@@ -103,6 +103,9 @@ class Client:
         else:  # Device Code Flow
             return "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
 
+    def get_user_id_by_upn(self, upn: str) -> str:
+        return self.ms_client.http_request(method="GET", url_suffix=f"users/{upn}")["id"]
+    
     def risky_users_list_request(
         self,
         limit: int = None,
@@ -156,6 +159,34 @@ class Client:
             Response (dict): API response from AzureRiskyUsers.
         """
         return self.ms_client.http_request(method="GET", url_suffix=f"identityProtection/riskyUsers/{id}")
+
+    def confirm_compromised_request(self, user_ids: list) -> None:
+        """
+        Confirms user(s) as compromised.
+        Args:
+            user_ids (list): List of user IDs to confirm as compromised.
+        Returns:
+            Response (dict): API response from AzureRiskyUsers.
+        """
+        res: requests.Response = self.ms_client.http_request(
+            method="POST", url_suffix="identityProtection/riskyUsers/confirmCompromised", json_data={"userIds": user_ids}, resp_type="response"
+        )
+        if res.status_code != 204:
+            raise DemistoException(f"Unable to confirm risky user:\n{res.text}")
+
+    def confirm_safe_request(self, user_ids: list) -> None:
+        """
+        Confirms user(s) as safe.
+        Args:
+            user_ids (list): List of user IDs to confirm as safe.
+        Returns:
+            Response (dict): API response from AzureRiskyUsers.
+        """
+        res: requests.Response =  self.ms_client.http_request(
+            method="POST", url_suffix="identityProtection/riskyUsers/confirm", json_data={"userIds": user_ids}, resp_type="response"
+        )
+        if res.status_code != 204:
+            raise DemistoException(f"Unable to confirm risky user:\n{res.text}")
 
     def risk_detections_list_request(
         self,
@@ -290,6 +321,9 @@ def do_pagination(client: Client, response: dict[str, Any], limit: int = 1) -> d
         response_data.extend(response.get("value") or [])
     demisto.debug(f"The limited response contains: {len(response_data[:limit])}")
     return {"value": response_data[:limit], "@odata.context": response.get("@odata.context"), "@odata.nextLink": next_link}
+
+
+def get_user_from_upn
 
 
 def get_user_human_readable(users: list) -> Any:
@@ -583,6 +617,42 @@ def risk_detection_get_command(client: Client, args: dict[str, Any]) -> CommandR
     )
 
 
+def risky_users_confirm_compromise_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    users = argToList(args["user"])
+    parsed_users = [
+        (
+            client.get_user_id_by_upn(user)
+            if "@" in user
+            else user
+        )
+        for user in users
+    ]
+    
+    client.confirm_compromised_request(user_ids=parsed_users)
+    
+    return CommandResults(
+        readable_output=f"Request to confirm users {users} as compromised was successful."
+    )
+    
+    
+def risky_users_confirm_safe_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    users = argToList(args["user"])
+    parsed_users = [
+        (
+            client.get_user_id_by_upn(user)
+            if "@" in user
+            else user
+        )
+        for user in users
+    ]
+    
+    client.confirm_safe_request(user_ids=parsed_users)
+    
+    return CommandResults(
+        readable_output=f"Request to confirm users {users} as safe was successful."  # TODO reformat
+    )
+
+
 def test_module(client: Client):
     """Tests API connectivity and authentication'
     The test module is not functional for Device Code flow authentication, it raises the suitable exception instead.
@@ -670,6 +740,10 @@ def main():
             return_results(risk_detections_list_command(client, args))
         elif command == "azure-risky-users-risk-detection-get":
             return_results(risk_detection_get_command(client, args))
+        elif command == "azure-risky-users-confirm-compromise":
+            return_results(risky_users_confirm_compromise_command(client, args))
+        elif command == "azure-risky-users-confirm-safe":
+            return_results(risky_users_confirm_safe_command(client, args))
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
 

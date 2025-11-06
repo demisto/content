@@ -335,6 +335,20 @@ script:
     - contextPath: AzureRiskyUsers.RiskDetection.tokenIssuerType
       description: 'Indicates the type of token issuer for the detected sign-in risk. Possible values are: AzureAD, ADFederationServices, UnknownFutureValue.'
       type: String
+  - arguments:
+    - description: User ID or UPN of the user(s) to confirm as compromised. Supports an array of values.
+      name: user
+      required: true
+      isArray: True
+    description: Confirms user(s) as compromised.
+    name: azure-risky-users-confirm-compromise
+  - arguments:
+    - description: User ID or UPN of the user(s) to confirm as safe. Supports an array of values.
+      name: user
+      required: true
+      isArray: True
+    description: Confirms user(s) as safe (post-investigation).
+    name: azure-risky-users-confirm-safe
   dockerimage: demisto/crypto:1.0.0.3539024
   runonce: false
   script: '-'
