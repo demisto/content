@@ -93,6 +93,8 @@ tasks:
         simple: "false"
       environment_id:
         simple: '160: Windows 10'
+      execution-timeout:
+        simple: "660"
       extended_data:
         simple: "false"
       polling:
