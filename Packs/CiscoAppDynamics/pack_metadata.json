@@ -9,9 +9,15 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Security"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "Network Security"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"
