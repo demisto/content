@@ -39,6 +39,7 @@ variables:
   SDK_REF: "master" # The default sdk branch to use
   OVERRIDE_ALL_PACKS: "false"
 
+  CURRENT_BRANCH_NAME: "missing-cortex-login"
 
 include:
   - local: .gitlab/ci/global.yml
@@ -47,3 +48,6 @@ include:
   - local: .gitlab/ci/instance-test.yml
   - local: .gitlab/ci/sdk-nightly.yml
   - local: .gitlab/ci/miscellaneous.yml
+  - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
+    ref: "missing-cortex-login"
+    project: "${CI_PROJECT_NAMESPACE}/infra"
