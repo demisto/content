@@ -8,7 +8,7 @@ comment: This script enriches CVEs published by Palo Alto Networks with detailed
 commonfields:
   id: PAN-OS_Security_Advisories_Enrichment
   version: -1
-dockerimage: demisto/python3:3.12.11.3982393
+dockerimage: demisto/python3:3.12.12.5490952
 enabled: true
 engineinfo: {}
 name: PAN-OS_Security_Advisories_Enrichment

@@ -2861,7 +2861,7 @@ script:
     - contextPath: MISP.Warninglist.Attributes
       description: The attribute types for this warninglist.
       type: string
-  dockerimage: demisto/pymisp2:2.5.17.1.4892767
+  dockerimage: demisto/pymisp2:2.5.17.2.5085941
   runonce: false
   script: ''
   subtype: python3

@@ -234,7 +234,7 @@ script:
     - User Hard Remediation
   - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.5490952
   runonce: false
   script: '-'
   subtype: python3
