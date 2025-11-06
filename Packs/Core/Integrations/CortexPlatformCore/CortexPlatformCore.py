@@ -372,13 +372,15 @@ class Client(CoreClient):
         return reply
     
     def appsec_remediate_issue(self, request_body):
-        reply = self._http_request(
+        return self._http_request(
             method="POST",
-            json_data=request_body,
-            headers=self._headers,
-            url_suffix="/trigger_fix_pull_request"
+            data=request_body,
+            headers={
+                **self._headers,
+                'content-type': "application/json"
+            },
+            url_suffix="/trigger_fix_pull_request",
         )
-        return reply
 
 
 def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
@@ -758,9 +760,13 @@ def appsec_remediate_issue_command(client, args):
         "fixBranchName": args.get("fix_branch_name")
     }
     request_body = remove_empty_elements(request_body)
-    print(request_body)
     response = client.appsec_remediate_issue(request_body)
-    print(response)
+    return CommandResults(
+        readable_output=tableToMarkdown("Remediation Results", response, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Appsec.Remediation",
+        outputs=response,
+        raw_response=response
+    )
     
 
 def main():  # pragma: no cover
