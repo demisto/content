@@ -151,12 +151,11 @@ def test_disable_or_enable_tag(requests_mock):
     args = {"tag_id": "foo, bar", "action": "disabled"}
 
     response = disable_or_enable_tags_command(client, args)
-    assert response.outputs[0] == mock_response
+    assert response.outputs == mock_response
     assert response.outputs_prefix == "CTIX.TagAction"
     assert response.outputs_key_field == "result"
 
-    assert isinstance(response.raw_response, list)
-    assert len(response.raw_response) == 1
+    assert isinstance(response.raw_response, dict)
 
 
 def test_disable_or_enable_tag_no_inputs(requests_mock):
@@ -565,11 +564,11 @@ def test_saved_result_set_command(requests_mock):
 
     response = saved_result_set_command(client, args)
 
-    assert response[0].outputs == mock_response["results"][0]
-    assert response[0].outputs_prefix == "CTIX.SavedResultSet"
+    assert response.outputs == mock_response["results"]
+    assert response.outputs_prefix == "CTIX.SavedResultSet"
 
-    assert isinstance(response[0].outputs, dict)
-    assert len(response[0].outputs) == 37
+    assert isinstance(response.outputs[0], dict)
+    assert len(response.outputs[0]) == 8
 
 
 def test_add_tag_indicator_updation_command(requests_mock):

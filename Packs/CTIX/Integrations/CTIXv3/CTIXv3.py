@@ -974,9 +974,8 @@ def disable_or_enable_tags_command(client: Client, args: dict[str, Any]) -> Comm
     """
     tag_ids = argToList(args.get("tag_id"))
     action = args.get("action") or "disabled"
-    final_result = []
     response = client.disable_or_enable_tag(tag_ids=tag_ids, action=action.lower())
-    final_result.append(response.get("data"))
+    final_result = response.get("data", {})
     final_result = no_result_found(final_result)
     if isinstance(final_result, CommandResults):
         return final_result
