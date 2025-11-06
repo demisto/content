@@ -39,6 +39,12 @@ from VectraXDR import (
     vectra_group_unassign_command,
     get_modified_remote_data_command,
     get_remote_data_command,
+    vectra_entity_detections_mark_asclosed_command,
+    vectra_detections_mark_asclosed_command,
+    vectra_detections_mark_asopen_command,
+    vectra_detection_tag_list_command,
+    vectra_detection_tag_add_command,
+    vectra_detection_tag_remove_command,
 )
 from VectraXDR import (
     ERRORS,
@@ -1527,7 +1533,7 @@ def test_vectra_entity_tag_add_when_get_tag_response_is_invalid(mocker, client):
     with pytest.raises(DemistoException) as exception:
         vectra_entity_tag_add_command(client, args)
 
-    assert str(exception.value) == f'Something went wrong. Message: {get_tags_res.get("message")}.'
+    assert str(exception.value) == f"Something went wrong. Message: {get_tags_res.get('message')}."
 
 
 def test_vectra_entity_tag_add_when_add_tag_response_is_invalid(mocker, client):
@@ -1556,7 +1562,7 @@ def test_vectra_entity_tag_add_when_add_tag_response_is_invalid(mocker, client):
     with pytest.raises(DemistoException) as exception:
         vectra_entity_tag_add_command(client, args)
 
-    assert str(exception.value) == f'Something went wrong. Message: {add_tags_res.get("message")}.'
+    assert str(exception.value) == f"Something went wrong. Message: {add_tags_res.get('message')}."
 
 
 def test_vectra_entity_tag_remove_valid_arguments(mocker, client):
@@ -1658,7 +1664,7 @@ def test_vectra_entity_tag_remove_when_get_tag_response_is_invalid(mocker, clien
     with pytest.raises(DemistoException) as exception:
         vectra_entity_tag_remove_command(client, args)
 
-    assert str(exception.value) == f'Something went wrong. Message: {get_tags_res.get("message")}.'
+    assert str(exception.value) == f"Something went wrong. Message: {get_tags_res.get('message')}."
 
 
 def test_vectra_entity_tag_remove_when_add_tag_response_is_invalid(mocker, client):
@@ -1687,7 +1693,7 @@ def test_vectra_entity_tag_remove_when_add_tag_response_is_invalid(mocker, clien
     with pytest.raises(DemistoException) as exception:
         vectra_entity_tag_remove_command(client, args)
 
-    assert str(exception.value) == f'Something went wrong. Message: {add_tags_res.get("message")}.'
+    assert str(exception.value) == f"Something went wrong. Message: {add_tags_res.get('message')}."
 
 
 def test_vectra_entity_tag_list_valid_arguments(requests_mock, client):
@@ -1826,7 +1832,7 @@ def test_vectra_entity_tag_list_when_response_is_invalid(mocker, client):
     with pytest.raises(DemistoException) as exception:
         vectra_entity_tag_list_command(client, args)
 
-    assert str(exception.value) == f'Something went wrong. Message: {get_tags_res.get("message")}.'
+    assert str(exception.value) == f"Something went wrong. Message: {get_tags_res.get('message')}."
 
 
 def test_vectra_detections_mark_fixed_valid_arguments(requests_mock, client):
@@ -3627,3 +3633,693 @@ def test_update_remote_system_closing_notes_refetch_invalid(client, mocker, refe
         update_remote_system_command(client, mock_args, params)
 
     assert str(exception.value) == "Argument does not contain a valid boolean-like value"
+
+
+@pytest.mark.parametrize("close_reason", ["benign", "remediated"])
+def test_vectra_entity_detections_mark_asclosed_valid_arguments(requests_mock, client, close_reason):
+    """
+    Given:
+    - A client object.
+    - Mocked responses for entity data and marking detections as closed.
+    - Arguments specifying valid parameters for marking detections as closed for an entity.
+
+    When:
+    - Calling the 'vectra_entity_detections_mark_asclosed_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the human-readable output matches the expected output.
+    """
+    entity_response = util_load_json(f"{TEST_DATA_DIR}/get_entity_response.json")
+    response = {"_meta": {"level": "Success", "message": f"Successfully closed detections as {close_reason}"}}
+    args = {"entity_id": "334", "entity_type": "account", "close_reason": close_reason}
+    requests_mock.get(BASE_URL + "{}/{}".format(ENDPOINTS["ENTITY_ENDPOINT"], args["entity_id"]), json=entity_response)
+    requests_mock.patch(BASE_URL + ENDPOINTS["DETECTION_CLOSE_ENDPOINT"], json=response)
+    # Call the function
+    result = vectra_entity_detections_mark_asclosed_command(client, args)
+    result_context = result.to_context()
+    # Assert the CommandResults
+    expected_hr = f"##### The detections (1933, 1934) of the provided entity ID have been successfully closed as {close_reason}."
+    assert result_context.get("HumanReadable") == expected_hr
+
+
+def test_vectra_entity_detections_mark_asclosed_with_no_detections(requests_mock, client):
+    """
+    Given:
+    - A client object.
+    - Mocked responses for entity data with no detections.
+    - Arguments specifying valid parameters for marking detections as closed for an entity with no detections.
+
+    When:
+    - Calling the 'vectra_entity_detections_mark_asclosed_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the human-readable output matches the expected output indicating no detections to mark as closed.
+    """
+    args = {"entity_id": "1", "entity_type": "account", "close_reason": "benign"}
+    requests_mock.get(
+        BASE_URL + "{}/{}".format(ENDPOINTS["ENTITY_ENDPOINT"], args["entity_id"]), json={"entity_id": "1", "type": "account"}
+    )
+    # Call the function
+    result = vectra_entity_detections_mark_asclosed_command(client, args)
+    result_context = result.to_context()
+    # Assert the CommandResults
+    assert result_context.get("HumanReadable") == "There are no active detections to mark as closed for this entity ID: 1."
+
+
+def test_vectra_entity_detections_mark_asclosed_command_invalid_response(requests_mock, client):
+    """
+    Given:
+    - A mocked client for requests.
+    - A mock entity detection mark as closed invalid response.
+    - Arguments specifying valid parameters for marking detections as closed for an entity.
+
+    When:
+    - Calling the 'vectra_entity_detections_mark_asclosed_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the function raises a DemistoException with the expected error message.
+    """
+    entity_response = util_load_json(f"{TEST_DATA_DIR}/get_entity_response.json")
+    response = {"_meta": {"level": "Error", "message": "Failed to close detections"}}
+    requests_mock.get(BASE_URL + "{}/{}".format(ENDPOINTS["ENTITY_ENDPOINT"], 334), json=entity_response)
+    requests_mock.patch(BASE_URL + ENDPOINTS["DETECTION_CLOSE_ENDPOINT"], json=response)
+    args = {"entity_id": "334", "entity_type": "account", "close_reason": "benign"}
+
+    # Capture exception from the function
+    with pytest.raises(DemistoException) as exception:
+        vectra_entity_detections_mark_asclosed_command(client, args)
+
+    assert str(exception.value) == "Something went wrong. Message: Failed to close detections."
+
+
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({"entity_id": "", "entity_type": "account", "close_reason": "benign"}, ERRORS["REQUIRED_ARGUMENT"].format("entity_id")),
+        (
+            {"entity_id": "1", "entity_type": "invalid_type", "close_reason": "benign"},
+            ERRORS["INVALID_COMMAND_ARG_VALUE"].format("entity_type", ", ".join(VALID_ENTITY_TYPE)),
+        ),
+        ({"entity_id": "1", "entity_type": "", "close_reason": "benign"}, ERRORS["REQUIRED_ARGUMENT"].format("entity_type")),
+        ({"entity_id": "1", "entity_type": "account", "close_reason": ""}, ERRORS["REQUIRED_ARGUMENT"].format("close_reason")),
+        (
+            {"entity_id": "1", "entity_type": "account", "close_reason": "invalid_reason"},
+            ERRORS["INVALID_COMMAND_ARG_VALUE"].format("close_reason", "benign, remediated"),
+        ),
+    ],
+)
+def test_vectra_entity_detections_mark_asclosed_invalid_args(client, args, error_msg):
+    """
+    Given:
+    - Invalid arguments for marking detections as closed.
+
+    When:
+    - Calling the 'vectra_entity_detections_mark_asclosed_command' function with the provided invalid arguments.
+
+    Then:
+    - Assert that the function raises a ValueError with the expected error message.
+    """
+    # Call the function and assert that it raises ValueError
+    with pytest.raises(ValueError) as exception:
+        vectra_entity_detections_mark_asclosed_command(client, args)
+
+    assert str(exception.value) == error_msg
+
+
+@pytest.mark.parametrize("close_reason", ["benign", "remediated"])
+def test_vectra_detections_mark_asclosed_valid_arguments(requests_mock, client, close_reason):
+    """
+    Given:
+    - A mocked client for requests.
+    - A mock detection mark as closed response.
+    - The expected human-readable output file.
+    - Arguments specifying valid detection IDs and close reason to mark as closed.
+
+    When:
+    - Calling the 'vectra_detections_mark_asclosed_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the CommandResults object contains the expected outputs.
+    - Assert that the human-readable output matches the content of the expected file.
+    """
+    response = {"_meta": {"level": "Success", "message": f"Successfully closed detections as {close_reason}"}}
+    requests_mock.patch(BASE_URL + ENDPOINTS["DETECTION_CLOSE_ENDPOINT"], json=response)
+
+    args = {"detection_ids": "1,2,3", "close_reason": close_reason}
+
+    # Call the function
+    result = vectra_detections_mark_asclosed_command(client, args)
+    result_context = result.to_context()
+    expected_hr = f"##### The provided detection IDs have been successfully closed as {close_reason}."
+    # Assert the CommandResults
+    assert result_context.get("HumanReadable") == expected_hr
+    assert result_context.get("EntryContext") == {}
+
+
+def test_vectra_detections_mark_asclosed_invalid_response(requests_mock, client):
+    """
+    Given:
+    - A mocked client for requests.
+    - A mock detection mark as closed invalid response.
+    - Arguments specifying valid detection IDs and close reason to mark as closed.
+
+    When:
+    - Calling the 'vectra_detections_mark_asclosed_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the function raises a DemistoException with the expected error message.
+    """
+    response = {"_meta": {"level": "Error", "message": "Failed to close detections"}}
+    requests_mock.patch(BASE_URL + ENDPOINTS["DETECTION_CLOSE_ENDPOINT"], json=response)
+    args = {"detection_ids": "1,2,3", "close_reason": "benign"}
+
+    # Capture exception from the function
+    with pytest.raises(DemistoException) as exception:
+        vectra_detections_mark_asclosed_command(client, args)
+
+    assert str(exception.value) == "Something went wrong. Message: Failed to close detections."
+
+
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({}, ERRORS["REQUIRED_ARGUMENT"].format("detection_ids")),
+        ({"detection_ids": "1,2,3"}, ERRORS["REQUIRED_ARGUMENT"].format("close_reason")),
+        ({"detection_ids": "as,2", "close_reason": "benign"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+        ({"detection_ids": "1,2, , , ,,,3", "close_reason": "benign"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+        (
+            {"detection_ids": "1,2,3", "close_reason": "invalid"},
+            ERRORS["INVALID_COMMAND_ARG_VALUE"].format("close_reason", "benign, remediated"),
+        ),
+    ],
+)
+def test_vectra_detections_mark_asclosed_invalid_args(client, args, error_msg):
+    """
+    Given:
+    - A client object.
+    - Invalid arguments (missing detection_ids, missing close_reason, invalid detection_ids, invalid close_reason).
+
+    When:
+    - Calling the 'vectra_detections_mark_asclosed_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the function raises a ValueError with the expected error message.
+    """
+    # Call the function and assert that it raises ValueError
+    with pytest.raises(ValueError) as exception:
+        vectra_detections_mark_asclosed_command(client, args)
+
+    assert str(exception.value) == error_msg
+
+
+def test_vectra_detections_mark_asopen_valid_arguments(requests_mock, client):
+    """
+    Given:
+    - A mocked client for requests.
+    - A mock detection mark as open response.
+    - Arguments specifying valid detection IDs to mark as open.
+
+    When:
+    - Calling the 'vectra_detections_mark_asopen_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the CommandResults object contains the expected outputs.
+    - Assert that the human-readable output matches the expected content.
+    """
+    response = {"_meta": {"level": "success", "message": "Successfully re-opened detections"}}
+    requests_mock.patch(BASE_URL + ENDPOINTS["DETECTION_OPEN_ENDPOINT"], json=response)
+
+    args = {"detection_ids": "1,2,3"}
+
+    # Call the function
+    result = vectra_detections_mark_asopen_command(client, args)
+    result_context = result.to_context()
+    expected_hr = "##### The provided detection IDs have been successfully re-opened."
+    # Assert the CommandResults
+    assert result_context.get("HumanReadable") == expected_hr
+    assert result_context.get("EntryContext") == {}
+
+
+def test_vectra_detections_mark_asopen_invalid_response(requests_mock, client):
+    """
+    Given:
+    - A mocked client for requests.
+    - A mock detection mark as open invalid response.
+    - Arguments specifying valid detection IDs to mark as open.
+
+    When:
+    - Calling the 'vectra_detections_mark_asopen_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the function raises a DemistoException with the expected error message.
+    """
+    response = {"_meta": {"level": "Error", "message": "Failed to open detections"}}
+    requests_mock.patch(BASE_URL + ENDPOINTS["DETECTION_OPEN_ENDPOINT"], json=response)
+    args = {"detection_ids": "1,2,3"}
+
+    # Capture exception from the function
+    with pytest.raises(DemistoException) as exception:
+        vectra_detections_mark_asopen_command(client, args)
+
+    assert str(exception.value) == "Something went wrong. Message: Failed to open detections."
+
+
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({}, ERRORS["REQUIRED_ARGUMENT"].format("detection_ids")),
+        ({"detection_ids": ""}, ERRORS["REQUIRED_ARGUMENT"].format("detection_ids")),
+        ({"detection_ids": "as,2"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+        ({"detection_ids": "1,2, ,  ,3"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+    ],
+)
+def test_vectra_detections_mark_asopen_invalid_args(client, args, error_msg):
+    """
+    Given:
+    - A client object.
+    - Invalid arguments (missing detection_ids, empty detection_ids, invalid detection_ids).
+
+    When:
+    - Calling the 'vectra_detections_mark_asopen_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the function raises a ValueError with the expected error message.
+    """
+    # Call the function and assert that it raises ValueError
+    with pytest.raises(ValueError) as exception:
+        vectra_detections_mark_asopen_command(client, args)
+
+    assert str(exception.value) == error_msg
+
+
+def test_vectra_detection_tag_list_valid_arguments(requests_mock, client):
+    """
+    Given:
+    - A client object.
+    - Mocked 'list_detection_tags_request' method returning tags response.
+    - The expected human-readable output file.
+    - Arguments specifying valid parameters for listing the tags of a detection.
+
+    When:
+    - Calling the 'vectra_detection_tag_list_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the CommandResults object contains the expected outputs.
+    - Assert the correctness of the 'outputs_prefix' property.
+    - Assert that the human-readable output matches the expected format.
+    - Assert that the 'Contents' property in the context matches the tags response.
+    - Assert that the 'EntryContext' property in the context matches the context data.
+    - Assert the correctness of the 'outputs_key_field' property.
+    """
+    get_tags_res = {"status": "success", "tag_id": "36", "tags": ["tag1", "tag2"]}
+    requests_mock.get(BASE_URL + ENDPOINTS["DETECTION_TAG_ENDPOINT"].format(123), json=get_tags_res)
+    args = {"detection_id": "123"}
+
+    # Call the function
+    result = vectra_detection_tag_list_command(client, args)
+    result_context = result.to_context()
+    get_tags_res.update({"detection_id": 123})
+    del get_tags_res["status"]
+
+    # Assert the CommandResults
+    assert result.outputs_prefix == "Vectra.Detection.Tags"
+    assert "##### List of tags: **tag1, tag2**" in result_context.get("HumanReadable")
+    assert result_context.get("Contents") == get_tags_res
+    assert result.outputs_key_field == ["tag_id", "detection_id"]
+
+
+def test_vectra_detection_tag_list_with_empty_tag_response(mocker, client):
+    """
+    Given:
+    - A client object.
+    - Mocked 'list_detection_tags_request' method returning empty tags response.
+    - Arguments specifying valid parameters for listing the tags of a detection.
+
+    When:
+    - Calling the 'vectra_detection_tag_list_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the CommandResults object contains the expected outputs.
+    - Assert the correctness of the 'outputs_prefix' property.
+    - Assert that the human-readable output indicates no tags were found.
+    - Assert that the 'Contents' property in the context matches the tags response.
+    - Assert the correctness of the 'outputs_key_field' property.
+    """
+    get_tags_res = {"status": "success", "tag_id": "36", "tags": []}
+    mocker.patch.object(client, "list_detection_tags_request", return_value=get_tags_res)
+    args = {"detection_id": "123"}
+
+    # Call the function
+    result = vectra_detection_tag_list_command(client, args)
+    result_context = result.to_context()
+    get_tags_res.update({"detection_id": 123})
+    get_tags_res.pop("status", None)
+
+    # Assert the CommandResults
+    assert result.outputs_prefix == "Vectra.Detection.Tags"
+    assert result_context.get("HumanReadable") == "##### No tags were found for the given detection ID."
+    assert result_context.get("Contents") == get_tags_res
+    assert result.outputs_key_field == ["tag_id", "detection_id"]
+
+
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({}, ERRORS["REQUIRED_ARGUMENT"].format("detection_id")),
+        ({"detection_id": "0"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_id")),
+        ({"detection_id": "-1"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_id")),
+        ({"detection_id": "1.5"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_id")),
+        ({"detection_id": "abc"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_id")),
+    ],
+)
+def test_vectra_detection_tag_list_invalid_args(client, args, error_msg):
+    """
+    Given:
+    - A client object.
+    - Arguments specifying different invalid values for detection_id.
+
+    When:
+    - Calling the 'vectra_detection_tag_list_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the function raises a ValueError.
+    - Assert that the error message matches the expected error message for each invalid argument.
+    """
+    # Call the function and assert that it raises ValueError
+    with pytest.raises(ValueError) as exception:
+        vectra_detection_tag_list_command(client, args)
+
+    assert str(exception.value) == error_msg
+
+
+def test_vectra_detection_tag_list_when_response_is_invalid(mocker, client):
+    """
+    Given:
+    - A client object.
+    - Mocked 'list_detection_tags_request' method returning invalid response.
+    - Arguments specifying valid detection_id.
+
+    When:
+    - Calling the 'vectra_detection_tag_list_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the function raises a DemistoException.
+    - Assert that the error message indicates something went wrong.
+    """
+    get_tags_res = {"status": "error", "message": "Detection not found"}
+    mocker.patch.object(client, "list_detection_tags_request", return_value=get_tags_res)
+    args = {"detection_id": "123"}
+
+    # Call the function
+    with pytest.raises(DemistoException) as exception:
+        vectra_detection_tag_list_command(client, args)
+
+    assert str(exception.value) == f"Something went wrong. Message: {get_tags_res.get('message')}."
+
+
+def test_vectra_detection_tag_list_when_response_has_no_status(mocker, client):
+    """
+    Given:
+    - A client object.
+    - Mocked 'list_detection_tags_request' method returning response without status.
+    - Arguments specifying valid detection_id.
+
+    When:
+    - Calling the 'vectra_detection_tag_list_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the function raises a DemistoException.
+    - Assert that the error message indicates something went wrong.
+    """
+    get_tags_res = {"tag_id": "36", "tags": ["tag1"]}
+    mocker.patch.object(client, "list_detection_tags_request", return_value=get_tags_res)
+    args = {"detection_id": "123"}
+
+    # Call the function
+    with pytest.raises(DemistoException) as exception:
+        vectra_detection_tag_list_command(client, args)
+
+    assert str(exception.value) == "Something went wrong."
+
+
+def test_vectra_detection_tag_add_valid_arguments(requests_mock, client):
+    """
+    Given:
+    - A mocked client for requests.
+    - A mock get and update tag response.
+    - The expected human-readable output file.
+    - Arguments specifying valid parameters for adding the tags to an entity.
+
+    When:
+    - Calling the 'vectra_detection_tag_add_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the CommandResults object contains the expected outputs.
+    - Assert the correctness of the 'outputs_prefix' property.
+    - Assert that the human-readable output matches the content of the expected file.
+    - Assert that the 'Contents' property in the context matches the tags response.
+    - Assert that the 'EntryContext' property in the context matches the context data.
+    - Assert the correctness of the 'outputs_key_field' property.
+    """
+    add_tags_res = util_load_json(f"{TEST_DATA_DIR}/detection_tag_add_response.json")
+    get_tags_res = util_load_json(f"{TEST_DATA_DIR}/detection_tag_get_response.json")
+    context_data = util_load_json(f"{TEST_DATA_DIR}/detection_tag_add_context.json")
+    with open(f"{TEST_DATA_DIR}/detection_tag_add_hr.md") as f:
+        result_hr = f.read()
+
+    requests_mock.get(BASE_URL + ENDPOINTS["DETECTION_TAG_ENDPOINT"].format(1), json=get_tags_res)
+    requests_mock.patch(BASE_URL + ENDPOINTS["DETECTION_TAG_ENDPOINT"].format(1), json=add_tags_res)
+
+    args = {
+        "detection_id": "1",
+        "tags": "tag1, tag2",
+    }
+
+    # Call the function
+    result = vectra_detection_tag_add_command(client, args)
+    result_context = result.to_context()
+    add_tags_res.update({"detection_id": 1})
+    del add_tags_res["status"]
+    # Assert the CommandResults
+    assert result.outputs_prefix == "Vectra.Detection.Tags"
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("Contents") == add_tags_res
+    assert result_context.get("EntryContext") == remove_empty_elements(context_data)
+    assert result.outputs_key_field == ["tag_id", "detection_id"]
+
+
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({"tags": "tag1"}, ERRORS["REQUIRED_ARGUMENT"].format("detection_id")),
+        ({"detection_id": "1", "tags": ""}, ERRORS["REQUIRED_ARGUMENT"].format("tags")),
+        ({"detection_id": "1", "tags": " , "}, ERRORS["REQUIRED_ARGUMENT"].format("tags")),
+        ({"detection_id": "0", "tags": "tag1"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_id")),
+        ({"detection_id": "-1", "tags": "tag1"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_id")),
+        ({"detection_id": "1.5", "tags": "tag1"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_id")),
+        ({"detection_id": "abc", "tags": "tag1"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_id")),
+    ],
+)
+def test_vectra_detection_tag_add_invalid_args(client, args, error_msg):
+    """
+    Given:
+    - A client object.
+    - Arguments specifying different invalid values for entity_id, entity_type, and tags.
+
+    When:
+    - Calling the 'vectra_detection_tag_add_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the function raises a ValueError.
+    - Assert that the error message matches the expected error message for each invalid argument.
+    """
+    # Call the function and assert that it raises ValueError
+    with pytest.raises(ValueError) as exception:
+        vectra_detection_tag_add_command(client, args)
+
+    assert str(exception.value) == error_msg
+
+
+def test_vectra_detection_tag_add_when_get_tag_response_is_invalid(requests_mock, client):
+    """
+    Given:
+    - A client object.
+    - Mocked 'list_detection_tags_request' method returning invalid response.
+    - Arguments specifying invalid tags.
+
+    When:
+    - Calling the 'vectra_detection_tag_add_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the human-readable output indicates that invalid result was found.
+    """
+    get_tags_res = util_load_json(f"{TEST_DATA_DIR}/detection_tag_get_invalid_response.json")
+    requests_mock.get(BASE_URL + ENDPOINTS["DETECTION_TAG_ENDPOINT"].format(1), json=get_tags_res)
+    args = {
+        "detection_id": "1",
+        "tags": "tag1, tag2",
+    }
+    # Call the function
+    with pytest.raises(DemistoException) as exception:
+        vectra_detection_tag_add_command(client, args)
+
+    assert str(exception.value) == f"Something went wrong. Message: {get_tags_res.get('message')}."
+
+
+def test_vectra_detection_tag_add_when_add_tag_response_is_invalid(requests_mock, client):
+    """
+    Given:
+    - A client object.
+    - Mocked 'update_detection_tags_request' method returning invalid response.
+    - Arguments specifying invalid tags.
+
+    When:
+    - Calling the 'vectra_detection_tag_add_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the human-readable output indicates that invalid result was found.
+    """
+    get_tags_res = util_load_json(f"{TEST_DATA_DIR}/detection_tag_get_response.json")
+    add_tags_res = util_load_json(f"{TEST_DATA_DIR}/detection_tag_get_invalid_response.json")
+
+    requests_mock.get(BASE_URL + ENDPOINTS["DETECTION_TAG_ENDPOINT"].format(1), json=get_tags_res)
+    requests_mock.patch(BASE_URL + ENDPOINTS["DETECTION_TAG_ENDPOINT"].format(1), json=add_tags_res)
+    args = {
+        "detection_id": "1",
+        "tags": "tag1, tag2",
+    }
+    # Call the function
+    with pytest.raises(DemistoException) as exception:
+        vectra_detection_tag_add_command(client, args)
+
+    assert str(exception.value) == f"Something went wrong. Message: {add_tags_res.get('message')}."
+
+
+def test_vectra_detection_tag_remove_valid_arguments(requests_mock, client):
+    """
+    Given:
+    - A client object.
+    - Mocked 'update_detection_tags_request' method returning tags response.
+    - The expected human-readable output file.
+    - Arguments specifying valid parameters for adding the tags to an entity.
+
+    When:
+    - Calling the 'vectra_detection_tag_remove_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the CommandResults object contains the expected outputs.
+    - Assert the correctness of the 'outputs_prefix' property.
+    - Assert that the human-readable output matches the content of the expected file.
+    - Assert that the 'Contents' property in the context matches the tags response.
+    - Assert that the 'EntryContext' property in the context matches the context data.
+    - Assert the correctness of the 'outputs_key_field' property.
+    """
+    remove_tags_res = util_load_json(f"{TEST_DATA_DIR}/detection_tag_remove_response.json")
+    get_tags_res = util_load_json(f"{TEST_DATA_DIR}/detection_tag_get_response.json")
+    context_data = util_load_json(f"{TEST_DATA_DIR}/detection_tag_remove_context.json")
+    with open(f"{TEST_DATA_DIR}/detection_tag_remove_hr.md") as f:
+        result_hr = f.read()
+
+    requests_mock.get(BASE_URL + ENDPOINTS["DETECTION_TAG_ENDPOINT"].format(1), json=get_tags_res)
+    requests_mock.patch(BASE_URL + ENDPOINTS["DETECTION_TAG_ENDPOINT"].format(1), json=remove_tags_res)
+
+    args = {"detection_id": "1", "tags": "tag,tag2"}
+
+    # Call the function
+    result = vectra_detection_tag_remove_command(client, args)
+    result_context = result.to_context()
+    remove_tags_res.update({"detection_id": 1})
+    del remove_tags_res["status"]
+    # Assert the CommandResults
+    assert result.outputs_prefix == "Vectra.Detection.Tags"
+    assert result_context.get("HumanReadable") == result_hr
+    assert result_context.get("Contents") == remove_tags_res
+    assert result_context.get("EntryContext") == remove_empty_elements(context_data)
+    assert result.outputs_key_field == ["tag_id", "detection_id"]
+
+
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        ({"tags": "tag1"}, ERRORS["REQUIRED_ARGUMENT"].format("detection_id")),
+        ({"detection_id": "1", "tags": ""}, ERRORS["REQUIRED_ARGUMENT"].format("tags")),
+        ({"detection_id": "1", "tags": " , "}, ERRORS["REQUIRED_ARGUMENT"].format("tags")),
+        ({"detection_id": "0", "tags": "tag1"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_id")),
+        ({"detection_id": "-1", "tags": "tag1"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_id")),
+        ({"detection_id": "1.5", "tags": "tag1"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_id")),
+        ({"detection_id": "abc", "tags": "tag1"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_id")),
+    ],
+)
+def test_vectra_detection_tag_remove_invalid_args(client, args, error_msg):
+    """
+    Given:
+    - A client object.
+    - Arguments specifying different invalid values for entity_id and entity_type.
+
+    When:
+    - Calling the 'vectra_detection_tag_remove_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the function raises a ValueError.
+    - Assert that the error message matches the expected error message for each invalid argument.
+    """
+    # Call the function and assert that it raises ValueError
+    with pytest.raises(ValueError) as exception:
+        vectra_detection_tag_remove_command(client, args)
+
+    assert str(exception.value) == error_msg
+
+
+def test_vectra_detection_tag_remove_when_get_tag_response_is_invalid(requests_mock, client):
+    """
+    Given:
+    - A client object.
+    - Mocked 'list_detection_tags_request' method returning invalid response.
+    - Arguments specifying invalid tags.
+
+    When:
+    - Calling the 'vectra_detection_tag_remove_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the human-readable output indicates that invalid result was found.
+    """
+    get_tags_res = util_load_json(f"{TEST_DATA_DIR}/detection_tag_get_invalid_response.json")
+    requests_mock.get(BASE_URL + ENDPOINTS["DETECTION_TAG_ENDPOINT"].format(1), json=get_tags_res)
+    args = {
+        "detection_id": "1",
+        "tags": "tag2",
+    }
+    # Call the function
+    with pytest.raises(DemistoException) as exception:
+        vectra_detection_tag_remove_command(client, args)
+
+    assert str(exception.value) == f"Something went wrong. Message: {get_tags_res.get('message')}."
+
+
+def test_vectra_detection_tag_remove_when_remove_tag_response_is_invalid(requests_mock, client):
+    """
+    Given:
+    - A client object.
+    - Mocked 'update_detection_tags_request' method returning invalid response.
+    - Arguments specifying invalid tags.
+
+    When:
+    - Calling the 'vectra_detection_tag_remove_command' function with the provided client and arguments.
+
+    Then:
+    - Assert that the human-readable output indicates that invalid result was found.
+    """
+    get_tags_res = util_load_json(f"{TEST_DATA_DIR}/detection_tag_get_response.json")
+    remove_tags_res = util_load_json(f"{TEST_DATA_DIR}/detection_tag_get_invalid_response.json")
+
+    requests_mock.get(BASE_URL + ENDPOINTS["DETECTION_TAG_ENDPOINT"].format(1), json=get_tags_res)
+    requests_mock.patch(BASE_URL + ENDPOINTS["DETECTION_TAG_ENDPOINT"].format(1), json=remove_tags_res)
+    args = {
+        "detection_id": "1",
+        "tags": "tag, tag2",
+    }
+    # Call the function
+    with pytest.raises(DemistoException) as exception:
+        vectra_detection_tag_remove_command(client, args)
+
+    assert str(exception.value) == f"Something went wrong. Message: {remove_tags_res.get('message')}."
