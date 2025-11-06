@@ -2,7 +2,7 @@
     "name": "Silent Push",
     "description": "The Silent Push platform focuses on proactive threat intelligence and threat hunting.",
     "support": "partner",
-    "currentVersion": "1.2.0",
+    "currentVersion": "1.2.1",
     "author": "Silent Push",
     "url": "https://www.silentpush.com/contact/",
     "email": "integrations@silentpush.com",
@@ -14,7 +14,8 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": []
 }

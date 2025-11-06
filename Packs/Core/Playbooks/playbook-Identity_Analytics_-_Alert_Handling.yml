@@ -5,7 +5,7 @@ description: |-
   The `Identity Analytics - Alert Handling` playbook is designed to handle Identity Analytics alerts and executes the following:
 
   Analysis:
-  - Enriches the IP and the account, providing additional context and information about these indicators.
+  - Enriches the Indicators and the account, providing additional context and information about these indicators.
 
   Verdict:
   - Determines the appropriate verdict based on the data collected from the enrichment phase.
@@ -33,14 +33,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "47"
+      - "57"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 250,
-          "y": -510
+          "y": -660
         }
       }
     note: false
@@ -108,53 +108,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": -80
+          "x": -90,
+          "y": -70
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: d44bd7f6-7d7d-4b0e-8746-110754f73f1e
-    type: regular
-    task:
-      id: d44bd7f6-7d7d-4b0e-8746-110754f73f1e
-      version: -1
-      name: IP Enrichment
-      description: Checks the reputation of an IP address.
-      script: '|||ip'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      ip:
-        complex:
-          root: IP
-          accessor: Address
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 780,
-          "y": -80
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -174,7 +135,6 @@ tasks:
       '#none#':
       - "56"
       - "1"
-      - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -334,7 +294,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
+          "x": 620,
           "y": 110
         }
       }
@@ -1510,8 +1470,44 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
+          "x": 620,
           "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 2957a278-54d6-4502-b8ba-bf73ba3a1d73
+    type: regular
+    task:
+      id: 2957a278-54d6-4502-b8ba-bf73ba3a1d73
+      version: -1
+      name: Extract and enrich the alert indicators
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      text:
+        simple: ${alert}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": -530
         }
       }
     note: false
@@ -1536,10 +1532,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3300,
+        "height": 3450,
         "width": 2240,
         "x": -540,
-        "y": -510
+        "y": -660
       }
     }
   }
@@ -1649,7 +1645,9 @@ marketplaces:
 - marketplacev2
 - platform
 fromversion: 6.10.0
-
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
 supportedModules:
 - X1
 - X3
