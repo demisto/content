@@ -116,14 +116,8 @@ script:
   subtype: python3
   commands:
   - name: ad-expire-password
-    prettyname: Expire Password for User - ActiveDirectory
+    prettyname: Force Password Reset [ActiveDirectory]
     quickaction: true
-    supportedModules:
-      - C3
-      - X0
-      - X3
-      - X5
-      - ENT_PLUS
     arguments:
     - name: username
       required: true
@@ -278,14 +272,8 @@ script:
       description: "The attribute value to update."
     description: Updates attributes of an existing Active Directory contact.
   - name: ad-disable-account
-    prettyname: Deactivate/Disable User - ActiveDirectory
+    prettyname: Disable User Account [ActiveDirectory]
     quickaction: true
-    supportedModules:
-      - C3
-      - X0
-      - X3
-      - X5
-      - ENT_PLUS
     arguments:
     - description: "The username of the account to disable (sAMAccountName)."
       name: username
