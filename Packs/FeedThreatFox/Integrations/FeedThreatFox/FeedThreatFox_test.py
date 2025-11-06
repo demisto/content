@@ -400,6 +400,8 @@ tags_data = [
         [],
     ),  # expected
 ]
+
+
 @pytest.mark.parametrize("indicator, with_ports, expected_tags", tags_data)
 def test_tags(indicator, with_ports, expected_tags):
     """
@@ -416,22 +418,24 @@ def test_tags(indicator, with_ports, expected_tags):
 
     tags = tags(indicator, with_ports)
     assert set(tags) == set(expected_tags)
-    
+
 
 tags_data = [
     (
         {"malware_printable": "Unknown malware"},
-        ['threatFoxTagFromConfiguration'],
+        ["threatFoxTagFromConfiguration"],
         False,  # case malware_printable in unknown
-        ['threatfoxtagfromconfiguration'],
+        ["threatfoxtagfromconfiguration"],
     ),
     (
         {"malware_printable": "Unknown malware"},
-        ['threatFoxTagFromConfiguration','threatFoxTagFromConfiguration2'],
+        ["threatFoxTagFromConfiguration", "threatFoxTagFromConfiguration2"],
         False,  # case malware_printable in unknown
-        ['threatfoxtagfromconfiguration','threatfoxtagfromconfiguration2'],
+        ["threatfoxtagfromconfiguration", "threatfoxtagfromconfiguration2"],
     ),
 ]
+
+
 @pytest.mark.parametrize("indicator, tags_from_conf, with_ports, expected_tags", tags_data)
 def test_tags_from_configuration(indicator, tags_from_conf, with_ports, expected_tags):
     """

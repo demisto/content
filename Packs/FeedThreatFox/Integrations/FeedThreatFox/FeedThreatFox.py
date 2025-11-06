@@ -149,7 +149,9 @@ def indicator_type(indicator: dict) -> str:
         return FeedIndicatorType.File
 
 
-def parse_indicator_for_fetch(indicator: dict, with_ports: bool, create_relationship: bool, tlp_color: str, feed_tags: list = []) -> dict[str, Any]:
+def parse_indicator_for_fetch(
+    indicator: dict, with_ports: bool, create_relationship: bool, tlp_color: str, feed_tags: list = []
+) -> dict[str, Any]:
     """Parses the indicator given from the api to an indicator that can be sent to Threat Intel min XSOAR.
 
     Args:
@@ -460,7 +462,7 @@ def main() -> None:
                 interval=interval,
                 tlp_color=tlp_color,
                 last_run=demisto.getLastRun(),
-                feed_tags = feed_tags,
+                feed_tags=feed_tags,
             )
             for iter_ in batch(res, batch_size=2000):
                 demisto.debug(f"{LOG_LINE} {iter_=}")
