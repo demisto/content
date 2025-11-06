@@ -49,7 +49,7 @@ function isTaskMatch(task, name, tag, states) {
         (taskTask.tags && taskTask.tags.indexOf(tag) !== -1);
 
     var stateMatch = !states || states.length === 0 ||
-        (states.indexOf(task.state) !== -1);
+        (states.indexOf(task.state) !== -1 || task.state === undefined);
 
     return nameMatch && tagMatch && stateMatch;
 }
