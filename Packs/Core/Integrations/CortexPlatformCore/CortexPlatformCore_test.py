@@ -2411,7 +2411,7 @@ def test_update_issue_command_success_all_fields(mocker):
     args = {
         "id": "12345",
         "assigned_user_mail": "user@example.com",
-        "severity": "2",
+        "severity": "medium",
         "name": "Test Issue",
         "occurred": "2023-01-01T00:00:00Z",
         "phase": "investigation",
@@ -2529,7 +2529,7 @@ def test_update_issue_command_severity_low(mocker):
     mocker.patch.object(demisto, "debug")
     mocker.patch("CortexPlatformCore.arg_to_number", return_value=1)
 
-    args = {"id": "12345", "severity": "1"}
+    args = {"id": "12345", "severity": "low"}
 
     update_issue_command(client, args)
 
