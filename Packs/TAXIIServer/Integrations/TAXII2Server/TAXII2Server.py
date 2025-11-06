@@ -258,7 +258,7 @@ class TAXII2Server:
         """
         found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get("query")
-        iocs, _, total = find_indicators(
+        iocs, _, total, _ = find_indicators(
             query=query, types=types, added_after=added_after, limit=limit, offset=offset, is_manifest=True
         )
 
