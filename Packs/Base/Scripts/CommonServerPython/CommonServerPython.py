@@ -22,7 +22,7 @@ import urllib
 import gzip
 import ssl
 import signal
-from random import randint, uniform
+from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
