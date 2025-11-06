@@ -807,7 +807,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 
 [package.source]
 type = "git"
-url = "git@github.com:demisto/demisto-sdk.git"
+url = "https://github.com/demisto/demisto-sdk.git"
 reference = "0e9d7a3bf3458e3548fc035ed72a4c51bfbe8cf8"
 resolved_reference = "0e9d7a3bf3458e3548fc035ed72a4c51bfbe8cf8"
 
@@ -4685,4 +4685,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10,<3.12"
-content-hash = "4a9b095350c20d3c52f842fa5d890592982aa1f6654ac5eded95f182f8cbe3c0"
+content-hash = "8fc6fd7fd91c6f1ac191e666ec19d085df0a435bba70d7c12c41ecaf53861335"
