@@ -136,6 +136,8 @@ script:
     - contextPath: TAXIIServer.Collection.description
       description: The collection description.
       type: String
+  - description: delete integration context
+    name: taxii-delete-context
   - description: Returns the TAXII server info, default URL, title, etc.
     name: taxii-server-info
     outputs:
