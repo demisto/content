@@ -796,7 +796,7 @@ def get_appsec_rule_ids_from_names(client, rule_names: list[str]) -> list[str]:
         return []
 
     fb = FilterBuilder()
-    fb.add_field("ruleName", FilterType.CONTAINS, rule_names)
+    fb.add_field("ruleName", FilterType.EQ, rule_names)
     data = (
         client.get_webapp_data(build_webapp_request_data(APPSEC_RULES_TABLE, fb.to_dict(), limit=200, sort_field="ruleName"))
         .get("reply", {})
