@@ -1,7 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-sectionorder:
-- Connect
-- Collect
 commonfields:
   id: Group-IB Threat Intelligence & Attribution Feed
   version: -1
@@ -236,3 +233,6 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+sectionorder:
+- Connect
+- Collect
