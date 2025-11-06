@@ -128,7 +128,7 @@ class Client(BaseClient):
             error_handler=unit42_error_handler,
             retries=RETRY_COUNT,
             status_list_to_retry=STATUS_CODES_TO_RETRY,
-            raise_on_status=True
+            raise_on_status=True,
         )
         return response
 
@@ -155,7 +155,7 @@ class Client(BaseClient):
             error_handler=unit42_error_handler,
             retries=RETRY_COUNT,
             status_list_to_retry=STATUS_CODES_TO_RETRY,
-            raise_on_status=True
+            raise_on_status=True,
         )
 
         return response
