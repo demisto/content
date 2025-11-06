@@ -50,13 +50,13 @@ VULNERABILITIES_SEVERITY_MAPPING = {
 
 # Policy finding type mapping
 POLICY_FINDING_TYPE_MAPPING = {
-    "ci_cd_risk": "CAS_CI_CD_RISK_SCANNER",
-    "cve": "CAS_CVE_SCANNER",
-    "iac": "CAS_IAC_SCANNER",
-    "license": "CAS_LICENSE_SCANNER",
-    "operational_risk": "CAS_OPERATIONAL_RISK_SCANNER",
-    "secret": "CAS_SECRET_SCANNER",
-    "sast": "CAS_SAST_SCANNER",
+    "CI/CD Risk": "CAS_CI_CD_RISK_SCANNER",
+    "Vulnerabilities": "CAS_CVE_SCANNER",
+    "IaC Misconfiguration": "CAS_IAC_SCANNER",
+    "Licenses": "CAS_LICENSE_SCANNER",
+    "Operational Risk": "CAS_OPERATIONAL_RISK_SCANNER",
+    "Secrets": "CAS_SECRET_SCANNER",
+    "Weaknesses": "CAS_SAST_SCANNER",
 }
 
 
@@ -395,7 +395,7 @@ class Client(CoreClient):
 
         return reply
 
-    def create_policy(self, policy_payload: dict) -> dict:
+    def create_policy(self, policy_payload: str) -> dict:
         """
         Creates a new policy in Cortex XDR.
         Args:
@@ -405,8 +405,11 @@ class Client(CoreClient):
         """
         return self._http_request(
             method="POST",
-            json_data=policy_payload,
-            headers=self._headers,
+            data=policy_payload,
+            headers={
+                **self._headers,
+                'content-type': "application/json"
+            },
             url_suffix="/public_api/appsec/v1/policies",
         )
 
@@ -834,9 +837,10 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
         "assetGroupIds": asset_group_ids,
         "triggers": triggers,
     }
+    payload = json.dumps(payload)
     demisto.debug(f"{payload=}")
-    response = client.create_policy(payload)
 
+    response = client.create_policy(payload)
     readable_output = tableToMarkdown(
         "Cortex XDR Policy Created",
         response,
@@ -853,8 +857,6 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-# -------- Helper Builders -------- #
-
 def create_policy_get_asset_groups(client, args):
     names = argToList(args.get("asset_group_names"))
     return get_asset_group_ids_from_names(client, names) if names else []
@@ -863,10 +865,12 @@ def create_policy_get_asset_groups(client, args):
 def create_policy_build_conditions(client, args):
     builder = FilterBuilder()
 
-    # Finding Type
     finding_types = argToList(args.get("conditions_finding_type"))
-    if finding_types:
-        builder.add_field("Finding Type", FilterType.EQ, finding_types, POLICY_FINDING_TYPE_MAPPING)
+    if not finding_types:
+        # Default to all finding types if none specified
+        finding_types = [ft for ft in POLICY_FINDING_TYPE_MAPPING if ft != "CI/CD Risk"]
+
+    builder.add_field("Finding Type", FilterType.EQ, finding_types, POLICY_FINDING_TYPE_MAPPING)
 
     # Severity
     severities = argToList(args.get("conditions_severity"))
@@ -953,6 +957,7 @@ def create_policy_build_scope(args):
         if val is not None:
             builder.add_field(label, FilterType.EQ, val)
 
+    # Always return the filter dict (can be empty for scope)
     return builder.to_dict()
 
 
@@ -963,41 +968,75 @@ def create_policy_build_triggers(args):
     Actions are True/False depending on user input.
     isEnabled is True if any action or override is set.
     """
-    def trigger(report_key, block_key=None, comment_key=None, override_key=None):
-        actions = {}
-        for k in [report_key, block_key, comment_key]:
-            if k:
-                actions[k.replace("triggers_", "").split("_")[1]] = argToBoolean(args.get(k) or False)
-        override = args.get(override_key)
-        is_enabled = any(actions.values()) or bool(override)
-        return {
-            "isEnabled": is_enabled,
-            "actions": actions,
-            "overrideIssueSeverity": override if override is not None else None,
-        }
+    # Periodic trigger
+    periodic_report_issue = argToBoolean(args.get("triggers_periodic_report_issue", False))
+    periodic_override = args.get("triggers_periodic_override_severity")
+    
+    # If override is set, reportIssue must be True
+    if periodic_override:
+        periodic_report_issue = True
+    
+    periodic_enabled = periodic_report_issue or bool(periodic_override)
+    
+    # PR trigger
+    pr_report_issue = argToBoolean(args.get("triggers_pr_report_issue", False))
+    pr_block_pr = argToBoolean(args.get("triggers_pr_block_pr", False))
+    pr_report_comment = argToBoolean(args.get("triggers_pr_report_pr_comment", False))
+    pr_override = args.get("triggers_pr_override_severity")
+    
+    # If override is set, reportIssue must be True
+    if pr_override:
+        pr_report_issue = True
+    
+    pr_enabled = pr_report_issue or pr_block_pr or pr_report_comment or bool(pr_override)
+    
+    # CI/CD trigger
+    cicd_report_issue = argToBoolean(args.get("triggers_cicd_report_issue", False))
+    cicd_block_cicd = argToBoolean(args.get("triggers_cicd_block_cicd", False))
+    cicd_report_cicd = argToBoolean(args.get("triggers_cicd_report_cicd", False))
+    cicd_override = args.get("triggers_cicd_override_severity")
+    
+    # If override is set, reportIssue must be True
+    if cicd_override:
+        cicd_report_issue = True
+    
+    cicd_enabled = cicd_report_issue or cicd_block_cicd or cicd_report_cicd or bool(cicd_override)
 
     triggers = {
-        "periodic": trigger("triggers_periodic_report_issue", override_key="triggers_periodic_override_severity"),
-        "pr": trigger(
-            "triggers_pr_report_issue",
-            "triggers_pr_block_pr",
-            "triggers_pr_report_pr_comment",
-            override_key="triggers_pr_override_severity",
-        ),
-        "cicd": trigger(
-            "triggers_cicd_report_issue",
-            "triggers_cicd_block_cicd",
-            "triggers_cicd_report_cicd",
-            override_key="triggers_cicd_override_severity",
-        ),
+        "periodic": {
+            "isEnabled": periodic_enabled,
+            "actions": {
+                "reportIssue": periodic_report_issue
+            }
+        },
+        "pr": {
+            "isEnabled": pr_enabled,
+            "actions": {
+                "reportIssue": pr_report_issue,
+                "blockPr": pr_block_pr,
+                "reportPrComment": pr_report_comment
+            }
+        },
+        "cicd": {
+            "isEnabled": cicd_enabled,
+            "actions": {
+                "reportIssue": cicd_report_issue,
+                "blockCicd": cicd_block_cicd,
+                "reportCicd": cicd_report_cicd
+            }
+        }
     }
+    
+    # Add override severity if specified (and set to null if not specified)
+    triggers["periodic"]["overrideIssueSeverity"] = periodic_override if periodic_override else None
+    triggers["pr"]["overrideIssueSeverity"] = pr_override if pr_override else None
+    triggers["cicd"]["overrideIssueSeverity"] = cicd_override if cicd_override else None
 
     # Ensure at least one trigger is enabled
     if not any(t["isEnabled"] for t in triggers.values()):
         raise DemistoException("At least one trigger (periodic, PR, or CI/CD) must be set.")
 
     return triggers
-
 
 
 
