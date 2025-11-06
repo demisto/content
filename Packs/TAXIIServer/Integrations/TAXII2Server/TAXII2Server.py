@@ -303,6 +303,7 @@ class TAXII2Server:
         limited_extensions = None
 
         if use_search_after:
+            # returns the iocs without calculate offset
             objects = iocs
             limited_iocs = iocs
         else:
@@ -595,6 +596,8 @@ def search_indicators(field_filters: Optional[str], query: str, limit: int, sear
         field_filters: filter
         query: query
         limit: response items limit
+        search_after: A cursor-like list used for pagination to retrieve results
+            that come after the last item from a previous search.
 
     Returns: IndicatorsSearcher.
     """
@@ -632,15 +635,16 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
     new_query = create_query(query, types, added_after)
     new_limit = offset + limit
     field_filters = set_field_filters(is_manifest)
-
     use_search_after = False
 
+    # remove old search_after values from the context
     integration_context = get_integration_context(True)
     demisto.info(f"{integration_context=}")
     demisto.info(f"before finalize_search_after")
     finalize_search_after(integration_context)
     demisto.info(f"{integration_context=}")
 
+    # check if there is a search_after value for this collection with this offset
     if integration_context.get(SEARCH_AFTER_KEY_NAME,{}).get(collection_id,{}).get(str(offset)):
         search_after = integration_context[SEARCH_AFTER_KEY_NAME][collection_id][str(offset)]
         demisto.info(f"found search_after_cache: {search_after}")
@@ -686,7 +690,7 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
 
 
 def finalize_search_after(integration_context: dict) -> None:
-    """Remove expired entries from cache['search_after_cache'] if older than 5 minutes."""
+    """Remove expired entries from cache['search_after_cache'] if older than 24 hours."""
     now = datetime.now(timezone.utc)
     # TODO: revert
     # expiry_time = timedelta(hours=24)
@@ -696,8 +700,8 @@ def finalize_search_after(integration_context: dict) -> None:
     if not isinstance(search_cache, dict):
         return
 
-    for uid, time_dict in list(search_cache.items()):
-        for code, data in list(time_dict.items()):
+    for collection_id, time_dict in list(search_cache.items()):
+        for offset, data in list(time_dict.items()):
             last_updated_str = data.get("last_updated")
             if not last_updated_str:
                 continue
@@ -708,12 +712,12 @@ def finalize_search_after(integration_context: dict) -> None:
                 continue
 
             if now - last_updated > expiry_time:
-                del time_dict[code]
-                demisto.info(f"finalize_context removed {code} : {data} from cache")
+                del time_dict[offset]
+                demisto.info(f"finalize_context removed {collection_id=} {offset=} {data} from cache")
 
         # Clean up empty nested dicts
         if not time_dict:
-            del search_cache[uid]
+            del search_cache[collection_id]
 
 
 
