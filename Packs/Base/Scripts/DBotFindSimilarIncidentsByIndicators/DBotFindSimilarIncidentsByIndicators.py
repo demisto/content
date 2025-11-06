@@ -225,7 +225,17 @@ def get_related_incidents(
     :return: The list of the related incident IDs
     """
     incident_ids = flatten_list([i.get("investigationIDs") or [] for i in indicators.values()])
-    incident_ids = list({x for x in incident_ids if not re.match(PLAYGROUND_PATTERN, x)})
+    # Filter out playground incidents and ensure we only have valid incident IDs (not JSON objects)
+    incident_ids = list(
+        {
+            x
+            for x in incident_ids
+            if isinstance(x, str)
+            and not re.match(PLAYGROUND_PATTERN, x)
+            and not x.startswith("{")  # Filter out JSON objects in str format
+        }
+    )
+
     if not (query or from_date) or not incident_ids:
         demisto.debug(f"Found {len(incident_ids)} related incidents: {incident_ids}")
         return incident_ids
