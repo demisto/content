@@ -11,7 +11,7 @@ import demistomock as demisto  # noqa: F401
 from bs4 import BeautifulSoup
 from CommonServerPython import *  # noqa: F401
 
-# Note: time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
+# Note:   time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
 
 """ CONSTANTS """
