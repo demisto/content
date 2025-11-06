@@ -1,7 +1,7 @@
 commonfields:
-  id: GetASPMCoverage
+  id: CortexListAppSecAssetCoverage
   version: -1
-name: GetASPMCoverage
+name: CortexListAppSecAssetCoverage
 script: ''
 type: python
 tags:
