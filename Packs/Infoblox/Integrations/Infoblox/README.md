@@ -1824,7 +1824,7 @@ Creates a host record. Note: Either ipv4_address or ipv6_address is required.
 | ipv6_address | The IPv6 addresses for the host record. Example: [{"ipv6addr": "2001:db8::1"}], [{"ipv6addr": "2001:db8::2", "configure_for_dhcp": true, "duid": "00:01:00:01:0a:1a"}]. | Optional |
 | comment | The comment for this host record. | Optional |
 | aliases | The aliases for this host record. Example: ["alias1", "alias2"]. | Optional |
-| configure_for_dns | Whether to configure the host record for DNS. Default is True. | Optional |
+| configure_for_dns | Whether to configure the host record for DNS. Possible values are: Yes, No. Default is Yes. | Optional |
 | extattrs | The extended attributes for this host record. Example: {"Site": {"value": "example"}}. | Optional |
 | additional_parameters | JSON object containing additional parameters to create host record. Example: {"use_ttl": true, "ttl": 3600, "disable": true}. | Optional |
 

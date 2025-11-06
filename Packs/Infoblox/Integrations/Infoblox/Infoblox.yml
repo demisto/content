@@ -892,7 +892,11 @@ script:
     - name: configure_for_dns
       description: Whether to configure the host record for DNS.
       required: false
-      defaultValue: true
+      auto: PREDEFINED
+      predefined:
+      - Yes
+      - No
+      defaultValue: Yes
     - name: extattrs
       type: textArea
       description: "The extended attributes for this host record. Example: {\"Site\": {\"value\": \"example\"}}."

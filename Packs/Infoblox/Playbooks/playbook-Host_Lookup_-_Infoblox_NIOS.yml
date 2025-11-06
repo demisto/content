@@ -214,6 +214,7 @@ tasks:
               right:
                 value:
                   simple: domain
+              ignorecase: true
           accessor: value
           transformers:
           - operator: SetIfEmpty
