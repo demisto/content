@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def map_to_command_args(args) -> tuple[dict, dict]:
+def map_to_command_args(args: dict) -> tuple[dict, dict]:
     set_issue_args = ["systems", "type", "custom_fields", "details"]
     update_issue_args = ["name", "assigned_user_mail", "severity", "occurred", "phase"]
 
@@ -19,36 +19,28 @@ def map_to_command_args(args) -> tuple[dict, dict]:
         elif arg in update_issue_args:
             update_issue_args_dict[arg] = value
 
-        elif arg == "id":
-            set_issue_args_dict[arg] = value
-            update_issue_args_dict[arg] = value
-
     return set_issue_args_dict, update_issue_args_dict
 
 
 def main():
     args = demisto.args()
+    issue_id = args.pop("id", None)
     set_issue_args_dict, update_issue_args_dict = map_to_command_args(args)
-    issue_id = args.get("id")
-    len_set = len(set_issue_args_dict)
-    len_update = len(update_issue_args_dict)
-    if issue_id:
-        len_set = len_set - 1
-        len_update = len_update - 1
-
-    flag = False
+    command_executed = False
     try:
-        if len_set > 0:  # ensures that more than issue_id presents
+        if len(set_issue_args_dict) > 0:  # ensures that more than issue_id presents
             demisto.debug(f"Calling setIssue with {set_issue_args_dict}")
-            flag = True
+            command_executed = True
+            set_issue_args_dict["id"] = issue_id
             execute_command("setIssue", set_issue_args_dict)
 
-        if len_update > 0:
+        if len(update_issue_args_dict) > 0:
             demisto.debug(f"Calling core-update-issue with {update_issue_args_dict}")
-            flag = True
+            command_executed = True
+            update_issue_args_dict["id"] = issue_id
             execute_command("core-update-issue", update_issue_args_dict)
 
-        if flag:
+        if command_executed:
             return_results("done")
         else:
             return_error("Please provide arguments to update the issue.")
