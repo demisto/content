@@ -364,7 +364,7 @@ class Client(CoreClient):
             method="POST",
             headers=self._headers,
             json_data={"request_data": {"filters": filter}},
-            url_suffix="/asset-groups",
+            full_url="/api/webapp/public_api/v1/asset-groups",
         )
 
         return reply
@@ -778,7 +778,7 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
     return group_ids
 
 
-def get_appsec_rule_ids_from_names(client: Client, rule_names: list[str]) -> list[str]:
+def get_appsec_rule_ids_from_names(client, rule_names: list[str]) -> list[str]:
     """
     Retrieves the IDs of AppSec rules based on their names using exact and partial matching.
 
@@ -804,7 +804,7 @@ def get_appsec_rule_ids_from_names(client: Client, rule_names: list[str]) -> lis
         or []
     )
 
-    lookup = {r["ruleName"].lower(): r["id"] for r in data if r.get("id")}
+    lookup = {r["ruleName"].lower(): r["ruleId"] for r in data if r.get("ruleId")}
     ids, found = [], set()
 
     for name in rule_names:
@@ -884,7 +884,8 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def create_policy_get_asset_groups(client, args):
+def create_policy_get_asset_groups(client: Client, args: dict) -> list[str]:
+
     names = argToList(args.get("asset_group_names"))
     return get_asset_group_ids_from_names(client, names) if names else []
 
