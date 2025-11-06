@@ -2360,12 +2360,10 @@ def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> Comma
         },
     }
     remove_empty_elements(outputs)
-
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="GCP.Compute.Networks",
-        outputs_key_field="id",
         outputs=outputs,
+        raw_response=response,
     )
 
 
