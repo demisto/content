@@ -291,7 +291,7 @@ class MsGraphClient:
         # that was created to handle the estimate.
         location_url = response.headers.get("Location")
         if not location_url:
-            raise DemistoException("Missing Location header in estimateStatistics response")
+            raise DemistoException("Estimate statistics is not available for this search_id.")
 
         # Fetch operation status
         operation = self.ms_client.http_request(method="GET", full_url=location_url)
@@ -1737,21 +1737,30 @@ def get_ediscovery_report_command(client, args):
 
     # Poll the operation
     result = client.ms_client.http_request(method="GET", full_url=operation_url)
-    status = result.get("status")
-    report_url = result.get("outputLocation", {}).get("container")
-    file_name = result.get("outputLocation", {}).get("fileName")
+    status = result.get("status", "unknown")
+    file_metadata = result.get("exportFileMetadata")
 
-    if status == "succeeded" and report_url and file_name:
-        # Download the file into XSOAR
-        file_data = client.ms_client.http_request(method="GET", full_url=f"{report_url}/{file_name}", resp_type="content")
-        return fileResult(filename=file_name, data=file_data)
+    if file_metadata:
+        # Handle first file only; can extend to multiple files if needed
+        file_info = file_metadata[0]
+        download_url = file_info.get("downloadUrl")
+        file_name = file_info.get("fileName")
+
+        if download_url and file_name:
+            file_data = client.ms_client.http_request(
+                method="GET", full_url=download_url, resp_type="content"
+            )
+            return fileResult(filename=file_name, data=file_data)
 
     # Report is not ready yet
     readable_output = f"Export report status: {status}. The report is not ready yet. Please run again later."
 
     return CommandResults(
         readable_output=readable_output,
-        outputs={"OperationURL": operation_url, "Status": status},
+        outputs={
+            "OperationURL": operation_url,
+            "Status": status,
+        },
         outputs_prefix="MsGraph.eDiscovery.ExportReport",
         raw_response=result,
     )
@@ -2318,7 +2327,6 @@ def main():
         "msg-run-estimate-statistics": run_estimate_statistics_command,
         "msg-get-last-estimate-statistics-operation": get_last_estimate_statistics_operation_command,
         "msg-start-ediscovery-report": start_export_ediscovery_report_command,
-        "msg-get-ediscovery-report": get_ediscovery_report_command,
         "msg-advanced-hunting": advanced_hunting_command,
         "msg-list-security-incident": get_list_security_incident_command,
         "msg-update-security-incident": update_incident_command,
@@ -2372,6 +2380,8 @@ def main():
             return_results(create_url_assessment_request_command(args, client))
         elif command == "msg-list-threat-assessment-requests":
             return_results(list_threat_assessment_requests_command(client, args))
+        elif command == "msg-get-ediscovery-report":
+            return_results(get_ediscovery_report_command(client, args))
         elif command == "ms-graph-security-auth-reset":
             return_results(reset_auth())
         elif demisto.command() == "msg-generate-login-url":
