@@ -138,7 +138,7 @@ args:
     - OCI
 - name: limit
   description: "The maximum number of assets to return."
-  defaultValue: "1000"
+  defaultValue: "50"
 outputs:
 - contextPath: Core.Coverage.total_filtered_assets
   description:
