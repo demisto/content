@@ -5,7 +5,7 @@
             "Accounts_1",
             "Accounts_36"
         ],
-        "last_timestamp": "2022-07-03T23:34:07+00:00"
+        "last_timestamp": "2022-07-08T14:10:34+00:00"
     },
     "Hosts": {
         "id": 472,
@@ -13,7 +13,7 @@
             "Hosts_1",
             "Hosts_472"
         ],
-        "last_timestamp": "2022-07-09T14:13:58+00:00"
+        "last_timestamp": "2022-07-11T07:07:59+00:00"
     },
     "Detections": {
         "id": 14,
