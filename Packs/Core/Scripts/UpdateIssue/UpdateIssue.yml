@@ -34,6 +34,12 @@ args:
 - name: phase
   description: Change the phase of an issue.
   type: string
+  auto: PREDEFINED
+  predefined:
+    - Triage
+    - Investigation
+    - Containment
+    - Response
 - name: systems
   description: Add systems (system label) to an issue in a format of system,system - i.e. 1.1.1.1,2.2.2.2.
   type: string

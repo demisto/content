@@ -1124,6 +1124,12 @@ script:
       - name: phase
         description: Change the phase of an issue.
         type: string
+        auto: PREDEFINED
+        predefined:
+          - Triage
+          - Investigation
+          - Containment
+          - Response
       name: core-update-issue
       description: Updates the properties of an issue. This command does not provide an explicit indication of success.
     - arguments:
