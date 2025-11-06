@@ -149,7 +149,7 @@ def indicator_type(indicator: dict) -> str:
         return FeedIndicatorType.File
 
 
-def parse_indicator_for_fetch(indicator: dict, with_ports: bool, create_relationship: bool, tlp_color: str, feed_tags: list) -> dict[str, Any]:
+def parse_indicator_for_fetch(indicator: dict, with_ports: bool, create_relationship: bool, tlp_color: str, feed_tags: list = []) -> dict[str, Any]:
     """Parses the indicator given from the api to an indicator that can be sent to Threat Intel min XSOAR.
 
     Args:
@@ -219,7 +219,7 @@ def to_date(date) -> Optional[str]:
     return None
 
 
-def tags(indicator: dict, with_ports: bool, feed_tags: list) -> List[str]:
+def tags(indicator: dict, with_ports: bool, feed_tags: list = []) -> List[str]:
     """Returns a list of tags to add to the indicator given
 
     Args:
@@ -241,7 +241,7 @@ def tags(indicator: dict, with_ports: bool, feed_tags: list) -> List[str]:
         res.append("port: " + indicator["ioc"].split(":")[1])
     if feed_tags:
         for feed_tag in feed_tags:
-            res.extend(indicator[feed_tag])
+            res.append(feed_tag)
 
     res = [tag.lower() for tag in res if tag]
 
@@ -378,7 +378,7 @@ def fetch_indicators_command(
     interval: int,
     tlp_color: str,
     last_run: dict,
-    feed_tags: list,
+    feed_tags: list = [],
 ):
     now = datetime.now(timezone.utc)
     days_for_query = int(interval / 1440)  # The interval is validated already in the main
@@ -460,7 +460,7 @@ def main() -> None:
                 interval=interval,
                 tlp_color=tlp_color,
                 last_run=demisto.getLastRun(),
-                feed_tags,
+                feed_tags = feed_tags,
             )
             for iter_ in batch(res, batch_size=2000):
                 demisto.debug(f"{LOG_LINE} {iter_=}")
