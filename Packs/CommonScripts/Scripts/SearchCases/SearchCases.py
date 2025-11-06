@@ -117,8 +117,7 @@ def main():  # pragma: nocover
             demisto.debug("error: " + error)
             raise DemistoException(f"Failed to execute the core-get-cases command {error}")
 
-        # If enriched case data was requested, validate the number of returned cases (max 10)
-        # by checking the length of the entry context of the results object
+        # In case enriched case data was requested
         if argToBoolean(args.get("get_enriched_case_data", "false")):
             raw_response_search_cases = results.get("Contents", {})
             if isinstance(raw_response_search_cases, dict):
