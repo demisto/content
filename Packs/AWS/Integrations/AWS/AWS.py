@@ -2215,16 +2215,12 @@ class EC2:
         kwargs = {
             "VpcId": args.get("vpc_id"),
             "ClientToken": args.get("client_token"),
-            "TagSpecifications": parse_filter_field(args.get("tag_specifications")),
+            "TagSpecifications": parse_tag_field(args.get("tag_specifications")),
         }
 
         remove_nulls_from_dictionary(kwargs)
-        if tag_specifications_arg := kwargs.get("TagSpecifications", []):
-            tags = []
-            for tag in tag_specifications_arg:
-                tags.append({"Key": tag.get("Name"), "Value": tag.get("Values", [])[0]})
-            tag_specifications = [{"ResourceType": "network-acl", "Tags": tags}]
-            kwargs["TagSpecifications"] = tag_specifications
+        if tag_specifications := kwargs.get("TagSpecifications"):
+            kwargs["TagSpecifications"] = [{"ResourceType": "network-acl", "Tags": tag_specifications}]
 
         response = client.create_network_acl(**kwargs)
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
