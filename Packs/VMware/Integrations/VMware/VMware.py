@@ -65,15 +65,15 @@ class Client(BaseClient):
         auth = (self.user_name, self.password)
         session_id_response = self._http_request(method="POST", url_suffix="/api/session", auth=auth, resp_type="text")
         demisto.debug(f"Got {session_id_response=}.")
-        session_id = session_id_response
+        session_id = session_id_response.replace('"', "")
         if not session_id:
             raise DemistoException("Failed to obtain session ID. Check credentials and VCENTER_HOST.")
         return session_id
 
     def logout(self):
-        """Closes the session."""
+        """Closes the session and returns HTTP 204 with empty response object."""
         # https://developer.broadcom.com/xapis/vsphere-automation-api/latest/api/session/delete/
-        self._http_request(method="DELETE", url_suffix="/api/session")  # returns HTTP 204 with empty response
+        self._http_request(method="DELETE", url_suffix="/api/session", resp_type="response")
 
     def get_category_id(self, category_name: str) -> str:
         """Get the ID of the category by its name."""
@@ -120,7 +120,7 @@ class Client(BaseClient):
     def list_vms(self, vm_ids: list) -> list:
         """List VMs filtered by VM IDs."""
         # https://developer.broadcom.com/xapis/vsphere-automation-api/v7.0u3/vcenter/api/vcenter/vm/get/index
-        filtered_vms_response = self._http_request(method="GET", url_suffix="/api/vcenter/vm", params={"vms": ",".join(vm_ids)})
+        filtered_vms_response = self._http_request(method="GET", url_suffix="/api/vcenter/vm", params={"vms": vm_ids})
         demisto.debug(f"Got {filtered_vms_response=}.")
         return filtered_vms_response
 
@@ -905,7 +905,7 @@ def main():  # pragma: no cover
     res = []
     si = None
     client = None
-    result: Any
+    result: Any = None
     try:
         si = login(url, port, user_name, password)
         if command == "test-module":
@@ -945,7 +945,8 @@ def main():  # pragma: no cover
             result = register_vm(si, args)
         if command == "vmware-unregister-vm":
             result = unregister_vm(si, args)
-        res.append(result)
+        if result:
+            res.append(result)
     except Exception as ex:
         if hasattr(ex, "msg") and ex.msg:  # type: ignore
             message = ex.msg  # type: ignore
