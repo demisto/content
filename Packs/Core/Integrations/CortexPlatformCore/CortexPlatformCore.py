@@ -44,15 +44,15 @@ class AppsecIssues:
 
     ISSUE_TYPES = [
         AppsecIssueType("ISSUES_IAC", {"urgency", "fix_available", "sla"}),
-        AppsecIssueType("ISSUES_CVES", {"urgency", "fix_available", "cvss_score_gte", "epss_score_gte", "has_kev", "sla"}),
-        AppsecIssueType("ISSUES_SECRETS", {"urgency", "fix_available", "sla"}),
+        AppsecIssueType("ISSUES_CVES", {"urgency", "fix_available", "sla", "cvss_score_gte", "epss_score_gte", "has_kev"}),
+        AppsecIssueType("ISSUES_SECRETS", {"urgency", "fix_available", "sla", "validation"}),
         AppsecIssueType("ISSUES_WEAKNESSES", {"urgency", "fix_available", "sla"}),
         AppsecIssueType("ISSUES_OPERATIONAL_RISK", {"fix_available", "sla"}),
         AppsecIssueType("ISSUES_LICENSES", {"fix_available", "sla"}),
         AppsecIssueType("ISSUES_CI_CD", {"sla"}),
     ]
 
-    SPECIAL_FILTERS = {"urgency", "fix_available", "epss_score_gte", "cvss_score_gte", "has_kev", "sla"}
+    SPECIAL_FILTERS = {"urgency", "fix_available", "sla", "epss_score_gte", "cvss_score_gte", "has_kev", "validation"}
 
     SEVERITY_MAPPINGS = {
         "info": "SEV_010_INFO",
@@ -827,33 +827,19 @@ def create_appsec_issues_filter_and_tables(args: dict) -> tuple[list, FilterBuil
     tables = []
     filter_builder = FilterBuilder()
 
-    if not special_filter_args:
-        tables.append("ALERTS_VIEW_TABLE")
-        filter_builder.add_field(
-            "alert_source",
-            FilterType.EQ,
-            [
-                "CAS_CVE_SCANNER",
-                "CAS_LICENSE_SCANNER",
-                "CAS_SECRET_SCANNER",
-                "CAS_IAC_SCANNER",
-                "CAS_SAST_SCANNER",
-                "CAS_OPERATIONAL_RISK_SCANNER",
-                "CAS_CI_CD_RISK_SCANNER",
-            ],
-        )
-    else:
-        for issue_type in AppsecIssues.ISSUE_TYPES:
-            if special_filter_args.issubset(issue_type.filters):
-                tables.append(issue_type.table_name)
-        if not tables:
-            raise DemistoException(f"No matching issue type found for the given filter combination: {special_filter_args}")
+    for issue_type in AppsecIssues.ISSUE_TYPES:
+        if special_filter_args.issubset(issue_type.filters):
+            tables.append(issue_type.table_name)
+
+    if not tables:
+        raise DemistoException(f"No matching issue type found for the given filter combination: {special_filter_args}")
 
     filter_builder.add_field("cas_issues_cvss_score", FilterType.GTE, arg_to_float(args.get("cvss_score_gte", "")))
     filter_builder.add_field("cas_issues_epss_score", FilterType.GTE, arg_to_float(args.get("epss_score_gte")))
     filter_builder.add_field("cas_issues_is_kev", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev")))
     filter_builder.add_field("cas_sla_status", FilterType.EQ, argToList(args.get("sla")))
     filter_builder.add_field("cas_issues_is_fixable", FilterType.EQ, arg_to_bool_or_none(args.get("fix_available")))
+    filter_builder.add_field("cas_issues_validation", FilterType.EQ, argToList(args.get("validation")))
     filter_builder.add_field("urgency", FilterType.EQ, argToList(args.get("urgency")))
     filter_builder.add_field("severity", FilterType.EQ, argToList(args.get("severity")), AppsecIssues.SEVERITY_MAPPINGS)
     filter_builder.add_field("internal_id", FilterType.CONTAINS, argToList(args.get("issue_id")))
@@ -888,7 +874,6 @@ def normalize_and_filter_appsec_issue(issue: dict) -> dict:
     issue_all_fields = {}
     issue_all_fields.update(issue.get("cas_issues_extended_fields", {}))
     issue_all_fields.update(issue.get("cas_issues_normalized_fields", {}))
-    issue_all_fields.update(issue.get("extended_fields", {}))
     issue_all_fields.update(issue)
 
     issue_all_fields = cast(dict, alert_to_issue(issue_all_fields))

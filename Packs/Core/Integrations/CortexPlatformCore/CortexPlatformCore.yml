@@ -1407,7 +1407,7 @@ script:
             - "true"
             - "false"
         - name: severity
-          description: The severity of the issue.
+          description: The severity of the issue. Accepts a comma-separated list.
           isArray: true
           auto: PREDEFINED
           predefined:
@@ -1417,7 +1417,7 @@ script:
             - high
             - critical
         - name: urgency
-          description: The urgency of the issue.
+          description: The urgency of the issue. Accepts a comma-separated list.
           isArray: true
           auto: PREDEFINED
           predefined:
@@ -1433,13 +1433,23 @@ script:
             - "true"
             - "false"
         - name: sla
-          description: SLA status of the issue.
+          description: SLA status of the issue. Accepts a comma-separated list.
           isArray: true
           auto: PREDEFINED
           predefined:
             - APPROACHING
             - IN_SLA
             - OVERDUE
+        - name: validation
+          description: Validation status of the issue. Accepts a comma-separated list.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - INVALID
+            - NO_VALIDATION
+            - PRIVILEGED
+            - UNAVAILABLE
+            - VALID
       outputs:
         - contextPath: Core.AppsecIssue.ISSUE_ID
           description: The unique identifier for the issue issue.
