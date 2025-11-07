@@ -156,6 +156,93 @@ class Comment:
         return remove_none_values(result)
 
 
+# {
+#     "data": {
+#         "id": "fpx-jxd-nhw",
+#         "type": "suppressions",
+#         "attributes": {
+#             "creation_date": 1736348669774,
+#             "creator": {
+#                 "handle": "waleed.sawan@datadoghq.com",
+#                 "name": "Waleed Sawan"
+#             },
+#             "data_exclusion_query": "source:cloudtrail account_id:12345",
+#             "description": "",
+#             "editable": true,
+#             "enabled": true,
+#             "name": "Testing workflows p2",
+#             "rule_query": "type:log_detection source:cloudtrail",
+#             "suppression_query": "",
+#             "tags": [],
+#             "update_date": 1762508997083,
+#             "updater": {
+#                 "handle": "mael.gaonach@datadoghq.com",
+#                 "name": "Maël Gaonach"
+#             },
+#             "version": 62
+#         }
+#     }
+# }
+
+
+@dataclass
+class SecuritySuppression:
+    id: str
+    name: str
+    description: str
+    enabled: bool
+    creation_at: datetime
+    update_at: datetime
+    creator: str
+    updater: str
+    data_exclusion_query: str
+    rule_query: str
+    suppression_query: str
+
+    # Raw suppression data
+    raw: dict[str, Any]
+
+    def build_url(self) -> str:
+        return f"https://app.{SITE}/security/configuration/suppressions/view/{self.id}"
+
+    def to_display_dict(self) -> dict[str, Any]:
+        return {
+            "Name": self.name,
+            "Enabled": self.enabled,
+            "Creator": self.creator,
+            "Created at": self.creation_at.isoformat(),
+            "Rule query": self.rule_query,
+            "Data exclusion query": self.data_exclusion_query,
+            "Suppression query": self.suppression_query,
+            "URL": self.build_url(),
+        }
+
+    def to_dict(self) -> dict[str, Any]:
+        """
+        Convert a SecuritySuppression to a plain dictionary for XSOAR context output.
+
+        Returns:
+            Dict[str, Any]: Dictionary for context output.
+        """
+        result = {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "enabled": self.enabled,
+            "creationAt": int(self.creation_at.timestamp()),
+            "updateAt": int(self.update_at.timestamp()),
+            "creator": self.creator,
+            "updater": self.updater,
+            "dataExclusionQuery": self.data_exclusion_query,
+            "ruleQuery": self.rule_query,
+            "suppressionQuery": self.suppression_query,
+            "url": self.build_url(),
+            "raw": self.raw,
+        }
+
+        return remove_none_values(result)
+
+
 @dataclass
 class SecurityRule:
     id: str
@@ -226,11 +313,7 @@ class SecurityRule:
             "Type": self.type,
             "Is Enabled": self.is_enabled,
             "Created At": self.created_at,
-            "Tags": (
-                ", ".join(self.tags[:5]) + ("..." if len(self.tags) > 5 else "")
-                if self.tags
-                else None
-            ),
+            "Tags": (", ".join(self.tags[:5]) + ("..." if len(self.tags) > 5 else "") if self.tags else None),
             "URL": self.build_url(),
         }
 
@@ -294,20 +377,12 @@ class Log:
         """
         return {
             "Timestamp": str(self.timestamp) if self.timestamp else None,
-            "Message": (
-                self.message[:100] + "..."
-                if self.message and len(self.message) > 100
-                else self.message
-            ),
+            "Message": (self.message[:100] + "..." if self.message and len(self.message) > 100 else self.message),
             "Service": self.service,
             "Host": self.host,
             "Source": self.source,
             "Status": self.status,
-            "Tags": (
-                ", ".join(self.tags[:3]) + ("..." if len(self.tags) > 3 else "")
-                if self.tags
-                else None
-            ),
+            "Tags": (", ".join(self.tags[:3]) + ("..." if len(self.tags) > 3 else "") if self.tags else None),
             "URL": self.build_url(),
         }
 
@@ -381,26 +456,12 @@ class SecuritySignal:
             "Message": self.message,
             "Severity": self.severity,
             "State": self.triage.state if self.triage else None,
-            "Rule URL": (
-                SecurityRule(
-                    id=self.rule_id, name="", type="", is_enabled=False
-                ).build_url()
-                if self.rule_id
-                else None
-            ),
+            "Rule URL": (SecurityRule(id=self.rule_id, name="", type="", is_enabled=False).build_url() if self.rule_id else None),
             "Host": self.host,
             "Services": self.service,
             "Timestamp": str(self.timestamp) if self.timestamp else None,
-            "Assignee": (
-                self.triage.assignee.name
-                if (self.triage and self.triage.assignee)
-                else None
-            ),
-            "Tags": (
-                ", ".join(self.tags[:5]) + ("..." if len(self.tags) > 5 else "")
-                if self.tags
-                else None
-            ),
+            "Assignee": (self.triage.assignee.name if (self.triage and self.triage.assignee) else None),
+            "Tags": (", ".join(self.tags[:5]) + ("..." if len(self.tags) > 5 else "") if self.tags else None),
             "URL": self.build_url(),
         }
         return remove_none_values(result)
@@ -435,9 +496,7 @@ class SecuritySignal:
         if self.rule_id:
             result["rule"] = {
                 "id": self.rule_id,
-                "url": SecurityRule(
-                    id=self.rule_id, name="", type="", is_enabled=False
-                ).build_url(),
+                "url": SecurityRule(id=self.rule_id, name="", type="", is_enabled=False).build_url(),
             }
 
         # Convert triage to dict if present
@@ -784,9 +843,7 @@ def parse_log(data: dict[str, Any]) -> Log:
     timestamp = None
     if attrs.get("timestamp"):
         try:
-            timestamp = datetime.fromisoformat(
-                attrs.get("timestamp", "").replace("Z", "+00:00")
-            )
+            timestamp = datetime.fromisoformat(attrs.get("timestamp", "").replace("Z", "+00:00"))
         except (ValueError, AttributeError):
             # Keep as string if parsing fails
             timestamp = None
@@ -808,6 +865,47 @@ def parse_log(data: dict[str, Any]) -> Log:
         source=attrs.get("source"),
         status=attrs.get("status"),
         tags=tags,
+        raw=data,
+    )
+
+
+def parse_security_suppression(data: dict[str, Any]) -> SecuritySuppression:
+    """
+    Parse raw security suppression data from the Datadog API into a structured SecuritySuppression object.
+
+    Args:
+        data (Dict[str, Any]): Raw security suppression data from the Datadog API response.
+                              Expected to contain 'id', 'type', and 'attributes' fields.
+
+    Returns:
+        SecuritySuppression: Structured dataclass containing parsed suppression information.
+
+    Example:
+        >>> api_data = {"id": "fpx-jxd-nhw", "type": "suppressions", "attributes": {...}}
+        >>> suppression = parse_security_suppression(api_data)
+        >>> suppression.id
+        "fpx-jxd-nhw"
+    """
+    attrs = data.get("attributes", {})
+    creator_data = attrs.get("creator", {})
+    updater_data = attrs.get("updater", {})
+
+    # Format creator and updater as "Name <handle>"
+    creator = f"{creator_data.get('name', '')} <{creator_data.get('handle', '')}>" if creator_data else ""
+    updater = f"{updater_data.get('name', '')} <{updater_data.get('handle', '')}>" if updater_data else ""
+
+    return SecuritySuppression(
+        id=data.get("id", ""),
+        name=attrs.get("name", ""),
+        description=attrs.get("description", ""),
+        enabled=attrs.get("enabled", False),
+        creation_at=datetime.fromtimestamp(int(attrs.get("creation_date", 0)) / 1_000),
+        update_at=datetime.fromtimestamp(int(attrs.get("update_date", 0)) / 1_000),
+        creator=creator,
+        updater=updater,
+        data_exclusion_query=attrs.get("data_exclusion_query", ""),
+        rule_query=attrs.get("rule_query", ""),
+        suppression_query=attrs.get("suppression_query", ""),
         raw=data,
     )
 
@@ -1027,9 +1125,7 @@ def get_security_signal_command(
     # If signal_id not provided, try to get it from the current incident
     if not signal_id:
         incident = demisto.incident()
-        signal_id = incident.get("CustomFields", {}).get(
-            "datadogcloudsiemv2securitysignalid"
-        )
+        signal_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignalid")
         if not signal_id:
             raise DemistoException(
                 "signal_id is required. Provide it as an argument or run from an incident with a Datadog Security Signal ID."
@@ -1038,9 +1134,7 @@ def get_security_signal_command(
     try:
         with ApiClient(configuration) as api_client:
             api_instance = SecurityMonitoringApi(api_client)
-            signal_response = api_instance.get_security_monitoring_signal(
-                signal_id=signal_id
-            )
+            signal_response = api_instance.get_security_monitoring_signal(signal_id=signal_id)
             results = signal_response.to_dict()
             data = results.get("data", {})
 
@@ -1058,9 +1152,7 @@ def get_security_signal_command(
             # Create human-readable summary using the display dictionary
             signal_display = signal.to_display_dict()
 
-            readable_output = lookup_to_markdown(
-                [signal_display], "Security Signal Details"
-            )
+            readable_output = lookup_to_markdown([signal_display], "Security Signal Details")
 
             return CommandResults(
                 readable_output=readable_output,
@@ -1101,9 +1193,7 @@ def suppress_rule_command(
     # If rule_id not provided, try to get it from the current incident
     if not rule_id:
         incident = demisto.incident()
-        rule_id = incident.get("CustomFields", {}).get(
-            "datadogcloudsiemv2securitysignalruleid"
-        )
+        rule_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignalruleid")
         if not rule_id:
             raise DemistoException(
                 "rule_id is required. Provide it as an argument or run from an incident with a Datadog Security Rule ID."
@@ -1167,9 +1257,7 @@ def unsuppress_rule_command(
     # If rule_id not provided, try to get it from the current incident
     if not rule_id:
         incident = demisto.incident()
-        rule_id = incident.get("CustomFields", {}).get(
-            "datadogcloudsiemv2securitysignalruleid"
-        )
+        rule_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignalruleid")
         if not rule_id:
             raise DemistoException(
                 "rule_id is required. Provide it as an argument or run from an incident with a Datadog Security Rule ID."
@@ -1204,6 +1292,75 @@ def unsuppress_rule_command(
         raise DemistoException(f"Failed to unsuppress rule {rule_id}: {str(e)}")
 
 
+def suppressions_list_command(
+    configuration: Configuration,
+    args: dict[str, Any],
+) -> CommandResults:
+    """
+    List suppressions affecting a security rule.
+
+    Args:
+        configuration: Datadog API configuration
+        args: Command arguments containing:
+            - rule_id (str, optional): The ID of the security rule - fallback to incident rule id if not provided
+
+    Returns:
+        CommandResults: XSOAR command results with suppressions data
+
+    Raises:
+        DemistoException: If rule_id is missing or API call fails
+    """
+    rule_id = args.get("rule_id")
+
+    # If rule_id not provided, try to get it from the current incident
+    if not rule_id:
+        incident = demisto.incident()
+        rule_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignalruleid")
+        if not rule_id:
+            raise DemistoException(
+                "rule_id is required. Provide it as an argument or run from an incident with a Datadog Security Rule ID."
+            )
+
+    try:
+        with ApiClient(configuration) as api_client:
+            api_instance = SecurityMonitoringApi(api_client)
+            response = api_instance.get_suppressions_affecting_rule(rule_id=rule_id)
+            suppressions_data = response.to_dict().get("data", [])
+
+            if not suppressions_data:
+                readable_output = f"No suppressions found affecting rule: {rule_id}"
+                return CommandResults(
+                    readable_output=readable_output,
+                    outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.SecuritySuppression",
+                    outputs_key_field="id",
+                    outputs=[],
+                )
+
+            # Parse suppressions
+            suppressions = []
+            display_data = []
+
+            for suppression_data in suppressions_data:
+                suppression = parse_security_suppression(suppression_data)
+                suppressions.append(suppression.to_dict())
+                display_data.append(suppression.to_display_dict())
+
+            # Create human-readable output
+            readable_output = lookup_to_markdown(
+                display_data, f"Suppressions Affecting Rule {rule_id} ({len(suppressions)} results)"
+            )
+
+            return CommandResults(
+                readable_output=readable_output,
+                outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.SecuritySuppression",
+                outputs_key_field="id",
+                outputs=suppressions,
+            )
+
+    except Exception as e:
+        raise DemistoException(f"Failed to list suppressions for rule {rule_id}: {str(e)}")
+
+
 def get_security_rule_command(
     configuration: Configuration,
     args: dict[str, Any],
@@ -1227,9 +1384,7 @@ def get_security_rule_command(
     # If rule_id not provided, try to get it from the current incident
     if not rule_id:
         incident = demisto.incident()
-        rule_id = incident.get("CustomFields", {}).get(
-            "datadogcloudsiemv2securitysignalruleid"
-        )
+        rule_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignalruleid")
         if not rule_id:
             raise DemistoException(
                 "rule_id is required. Provide it as an argument or run from an incident with a Datadog Security Rule ID."
@@ -1255,9 +1410,7 @@ def get_security_rule_command(
             # Create human-readable summary using the display dictionary
             rule_display = rule.to_display_dict()
 
-            readable_output = lookup_to_markdown(
-                [rule_display], "Security Rule Details"
-            )
+            readable_output = lookup_to_markdown([rule_display], "Security Rule Details")
 
             return CommandResults(
                 readable_output=readable_output,
@@ -1308,9 +1461,7 @@ def get_security_signal_list_command(
             from_datetime = parse(from_date, settings={"TIMEZONE": "UTC"})
             to_datetime = parse(to_date, settings={"TIMEZONE": "UTC"})
         except Exception as e:
-            raise DemistoException(
-                f"Invalid date format. Use formats like '7 days ago', '2023-01-01T00:00:00Z': {str(e)}"
-            )
+            raise DemistoException(f"Invalid date format. Use formats like '7 days ago', '2023-01-01T00:00:00Z': {str(e)}")
 
         # Use helper function to fetch signals
         signals_objs = fetch_security_signals(
@@ -1323,9 +1474,7 @@ def get_security_signal_list_command(
         )
 
         if not signals_objs:
-            readable_output = (
-                "No security signals found matching the specified criteria."
-            )
+            readable_output = "No security signals found matching the specified criteria."
             return CommandResults(
                 readable_output=readable_output,
                 outputs_prefix=SECURITY_SIGNAL_CONTEXT_NAME,
@@ -1342,9 +1491,7 @@ def get_security_signal_list_command(
             display_data.append(signal.to_display_dict())
 
         # Create human-readable output
-        readable_output = lookup_to_markdown(
-            display_data, f"Security Signals ({len(signals)} results)"
-        )
+        readable_output = lookup_to_markdown(display_data, f"Security Signals ({len(signals)} results)")
 
         return CommandResults(
             readable_output=readable_output,
@@ -1391,9 +1538,7 @@ def update_security_signal_command(
     # If signal_id not provided, try to get it from the current incident
     if not signal_id:
         incident = demisto.incident()
-        signal_id = incident.get("CustomFields", {}).get(
-            "datadogcloudsiemv2securitysignalid"
-        )
+        signal_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignalid")
         if not signal_id:
             raise DemistoException(
                 "signal_id is required. Provide it as an argument or run from an incident with a Datadog Security Signal ID."
@@ -1407,9 +1552,7 @@ def update_security_signal_command(
     if state is not None:
         valid_states = ["open", "under_review", "archived"]
         if state not in valid_states:
-            raise DemistoException(
-                f"Invalid state '{state}'. Valid states are: {', '.join(valid_states)}"
-            )
+            raise DemistoException(f"Invalid state '{state}'. Valid states are: {', '.join(valid_states)}")
 
     try:
         with ApiClient(configuration) as api_client:
@@ -1427,25 +1570,17 @@ def update_security_signal_command(
                     )
                     users = res.get("data", [])
                     if len(users) == 0:
-                        raise DemistoException(
-                            f"Could not determine any user for name or email: {assignee}"
-                        )
+                        raise DemistoException(f"Could not determine any user for name or email: {assignee}")
                     if len(users) > 1:
-                        users = {
-                            u.get("attributes", {}).get("email", "") for u in users
-                        }
-                        raise DemistoException(
-                            f"Could not determine the user to assign to from list: {users}"
-                        )
+                        users = {u.get("attributes", {}).get("email", "") for u in users}
+                        raise DemistoException(f"Could not determine the user to assign to from list: {users}")
                     assignee_uuid = users[0].get("id")
 
                 # Always update assignee - either with found assignee_uuid or by unassigning
                 assignee_body = SecurityMonitoringSignalAssigneeUpdateRequest(
                     data=SecurityMonitoringSignalAssigneeUpdateData(
                         attributes=SecurityMonitoringSignalAssigneeUpdateAttributes(
-                            assignee=SecurityMonitoringTriageUser(
-                                uuid=assignee_uuid or ""
-                            ),
+                            assignee=SecurityMonitoringTriageUser(uuid=assignee_uuid or ""),
                         ),
                     ),
                 )
@@ -1504,9 +1639,7 @@ def add_security_signal_comment_command(
     # If event_id not provided, try to get it from the current incident
     if not event_id:
         incident = demisto.incident()
-        event_id = incident.get("CustomFields", {}).get(
-            "datadogcloudsiemv2securitysignaleventid"
-        )
+        event_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignaleventid")
         if not event_id:
             raise DemistoException(
                 "event_id is required. Provide it as an argument or run from an incident with a Datadog Security Signal Event ID."
@@ -1529,9 +1662,7 @@ def add_security_signal_comment_command(
         )
 
         if not comments_response.ok:
-            raise DemistoException(
-                f"API request failed with status {comments_response.status_code}: {comments_response.text}"
-            )
+            raise DemistoException(f"API request failed with status {comments_response.status_code}: {comments_response.text}")
 
         data = comments_response.json().get("data", {})
         comment_obj = parse_security_comment(data)
@@ -1540,9 +1671,7 @@ def add_security_signal_comment_command(
         with ApiClient(configuration) as api_client:
             user_api_instance = UsersApi(api_client)
             try:
-                user_response = user_api_instance.get_user(
-                    user_id=comment_obj.user_uuid
-                )
+                user_response = user_api_instance.get_user(user_id=comment_obj.user_uuid)
                 user_data = user_response.to_dict().get("data", {})
                 attrs = user_data.get("attributes", {})
                 comment_obj.user_name = attrs.get("name")
@@ -1554,9 +1683,7 @@ def add_security_signal_comment_command(
         display_data = comment_obj.to_display_dict()
         output = comment_obj.to_dict()
 
-        readable_output = lookup_to_markdown(
-            [display_data], "Comment Added Successfully"
-        )
+        readable_output = lookup_to_markdown([display_data], "Comment Added Successfully")
 
         return CommandResults(
             readable_output=readable_output,
@@ -1592,9 +1719,7 @@ def list_security_signal_comments_command(
     # If event_id not provided, try to get it from the current incident
     if not event_id:
         incident = demisto.incident()
-        event_id = incident.get("CustomFields", {}).get(
-            "datadogcloudsiemv2securitysignaleventid"
-        )
+        event_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignaleventid")
         if not event_id:
             raise DemistoException(
                 "event_id is required. Provide it as an argument or run from an incident with a Datadog Security Signal Event ID."
@@ -1645,9 +1770,7 @@ def list_security_signal_comments_command(
         display_data = [c.to_display_dict() for c in comments]
         outputs = [c.to_dict() for c in comments]
 
-        readable_output = lookup_to_markdown(
-            display_data, f"Security Signal Comments ({len(comments)} results)"
-        )
+        readable_output = lookup_to_markdown(display_data, f"Security Signal Comments ({len(comments)} results)")
 
         return CommandResults(
             readable_output=readable_output,
@@ -1689,9 +1812,7 @@ def logs_query_command(
         # If no query provided, try to get it from incident's rule
         if not has_query:
             incident = demisto.incident()
-            rule_id = incident.get("CustomFields", {}).get(
-                "datadogcloudsiemv2securitysignalruleid"
-            )
+            rule_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignalruleid")
 
             if not rule_id:
                 raise DemistoException(
@@ -1701,9 +1822,7 @@ def logs_query_command(
             # Fetch the rule and extract the query
             with ApiClient(configuration) as api_client:
                 api_instance = SecurityMonitoringApi(api_client)
-                rule_response = api_instance.get_security_monitoring_rule(
-                    rule_id=rule_id
-                )
+                rule_response = api_instance.get_security_monitoring_rule(rule_id=rule_id)
                 rule_data = rule_response.to_dict()
                 rule = parse_security_rule(rule_data)
 
@@ -1717,11 +1836,7 @@ def logs_query_command(
         if sort not in ["asc", "desc"]:
             raise DemistoException("Sort must be either 'asc' or 'desc'")
 
-        sort_order = (
-            LogsSort.TIMESTAMP_ASCENDING
-            if sort == "asc"
-            else LogsSort.TIMESTAMP_DESCENDING
-        )
+        sort_order = LogsSort.TIMESTAMP_ASCENDING if sort == "asc" else LogsSort.TIMESTAMP_DESCENDING
 
         search_query = args.get("query", "*")
 
@@ -1733,9 +1848,7 @@ def logs_query_command(
             from_datetime = parse(from_date, settings={"TIMEZONE": "UTC"})
             to_datetime = parse(to_date, settings={"TIMEZONE": "UTC"})
         except Exception as e:
-            raise DemistoException(
-                f"Invalid date format. Use formats like '7 days ago', '2023-01-01T00:00:00Z': {str(e)}"
-            )
+            raise DemistoException(f"Invalid date format. Use formats like '7 days ago', '2023-01-01T00:00:00Z': {str(e)}")
 
         with ApiClient(configuration) as api_client:
             logs_api_instance = LogsApi(api_client)
@@ -1879,11 +1992,7 @@ def fetch_incidents(
 
             incident = {
                 "name": signal.title or f"Datadog Security Signal {signal.id}",
-                "occurred": (
-                    str(signal.timestamp)
-                    if signal.timestamp
-                    else to_datetime.isoformat()
-                ),
+                "occurred": (str(signal.timestamp) if signal.timestamp else to_datetime.isoformat()),
                 "details": signal.message,
                 "severity": map_severity_to_xsoar(signal.severity),
                 "dbotMirrorId": signal.id,
@@ -1933,16 +2042,8 @@ def main() -> None:
         # Handle credentials type (type 9) - extract password from dict
         api_key_creds = params.get("api_key", {})
         app_key_creds = params.get("app_key", {})
-        configuration.api_key["apiKeyAuth"] = (
-            api_key_creds.get("password")
-            if isinstance(api_key_creds, dict)
-            else api_key_creds
-        )
-        configuration.api_key["appKeyAuth"] = (
-            app_key_creds.get("password")
-            if isinstance(app_key_creds, dict)
-            else app_key_creds
-        )
+        configuration.api_key["apiKeyAuth"] = api_key_creds.get("password") if isinstance(api_key_creds, dict) else api_key_creds
+        configuration.api_key["appKeyAuth"] = app_key_creds.get("password") if isinstance(app_key_creds, dict) else app_key_creds
         configuration.server_variables["site"] = SITE
         configuration.verify_ssl = not params.get("insecure", False)
 
@@ -1961,7 +2062,7 @@ def main() -> None:
             "datadog-rule-get": get_security_rule_command,
             "datadog-logs-query": logs_query_command,
             # New commands
-            # datadog-rule-suppression-list
+            "datadog-rule-suppression-list": suppressions_list_command,
             # datadog-security-filter-get
             # datadog-security-filter-list
             # datadog-signal-notification-rule-get
