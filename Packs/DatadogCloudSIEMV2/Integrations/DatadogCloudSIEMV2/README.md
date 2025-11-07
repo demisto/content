@@ -1,21 +1,21 @@
-# Datadog Cloud SIEM
+# Datadog Cloud SIEM V2
 
-Datadog Cloud SIEM integration for Cortex XSOAR provides security signal management and log search capabilities for threat detection and incident response.
+Datadog Cloud SIEM V2 integration for Cortex XSOAR provides security signal management and log search capabilities for threat detection and incident response.
 
 This integration allows security teams to:
 
-- Fetch security signals as XSOAR incidents automatically
-- Retrieve and filter security signals from Datadog's Cloud SIEM platform
-- Manage signal triage states and assignments
-- Search security logs for investigations
-- Extract IOCs (IPs, URLs, file hashes) from security signals
+-   Fetch security signals as XSOAR incidents automatically
+-   Retrieve and filter security signals from Datadog's Cloud SIEM platform
+-   Manage signal triage states and assignments
+-   Search security logs for investigations
+-   Extract IOCs (IPs, URLs, file hashes) from security signals
 
 This integration was integrated and tested with version 2.12.0 of datadog-api-client.
 
-## Configure Datadog Cloud SIEM on Cortex XSOAR
+## Configure Datadog Cloud SIEM V2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Instances**.
-2. Search for Datadog Cloud SIEM.
+2. Search for Datadog Cloud SIEM V2.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter**    | **Description**                                                                 | **Required** |
@@ -42,7 +42,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ---
 
-Get a specific security signal by ID from Datadog Cloud SIEM.
+Get a specific security signal by ID from Datadog Cloud SIEM V2.
 
 #### Base Command
 
@@ -90,7 +90,7 @@ Get a specific security signal by ID from Datadog Cloud SIEM.
 
 ---
 
-Get a list of security signals from Datadog Cloud SIEM with optional filtering and pagination.
+Get a list of security signals from Datadog Cloud SIEM V2 with optional filtering and pagination.
 
 #### Base Command
 
@@ -146,7 +146,7 @@ Get a list of security signals from Datadog Cloud SIEM with optional filtering a
 
 ---
 
-Update a security signal's assignee and/or state in Datadog Cloud SIEM. Can update assignee only, state only, or both in a single command.
+Update a security signal's assignee and/or state in Datadog Cloud SIEM V2. Can update assignee only, state only, or both in a single command.
 
 #### Base Command
 
@@ -200,7 +200,7 @@ Update a security signal's assignee and/or state in Datadog Cloud SIEM. Can upda
 
 ---
 
-Add a comment to a security signal in Datadog Cloud SIEM.
+Add a comment to a security signal in Datadog Cloud SIEM V2.
 
 #### Base Command
 
@@ -236,7 +236,7 @@ Add a comment to a security signal in Datadog Cloud SIEM.
 
 ---
 
-List all comments for a security signal in Datadog Cloud SIEM.
+List all comments for a security signal in Datadog Cloud SIEM V2.
 
 #### Base Command
 
@@ -328,7 +328,7 @@ There is no context output for this command.
 
 ---
 
-Get a specific security monitoring rule by ID from Datadog Cloud SIEM.
+Get a specific security monitoring rule by ID from Datadog Cloud SIEM V2.
 
 #### Base Command
 
@@ -369,7 +369,7 @@ Get a specific security monitoring rule by ID from Datadog Cloud SIEM.
 
 ---
 
-Query logs in Datadog Cloud SIEM with optional filtering for security investigations.
+Query logs in Datadog Cloud SIEM V2 with optional filtering for security investigations.
 
 #### Base Command
 
@@ -410,7 +410,7 @@ Query logs in Datadog Cloud SIEM with optional filtering for security investigat
 
 ## Incident Fetching
 
-This integration supports fetching security signals from Datadog Cloud SIEM as Cortex XSOAR incidents.
+This integration supports fetching security signals from Datadog Cloud SIEM V2 as Cortex XSOAR incidents.
 
 ### Configuration
 
@@ -429,21 +429,21 @@ To enable incident fetching:
 
 Each fetched incident includes:
 
-- **Name**: Security signal title
-- **Occurred**: Signal timestamp
-- **Severity**: Mapped from Datadog severity (Low=1, Medium=2, High=3, Critical=4)
-- **Raw JSON**: Complete signal data for mapping and enrichment
+-   **Name**: Security signal title
+-   **Occurred**: Signal timestamp
+-   **Severity**: Mapped from Datadog severity (Low=1, Medium=2, High=3, Critical=4)
+-   **Raw JSON**: Complete signal data for mapping and enrichment
 
 ## Troubleshooting
 
 ### Authentication Errors
 
-- Verify API Key and APP Key are correct
-- Ensure keys have appropriate permissions in Datadog
-- Check Server URL matches your Datadog site (e.g., datadoghq.com, datadoghq.eu)
+-   Verify API Key and APP Key are correct
+-   Ensure keys have appropriate permissions in Datadog
+-   Check Server URL matches your Datadog site (e.g., datadoghq.com, datadoghq.eu)
 
 ### Fetch Issues
 
-- Check First Fetch Time is not too far in the past (max 90 days recommended)
-- Verify Fetch Query syntax using Datadog's query language
-- Review integration logs for detailed error messages
+-   Check First Fetch Time is not too far in the past (max 90 days recommended)
+-   Verify Fetch Query syntax using Datadog's query language
+-   Review integration logs for detailed error messages

@@ -5,7 +5,9 @@ import pytest
 @pytest.fixture
 def mock_incident():
     """Fixture providing a mock incident with Datadog Security Signal ID."""
-    return {"CustomFields": {"datadogsecuritysignalid": "test-signal-id-123"}}
+    return {
+        "CustomFields": {"datadogcloudsiemv2securitysignalid": "test-signal-id-123"}
+    }
 
 
 @pytest.fixture
@@ -13,7 +15,11 @@ def mock_signal_data():
     """Fixture providing mock security signal data from Datadog."""
     return {
         "id": "test-signal-id-123",
-        "attributes": {"message": "Test security signal", "severity": "high", "state": "open"},
+        "attributes": {
+            "message": "Test security signal",
+            "severity": "high",
+            "state": "open",
+        },
         "triage": {"state": "open", "assignee": {"name": "john.doe@example.com"}},
     }
 
@@ -23,7 +29,11 @@ def mock_archived_signal_data():
     """Fixture providing mock archived security signal data."""
     return {
         "id": "test-signal-id-123",
-        "attributes": {"message": "Test security signal", "severity": "high", "state": "archived"},
+        "attributes": {
+            "message": "Test security signal",
+            "severity": "high",
+            "state": "archived",
+        },
         "triage": {
             "state": "archived",
             "archive_reason": "false_positive",
@@ -36,7 +46,9 @@ def mock_archived_signal_data():
 class TestDatadogSyncIncidentFields:
     """Test class for DatadogSyncIncidentFields script."""
 
-    def test_sync_incident_fields_success(self, mocker, mock_incident, mock_signal_data):
+    def test_sync_incident_fields_success(
+        self, mocker, mock_incident, mock_signal_data
+    ):
         """Test successful synchronization of incident fields.
 
         Given: An incident with a valid Datadog Security Signal ID
@@ -57,9 +69,9 @@ class TestDatadogSyncIncidentFields:
             demisto,
             "mapObject",
             return_value={
-                "datadogsecuritysignalid": "test-signal-id-123",
-                "datadogsecuritysignalmessage": "Test security signal",
-                "datadogsecuritysignalseverity": "high",
+                "datadogcloudsiemv2securitysignalid": "test-signal-id-123",
+                "datadogcloudsiemv2securitysignalmessage": "Test security signal",
+                "datadogcloudsiemv2securitysignalseverity": "high",
             },
         )
         mocker.patch("DatadogSyncIncidentFields.isError", return_value=False)
@@ -82,7 +94,9 @@ class TestDatadogSyncIncidentFields:
         """
         incident_without_id = {"CustomFields": {}}
         mocker.patch.object(demisto, "incident", return_value=incident_without_id)
-        mock_error = mocker.patch("DatadogSyncIncidentFields.return_error", side_effect=SystemExit(0))
+        mock_error = mocker.patch(
+            "DatadogSyncIncidentFields.return_error", side_effect=SystemExit(0)
+        )
 
         from DatadogSyncIncidentFields import main
 
@@ -100,10 +114,16 @@ class TestDatadogSyncIncidentFields:
         Then: An error should be returned indicating fetch failure
         """
         mocker.patch.object(demisto, "incident", return_value=mock_incident)
-        mocker.patch.object(demisto, "executeCommand", return_value=[{"Type": 4, "Contents": "API Error"}])
+        mocker.patch.object(
+            demisto,
+            "executeCommand",
+            return_value=[{"Type": 4, "Contents": "API Error"}],
+        )
         mocker.patch("DatadogSyncIncidentFields.isError", return_value=True)
         mocker.patch("DatadogSyncIncidentFields.get_error", return_value="API Error")
-        mock_error = mocker.patch("DatadogSyncIncidentFields.return_error", side_effect=SystemExit(0))
+        mock_error = mocker.patch(
+            "DatadogSyncIncidentFields.return_error", side_effect=SystemExit(0)
+        )
 
         from DatadogSyncIncidentFields import main
 
@@ -121,9 +141,13 @@ class TestDatadogSyncIncidentFields:
         Then: An error should be returned indicating no signal data
         """
         mocker.patch.object(demisto, "incident", return_value=mock_incident)
-        mocker.patch.object(demisto, "executeCommand", return_value=[{"Type": 1, "Contents": {}}])
+        mocker.patch.object(
+            demisto, "executeCommand", return_value=[{"Type": 1, "Contents": {}}]
+        )
         mocker.patch("DatadogSyncIncidentFields.isError", return_value=False)
-        mock_error = mocker.patch("DatadogSyncIncidentFields.return_error", side_effect=SystemExit(0))
+        mock_error = mocker.patch(
+            "DatadogSyncIncidentFields.return_error", side_effect=SystemExit(0)
+        )
 
         from DatadogSyncIncidentFields import main
 
@@ -133,7 +157,9 @@ class TestDatadogSyncIncidentFields:
         mock_error.assert_called_once()
         assert "No signal data returned" in mock_error.call_args[0][0]
 
-    def test_archived_signal_closes_incident(self, mocker, mock_incident, mock_archived_signal_data):
+    def test_archived_signal_closes_incident(
+        self, mocker, mock_incident, mock_archived_signal_data
+    ):
         """Test that archived signals trigger incident closure.
 
         Given: An incident with a signal ID and the signal is archived in Datadog
@@ -145,7 +171,9 @@ class TestDatadogSyncIncidentFields:
             demisto,
             "executeCommand",
             side_effect=[
-                [{"Type": 1, "Contents": mock_archived_signal_data}],  # datadog-signal-get
+                [
+                    {"Type": 1, "Contents": mock_archived_signal_data}
+                ],  # datadog-signal-get
                 {},  # setIncident
                 {},  # setOwner
                 {},  # closeInvestigation
@@ -155,9 +183,9 @@ class TestDatadogSyncIncidentFields:
             demisto,
             "mapObject",
             return_value={
-                "datadogsecuritysignalid": "test-signal-id-123",
-                "datadogsecuritysignalmessage": "Test security signal",
-                "datadogsecuritysignalseverity": "high",
+                "datadogcloudsiemv2securitysignalid": "test-signal-id-123",
+                "datadogcloudsiemv2securitysignalmessage": "Test security signal",
+                "datadogcloudsiemv2securitysignalseverity": "high",
             },
         )
         mocker.patch("DatadogSyncIncidentFields.isError", return_value=False)
@@ -176,7 +204,10 @@ class TestDatadogSyncIncidentFields:
 
         assert close_investigation_call is not None
         assert close_investigation_call[0][1]["closeReason"] == "false_positive"
-        assert close_investigation_call[0][1]["closeNotes"] == "This was a false positive detection"
+        assert (
+            close_investigation_call[0][1]["closeNotes"]
+            == "This was a false positive detection"
+        )
         mock_results.assert_called_once()
 
     def test_no_fields_to_update(self, mocker, mock_incident, mock_signal_data):
@@ -187,7 +218,11 @@ class TestDatadogSyncIncidentFields:
         Then: A message indicating no fields to update should be returned
         """
         mocker.patch.object(demisto, "incident", return_value=mock_incident)
-        mocker.patch.object(demisto, "executeCommand", return_value=[{"Type": 1, "Contents": mock_signal_data}])
+        mocker.patch.object(
+            demisto,
+            "executeCommand",
+            return_value=[{"Type": 1, "Contents": mock_signal_data}],
+        )
         mocker.patch.object(demisto, "mapObject", return_value={})
         mocker.patch("DatadogSyncIncidentFields.isError", return_value=False)
         mock_results = mocker.patch("DatadogSyncIncidentFields.return_results")
@@ -208,9 +243,13 @@ class TestDatadogSyncIncidentFields:
         Then: The error should be caught and returned appropriately
         """
         mocker.patch.object(demisto, "incident", return_value=mock_incident)
-        mocker.patch.object(demisto, "executeCommand", side_effect=Exception("Unexpected error"))
+        mocker.patch.object(
+            demisto, "executeCommand", side_effect=Exception("Unexpected error")
+        )
         mocker.patch.object(demisto, "error")
-        mock_error = mocker.patch("DatadogSyncIncidentFields.return_error", side_effect=SystemExit(0))
+        mock_error = mocker.patch(
+            "DatadogSyncIncidentFields.return_error", side_effect=SystemExit(0)
+        )
 
         from DatadogSyncIncidentFields import main
 
@@ -218,7 +257,9 @@ class TestDatadogSyncIncidentFields:
             main()
 
         mock_error.assert_called_once()
-        assert "Failed to execute DatadogSyncIncidentFields" in mock_error.call_args[0][0]
+        assert (
+            "Failed to execute DatadogSyncIncidentFields" in mock_error.call_args[0][0]
+        )
         assert "Unexpected error" in mock_error.call_args[0][0]
 
     def test_signal_without_owner(self, mocker, mock_incident):
@@ -243,7 +284,11 @@ class TestDatadogSyncIncidentFields:
                 {},  # setIncident
             ],
         )
-        mocker.patch.object(demisto, "mapObject", return_value={"datadogsecuritysignalid": "test-signal-id-123"})
+        mocker.patch.object(
+            demisto,
+            "mapObject",
+            return_value={"datadogcloudsiemv2securitysignalid": "test-signal-id-123"},
+        )
         mocker.patch("DatadogSyncIncidentFields.isError", return_value=False)
         mock_results = mocker.patch("DatadogSyncIncidentFields.return_results")
 

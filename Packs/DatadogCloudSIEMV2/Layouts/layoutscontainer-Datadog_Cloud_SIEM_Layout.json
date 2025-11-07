@@ -1,5 +1,5 @@
 {
-    "description": "Datadog Cloud SIEM Incident Layout - Enhanced layout for security signal investigation and triage",
+    "description": "Datadog Cloud SIEM V2 Incident Layout - Enhanced layout for security signal investigation and triage",
     "detailsV2": {
         "tabs": [
             {
@@ -15,27 +15,27 @@
                         "items": [
                             {
                                 "endCol": 6,
-                                "fieldId": "datadogsecuritysignaltitle",
+                                "fieldId": "datadogcloudsiemv2securitysignaltitle",
                                 "height": 22,
-                                "id": "field-datadogsecuritysignaltitle",
+                                "id": "field-datadogcloudsiemv2securitysignaltitle",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 6,
-                                "fieldId": "datadogsecuritysignalurl",
+                                "fieldId": "datadogcloudsiemv2securitysignalurl",
                                 "height": 22,
-                                "id": "field-datadogsecuritysignalurl",
+                                "id": "field-datadogcloudsiemv2securitysignalurl",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 6,
-                                "fieldId": "datadogsecuritysignalmessage",
+                                "fieldId": "datadogcloudsiemv2securitysignalmessage",
                                 "height": 88,
-                                "id": "field-datadogsecuritysignalmessage",
+                                "id": "field-datadogcloudsiemv2securitysignalmessage",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -58,36 +58,36 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "datadogsecuritysignalid",
+                                "fieldId": "datadogcloudsiemv2securitysignalid",
                                 "height": 22,
-                                "id": "field-datadogsecuritysignalid",
+                                "id": "field-datadogcloudsiemv2securitysignalid",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "datadogsecuritysignaltimestamp",
+                                "fieldId": "datadogcloudsiemv2securitysignaltimestamp",
                                 "height": 22,
-                                "id": "field-datadogsecuritysignaltimestamp",
+                                "id": "field-datadogcloudsiemv2securitysignaltimestamp",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "datadogsecuritysignalseverity",
+                                "fieldId": "datadogcloudsiemv2securitysignalseverity",
                                 "height": 22,
-                                "id": "field-datadogsecuritysignalseverity",
+                                "id": "field-datadogcloudsiemv2securitysignalseverity",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "datadogsecuritysignalhost",
+                                "fieldId": "datadogcloudsiemv2securitysignalhost",
                                 "height": 22,
-                                "id": "field-datadogsecuritysignalhost",
+                                "id": "field-datadogcloudsiemv2securitysignalhost",
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -95,18 +95,18 @@
 
                             {
                                 "endCol": 2,
-                                "fieldId": "datadogsecuritysignaltags",
+                                "fieldId": "datadogcloudsiemv2securitysignaltags",
                                 "height": 22,
-                                "id": "field-datadogsecuritysignaltags",
+                                "id": "field-datadogcloudsiemv2securitysignaltags",
                                 "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "datadogsecuritysignaltriggeringlogid",
+                                "fieldId": "datadogcloudsiemv2securitysignaltriggeringlogid",
                                 "height": 22,
-                                "id": "field-datadogsecuritysignaltriggeringlogid",
+                                "id": "field-datadogcloudsiemv2securitysignaltriggeringlogid",
                                 "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -129,18 +129,18 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "datadogsecuritysignalruleurl",
+                                "fieldId": "datadogcloudsiemv2securitysignalruleurl",
                                 "height": 22,
-                                "id": "field-datadogsecuritysignalruleurl",
+                                "id": "field-datadogcloudsiemv2securitysignalruleurl",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "datadogsecuritysignalruleid",
+                                "fieldId": "datadogcloudsiemv2securitysignalruleid",
                                 "height": 22,
-                                "id": "field-datadogsecuritysignalruleid",
+                                "id": "field-datadogcloudsiemv2securitysignalruleid",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -163,36 +163,36 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "datadogsecuritysignaltriagestate",
+                                "fieldId": "datadogcloudsiemv2securitysignaltriagestate",
                                 "height": 22,
-                                "id": "field-datadogsecuritysignaltriagestate",
+                                "id": "field-datadogcloudsiemv2securitysignaltriagestate",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "datadogsecuritysignaltriageassigneename",
+                                "fieldId": "datadogcloudsiemv2securitysignaltriageassigneename",
                                 "height": 22,
-                                "id": "field-datadogsecuritysignaltriageassigneename",
+                                "id": "field-datadogcloudsiemv2securitysignaltriageassigneename",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "datadogsecuritysignaltriagearchivereason",
+                                "fieldId": "datadogcloudsiemv2securitysignaltriagearchivereason",
                                 "height": 22,
-                                "id": "field-datadogsecuritysignaltriagearchivereason",
+                                "id": "field-datadogcloudsiemv2securitysignaltriagearchivereason",
                                 "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "datadogsecuritysignaltriagearchivecomment",
+                                "fieldId": "datadogcloudsiemv2securitysignaltriagearchivecomment",
                                 "height": 44,
-                                "id": "field-datadogsecuritysignaltriagearchivecomment",
+                                "id": "field-datadogcloudsiemv2securitysignaltriagearchivecomment",
                                 "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -501,8 +501,8 @@
         ]
     },
     "group": "incident",
-    "id": "Datadog Cloud SIEM Layout",
-    "name": "Datadog Cloud SIEM Layout",
+    "id": "Datadog Cloud SIEM V2 Layout",
+    "name": "Datadog Cloud SIEM V2 Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.8.0"
