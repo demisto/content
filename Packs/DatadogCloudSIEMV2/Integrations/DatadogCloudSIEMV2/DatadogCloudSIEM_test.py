@@ -174,9 +174,7 @@ def security_signals_list_response():
 class TestGetSecuritySignalCommand:
     """Tests for datadog-signal-get command."""
 
-    def test_get_security_signal_command_success(
-        self, configuration, security_signal_response
-    ):
+    def test_get_security_signal_command_success(self, configuration, security_signal_response):
         """Test get_security_signal_command with valid signal ID.
 
         Given: A valid signal ID and mocked API response
@@ -194,18 +192,14 @@ class TestGetSecuritySignalCommand:
         ):
             mock_api_instance = MagicMock()
             mock_api.return_value = mock_api_instance
-            mock_api_instance.get_security_monitoring_signal.return_value = (
-                mock_response
-            )
+            mock_api_instance.get_security_monitoring_signal.return_value = mock_response
 
             result = get_security_signal_command(configuration, args)
 
             assert isinstance(result, CommandResults)
             assert result.outputs["id"] == "AQAAAYvz-1234567890"  # type: ignore
             assert result.outputs["severity"] == "high"  # type: ignore
-            mock_api_instance.get_security_monitoring_signal.assert_called_once_with(
-                signal_id="AQAAAYvz-1234567890"
-            )
+            mock_api_instance.get_security_monitoring_signal.assert_called_once_with(signal_id="AQAAAYvz-1234567890")
 
     def test_get_security_signal_command_not_found(self, configuration):
         """Test get_security_signal_command when signal is not found.
@@ -225,9 +219,7 @@ class TestGetSecuritySignalCommand:
         ):
             mock_api_instance = MagicMock()
             mock_api.return_value = mock_api_instance
-            mock_api_instance.get_security_monitoring_signal.return_value = (
-                mock_response
-            )
+            mock_api_instance.get_security_monitoring_signal.return_value = mock_response
 
             result = get_security_signal_command(configuration, args)
 
@@ -245,16 +237,12 @@ class TestGetSecuritySignalCommand:
         args = {}
 
         with (
-            patch(
-                "DatadogCloudSIEMV2.demisto.incident", return_value={"CustomFields": {}}
-            ),
+            patch("DatadogCloudSIEMV2.demisto.incident", return_value={"CustomFields": {}}),
             pytest.raises(DemistoException, match="signal_id is required"),
         ):
             get_security_signal_command(configuration, args)
 
-    def test_get_security_signal_command_from_incident_context(
-        self, configuration, security_signal_response
-    ):
+    def test_get_security_signal_command_from_incident_context(self, configuration, security_signal_response):
         """Test get_security_signal_command retrieves signal_id from incident context.
 
         Given: No signal_id in args but valid signal_id in incident custom fields
@@ -271,18 +259,12 @@ class TestGetSecuritySignalCommand:
             patch("DatadogCloudSIEMV2.SecurityMonitoringApi") as mock_api,
             patch(
                 "DatadogCloudSIEMV2.demisto.incident",
-                return_value={
-                    "CustomFields": {
-                        "datadogcloudsiemv2securitysignalid": "AQAAAYvz-1234567890"
-                    }
-                },
+                return_value={"CustomFields": {"datadogcloudsiemv2securitysignalid": "AQAAAYvz-1234567890"}},
             ),
         ):
             mock_api_instance = MagicMock()
             mock_api.return_value = mock_api_instance
-            mock_api_instance.get_security_monitoring_signal.return_value = (
-                mock_response
-            )
+            mock_api_instance.get_security_monitoring_signal.return_value = mock_response
 
             result = get_security_signal_command(configuration, args)
 
@@ -305,9 +287,7 @@ class TestGetSecuritySignalCommand:
         ):
             mock_api_instance = MagicMock()
             mock_api.return_value = mock_api_instance
-            mock_api_instance.get_security_monitoring_signal.side_effect = Exception(
-                "API Error"
-            )
+            mock_api_instance.get_security_monitoring_signal.side_effect = Exception("API Error")
 
             get_security_signal_command(configuration, args)
 
@@ -315,9 +295,7 @@ class TestGetSecuritySignalCommand:
 class TestGetSecuritySignalListCommand:
     """Tests for datadog-signal-list command."""
 
-    def test_get_security_signal_list_command_success(
-        self, configuration, security_signals_list_response
-    ):
+    def test_get_security_signal_list_command_success(self, configuration, security_signals_list_response):
         """Test get_security_signal_list_command with default parameters.
 
         Given: Default limit parameter and mocked API response with 2 signals
@@ -351,9 +329,7 @@ class TestGetSecuritySignalListCommand:
             assert isinstance(result.outputs, list)  # type: ignore
             assert len(result.outputs) == 2  # type: ignore
 
-    def test_get_security_signal_list_command_with_filters(
-        self, configuration, security_signals_list_response
-    ):
+    def test_get_security_signal_list_command_with_filters(self, configuration, security_signals_list_response):
         """Test get_security_signal_list_command with severity and state filters.
 
         Given: State and severity filter parameters
@@ -376,9 +352,7 @@ class TestGetSecuritySignalListCommand:
         ):
             mock_api_instance = MagicMock()
             mock_api.return_value = mock_api_instance
-            mock_api_instance.search_security_monitoring_signals.return_value = (
-                mock_response
-            )
+            mock_api_instance.search_security_monitoring_signals.return_value = mock_response
 
             # Mock fetch to return signals
             mock_signal = MagicMock()
@@ -415,9 +389,7 @@ class TestGetSecuritySignalListCommand:
         ):
             mock_api_instance = MagicMock()
             mock_api.return_value = mock_api_instance
-            mock_api_instance.search_security_monitoring_signals.return_value = (
-                mock_response
-            )
+            mock_api_instance.search_security_monitoring_signals.return_value = mock_response
 
             results = get_security_signal_list_command(configuration, args)
 
@@ -459,9 +431,7 @@ class TestGetSecuritySignalListCommand:
         """
         args = {"sort": "invalid", "limit": "50"}
 
-        with pytest.raises(
-            DemistoException, match="Sort must be either 'asc' or 'desc'"
-        ):
+        with pytest.raises(DemistoException, match="Sort must be either 'asc' or 'desc'"):
             get_security_signal_list_command(configuration, args)
 
     def test_get_security_signal_list_command_with_page_size(self, configuration):
@@ -537,9 +507,7 @@ class TestUpdateSecuritySignalCommand:
             mock_api_instance = MagicMock()
             mock_api.return_value = mock_api_instance
             # The GET call happens after the update to fetch fresh data
-            mock_api_instance.get_security_monitoring_signal.return_value = (
-                mock_get_response
-            )
+            mock_api_instance.get_security_monitoring_signal.return_value = mock_get_response
 
             # Mock user lookup
             mock_users_instance = MagicMock()
@@ -564,18 +532,14 @@ class TestUpdateSecuritySignalCommand:
 
             # Verify the update API was called with correct assignee payload
             mock_api_instance.edit_security_monitoring_signal_assignee.assert_called_once()
-            call_args = (
-                mock_api_instance.edit_security_monitoring_signal_assignee.call_args
-            )
+            call_args = mock_api_instance.edit_security_monitoring_signal_assignee.call_args
             assert call_args[1]["signal_id"] == "AQAAAYvz-1234567890"
             # Verify the body contains the correct assignee UUID from user lookup
             body = call_args[1]["body"]
             assert body.data.attributes.assignee.uuid == "user-123"
 
             # Verify that after the update, a fresh GET was called to retrieve the updated signal
-            mock_api_instance.get_security_monitoring_signal.assert_called_once_with(
-                signal_id="AQAAAYvz-1234567890"
-            )
+            mock_api_instance.get_security_monitoring_signal.assert_called_once_with(signal_id="AQAAAYvz-1234567890")
 
     def test_update_security_signal_state_command_success(self, configuration):
         """Test update_security_signal_command with valid state parameter.
@@ -622,9 +586,7 @@ class TestUpdateSecuritySignalCommand:
         ):
             mock_api_instance = MagicMock()
             mock_api.return_value = mock_api_instance
-            mock_api_instance.get_security_monitoring_signal.return_value = (
-                mock_get_response
-            )
+            mock_api_instance.get_security_monitoring_signal.return_value = mock_get_response
 
             result = update_security_signal_command(configuration, args)
 
@@ -677,9 +639,7 @@ class TestUpdateSecuritySignalCommand:
         ):
             mock_api_instance = MagicMock()
             mock_api.return_value = mock_api_instance
-            mock_api_instance.get_security_monitoring_signal.return_value = (
-                mock_get_response
-            )
+            mock_api_instance.get_security_monitoring_signal.return_value = mock_get_response
 
             mock_users_instance = MagicMock()
             mock_users_api.return_value = mock_users_instance
@@ -737,17 +697,13 @@ class TestUpdateSecuritySignalCommand:
         ):
             mock_api_instance = MagicMock()
             mock_api.return_value = mock_api_instance
-            mock_api_instance.get_security_monitoring_signal.return_value = (
-                mock_get_response
-            )
+            mock_api_instance.get_security_monitoring_signal.return_value = mock_get_response
 
             result = update_security_signal_command(configuration, args)
 
             assert isinstance(result, CommandResults)
             # Verify assignee update was called with empty UUID
-            call_args = (
-                mock_api_instance.edit_security_monitoring_signal_assignee.call_args
-            )
+            call_args = mock_api_instance.edit_security_monitoring_signal_assignee.call_args
             body = call_args[1]["body"]
             assert body.data.attributes.assignee.uuid == ""
 
@@ -791,9 +747,7 @@ class TestUpdateSecuritySignalCommand:
             patch("DatadogCloudSIEMV2.ApiClient"),
             patch("DatadogCloudSIEMV2.SecurityMonitoringApi"),
             patch("DatadogCloudSIEMV2.UsersApi") as mock_users_api,
-            pytest.raises(
-                DemistoException, match="Could not determine the user to assign"
-            ),
+            pytest.raises(DemistoException, match="Could not determine the user to assign"),
         ):
             mock_users_instance = MagicMock()
             mock_users_api.return_value = mock_users_instance
@@ -878,9 +832,7 @@ class TestGetSecurityRuleCommand:
             assert result.outputs["id"] == "rule-abc-123"  # type: ignore
             assert result.outputs["name"] == "Brute Force Login Detection"  # type: ignore
             assert result.outputs["type"] == "log_detection"  # type: ignore
-            mock_api_instance.get_security_monitoring_rule.assert_called_once_with(
-                rule_id="rule-abc-123"
-            )
+            mock_api_instance.get_security_monitoring_rule.assert_called_once_with(rule_id="rule-abc-123")
 
     def test_get_security_rule_command_from_incident(self, configuration):
         """Test get_security_rule_command retrieves rule_id from incident context.
@@ -904,11 +856,7 @@ class TestGetSecurityRuleCommand:
             patch("DatadogCloudSIEMV2.SecurityMonitoringApi") as mock_api,
             patch(
                 "DatadogCloudSIEMV2.demisto.incident",
-                return_value={
-                    "CustomFields": {
-                        "datadogcloudsiemv2securitysignalruleid": "rule-from-incident"
-                    }
-                },
+                return_value={"CustomFields": {"datadogcloudsiemv2securitysignalruleid": "rule-from-incident"}},
             ),
         ):
             mock_api_instance = MagicMock()
@@ -977,17 +925,12 @@ class TestSuppressRuleCommand:
         ):
             mock_api_instance = MagicMock()
             mock_api.return_value = mock_api_instance
-            mock_api_instance.create_security_monitoring_suppression.return_value = (
-                mock_response
-            )
+            mock_api_instance.create_security_monitoring_suppression.return_value = mock_response
 
             result = suppress_rule_command(configuration, args)
 
             assert isinstance(result, CommandResults)
-            assert (
-                "Successfully created suppression for rule rule-abc-123"
-                in result.readable_output
-            )
+            assert "Successfully created suppression for rule rule-abc-123" in result.readable_output
             assert "suppression-xyz-789" in result.readable_output
             mock_api_instance.create_security_monitoring_suppression.assert_called_once()
 
@@ -1015,17 +958,13 @@ class TestSuppressRuleCommand:
         ):
             mock_api_instance = MagicMock()
             mock_api.return_value = mock_api_instance
-            mock_api_instance.create_security_monitoring_suppression.return_value = (
-                mock_response
-            )
+            mock_api_instance.create_security_monitoring_suppression.return_value = mock_response
 
             result = suppress_rule_command(configuration, args)
 
             assert isinstance(result, CommandResults)
             # Verify the data_exclusion_query was passed
-            call_args = (
-                mock_api_instance.create_security_monitoring_suppression.call_args
-            )
+            call_args = mock_api_instance.create_security_monitoring_suppression.call_args
             body = call_args[1]["body"]
             assert body.data.attributes.data_exclusion_query == "host:test-server"
 
@@ -1057,9 +996,7 @@ class TestUnsuppressRuleCommand:
         ):
             mock_api_instance = MagicMock()
             mock_api.return_value = mock_api_instance
-            mock_api_instance.get_suppressions_affecting_rule.return_value = (
-                mock_get_response
-            )
+            mock_api_instance.get_suppressions_affecting_rule.return_value = mock_get_response
 
             result = unsuppress_rule_command(configuration, args)
 
@@ -1068,9 +1005,7 @@ class TestUnsuppressRuleCommand:
             assert "suppression-1" in result.readable_output
             assert "suppression-2" in result.readable_output
             # Verify update was called twice (once for each suppression)
-            assert (
-                mock_api_instance.update_security_monitoring_suppression.call_count == 2
-            )
+            assert mock_api_instance.update_security_monitoring_suppression.call_count == 2
 
     def test_unsuppress_rule_command_no_suppressions(self, configuration):
         """Test unsuppress_rule_command when no suppressions exist.
@@ -1090,9 +1025,7 @@ class TestUnsuppressRuleCommand:
         ):
             mock_api_instance = MagicMock()
             mock_api.return_value = mock_api_instance
-            mock_api_instance.get_suppressions_affecting_rule.return_value = (
-                mock_get_response
-            )
+            mock_api_instance.get_suppressions_affecting_rule.return_value = mock_get_response
 
             result = unsuppress_rule_command(configuration, args)
 
@@ -1144,9 +1077,7 @@ class TestSecuritySignalCommentCommands:
         }
 
         with (
-            patch(
-                "DatadogCloudSIEMV2.requests.post", return_value=mock_requests_response
-            ),
+            patch("DatadogCloudSIEMV2.requests.post", return_value=mock_requests_response),
             patch("DatadogCloudSIEMV2.ApiClient"),
             patch("DatadogCloudSIEMV2.UsersApi") as mock_users_api,
         ):
@@ -1188,9 +1119,7 @@ class TestSecuritySignalCommentCommands:
         mock_requests_response.text = "Forbidden"
 
         with (
-            patch(
-                "DatadogCloudSIEMV2.requests.post", return_value=mock_requests_response
-            ),
+            patch("DatadogCloudSIEMV2.requests.post", return_value=mock_requests_response),
             pytest.raises(DemistoException, match="API request failed with status 403"),
         ):
             add_security_signal_comment_command(configuration, args)
@@ -1253,9 +1182,7 @@ class TestSecuritySignalCommentCommands:
         }
 
         with (
-            patch(
-                "DatadogCloudSIEMV2.requests.get", return_value=mock_requests_response
-            ),
+            patch("DatadogCloudSIEMV2.requests.get", return_value=mock_requests_response),
             patch("DatadogCloudSIEMV2.ApiClient"),
             patch("DatadogCloudSIEMV2.UsersApi") as mock_users_api,
         ):
@@ -1289,9 +1216,7 @@ class TestSecuritySignalCommentCommands:
         mock_requests_response.json.return_value = {"data": []}
 
         with (
-            patch(
-                "DatadogCloudSIEMV2.requests.get", return_value=mock_requests_response
-            ),
+            patch("DatadogCloudSIEMV2.requests.get", return_value=mock_requests_response),
             patch("DatadogCloudSIEMV2.ApiClient"),
             patch("DatadogCloudSIEMV2.UsersApi"),
         ):
@@ -1404,10 +1329,7 @@ class TestLogsQueryCommand:
             mock_api_instance.list_logs.assert_called_once()
             call_args = mock_api_instance.list_logs.call_args
             body = call_args[1]["body"]
-            assert (
-                body.filter.query
-                == "service:auth-service status:warn host:web-server-01"
-            )
+            assert body.filter.query == "service:auth-service status:warn host:web-server-01"
 
     def test_logs_query_command_no_results(self, configuration):
         """Test logs_query_command when no logs are found.
@@ -1434,9 +1356,7 @@ class TestLogsQueryCommand:
             assert isinstance(result, CommandResults)
             assert "No logs found" in result.readable_output
 
-    def test_logs_query_command_from_incident_rule(
-        self, configuration, logs_query_response
-    ):
+    def test_logs_query_command_from_incident_rule(self, configuration, logs_query_response):
         """Test logs_query_command without query parameter, using rule from incident.
 
         Given: No query parameter but valid rule_id in incident context
@@ -1463,18 +1383,12 @@ class TestLogsQueryCommand:
             patch("DatadogCloudSIEMV2.LogsApi") as mock_logs_api,
             patch(
                 "DatadogCloudSIEMV2.demisto.incident",
-                return_value={
-                    "CustomFields": {
-                        "datadogcloudsiemv2securitysignalruleid": "rule-123"
-                    }
-                },
+                return_value={"CustomFields": {"datadogcloudsiemv2securitysignalruleid": "rule-123"}},
             ),
         ):
             mock_security_instance = MagicMock()
             mock_security_api.return_value = mock_security_instance
-            mock_security_instance.get_security_monitoring_rule.return_value = (
-                mock_rule_response
-            )
+            mock_security_instance.get_security_monitoring_rule.return_value = mock_rule_response
 
             mock_logs_instance = MagicMock()
             mock_logs_api.return_value = mock_logs_instance
@@ -1484,9 +1398,7 @@ class TestLogsQueryCommand:
 
             assert isinstance(result, CommandResults)
             # Verify rule was fetched and query was extracted
-            mock_security_instance.get_security_monitoring_rule.assert_called_once_with(
-                rule_id="rule-123"
-            )
+            mock_security_instance.get_security_monitoring_rule.assert_called_once_with(rule_id="rule-123")
             # Verify logs were queried with extracted query
             call_args = mock_logs_instance.list_logs.call_args
             body = call_args[1]["body"]
@@ -1502,9 +1414,7 @@ class TestLogsQueryCommand:
         args = {}
 
         with (
-            patch(
-                "DatadogCloudSIEMV2.demisto.incident", return_value={"CustomFields": {}}
-            ),
+            patch("DatadogCloudSIEMV2.demisto.incident", return_value={"CustomFields": {}}),
             pytest.raises(DemistoException, match="query is required"),
         ):
             logs_query_command(configuration, args)
@@ -1557,9 +1467,7 @@ class TestFetchIncidents:
             "url": "https://app.datadoghq.com/security/signal?event=signal-123",
         }
 
-        with patch(
-            "DatadogCloudSIEMV2.fetch_security_signals", return_value=[mock_signal]
-        ):
+        with patch("DatadogCloudSIEMV2.fetch_security_signals", return_value=[mock_signal]):
             from DatadogCloudSIEMV2 import fetch_incidents
 
             fetch_incidents(configuration, params)
@@ -1630,9 +1538,7 @@ class TestFetchIncidents:
             "url": "https://app.datadoghq.com/security/signal?event=signal-456",
         }
 
-        with patch(
-            "DatadogCloudSIEMV2.fetch_security_signals", return_value=[mock_signal]
-        ):
+        with patch("DatadogCloudSIEMV2.fetch_security_signals", return_value=[mock_signal]):
             from DatadogCloudSIEMV2 import fetch_incidents
 
             fetch_incidents(configuration, params)
@@ -1825,10 +1731,7 @@ class TestHelperFunctions:
 
         # Test with no filters (should still have the default rule type filter)
         query_empty = security_signals_search_query({})
-        assert (
-            '@workflow.rule.type:("Log Detection" OR "Signal Correlation")'
-            in query_empty
-        )
+        assert '@workflow.rule.type:("Log Detection" OR "Signal Correlation")' in query_empty
 
     def test_calculate_limit(self):
         """Test calculate_limit function.
@@ -1850,9 +1753,7 @@ class TestHelperFunctions:
         assert calculate_limit(None, 0) == 50
 
         # Test invalid page_size (negative)
-        with pytest.raises(
-            DemistoException, match="page size should be greater than zero"
-        ):
+        with pytest.raises(DemistoException, match="page size should be greater than zero"):
             calculate_limit(None, -1)
 
     def test_map_severity_to_xsoar(self):

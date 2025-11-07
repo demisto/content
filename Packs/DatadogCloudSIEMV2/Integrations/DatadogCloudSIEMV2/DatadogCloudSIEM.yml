@@ -393,6 +393,51 @@ script:
       name: datadog-rule-unsuppress
       description: Disable all active suppressions affecting a security monitoring rule, re-enabling alerts for that rule.
     - arguments:
+        - description: The ID of the security rule to list suppressions for. If not provided, will attempt to get it from the current incident.
+          name: rule_id
+      name: datadog-rule-suppression-list
+      description: List all suppressions affecting a specific security monitoring rule in Datadog Cloud SIEM V2.
+      outputs:
+        - contextPath: Datadog.SecuritySuppression.id
+          description: The unique identifier of the suppression.
+          type: String
+        - contextPath: Datadog.SecuritySuppression.name
+          description: The name of the suppression.
+          type: String
+        - contextPath: Datadog.SecuritySuppression.description
+          description: The description of the suppression.
+          type: String
+        - contextPath: Datadog.SecuritySuppression.enabled
+          description: Whether the suppression is enabled.
+          type: Boolean
+        - contextPath: Datadog.SecuritySuppression.creationAt
+          description: Timestamp when the suppression was created (in milliseconds).
+          type: Number
+        - contextPath: Datadog.SecuritySuppression.updateAt
+          description: Timestamp when the suppression was last updated (in milliseconds).
+          type: Number
+        - contextPath: Datadog.SecuritySuppression.creator
+          description: The creator of the suppression (name and email).
+          type: String
+        - contextPath: Datadog.SecuritySuppression.updater
+          description: The user who last updated the suppression (name and email).
+          type: String
+        - contextPath: Datadog.SecuritySuppression.dataExclusionQuery
+          description: Query to match signals to suppress.
+          type: String
+        - contextPath: Datadog.SecuritySuppression.ruleQuery
+          description: Query to target specific security rules.
+          type: String
+        - contextPath: Datadog.SecuritySuppression.suppressionQuery
+          description: Additional suppression query filters.
+          type: String
+        - contextPath: Datadog.SecuritySuppression.url
+          description: URL to view the suppression in Datadog UI.
+          type: String
+        - contextPath: Datadog.SecuritySuppression.raw
+          description: The raw suppression object returned by the API.
+          type: Unknown
+    - arguments:
         - description: The event ID of the security signal to add a comment to. If not provided, will attempt to get it from the current incident.
           name: event_id
         - description: The comment text to add to the security signal.
