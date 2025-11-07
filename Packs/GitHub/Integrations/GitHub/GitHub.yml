@@ -1,7 +1,4 @@
 category: Utilities
-sectionorder:
-- Connect
-- Collect
 commonfields:
   id: GitHub
   version: -1
@@ -34,6 +31,7 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
+  display: ''
 - display: Credentials
   name: credentials
   type: 9
@@ -93,6 +91,11 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: Integration to GitHub API.
 display: GitHub
 name: GitHub
@@ -412,6 +415,7 @@ script:
     - contextPath: GitHub.Release.Published_at
       description: The date when the release was published.
       type: Date
+    arguments: []
   - arguments:
     - default: true
       defaultValue: 3 days
@@ -2410,12 +2414,14 @@ script:
       predefined:
       - raw
       - html
+      auto: PREDEFINED
     - defaultValue: 'false'
       description: 'Whether to create a file entry in the War Room with the file contents. Possible values are: "true" and "false". Default value is "false".'
       name: create_file_from_content
       predefined:
       - 'true'
       - 'false'
+      auto: PREDEFINED
     - description: The name of the organization.
       name: organization
     - description: The name of the repository.
@@ -3665,10 +3671,31 @@ script:
     - contextPath: GitHub.Workflow.updated_at
       description: Datetime the GitHub workflow was updated at.
       type: Date
-  dockerimage: demisto/auth-utils:1.0.0.3815669
+  - arguments:
+    - description: The full path to the file in the repository (e.g., path/to/file.txt).
+      name: path_to_file
+      required: true
+    - description: The branch to delete the file from (e.g., main or master).
+      name: branch_name
+      required: true
+    - defaultValue: Deleted file via Cortex XSOAR
+      description: The commit message for the file deletion.
+      name: commit_message
+    description: Used to delete a file on GitHub.
+    name: GitHub-delete-file
+    outputs:
+    - contextPath: GitHub.File.path
+      description: The path of the deleted file.
+      type: string
+    - contextPath: GitHub.File.sha
+      description: The SHA of the commit that deleted the file.
+      type: string
+    - contextPath: GitHub.File.deleted
+      description: True if the file was deleted.
+  dockerimage: demisto/auth-utils:1.0.0.5633969
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:

@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
 """ IMPORTS """
 import codecs
 import copy
@@ -58,6 +57,49 @@ PROJECTS_PREVIEW = "application/vnd.github.inertia-preview+json"
 DEFAULT_PAGE_SIZE = 50
 DEFAULT_PAGE_NUMBER = 1
 """ HELPER FUNCTIONS """
+
+
+def github_delete_file_command():
+
+    args = demisto.args()
+    commit_message = args.get('commit_message')
+    path_to_file = args.get('path_to_file')
+    branch = args.get('branch_name')
+
+    # 1. Get the file's current SHA
+    # Endpoint: GET /repos/{owner}/{repo}/contents/{path}
+    get_url = f'{FILE_SUFFIX}/{path_to_file}'
+    try:
+        response = http_request('GET', get_url)
+        file_sha = response.get('sha')
+    except Exception as e:
+        # Handle file not found (404) or other API errors
+        return_error(f'Could not retrieve file SHA for deletion: {e}')
+
+    # 2. Build the DELETE request body
+    delete_body = {
+        'message': commit_message,
+        'sha': file_sha,
+        'branch': branch
+    }
+
+    # 3. Delete the file by sending a DELETE request with the commit info
+    # Endpoint: DELETE /repos/{owner}/{repo}/contents/{path}
+    try:
+        delete_url = f'{FILE_SUFFIX}/{path_to_file}'
+        response = http_request('DELETE', delete_url, data=delete_body)
+
+        # Format the command result for XSOAR
+        hr_output = f"Successfully deleted file **{path_to_file}** from branch **{branch}**."
+        return_results(CommandResults(
+            readable_output=hr_output,
+            outputs_prefix='GitHub.File',
+            outputs_key_field='path',
+            outputs={'path': path_to_file, 'sha': response.get('commit', {}).get('sha'), 'deleted': True}
+        ))
+
+    except Exception as e:
+        return_error(f'Failed to delete file on GitHub: {e}')
 
 
 def create_jwt(private_key: str, integration_id: str):
