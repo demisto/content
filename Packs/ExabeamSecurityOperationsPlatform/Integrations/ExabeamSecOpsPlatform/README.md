@@ -342,27 +342,25 @@ Search for cases that match one or more search criteria. For example, you can se
 | ExabeamPlatform.Case.mitres.tacticKey | String | Key of the MITRE tactic associated with the case. | 
 | ExabeamPlatform.Case.mitres.technique | String | MITRE technique associated with the case. | 
 | ExabeamPlatform.Case.mitres.techniqueKey | String | Key of the MITRE technique associated with the case. | 
-### exabeam-get-threat-summary
+### exabeam-platform-create-case-note
 
 ***
-Retrieve the Copilot Threat Summary for an individual alert.
+Add a new note to the specified case.
 
 #### Base Command
 
-`exabeam-get-threat-summary`
+`exabeam-platform-create-case-note`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alertId | The alertId to fetch a threat summary for. | Required | 
+| case_id | Unique ID that identifies a case. | Required | 
+| note | Note text. | Required | 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| ExabeamPlatform.Alert.Summary | string | Threat Summary of the Exabeam Alert | 
-
+There is no context output for this command.
 ### exabeam-update-case-details
 
 ***
@@ -376,17 +374,56 @@ Update details for a specific case
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| caseId | ID of the case to be updated. | Required | 
-| alertDescription | Alert description in either plaintext or HTML format. Length &lt;=1024. | Optional | 
-| alertName | Alert name. Length &lt;= 128. | Optional | 
+| case_id | ID of the case to be updated. | Required | 
+| alert_description | Alert description in either plaintext or HTML format. Length &lt;=1024. | Optional | 
+| alert_name | Alert name. Length &lt;= 128. | Optional | 
 | priority | Alert priority. Possible values are: CRITICAL, HIGH, MEDIUM, LOW. | Optional | 
 | tags | Tags to group cases. | Optional | 
 | stage | Case stage. Possible values are: NEW, INVESTIGATION, REMEDIATION, CLOSED. | Optional | 
-| closedReason | Reason for case closure. Possible values are: Already Mitigated or Resolved, False Positive or Duplicate, Low Risk, Rule Misconfiguration, Policy or Setup Issue, Other. | Optional | 
-| supportingReason | Supporting reason for case closure. | Optional | 
+| closed_reason | Reason for case closure. Possible values are: Already Mitigated or Resolved, False Positive or Duplicate, Low Risk, Rule Misconfiguration, Policy or Setup Issue, Other. | Optional | 
+| supporting_reason | Supporting reason for case closure. | Optional | 
 | assignee | Assignee for the case. | Optional | 
 | queue | Queue for the case. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
+### exabeam-platform-list-case-notes
+
+***
+Retrieve a list of notes associated with the specified caseId.
+
+#### Base Command
+
+`exabeam-platform-list-case-notes`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | Unique ID that identifies a case. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### exabeam-get-threat-summary
+
+***
+Retrieve the Copilot Threat Summary for an individual alert.
+
+#### Base Command
+
+`exabeam-get-threat-summary`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The alertId to fetch a threat summary for. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ExabeamPlatform.Alert.Summary | string | Threat Summary of the Exabeam Alert | 
+

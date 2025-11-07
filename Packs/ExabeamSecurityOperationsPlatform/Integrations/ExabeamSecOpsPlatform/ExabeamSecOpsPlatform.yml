@@ -1,7 +1,4 @@
 category: Analytics & SIEM
-sectionorder:
-- Connect
-- Collect
 commonfields:
   id: ExabeamSecOpsPlatform
   version: -1
@@ -582,7 +579,7 @@ script:
     polling: true
   - arguments:
     - description: The alertId to fetch a threat summary for.
-      name: alertId
+      name: alert_id
       required: true
     description: Retrieve the Copilot Threat Summary for an individual alert.
     name: exabeam-get-threat-summary
@@ -592,12 +589,12 @@ script:
       type: string
   - arguments:
     - description: ID of the case to be updated.
-      name: caseId
+      name: case_id
       required: true
     - description: Alert description in either plaintext or HTML format. Length <=1024.
-      name: alertDescription
+      name: alert_description
     - description: Alert name. Length <= 128.
-      name: alertName
+      name: alert_name
     - auto: PREDEFINED
       description: Alert priority.
       name: priority
@@ -619,7 +616,7 @@ script:
       - CLOSED
     - auto: PREDEFINED
       description: Reason for case closure.
-      name: closedReason
+      name: closed_reason
       predefined:
       - Already Mitigated or Resolved
       - False Positive or Duplicate
@@ -628,13 +625,28 @@ script:
       - Policy or Setup Issue
       - Other
     - description: Supporting reason for case closure.
-      name: supportingReason
+      name: supporting_reason
     - description: Assignee for the case.
       name: assignee
     - description: Queue for the case.
       name: queue
     description: Update details for a specific case.
     name: exabeam-update-case-details
+  - arguments:
+    - description: Unique ID that identifies a case.
+      name: case_id
+      required: true
+    description: Retrieve a list of notes associated with the specified caseId.
+    name: exabeam-platform-list-case-notes
+  - arguments:
+    - description: Unique ID that identifies a case.
+      name: case_id
+      required: true
+    - description: Note text.
+      name: note
+      required: true
+    description: Add a new note to the specified case.
+    name: exabeam-platform-create-case-note
   runonce: false
   script: ''
   type: python

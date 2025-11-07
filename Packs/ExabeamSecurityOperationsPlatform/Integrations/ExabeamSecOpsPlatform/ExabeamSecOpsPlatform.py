@@ -544,7 +544,7 @@ def get_cases_in_batches(
     return all_cases, start_time, last_fetched_ids
 
 
-def filter_existing_cases(cases: list[dict], ids_exists: list[str], last_run: str) -> list:
+def filter_existing_cases(cases: list[dict], ids_exists: list[str]) -> list:
     """
     Filters out cases that already exist in the provided list of existing IDs.
 
@@ -555,6 +555,23 @@ def filter_existing_cases(cases: list[dict], ids_exists: list[str], last_run: st
     Returns:
         list[dict]: A list of case dictionaries that do not have IDs present in the `ids_exists` list.
     """
+    if ids_exists:
+        demisto.debug(f"Existing IDs in last_run: {ids_exists}")
+
+        filtered_cases = []
+        for case in cases:
+            case_id = case.get("caseId")
+            if case_id not in ids_exists:
+                filtered_cases.append(case)
+            else:
+                demisto.debug(f"Case with ID {case_id} already exists, skipping.")
+        demisto.debug(f"After filtered cases count: {len(filtered_cases)}")
+    else:
+        filtered_cases = cases
+    return filtered_cases
+
+
+def filter_existing_cases_lr(cases: list[dict], ids_exists: list[str], last_run: str) -> list:
     if ids_exists:
         demisto.debug(f"Existing IDs in last_run: {ids_exists}")
 
@@ -1001,12 +1018,11 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
     demisto.debug(f"Response contain {len(cases)} cases")
 
     ids_exists = last_run.get("last_ids", [])
-    cases = filter_existing_cases(cases, ids_exists, start_time)
-
-    last_run = update_last_run(cases, end_time)
+    cases_for_last_run = filter_existing_cases_lr(cases, ids_exists, start_time)
+    cases_for_incidents = filter_existing_cases(cases, ids_exists)
+    last_run = update_last_run(cases_for_last_run, end_time)
     demisto.debug(f"Last run after the fetch run: {last_run}")
-
-    incidents = format_incidents(cases)
+    incidents = format_incidents(cases_for_incidents)
     demisto.debug(f"After the fetch incidents count: {len(incidents)}")
     return incidents, last_run
 
@@ -1106,7 +1122,7 @@ def get_threat_summary(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: Command results containing a human-readable threat summary.
     """
-    data = json.dumps({"alertId": args.get("alertId")})
+    data = json.dumps({"alertId": args.get("alert_id")})
     full_url = f"{client._base_url}/threat-center/v1/alerts/threat-explainer/prompt"
     response = client.request(method="POST", full_url=full_url, data=data, timeout=60)
 
@@ -1130,8 +1146,19 @@ def update_case_details(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: Command results containing human-readable case details.
     """
-    caseId = args.pop('caseId')
-    request_data = json.dumps(args)
+    caseId = args.pop('case_id')
+    newargs = {
+        "alertDesciption": args.get("alert_desciption"),
+        "alertName": args.get("alert_name"),
+        "priority": args.get("priority"),
+        "tags": args.get("tags"),
+        "stage": args.get("stage"),
+        "closedReason": args.get("closed_reason"),
+        "supportingReason": args.get("supporting_reason"),
+        "assignee": args.get("assignee"),
+        "queue": args.get("queue")
+    }
+    request_data = json.dumps(newargs)
     full_url = f"{client._base_url}/threat-center/v2/cases/{caseId}"
     response = client.request(method="POST", full_url=full_url, data=request_data)
 
@@ -1139,6 +1166,61 @@ def update_case_details(client: Client, args: dict) -> CommandResults:
         outputs_prefix="ExabeamPlatform.Event",
         outputs=response,
         readable_output=tableToMarkdown(name="Case ID: " + caseId, t=response)
+    )
+
+
+def list_case_notes(client: Client, args: dict) -> CommandResults:
+    """
+    Implements `exabeam-platform-list-case-notes`; Retrieve a list of notes associated with the specified caseId.
+
+    Args:
+        client (Client): API client instance.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: Command results containing case notes
+    """
+    caseId = args.pop('case_id')
+    full_url = f"{client._base_url}/threat-center/v1/cases/{caseId}/notes"
+    response = client.request(method="GET", full_url=full_url)
+    keys_to_remove = ['case_id', 'is_deleted', 'is_edited', 'last_modified_timestamp', 'text_rt']
+    filtered_response = []
+
+    for i in response:
+        filtered_response.append({key: value for key, value in i.items() if key not in keys_to_remove})
+
+    return CommandResults(
+        outputs_prefix="ExabeamPlatform.Notes",
+        outputs=response,
+        readable_output=tableToMarkdown(name="Case Notes:" + caseId, t=filtered_response)
+    )
+
+
+def create_case_note(client: Client, args: dict) -> CommandResults:
+    """
+    Implements `exabeam-platform-create-case-note`; Add a new note to the specified case.
+
+    Args:
+        client (Client): API client instance.
+        args (dict[str, Any]): The command arguments.
+
+    Returns:
+        CommandResults: Command results showing the new case note
+    """
+    caseId = args.pop('case_id')
+    request_data = json.dumps(args)
+    full_url = f"{client._base_url}/threat-center/v1/cases/{caseId}/notes"
+    response = client.request(method="POST", full_url=full_url, data=request_data)
+    keys_to_remove = ['case_id', 'is_deleted', 'is_edited', 'last_modified_timestamp', 'text_rt']
+    filtered_response = []
+
+    for i in response:
+        filtered_response.append({key: value for key, value in i.items() if key not in keys_to_remove})
+
+    return CommandResults(
+        outputs_prefix="ExabeamPlatform.Notes",
+        outputs=response,
+        readable_output=tableToMarkdown(name="Case Notes:" + caseId, t=filtered_response)
     )
 
 
@@ -1204,6 +1286,10 @@ def main() -> None:  # pragma: no cover
             return_results(get_threat_summary(client, args))
         elif command == "exabeam-update-case-details":
             return_results(update_case_details(client, args))
+        elif command == "exabeam-platform-list-case-notes":
+            return_results(list_case_notes(client, args))
+        elif command == "exabeam-platform-create-case-note":
+            return_results(create_case_note(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not supported")
 
