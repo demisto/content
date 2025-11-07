@@ -5,7 +5,9 @@ from CommonServerPython import *  # noqa: F401
 def main():
     try:
         incident = demisto.incident()
-        signal_id = incident.get("CustomFields", {}).get("datadogsecuritysignalid")
+        signal_id = incident.get("CustomFields", {}).get(
+            "datadogcloudsiemv2securitysignalid"
+        )
 
         if not signal_id:
             return_error("No Datadog Security Signal ID found in incident.")
@@ -20,7 +22,9 @@ def main():
         if not signal:
             return_error("No signal data returned from Datadog.")
 
-        mapped_data = demisto.mapObject(signal, "Datadog Cloud SIEM - Incoming Mapper", "DatadogCloudSIEM")
+        mapped_data = demisto.mapObject(
+            signal, "Datadog Cloud SIEM V2 - Incoming Mapper", "DatadogCloudSIEMV2"
+        )
 
         custom_fields = {}
         for key, value in mapped_data.items():
@@ -45,7 +49,11 @@ def main():
                     "closeInvestigation",
                     {"closeReason": close_reason, "closeNotes": close_notes},
                 )
-            return_results(CommandResults(readable_output="Successfully synced incident fields from Datadog."))
+            return_results(
+                CommandResults(
+                    readable_output="Successfully synced incident fields from Datadog."
+                )
+            )
         else:
             return_results(CommandResults(readable_output="No fields to update."))
 

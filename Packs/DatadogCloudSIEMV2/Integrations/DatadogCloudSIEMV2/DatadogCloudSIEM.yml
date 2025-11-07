@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: DatadogCloudSIEM
+  id: DatadogCloudSIEMV2
   version: -1
 sectionOrder:
   - Connect
@@ -89,16 +89,16 @@ configuration:
     name: fetch_query
     type: 0
     required: false
-description: Datadog Cloud SIEM integration for XSOAR provides security signal management capabilities. This integration allows you to retrieve, filter, and manage security signals from Datadog's Cloud SIEM platform, enabling security teams to investigate threats, manage signal triage states, and assign signals to team members.
-display: Datadog Cloud SIEM
-name: DatadogCloudSIEM
+description: Datadog Cloud SIEM V2 integration for XSOAR provides security signal management capabilities. This integration allows you to retrieve, filter, and manage security signals from Datadog's Cloud SIEM platform, enabling security teams to investigate threats, manage signal triage states, and assign signals to team members.
+display: Datadog Cloud SIEM V2
+name: DatadogCloudSIEMV2
 script:
   commands:
     - arguments:
         - description: The unique identifier of the security signal to retrieve. If not provided, will attempt to get it from the current incident.
           name: signal_id
       name: datadog-signal-get
-      description: Get a specific security signal by ID from Datadog Cloud SIEM.
+      description: Get a specific security signal by ID from Datadog Cloud SIEM V2.
       outputs:
         - contextPath: Datadog.SecuritySignal.id
           description: The unique identifier of the security signal.
@@ -193,7 +193,7 @@ script:
         - description: Maximum number of results to return. If page_size is specified, limit is ignored. Default is 50.
           name: limit
       name: datadog-signal-list
-      description: Get a list of security signals from Datadog Cloud SIEM with optional filtering and pagination.
+      description: Get a list of security signals from Datadog Cloud SIEM V2 with optional filtering and pagination.
       outputs:
         - contextPath: Datadog.SecuritySignal.id
           description: The unique identifier of the security signal.
@@ -279,7 +279,7 @@ script:
         - description: Comment about the state change (used when changing state to archived).
           name: archive_comment
       name: datadog-signal-update
-      description: Update a security signal's assignee and/or state in Datadog Cloud SIEM. Can update assignee only, state only, or both in a single command.
+      description: Update a security signal's assignee and/or state in Datadog Cloud SIEM V2. Can update assignee only, state only, or both in a single command.
       outputs:
         - contextPath: Datadog.SecuritySignal.id
           description: The unique identifier of the security signal.
@@ -342,7 +342,7 @@ script:
         - description: The unique identifier of the security rule to retrieve. If not provided, will attempt to get it from the current incident.
           name: rule_id
       name: datadog-rule-get
-      description: Get a specific security monitoring rule by ID from Datadog Cloud SIEM.
+      description: Get a specific security monitoring rule by ID from Datadog Cloud SIEM V2.
       outputs:
         - contextPath: Datadog.SecurityRule.id
           description: The unique identifier of the security rule.
@@ -399,7 +399,7 @@ script:
           name: comment
           required: true
       name: datadog-signal-comment-add
-      description: Add a comment to a security signal in Datadog Cloud SIEM.
+      description: Add a comment to a security signal in Datadog Cloud SIEM V2.
       outputs:
         - contextPath: Datadog.SecurityComment.id
           description: The unique identifier of the comment.
@@ -423,7 +423,7 @@ script:
         - description: The event ID of the security signal to list comments for. If not provided, will attempt to get it from the current incident.
           name: event_id
       name: datadog-signal-comment-list
-      description: List all comments for a security signal in Datadog Cloud SIEM.
+      description: List all comments for a security signal in Datadog Cloud SIEM V2.
       outputs:
         - contextPath: Datadog.SecurityComment.id
           description: The unique identifier of the comment.
@@ -466,7 +466,7 @@ script:
         - description: Maximum number of results to return. Default is 50.
           name: limit
       name: datadog-logs-query
-      description: Query logs in Datadog Cloud SIEM with optional filtering for security investigations.
+      description: Query logs in Datadog Cloud SIEM V2 with optional filtering for security investigations.
       outputs:
         - contextPath: Datadog.Log.id
           description: The unique identifier of the log entry.
@@ -504,8 +504,8 @@ script:
   script: "-"
   subtype: python3
   type: python
-defaultclassifier: Datadog Cloud SIEM
-defaultmapperin: Datadog Cloud SIEM - Incoming Mapper
+defaultclassifier: Datadog Cloud SIEM V2
+defaultmapperin: Datadog Cloud SIEM V2 - Incoming Mapper
 tests:
-  - DatadogCloudSIEM
+  - DatadogCloudSIEMV2
 fromversion: 6.8.0

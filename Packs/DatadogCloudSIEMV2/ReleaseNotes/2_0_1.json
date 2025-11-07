@@ -1,4 +1,0 @@
-{
-  "breakingChanges": true,
-  "breakingChangesNotes": "This version refocuses the integration exclusively on Cloud SIEM functionality. The integration now correctly maps Datadog Cloud SIEM Security Signals to XSOAR incidents instead of Datadog Incident Management incidents. Users of version 1.x must reconfigure the integration to use security signals instead of incidents and update any playbooks or automations that depend on removed commands. The following commands have been removed: datadog-event-create, datadog-event-list, datadog-tag-list, datadog-host-tag-create, datadog-host-tag-get, datadog-host-tag-update, datadog-host-tag-delete, datadog-active-metric-list, datadog-metric-search, datadog-metric-metadata-get, datadog-metric-metadata-update, datadog-time-series-point-query, datadog-incident-create, datadog-incident-delete, datadog-incident-update, and datadog-incident-list."
-}

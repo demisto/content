@@ -1,9 +1,9 @@
 {
-    "id": "Datadog Cloud SIEM",
-    "name": "Datadog Cloud SIEM",
+    "id": "Datadog Cloud SIEM V2",
+    "name": "Datadog Cloud SIEM V2",
     "type": "classification",
-    "description": "Classifier for Datadog Cloud SIEM security signals",
-    "defaultIncidentType": "Datadog Cloud SIEM",
+    "description": "Classifier for Datadog Cloud SIEM V2 security signals",
+    "defaultIncidentType": "Datadog Cloud SIEM V2",
     "keyTypeMap": {},
     "transformer": {},
     "version": -1,

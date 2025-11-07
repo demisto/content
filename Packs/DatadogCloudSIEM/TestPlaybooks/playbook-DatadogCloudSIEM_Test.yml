@@ -1,0 +1,3052 @@
+id: DatadogCloudSIEM
+version: -1
+name: DatadogCloudSIEM
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 40c155fa-3b0a-4f6e-847b-9ddafcdce11a
+    type: start
+    task:
+      id: 40c155fa-3b0a-4f6e-847b-9ddafcdce11a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: 'This playbook verifies the output context.'
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 87924d8a-f195-4af7-8446-ff3db1cebf58
+    type: regular
+    task:
+      id: 87924d8a-f195-4af7-8446-ff3db1cebf58
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 0f238ab7-2531-43af-81a3-e36bc586da2a
+    type: regular
+    task:
+      id: 0f238ab7-2531-43af-81a3-e36bc586da2a
+      version: -1
+      name: datadog-event-create
+      script: DatadogCloudSIEM|||datadog-event-create
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      text:
+        simple: '"EventText"'
+      title:
+        simple: '"EventTitle"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 3aff0eae-3b37-46d4-8d03-5ea8949b49c7
+    type: condition
+    task:
+      id: 3aff0eae-3b37-46d4-8d03-5ea8949b49c7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.date_happened
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.date_happened
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.priority
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.text
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.text
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.tags
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.tags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.url
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.status
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.title
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.alert_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.alert_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.device_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.device_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.source_type_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.source_type_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.host
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.host
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b0da25b8-b6d5-40f4-881e-598343b77e30
+    type: regular
+    task:
+      id: b0da25b8-b6d5-40f4-881e-598343b77e30
+      version: -1
+      name: datadog-event-list
+      script: DatadogCloudSIEM|||datadog-event-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      limit:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: acae8deb-dcf0-4d40-8edf-618dafa43a79
+    type: condition
+    task:
+      id: acae8deb-dcf0-4d40-8edf-618dafa43a79
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.alert_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.alert_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.date_happened
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.date_happened
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.device_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.device_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.priority
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.text
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.text
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.tags
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.tags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.url
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.status
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.host
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.host
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.title
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Event.source_type_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Event.source_type_name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c284b9da-6cbc-4411-858e-6426bb34e468
+    type: regular
+    task:
+      id: c284b9da-6cbc-4411-858e-6426bb34e468
+      version: -1
+      name: datadog-tag-list
+      script: DatadogCloudSIEM|||datadog-tag-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      limit:
+        simple: "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: f770c16f-3d05-4014-8acb-82f442b35126
+    type: condition
+    task:
+      id: f770c16f-3d05-4014-8acb-82f442b35126
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Tag
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Tag
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.HostTag
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.HostTag
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: f23b61dd-2f49-4075-85d8-d68abe4b20f0
+    type: regular
+    task:
+      id: f23b61dd-2f49-4075-85d8-d68abe4b20f0
+      version: -1
+      name: datadog-host-tag-create
+      script: DatadogCloudSIEM|||datadog-host-tag-create
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      host_name:
+        simple: TestHost2
+      tags:
+        simple: '"env:prod"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 276efb31-10c2-4c55-8178-10778b2cfecb
+    type: condition
+    task:
+      id: 276efb31-10c2-4c55-8178-10778b2cfecb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Tag
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Tag
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.HostTag
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.HostTag
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 2d60657f-f918-43b0-85e6-1f1703d17cae
+    type: regular
+    task:
+      id: 2d60657f-f918-43b0-85e6-1f1703d17cae
+      version: -1
+      name: datadog-host-tag-get
+      script: DatadogCloudSIEM|||datadog-host-tag-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      host_name:
+        simple: TestHost2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 6d9f9e4f-0f14-488d-8a95-42a7863d4e17
+    type: condition
+    task:
+      id: 6d9f9e4f-0f14-488d-8a95-42a7863d4e17
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Tag
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Tag
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.HostTag
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.HostTag
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d18d5649-0478-41b5-8a7b-801e377783e6
+    type: regular
+    task:
+      id: d18d5649-0478-41b5-8a7b-801e377783e6
+      version: -1
+      name: datadog-host-tag-update
+      script: DatadogCloudSIEM|||datadog-host-tag-update
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      host_name:
+        simple: TestHost2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 55863d3b-e10f-42a5-81f3-0fdcfef4d77d
+    type: condition
+    task:
+      id: 55863d3b-e10f-42a5-81f3-0fdcfef4d77d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Tag
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Tag
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.HostTag
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.HostTag
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: fadf559e-62ab-4a50-8d48-741ca8e44e7f
+    type: regular
+    task:
+      id: fadf559e-62ab-4a50-8d48-741ca8e44e7f
+      version: -1
+      name: datadog-host-tag-delete
+      script: DatadogCloudSIEM|||datadog-host-tag-delete
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      host_name:
+        simple: TestHost2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 3da264e7-bbfb-4a05-8847-e7dcd89394fe
+    type: regular
+    task:
+      id: 3da264e7-bbfb-4a05-8847-e7dcd89394fe
+      version: -1
+      name: datadog-active-metric-list
+      script: DatadogCloudSIEM|||datadog-active-metric-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      from:
+        simple: '"-2days"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 065305c9-6aca-4d93-8a44-6a086f7a6f59
+    type: condition
+    task:
+      id: 065305c9-6aca-4d93-8a44-6a086f7a6f59
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Metric.from
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Metric.from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Metric
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Metric
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: f317ce61-e658-44f8-8323-fdc7e81586ee
+    type: regular
+    task:
+      id: f317ce61-e658-44f8-8323-fdc7e81586ee
+      version: -1
+      name: datadog-metric-search
+      script: DatadogCloudSIEM|||datadog-metric-search
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      query:
+        simple: '"datadog.agent.python.version"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: f639bbf5-1151-482a-8b10-0a9d1bbae96a
+    type: condition
+    task:
+      id: f639bbf5-1151-482a-8b10-0a9d1bbae96a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Metric.metric_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Metric.metric_name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: b317fdd0-e2eb-46d9-8739-84b5dc3597d6
+    type: regular
+    task:
+      id: b317fdd0-e2eb-46d9-8739-84b5dc3597d6
+      version: -1
+      name: datadog-metric-metadata-get
+      script: DatadogCloudSIEM|||datadog-metric-metadata-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      metric_name:
+        simple: '"system.io.block_in"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 646d57c3-424d-49ad-8fc5-521566c047d5
+    type: condition
+    task:
+      id: 646d57c3-424d-49ad-8fc5-521566c047d5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.description
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.integration
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.integration
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.per_unit
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.per_unit
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.short_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.short_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.statsd_interval
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.statsd_interval
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.unit
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.unit
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.metric_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.metric_name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: adf88662-81ad-42ca-8e0b-0d1c1a225456
+    type: regular
+    task:
+      id: adf88662-81ad-42ca-8e0b-0d1c1a225456
+      version: -1
+      name: datadog-metric-metadata-update
+      script: DatadogCloudSIEM|||datadog-metric-metadata-update
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      metric_name:
+        simple: '"system.io.block_in"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 74a8604d-48c4-4589-8fcf-c8fdf122ef0e
+    type: condition
+    task:
+      id: 74a8604d-48c4-4589-8fcf-c8fdf122ef0e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.description
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.per_unit
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.per_unit
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.short_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.short_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.statsd_interval
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.statsd_interval
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.unit
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.unit
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.metric_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.MetricMetadata.metric_name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 5a9b103a-a37d-4a49-80a1-36627ccbd773
+    type: regular
+    task:
+      id: 5a9b103a-a37d-4a49-80a1-36627ccbd773
+      version: -1
+      name: datadog-incident-create
+      script: DatadogCloudSIEM|||datadog-incident-create
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      customer_impacted:
+        simple: "False"
+      title:
+        simple: '"incident-test1"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: ebda043b-e00b-4887-8fb6-a038bfe180ee
+    type: condition
+    task:
+      id: ebda043b-e00b-4887-8fb6-a038bfe180ee
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.public_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.public_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.resolved
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.resolved
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.title
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_scope
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_scope
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_start
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_start
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_end
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_end
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impacted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.notification_handles.display_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.notification_handles.display_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.notification_handles.handle
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.notification_handles.handle
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.created
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.modified
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.detected
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.detected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_duration
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_duration
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_detect
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_detect
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_repair
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_repair
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_internal_response
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_internal_response
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_resolve
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_resolve
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.severity.value
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.severity.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.state.value
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.state.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.detection_method.value
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.detection_method.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.root_cause.value
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.root_cause.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.summary.value
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.summary.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.created_by_user.data.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.created_by_user.data.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.integrations.data.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.integrations.data.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.last_modified_by_user.data.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.last_modified_by_user.data.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.commander_user.data.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.commander_user.data.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.created_at
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.handle
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.handle
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.icon
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.icon
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.modified_at
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.modified_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.status
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.title
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.org.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.org.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.other_orgs.id
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.other_orgs.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.other_users.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.other_users.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.roles.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.roles.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 59cffbf4-3a40-4cf8-800b-5b35f4b7f7b6
+    type: regular
+    task:
+      id: 59cffbf4-3a40-4cf8-800b-5b35f4b7f7b6
+      version: -1
+      name: datadog-incident-delete
+      script: DatadogCloudSIEM|||datadog-incident-delete
+      type: regular
+      iscommand: true
+      brand: DatadogCloudSIEM
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      incident_id:
+        simple: ${Datadog.Incident.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 032cc32a-b0c9-4715-8183-44645452024c
+    type: regular
+    task:
+      id: 032cc32a-b0c9-4715-8183-44645452024c
+      version: -1
+      name: datadog-incident-update
+      script: DatadogCloudSIEM|||datadog-incident-update
+      type: regular
+      iscommand: true
+      brand: DatadogCloudSIEM
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      incident_id:
+        simple: ${Datadog.Incident.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: a080f9fe-f45b-46d9-8942-8fe69d65e760
+    type: condition
+    task:
+      id: a080f9fe-f45b-46d9-8942-8fe69d65e760
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.public_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.public_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.title
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.resolved
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.resolved
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_scope
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_scope
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_start
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_start
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_end
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_end
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impacted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.notification_handles.handle
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.notification_handles.handle
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.notification_handles.display_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.notification_handles.display_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.created
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.modified
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.detected
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.detected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_duration
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_duration
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_detect
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_detect
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_repair
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_repair
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_internal_response
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_internal_response
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_resolve
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_resolve
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.severity.value
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.severity.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.state.value
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.state.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.detection_method.value
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.detection_method.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.root_cause.value
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.root_cause.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.summary.value
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.summary.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.created_by_user.data.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.created_by_user.data.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.last_modified_by_user.data.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.last_modified_by_user.data.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.commander_user.data.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.commander_user.data.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.created_at
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.handle
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.handle
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.icon
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.icon
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.modified_at
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.modified_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.status
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.title
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.org.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.org.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.other_orgs.id
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.other_orgs.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.other_users.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.other_users.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.roles.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.roles.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 849c84fd-9142-4e6c-81ce-3912ba3d72c4
+    type: regular
+    task:
+      id: 849c84fd-9142-4e6c-81ce-3912ba3d72c4
+      version: -1
+      name: datadog-incident-list
+      script: DatadogCloudSIEM|||datadog-incident-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      limit:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 847223d1-52e7-48f0-8343-2a37f4e24988
+    type: condition
+    task:
+      id: 847223d1-52e7-48f0-8343-2a37f4e24988
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.public_id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.public_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.resolved
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.resolved
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.title
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_scope
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_scope
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_start
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_start
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_end
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_end
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impacted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.notification_handles.display_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.notification_handles.display_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.notification_handles.handle
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.notification_handles.handle
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.created
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.modified
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.detected
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.detected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_duration
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.customer_impact_duration
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_detect
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_detect
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_repair
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_repair
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_internal_response
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_internal_response
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_resolve
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.time_to_resolve
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.severity.value
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.severity.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.state.value
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.state.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.detection_method.value
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.detection_method.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.root_cause.value
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.root_cause.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.summary.value
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.attributes.fields.summary.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.created_by_user.data.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.created_by_user.data.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.integrations.data.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.integrations.data.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.last_modified_by_user.data.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.last_modified_by_user.data.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.commander_user.data.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.relationships.commander_user.data.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.created_at
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.created_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.handle
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.handle
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.icon
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.icon
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.modified_at
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.modified_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.status
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.title
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.attributes.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.org.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.org.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.other_orgs.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.other_orgs.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.other_users.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.other_users.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.roles.id
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.Incident.included.relationships.roles.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 414c8b3f-9b4c-4a26-80f5-ec9e34d85f67
+    type: regular
+    task:
+      id: 414c8b3f-9b4c-4a26-80f5-ec9e34d85f67
+      version: -1
+      name: datadog-time-series-point-query
+      script: DatadogCloudSIEM|||datadog-time-series-point-query
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      from:
+        simple: '"-2days"'
+      query:
+        simple: '"system.cpu.idle"'
+      to:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 54e8e5be-c6bc-4f1b-84fa-c3ec26438cc2
+    type: condition
+    task:
+      id: 54e8e5be-c6bc-4f1b-84fa-c3ec26438cc2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.from_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.from_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.error
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.error
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.group_by
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.group_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.message
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.message
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.query
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.query
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.res_type
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.res_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.aggr
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.aggr
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.display_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.display_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.end
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.end
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.expression
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.expression
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.interval
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.interval
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.length
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.length
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.metric
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.metric
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.pointlist
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.pointlist
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.query_index
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.query_index
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.scope
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.scope
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.start
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.start
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.tag_set
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.tag_set
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.unit.family
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.unit.family
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.unit.name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.unit.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.unit.plural
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.unit.plural
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.unit.scale_factor
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.unit.scale_factor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.unit.short_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.series.unit.short_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.status
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.to_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: Datadog.TimeSeriesPoint.to_date
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 9dbcebc5-ca4d-4290-86da-19cf06c75065
+    type: title
+    task:
+      id: 9dbcebc5-ca4d-4290-86da-19cf06c75065
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 6415,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.8.0
+description: This playbook verifies the command results.
