@@ -329,6 +329,7 @@ fromversion: 6.1.0
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)
 defaultclassifier: RF - Classifier
