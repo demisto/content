@@ -2603,7 +2603,7 @@ Get The latest AMI.
 | AWS.EC2.Images.Platform | string | The value is Windows for Windows AMIs; otherwise blank. |
 | AWS.EC2.Images.ProductCodes.ProductCodeId | string | The product code. |
 | AWS.EC2.Images.ProductCodes.ProductCodeType | string | The type of product code. |
-| AWS.EC2.Images.RamdiskId | string | The RAM disk associated with the image, if any. Only applicable for machine images. | 
+| AWS.EC2.Images.RamdiskId | string | The RAM disk associated with the image, if any. Only applicable for machine images. |
 | AWS.EC2.Images.State | string | The current state of the AMI. If the state is available , the image is successfully registered and can be used to launch an instance. | 
 | AWS.EC2.Images.BlockDeviceMappings.DeviceName | string | The device name \(for example, /dev/sdh or xvdh \). |
 | AWS.EC2.Images.BlockDeviceMappings.VirtualName | string | The virtual device name \(ephemeral N\). |
