@@ -2604,7 +2604,7 @@ Get The latest AMI.
 | AWS.EC2.Images.ProductCodes.ProductCodeId | string | The product code. |
 | AWS.EC2.Images.ProductCodes.ProductCodeType | string | The type of product code. |
 | AWS.EC2.Images.RamdiskId | string | The RAM disk associated with the image, if any. Only applicable for machine images. |
-| AWS.EC2.Images.State | string | The current state of the AMI. If the state is available , the image is successfully registered and can be used to launch an instance. | 
+| AWS.EC2.Images.State | string | The current state of the AMI. If the state is available , the image is successfully registered and can be used to launch an instance. |
 | AWS.EC2.Images.BlockDeviceMappings.DeviceName | string | The device name \(for example, /dev/sdh or xvdh \). |
 | AWS.EC2.Images.BlockDeviceMappings.VirtualName | string | The virtual device name \(ephemeral N\). |
 | AWS.EC2.Images.BlockDeviceMappings.Ebs.Encrypted | boolean | Indicates whether the EBS volume is encrypted. |
@@ -2727,6 +2727,7 @@ Adds or overwrites one or more tags for the specified Amazon EC2 resource or res
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-s3-bucket-website-get
 
 ***
@@ -2752,6 +2753,7 @@ Returns the website configuration for a bucket.
 | AWS.S3-Buckets.BucketWebsite.IndexDocument | Object | The name of the index document for the website \(for example index.html\). |
 | AWS.S3-Buckets.BucketWebsite.RedirectAllRequestsTo | Object | Specifies the redirect behavior of all requests to a website endpoint of an Amazon S3 bucket. |
 | AWS.S3-Buckets.BucketWebsite.RoutingRules | Array | Rules that define when a redirect is applied and the redirect behavior. |
+
 ### aws-s3-bucket-acl-get
 
 ***
