@@ -2576,58 +2576,59 @@ Get The latest AMI.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region where instances will be created. Must be a valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| executable_users | Scopes the images by users with explicit launch permissions. | Optional | 
-| filters | One or more filters. Filters must be separated by a semicolon (;) and specified using the format "key=key,values=val". Refer to the AWS documentation for detailed filter options. | Optional | 
-| owners | Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon \| aws-marketplace \| microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership. Separated by ','. | Optional | 
-| image_ids | The image IDs separated by ','. | Optional | 
-| include_deprecated | Specifies whether to include deprecated AMIs. Possible values are: true, false. | Optional | 
-| include_disabled | Specifies whether to include disabled AMIs. Possible values are: true, false. | Optional | 
-| limit | The maximum number of items to return for this request. To get the next page of items, make another request with the token returned in the output. | Optional | 
-| next_token | The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request. | Optional | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region where instances will be created. Must be a valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| executable_users | Scopes the images by users with explicit launch permissions. | Optional |
+| filters | One or more filters. Filters must be separated by a semicolon (;) and specified using the format "key=key,values=val". Refer to the AWS documentation for detailed filter options. | Optional |
+| owners | Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon \| aws-marketplace \| microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership. Separated by ','. | Optional |
+| image_ids | The image IDs separated by ','. | Optional |
+| include_deprecated | Specifies whether to include deprecaed AMIs. Possible values are: true, false. | Optional |
+
+| include_disabled | Specifies whether to include disabled AMIs. Possible values are: true, false. | Optional |
+| limit | The maximum number of items to return for this request. To get the next page of items, make another request with the token returned in the output. | Optional |
+| next_token | The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.Images.Architecture | string | The architecture of the image. | 
-| AWS.EC2.Images.CreationDate | date | The date and time the image was created. | 
-| AWS.EC2.Images.ImageId | string | The ID of the AMI. | 
-| AWS.EC2.Images.ImageLocation | string | The location of the AMI. | 
-| AWS.EC2.Images.ImageType | string | The type of image. | 
-| AWS.EC2.Images.Public | boolean | Indicates whether the image has public launch permissions. The value is true if this image has public launch permissions or false if it has only implicit and explicit launch permissions. | 
-| AWS.EC2.Images.KernelId | string | The kernel associated with the image, if any. Only applicable for machine images. | 
-| AWS.EC2.Images.OwnerId | string | The AWS account ID of the image owner. | 
-| AWS.EC2.Images.Platform | string | The value is Windows for Windows AMIs; otherwise blank. | 
-| AWS.EC2.Images.ProductCodes.ProductCodeId | string | The product code. | 
-| AWS.EC2.Images.ProductCodes.ProductCodeType | string | The type of product code. | 
+| AWS.EC2.Images.Architecture | string | The architecture of the image. |
+| AWS.EC2.Images.CreationDate | date | The date and time the image was created. |
+| AWS.EC2.Images.ImageId | string | The ID of the AMI. |
+| AWS.EC2.Images.ImageLocation | string | The location of the AMI. |
+| AWS.EC2.Images.ImageType | string | The type of image. |
+| AWS.EC2.Images.Public | boolean | Indicates whether the image has public launch permissions. The value is true if this image has public launch permissions or false if it has only implicit and explicit launch permissions. |
+| AWS.EC2.Images.KernelId | string | The kernel associated with the image, if any. Only applicable for machine images. |
+| AWS.EC2.Images.OwnerId | string | The AWS account ID of the image owner. |
+| AWS.EC2.Images.Platform | string | The value is Windows for Windows AMIs; otherwise blank. |
+| AWS.EC2.Images.ProductCodes.ProductCodeId | string | The product code. |
+| AWS.EC2.Images.ProductCodes.ProductCodeType | string | The type of product code. |
 | AWS.EC2.Images.RamdiskId | string | The RAM disk associated with the image, if any. Only applicable for machine images. | 
 | AWS.EC2.Images.State | string | The current state of the AMI. If the state is available , the image is successfully registered and can be used to launch an instance. | 
-| AWS.EC2.Images.BlockDeviceMappings.DeviceName | string | The device name \(for example, /dev/sdh or xvdh \). | 
-| AWS.EC2.Images.BlockDeviceMappings.VirtualName | string | The virtual device name \(ephemeral N\). | 
-| AWS.EC2.Images.BlockDeviceMappings.Ebs.Encrypted | boolean | Indicates whether the EBS volume is encrypted. | 
-| AWS.EC2.Images.BlockDeviceMappings.Ebs.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted on instance termination. | 
-| AWS.EC2.Images.BlockDeviceMappings.Ebs.Iops | number | The number of I/O operations per second \(IOPS\) that the volume supports. | 
-| AWS.EC2.Images.BlockDeviceMappings.Ebs.KmsKeyId | string | Identifier \(key ID, key alias, ID ARN, or alias ARN\) for a user-managed CMK under which the EBS volume is encrypted. | 
-| AWS.EC2.Images.BlockDeviceMappings.Ebs.SnapshotId | string | The ID of the snapshot. | 
-| AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeSize | number | The size of the volume, in GiB. | 
-| AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeType | string | The volume type. | 
-| AWS.EC2.Images.BlockDeviceMappings.NoDevice | string | Suppresses the specified device included in the block device mapping of the AMI. | 
-| AWS.EC2.Images.Description | string | The description of the AMI that was provided during image creation. | 
-| AWS.EC2.Images.EnaSupport | boolean | Specifies whether enhanced networking with ENA is enabled. | 
-| AWS.EC2.Images.Hypervisor | string | The hypervisor type of the image. | 
-| AWS.EC2.Images.ImageOwnerAlias | string | The AWS account alias \(for example, amazon , self \) or the AWS account ID of the AMI owner. | 
-| AWS.EC2.Images.Name | string | The name of the AMI that was provided during image creation. | 
-| AWS.EC2.Images.RootDeviceName | string | The device name of the root device volume \(for example, /dev/sda1\). | 
-| AWS.EC2.Images.RootDeviceType | string | The type of root device used by the AMI. The AMI can use an EBS volume or an instance store volume. | 
-| AWS.EC2.Images.SriovNetSupport | string | Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled. | 
-| AWS.EC2.Images.StateReason.Code | string | The reason code for the state change. | 
-| AWS.EC2.Images.StateReason.Message | string | The message for the state change. | 
-| AWS.EC2.Images.Tags.Key | string | The key of the tag. | 
-| AWS.EC2.Images.Tags.Value | string | The value of the tag. | 
-| AWS.EC2.Images.VirtualizationType | string | The type of virtualization of the AMI. | 
-| AWS.EC2.Images.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
+| AWS.EC2.Images.BlockDeviceMappings.DeviceName | string | The device name \(for example, /dev/sdh or xvdh \). |
+| AWS.EC2.Images.BlockDeviceMappings.VirtualName | string | The virtual device name \(ephemeral N\). |
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.Encrypted | boolean | Indicates whether the EBS volume is encrypted. |
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.DeleteOnTermination | boolean | Indicates whether the EBS volume is deleted on instance termination. |
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.Iops | number | The number of I/O operations per second \(IOPS\) that the volume supports. |
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.KmsKeyId | string | Identifier \(key ID, key alias, ID ARN, or alias ARN\) for a user-managed CMK under which the EBS volume is encrypted. |
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.SnapshotId | string | The ID of the snapshot. |
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeSize | number | The size of the volume, in GiB. |
+| AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeType | string | The volume type. |
+| AWS.EC2.Images.BlockDeviceMappings.NoDevice | string | Suppresses the specified device included in the block device mapping of the AMI. |
+| AWS.EC2.Images.Description | string | The description of the AMI that was provided during image creation. |
+| AWS.EC2.Images.EnaSupport | boolean | Specifies whether enhanced networking with ENA is enabled. |
+| AWS.EC2.Images.Hypervisor | string | The hypervisor type of the image. |
+| AWS.EC2.Images.ImageOwnerAlias | string | The AWS account alias \(for example, amazon , self \) or the AWS account ID of the AMI owner. |
+| AWS.EC2.Images.Name | string | The name of the AMI that was provided during image creation. |
+| AWS.EC2.Images.RootDeviceName | string | The device name of the root device volume \(for example, /dev/sda1\). |
+| AWS.EC2.Images.RootDeviceType | string | The type of root device used by the AMI. The AMI can use an EBS volume or an instance store volume. |
+| AWS.EC2.Images.SriovNetSupport | string | Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled. |
+| AWS.EC2.Images.StateReason.Code | string | The reason code for the state change. |
+| AWS.EC2.Images.StateReason.Message | string | The message for the state change. |
+| AWS.EC2.Images.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Images.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Images.VirtualizationType | string | The type of virtualization of the AMI. |
+| AWS.EC2.Images.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
 
 ### aws-ec2-network-acl-create
 
@@ -2642,35 +2643,35 @@ Creates a network ACL in a VPC. Network ACLs provide an optional layer of securi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| vpc_id | The ID of the VPC. | Required | 
-| client_token | Unique, case-sensitive identifier that you provide to ensure the idempotency of the request. | Optional | 
-| tag_specifications | The tags to assign to the network ACL. Must be separated by a semicolon (;) and specified using the format "key=key,values=val". | Optional | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| vpc_id | The ID of the VPC. | Required |
+| client_token | Unique, case-sensitive identifier that you provide to ensure the idempotency of the request. | Optional |
+| tag_specifications | The tags to assign to the network ACL. Must be separated by a semicolon (;) and specified using the format "key=key,values=val". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.VpcId.NetworkAcl.Associations.NetworkAclAssociationId | String | The ID of the association between a network ACL and a subnet. | 
-| AWS.EC2.VpcId.NetworkAcl.Associations.NetworkAclId | String | The ID of the network ACL. | 
-| AWS.EC2.VpcId.NetworkAcl.Associations.SubnetId | String | The ID of the subnet. | 
-| AWS.EC2.VpcId.NetworkAcl.Entries.CidrBlock | String | The IPv4 network range to allow or deny, in CIDR notation. | 
-| AWS.EC2.VpcId.NetworkAcl.Entries.Egress | Boolean | Indicates whether the rule is an egress rule \(applied to traffic leaving the subnet\). | 
-| AWS.EC2.VpcId.NetworkAcl.Entries.IcmpTypeCode.Code | Number | The ICMP code. A value of -1 means all codes for the specified ICMP type. | 
-| AWS.EC2.VpcId.NetworkAcl.Entries.IcmpTypeCode.Type | Number | The ICMP type. A value of -1 means all types. | 
-| AWS.EC2.VpcId.NetworkAcl.Entries.Ipv6CidrBlock | String | The IPv6 network range to allow or deny, in CIDR notation. | 
-| AWS.EC2.VpcId.NetworkAcl.Entries.PortRange.From | Number | The first port in the range. | 
-| AWS.EC2.VpcId.NetworkAcl.Entries.PortRange.To | Number | The last port in the range. | 
-| AWS.EC2.VpcId.NetworkAcl.Entries.Protocol | String | The protocol number. A value of "-1" means all protocols. | 
-| AWS.EC2.VpcId.NetworkAcl.Entries.RuleAction | String | Indicates whether to allow or deny the traffic that matches the rule. | 
-| AWS.EC2.VpcId.NetworkAcl.Entries.RuleNumber | Number | The rule number for the entry. ACL entries are processed in ascending order by rule number. | 
-| AWS.EC2.VpcId.NetworkAcl.NetworkAclId | String | The ID of the network ACL. | 
-| AWS.EC2.VpcId.NetworkAcl.Tags.Key | String | The key of the tag. | 
-| AWS.EC2.VpcId.NetworkAcl.Tags.Value | String | The value of the tag. | 
-| AWS.EC2.VpcId.NetworkAcl.VpcId | String | The ID of the VPC for the network ACL. | 
-| AWS.EC2.VpcId.NetworkAcl.OwnerId | String | The ID of the AWS account that owns the network ACL. | 
-| AWS.EC2.VpcId.NetworkAcl.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
+| AWS.EC2.VpcId.NetworkAcl.Associations.NetworkAclAssociationId | String | The ID of the association between a network ACL and a subnet. |
+| AWS.EC2.VpcId.NetworkAcl.Associations.NetworkAclId | String | The ID of the network ACL. |
+| AWS.EC2.VpcId.NetworkAcl.Associations.SubnetId | String | The ID of the subnet. |
+| AWS.EC2.VpcId.NetworkAcl.Entries.CidrBlock | String | The IPv4 network range to allow or deny, in CIDR notation. |
+| AWS.EC2.VpcId.NetworkAcl.Entries.Egress | Boolean | Indicates whether the rule is an egress rule \(applied to traffic leaving the subnet\). |
+| AWS.EC2.VpcId.NetworkAcl.Entries.IcmpTypeCode.Code | Number | The ICMP code. A value of -1 means all codes for the specified ICMP type. |
+| AWS.EC2.VpcId.NetworkAcl.Entries.IcmpTypeCode.Type | Number | The ICMP type. A value of -1 means all types. |
+| AWS.EC2.VpcId.NetworkAcl.Entries.Ipv6CidrBlock | String | The IPv6 network range to allow or deny, in CIDR notation. |
+| AWS.EC2.VpcId.NetworkAcl.Entries.PortRange.From | Number | The first port in the range. |
+| AWS.EC2.VpcId.NetworkAcl.Entries.PortRange.To | Number | The last port in the range. |
+| AWS.EC2.VpcId.NetworkAcl.Entries.Protocol | String | The protocol number. A value of "-1" means all protocols. |
+| AWS.EC2.VpcId.NetworkAcl.Entries.RuleAction | String | Indicates whether to allow or deny the traffic that matches the rule. |
+| AWS.EC2.VpcId.NetworkAcl.Entries.RuleNumber | Number | The rule number for the entry. ACL entries are processed in ascending order by rule number. |
+| AWS.EC2.VpcId.NetworkAcl.NetworkAclId | String | The ID of the network ACL. |
+| AWS.EC2.VpcId.NetworkAcl.Tags.Key | String | The key of the tag. |
+| AWS.EC2.VpcId.NetworkAcl.Tags.Value | String | The value of the tag. |
+| AWS.EC2.VpcId.NetworkAcl.VpcId | String | The ID of the VPC for the network ACL. |
+| AWS.EC2.VpcId.NetworkAcl.OwnerId | String | The ID of the AWS account that owns the network ACL. |
+| AWS.EC2.VpcId.NetworkAcl.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
 
 ### aws-ec2-ipam-discovered-public-addresses-get
 
@@ -2685,25 +2686,25 @@ Gets the public IP addresses that have been discovered by IPAM.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| ipam_resource_discovery_id | An IPAM resource discovery ID. | Required | 
-| address_region | The Amazon Web Services region for the IP address. | Required | 
-| filters | One or more filters. Filters must be separated by a semicolon (;) and specified using the format "key=key,values=val". Refer to the AWS documentation for detailed filter options. | Optional | 
-| limit | The maximum number of results to return in a single call. Specify a value between 5 and 1000. | Optional | 
-| next_token | The token for the next set of results. | Optional | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| ipam_resource_discovery_id | An IPAM resource discovery ID. | Required |
+| address_region | The Amazon Web Services region for the IP address. | Required |
+| filters | One or more filters. Filters must be separated by a semicolon (;) and specified using the format "key=key,values=val". Refer to the AWS documentation for detailed filter options. | Optional |
+| limit | The maximum number of results to return in a single call. Specify a value between 5 and 1000. | Optional |
+| next_token | The token for the next set of results. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.IpamDiscoveredPublicAddresses.Address | String | IPAM discovered public addresses. | 
-| AWS.EC2.IpamDiscoveredPublicAddresses.AddressOwnerId | String | The ID of the owner of the resource the IP address is assigned to. | 
-| AWS.EC2.IpamDiscoveredPublicAddresses.AddressType | String | The IP address type. | 
-| AWS.EC2.IpamDiscoveredPublicAddresses.AssociationStatus | String | The association status. | 
-| AWS.EC2.IpamDiscoveredPublicAddresses.InstanceId | String | The instance ID of the instance the assigned IP address is assigned to. | 
-| AWS.EC2.IpamDiscoveredPublicAddresses.Tags | Unknown | Tags associated with the IP address. | 
-| AWS.EC2.IpamDiscoveredPublicAddresses.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
+| AWS.EC2.IpamDiscoveredPublicAddresses.Address | String | IPAM discovered public addresses. |
+| AWS.EC2.IpamDiscoveredPublicAddresses.AddressOwnerId | String | The ID of the owner of the resource the IP address is assigned to. |
+| AWS.EC2.IpamDiscoveredPublicAddresses.AddressType | String | The IP address type. |
+| AWS.EC2.IpamDiscoveredPublicAddresses.AssociationStatus | String | The association status. |
+| AWS.EC2.IpamDiscoveredPublicAddresses.InstanceId | String | The instance ID of the instance the assigned IP address is assigned to. |
+| AWS.EC2.IpamDiscoveredPublicAddresses.Tags | Unknown | Tags associated with the IP address. |
+| AWS.EC2.IpamDiscoveredPublicAddresses.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
 
 ### aws-ec2-tags-create
 
@@ -2718,10 +2719,10 @@ Adds or overwrites one or more tags for the specified Amazon EC2 resource or res
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| resources | The IDs of one or more resources to tag. For example, ami-1a2b3c4d. | Required | 
-| tags | One or more tags. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456". | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| resources | The IDs of one or more resources to tag. For example, ami-1a2b3c4d. | Required |
+| tags | One or more tags. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456". | Required |
 
 #### Context Output
 
@@ -2739,18 +2740,18 @@ Returns the website configuration for a bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| bucket | The bucket name for which to get the website configuration. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | The bucket name for which to get the website configuration. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.S3-Buckets.BucketWebsite.ErrorDocument | Object | The object key name of the website error document to use for 4XX class errors. | 
-| AWS.S3-Buckets.BucketWebsite.IndexDocument | Object | The name of the index document for the website \(for example index.html\). | 
-| AWS.S3-Buckets.BucketWebsite.RedirectAllRequestsTo | Object | Specifies the redirect behavior of all requests to a website endpoint of an Amazon S3 bucket. | 
-| AWS.S3-Buckets.BucketWebsite.RoutingRules | Array | Rules that define when a redirect is applied and the redirect behavior. | 
+| AWS.S3-Buckets.BucketWebsite.ErrorDocument | Object | The object key name of the website error document to use for 4XX class errors. |
+| AWS.S3-Buckets.BucketWebsite.IndexDocument | Object | The name of the index document for the website \(for example index.html\). |
+| AWS.S3-Buckets.BucketWebsite.RedirectAllRequestsTo | Object | Specifies the redirect behavior of all requests to a website endpoint of an Amazon S3 bucket. |
+| AWS.S3-Buckets.BucketWebsite.RoutingRules | Array | Rules that define when a redirect is applied and the redirect behavior. |
 ### aws-s3-bucket-acl-get
 
 ***
@@ -2764,13 +2765,13 @@ Return the access control list (ACL) of a bucket.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. | Required | 
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
-| bucket | Specifies the S3 bucket whose ACL is being requested. | Required | 
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | Specifies the S3 bucket whose ACL is being requested. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.S3-Buckets.BucketAcl.Grants | Array | A list of grants. | 
-| AWS.S3-Buckets.BucketAcl.Owner | Object | Container for the bucket owner's display name and ID. | 
+| AWS.S3-Buckets.BucketAcl.Grants | Array | A list of grants. |
+| AWS.S3-Buckets.BucketAcl.Owner | Object | Container for the bucket owner's display name and ID. |
