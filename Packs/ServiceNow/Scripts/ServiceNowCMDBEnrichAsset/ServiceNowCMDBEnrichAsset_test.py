@@ -85,9 +85,7 @@ def test_get_command_results(mocker):
     mock_args = {"key": "value"}
     expected_result = {"result": "success"}
 
-    mocker.patch(
-        "ServiceNowCMDBEnrichAsset.demisto.executeCommand", return_value=[{"Contents": {"result": expected_result}}]
-    )
+    mocker.patch("ServiceNowCMDBEnrichAsset.demisto.executeCommand", return_value=[{"Contents": {"result": expected_result}}])
 
     result = get_command_results(mock_command, mock_args)
     assert result == expected_result
