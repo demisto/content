@@ -434,7 +434,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     # Application Security issue
     appsec_sources = ["CAS_CVE_SCANNER", "CAS_IAC_SCANNER"]
     if issue.get("alert_source") in appsec_sources:
-        fix_suggestion: dict = client.get_appsec_suggested_fix(issue_id)
+        fix_suggestion = client.get_appsec_suggested_fix(issue_id)
         if fix_suggestion:
             recommendation.update({
                 "existing_code_block": fix_suggestion.get("existingCodeBlock"),
