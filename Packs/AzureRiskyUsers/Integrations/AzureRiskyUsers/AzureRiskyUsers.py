@@ -114,7 +114,7 @@ class Client:
             str: The user ID
         """
         return (
-            self.ms_client.http_request(method="GET", url_suffix=f"users/{upn}")["id"]
+            self.ms_client.http_request(method="GET", url_suffix=f"users/{upn_to_user_id}")["id"]
             if "@" in user_id_or_upn
             else user_id_or_upn
         )
