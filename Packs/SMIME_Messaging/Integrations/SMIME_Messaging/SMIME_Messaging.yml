@@ -2,17 +2,22 @@ category: Utilities
 commonfields:
   id: SMIME Messaging
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: Public Key
   name: public_key
   required: true
   type: 12
   additionalinfo: Sender public key required for signing emails.
+  section: Connect
 - display: Private Key
   name: private_key
   required: true
   type: 14
   additionalinfo: Sender private key required for decrypting and signing emails.
+  section: Connect
 description: Use the S/MIME (Secure Multipurpose Internet Mail Extensions) integration to send and receive secure MIME data.
 display: SMIME Messaging
 name: SMIME Messaging
