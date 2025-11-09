@@ -3,7 +3,6 @@ from typing import Any
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 # Columns representing different scanner coverage categories
 SCANNER_COLUMNS: list[str] = [
     "is_scanned_by_vulnerabilities",
@@ -151,6 +150,9 @@ def main() -> None:
         asset_coverage_histograms = get_command_results("core-get-asset-coverage-histogram", args)
 
         # Process histogram outputs
+        if type(asset_coverage_histograms) is not dict:
+            demisto.debug(f"asset_coverage_histograms are not dict {asset_coverage_histograms}")
+            asset_coverage_histograms = {}
         scanner_histograms, coverage_percentage = transform_scanner_histograms_outputs(asset_coverage_histograms)
         status_histogram = transform_status_coverage_histogram_output(asset_coverage_histograms)
 
