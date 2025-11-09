@@ -87,7 +87,6 @@ def build_servicenow_url(instance_url: str, table: str, sys_id: str) -> str:
 def get_network_adapter(sid: str) -> NetworkAdapter:
     """Fetch and parse network adapter details from ServiceNow."""
     result = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": CMDB_CI_NETWORK_ADAPTER, "sys_id": sid})
-    print(f"get_network_adapter {sid} {result}")
     if not isinstance(result, dict):
         result = {}
 
@@ -117,7 +116,7 @@ def get_related_configuration_item(sid: str, instance_url: str) -> Configuration
     result = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": "cmdb_ci", "sys_id": sid})
     if not isinstance(result, dict):
         result = {}
-    print(f"get_related_configuration_item 1 {result}")
+
     ci_class = result.get("attributes", {}).get("sys_class_name", "")
     if not ci_class:
         return ConfigurationItem(
@@ -128,7 +127,6 @@ def get_related_configuration_item(sid: str, instance_url: str) -> Configuration
     result = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": ci_class, "sys_id": sid})
     if not isinstance(result, dict):
         result = {}
-    print(f"get_related_configuration_item 2 {result}")
 
     attributes = result.get("attributes", {})
     assigned_to = attributes.get("assigned_to", {}) if isinstance(attributes.get("assigned_to"), dict) else {}
@@ -166,8 +164,6 @@ def main():
         result = get_command_results(
             "servicenow-cmdb-records-list", {"class": CMDB_CI_NETWORK_ADAPTER, "query": f"ip_address={ip_address}"}
         )
-
-        print(result)
 
         if not isinstance(result, list):
             result = []
