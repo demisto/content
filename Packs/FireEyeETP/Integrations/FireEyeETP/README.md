@@ -7,7 +7,7 @@ Use the Trellix Email Security - Cloud integration to import messages as inciden
 ## Use Cases
 
 * Search for messages using specific message attributes as indicators.
-* Import messages as Cortex XSOAR incidents, using the message status as indicator.
+* Import messages as Cortex incidents/issues, using the message status as indicator.
 
 ## Authentication Prerequisites
 
@@ -33,7 +33,7 @@ We support two different authentication methods depending on the endpoint domain
   * When creating the Client ID and Client Secret, ensure the corresponding user/role has **explicit permission to access the API**.
   * **Note:** If API access permissions are not properly set for the user/role, the authentication attempt will fail with a **`400 Client Error: Bad Request`** even if the Client ID and Secret are correct.
 
-* Contact Trellix Email Security - Cloud Technical Support to let them know the IP address of your Cortex XSOAR Server and the URL you are accessing, e.g. `https://etp.us.fireeye.com`. Trellix will add these details to their Firewall rules so that the bidirectional traffic can be allowed between Cortex XSOAR and Trellix Email Security - Cloud.
+* Contact Trellix Email Security - Cloud Technical Support to let them know the IP address of your Cortex Server and the URL you are accessing, e.g. `https://etp.us.fireeye.com`. Trellix will add these details to their Firewall rules so that the bidirectional traffic can be allowed between Cortex and Trellix Email Security - Cloud.
 
 ## Configure Trellix Email Security - Cloud in Cortex
 

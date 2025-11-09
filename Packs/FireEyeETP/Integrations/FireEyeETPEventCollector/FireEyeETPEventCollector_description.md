@@ -77,6 +77,4 @@ Use this method for **trellix.com** domains.
 
 3. When creating the Client ID and Client Secret, ensure the corresponding user/role has **explicit permission to access the API**.
 
-   * **Note:** If API access permissions are not properly set for the user/role, the authentication attempt will fail with a **`400 Client Error: Bad Request`** even if the Client ID and Secret are otherwise correct.
-
-For more information, see the [Official Product Documentation](https://docs.trellix.com/bundle/etp_api/page/UUID-98fd1a2c-382d-130b-00c5-b9be402fe660_1.html#idm44910884288000).
+   * **Note:** If API access permissions are not properly set for the user/role, the authentication attempt will fail with a **`400 Client Error: Bad Request`**, even if the Client ID and Secret are otherwise correct.
