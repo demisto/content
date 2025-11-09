@@ -471,7 +471,6 @@ Retrieve asset groups from the Cortex platform with optional filtering.
 | Core.AssetGroups.returned_count | String | The actual number of asset groups that match all filter criteria and returned in this specific response. |
 | Core.AssetGroups.filtered_count | String | The total number of asset groups in the system that match all filter criteria. |
 
-
 ### core-get-vulnerabilities
 
 ***
