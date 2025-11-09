@@ -2,7 +2,7 @@ import json
 
 import pytest
 from pytest_mock import MockerFixture
-
+from unittest.mock import call
 import demistomock as demisto
 
 MAX_GET_INCIDENTS_LIMIT = 100
@@ -2400,7 +2400,7 @@ def test_enable_scanners_command_single_repository(mocker: MockerFixture):
     result = enable_scanners_command(mock_client, args)
 
     mock_build_payload.assert_called_once_with(args)
-    mock_enable_scanners.assert_called_once_with({"test": "payload"})
+    mock_enable_scanners.assert_called_once_with({"test": "payload"}, "repo_001")
     assert "Successfully updated repositories: repo_001" in result.readable_output
 
 
@@ -2423,8 +2423,13 @@ def test_enable_scanners_command_repository_ids_as_list(mocker: MockerFixture):
 
     result = enable_scanners_command(mock_client, args)
 
-    mock_build_payload.assert_called_once_with(args)
-    mock_enable_scanners.assert_called_once_with({"payload": "test"})
+    mock_build_payload.assert_called_with(args)
+
+    expected_calls = [
+        call({"payload": "test"}, "repo_alpha"),
+        call({"payload": "test"}, "repo_beta"),
+    ]
+    mock_enable_scanners.assert_has_calls(expected_calls)
     assert "Successfully updated repositories: repo_alpha, repo_beta" in result.readable_output
 
 
@@ -2448,7 +2453,7 @@ def test_enable_scanners_command_minimal_args(mocker: MockerFixture):
     result = enable_scanners_command(mock_client, args)
 
     mock_build_payload.assert_called_once_with(args)
-    mock_enable_scanners.assert_called_once_with({"minimal": True})
+    mock_enable_scanners.assert_called_once_with({"minimal": True}, "single_repo")
     assert "Successfully updated repositories: single_repo" in result.readable_output
 
 

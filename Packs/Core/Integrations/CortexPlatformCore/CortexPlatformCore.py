@@ -358,13 +358,16 @@ class Client(CoreClient):
             url_suffix="/get_data",
             json_data=request_data,
         )
-        
+
     def enable_scanners(self, payload: dict, repository_id: str) -> dict:
         return self._http_request(
             method="PUT",
             url_suffix=f"/public_api/appsec/v1/repositories/{repository_id}/scan-configuration",
             json_data=payload,
-            headers={**self._headers, "Content-Type": "application/json",},
+            headers={
+                **self._headers,
+                "Content-Type": "application/json",
+            },
         )
 
     def get_playbook_suggestion_by_issue(self, issue_id):
