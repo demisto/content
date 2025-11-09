@@ -27,6 +27,7 @@ valid_args = {
     "limit",
 }
 
+
 def get_command_results(command: str, args: dict[str, Any]) -> Union[dict[str, Any], list]:
     """Execute a Demisto command and return the parsed result.
 
@@ -57,6 +58,7 @@ def get_command_results(command: str, args: dict[str, Any]) -> Union[dict[str, A
         return contents.get("reply", {})
 
     return {}
+
 
 def transform_scanner_histograms_outputs(asset_coverage_histograms):
     def get_count(data, value):
