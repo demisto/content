@@ -172,51 +172,6 @@ def build_file_name(
     return f"cape_task_{file_identifier}{middle_part_str}.{extension}"
 
 
-# def build_file_name(
-#     file_identifier: str | int,
-#     file_type: Literal["file", "report", "screenshot", "network_dump"] | None = None,
-#     screenshot_number: int | None = None,
-#     file_format: (
-#         Literal["pdf", "html", "csv", "zip", "pcap", "bin"] | str | None
-#     ) = None,
-# ) -> str:
-#     """
-#     Constructs a standardized filename based on the task identifier and file metadata.
-#     """
-#     TYPE_MAP = {
-#         "screenshot": {"ext": "png", "part": "screenshot"},
-#         "report": {
-#             "ext": str(file_format) if file_format else "json",
-#             "part": "report",
-#         },
-#         "file": {
-#             "ext": str(file_format) if file_format else "json",
-#             "part": "file",
-#         },
-#         "network_dump": {
-#             "ext": "pcap",
-#             "part": "network_dump",
-#         },
-#     }
-
-#     extension = str(file_format) if file_format else "dat"
-#     middle_part_base = None
-
-#     if file_type in TYPE_MAP:
-#         info = TYPE_MAP[file_type]
-#         extension = info["ext"]
-#         middle_part_base = info["part"]
-
-#     # Special handling for screenshot number
-#     if file_type == "screenshot" and screenshot_number is not None:
-#         middle_part_base = f"screenshot_{screenshot_number}"
-
-#     # Construct the final filename parts
-#     middle_part_str = f"_{middle_part_base}" if middle_part_base else ""
-
-#     return f"cape_task_{file_identifier}{middle_part_str}.{extension}"
-
-
 def status_is_reported(status_response: str) -> bool:
     return status_response == "reported"
 
