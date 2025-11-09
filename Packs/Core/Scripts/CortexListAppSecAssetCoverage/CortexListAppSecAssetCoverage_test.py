@@ -121,8 +121,8 @@ def test_transform_scanner_histograms_outputs(mock_histogram_data):
 
     enabled_scanners = ["is_scanned_by_malware", "is_scanned_by_secrets", "is_scanned_by_vulnerabilities"]
     assert all(k in output for k in cc.SCANNER_COLUMNS)
-    for v in output.values():
-        if v in enabled_scanners:
+    for k, v in output.items():
+        if k in enabled_scanners:
             assert v["enabled"] == 6
         else:
             assert v["enabled"] == 0
