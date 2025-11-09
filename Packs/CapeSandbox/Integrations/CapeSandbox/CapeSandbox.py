@@ -831,7 +831,7 @@ def cape_task_poll_report(args: dict[str, Any], client: CapeSandboxClient) -> Po
     Polling Flow:
     1. Status Check: Queries the task status (running or reported).
     2. Polling Continuation: If 'running', schedules the next poll (continue_to_poll=True).
-    3. Final Report: If 'reported', fetches the detailed task view and the raw report file.
+    3. Final Report: If 'reported', calls a helper to fetch the detailed task view and report.
     4. Result Compilation: Returns final CommandResults (task metadata) and a fileResult (the report).
 
     Args:
@@ -879,55 +879,17 @@ def cape_task_poll_report(args: dict[str, Any], client: CapeSandboxClient) -> Po
         demisto.debug(f"Task ID {task_id} status is 'reported'. Fetching final results.")
 
         # --- Final Report Fetch ---
-        demisto.debug(f"Fetching final task view for task_id: {task_id}")
-        task_view = client.get_task_view(task_id)
-        demisto.debug(f"Task view data keys: {list(task_view.keys()) if isinstance(task_view, dict) else 'N/A'}")
-
-        readable = tableToMarkdown(
-            f"{INTEGRATION_NAME} Task {task_id}",
-            task_view.get("data") or task_view,
-            headers=[
-                "id",
-                "target",
-                "category",
-                "priority",
-                "machine",
-                "package",
-                "platform",
-                "started_on",
-                "completed_on",
-                "status",
-                "running_processes",
-                "domains",
-            ],
-            headerTransform=string_to_table_header,
-        )
         final_output_prefix = args.get("outputs_prefix", "Cape.Task")
-        final_results = CommandResults(
-            readable_output=readable,
-            outputs_prefix=final_output_prefix,
-            outputs_key_field="id",
-            outputs=task_view.get("data") or task_view,
-        )
 
-        # Fetch the JSON report file content
-        demisto.debug(f"Fetching ZIP report for task_id: {task_id}")
-        report_file_content = client.get_task_report(task_id=task_id, format="json", zip_download=True)
-        demisto.debug(f"Report ZIP size: {len(report_file_content)} bytes")
-
-        filename = build_file_name(file_identifier=task_id, file_type="report", file_format="zip")
-        demisto.debug(f"Generated report filename: {filename}")
-        file_result = fileResult(filename, report_file_content)
+        # Call the new helper to do all the work
+        final_results_list = _handle_reported_task(client, task_id, final_output_prefix)
 
         # --- Result Compilation ---
         final_readable = f"Polling finished successfully for Task {task_id}. Results returned."
         demisto.debug(final_readable)
 
         return PollResult(
-            response=[
-                file_result,
-                final_results,
-            ],
+            response=final_results_list,  # Pass the list from the helper
             continue_to_poll=False,
             partial_result=CommandResults(readable_output=final_readable),
         )
@@ -950,6 +912,55 @@ def cape_task_poll_report(args: dict[str, Any], client: CapeSandboxClient) -> Po
             continue_to_poll=True,
             partial_result=status_update,
         )
+
+
+def _handle_reported_task(client: CapeSandboxClient, task_id: str, final_output_prefix: str) -> list[Any]:
+    """
+    Fetches, formats, and returns the final task view and report file
+    once a task's status is 'reported'.
+    """
+    demisto.debug(f"Fetching final task view for task_id: {task_id}")
+    task_view = client.get_task_view(task_id)
+    demisto.debug(f"Task view data keys: {list(task_view.keys()) if isinstance(task_view, dict) else 'N/A'}")
+
+    readable = tableToMarkdown(
+        f"{INTEGRATION_NAME} Task {task_id}",
+        task_view.get("data") or task_view,
+        headers=[
+            "id",
+            "target",
+            "category",
+            "priority",
+            "machine",
+            "package",
+            "platform",
+            "started_on",
+            "completed_on",
+            "status",
+            "running_processes",
+            "domains",
+        ],
+        headerTransform=string_to_table_header,
+    )
+
+    final_results = CommandResults(
+        readable_output=readable,
+        outputs_prefix=final_output_prefix,
+        outputs_key_field="id",
+        outputs=task_view.get("data") or task_view,
+    )
+
+    # Fetch the JSON report file content
+    demisto.debug(f"Fetching ZIP report for task_id: {task_id}")
+    report_file_content = client.get_task_report(task_id=task_id, format="json", zip_download=True)
+    demisto.debug(f"Report ZIP size: {len(report_file_content)} bytes")
+
+    filename = build_file_name(file_identifier=task_id, file_type="report", file_format="zip")
+    demisto.debug(f"Generated report filename: {filename}")
+    file_result = fileResult(filename, report_file_content)
+
+    # Return a list of all results to be passed to PollResult
+    return [file_result, final_results]
 
 
 def cape_file_submit_command(client: CapeSandboxClient, args: dict[str, Any]) -> CommandResults:
