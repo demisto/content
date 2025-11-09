@@ -1,7 +1,57 @@
 Netskope API v2 provides a powerful interface for managing and monitoring Netskope deployments. It enables users to retrieve alerts and events, manage URL lists, and control clients. With Netskope API v2, organizations can proactively respond to security threats, enforce web access policies, and efficiently administer their Netskope environment.
 This integration was integrated and tested with version 2 of the Netskope API.
 
-## Configure Netskope (API v2) in Cortex
+To successfully instantiate an instance of the Netskope API v2 integration under the **RBACv3 framework**, follow the steps below.
+Note: Netskope has deprecated the legacy single-step API token generation process. All new and migrated tenants must use **RBACv3** to create API tokens through **Service Accounts**.
+
+#### Step 1: Create a Service Account (RBACv3)
+
+Follow the instructions under the section [Create a New Service Account](https://example.com).
+
+### Step 2: Assign required functional roles
+
+Ensure the Service Account has access to the following functional areas:
+In total 4 sections need to be enabled:
+
+1. Administration
+2. Access Control
+3. DLP
+4. Events & Analytics
+
+![Add new role](../../doc_files/NetskopeAPIv2_step_2_new_role.png)
+
+#### For Administration
+
+In the Administration section, select **Function > Audit Log** and grant it **View** rights.
+![Add new role - Administration](../../doc_files/NetskopeAPIv2_step2_new_role_administration.png)
+
+Under **Users & Groups**, select **Manage**:
+![Users and Groups](../../doc_files/NetskopeAPIv2_step2_users_and_groups.png)
+
+#### Events & Analytics
+
+Functions that need to be set to view: **Application Events**, **Page Events**, **Network Events**, and **Alerts**.
+![Events and Analytics](../../doc_files/NetskopeAPIv2_step_2_events_and_analystics.png)
+
+#### For Access Control
+
+Select **Access Control**, for the **Infrastructure** function, grant **View** rights.
+![Access Control](../../doc_files/NetskopeAPIv2_step2_access_control.png)
+
+For the **URL List**, set to **Manage and Apply**.
+![Manage and Apply](../../doc_files/NetskopeAPIv2_step2_manage_and_apply.png)
+
+#### For DLP
+For **DLP Incident**, set to **View**.
+![DLP Incident](../../doc_files/NetskopeAPIv2_step2_dlp.png)
+
+### Step 3
+
+- **API Token:** Copy the generated API token and store it securely.
+- **Server URL:** Construct the server URL using your account name and region. Example:
+If your account name is `xsoar` and the region is `de`, your Server URL is: https://xsoar.de.goskope.com/
+
+## Configue Netskope (API v2) in Cortex
 
 | **Parameter**                                            | **Description**                                                                                                                                                           | **Required** |
 | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
