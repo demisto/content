@@ -553,7 +553,7 @@ class XSOAR2STIXParser:
                     elif stix_ioc:
                         iocs.append(stix_ioc)
 
-        demisto.info(f"create_indicators before {len(iocs)=}")
+        demisto.info(f"create_indicators {len(iocs)=}")
         if (
             not is_manifest
             and iocs
