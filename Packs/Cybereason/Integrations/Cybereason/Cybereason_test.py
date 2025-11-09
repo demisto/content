@@ -73,6 +73,92 @@ def load_mock_response(file_name: str) -> str:
         return mock_file.read()
 
 
+def test_cybereason_api_call(mocker):
+    """
+    Given:
+        - API call returns a redirect to the login page (session expired).
+    When:
+        - cybereason_api_call() is executed.
+    Then:
+        - Should trigger re-login, update token, and retry request successfully.
+    """
+    from Cybereason import Client
+    import time
+
+    mock_response_login_redirect = mocker.Mock()
+    mock_response_login_redirect.status_code = 200
+    mock_response_login_redirect.url = "https://server/login.html"
+
+    mock_response_success = mocker.Mock()
+    mock_response_success.status_code = 200
+    mock_response_success.url = "https://server/some_api"
+    mock_response_success.json.return_value = {"result": "ok"}
+
+    mock_http_request = mocker.Mock(side_effect=[mock_response_login_redirect, mock_response_success])
+    mock_login = mocker.patch("Cybereason.login", return_value=("new_token", int(time.time())))
+    mocker.patch("Cybereason.get_integration_context", return_value={})
+    mock_set_context = mocker.patch("Cybereason.set_integration_context")
+    mock_headers = mocker.patch("Cybereason.HEADERS", {"Cookie": ""})
+
+    client = Client(base_url="https://server", verify=False, headers=mock_headers, proxy=False)
+    client._http_request = mock_http_request
+
+    result = client.cybereason_api_call("GET", "/some_api", json_body={})
+
+    # Assertions
+    mock_login.assert_called_once()
+    assert result == {"result": "ok"}
+    assert mock_set_context.called
+    assert "JSESSIONID=new_token" in mock_headers["Cookie"]
+    assert mock_http_request.call_count == 2
+
+
+def test_validate_jsession_two(mocker):
+    """
+    Given:
+        - A token validity scenario (valid or expired).
+    When:
+        - validate_jsession() is called.
+    Then:
+        - If token is valid → should NOT refresh.
+        - If token expired → should refresh and update context.
+    """
+    from Cybereason import validate_jsession
+    import time
+
+    token_valid = False
+    expected_refresh = True
+
+    mock_time = int(time.time())
+    valid_until = mock_time + 10000 if token_valid else mock_time - 10
+
+    mock_integration_context = {
+        "jsession_id": "old_token",
+        "valid_until": valid_until,
+    }
+
+    mocker.patch("Cybereason.get_integration_context", return_value=mock_integration_context)
+    mock_set_context = mocker.patch("Cybereason.set_integration_context")
+    mock_headers = mocker.patch("Cybereason.HEADERS", {})
+    mock_login = mocker.patch("Cybereason.login", return_value=("new_token", mock_time))
+    mock_client = mocker.Mock()
+
+    validate_jsession(mock_client)
+
+    if expected_refresh:
+        # Expired case: login called, context updated
+        mock_login.assert_called_once()
+        mock_set_context.assert_called_once()
+        assert mock_integration_context["jsession_id"] == "new_token"
+        assert mock_integration_context["valid_until"] == mock_time + 28000
+        assert "JSESSIONID=new_token" in mock_headers["Cookie"]
+    else:
+        # Valid token case: no refresh
+        mock_login.assert_not_called()
+        mock_set_context.assert_not_called()
+        assert "JSESSIONID=old_token" in mock_headers["Cookie"]
+
+
 def test_one_query_file(mocker):
     from Cybereason import Client, query_file_command
 
@@ -284,19 +370,14 @@ def test_unisolate_machine_command(mocker):
 def test_get_non_edr_malop_data(mocker):
     from Cybereason import get_detection_details
     from Cybereason import Client
-    HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
-    client = Client(
-        base_url="https://test.server.com:8888",
-        verify=False,
-        headers=HEADERS,
-        proxy=True)
-    args = {
-        "malopGuid": "AAAA0yUlnvXGQODT"
-    }
-    raw_response = json.loads(load_mock_response('malop_detection_data.json'))
+
+    HEADERS = {"Content-Type": "application/json", "Connection": "close"}
+    client = Client(base_url="https://test.server.com:8888", verify=False, headers=HEADERS, proxy=True)
+    args = {"malopGuid": "AAAA0yUlnvXGQODT"}
+    raw_response = json.loads(load_mock_response("malop_detection_data.json"))
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
     command_output = get_detection_details(client, args)
-    assert command_output['malops'][0]['guid'] == 'AAAA0yUlnvXGQODT'
+    assert command_output["malops"][0]["guid"] == "AAAA0yUlnvXGQODT"
 
 
 def test_query_malops_command(mocker):
@@ -748,22 +829,19 @@ def test_add_comment_command(mocker):
 def test_fetch_incidents(mocker):
     from Cybereason import fetch_incidents
     from Cybereason import Client
-    HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
-    client = Client(
-        base_url="https://test.server.com:8888",
-        verify=False,
-        headers=HEADERS,
-        proxy=True)
 
-    raw_response = json.loads(load_mock_response('query_malop_management_raw_response.json'))
+    HEADERS = {"Content-Type": "application/json", "Connection": "close"}
+    client = Client(base_url="https://test.server.com:8888", verify=False, headers=HEADERS, proxy=True)
+
+    raw_response = json.loads(load_mock_response("query_malop_management_raw_response.json"))
     mocker.patch("Cybereason.get_malop_management_data", return_value=raw_response)
-    malop_process_raw_response = json.loads(load_mock_response('query_malop_raw_response.json'))
+    malop_process_raw_response = json.loads(load_mock_response("query_malop_raw_response.json"))
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=malop_process_raw_response)
 
     command_output = fetch_incidents(client)
     command_output = str(command_output)
 
-    assert command_output == 'None'
+    assert command_output == "None"
 
 
 def test_archive_sensor_command(mocker):
@@ -924,14 +1002,7 @@ def test_malop_to_incident_edr_malop(mocker):
             "malopLastUpdateTime": {"values": ["1728032260900"]},
         },
         "elementValues": {
-            "primaryRootCauseElements": {
-                "elementValues": [
-                    {
-                        "elementType": "File",
-                        "name": "avg_secure_browser_setup.pdf.exe"
-                    }
-                ]
-            }
+            "primaryRootCauseElements": {"elementValues": [{"elementType": "File", "name": "avg_secure_browser_setup.pdf.exe"}]}
         },
         "isEdr": True,
     }
@@ -995,15 +1066,21 @@ def test_malop_to_incident_resolved_non_edr_malop(mocker):
         "malopDetectionType": "ABCD",
         "creationTime": "23456",
         "lastUpdateTime": "6789",
-        "edr": False
+        "edr": False,
     }
     command_output = malop_to_incident(args)
 
-    assert all([(command_output['name'] == "Cybereason Malop 12345D"), (command_output['status'] == 2),
-                (command_output['CustomFields']['malopcreationtime'] == "23456"),
-                (command_output['CustomFields']['malopupdatetime'] == "6789"),
-                (command_output['CustomFields']['malopdetectiontype'] == "ABCD"),
-                (not command_output['CustomFields']['malopedr']), (command_output['dbotmirrorid'] == "12345D")])
+    assert all(
+        [
+            (command_output["name"] == "Cybereason Malop 12345D"),
+            (command_output["status"] == 2),
+            (command_output["CustomFields"]["malopcreationtime"] == "23456"),
+            (command_output["CustomFields"]["malopupdatetime"] == "6789"),
+            (command_output["CustomFields"]["malopdetectiontype"] == "ABCD"),
+            (not command_output["CustomFields"]["malopedr"]),
+            (command_output["dbotmirrorid"] == "12345D"),
+        ]
+    )
 
     with pytest.raises(Exception) as exc_info:
         command_output = malop_to_incident("args")
@@ -1012,13 +1089,14 @@ def test_malop_to_incident_resolved_non_edr_malop(mocker):
 
 def test_malop_to_incident_active_non_edr_malop(mocker):
     from Cybereason import malop_to_incident
+
     args = {
         "guidString": "12345D",
         "status": "Active",
         "malopDetectionType": "ABCD",
         "creationTime": "23456",
         "lastUpdateTime": "6789",
-        "edr": False
+        "edr": False,
     }
     command_output = malop_to_incident(args)
 
