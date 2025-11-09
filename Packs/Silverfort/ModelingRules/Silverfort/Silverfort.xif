@@ -58,11 +58,11 @@ alter
 
 [MODEL: dataset = "silverfort_admin_console_raw"]
 
-filter cefdeviceeventclassid = "Authentication" AND app ~= "Kerberos|SSO|SAML|OIDC"
+filter cefdeviceeventclassid = "Authentication" AND app ~= "SSO|SAML|OIDC"
 | call silverfort_admin_console_authentication_fields
 | call silverfort_admin_console_authentication_story_fields;
 
-filter cefdeviceeventclassid = "Authentication" AND app NOT IN("Kerberos", "*SSO*","*SAML*", "*OIDC*")
+filter cefdeviceeventclassid = "Authentication" AND app NOT IN("*SSO*","*SAML*", "*OIDC*")
 | call silverfort_admin_console_authentication_fields
 | alter
     xdm.event.outcome_reason = if(cs5 != "n/a", cs5, outcome_reason);
