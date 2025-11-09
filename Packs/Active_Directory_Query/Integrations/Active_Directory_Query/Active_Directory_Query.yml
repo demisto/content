@@ -118,6 +118,7 @@ script:
   - name: ad-expire-password-quickaction
     prettyname: Force Password Reset [ActiveDirectory]
     quickaction: true
+    hidden: true
     arguments:
     - name: username
       required: true
@@ -132,17 +133,11 @@ script:
     compliantpolicies:
     - User Soft Remediation
   - name: ad-expire-password
-    prettyname: Force Password Reset [ActiveDirectory]
-    quickaction: true
     arguments:
     - name: username
       required: true
       description: The username (samAccountName) of the user to modify.
-      prettyname: Run action on
-      prettypredefined:
-        User from the issue: ${issue.original_alert_json.raw_abioc.event.xdm.source.user.username}
     - name: base-dn
-      prettyname: Base DN
       description: Root (for example, DC=domain,DC=com).
     description: Expires the password of an Active Directory user.
     compliantpolicies:
@@ -290,6 +285,7 @@ script:
   - name: ad-disable-account-quickaction
     prettyname: Disable User Account [ActiveDirectory]
     quickaction: true
+    hidden: true
     arguments:
     - description: "The username of the account to disable (sAMAccountName)."
       name: username
@@ -304,17 +300,11 @@ script:
     compliantpolicies:
     - User Hard Remediation
   - name: ad-disable-account
-    prettyname: Disable User Account [ActiveDirectory]
-    quickaction: true
     arguments:
     - description: "The username of the account to disable (sAMAccountName)."
       name: username
       required: true
-      prettyname: Run action on
-      prettypredefined:
-        User from the issue: ${issue.original_alert_json.raw_abioc.event.xdm.source.user.username}
     - name: base-dn
-      prettyname: Base DN
       description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance is used.
     description: Disables an Active Directory user account.
     compliantpolicies:
