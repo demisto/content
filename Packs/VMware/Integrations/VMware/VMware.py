@@ -640,16 +640,14 @@ def list_vms_by_tag(client: Client, args: dict) -> CommandResults:
     demisto.debug(f"Got {len(vm_ids)} VM IDs associated with {tag_id=}.")
 
     # STEP 5 - Get VM names by VM IDs
-    if not vm_ids:
-        associated_vms = []
-    else:
-        associated_vms = [
-            {"VM": vm.get("name"), "TagName": tag_name, "Category": category_name} for vm in client.list_vms(vm_ids)
-        ]
+    associated_vms = client.list_vms(vm_ids) if vm_ids else []
+    demisto.debug(f"Got {len(associated_vms)} VMs associated with {tag_id=}.")
+
+    context_output = [{"VM": vm.get("name"), "TagName": tag_name, "Category": category_name} for vm in associated_vms]
 
     return CommandResults(
         readable_output=tableToMarkdown(f"VMs with category: {category_name!r} and tag: {tag_name!r}", associated_vms),
-        outputs=associated_vms,
+        outputs=context_output,
         outputs_prefix="VMwareTag",
         outputs_key_field=["VM", "TagName", "Category"],
     )
