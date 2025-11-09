@@ -2193,7 +2193,7 @@ def storage_container_property_get_command(client: AzureClient, params: dict, ar
     container_name = args["container_name"]
     account_name = args.get("account_name", "")
     response = client.get_storage_container_properties_request(account_name, container_name)
-
+    print(response)
     raw_response = response.headers
     raw_response = dict(raw_response)  # Convert raw_response from 'CaseInsensitiveDict' to 'dict'
 
@@ -2274,7 +2274,7 @@ def storage_container_delete_command(client: AzureClient, params: dict, args: di
         readable_output=f"Container {container_name} successfully deleted.",
     )
 
-def create_blob_command(client: AzureClient, params: dict, args: Dict[str, Any]) -> CommandResults:
+def storage_container_blob_create_command(client: AzureClient, params: dict, args: Dict[str, Any]) -> CommandResults:
     """
     Create a new Blob under the specified Container.
 
@@ -2292,10 +2292,11 @@ def create_blob_command(client: AzureClient, params: dict, args: Dict[str, Any])
     blob_name = args.get("blob_name", "")
     
 
-    client.storage_container_create_blob_request(container_name, account_name, file_entry_id, blob_name)
+    response = client.storage_container_create_blob_request(container_name, account_name, file_entry_id, blob_name)
 
     command_results = CommandResults(
-        readable_output="Blob successfully created.",
+        readable_output=f"Blob {blob_name} successfully created.",
+        raw_response=response
     )
 
     return command_results
@@ -2415,7 +2416,7 @@ def storage_container_blob_property_get_command(client: AzureClient, params: dic
     readable_output = tableToMarkdown(
         f"Blob {blob_name} Properties:",
         outputs.get("Blob").get("Property"),  # type: ignore
-        headers=["creation_time", "last_modified", "content_length", "content_type", "etag"],
+        # headers=["creation_time", "last_modified", "content_length", "content_type", "etag"],
         headerTransform=string_to_table_header,
         removeNull=True,
     )
@@ -2566,7 +2567,7 @@ def transform_response_to_context_format(data: dict, keys: list) -> dict:
         dict: Processed data.
 
     """
-    return {key.replace("x-ms-", "").replace("-", "_").lower(): value for key, value in data.items() if key in keys}
+    return {key.replace("X-Ms-", "").replace("-", "_").lower(): value for key, value in data.items() if key in keys}
 
 
 def create_policy_assignment_command(client: AzureClient, params: dict, args: dict):
@@ -3611,7 +3612,7 @@ def main():
             "azure-storage-container-property-get": storage_container_property_get_command,
             "azure-storage-container-create": storage_container_create_command,
             "azure-storage-container-delete": storage_container_delete_command,
-            "azure-storage-container-blob-create": create_blob_command,
+            "azure-storage-container-blob-create": storage_container_blob_create_command,
             "azure-storage-container-blob-get": storage_container_blob_get_command,
             "azure-storage-container-blob-tag-get": storage_container_blob_tag_get_command,
             "azure-storage-container-blob-tag-set": storage_container_blob_tag_set_command,

@@ -35,9 +35,15 @@ from Azure import (
     API_VERSION,
     SCOPE_BY_CONNECTION,
     PREFIX_URL_AZURE,
+    STORAGE_DATE_FORMAT,
+    storage_container_property_get_command,
+    transform_response_to_context_format,
+    convert_dict_time_format,
 )
 from MicrosoftApiModule import Resources
-
+from requests import Response
+from datetime import datetime, timedelta
+from requests.structures import CaseInsensitiveDict
 
 @pytest.fixture
 def mock_params():
@@ -53,19 +59,6 @@ def mock_params():
     }
 
 
-@pytest.fixture
-def client(mocker, mock_params):
-    mocker.patch("MicrosoftApiModule.MicrosoftClient.http_request")
-    mocker.patch("MicrosoftApiModule.MicrosoftClient.get_access_token")
-    return AzureClient(
-        app_id=mock_params.get("app_id", ""),
-        subscription_id=mock_params.get("subscription_id", ""),
-        resource_group_name=mock_params.get("resource_group_name", ""),
-        verify=not mock_params.get("insecure", False),
-        proxy=mock_params.get("proxy", False),
-        tenant_id=mock_params.get("tenant_id"),
-        enc_key=mock_params.get("credentials", {}).get("password"),
-    )
 
 
 def util_load_json(path):
@@ -2786,3 +2779,99 @@ def test_extract_azure_resource_info():
     assert subscription_id == "12345678-1234-1234-1234-123456789012"
     assert resource_group == "test-rg"
     assert account_name is None
+
+
+def test_storage_container_blob_create_command(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to create a blob in a storage container.
+    When: The storage_container_blob_create_command function is called with valid parameters.
+    Then: The function should call the client's create_blob method and return a success message.
+    """
+    # Mock arguments
+    args = {
+        "container_name": "testcontainer",
+        "account_name": "testaccount",
+        "file_entry_id": "test_file_entry_id",
+        "blob_name": "test_blob.txt",
+    }
+
+    # Mock demisto.getFilePath
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "/tmp/test_file.txt", "name": "test_file.txt"})
+
+    # Mock os.path.getsize
+    mocker.patch("os.path.getsize", return_value=100)  # Simulate a file size of 100 bytes
+
+    # Mock builtins.open
+    mock_file_content = b"This is a test file content."
+    mocker.patch("builtins.open", mocker.mock_open(read_data=mock_file_content))
+
+    # Mock the client's storage_container_create_blob_request method
+    mock_response = mocker.Mock(spec=Response)
+    mock_response.status_code = 201
+    mock_response.text = "Blob created"
+    mocker.patch.object(client, "storage_container_create_blob_request", return_value=mock_response)
+
+    # Call the function
+    result = Azure.storage_container_blob_create_command(client, mock_params, args)
+
+    # Verify results
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "Blob test_blob.txt successfully created."
+    assert result.raw_response == mock_response
+
+    # Verify client.storage_container_create_blob_request was called with correct parameters
+    client.storage_container_create_blob_request.assert_called_once_with(
+        args["container_name"], args["account_name"], args["file_entry_id"], args["blob_name"]
+    )
+
+def test_storage_container_property_get_command(mocker):
+    """
+    Given: An Azure client mock and the update_blob_container.json file.
+    When: storage_blob_containers_update_command is called.
+    Then:
+        1. It should call client.storage_blob_containers_create_update_request with correct parameters and PATCH method.
+        2. It should extract subscription_id, resource_group, and account_name from the response ID.
+        3. The CommandResults should have correct outputs, readable_output, and metadata.
+    """
+
+    params = {}
+    args = {"container_name": "testcontainer", "account_name": "testaccount"}
+
+    # 3. Create the mock client and the mock HTTP response (using mocker.Mock())
+    mock_client = mocker.Mock()
+    
+    # Prepare the mocked HTTP response object with headers
+    mock_response = mocker.Mock()
+    # The CaseInsensitiveDict is what the requests library returns for headers
+    raw_response_data = {
+        "Content-Length": "0",
+        "Etag": "0x8DB7F5589F2DC4A",
+        "Last-Modified": "Wed, 14 Aug 2024 10:00:00 GMT",
+        "x-ms-request-id": "req-id-12345",
+        "x-ms-lease-status": "unlocked",
+        "x-ms-lease-state": "available",
+        "x-ms-blob-public-access": "container"
+    }
+    mock_response.headers = CaseInsensitiveDict(raw_response_data)
+    
+    # Configure the client method to return this mock response
+    mock_client.get_storage_container_properties_request.return_value = mock_response
+
+    result: CommandResults = storage_container_property_get_command(mock_client, params, args)
+
+    mock_client.http_request.assert_called_once_with(
+        subscription_id="subid", resource_group_name="rg1", args=args, method="PATCH"
+    )
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.StorageBlobContainer"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+    assert result.raw_response == mock_response
+
+    assert "Azure Storage Blob Containers Properties" in result.readable_output
+    assert "container6185" in result.readable_output
+    assert "sto328" in result.readable_output
+    assert "subscription-id" in result.readable_output
+    assert "res3376" in result.readable_output
+    assert "Container" in result.readable_output
