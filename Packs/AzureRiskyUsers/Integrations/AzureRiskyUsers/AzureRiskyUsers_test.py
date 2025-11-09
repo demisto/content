@@ -1,16 +1,7 @@
 import json
 
 import pytest
-from AzureRiskyUsers import (
-    CLIENT_CREDENTIALS_FLOW,
-    DEVICE_FLOW,
-    Client,
-    azure_risky_users_confirm_compromise_command,
-    azure_risky_users_confirm_safe_command,
-    resolve_users_to_ids,
-    DemistoException,
-    CommandResults,
-)
+from AzureRiskyUsers import CLIENT_CREDENTIALS_FLOW, DEVICE_FLOW, Client
 
 BASE_URL = "https://graph.microsoft.com/v1.0/"
 ACCESS_TOKEN_REQUEST_URL = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
@@ -51,7 +42,7 @@ def test_risky_users_list_command_without_pagination(requests_mock) -> None:
     result = risky_users_list_command(mock_client(), {"limit": "20"})
     assert result[0].outputs_prefix == "AzureRiskyUsers.RiskyUser"
     assert result[0].outputs_key_field == "id"
-    assert len(result[0].raw_response.get("value")) == 3
+    assert len(result[0].raw_response) == 3
 
 
 def test_risky_users_list_command_with_page_size(requests_mock) -> None:
@@ -75,7 +66,7 @@ def test_risky_users_list_command_with_page_size(requests_mock) -> None:
     result = risky_users_list_command(mock_client(), {"page_size": "3"})
     assert result[0].outputs_prefix == "AzureRiskyUsers.RiskyUser"
     assert result[0].outputs_key_field == "id"
-    assert len(result[0].raw_response.get("value")) == 3
+    assert len(result[0].raw_response) == 3
     assert result[1].outputs == {"AzureRiskyUsers(true)": {"RiskyUserListNextToken": mock_response.get("@odata.nextLink")}}
 
 
@@ -102,7 +93,7 @@ def test_risky_users_list_command_with_token(requests_mock) -> None:
     assert result[0].outputs_prefix == "AzureRiskyUsers.RiskyUser"
     assert result[0].outputs_key_field == "id"
     assert len(result[0].outputs) == 3
-    assert len(result[0].raw_response.get("value")) == 3
+    assert len(result[0].raw_response) == 3
     assert result[1].outputs == {"AzureRiskyUsers(true)": {"RiskyUserListNextToken": mock_response.get("@odata.nextLink")}}
     assert requested_mock_token.call_count == 1
     assert requested_mock_without_token.call_count == 0
@@ -131,7 +122,7 @@ def test_risky_users_list_command_with_limit(requests_mock) -> None:
     assert result[0].outputs_prefix == "AzureRiskyUsers.RiskyUser"
     assert result[0].outputs_key_field == "id"
     assert len(result[0].outputs) == 6
-    assert "RiskyUserListNextToken" not in result[0].outputs_key_field
+    assert "RiskyUserListNextToken" not in result[0].outputs
 
 
 def test_risky_users_list_command_with_order_by(requests_mock) -> None:
@@ -161,7 +152,7 @@ def test_risky_users_list_command_with_order_by(requests_mock) -> None:
     assert result[0].outputs_key_field == "id"
 
     assert result[0].outputs[0].get("id") == "111"
-    assert "RiskyUserListNextToken" not in result[0].outputs_key_field
+    assert "RiskyUserListNextToken" not in result[0].outputs
 
 
 def test_risky_users_list_command_with_updated_after(requests_mock) -> None:
@@ -191,7 +182,7 @@ def test_risky_users_list_command_with_updated_after(requests_mock) -> None:
     assert result[0].outputs_key_field == "id"
 
     assert result[0].outputs[0].get("id") == "111"
-    assert "RiskyUserListNextToken" not in result[0].outputs_key_field
+    assert "RiskyUserListNextToken" not in result[0].outputs
 
 
 def test_risky_user_get_command(requests_mock) -> None:
@@ -300,7 +291,6 @@ def test_get_skip_token() -> None:
     result = get_skip_token(
         next_link=None, outputs_prefix="AzureRiskyUsers.RiskyUser", outputs_key_field="id", readable_output="test"
     )
-    assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "AzureRiskyUsers.RiskyUser"
     assert result.outputs_key_field == "id"
     assert result.readable_output == "test"
@@ -463,473 +453,3 @@ def test_do_pagination_without_next_token(mocker):
     assert requests_mock.call_count == 0
     assert data == expected_result
     assert last_next_link == mock_response.get("@odata.nextLink")
-
-
-def test_azure_risky_users_confirm_compromise_command(requests_mock) -> None:
-    """
-    Scenario: Confirm user(s) as compromised.
-    Given:
-     - User has provided valid credentials.
-     - Headers and JWT token have been set.
-    When:
-     - azure_risky_users_confirm_compromise_command is called with user IDs.
-    Then:
-     - Ensure the API is called with the correct endpoint and payload.
-     - Ensure a success message is returned.
-    """
-    user_ids = ["user1_id", "user2_id"]
-    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
-    confirm_compromised_mock = requests_mock.post(
-        f"{BASE_URL}identityProtection/riskyUsers/confirmCompromised",
-        json={},
-        status_code=204
-    )
-    result = azure_risky_users_confirm_compromise_command(mock_client(), {"user": user_ids})
-    assert confirm_compromised_mock.called_once
-    assert confirm_compromised_mock.last_request.json() == {"userIds": user_ids}
-    assert result.readable_output == f"Request to confirm user {', '.join(user_ids)} as compromised was successful."
-
-
-def test_azure_risky_users_confirm_compromise_command_with_upn(requests_mock) -> None:
-    """
-    Scenario: Confirm user(s) as compromised using UPNs.
-    Given:
-     - User has provided valid credentials.
-     - Headers and JWT token have been set.
-    When:
-     - azure_risky_users_confirm_compromise_command is called with UPNs.
-    Then:
-     - Ensure the API is called with the correct endpoint and payload after UPN resolution.
-     - Ensure a success message is returned.
-    """
-    user_upns = ["user1@example.com", "user2@example.com"]
-    user_ids = ["user1_id", "user2_id"]
-    mock_risky_users_response = {
-        "value": [
-            {"id": "user1_id", "userPrincipalName": "user1@example.com"},
-            {"id": "user2_id", "userPrincipalName": "user2@example.com"},
-        ]
-    }
-    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
-    requests_mock.get(
-        f"{BASE_URL}identityProtection/riskyUsers?%24filter=userPrincipalName+eq+%27user1%40example.com%27",
-        json={"value": [mock_risky_users_response["value"][0]]}
-    )
-    requests_mock.get(
-        f"{BASE_URL}identityProtection/riskyUsers?%24filter=userPrincipalName+eq+%27user2%40example.com%27",
-        json={"value": [mock_risky_users_response["value"][1]]}
-    )
-    confirm_compromised_mock = requests_mock.post(
-        f"{BASE_URL}identityProtection/riskyUsers/confirmCompromised",
-        json={},
-        status_code=204
-    )
-    result = azure_risky_users_confirm_compromise_command(mock_client(), {"user": user_upns})
-    assert confirm_compromised_mock.called_once
-    assert confirm_compromised_mock.last_request.json() == {"userIds": user_ids}
-    assert result.readable_output == f"Request to confirm user {', '.join(user_upns)} as compromised was successful."
-
-
-def test_azure_risky_users_confirm_safe_command(requests_mock) -> None:
-    """
-    Scenario: Confirm user(s) as safe.
-    Given:
-     - User has provided valid credentials.
-     - Headers and JWT token have been set.
-    When:
-     - azure_risky_users_confirm_safe_command is called with user IDs.
-    Then:
-     - Ensure the API is called with the correct endpoint and payload.
-     - Ensure a success message is returned.
-    """
-    user_ids = ["user3_id", "user4_id"]
-    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
-    confirm_safe_mock = requests_mock.post(
-        f"{BASE_URL}identityProtection/riskyUsers/confirm",
-        json={},
-        status_code=204
-    )
-    result = azure_risky_users_confirm_safe_command(mock_client(), {"user": user_ids})
-    assert confirm_safe_mock.called_once
-    assert confirm_safe_mock.last_request.json() == {"userIds": user_ids}
-    assert result.readable_output == f"Request to confirm user {', '.join(user_ids)} as safe was successful."
-
-
-def test_azure_risky_users_confirm_safe_command_with_upn(requests_mock) -> None:
-    """
-    Scenario: Confirm user(s) as safe using UPNs.
-    Given:
-     - User has provided valid credentials.
-     - Headers and JWT token have been set.
-    When:
-     - azure_risky_users_confirm_safe_command is called with UPNs.
-    Then:
-     - Ensure the API is called with the correct endpoint and payload after UPN resolution.
-     - Ensure a success message is returned.
-    """
-    user_upns = ["user3@example.com", "user4@example.com"]
-    user_ids = ["user3_id", "user4_id"]
-    mock_risky_users_response = {
-        "value": [
-            {"id": "user3_id", "userPrincipalName": "user3@example.com"},
-            {"id": "user4_id", "userPrincipalName": "user4@example.com"},
-        ]
-    }
-    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
-    requests_mock.get(
-        f"{BASE_URL}identityProtection/riskyUsers?%24filter=userPrincipalName+eq+%27user3%40example.com%27",
-        json={"value": [mock_risky_users_response["value"][0]]}
-    )
-    requests_mock.get(
-        f"{BASE_URL}identityProtection/riskyUsers?%24filter=userPrincipalName+eq+%27user4%40example.com%27",
-        json={"value": [mock_risky_users_response["value"][1]]}
-    )
-    confirm_safe_mock = requests_mock.post(
-        f"{BASE_URL}identityProtection/riskyUsers/confirm",
-        json={},
-        status_code=204
-    )
-    result = azure_risky_users_confirm_safe_command(mock_client(), {"user": user_upns})
-    assert confirm_safe_mock.called_once
-    assert confirm_safe_mock.last_request.json() == {"userIds": user_ids}
-    assert result.readable_output == f"Request to confirm user {', '.join(user_upns)} as safe was successful."
-
-
-def test_resolve_users_to_ids_upn_not_found(requests_mock):
-    """
-    Scenario: Attempt to resolve a UPN that does not exist.
-    Given:
-     - A UPN that does not correspond to an existing user.
-    When:
-     - resolve_users_to_ids is called.
-    Then:
-     - A DemistoException is raised.
-    """
-    user_upns = ["nonexistent@example.com"]
-    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
-    requests_mock.get(
-        f"{BASE_URL}identityProtection/riskyUsers?%24filter=userPrincipalName+eq+%27nonexistent%40example.com%27",
-        json={"value": []}
-    )
-    with pytest.raises(DemistoException, match="Could not resolve UPN 'nonexistent@example.com' to a user ID."):
-        resolve_users_to_ids(mock_client(), user_upns)
-
-
-def test_azure_risky_users_confirm_compromise_command(requests_mock) -> None:
-    """
-    Scenario: Confirm user(s) as compromised.
-    Given:
-     - User has provided valid credentials.
-     - Headers and JWT token have been set.
-    When:
-     - azure_risky_users_confirm_compromise_command is called with user IDs.
-    Then:
-     - Ensure the API is called with the correct endpoint and payload.
-     - Ensure a success message is returned.
-    """
-    from AzureRiskyUsers import azure_risky_users_confirm_compromise_command
-
-    user_ids = ["user1_id", "user2_id"]
-    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
-    confirm_compromised_mock = requests_mock.post(
-        f"{BASE_URL}identityProtection/riskyUsers/confirmCompromised",
-        json={},
-        status_code=204
-    )
-    result = azure_risky_users_confirm_compromise_command(mock_client(), {"user": user_ids})
-    assert confirm_compromised_mock.called_once
-    assert confirm_compromised_mock.last_request.json() == {"userIds": user_ids}
-    assert result.readable_output == f"Request to confirm user {', '.join(user_ids)} as compromised was successful."
-
-
-def test_azure_risky_users_confirm_compromise_command_with_upn(requests_mock) -> None:
-    """
-    Scenario: Confirm user(s) as compromised using UPNs.
-    Given:
-     - User has provided valid credentials.
-     - Headers and JWT token have been set.
-    When:
-     - azure_risky_users_confirm_compromise_command is called with UPNs.
-    Then:
-     - Ensure the API is called with the correct endpoint and payload after UPN resolution.
-     - Ensure a success message is returned.
-    """
-    from AzureRiskyUsers import azure_risky_users_confirm_compromise_command
-
-    user_upns = ["user1@example.com", "user2@example.com"]
-    user_ids = ["user1_id", "user2_id"]
-    mock_risky_users_response = {
-        "value": [
-            {"id": "user1_id", "userPrincipalName": "user1@example.com"},
-            {"id": "user2_id", "userPrincipalName": "user2@example.com"},
-        ]
-    }
-    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
-    requests_mock.get(
-        f"{BASE_URL}identityProtection/riskyUsers?%24filter=userPrincipalName+eq+%27user1%40example.com%27",
-        json={"value": [mock_risky_users_response["value"][0]]}
-    )
-    requests_mock.get(
-        f"{BASE_URL}identityProtection/riskyUsers?%24filter=userPrincipalName+eq+%27user2%40example.com%27",
-        json={"value": [mock_risky_users_response["value"][1]]}
-    )
-    confirm_compromised_mock = requests_mock.post(
-        f"{BASE_URL}identityProtection/riskyUsers/confirmCompromised",
-        json={},
-        status_code=204
-    )
-    result = azure_risky_users_confirm_compromise_command(mock_client(), {"user": user_upns})
-    assert confirm_compromised_mock.called_once
-    assert confirm_compromised_mock.last_request.json() == {"userIds": user_ids}
-    assert result.readable_output == f"Request to confirm user {', '.join(user_upns)} as compromised was successful."
-
-
-def test_azure_risky_users_confirm_safe_command(requests_mock) -> None:
-    """
-    Scenario: Confirm user(s) as safe.
-    Given:
-     - User has provided valid credentials.
-     - Headers and JWT token have been set.
-    When:
-     - azure_risky_users_confirm_safe_command is called with user IDs.
-    Then:
-     - Ensure the API is called with the correct endpoint and payload.
-     - Ensure a success message is returned.
-    """
-    from AzureRiskyUsers import azure_risky_users_confirm_safe_command
-
-    user_ids = ["user3_id", "user4_id"]
-    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
-    confirm_safe_mock = requests_mock.post(
-        f"{BASE_URL}identityProtection/riskyUsers/confirm",
-        json={},
-        status_code=204
-    )
-    result = azure_risky_users_confirm_safe_command(mock_client(), {"user": user_ids})
-    assert confirm_safe_mock.called_once
-    assert confirm_safe_mock.last_request.json() == {"userIds": user_ids}
-    assert result.readable_output == f"Request to confirm user {', '.join(user_ids)} as safe was successful."
-
-
-def test_azure_risky_users_confirm_safe_command_with_upn(requests_mock) -> None:
-    """
-    Scenario: Confirm user(s) as safe using UPNs.
-    Given:
-     - User has provided valid credentials.
-     - Headers and JWT token have been set.
-    When:
-     - azure_risky_users_confirm_safe_command is called with UPNs.
-    Then:
-     - Ensure the API is called with the correct endpoint and payload after UPN resolution.
-     - Ensure a success message is returned.
-    """
-    from AzureRiskyUsers import azure_risky_users_confirm_safe_command
-
-    user_upns = ["user3@example.com", "user4@example.com"]
-    user_ids = ["user3_id", "user4_id"]
-    mock_risky_users_response = {
-        "value": [
-            {"id": "user3_id", "userPrincipalName": "user3@example.com"},
-            {"id": "user4_id", "userPrincipalName": "user4@example.com"},
-        ]
-    }
-    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
-    requests_mock.get(
-        f"{BASE_URL}identityProtection/riskyUsers?%24filter=userPrincipalName+eq+%27user3%40example.com%27",
-        json={"value": [mock_risky_users_response["value"][0]]}
-    )
-    requests_mock.get(
-        f"{BASE_URL}identityProtection/riskyUsers?%24filter=userPrincipalName+eq+%27user4%40example.com%27",
-        json={"value": [mock_risky_users_response["value"][1]]}
-    )
-    confirm_safe_mock = requests_mock.post(
-        f"{BASE_URL}identityProtection/riskyUsers/confirm",
-        json={},
-        status_code=204
-    )
-    result = azure_risky_users_confirm_safe_command(mock_client(), {"user": user_upns})
-    assert confirm_safe_mock.called_once
-    assert confirm_safe_mock.last_request.json() == {"userIds": user_ids}
-    assert result.readable_output == f"Request to confirm user {', '.join(user_upns)} as safe was successful."
-
-
-def test_resolve_users_to_ids_upn_not_found(requests_mock):
-    """
-    Scenario: Attempt to resolve a UPN that does not exist.
-    Given:
-     - A UPN that does not correspond to an existing user.
-    When:
-     - resolve_users_to_ids is called.
-    Then:
-     - A DemistoException is raised.
-    """
-    from AzureRiskyUsers import resolve_users_to_ids, DemistoException
-
-    user_upns = ["nonexistent@example.com"]
-    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
-    requests_mock.get(
-        f"{BASE_URL}identityProtection/riskyUsers?%24filter=userPrincipalName+eq+%27nonexistent%40example.com%27",
-        json={"value": []}
-    )
-    with pytest.raises(DemistoException, match="Could not resolve UPN 'nonexistent@example.com' to a user ID."):
-        resolve_users_to_ids(mock_client(), user_upns)
-
-
-def test_azure_risky_users_confirm_compromise_command(requests_mock) -> None:
-    """
-    Scenario: Confirm user(s) as compromised.
-    Given:
-     - User has provided valid credentials.
-     - Headers and JWT token have been set.
-    When:
-     - azure_risky_users_confirm_compromise_command is called with user IDs.
-    Then:
-     - Ensure the API is called with the correct endpoint and payload.
-     - Ensure a success message is returned.
-    """
-    from AzureRiskyUsers import azure_risky_users_confirm_compromise_command
-
-    user_ids = ["user1_id", "user2_id"]
-    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
-    confirm_compromised_mock = requests_mock.post(
-        f"{BASE_URL}identityProtection/riskyUsers/confirmCompromised",
-        json={},
-        status_code=204
-    )
-    result = azure_risky_users_confirm_compromise_command(mock_client(), {"user": user_ids})
-    assert confirm_compromised_mock.called_once
-    assert confirm_compromised_mock.last_request.json() == {"userIds": user_ids}
-    assert result.readable_output == f"Request to confirm user {', '.join(user_ids)} as compromised was successful."
-
-
-def test_azure_risky_users_confirm_compromise_command_with_upn(requests_mock) -> None:
-    """
-    Scenario: Confirm user(s) as compromised using UPNs.
-    Given:
-     - User has provided valid credentials.
-     - Headers and JWT token have been set.
-    When:
-     - azure_risky_users_confirm_compromise_command is called with UPNs.
-    Then:
-     - Ensure the API is called with the correct endpoint and payload after UPN resolution.
-     - Ensure a success message is returned.
-    """
-    from AzureRiskyUsers import azure_risky_users_confirm_compromise_command
-
-    user_upns = ["user1@example.com", "user2@example.com"]
-    user_ids = ["user1_id", "user2_id"]
-    mock_risky_users_response = {
-        "value": [
-            {"id": "user1_id", "userPrincipalName": "user1@example.com"},
-            {"id": "user2_id", "userPrincipalName": "user2@example.com"},
-        ]
-    }
-    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
-    requests_mock.get(
-        f"{BASE_URL}identityProtection/riskyUsers?%24filter=userPrincipalName+eq+%27user1%40example.com%27",
-        json={"value": [mock_risky_users_response["value"][0]]}
-    )
-    requests_mock.get(
-        f"{BASE_URL}identityProtection/riskyUsers?%24filter=userPrincipalName+eq+%27user2%40example.com%27",
-        json={"value": [mock_risky_users_response["value"][1]]}
-    )
-    confirm_compromised_mock = requests_mock.post(
-        f"{BASE_URL}identityProtection/riskyUsers/confirmCompromised",
-        json={},
-        status_code=204
-    )
-    result = azure_risky_users_confirm_compromise_command(mock_client(), {"user": user_upns})
-    assert confirm_compromised_mock.called_once
-    assert confirm_compromised_mock.last_request.json() == {"userIds": user_ids}
-    assert result.readable_output == f"Request to confirm user {', '.join(user_upns)} as compromised was successful."
-
-
-def test_azure_risky_users_confirm_safe_command(requests_mock) -> None:
-    """
-    Scenario: Confirm user(s) as safe.
-    Given:
-     - User has provided valid credentials.
-     - Headers and JWT token have been set.
-    When:
-     - azure_risky_users_confirm_safe_command is called with user IDs.
-    Then:
-     - Ensure the API is called with the correct endpoint and payload.
-     - Ensure a success message is returned.
-    """
-    from AzureRiskyUsers import azure_risky_users_confirm_safe_command
-
-    user_ids = ["user3_id", "user4_id"]
-    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
-    confirm_safe_mock = requests_mock.post(
-        f"{BASE_URL}identityProtection/riskyUsers/confirm",
-        json={},
-        status_code=204
-    )
-    result = azure_risky_users_confirm_safe_command(mock_client(), {"user": user_ids})
-    assert confirm_safe_mock.called_once
-    assert confirm_safe_mock.last_request.json() == {"userIds": user_ids}
-    assert result.readable_output == f"Request to confirm user {', '.join(user_ids)} as safe was successful."
-
-
-def test_azure_risky_users_confirm_safe_command_with_upn(requests_mock) -> None:
-    """
-    Scenario: Confirm user(s) as safe using UPNs.
-    Given:
-     - User has provided valid credentials.
-     - Headers and JWT token have been set.
-    When:
-     - azure_risky_users_confirm_safe_command is called with UPNs.
-    Then:
-     - Ensure the API is called with the correct endpoint and payload after UPN resolution.
-     - Ensure a success message is returned.
-    """
-    from AzureRiskyUsers import azure_risky_users_confirm_safe_command
-
-    user_upns = ["user3@example.com", "user4@example.com"]
-    user_ids = ["user3_id", "user4_id"]
-    mock_risky_users_response = {
-        "value": [
-            {"id": "user3_id", "userPrincipalName": "user3@example.com"},
-            {"id": "user4_id", "userPrincipalName": "user4@example.com"},
-        ]
-    }
-    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
-    requests_mock.get(
-        f"{BASE_URL}identityProtection/riskyUsers?%24filter=userPrincipalName+eq+%27user3%40example.com%27",
-        json={"value": [mock_risky_users_response["value"][0]]}
-    )
-    requests_mock.get(
-        f"{BASE_URL}identityProtection/riskyUsers?%24filter=userPrincipalName+eq+%27user4%40example.com%27",
-        json={"value": [mock_risky_users_response["value"][1]]}
-    )
-    confirm_safe_mock = requests_mock.post(
-        f"{BASE_URL}identityProtection/riskyUsers/confirm",
-        json={},
-        status_code=204
-    )
-    result = azure_risky_users_confirm_safe_command(mock_client(), {"user": user_upns})
-    assert confirm_safe_mock.called_once
-    assert confirm_safe_mock.last_request.json() == {"userIds": user_ids}
-    assert result.readable_output == f"Request to confirm user {', '.join(user_upns)} as safe was successful."
-
-
-def test_resolve_users_to_ids_upn_not_found(requests_mock):
-    """
-    Scenario: Attempt to resolve a UPN that does not exist.
-    Given:
-     - A UPN that does not correspond to an existing user.
-    When:
-     - resolve_users_to_ids is called.
-    Then:
-     - A DemistoException is raised.
-    """
-    from AzureRiskyUsers import resolve_users_to_ids, DemistoException
-
-    user_upns = ["nonexistent@example.com"]
-    requests_mock.post(ACCESS_TOKEN_REQUEST_URL, json={})
-    requests_mock.get(
-        f"{BASE_URL}identityProtection/riskyUsers?%24filter=userPrincipalName+eq+%27nonexistent%40example.com%27",
-        json={"value": []}
-    )
-    with pytest.raises(DemistoException, match="Could not resolve UPN 'nonexistent@example.com' to a user ID."):
-        resolve_users_to_ids(mock_client(), user_upns)
