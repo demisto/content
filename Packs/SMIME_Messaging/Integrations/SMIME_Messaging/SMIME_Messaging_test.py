@@ -82,7 +82,9 @@ def test_sign():
     message_body = "text to check"
 
     sign = sign_email(client, {"message_body": message_body}).readable_output
-    assert 'MIME-Version: 1.0\nContent-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg="sha-256";' in sign
+    assert (
+        'MIME-Version: 1.0\nContent-Type: multipart/signed; protocol="application/x-pkcs7-signature"; micalg="sha-256";' in sign
+    )
 
 
 def test_verify(mocker):

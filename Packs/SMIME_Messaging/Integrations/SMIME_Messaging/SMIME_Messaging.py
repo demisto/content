@@ -434,7 +434,7 @@ def verify(client: Client, args: dict) -> List[CommandResults]:
             raise DemistoException("SMIME error while loading message")
         p7, data = result
         verified_data = client.smime.verify(p7, data, flags=SMIME.PKCS7_NOVERIFY)
-        human_readable = f"The signature verified\n\n{verified_data}"
+        human_readable = f"The signature verified\n\n{verified_data}"  # type: ignore[str-bytes-safe]
 
     except SMIME.SMIME_Error as e:
         if str(e) == "no content type":
@@ -528,8 +528,8 @@ def decrypt_email_body(client: Client, args: dict) -> List[CommandResults]:
     try:
         p7 = SMIME.smime_load_pkcs7(encrypt_message["path"])
         if isinstance(p7, tuple):
-            p7 = p7[0]
-        decrypted_text = client.smime.decrypt(p7)
+            p7 = p7[0]  # type: ignore[assignment]
+        decrypted_text = client.smime.decrypt(p7)  # type: ignore[arg-type]
         if not decrypted_text:
             raise ValueError("Unknown error: failed to decrypt message")
         out, msg = decode_str(decrypted_text, encoding)
@@ -540,8 +540,8 @@ def decrypt_email_body(client: Client, args: dict) -> List[CommandResults]:
             with open(encrypt_message["path"], "rb") as message_file:
                 p7data = message_file.read()
             p7bio = BIO.MemoryBuffer(p7data)
-            p7 = SMIME.load_pkcs7_bio_der(p7bio)
-            decrypted_text = client.smime.decrypt(p7, flags=SMIME.PKCS7_NOVERIFY)
+            p7 = SMIME.load_pkcs7_bio_der(p7bio)  # type: ignore[assignment]
+            decrypted_text = client.smime.decrypt(p7, flags=SMIME.PKCS7_NOVERIFY)  # type: ignore[arg-type]
             if not decrypted_text:
                 raise ValueError("Unknown error: failed to decrypt message")
             out, msg = decode_str(decrypted_text, encoding)
