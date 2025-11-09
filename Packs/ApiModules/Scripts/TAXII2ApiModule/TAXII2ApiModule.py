@@ -530,6 +530,9 @@ class XSOAR2STIXParser:
         for ioc in indicator_searcher:
             found_indicators = ioc.get("iocs") or []
             total = ioc.get("total")
+
+            demisto.info(f"create_indicators Found {len(found_indicators)} {total=}")
+
             for xsoar_indicator in found_indicators:
                 xsoar_type = xsoar_indicator.get("indicator_type")
                 if is_manifest:
@@ -549,12 +552,15 @@ class XSOAR2STIXParser:
                             extensions.append(extension_definition)
                     elif stix_ioc:
                         iocs.append(stix_ioc)
+
+        demisto.info(f"create_indicators before {len(iocs)=}")
         if (
             not is_manifest
             and iocs
             and is_demisto_version_ge("6.6.0")
             and (relationships := self.create_relationships_objects(iocs, extensions))
         ):
+            demisto.info(f"create_indicators {len(relationships)=}")
             total += len(relationships)
             iocs.extend(relationships)
             iocs = sorted(iocs, key=lambda k: k["modified"])
