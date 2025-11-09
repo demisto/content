@@ -401,6 +401,7 @@ class Client(CoreClient):
         Returns:
             dict: The response from the API.
         """
+        demisto.debug(f"Policy creation payload: {policy_payload}")
         return self._http_request(
             method="POST",
             data=policy_payload,
@@ -915,37 +916,31 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
     builder.add_field("Finding Type", FilterType.EQ, finding_types, POLICY_FINDING_TYPE_MAPPING)
 
     # Severity
-    severities = argToList(args.get("conditions_severity"))
-    if severities:
+    if severities := argToList(args.get("conditions_severity")):
         builder.add_field("Severity", FilterType.EQ, severities)
 
     # Developer Suppression
-    dev_supp = arg_to_bool_or_none(args.get("conditions_developer_suppression"))
-    if dev_supp is not None:
+    if dev_supp := arg_to_bool_or_none(args.get("conditions_developer_suppression")):
         builder.add_field("Respect Developer Suppression", FilterType.EQ, dev_supp)
 
     # Backlog
-    backlog = args.get("conditions_backlog_status")
-    if backlog:
+    if backlog := args.get("conditions_backlog_status"):
         builder.add_field("Backlog Status", FilterType.EQ, backlog)
 
     # Packages
     for field in ["package_name", "package_version", "package_operational_risk"]:
-        val = args.get(f"conditions_{field}")
-        if val:
+        if val := args.get(f"conditions_{field}"):
             op = FilterType.CONTAINS if field == "package_name" else FilterType.EQ
             builder.add_field(field.replace("_", " ").title(), op, val)
 
     # AppSec Rules
-    rule_names = argToList(args.get("conditions_appsec_rule_names"))
-    if rule_names:
+    if rule_names := argToList(args.get("conditions_appsec_rule_names")):
         rule_ids = get_appsec_rule_ids_from_names(client, rule_names)
         builder.add_field("AppSec Rule", FilterType.EQ, rule_ids)
 
     # CVSS / EPSS
     for f, n in [("cvss", "CVSS"), ("epss", "EPSS")]:
-        val = arg_to_number(args.get(f"conditions_{f}"))
-        if val is not None:
+        if val := arg_to_number(args.get(f"conditions_{f}")):
             builder.add_field(n, FilterType.GTE, val)
 
     # Boolean Conditions
@@ -953,8 +948,7 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
         "has_a_fix": "HasAFix",
         "is_kev": "IsKev",
     }.items():
-        val = arg_to_bool_or_none(args.get(f"conditions_{key}"))
-        if val is not None:
+        if val := arg_to_bool_or_none(args.get(f"conditions_{key}")):
             builder.add_field(label, FilterType.EQ, val)
 
     # Secret Validity, License Type
@@ -962,8 +956,7 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
         "secret_validity": "SecretValidity",
         "license_type": "LicenseType",
     }.items():
-        vals = argToList(args.get(f"conditions_{key}", []))
-        if vals:
+        if vals := argToList(args.get(f"conditions_{key}", [])):
             builder.add_field(label, FilterType.EQ, vals)
 
     return builder.to_dict()
@@ -994,30 +987,31 @@ def create_policy_build_scope(args: dict) -> dict:
     builder = FilterBuilder()
 
     # Category
-    categories = argToList(args.get("scope_category", []))
-    if categories:
-        builder.add_field("Category", FilterType.EQ, categories, POLICY_CATEGORY_MAPPING)
+    if categories := argToList(args.get("scope_category", [])):
+        builder.add_field("category", FilterType.EQ, categories, POLICY_CATEGORY_MAPPING)
 
-    # Business Apps / Criticality
-    for field, label in {
-        "scope_business_application_names": "Business Application Names",
-        "scope_application_business_criticality": "Application Business Criticality",
-        "scope_repository_name": "Repository Name",
-    }.items():
-        val = args.get(field)
-        if val:
-            builder.add_field(label, FilterType.CONTAINS, val)
+    # Business application names - use the exact field name
+    if business_app_names := argToList(args.get("scope_business_application_names")):
+        filter_type = FilterType.ARRAY_CONTAINS if len(business_app_names) > 1 else FilterType.CONTAINS
+        builder.add_field("business_application_names", filter_type, business_app_names)
+
+    # Application business criticality
+    if app_criticality := args.get("scope_application_business_criticality"):
+        builder.add_field("application_business_criticality", FilterType.CONTAINS, app_criticality)
+
+    # Repository name
+    if repo_name := args.get("scope_repository_name"):
+        builder.add_field("repository_name", FilterType.CONTAINS, repo_name)
 
     # Boolean scope filters
     for key, label in {
-        "scope_is_public_repository": "Is Public Repository",
-        "scope_has_deployed_assets": "Has Deployed Assets",
-        "scope_has_internet_exposed_deployed_assets": "Has Internet-exposed deployed assets",
-        "scope_has_sensitive_data_access": "Has deployed assets with Access to sensitive data",
-        "scope_has_privileged_capabilities": "Has deployed assets with privileged capabilities",
+        "scope_is_public_repository": "is_public_repository",
+        "scope_has_deployed_assets": "has_deployed_assets",
+        "scope_has_internet_exposed_deployed_assets": "has_internet_exposed",
+        "scope_has_sensitive_data_access": "has_sensitive_data_access",
+        "scope_has_privileged_capabilities": "has_privileged_capabilities",
     }.items():
-        val = arg_to_bool_or_none(args.get(key))
-        if val is not None:
+        if val := arg_to_bool_or_none(args.get(key)):
             builder.add_field(label, FilterType.EQ, val)
 
     # Always return the filter dict (can be empty for scope)
