@@ -337,7 +337,7 @@ def test_build_file_name_report_formats(identifier, file_type, file_format, expe
         ("pending", False),
         ("completed", False),
         ("", False),
-        ("REPORTED", False),  # Case sensitive
+        ("REPORTED", False),
     ],
 )
 def test_status_is_reported(status, expected):
@@ -637,7 +637,6 @@ def test_view_machine_missing_name_fail(client):
 
 # ========================================
 # Tests: test-module Command
-
 # ========================================
 # Tests: 429 Rate Limit Handling
 # ========================================
@@ -1156,41 +1155,6 @@ def test_cape_task_report_get_command_not_found_fail(mocker, client):
 # ========================================
 
 
-def test_cape_task_screenshot_download_command_multiple(mocker, client):
-    """Tests cape_task_screenshot_download_command returns multiple screenshots."""
-    mocker.patch.object(
-        client,
-        "list_task_screenshots",
-        return_value={
-            "screenshots": [
-                {"number": 1, "url": "http://test.example.com/screenshot1.png"},
-                {"number": 2, "url": "http://test.example.com/screenshot2.png"},
-            ]
-        },
-    )
-
-    content_list = [
-        util_load_file("mock_screenshot_content_1.png"),
-        util_load_file("mock_screenshot_content_2.png"),
-    ]
-    filename_list = ["cape_task_123_screenshot_1.png", "cape_task_123_screenshot_2.png"]
-    mocker.patch.object(client, "get_task_screenshot", side_effect=content_list)
-    mocker.patch.object(CapeSandbox, "build_file_name", side_effect=filename_list)
-    mocker.patch(
-        "CapeSandbox.fileResult",
-        side_effect=[
-            {"File": filename_list[0], "TaskID": "123", "Contents": content_list[0]},
-            {"File": filename_list[1], "TaskID": "123", "Contents": content_list[1]},
-        ],
-    )
-
-    args = {"task_id": "123"}
-    result = cape_task_screenshot_download_command(client, args)
-    assert result.outputs_prefix == "Cape.Task.Screenshot"
-    assert isinstance(result.outputs, list)
-    assert len(result.outputs) == 2
-
-
 def test_cape_task_screenshot_download_single(mocker, client):
     """Tests downloading a single, specified screenshot number."""
     mock_content = util_load_file("mock_screenshot_content_1.png")
@@ -1205,14 +1169,84 @@ def test_cape_task_screenshot_download_single(mocker, client):
     assert result.outputs[0]["File"] == "screenshot_5.png"
 
 
-def test_cape_task_screenshot_download_no_candidates(mocker, client):
-    """Tests failure when no screenshots are found."""
-    mocker.patch.object(client, "list_task_screenshots", return_value={})
-    mocker.patch.object(client, "get_task_screenshot", side_effect=DemistoException("Not Found"))
+def test_cape_task_screenshot_download_all_zip_success(mocker, client):
+    """
+    Tests the 'download all' (no 'screenshot' arg) success path.
+    - Mocks the client's 'download_all_screenshots_zip' to return bytes.
+    - Verifies the correct file is created.
+    """
+    mocker.patch.object(client, "download_all_screenshots_zip", return_value=b"zip_content")
+    mocker.patch("CapeSandbox.fileResult", return_value={"Name": "mocked.zip"})
 
     args = {"task_id": "123"}
-    with pytest.raises(DemistoException, match="No screenshots found for task 123"):
+    results = cape_task_screenshot_download_command(client, args)
+
+    client.download_all_screenshots_zip.assert_called_with(task_id="123")
+
+    assert results.outputs is not None
+    assert isinstance(results.outputs, list)
+    assert len(results.outputs) == 1
+    assert results.outputs_prefix == "Cape.Task.Screenshot"
+    assert results.outputs[0]["Name"] == "mocked.zip"
+    assert "All Screenshots (ZIP)" in results.readable_output
+
+
+def test_cape_task_screenshot_download_single_success(mocker, client):
+    """
+    Tests the 'download single' (with 'screenshot' arg) success path.
+    - Mocks the client's 'get_task_screenshot' to return bytes.
+    - Verifies the correct file is created.
+    """
+    mocker.patch.object(client, "get_task_screenshot", return_value=b"png_content")
+    mocker.patch(
+        "CapeSandbox.fileResult",
+        return_value={"Name": "mocked.png", "ScreenshotNumber": "5"},
+    )
+
+    args = {"task_id": "123", "screenshot": "5"}
+    results = cape_task_screenshot_download_command(client, args)
+
+    client.get_task_screenshot.assert_called_with(task_id="123", number="5")
+
+    assert results.outputs is not None
+    assert isinstance(results.outputs, list)
+    assert len(results.outputs) == 1
+    assert results.outputs_prefix == "Cape.Task.Screenshot"
+    assert results.outputs[0]["Name"] == "mocked.png"
+    assert results.outputs[0]["ScreenshotNumber"] == "5"
+    assert "Screenshot 5" in results.readable_output
+
+
+def test_cape_task_screenshot_download_failure(mocker, client):
+    """
+    Tests that a client-side exception is correctly raised.
+    This test works for BOTH 'all' and 'single' paths.
+    """
+    # Mock the 'single' path to fail
+    mocker.patch.object(client, "get_task_screenshot", side_effect=DemistoException("Image Not Found"))
+
+    args = {"task_id": "123", "screenshot": "99"}
+
+    # The command should catch the DemistoException and re-raise it
+    with pytest.raises(
+        DemistoException,
+        match="Failed to fetch screenshots for task 123: Image Not Found",
+    ):
         cape_task_screenshot_download_command(client, args)
+
+    # Mock the 'all' path to fail
+    mocker.patch.object(
+        client,
+        "download_all_screenshots_zip",
+        side_effect=DemistoException("ZIP Not Found"),
+    )
+
+    args_all = {"task_id": "123"}
+    with pytest.raises(
+        DemistoException,
+        match="Failed to fetch screenshots for task 123: ZIP Not Found",
+    ):
+        cape_task_screenshot_download_command(client, args_all)
 
 
 # ========================================
@@ -1333,7 +1367,6 @@ def test_main_invalid_command_fail(mocker):
     mocker.patch.object(demisto, "params", return_value={"url": SERVER_URL, "api_token": "TOKEN"})
     mocker.patch.object(demisto, "args", return_value={})
 
-    # Mock return_error to capture the error
     mock_return_error = mocker.patch("CapeSandbox.return_error")
 
     CapeSandbox.main()
@@ -1407,7 +1440,7 @@ def test_main_command_execution_error(mocker):
     """Tests main() handles command execution errors gracefully."""
     mocker.patch.object(demisto, "command", return_value="cape-file-view")
     mocker.patch.object(demisto, "params", return_value={"url": SERVER_URL, "api_token": "TOKEN"})
-    mocker.patch.object(demisto, "args", return_value={})  # Missing required args
+    mocker.patch.object(demisto, "args", return_value={})
 
     mock_return_error = mocker.patch("CapeSandbox.return_error")
 

@@ -317,7 +317,6 @@ TASK_GET_PCAP = f"{TASKS_BASE}/{Action.GET.value}/{Action.PCAP.value}/{{task_id}
 CUCKOO_STATUS_URL = f"{BASE_PREFIX}/cuckoo/{Action.STATUS.value}/"
 TASK_SCREENSHOTS_LIST = f"{TASKS_BASE}/{Action.GET.value}/screenshot/{{task_id}}/"
 TASK_SCREENSHOT_GET = f"{TASKS_BASE}/{Action.GET.value}/screenshot/{{task_id}}/{{number}}/"
-
 # -- Files --
 FILE_VIEW_BY_TASK = f"{FILES_BASE}/{Action.VIEW.value}/{Action.ID.value}/{{task_id}}/"
 FILE_VIEW_BY_MD5 = f"{FILES_BASE}/{Action.VIEW.value}/{Action.MD5.value}/{{md5}}/"
@@ -708,13 +707,25 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
 
     def list_task_screenshots(self, task_id: int | str) -> Any:
         """Return list/metadata of screenshots for a task (JSON)."""
-        return self.http_request("GET", url_suffix=TASK_SCREENSHOTS_LIST.format(task_id=task_id))
+        return self.http_request(
+            "GET",
+            url_suffix=TASK_SCREENSHOTS_LIST.format(task_id=task_id),
+            resp_type=ResponseTypes.CONTENT.value,
+        )
 
     def get_task_screenshot(self, task_id: int | str, number: int | str) -> bytes:
         """Return a specific screenshot content (binary)."""
         return self.http_request(
             "GET",
             url_suffix=TASK_SCREENSHOT_GET.format(task_id=task_id, number=number),
+            resp_type=ResponseTypes.CONTENT.value,
+        )
+
+    def download_all_screenshots_zip(self, task_id: int | str) -> bytes:
+        """Return all screenshots as a single ZIP file (binary)."""
+        return self.http_request(
+            "GET",
+            url_suffix=TASK_SCREENSHOTS_LIST.format(task_id=task_id),
             resp_type=ResponseTypes.CONTENT.value,
         )
 
@@ -1478,91 +1489,154 @@ def cape_cuckoo_status_get_command(client: CapeSandboxClient, args: dict[str, An
     return CommandResults(readable_output=readable)
 
 
+# def cape_task_screenshot_download_command2(
+#     client: CapeSandboxClient, args: dict[str, Any]
+# ) -> CommandResults:
+#     """Download screenshots for a task."""
+#     command = "List Task Screenshots"
+#     demisto.debug(f"Starting execution of command: {command}")
+
+#     task_id = args["task_id"]
+#     single_number = arg_to_number(args.get("screenshot"))
+
+#     demisto.debug(f"Screenshot parameters: {task_id=}, {single_number=}")
+
+#     if single_number:
+#         demisto.debug(f"Downloading single screenshot number: {single_number}")
+#         candidates_raw = [single_number]
+
+#     else:
+#         demisto.debug(f"Fetching screenshot list for task_id: {task_id}")
+#         meta = client.list_task_screenshots(task_id)
+#         demisto.debug(f"Received screenshot metadata: {meta}")
+
+#         candidates_raw = meta.get("screenshots") or meta.get("data") or meta
+
+#         if not isinstance(candidates_raw, list):
+#             demisto.debug(
+#                 f"Screenshot metadata is not a list, setting to empty: {type(candidates_raw)}"
+#             )
+#             candidates_raw = []
+
+#     file_entries = []
+#     candidate_numbers = []
+
+#     demisto.debug(f"Processing {len(candidates_raw)} raw screenshot candidates")
+#     for idx, item in enumerate(candidates_raw):
+#         current_number: int | None = None
+#         if isinstance(item, dict):
+#             current_number = arg_to_number(item.get("number"))
+#             demisto.debug(f"Candidate {idx}: dict with number={current_number}")
+#         elif isinstance(item, int):
+#             current_number = item
+#             demisto.debug(f"Candidate {idx}: int={current_number}")
+#         else:
+#             demisto.debug(f"Candidate {idx}: unexpected type {type(item)}")
+
+#         if current_number is not None:
+#             candidate_numbers.append(current_number)
+
+#     if not candidate_numbers and not single_number:
+#         demisto.debug("No screenshot numbers found, using fallback range 1-5")
+#         candidate_numbers.extend(range(1, 6))
+
+#     demisto.debug(
+#         f"Processing {len(candidate_numbers)} screenshot numbers: {candidate_numbers}"
+#     )
+#     processed_numbers = set()
+
+#     for idx, number in enumerate(candidate_numbers):
+#         if number in processed_numbers:
+#             demisto.debug(f"Screenshot {number} already processed, skipping")
+#             continue
+
+#         try:
+#             demisto.debug(
+#                 f"[{idx+1}/{len(candidate_numbers)}] Downloading screenshot {number} for task {task_id}"
+#             )
+#             content = client.get_task_screenshot(task_id=task_id, number=number)
+#             demisto.debug(
+#                 f"Successfully retrieved screenshot {number}. Size: {len(content)} bytes"
+#             )
+#             filename = build_file_name(task_id, "screenshot", number)
+#             demisto.debug(f"Generated filename: {filename}")
+
+#             file_meta = fileResult(filename, content)
+
+#             file_meta["TaskID"] = task_id
+#             file_meta["ScreenshotNumber"] = number
+#             file_entries.append(file_meta)
+
+#             processed_numbers.add(number)
+#             demisto.debug(
+#                 f"Successfully processed screenshot {number} ({len(file_entries)} total)"
+#             )
+
+#         except DemistoException as error:
+#             demisto.debug(
+#                 f"Failed to fetch screenshot {number} for task {task_id}: {error}"
+#             )
+
+#     demisto.debug(
+#         f"Screenshot download complete. Total files: {len(file_entries)}, Processed numbers: {processed_numbers}"
+#     )
+
+#     if not file_entries:
+#         demisto.debug(f"No screenshots successfully downloaded for task {task_id}")
+#         raise DemistoException(f"No screenshots found for task {task_id}")
+
+#     readable = tableToMarkdown(
+#         f"{INTEGRATION_NAME} Screenshots for Task {task_id}",
+#         file_entries,
+#         headers=["TaskID", "ScreenshotNumber", "Name", "Size", "SHA1", "MD5"],
+#         headerTransform=string_to_table_header,
+#     )
+
+#     demisto.debug(f"Command '{command}' execution finished successfully.")
+#     return CommandResults(
+#         readable_output=readable,
+#         outputs_prefix="Cape.Task.Screenshot",
+#         outputs_key_field="ScreenshotNumber",
+#         outputs=file_entries,
+#     )
+
+
 def cape_task_screenshot_download_command(client: CapeSandboxClient, args: dict[str, Any]) -> CommandResults:
-    """Download screenshots for a task."""
-    command = "List Task Screenshots"
+    """
+    Download screenshots for a task.
+
+    - If 'screenshot' arg is provided, downloads that single image.
+    - If 'screenshot' arg is NOT provided, downloads all screenshots as a single ZIP file.
+    """
+    command = "Download Task Screenshots"
     demisto.debug(f"Starting execution of command: {command}")
 
     task_id = args["task_id"]
-    single_number = arg_to_number(args.get("screenshot"))
+    screenshot_number = args.get("screenshot")
 
-    demisto.debug(f"Screenshot parameters: {task_id=}, {single_number=}")
-
-    if single_number:
-        demisto.debug(f"Downloading single screenshot number: {single_number}")
-        candidates_raw = [single_number]
-
-    else:
-        # about to call with taskif
-        demisto.debug(f"Fetching screenshot list for task_id: {task_id}")
-        meta = client.list_task_screenshots(task_id)
-        demisto.debug(f"Received screenshot metadata: {meta}")
-
-        candidates_raw = meta.get("screenshots") or meta.get("data") or meta
-
-        if not isinstance(candidates_raw, list):
-            demisto.debug(f"Screenshot metadata is not a list, setting to empty: {type(candidates_raw)}")
-            candidates_raw = []
-
-    file_entries = []
-    candidate_numbers = []
-
-    demisto.debug(f"Processing {len(candidates_raw)} raw screenshot candidates")
-    for idx, item in enumerate(candidates_raw):
-        current_number: int | None = None
-        if isinstance(item, dict):
-            current_number = arg_to_number(item.get("number"))
-            demisto.debug(f"Candidate {idx}: dict with number={current_number}")
-        elif isinstance(item, int):
-            current_number = item
-            demisto.debug(f"Candidate {idx}: int={current_number}")
+    try:
+        if screenshot_number:
+            # Case 1: Download a single screenshot
+            file_meta, readable_title = _download_single_screenshot(client, task_id, screenshot_number)
         else:
-            demisto.debug(f"Candidate {idx}: unexpected type {type(item)}")
+            # Case 2: Download all screenshots as a zip
+            file_meta, readable_title = _download_all_screenshots_zip(client, task_id)
 
-        if current_number is not None:
-            candidate_numbers.append(current_number)
+        # We will always have just one file result (either the image or the zip)
+        file_entries = [file_meta]
 
-    if not candidate_numbers and not single_number:
-        demisto.debug("No screenshot numbers found, using fallback range 1-5")
-        candidate_numbers.extend(range(1, 6))
-
-    demisto.debug(f"Processing {len(candidate_numbers)} screenshot numbers: {candidate_numbers}")
-    processed_numbers = set()
-
-    for idx, number in enumerate(candidate_numbers):
-        if number in processed_numbers:
-            demisto.debug(f"Screenshot {number} already processed, skipping")
-            continue
-
-        try:
-            demisto.debug(f"[{idx+1}/{len(candidate_numbers)}] Downloading screenshot {number} for task {task_id}")
-            content = client.get_task_screenshot(task_id=task_id, number=number)
-            demisto.debug(f"Successfully retrieved screenshot {number}. Size: {len(content)} bytes")
-            filename = build_file_name(task_id, "screenshot", number)
-            demisto.debug(f"Generated filename: {filename}")
-
-            file_meta = fileResult(filename, content)
-
-            file_meta["TaskID"] = task_id
-            file_meta["ScreenshotNumber"] = number
-            file_entries.append(file_meta)
-
-            processed_numbers.add(number)
-            demisto.debug(f"Successfully processed screenshot {number} ({len(file_entries)} total)")
-
-        except DemistoException as error:
-            demisto.debug(f"Failed to fetch screenshot {number} for task {task_id}: {error}")
-
-    demisto.debug(f"Screenshot download complete. Total files: {len(file_entries)}, Processed numbers: {processed_numbers}")
+    except DemistoException as error:
+        demisto.debug(f"Failed to fetch screenshots for task {task_id}: {error}")
+        raise DemistoException(f"Failed to fetch screenshots for task {task_id}: {error}")
 
     if not file_entries:
         demisto.debug(f"No screenshots successfully downloaded for task {task_id}")
         raise DemistoException(f"No screenshots found for task {task_id}")
 
     readable = tableToMarkdown(
-        f"{INTEGRATION_NAME} Screenshots for Task {task_id}",
+        readable_title,
         file_entries,
-        headers=["TaskID", "ScreenshotNumber", "Name", "Size", "SHA1", "MD5"],
+        headers=["TaskID", "ScreenshotNumber", "Name", "Size", "SHA1", "MD5", "Note"],
         headerTransform=string_to_table_header,
     )
 
@@ -1570,9 +1644,42 @@ def cape_task_screenshot_download_command(client: CapeSandboxClient, args: dict[
     return CommandResults(
         readable_output=readable,
         outputs_prefix="Cape.Task.Screenshot",
-        outputs_key_field="ScreenshotNumber",
+        outputs_key_field="Name",
         outputs=file_entries,
     )
+
+
+def _download_single_screenshot(client: CapeSandboxClient, task_id: str, number: str) -> tuple[dict, str]:
+    """Downloads a single screenshot and builds its metadata."""
+
+    demisto.debug(f"Downloading single screenshot {number} for task {task_id}")
+    content = client.get_task_screenshot(task_id=task_id, number=number)
+    filename = build_file_name(file_identifier=task_id, file_type="screenshot", screenshot_number=int(number))
+
+    file_meta = fileResult(filename, content)
+    file_meta["TaskID"] = task_id
+    file_meta["ScreenshotNumber"] = number
+
+    readable_title = f"{INTEGRATION_NAME} Screenshot {number} for Task {task_id}"
+
+    # Return both the file data and the title for the Markdown table
+    return file_meta, readable_title
+
+
+def _download_all_screenshots_zip(client: CapeSandboxClient, task_id: str) -> tuple[dict, str]:
+    """Downloads all screenshots as a zip and builds its metadata."""
+
+    demisto.debug(f"Downloading all screenshots as ZIP for task {task_id}")
+    content = client.download_all_screenshots_zip(task_id=task_id)
+
+    filename = build_file_name(file_identifier=task_id, file_type="file", file_format="zip")
+
+    file_meta = fileResult(filename, content)
+    file_meta["TaskID"] = task_id
+    file_meta["Note"] = "All screenshots downloaded as a single ZIP file."
+    readable_title = f"{INTEGRATION_NAME} All Screenshots (ZIP) for Task {task_id}"
+
+    return file_meta, readable_title
 
 
 # endregion
