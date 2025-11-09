@@ -12,7 +12,7 @@ You can use the following methods to authenticate Microsoft Defender for Endpoin
 
 ### Authentication Using Cortex XSOAR app
 
-To use the **Cortex XSOAR application** and allow Cortex XSOAR/XSIAM access to Microsoft Defender For Endpoint an administrator has to approve our app using an admin consent flow by clicking this **[link]()**.
+To use the **Cortex XSOAR application** and allow Cortex XSOAR/XSIAM access to Microsoft Defender For Endpoint an administrator has to approve our app using an admin consent flow by clicking this **[link](https://oproxy.demisto.ninja/ms-defender-atp)**.
 After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key which should be inserted in the integration instance settings fields.
 If you previously had an API V1 configured based on the credentials obtained from this method, refer to the link above to gain new credentials with the relevant permissions.
 
