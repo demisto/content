@@ -1456,6 +1456,7 @@ def test_remove_mitre_technique_id_prefix():
     assert remove_mitre_technique_id_prefix("T123 - Multiple - Separators") == "Multiple - Separators"
     assert remove_mitre_technique_id_prefix("123 - No T prefix") == "123 - No T prefix"
 
+
 def test_unit42_error_handler_with_request_id(mocker):
     """
     Given:
@@ -1477,9 +1478,9 @@ def test_unit42_error_handler_with_request_id(mocker):
     unit42_error_handler(mock_response)
 
     expected_error_msg = (
-        f"Error in API request [Status: 500]\n"
-        f"[X-Request-ID: test-request-id-123]\n"
-        f"Response text - Internal Server Error"
+        "Error in API request [Status: 500]\n" "[X-Request-ID: test-request-id-123]\n" "Response text - Internal Server Error"
     )
     mock_return_error.assert_called_once_with(expected_error_msg)
-    demisto.debug.assert_called_once_with(f"{INTEGRATION_NAME} API Error - X-Request-ID: test-request-id-123, Status: 500, URL: https://example.com/api")
+    demisto.debug.assert_called_once_with(
+        f"{INTEGRATION_NAME} API Error - X-Request-ID: test-request-id-123, Status: 500, URL: https://example.com/api"
+    )
