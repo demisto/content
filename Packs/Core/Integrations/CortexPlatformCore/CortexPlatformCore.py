@@ -447,7 +447,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     )
 
 
-def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
+def search_asset_groups_command(client: Client, args: dict) -> List[CommandResults]:
     """
     Retrieves asset groups from the Cortex platform based on provided filters.
 
@@ -489,13 +489,30 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
         for item in data
     ]
 
-    return CommandResults(
+    command_results = []
+    command_results.append(CommandResults(
         readable_output=tableToMarkdown("AssetGroups", data, headerTransform=string_to_table_header),
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups.groups",
         outputs_key_field="id",
         outputs=data,
         raw_response=response,
-    )
+    ))
+    
+    filter_count = reply.get("FILTER_COUNT")
+
+    command_results.append(CommandResults(
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups.returned_count",
+        outputs=min(filter_count, limit),
+        raw_response=response,
+    ))
+
+    command_results.append(CommandResults(
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups.filtered_count",
+        outputs=filter_count,
+        raw_response=response,
+    ))
+
+    return command_results
 
 
 def build_webapp_request_data(

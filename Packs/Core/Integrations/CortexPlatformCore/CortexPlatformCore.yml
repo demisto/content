@@ -1213,6 +1213,11 @@ script:
           type: String
         - contextPath: Core.AssetGroups.modified_by_pretty
           description: The formatted name of the user who created the asset group.
+        - contextPath: Core.AssetGroups.returned_count
+          description: The actual number of asset groups that match all filter criteria and returned in this specific response.
+          type: String
+        - contextPath: Core.AssetGroups.filtered_count
+          description: The total number of asset groups in the system that match all filter criteria.
     - name: core-get-vulnerabilities
       description: "Retrieves vulnerabilities based on specified filters."
       arguments:
