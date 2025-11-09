@@ -869,18 +869,19 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
     demisto.debug(f"{payload=}")
 
     response = client.create_policy(payload)
+    execution_summary = {"executionSummary": "Cortex XDR Policy Created Successfully"}
+
     readable_output = tableToMarkdown(
         "Cortex XDR Policy Created Successfully",
-        response,
+        response if isinstance(response, dict) else execution_summary["executionSummary"],
         headers=["id", "name", "description", "createdAt"],
         headerTransform=string_to_table_header,
     )
-
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Policy",
         outputs_key_field="id",
-        outputs=response | {"executionSummary": "Cortex XDR Policy Created Successfully"},
+        outputs=response | execution_summary if isinstance(response, dict) else execution_summary,
         raw_response=response,
     )
 
