@@ -1,11 +1,11 @@
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
 # Columns representing different scanner coverage categories
-SCANNER_COLUMNS: List[str] = [
+SCANNER_COLUMNS: list[str] = [
     "is_scanned_by_vulnerabilities",
     "is_scanned_by_code_weakness",
     "is_scanned_by_secrets",
@@ -31,7 +31,7 @@ VALID_ARGS: set[str] = {
 }
 
 
-def get_command_results(command: str, args: Dict[str, Any]) -> Union[Dict[str, Any], List[Any]]:
+def get_command_results(command: str, args: dict[str, Any]) -> dict[str, Any] | list[Any]:
     """Execute a Cortex XSOAR (Demisto) command and return the parsed result.
 
     Args:
@@ -65,9 +65,7 @@ def get_command_results(command: str, args: Dict[str, Any]) -> Union[Dict[str, A
     return {}
 
 
-def transform_scanner_histograms_outputs(
-    asset_coverage_histograms: Dict[str, Any]
-) -> Tuple[Dict[str, Dict[str, float]], float]:
+def transform_scanner_histograms_outputs(asset_coverage_histograms: dict[str, Any]) -> tuple[dict[str, dict[str, float]], float]:
     """Transform scanner histogram data into a summarized structure.
 
     Args:
@@ -79,11 +77,11 @@ def transform_scanner_histograms_outputs(
             - The overall coverage percentage across all scanners.
     """
 
-    def get_count(data: List[Dict[str, Any]], value: str) -> int:
+    def get_count(data: list[dict[str, Any]], value: str) -> int:
         """Retrieve the count for a given value from histogram data."""
         return next((item.get("count", 0) for item in data if item.get("value") == value), 0)
 
-    output: Dict[str, Dict[str, float]] = {}
+    output: dict[str, dict[str, float]] = {}
     total_enabled = total_relevant = 0
 
     for column in SCANNER_COLUMNS:
@@ -105,9 +103,7 @@ def transform_scanner_histograms_outputs(
     return output, overall_coverage
 
 
-def transform_status_coverage_histogram_output(
-    data: Dict[str, Any]
-) -> Dict[str, Dict[str, Union[int, float]]]:
+def transform_status_coverage_histogram_output(data: dict[str, Any]) -> dict[str, dict[str, int | float]]:
     """Transform the status coverage histogram into a flattened dictionary.
 
     Args:
@@ -123,7 +119,7 @@ def transform_status_coverage_histogram_output(
         "NOT SCANNED": "not_scanned",
     }
 
-    output: Dict[str, Union[int, float]] = {}
+    output: dict[str, int | float] = {}
 
     for item in data.get("status_coverage", []):
         label = mapping.get(item.get("value"), str(item.get("value", "")).lower().replace(" ", "_"))

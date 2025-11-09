@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 import demistomock as demisto
 import CommonServerPython  # noqa: F401
@@ -22,12 +22,25 @@ def mock_asset_coverage_data():
     """Sample get assets coverage data"""
     return {
         "DATA": [
-            {"asset_id": "xxx", "asset_type": "CONTAINER IMAGE REPOSITORY", "asset_name": "xxx", "unified_provider": "AWS",
-             "business_application_names": [], "is_scanned_by_vulnerabilities": "ENABLED",
-             "is_scanned_by_code_weakness": "IRRELEVANT", "is_scanned_by_secrets": "ENABLED", "is_scanned_by_iac": "IRRELEVANT",
-             "is_scanned_by_malware": "ENABLED", "is_scanned_by_cicd": "IRRELEVANT", "scanners_data": [],
-             "last_scan_status": "COMPLETED", "status_coverage": "FULLY SCANNED", "asset_provider": "AWS"},
-        ] * 6,
+            {
+                "asset_id": "xxx",
+                "asset_type": "CONTAINER IMAGE REPOSITORY",
+                "asset_name": "xxx",
+                "unified_provider": "AWS",
+                "business_application_names": [],
+                "is_scanned_by_vulnerabilities": "ENABLED",
+                "is_scanned_by_code_weakness": "IRRELEVANT",
+                "is_scanned_by_secrets": "ENABLED",
+                "is_scanned_by_iac": "IRRELEVANT",
+                "is_scanned_by_malware": "ENABLED",
+                "is_scanned_by_cicd": "IRRELEVANT",
+                "scanners_data": [],
+                "last_scan_status": "COMPLETED",
+                "status_coverage": "FULLY SCANNED",
+                "asset_provider": "AWS",
+            },
+        ]
+        * 6,
         "TOTAL_COUNT": 6,
         "FILTER_COUNT": 6,
     }
@@ -52,6 +65,7 @@ def mock_histogram_data():
 # ----------------------------------------------------------------------
 # Tests for get_command_results
 # ----------------------------------------------------------------------
+
 
 def test_get_command_results_success(mock_execute_command_success, monkeypatch):
     """
@@ -96,6 +110,7 @@ def test_get_command_results_error_entry(monkeypatch):
 # Tests for transform_scanner_histograms_outputs
 # ----------------------------------------------------------------------
 
+
 def test_transform_scanner_histograms_outputs(mock_histogram_data):
     """
     GIVEN valid histogram data where all scanners are ENABLED
@@ -104,7 +119,7 @@ def test_transform_scanner_histograms_outputs(mock_histogram_data):
     """
     output, coverage = cc.transform_scanner_histograms_outputs(mock_histogram_data)
 
-    enabled_scanners = ["is_scanned_by_malware" , "is_scanned_by_secrets" , "is_scanned_by_vulnerabilities"]
+    enabled_scanners = ["is_scanned_by_malware", "is_scanned_by_secrets", "is_scanned_by_vulnerabilities"]
     assert all(k in output for k in cc.SCANNER_COLUMNS)
     for v in output.values():
         if v in enabled_scanners:
@@ -141,6 +156,7 @@ def test_transform_scanner_histograms_outputs_partial():
 # Tests for transform_status_coverage_histogram_output
 # ----------------------------------------------------------------------
 
+
 def test_transform_status_coverage_histogram_output(mock_histogram_data):
     """
     GIVEN valid status_coverage histogram data
@@ -169,6 +185,7 @@ def test_transform_status_coverage_histogram_output_empty():
 # ----------------------------------------------------------------------
 # Tests for main()
 # ----------------------------------------------------------------------
+
 
 @patch("CortexListAppSecAssetCoverage.return_results")
 @patch("CortexListAppSecAssetCoverage.get_command_results")
