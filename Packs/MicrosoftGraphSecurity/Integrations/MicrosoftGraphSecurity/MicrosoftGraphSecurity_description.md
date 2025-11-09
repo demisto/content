@@ -1,5 +1,5 @@
 # Authentication
-You can use the following methods to authenticate Microsoft Graph Security.
+You can use the following methods to authenticate Microsoft Graph Security:
 - Cortex XSOAR app
 - Authorization Code Flow
 - Client Credentials Flow
