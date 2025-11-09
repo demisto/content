@@ -11,7 +11,7 @@
         "Identity and Access Management"
     ],
     "tags": [],
-    "useCases": [],
+    "useCases": ["Identity and Access Management"],
     "keywords": [
         "Silverfort"
     ],
