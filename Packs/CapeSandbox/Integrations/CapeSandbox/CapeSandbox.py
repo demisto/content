@@ -125,22 +125,17 @@ def extract_entry_file_data(entry_id: str) -> tuple[str, str]:
     path = filepath_result["path"]
     name = filepath_result.get("name")
 
-    final_name = name if name else os.path.basename(path)
+    final_name = name or os.path.basename(path)
 
     return path, final_name
 
 
-def get_entry_path(entry_id: str) -> tuple[str, str]:
-    """
-    Wrapper function to safely extract file data.
-
-    Args:
-        entry_id: The ID of the entry.
-
-    Returns:
-        (file_path: str, file_name: str).
-    """
-    return extract_entry_file_data(entry_id)
+TYPE_MAP = {
+    "screenshot": {"ext": "png", "part": "screenshot"},
+    "report": {"ext": "json", "part": "report"},
+    "file": {"ext": "json", "part": "file"},
+    "network_dump": {"ext": "pcap", "part": "network_dump"},
+}
 
 
 def build_file_name(
@@ -152,38 +147,74 @@ def build_file_name(
     """
     Constructs a standardized filename based on the task identifier and file metadata.
     """
-    TYPE_MAP = {
-        "screenshot": {"ext": "png", "part": "screenshot"},
-        "report": {
-            "ext": str(file_format) if file_format else "json",
-            "part": "report",
-        },
-        "file": {
-            "ext": str(file_format) if file_format else "json",
-            "part": "file",
-        },
-        "network_dump": {
-            "ext": "pcap",
-            "part": "network_dump",
-        },
-    }
 
-    extension = str(file_format) if file_format else "dat"
+    extension = "dat"
     middle_part_base = None
 
+    # Get defaults from map if type is known
     if file_type in TYPE_MAP:
         info = TYPE_MAP[file_type]
         extension = info["ext"]
         middle_part_base = info["part"]
 
-    # Special handling for screenshot number
+    # Apply overrides based on other args
+    if file_format:
+        extension = str(file_format)
+
+    # Special handling for screenshot number always overrides
     if file_type == "screenshot" and screenshot_number is not None:
         middle_part_base = f"screenshot_{screenshot_number}"
+        extension = "png"  # Ensure it's always png
 
-    # Construct the final filename parts
+    # Construct the final filename
     middle_part_str = f"_{middle_part_base}" if middle_part_base else ""
 
     return f"cape_task_{file_identifier}{middle_part_str}.{extension}"
+
+
+# def build_file_name(
+#     file_identifier: str | int,
+#     file_type: Literal["file", "report", "screenshot", "network_dump"] | None = None,
+#     screenshot_number: int | None = None,
+#     file_format: (
+#         Literal["pdf", "html", "csv", "zip", "pcap", "bin"] | str | None
+#     ) = None,
+# ) -> str:
+#     """
+#     Constructs a standardized filename based on the task identifier and file metadata.
+#     """
+#     TYPE_MAP = {
+#         "screenshot": {"ext": "png", "part": "screenshot"},
+#         "report": {
+#             "ext": str(file_format) if file_format else "json",
+#             "part": "report",
+#         },
+#         "file": {
+#             "ext": str(file_format) if file_format else "json",
+#             "part": "file",
+#         },
+#         "network_dump": {
+#             "ext": "pcap",
+#             "part": "network_dump",
+#         },
+#     }
+
+#     extension = str(file_format) if file_format else "dat"
+#     middle_part_base = None
+
+#     if file_type in TYPE_MAP:
+#         info = TYPE_MAP[file_type]
+#         extension = info["ext"]
+#         middle_part_base = info["part"]
+
+#     # Special handling for screenshot number
+#     if file_type == "screenshot" and screenshot_number is not None:
+#         middle_part_base = f"screenshot_{screenshot_number}"
+
+#     # Construct the final filename parts
+#     middle_part_str = f"_{middle_part_base}" if middle_part_base else ""
+
+#     return f"cape_task_{file_identifier}{middle_part_str}.{extension}"
 
 
 def status_is_reported(status_response: str) -> bool:
@@ -228,15 +259,21 @@ _SHA256_RE = re.compile(r"^[A-Fa-f0-9]{64}$")
 
 
 def is_valid_md5(value: str | None) -> bool:
-    return bool(_MD5_RE.fullmatch(value or ""))
+    if not value:
+        return False
+    return bool(_MD5_RE.fullmatch(value))
 
 
 def is_valid_sha1(value: str | None) -> bool:
-    return bool(_SHA1_RE.fullmatch(value or ""))
+    if not value:
+        return False
+    return bool(_SHA1_RE.fullmatch(value))
 
 
 def is_valid_sha256(value: str | None) -> bool:
-    return bool(_SHA256_RE.fullmatch(value or ""))
+    if not value:
+        return False
+    return bool(_SHA256_RE.fullmatch(value))
 
 
 # endregion
@@ -351,9 +388,9 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
     ) -> None:
         base_url = base_url.rstrip("/") + "/"
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        self.api_token = (api_token or "").strip() if api_token else None
-        self.username = (username or "").strip() if username else None
-        self.password = (password or "").strip() if password else None
+        self.api_token = api_token.strip() if api_token else None
+        self.username = username.strip() if username else None
+        self.password = password.strip() if password else None
 
         demisto.debug(f"Client initialized. Base URL: {base_url}, Verify SSL: {verify}, Proxy: {proxy}")
 
@@ -973,7 +1010,7 @@ def cape_file_submit_command(client: CapeSandboxClient, args: dict[str, Any]) ->
     entry_id = args["entry_id"]
 
     try:
-        file_path, filename = get_entry_path(entry_id)
+        file_path, filename = extract_entry_file_data(entry_id)
         demisto.debug(f"Resolved entry_id '{entry_id}' to file: {filename} at path: {file_path}")
     except Exception as error:
         demisto.debug(f"Failed to resolve entry_id '{entry_id}': {error}")
@@ -1236,7 +1273,7 @@ def cape_tasks_list_command(client: CapeSandboxClient, args: dict[str, Any]) -> 
         data = task.get("data") or task
         readable = tableToMarkdown(
             f"{INTEGRATION_NAME} Task {task_id}",
-            data if isinstance(data, dict) else [data],
+            [data],
             headers=DATA_KEYS,
             headerTransform=string_to_table_header,
         )
@@ -1255,9 +1292,16 @@ def cape_tasks_list_command(client: CapeSandboxClient, args: dict[str, Any]) -> 
     demisto.debug(f"Raw list response keys: {list(resp.keys()) if isinstance(resp, dict) else 'N/A'}")
 
     data = resp.get("data", resp)
-    demisto.debug(f"Data type: {type(data)}, is_list: {isinstance(data, list)}")
 
-    items = data if isinstance(data, list) else [data]
+    if isinstance(data, list):
+        items = data
+    elif isinstance(data, dict):
+        demisto.debug("API returned a single dict, wrapping in a list.")
+        items = [data]
+    else:
+        demisto.debug(f"Unexpected data type from API: {type(data)}. Using empty list.")
+        items = []
+
     demisto.debug(f"Received task list with {len(items)} items")
 
     readable = tableToMarkdown(
@@ -1417,12 +1461,17 @@ def cape_machines_list_command(client: CapeSandboxClient, args: dict[str, Any]) 
     resp = client.list_machines()
     demisto.debug(f"Raw machines response keys: {list(resp.keys()) if isinstance(resp, dict) else 'N/A'}")
 
-    machines = resp.get("machines", resp.get("data", resp))
-    demisto.debug(f"Machines data type: {type(machines)}")
+    machines_data = resp.get("machines", resp.get("data", resp))
+    demisto.debug(f"Machines data type: {type(machines_data)}")
 
-    if isinstance(machines, dict):
+    if isinstance(machines_data, list):
+        machines = machines_data
+    elif isinstance(machines_data, dict):
         demisto.debug("Converting single machine dict to list")
-        machines = [machines]
+        machines = [machines_data]
+    else:
+        demisto.debug(f"Unexpected machine data type {type(machines_data)}, using empty list.")
+        machines = []
 
     demisto.debug(f"Total machines before filtering: {len(machines)}")
     if not all_results:
@@ -1434,7 +1483,7 @@ def cape_machines_list_command(client: CapeSandboxClient, args: dict[str, Any]) 
         f"{INTEGRATION_NAME} Machines (count={len(machines)})",
         machines,
         headers=[
-            "id",  # Id -> Task Id
+            "id",
             "status",
             "name",
             "arch",
@@ -1480,6 +1529,7 @@ def cape_cuckoo_status_get_command(client: CapeSandboxClient, args: dict[str, An
     tasks = data.get("tasks") or {}
     server = data.get("server") or {}
     machines = data.get("machines") or {}
+    server_storage = server.get("storage") or {}
 
     row = {
         "Version": data.get("version"),
@@ -1488,7 +1538,7 @@ def cape_cuckoo_status_get_command(client: CapeSandboxClient, args: dict[str, An
         "Tasks Running": tasks.get("running"),
         "Tasks Completed": tasks.get("completed"),
         "Tasks Pending": tasks.get("pending"),
-        "Server Usage": server.get("storage", {}).get("used_by"),
+        "Server Usage": server_storage.get("used_by"),
         "Machines Available": machines.get("available"),
         "Machines Total": machines.get("total"),
         "Tools": data.get("tools"),
@@ -1498,118 +1548,6 @@ def cape_cuckoo_status_get_command(client: CapeSandboxClient, args: dict[str, An
 
     demisto.debug(f"Command '{command}' execution finished successfully.")
     return CommandResults(readable_output=readable)
-
-
-# def cape_task_screenshot_download_command2(
-#     client: CapeSandboxClient, args: dict[str, Any]
-# ) -> CommandResults:
-#     """Download screenshots for a task."""
-#     command = "List Task Screenshots"
-#     demisto.debug(f"Starting execution of command: {command}")
-
-#     task_id = args["task_id"]
-#     single_number = arg_to_number(args.get("screenshot"))
-
-#     demisto.debug(f"Screenshot parameters: {task_id=}, {single_number=}")
-
-#     if single_number:
-#         demisto.debug(f"Downloading single screenshot number: {single_number}")
-#         candidates_raw = [single_number]
-
-#     else:
-#         demisto.debug(f"Fetching screenshot list for task_id: {task_id}")
-#         meta = client.list_task_screenshots(task_id)
-#         demisto.debug(f"Received screenshot metadata: {meta}")
-
-#         candidates_raw = meta.get("screenshots") or meta.get("data") or meta
-
-#         if not isinstance(candidates_raw, list):
-#             demisto.debug(
-#                 f"Screenshot metadata is not a list, setting to empty: {type(candidates_raw)}"
-#             )
-#             candidates_raw = []
-
-#     file_entries = []
-#     candidate_numbers = []
-
-#     demisto.debug(f"Processing {len(candidates_raw)} raw screenshot candidates")
-#     for idx, item in enumerate(candidates_raw):
-#         current_number: int | None = None
-#         if isinstance(item, dict):
-#             current_number = arg_to_number(item.get("number"))
-#             demisto.debug(f"Candidate {idx}: dict with number={current_number}")
-#         elif isinstance(item, int):
-#             current_number = item
-#             demisto.debug(f"Candidate {idx}: int={current_number}")
-#         else:
-#             demisto.debug(f"Candidate {idx}: unexpected type {type(item)}")
-
-#         if current_number is not None:
-#             candidate_numbers.append(current_number)
-
-#     if not candidate_numbers and not single_number:
-#         demisto.debug("No screenshot numbers found, using fallback range 1-5")
-#         candidate_numbers.extend(range(1, 6))
-
-#     demisto.debug(
-#         f"Processing {len(candidate_numbers)} screenshot numbers: {candidate_numbers}"
-#     )
-#     processed_numbers = set()
-
-#     for idx, number in enumerate(candidate_numbers):
-#         if number in processed_numbers:
-#             demisto.debug(f"Screenshot {number} already processed, skipping")
-#             continue
-
-#         try:
-#             demisto.debug(
-#                 f"[{idx+1}/{len(candidate_numbers)}] Downloading screenshot {number} for task {task_id}"
-#             )
-#             content = client.get_task_screenshot(task_id=task_id, number=number)
-#             demisto.debug(
-#                 f"Successfully retrieved screenshot {number}. Size: {len(content)} bytes"
-#             )
-#             filename = build_file_name(task_id, "screenshot", number)
-#             demisto.debug(f"Generated filename: {filename}")
-
-#             file_meta = fileResult(filename, content)
-
-#             file_meta["TaskID"] = task_id
-#             file_meta["ScreenshotNumber"] = number
-#             file_entries.append(file_meta)
-
-#             processed_numbers.add(number)
-#             demisto.debug(
-#                 f"Successfully processed screenshot {number} ({len(file_entries)} total)"
-#             )
-
-#         except DemistoException as error:
-#             demisto.debug(
-#                 f"Failed to fetch screenshot {number} for task {task_id}: {error}"
-#             )
-
-#     demisto.debug(
-#         f"Screenshot download complete. Total files: {len(file_entries)}, Processed numbers: {processed_numbers}"
-#     )
-
-#     if not file_entries:
-#         demisto.debug(f"No screenshots successfully downloaded for task {task_id}")
-#         raise DemistoException(f"No screenshots found for task {task_id}")
-
-#     readable = tableToMarkdown(
-#         f"{INTEGRATION_NAME} Screenshots for Task {task_id}",
-#         file_entries,
-#         headers=["TaskID", "ScreenshotNumber", "Name", "Size", "SHA1", "MD5"],
-#         headerTransform=string_to_table_header,
-#     )
-
-#     demisto.debug(f"Command '{command}' execution finished successfully.")
-#     return CommandResults(
-#         readable_output=readable,
-#         outputs_prefix="Cape.Task.Screenshot",
-#         outputs_key_field="ScreenshotNumber",
-#         outputs=file_entries,
-#     )
 
 
 def cape_task_screenshot_download_command(client: CapeSandboxClient, args: dict[str, Any]) -> CommandResults:

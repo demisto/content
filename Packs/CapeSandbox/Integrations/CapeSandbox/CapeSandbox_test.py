@@ -788,7 +788,7 @@ def test_cape_file_submit_command(mocker, client):
     """Tests cape_file_submit_command returns correct outputs."""
     mocker.patch.object(
         CapeSandbox,
-        "get_entry_path",
+        "extract_entry_file_data",
         return_value=("test_data/test_file.txt", "test_file.txt"),
     )
     mocker.patch.object(
@@ -818,7 +818,11 @@ def test_cape_file_submit_command(mocker, client):
 
 def test_cape_file_submit_command_no_task_id_fail(mocker, client):
     """Tests submission fails if API returns no task ID."""
-    mocker.patch.object(CapeSandbox, "get_entry_path", return_value=("path/to/file", "file.exe"))
+    mocker.patch.object(
+        CapeSandbox,
+        "extract_entry_file_data",
+        return_value=("path/to/file", "file.exe"),
+    )
     mocker.patch.object(client, "submit_file", return_value={"data": {"task_ids": []}})
 
     with pytest.raises(DemistoException, match="No task id returned from CAPE"):
@@ -827,7 +831,11 @@ def test_cape_file_submit_command_no_task_id_fail(mocker, client):
 
 def test_cape_file_submit_command_pcap_logic(mocker, client):
     """Tests submission correctly identifies and sets the pcap flag."""
-    mocker.patch.object(CapeSandbox, "get_entry_path", return_value=("path/to/file.pcap", "file.pcap"))
+    mocker.patch.object(
+        CapeSandbox,
+        "extract_entry_file_data",
+        return_value=("path/to/file.pcap", "file.pcap"),
+    )
     mocker.patch.object(client, "submit_file", return_value={"data": {"task_ids": [100]}})
     mocker.patch.object(CapeSandbox, "initiate_polling", return_value=CommandResults())
 
@@ -840,7 +848,7 @@ def test_cape_file_submit_file_not_found_fail(mocker, client):
     """Tests file submission fails when file is not found."""
     mocker.patch.object(
         CapeSandbox,
-        "get_entry_path",
+        "extract_entry_file_data",
         side_effect=DemistoException("Could not find file with entry ID 'invalid_id'."),
     )
     args = {"entry_id": "invalid_id"}
@@ -1396,7 +1404,11 @@ def test_main_cape_file_submit_success(mocker):
     mocker.patch.object(demisto, "command", return_value="cape-file-submit")
     mocker.patch.object(demisto, "params", return_value={"url": SERVER_URL, "api_token": "TOKEN"})
     mocker.patch.object(demisto, "args", return_value={"entry_id": "test_id"})
-    mocker.patch.object(CapeSandbox, "get_entry_path", return_value=("/tmp/file.exe", "file.exe"))
+    mocker.patch.object(
+        CapeSandbox,
+        "extract_entry_file_data",
+        return_value=("/tmp/file.exe", "file.exe"),
+    )
 
     mock_client = mocker.MagicMock()
     mock_client.submit_file.return_value = {"data": {"task_ids": [123]}}
