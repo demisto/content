@@ -1392,7 +1392,7 @@ script:
         - name: conditions_package_version
           description: Specify software package version constraints for precise policy targeting.
         - name: conditions_package_operational_risk
-          description: Filter packages by their operational risk assessment level.
+          description: "Filter packages by their operational risk assessment level. Supported values: Low, Medium, High"
         - name: conditions_appsec_rule_names
           description: Comma-separated list of AppSec rule names to include in policy evaluation. Rule names will be automatically resolved to their corresponding IDs.
           isArray: true
