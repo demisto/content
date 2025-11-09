@@ -33,8 +33,8 @@ alter
     xdm.source.location.city = if(cs10 != "n/a", cs10),
     xdm.source.location.latitude = latitude,
     xdm.source.location.longitude = longitude,
-    xdm.event.type = "authentication", //For authentication story
-    xdm.event.original_event_type = cefdeviceeventclassid, //Maybe syslogid?
+    xdm.event.type = "authentication",
+    xdm.event.original_event_type = cefdeviceeventclassid,
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN, //MFA is a different cefdeviceeventclassid "MFA", we currently don't support this event class.
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION);
 
