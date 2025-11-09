@@ -1,1564 +1,1086 @@
 import demistomock as demisto  # noqa: F401
-from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
-from http import HTTPStatus
-from datetime import date
-from collections.abc import Callable
-from botocore.client import BaseClient as BotoClient
-from botocore.config import Config
-from botocore.exceptions import ClientError
-from boto3 import Session
-
-DEFAULT_MAX_RETRIES: int = 5
-DEFAULT_SESSION_NAME = "cortex-session"
-DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv("EGRESSPROXY_CA_PATH") or "/etc/certs/egress.crt"
-DEFAULT_PROXYDOME = os.getenv("CRTX_HTTP_PROXY") or "10.181.0.100:11117"
-TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
-DEFAULT_REGION = "us-east-1"
-
-
-def parse_resource_ids(resource_id: str | None) -> list[str]:
-    if resource_id is None:
-        raise ValueError("Resource ID cannot be empty")
-    id_list = resource_id.replace(" ", "")
-    resource_ids = id_list.split(",")
-    return resource_ids
-
-
-def convert_datetimes_to_iso_safe(data):
-    """
-    Converts datetime objects in a data structure to ISO 8601 strings
-    by serializing to and then deserializing from JSON using a custom encoder.
-    """
-    json_string = json.dumps(data, cls=ISOEncoder)
-    return json.loads(json_string)
-
-
-class AWSErrorHandler:
-    """
-    Centralized error handling for AWS boto3 client errors.
-    Provides specialized handling for permission errors and general AWS API errors.
-    """
-
-    # Permission-related error codes that should be handled specially
-    PERMISSION_ERROR_CODES = [
-        "AccessDenied",
-        "UnauthorizedOperation",
-        "Forbidden",
-        "AccessDeniedException",
-        "UnauthorizedOperationException",
-        "InsufficientPrivilegesException",
-        "NotAuthorized",
-    ]
-
-    @classmethod
-    def handle_response_error(cls, response: dict, account_id: str | None = None) -> None:
-        """
-        Handle boto3 response errors.
-        For permission errors, returns a structured error entry using return_error.
-        For other errors, raises DemistoException with informative error message.
-        Args:
-            err (ClientError): The boto3 ClientError exception
-            account_id (str, optional): AWS account ID. If not provided, will try to get from demisto.args()
-        """
-        # Create informative error message
-        detailed_error = (
-            f"AWS API Error occurred while executing: {demisto.command()} with arguments: {demisto.args()}\n"
-            f"Request Id: {response.get('ResponseMetadata',{}).get('RequestId', 'N/A')}\n"
-            f"HTTP Status Code: {response.get('ResponseMetadata',{}).get('HTTPStatusCode', 'N/A')}"
-        )
-
-        return_error(detailed_error)
-
-    @classmethod
-    def handle_client_error(cls, err: ClientError, account_id: str | None = None) -> None:
-        """
-        Handle boto3 client errors with special handling for permission issues.
-        For permission errors, returns a structured error entry using return_error.
-        For other errors, raises DemistoException with informative error message.
-        Args:
-            err (ClientError): The boto3 ClientError exception
-            account_id (str, optional): AWS account ID. If not provided, will try to get from demisto.args()
-        """
-        error_code = err.response.get("Error", {}).get("Code", "")
-        error_message = err.response.get("Error", {}).get("Message", "")
-        http_status_code = err.response.get("ResponseMetadata", {}).get("HTTPStatusCode")
-        demisto.debug(f"[AWSErrorHandler] Got an client error: {error_message}")
-        # Check if this is a permission-related error
-        if (error_code in cls.PERMISSION_ERROR_CODES) or (http_status_code in [401, 403]):
-            cls._handle_permission_error(err, error_code, error_message, account_id)
-        else:
-            cls._handle_general_error(err, error_code, error_message)
-
-    @classmethod
-    def _handle_permission_error(
-        cls, err: ClientError, error_code: str, error_message: str, account_id: str | None = None
-    ) -> None:
-        """
-        Handle permission-related errors by returning structured error entry.
-        Args:
-            err (ClientError): The boto3 ClientError exception
-            error_code (str): The AWS error code
-            error_message (str): The AWS error message
-            account_id (str, optional): AWS account ID
-        """
-        # Get account_id from args if not provided
-        if not account_id:
-            account_id = demisto.args().get("account_id", "unknown")
-
-        action = cls._extract_action_from_message(error_message)
-        # When encountering an unauthorized error, an encoded authorization message may be returned with different
-        # encoding each time. This will create different error entries for each unauthorized error and will confuse the user.
-        # Therefore we will omit the actual encoded message.
-        demisto.info(f"Original error message: {error_message}")
-        error_entry = {
-            "account_id": account_id,
-            "message": cls.remove_encoded_authorization_message(error_message),
-            "name": action,
-        }
-        demisto.debug(f"Permission error detected: {error_entry}")
-        return_multiple_permissions_error([error_entry])
-
-    @classmethod
-    def remove_encoded_authorization_message(cls, message: str) -> str:
-        """
-        Remove encoded authorization messages from AWS error responses.
-        Args:
-            message (str): Original error message
-        Returns:
-            str: Cleaned error message without encoded authorization details
-        """
-        index = message.lower().find("encoded authorization failure message:")
-        if index != -1:  # substring found
-            return message[:index]
-        else:
-            return message
-
-    @classmethod
-    def _handle_general_error(cls, err: ClientError, error_code: str, error_message: str) -> None:
-        """
-        Handle general (non-permission) errors with informative error messages.
-        Args:
-            err (ClientError): The boto3 ClientError exception
-            error_code (str): The AWS error code
-            error_message (str): The AWS error message
-        """
-        # Get additional error details
-        request_id = err.response.get("ResponseMetadata", {}).get("RequestId", "N/A")
-        http_status = err.response.get("ResponseMetadata", {}).get("HTTPStatusCode", "N/A")
-
-        # Create informative error message
-        detailed_error = (
-            f"AWS API Error occurred while executing: {demisto.command()} with arguments: {demisto.args()}\n"
-            f"Error Code: {error_code}\n"
-            f"Error Message: {error_message}\n"
-            f"HTTP Status Code: {http_status}\n"
-            f"Request ID: {request_id}"
-        )
-
-        demisto.error(f"AWS API Error: {detailed_error}")
-        return_error(detailed_error)
-
-    @classmethod
-    def _extract_action_from_message(cls, error_message: str) -> str:
-        """
-        Extract AWS permission name from error message using regex patterns.
-        Args:
-            error_message (str): The AWS error message
-        Returns:
-            str: The extracted permission name or 'unknown' if not found
-        """
-        # Sanitize input to prevent regex injection
-        if not error_message or not isinstance(error_message, str):
-            return "unknown"
-
-        for action in REQUIRED_ACTIONS:
-            try:
-                match = re.search(action, error_message, re.IGNORECASE)
-                if match and match.group(0) == action:
-                    return action
-            except re.error:
-                pass
-
-        return "unknown"
-
-
-class AWSServices(str, Enum):
-    S3 = "s3"
-    IAM = "iam"
-    EC2 = "ec2"
-    RDS = "rds"
-    EKS = "eks"
-    LAMBDA = "lambda"
-    CloudTrail = "cloudtrail"
-
-
-class DatetimeEncoder(json.JSONEncoder):
-    # pylint: disable=method-hidden
-    def default(self, obj):
-        if isinstance(obj, datetime):
-            return obj.strftime("%Y-%m-%dT%H:%M:%S")
-        elif isinstance(obj, date):
-            return obj.strftime("%Y-%m-%d")
-        # Let the base class default method raise the TypeError
-        return json.JSONEncoder.default(self, obj)
-
-
-class S3:
-    service = AWSServices.S3
-
-    @staticmethod
-    def put_public_access_block_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Create or Modify the PublicAccessBlock configuration for an Amazon S3 bucket.
-
-        Args:
-            client (BotoClient): The boto3 client for S3 service
-            args (Dict[str, Any]): Command arguments including bucket name and access block settings
-
-        Returns:
-            CommandResults: Results of the operation with success/failure message
-        """
-
-        kwargs: dict[str, Union[bool, None]] = {
-            "BlockPublicAcls": argToBoolean(args.get("block_public_acls")) if args.get("block_public_acls") else None,
-            "IgnorePublicAcls": argToBoolean(args.get("ignore_public_acls")) if args.get("ignore_public_acls") else None,
-            "BlockPublicPolicy": argToBoolean(args.get("block_public_policy")) if args.get("block_public_policy") else None,
-            "RestrictPublicBuckets": (
-                argToBoolean(args.get("restrict_public_buckets")) if args.get("restrict_public_buckets") else None
-            ),
-        }
-
-        remove_nulls_from_dictionary(kwargs)
-        response = client.put_public_access_block(Bucket=args.get("bucket"), PublicAccessBlockConfiguration=kwargs)
-
-        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-            return CommandResults(readable_output=f"Successfully applied public access block to the {args.get('bucket')} bucket")
-
-        raise DemistoException(f"Couldn't apply public access block to the {args.get('bucket')} bucket. {json.dumps(response)}")
-
-    @staticmethod
-    def put_bucket_versioning_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Set the versioning state of an Amazon S3 bucket.
-
-        Args:
-            client (BotoClient): The boto3 client for S3 service
-            args (Dict[str, Any]): Command arguments including:
-                - bucket (str): The name of the bucket
-                - status (str): The versioning state of the bucket (Enabled or Suspended)
-                - mfa_delete (str): Specifies whether MFA delete is enabled (Enabled or Disabled)
-
-        Returns:
-            CommandResults: Results of the command execution
-        """
-        bucket: str = args.get("bucket", "")
-        status: str = args.get("status", "")
-        mfa_delete: str = args.get("mfa_delete", "")
-
-        versioning_configuration = {"Status": status, "MFADelete": mfa_delete}
-        remove_nulls_from_dictionary(versioning_configuration)
-        try:
-            response = client.put_bucket_versioning(Bucket=bucket, VersioningConfiguration=versioning_configuration)
-            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-                return CommandResults(
-                    readable_output=f"Successfully {status.lower()} versioning configuration for bucket `{bucket}`"
-                )
-            raise DemistoException(
-                f"Request completed but received unexpected status code: "
-                f"{response['ResponseMetadata']['HTTPStatusCode']}. "
-                f"{json.dumps(response)}"
-            )
-
-        except Exception as e:
-            raise DemistoException(f"Failed to update versioning configuration for bucket {bucket}. Error: {str(e)}")
-
-    @staticmethod
-    def put_bucket_logging_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Enables/configures logging for an S3 bucket.
-
-        Args:
-            args (Dict[str, Any]): Command arguments including:
-                - bucket (str): The name of the bucket to configure logging for
-                - bucket-logging-status (str, optional): JSON string containing logging configuration
-                - target-bucket (str, optional): The target bucket where logs will be stored
-                - target_prefix (str, optional): The prefix for log objects in the target bucket
-
-        Returns:
-            CommandResults: Results of the command execution
-        """
-        bucket = args["bucket"]
-
-        try:
-            if target_bucket := args.get("target_bucket"):
-                # Build logging configuration.
-                bucket_logging_status = {
-                    "LoggingEnabled": {"TargetBucket": target_bucket, "TargetPrefix": args.get("target_prefix", "")}
-                }
-            else:
-                # If neither full config nor target bucket provided, disable logging
-                bucket_logging_status = {}
-
-            response = client.put_bucket_logging(Bucket=bucket, BucketLoggingStatus=bucket_logging_status)
-
-            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-                if bucket_logging_status.get("LoggingEnabled"):
-                    target_bucket = bucket_logging_status["LoggingEnabled"].get("TargetBucket", "")
-                    target_prefix = bucket_logging_status["LoggingEnabled"].get("TargetPrefix", "")
-                    return CommandResults(
-                        readable_output=(
-                            f"Successfully enabled logging for bucket '{bucket}'. "
-                            f"Logs will be stored in '{target_bucket}/{target_prefix}'."
-                        )
-                    )
-                else:
-                    return CommandResults(readable_output=f"Successfully disabled logging for bucket '{bucket}'")
-            raise DemistoException(
-                f"Couldn't apply bucket policy to {args.get('bucket')} bucket. "
-                f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}."
-                f"{json.dumps(response)}"
-            )
-
-        except Exception as e:
-            raise DemistoException(f"Failed to configure logging for bucket '{bucket}'. Error: {str(e)}")
-
-    @staticmethod
-    def put_bucket_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Set the Access Control List (ACL) permissions for an Amazon S3 bucket.
-
-        Args:
-            client (BotoClient): The boto3 client for S3 service
-            args (Dict[str, Any]): Command arguments including:
-                - bucket (str): The name of the bucket
-                - acl (str): The canned ACL to apply (e.g., 'private', 'public-read', 'public-read-write')
-
-        Returns:
-            CommandResults: Results of the operation with success/failure message
-        """
-        acl, bucket = args.get("acl"), args.get("bucket")
-        response = client.put_bucket_acl(Bucket=bucket, ACL=acl)
-        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-            return CommandResults(readable_output=f"Successfully updated ACL for bucket {bucket} to '{acl}'")
-        raise DemistoException(
-            f"Request completed but received unexpected status code: "
-            f"{response['ResponseMetadata']['HTTPStatusCode']}. {json.dumps(response)}"
-        )
-
-    @staticmethod
-    def put_bucket_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Adds or updates a bucket policy for an Amazon S3 bucket.
-
-        Args:
-            client (BotoClient): The boto3 client for S3 service
-            args (Dict[str, Any]): Command arguments including:
-                - bucket (str): The name of the S3 bucket to apply the policy to
-                - policy (dict): The JSON policy document to be applied to the bucket
-                - confirmRemoveSelfBucketAccess (str, optional): Confirms removal of self bucket access if set to "True"
-
-        Returns:
-            CommandResults:
-                - On success: A result indicating the bucket policy was successfully applied
-                - On failure: An error result with details about why the policy application failed
-
-        Raises:
-            Exception: If there's an error while applying the bucket policy
-        """
-        kwargs = {"Bucket": args.get("bucket", ""), "Policy": json.dumps(args.get("policy"))}
-        try:
-            response = client.put_bucket_policy(**kwargs)
-            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-                return CommandResults(readable_output=f"Successfully applied bucket policy to {args.get('bucket')} bucket")
-            raise DemistoException(
-                f"Couldn't apply bucket policy to {args.get('bucket')} bucket. "
-                f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}."
-                f"{json.dumps(response)}"
-            )
-        except Exception as e:
-            raise DemistoException(f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Error: {str(e)}")
-
-
-class IAM:
-    service = AWSServices.IAM
-
-    @staticmethod
-    def get_account_password_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Get AWS account password policy.
-
-        Args:
-            client (BotoClient): The boto3 client for IAM service
-            args (Dict[str, Any]): Command arguments including account ID
-
-        Returns:
-            CommandResults: Results containing the current password policy configuration
-        """
-        response = client.get_account_password_policy()
-        data = json.loads(json.dumps(response["PasswordPolicy"], cls=DatetimeEncoder))
-        human_readable = tableToMarkdown("AWS IAM Account Password Policy", data)
-        return CommandResults(
-            outputs=data, readable_output=human_readable, outputs_prefix="AWS.IAM.PasswordPolicy", outputs_key_field="AccountId"
-        )
-
-    @staticmethod
-    def update_account_password_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Create or Update AWS account password policy.
-
-        Args:
-            client (BotoClient): The boto3 client for IAM service
-            args (Dict[str, Any]): Command arguments including password policy parameters
-
-        Returns:
-            CommandResults: Results of the operation with success/failure message
-        """
-        try:
-            response = client.get_account_password_policy()
-            kwargs = response["PasswordPolicy"]
-        except Exception:
-            raise DemistoException(f"Couldn't check current account password policy for account: {args.get('account_id')}")
-
-        # ExpirePasswords is part of the response but cannot be included in the request
-        if "ExpirePasswords" in kwargs:
-            kwargs.pop("ExpirePasswords")
-
-        command_args: dict[str, Union[int, bool, None]] = {
-            "MinimumPasswordLength": arg_to_number(args.get("minimum_password_length")),
-            "RequireSymbols": argToBoolean(args.get("require_symbols")) if args.get("require_symbols") else None,
-            "RequireNumbers": argToBoolean(args.get("require_numbers")) if args.get("require_numbers") else None,
-            "RequireUppercaseCharacters": (
-                argToBoolean(args.get("require_uppercase_characters")) if args.get("require_uppercase_characters") else None
-            ),
-            "RequireLowercaseCharacters": (
-                argToBoolean(args.get("require_lowercase_characters")) if args.get("require_lowercase_characters") else None
-            ),
-            "AllowUsersToChangePassword": (
-                argToBoolean(args.get("allow_users_to_change_password")) if args.get("allow_users_to_change_password") else None
-            ),
-            "MaxPasswordAge": arg_to_number(args.get("max_password_age")),
-            "PasswordReusePrevention": arg_to_number(args.get("password_reuse_prevention")),
-            "HardExpiry": argToBoolean(args.get("hard_expiry")) if args.get("hard_expiry") else None,
-        }
-
-        remove_nulls_from_dictionary(command_args)
-        for arg_key, arg_value in command_args.items():
-            kwargs[arg_key] = arg_value
-
-        response = client.update_account_password_policy(**kwargs)
-
-        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-            return CommandResults(
-                readable_output=f"Successfully updated account password policy for account: {args.get('account_id')}"
-            )
-        else:
-            raise DemistoException(
-                f"Couldn't updated account password policy for account: {args.get('account_id')}. {json.dumps(response)}"
-            )
-
-    @staticmethod
-    def put_role_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Adds or updates an inline policy document that is embedded in the specified IAM role.
-
-        Args:
-            client (BotoClient): The boto3 client for IAM service
-            args (Dict[str, Any]): Command arguments including policy_document, policy_name, and role_name
-
-        Returns:
-            CommandResults: Results of the operation with success/failure message
-        """
-        policy_document: str = args.get("policy_document", "")
-        policy_name: str = args.get("policy_name", "")
-        role_name: str = args.get("role_name", "")
-        kwargs = {"PolicyDocument": policy_document, "PolicyName": policy_name, "RoleName": role_name}
-
-        try:
-            client.put_role_policy(**kwargs)
-            human_readable = f"Policy '{policy_name}' was successfully added to role '{role_name}'"
-            return CommandResults(readable_output=human_readable)
-        except Exception as e:
-            raise DemistoException(f"Failed to add policy '{policy_name}' to role '{role_name}'. Error: {str(e)}")
-
-    @staticmethod
-    def delete_login_profile_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Deletes the password for the specified IAM user, which terminates the user's ability to access AWS services
-        through the AWS Management Console.
-
-        Args:
-            client (BotoClient): The boto3 client for IAM service
-            args (Dict[str, Any]): Command arguments including:
-                - user_name (str): The name of the user whose password you want to delete
-
-        Returns:
-            CommandResults: Results of the operation with success/failure message
-        """
-        user_name = args.get("user_name", "")
-
-        try:
-            response = client.delete_login_profile(UserName=user_name)
-
-            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-                return CommandResults(readable_output=f"Successfully deleted login profile for user '{user_name}'")
-            else:
-                raise DemistoException(
-                    f"Failed to delete login profile for user '{user_name}'. "
-                    f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
-                    f"{json.dumps(response)}"
-                )
-        except Exception as e:
-            raise DemistoException(f"Error deleting login profile for user '{user_name}': {str(e)}")
-
-    @staticmethod
-    def put_user_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Adds or updates an inline policy document that is embedded in the specified IAM user.
-
-        Args:
-            client (BotoClient): The boto3 client for IAM service
-            args (Dict[str, Any]): Command arguments including:
-                - user_name (str): The name of the user to associate the policy with
-                - policy_name (str): The name of the policy document
-                - policy_document (str): The policy document in JSON format
-
-        Returns:
-            CommandResults: Results of the operation with success/failure message
-        """
-        user_name = args.get("user_name", "")
-        policy_name = args.get("policy_name", "")
-        policy_document = args.get("policy_document", "")
-
-        try:
-            response = client.put_user_policy(
-                UserName=user_name,
-                PolicyName=policy_name,
-                PolicyDocument=json.dumps(policy_document) if isinstance(policy_document, dict) else policy_document,
-            )
-
-            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-                return CommandResults(readable_output=f"Successfully added/updated policy '{policy_name}' for user '{user_name}'")
-            else:
-                raise DemistoException(
-                    f"Failed to add/update policy '{policy_name}' for user '{user_name}'. "
-                    f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
-                    f"{json.dumps(response)}"
-                )
-        except Exception as e:
-            raise DemistoException(f"Error adding/updating policy '{policy_name}' for user '{user_name}': {str(e)}")
-
-    @staticmethod
-    def remove_role_from_instance_profile_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Removes the specified IAM role from the specified EC2 instance profile.
-
-        Args:
-            client (BotoClient): The boto3 client for IAM service
-            args (Dict[str, Any]): Command arguments including:
-                - instance_profile_name (str): The name of the instance profile to update
-                - role_name (str): The name of the role to remove
-
-        Returns:
-            CommandResults: Results of the operation with success/failure message
-        """
-        instance_profile_name = args.get("instance_profile_name", "")
-        role_name = args.get("role_name", "")
-
-        try:
-            response = client.remove_role_from_instance_profile(InstanceProfileName=instance_profile_name, RoleName=role_name)
-
-            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-                return CommandResults(
-                    readable_output=f"Successfully removed role '{role_name}' from instance profile '{instance_profile_name}'"
-                )
-            else:
-                raise DemistoException(
-                    f"Failed to remove role '{role_name}' from instance profile '{instance_profile_name}'. "
-                    f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
-                    f"{json.dumps(response)}"
-                )
-
-        except Exception as e:
-            raise DemistoException(f"Error removing role '{role_name}' from instance profile '{instance_profile_name}': {str(e)}")
-
-    @staticmethod
-    def update_access_key_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Changes the status of the specified access key from Active to Inactive, or vice versa.
-        This operation can be used to disable a user's access key as part of a key rotation workflow.
-        Args:
-            client (BotoClient): The boto3 client for IAM service
-            args (Dict[str, Any]): Command arguments including:
-                - access_key_id (str): The access key ID of the secret access key you want to update
-                - status (str): The status you want to assign to the secret access key (Active/Inactive)
-                - user_name (str, optional): The name of the user whose key you want to update
-
-        Returns:
-            CommandResults: Results of the operation with success/failure message
-        """
-        access_key_id = args.get("access_key_id", "")
-        status = args.get("status", "")
-        user_name = args.get("user_name")
-
-        kwargs = {"AccessKeyId": access_key_id, "Status": status}
-
-        if user_name:
-            kwargs["UserName"] = user_name
-
-        try:
-            response = client.update_access_key(**kwargs)
-
-            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-                user_info = f" for user '{user_name}'" if user_name else ""
-                return CommandResults(
-                    readable_output=f"Successfully updated access key '{access_key_id}' status to '{status}'{user_info}"
-                )
-            else:
-                raise DemistoException(
-                    f"Failed to update access key '{access_key_id}' status. "
-                    f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
-                    f"{json.dumps(response)}"
-                )
-        except Exception as e:
-            raise DemistoException(f"Error updating access key '{access_key_id}' status: {str(e)}")
-
-
-class EC2:
-    service = AWSServices.EC2
-
-    @staticmethod
-    def modify_instance_metadata_options_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Modify the EC2 instance metadata parameters on a running or stopped instance.
-
-        Args:
-            client (BotoClient): The boto3 client for EC2 service
-            args (Dict[str, Any]): Command arguments including instance ID and metadata options
-
-        Returns:
-            CommandResults: Results of the operation with success/failure message
-        """
-        kwargs = {
-            "InstanceId": args.get("instance_id"),
-            "HttpTokens": args.get("http_tokens"),
-            "HttpEndpoint": args.get("http_endpoint"),
-        }
-        remove_nulls_from_dictionary(kwargs)
-
-        response = client.modify_instance_metadata_options(**kwargs)
-
-        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-            return CommandResults(readable_output=f"Successfully updated EC2 instance metadata for {args.get('instance_id')}")
-        else:
-            raise DemistoException(f"Couldn't updated public EC2 instance metadata for {args.get('instance_id')}")
-
-    @staticmethod
-    def modify_instance_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Modify an EC2 instance attribute.
-        Args:
-            client (BotoClient): The boto3 client for EC2 service
-            args (Dict[str, Any]): Command arguments including instance attribute modifications
-
-        Returns
-            CommandResults: Results of the operation with success/failure message
-        """
-
-        def parse_security_groups(csv_list):
-            if csv_list is None:
-                return None
-
-            security_groups_str = csv_list.replace(" ", "")
-            security_groups_list = security_groups_str.split(",")
-            return security_groups_list
-
-        kwargs = {
-            "InstanceId": args.get("instance_id"),
-            "Attribute": args.get("attribute"),
-            "Value": args.get("value"),
-            "DisableApiStop": arg_to_bool_or_none(args.get("disable_api_stop")),
-            "Groups": parse_security_groups(args.get("groups")),
-        }
-        remove_nulls_from_dictionary(kwargs)
-        response = client.modify_instance_attribute(**kwargs)
-
-        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-            return CommandResults(
-                readable_output=f"Successfully modified EC2 instance `{args.get('instance_id')}` attribute `{kwargs.popitem()}"
-            )
-        raise DemistoException(f"Unexpected response from AWS - \n{response}")
-
-    @staticmethod
-    def modify_snapshot_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Adds or removes permission settings for the specified snapshot.
-
-        Args:
-            client (BotoClient): The boto3 client for EC2 service
-            args (Dict[str, Any]): Command arguments including:
-                - snapshot_id (str): The ID of the snapshot
-                - attribute (str): The snapshot attribute to modify
-                - operation_type (str): The operation to perform (add or remove)
-                - user_ids (str, optional): Comma-separated list of AWS account IDs
-                - group (str, optional): The group to add/remove (e.g., 'all')
-
-        Returns:
-            CommandResults: Results of the operation with success message
-        """
-        # Parse user IDs from comma-separated string
-        user_ids_list = None
-        if user_ids := args.get("user_ids"):
-            user_ids_list = argToList(user_ids)
-
-        # Parse group parameter
-        group_names_list = None
-        if group := args.get("group"):
-            group_names_list = [group.strip()]
-
-        # Build accounts parameter using assign_params to handle None values
-        accounts = assign_params(GroupNames=group_names_list, UserIds=user_ids_list)
-
-        response = client.modify_snapshot_attribute(
-            Attribute=args.get("attribute"),
-            SnapshotId=args.get("snapshot_id"),
-            OperationType=args.get("operation_type"),
-            **accounts,
-        )
-
-        if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
-            raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
-
-        return CommandResults(readable_output=f"Snapshot {args.get('snapshot_id')} permissions was successfully updated.")
-
-    @staticmethod
-    def modify_image_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Modify the specified attribute of an Amazon Machine Image (AMI).
-        """
-        kwargs = {
-            "Attribute": args.get("attribute"),
-            "ImageId": args.get("image_id"),
-            "OperationType": args.get("operation_type"),
-        }
-
-        if desc := args.get("description"):
-            kwargs["Description"] = {"Value": desc}
-
-        # Map snake_case arg names → CapitalCase boto3 params
-        resource_mapping = {
-            "user_ids": "UserIds",
-            "user_groups": "UserGroups",
-            "product_codes": "ProductCodes",
-        }
-        for snake, capital in resource_mapping.items():
-            if ids := args.get(snake):
-                kwargs[capital] = parse_resource_ids(ids)
-
-        # Build LaunchPermission block from snake_case args
-        launch_perm: dict[str, list[dict[str, str]]] = {"Add": [], "Remove": []}
-        perm_config = [
-            ("launch_permission_add_group", "Group", "Add"),
-            ("launch_permission_add_user_id", "UserId", "Add"),
-            ("launch_permission_remove_group", "Group", "Remove"),
-            ("launch_permission_remove_user_id", "UserId", "Remove"),
-        ]
-
-        for arg_key, perm_key, action in perm_config:
-            if val := args.get(arg_key):
-                launch_perm[action].append({perm_key: val})
-
-        if launch_perm["Add"] or launch_perm["Remove"]:
-            kwargs["LaunchPermission"] = launch_perm
-
-        remove_nulls_from_dictionary(kwargs)
-
-        response = client.modify_image_attribute(**kwargs)
-        if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
-            raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
-
-        return CommandResults(readable_output="Image attribute successfully modified")
-
-    @staticmethod
-    def revoke_security_group_ingress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Revokes an ingress rule from a security group.
-
-        The command supports two modes:
-        1. Simple mode: using protocol, port, and cidr arguments
-        2. Full mode: using ip_permissions for complex configurations
-        """
-
-        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
-            """Parse port argument which can be a single port or range (min-max)."""
-            if not port:
-                return None, None
-
-            if "-" in port:
-                from_port, to_port = port.split("-", 1)
-                return int(from_port.strip()), int(to_port.strip())
-            else:
-                _port: int = int(port.strip())
-                return _port, _port
-
-        kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
-        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
-
-        if ip_permissions := args.get("ip_permissions"):
-            try:
-                kwargs["IpPermissions"] = json.loads(ip_permissions)
-            except json.JSONDecodeError as e:
-                raise DemistoException(f"Received invalid `ip_permissions` JSON object: {e}")
-
-        remove_nulls_from_dictionary(kwargs)
-        try:
-            response = client.revoke_security_group_ingress(**kwargs)
-
-            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK and response["Return"]:
-                if "UnknownIpPermissions" in response:
-                    raise DemistoException("Security Group ingress rule not found.")
-                return CommandResults(readable_output="The Security Group ingress rule was revoked")
-            else:
-                raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
-
-        except Exception as e:
-            if "InvalidGroup.NotFound" in str(e):
-                raise DemistoException(f"Security group {kwargs['GroupId']} not found")
-            elif "InvalidGroupId.NotFound" in str(e):
-                raise DemistoException(f"Invalid security group ID: {kwargs['GroupId']}")
-            else:
-                raise DemistoException(f"Failed to revoke security group ingress rule: {str(e)}")
-
-    @staticmethod
-    def authorize_security_group_ingress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Adds an inbound rule to a security group.
-
-        The command supports two modes:
-        1. Simple mode: using protocol, port, and cidr arguments
-        2. Full mode: using ip_permissions for complex configurations
-        """
-
-        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
-            """Parse port argument which can be a single port or range (min-max)."""
-            if not port:
-                return None, None
-
-            if "-" in port:
-                from_port, to_port = port.split("-", 1)
-                return int(from_port.strip()), int(to_port.strip())
-            else:
-                _port: int = int(port.strip())
-                return _port, _port
-
-        kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
-        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
-
-        if ip_permissions := args.get("ip_permissions"):
-            try:
-                kwargs["IpPermissions"] = json.loads(ip_permissions)
-            except json.JSONDecodeError as e:
-                raise DemistoException(f"Received invalid `ip_permissions` JSON object: {e}")
-
-        remove_nulls_from_dictionary(kwargs)
-        try:
-            response = client.authorize_security_group_ingress(**kwargs)
-
-            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK and response["Return"]:
-                return CommandResults(readable_output="The Security Group ingress rule was authorized")
-            else:
-                raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
-
-        except Exception as e:
-            if "InvalidGroup.NotFound" in str(e):
-                raise DemistoException(f"Security group {kwargs['GroupId']} not found")
-            elif "InvalidGroupId.NotFound" in str(e):
-                raise DemistoException(f"Invalid security group ID: {kwargs['GroupId']}")
-            elif "InvalidPermission.Duplicate" in str(e):
-                raise DemistoException("The specified rule already exists in the security group")
-            else:
-                raise DemistoException(f"Failed to authorize security group ingress rule: {str(e)}")
-
-    @staticmethod
-    def revoke_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Revokes an egress rule from a security group.
-
-        Modes:
-        1) Full mode: use `ip_permissions` JSON
-        2) Simple mode: protocol, port, cidr → build IpPermissions
-        """
-
-        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
-            """Parse port argument which can be a single port or range (min-max)."""
-            if not port:
-                return None, None
-
-            if "-" in port:
-                from_port, to_port = port.split("-", 1)
-                return int(from_port.strip()), int(to_port.strip())
-            else:
-                _port: int = int(port.strip())
-                return _port, _port
-
-        group_id = args.get("group_id")
-        ip_permissions_arg = args.get("ip_permissions")
-
-        if ip_permissions_arg:
-            # Full mode: user provided the entire IpPermissions JSON
-            try:
-                ip_perms = json.loads(ip_permissions_arg)
-            except json.JSONDecodeError as e:
-                raise DemistoException(f"Invalid `ip_permissions` JSON: {e}")
-        else:
-            # Simple mode: build a single rule descriptor
-            proto = args.get("protocol")
-            from_port, to_port = parse_port_range(args.get("port", ""))
-            cidr = args.get("cidr")
-            ip_perms = [{"IpProtocol": proto, "FromPort": from_port, "ToPort": to_port, "IpRanges": [{"CidrIp": cidr}]}]
-
-        kwargs = {"GroupId": group_id, "IpPermissions": ip_perms}
-
-        try:
-            resp = client.revoke_security_group_egress(**kwargs)
-            status = resp.get("Return")
-            if resp.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200 and status:
-                return CommandResults(readable_output="Egress rule revoked successfully.")
-            else:
-                # If no exception but Return is False, AWS may report unknown perms
-                unknown = resp.get("UnknownIpPermissions")
-                if unknown:
-                    raise DemistoException("Specified egress rule not found.")
-                raise DemistoException(f"Unexpected response: {resp}")
-        except ClientError as e:
-            code = e.response["Error"]["Code"]
-            if code in ("InvalidGroup.NotFound", "InvalidGroupId.NotFound"):
-                raise DemistoException(f"Security group {group_id} not found.")
-            raise DemistoException(f"Failed to revoke egress rule: {e}")
-
-
-class EKS:
-    service = AWSServices.EKS
-
-    @staticmethod
-    def update_cluster_config_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Updates an Amazon EKS cluster configuration. Only a single type of update
-        (logging / resources_vpc_config) is allowed per call.
-        Args:
-            client (BotoClient): The boto3 client for EKS service
-            args (Dict[str, Any]): Command arguments including cluster name and configuration options
-
-        Returns:
-            CommandResults: Results of the operation with update information
-        """
-
-        def validate_args(args: Dict[str, Any]) -> dict:
-            """
-            Check that exactly one argument is passed, and if not raises a value error
-            """
-            validated_args = {"name": args.get("cluster_name")}
-            if resources_vpc_config := args.get("resources_vpc_config"):
-                resources_vpc_config = (
-                    json.loads(resources_vpc_config) if isinstance(resources_vpc_config, str) else resources_vpc_config
-                )
-                validated_args["resourcesVpcConfig"] = resources_vpc_config
-                # Convert specific string boolean values to actual boolean values
-                if isinstance(resources_vpc_config, dict):
-                    if "endpointPublicAccess" in resources_vpc_config and isinstance(
-                        resources_vpc_config["endpointPublicAccess"], str
-                    ):
-                        resources_vpc_config["endpointPublicAccess"] = (
-                            resources_vpc_config["endpointPublicAccess"].lower() == "true"
-                        )
-                    if "endpointPrivateAccess" in resources_vpc_config and isinstance(
-                        resources_vpc_config["endpointPrivateAccess"], str
-                    ):
-                        resources_vpc_config["endpointPrivateAccess"] = (
-                            resources_vpc_config["endpointPrivateAccess"].lower() == "true"
-                        )
-
-            if logging_arg := args.get("logging"):
-                logging_arg = json.loads(logging_arg) if isinstance(logging_arg, str) else logging_arg
-                validated_args["logging"] = logging_arg
-
-            if logging_arg and resources_vpc_config:
-                raise ValueError
-
-            result = remove_empty_elements(validated_args)
-            if isinstance(result, dict):
-                return result
-            else:
-                raise ValueError("No valid configuration argument provided")
-
-        validated_args: dict = validate_args(args)
-        try:
-            response = client.update_cluster_config(**validated_args)
-            response_data = response.get("update", {})
-            response_data["clusterName"] = validated_args["name"]
-            response_data["createdAt"] = datetime_to_string(response_data.get("createdAt"))
-
-            headers = ["clusterName", "id", "status", "type", "params"]
-            readable_output = tableToMarkdown(
-                name="Updated Cluster Config Information",
-                t=response_data,
-                removeNull=True,
-                headers=headers,
-                headerTransform=pascalToSpace,
-            )
-            return CommandResults(
-                readable_output=readable_output,
-                outputs_prefix="AWS.EKS.UpdateCluster",
-                outputs=response_data,
-                raw_response=response_data,
-                outputs_key_field="id",
-            )
-        except Exception as e:
-            if "No changes needed" in str(e):
-                return CommandResults(readable_output="No changes needed for the required update.")
-            else:
-                raise e
-
-
-class RDS:
-    service = AWSServices.RDS
-
-    @staticmethod
-    def modify_db_cluster_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Modifies an Amazon RDS DB Cluster configuration.
-
-        Args:
-            client (BotoClient): The boto3 client for RDS service
-            args (Dict[str, Any]): Command arguments including cluster configuration options
-
-        Returns:
-            CommandResults: Results of the operation with update information
-        """
-        try:
-            kwargs = {
-                "DBClusterIdentifier": args.get("db_cluster_identifier"),
-            }
-
-            # Optional parameters
-            optional_params = {
-                "DeletionProtection": "deletion_protection",
-                "EnableIAMDatabaseAuthentication": "enable_iam_database_authentication",
-            }
-
-            for param, arg_name in optional_params.items():
-                if arg_name in args:
-                    kwargs[param] = argToBoolean(args[arg_name])
-
-            demisto.debug(f"executing modify_db_cluster with {kwargs}")
-            response = client.modify_db_cluster(**kwargs)
-            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-                db_cluster = response.get("DBCluster", {})
-                readable_output = f"Successfully modified DB cluster {args.get('db-cluster-identifier')}"
-                if db_cluster:
-                    db_cluster = convert_datetimes_to_iso_safe(db_cluster)
-                    readable_output += "\n\nUpdated DB Cluster details:"
-                    readable_output += tableToMarkdown("", db_cluster)
-
-                return CommandResults(
-                    readable_output=readable_output,
-                    outputs_prefix="AWS.RDS.DBCluster",
-                    outputs=db_cluster,
-                    outputs_key_field="DBClusterIdentifier",
-                )
-            else:
-                raise DemistoException(
-                    f"Failed to modify DB cluster. "
-                    f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
-                    f"{json.dumps(response)}"
-                )
-
-        except Exception as e:
-            raise DemistoException(f"Error modifying DB cluster: {str(e)}")
-
-    @staticmethod
-    def modify_db_cluster_snapshot_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Modifies attributes of an Amazon RDS DB Cluster snapshot.
-        Args:
-            client (BotoClient): The boto3 client for RDS service
-            args (Dict[str, Any]): Command arguments for snapshot attribute modification
-
-        Returns:
-            CommandResults: Results of the snapshot attribute modification operation
-        """
-        try:
-            kwargs = {
-                "DBClusterSnapshotIdentifier": args.get("db_cluster_snapshot_identifier"),
-                "AttributeName": args.get("attribute_name"),
-            }
-
-            # Optional parameters
-            if "values_to_add" in args:
-                kwargs["ValuesToAdd"] = argToList(args.get("values_to_add"))
-
-            if "values-to-remove" in args:
-                kwargs["ValuesToRemove"] = argToList(args.get("values_to_remove"))
-
-            remove_nulls_from_dictionary(kwargs)
-
-            response = client.modify_db_cluster_snapshot_attribute(**kwargs)
-
-            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-                attributes = response.get("DBClusterSnapshotAttributesResult", {})
-
-                if attributes:
-                    readable_output = (
-                        f"Successfully modified DB cluster snapshot attribute for {args.get('db_cluster_snapshot_identifier')}"
-                    )
-                    readable_output += "\n\nUpdated DB Cluster Snapshot Attributes:"
-                    readable_output += tableToMarkdown("", attributes)
-
-                return CommandResults(
-                    readable_output=readable_output,
-                    outputs_prefix="AWS.RDS.DBClusterSnapshotAttributes",
-                    outputs=attributes,
-                    outputs_key_field="DBClusterSnapshotIdentifier",
-                )
-            else:
-                raise DemistoException(
-                    f"Failed to modify DB cluster snapshot attribute. "
-                    f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
-                    f"{json.dumps(response)}"
-                )
-
-        except Exception as e:
-            raise DemistoException(f"Error modifying DB cluster snapshot attribute: {str(e)}")
-
-    @staticmethod
-    def modify_db_instance_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Modifies an Amazon RDS DB Instance configuration.
-
-        Args:
-            client (BotoClient): The boto3 client for RDS service
-            args (Dict[str, Any]): Command arguments including instance identifier and configuration options
-
-        Returns:
-            CommandResults: Results of the operation with update information
-        """
-        try:
-            kwargs = {
-                "DBInstanceIdentifier": args.get("db_instance_identifier"),
-                "MultiAZ": arg_to_bool_or_none(args.get("multi_az")),
-                "ApplyImmediately": arg_to_bool_or_none(args.get("apply_immediately")),
-                "AutoMinorVersionUpgrade": arg_to_bool_or_none(args.get("auto_minor_version_upgrade")),
-                "DeletionProtection": arg_to_bool_or_none(args.get("deletion_protection")),
-                "EnableIAMDatabaseAuthentication": arg_to_bool_or_none(args.get("enable_iam_database_authentication")),
-                "PubliclyAccessible": arg_to_bool_or_none(args.get("publicly_accessible")),
-                "CopyTagsToSnapshot": arg_to_bool_or_none(args.get("copy_tags_to_snapshot")),
-                "BackupRetentionPeriod": arg_to_bool_or_none(args.get("backup_retention_period")),
-            }
-            remove_nulls_from_dictionary(kwargs)
-            demisto.info(f"modify_db_instance {kwargs=}")
-            response = client.modify_db_instance(**kwargs)
-
-            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-                db_instance = response.get("DBInstance", {})
-                readable_output = (
-                    f"Successfully modified DB instance {args.get('db_instance_identifier')}"
-                    f"\n\nUpdated DB Instance details:\n\n"
-                )
-                if db_instance:
-                    db_instance = convert_datetimes_to_iso_safe(db_instance)
-                    readable_output += tableToMarkdown("", t=db_instance, removeNull=True)
-
-                return CommandResults(
-                    readable_output=readable_output,
-                    outputs_prefix="AWS.RDS.DBInstance",
-                    outputs=db_instance,
-                    outputs_key_field="DBInstanceIdentifier",
-                )
-            else:
-                raise DemistoException(
-                    f"Failed to modify DB instance. "
-                    f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
-                    f"Error {response['Error']['Message']}",
-                )
-
-        except Exception as e:
-            raise DemistoException(f"Error modifying DB instance: {str(e)}")
-
-    @staticmethod
-    def modify_db_snapshot_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Adds or removes permission for the specified AWS account IDs to restore the specified DB snapshot.
-
-        Args:
-            client (BotoClient): The boto3 client for RDS service
-            args (Dict[str, Any]): Command arguments including snapshot identifier and attribute settings
-
-        Returns:
-            CommandResults: Results of the operation with success/failure message
-        """
-        kwargs = {
-            "DBSnapshotIdentifier": args.get("db_snapshot_identifier"),
-            "AttributeName": args.get("attribute_name"),
-            "ValuesToAdd": argToList(args.get("values_to_add")) if "values_to_add" in args else None,
-            "ValuesToRemove": argToList(args.get("values_to_remove")) if "values_to_remove" in args else None,
-        }
-        remove_nulls_from_dictionary(kwargs)
-
-        response = client.modify_db_snapshot_attribute(**kwargs)
-
-        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-            # Return the changed fields in the command results:
-            return CommandResults(
-                readable_output=(
-                    f"Successfully modified DB snapshot attribute for {args.get('db_snapshot_identifier')}:\n"
-                    f"{tableToMarkdown('Modified', kwargs)}"
-                )
-            )
-
-        else:
-            raise DemistoException(f"Couldn't modify DB snapshot attribute for {args.get('db_snapshot_identifier')}")
-
-
-class CloudTrail:
-    service = AWSServices.CloudTrail
-
-    @staticmethod
-    def start_logging_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Starts the recording of AWS API calls and log file delivery for a trail.
-        """
-        name = args.get("name")
-
-        try:
-            response = client.start_logging(Name=name)
-
-            return CommandResults(readable_output=f"Successfully started logging for CloudTrail: {name}", raw_response=response)
-        except Exception as e:
-            raise DemistoException(f"Error starting logging for CloudTrail {name}: {str(e)}")
-
-    @staticmethod
-    def update_trail_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """
-        Updates trail settings that control what events you are logging, and how to handle log files.
-        Changes to a trail do not require stopping the CloudTrail service.
-
-        Args:
-            client (BotoClient): The boto3 client for CloudTrail service
-            args (Dict[str, Any]): Command arguments including trail name and configuration options
-
-        Returns:
-            CommandResults: Results of the operation with update information
-        """
-        try:
-            kwargs = {
-                "Name": args.get("name"),
-                "S3BucketName": args.get("s3_bucket_name"),
-                "S3KeyPrefix": args.get("s3_key_prefix"),
-                "SnsTopicName": args.get("sns_topic_name"),
-                "IncludeGlobalServiceEvents": arg_to_bool_or_none(args.get("include_global_service_events")),
-                "IsMultiRegionTrail": arg_to_bool_or_none(args.get("is_multi_region_trail")),
-                "EnableLogFileValidation": arg_to_bool_or_none(args.get("enable_log_file_validation")),
-                "CloudWatchLogsLogGroupArn": args.get("cloud_watch_logs_log_group_arn"),
-                "CloudWatchLogsRoleArn": args.get("cloud_watch_logs_role_arn"),
-                "KMSKeyId": args.get("kms_key_id"),
-            }
-
-            remove_nulls_from_dictionary(kwargs)
-
-            response = client.update_trail(**kwargs)
-
-            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-                trail_data = response.get("Trail", {})
-                readable_output = f"Successfully updated CloudTrail: {args.get('name')}"
-
-                if trail_data:
-                    readable_output += "\n\nUpdated Trail Details:"
-                    readable_output += tableToMarkdown("", trail_data)
-
-                return CommandResults(
-                    readable_output=readable_output,
-                    outputs_prefix="AWS.CloudTrail.Trail",
-                    outputs=trail_data,
-                    outputs_key_field="TrailARN",
-                    raw_response=response,
-                )
-            else:
-                raise DemistoException(
-                    f"Failed to update CloudTrail. "
-                    f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
-                    f"{json.dumps(response)}"
-                )
-
-        except Exception as e:
-            raise DemistoException(f"Error updating CloudTrail {args.get('name')}: {str(e)}")
-
-
-COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
-    "aws-s3-public-access-block-update": S3.put_public_access_block_command,
-    "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
-    "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
-    "aws-s3-bucket-acl-put": S3.put_bucket_acl_command,
-    "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
-    "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
-    "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
-    "aws-iam-role-policy-put": IAM.put_role_policy_command,
-    "aws-iam-login-profile-delete": IAM.delete_login_profile_command,
-    "aws-iam-user-policy-put": IAM.put_user_policy_command,
-    "aws-iam-role-from-instance-profile-remove": IAM.remove_role_from_instance_profile_command,
-    "aws-iam-access-key-update": IAM.update_access_key_command,
-    "aws-ec2-instance-metadata-options-modify": EC2.modify_instance_metadata_options_command,
-    "aws-ec2-instance-attribute-modify": EC2.modify_instance_attribute_command,
-    "aws-ec2-snapshot-attribute-modify": EC2.modify_snapshot_attribute_command,
-    "aws-ec2-image-attribute-modify": EC2.modify_image_attribute_command,
-    "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
-    "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
-    "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
-    "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
-    "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
-    "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_snapshot_attribute_command,
-    "aws-rds-db-instance-modify": RDS.modify_db_instance_command,
-    "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
-    "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
-    "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
+from CoreIRApiModule import *
+import dateparser
+from enum import Enum
+
+# Disable insecure warnings
+urllib3.disable_warnings()
+
+TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+INTEGRATION_CONTEXT_BRAND = "Core"
+INTEGRATION_NAME = "AWS"
+MAX_GET_INCIDENTS_LIMIT = 100
+SEARCH_ASSETS_DEFAULT_LIMIT = 100
+
+COVERAGE_API_FIELDS_MAPPING = {"vendor_name": "asset_provider", "asset_provider": "unified_provider"}
+ASSET_COVERAGE_TABLE = "COVERAGE"
+
+ASSET_FIELDS = {
+    "asset_names": "xdm.asset.name",
+    "asset_types": "xdm.asset.type.name",
+    "asset_tags": "xdm.asset.tags",
+    "asset_ids": "xdm.asset.id",
+    "asset_providers": "xdm.asset.provider",
+    "asset_realms": "xdm.asset.realm",
+    "asset_group_ids": "xdm.asset.group_ids",
 }
 
-REQUIRED_ACTIONS: list[str] = [
-    "iam:PassRole",
-    "kms:CreateGrant",
-    "kms:Decrypt",
-    "kms:DescribeKey",
-    "kms:GenerateDataKey",
-    "rds:AddTagsToResource",
-    "rds:CreateTenantDatabase",
-    "secretsmanager:CreateSecret",
-    "secretsmanager:RotateSecret",
-    "secretsmanager:TagResource",
-    "rds:ModifyDBCluster",
-    "rds:ModifyDBClusterSnapshotAttribute",
-    "rds:ModifyDBInstance",
-    "rds:ModifyDBSnapshotAttribute",
-    "s3:PutBucketAcl",
-    "s3:PutBucketLogging",
-    "s3:PutBucketVersioning",
-    "s3:PutBucketPolicy",
-    "ec2:RevokeSecurityGroupEgress",
-    "ec2:ModifyImageAttribute",
-    "ec2:ModifyInstanceAttribute",
-    "ec2:ModifySnapshotAttribute",
-    "ec2:RevokeSecurityGroupIngress",
-    "eks:UpdateClusterConfig",
-    "iam:DeleteLoginProfile",
-    "iam:PutUserPolicy",
-    "iam:RemoveRoleFromInstanceProfile",
-    "iam:UpdateAccessKey",
-    "iam:GetAccountPasswordPolicy",
-    "iam:UpdateAccountPasswordPolicy",
-    "s3:PutBucketPublicAccessBlock",
-    "ec2:ModifyInstanceMetadataOptions",
-    "iam:GetAccountAuthorizationDetails",
+
+WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations", "core-get-asset-coverage",
+    "core-get-asset-coverage-histogram",]
+
+DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
+
+VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
+ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
+
+ASSET_GROUP_FIELDS = {
+    "asset_group_name": "XDM__ASSET_GROUP__NAME",
+    "asset_group_type": "XDM__ASSET_GROUP__TYPE",
+    "asset_group_description": "XDM__ASSET_GROUP__DESCRIPTION",
+    "asset_group_id": "XDM__ASSET_GROUP__ID",
+}
+
+VULNERABILITIES_SEVERITY_MAPPING = {
+    "info": "SEV_030_INFO",
+    "low": "SEV_040_LOW",
+    "medium": "SEV_050_MEDIUM",
+    "high": "SEV_060_HIGH",
+    "critical": "SEV_070_CRITICAL",
+}
+
+ALLOWED_SCANNERS = [
+    "SCA",
+    "IAC",
+    "SECRETS",
 ]
 
 
-def print_debug_logs(client: BotoClient, message: str):
+class FilterBuilder:
     """
-    Print debug logs with service prefix and command context.
-    Args:
-        client (BotoClient): The AWS client object
-        message (str): The debug message to log
+    Filter class for creating filter dictionary objects.
     """
-    service_name = client.meta.service_model.service_name
-    demisto.debug(f"[{service_name}] {demisto.command()}: {message}")
 
+    class FilterType(str, Enum):
+        operator: str
 
-def test_module(params):
-    if params.get("test_account_id"):
-        iam_client, _ = get_service_client(
-            params=params,
-            service_name=AWSServices.IAM,
-            config=Config(connect_timeout=5, read_timeout=5, retries={"max_attempts": 1}),
-        )
-        demisto.info("[AWS Automation Test Module] Initialized IAM client")
-    else:
-        raise DemistoException("Missing AWS credentials or account ID for health check")
+        """
+        Available type options for filter filtering.
+        Each member holds its string value and its logical operator for multi-value scenarios.
+        """
 
+        def __new__(cls, value, operator):
+            obj = str.__new__(cls, value)
+            obj._value_ = value
+            obj.operator = operator
+            return obj
 
-def health_check(credentials: dict, account_id: str, connector_id: str) -> list[HealthCheckError] | HealthCheckError | None:
-    """
-    Perform AWS service connectivity check with detailed error handling.
+        EQ = ("EQ", "OR")
+        RANGE = ("RANGE", "OR")
+        CONTAINS = ("CONTAINS", "OR")
+        GTE = ("GTE", "OR")
+        ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
+        JSON_WILDCARD = ("JSON_WILDCARD", "OR")
+        IS_EMPTY = ("IS_EMPTY", "OR")
+        NIS_EMPTY = ("NIS_EMPTY", "AND")
+        WILDCARD = ("WILDCARD", "OR")
 
-    Args:
-        credentials (dict): AWS credentials
-        account_id (str): AWS account ID
-        connector_id (str): Connector identifier
+    AND = "AND"
+    OR = "OR"
+    FIELD = "SEARCH_FIELD"
+    TYPE = "SEARCH_TYPE"
+    VALUE = "SEARCH_VALUE"
 
-    Returns:
-        Single HealthCheckError if connectivity issues are found, None otherwise
-    """
-    # List to collect all connectivity errors
-    failed_services: list[str] = []
+    class Field:
+        def __init__(self, field_name: str, filter_type: "FilterType", values: Any):
+            self.field_name = field_name
+            self.filter_type = filter_type
+            self.values = values
 
-    try:
-        # Connectivity check for services
-        for service in AWSServices:
-            try:
-                session = None
-                # Attempt to create a client for each service
-                client, session = get_service_client(
-                    session=session,
-                    service_name=service,
-                    config=Config(connect_timeout=3, read_timeout=3, retries={"max_attempts": 1}),
+    class MappedValuesField(Field):
+        def __init__(self, field_name: str, filter_type: "FilterType", values: Any, mappings: dict[str, "FilterType"]):
+            super().__init__(field_name, filter_type, values)
+            self.mappings = mappings
+
+    def __init__(self, filter_fields: list[Field] | None = None):
+        self.filter_fields = filter_fields or []
+
+    def add_field(self, name: str, type: "FilterType", values: Any, mapper: dict | None = None):
+        """
+        Adds a new field to the filter.
+        Args:
+            name (str): The name of the field.
+            type (FilterType): The type to use for the field.
+            values (Any): The values to filter for.
+            mapper (dict | None): An optional dictionary to map values before filtering.
+        """
+        processed_values = values
+        if mapper:
+            if not isinstance(values, list):
+                values = [values]
+            processed_values = [mapper[v] for v in values if v in mapper]
+
+        self.filter_fields.append(FilterBuilder.Field(name, type, processed_values))
+
+    def add_field_with_mappings(self, name: str, type: "FilterType", values: Any, mappings: dict[str, "FilterType"]):
+        """
+        Adds a new field to the filter with special value mappings.
+        Args:
+            name (str): The name of the field.
+            type (FilterType): The default filter type for non-mapped values.
+            values (Any): The values to filter for.
+            mappings (dict[str, FilterType]): A dictionary mapping special values to specific filter types.
+                Example:
+                    mappings = {
+                        "unassigned": FilterType.IS_EMPTY,
+                        "assigned": FilterType.NIS_EMPTY,
+                    }
+        """
+        self.filter_fields.append(FilterBuilder.MappedValuesField(name, type, values, mappings))
+
+    def add_time_range_field(self, name: str, start_time: str | None, end_time: str | None):
+        """
+        Adds a time range field to the filter.
+        Args:
+            name (str): The name of the field.
+            start_time (str | None): The start time of the range.
+            end_time (str | None): The end time of the range.
+        """
+        start, end = self._prepare_time_range(start_time, end_time)
+        if start and end:
+            self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
+
+    def to_dict(self) -> dict[str, list]:
+        """
+        Creates a filter dict from a list of Field objects.
+        The filter will require each field to be one of the values provided.
+        Returns:
+            dict[str, list]: Filter object.
+        """
+        filter_structure: dict[str, list] = {FilterBuilder.AND: []}
+
+        for field in self.filter_fields:
+            if not isinstance(field.values, list):
+                field.values = [field.values]
+
+            search_values = []
+            for value in field.values:
+                if value is None:
+                    continue
+
+                current_filter_type = field.filter_type
+                current_value = value
+
+                if isinstance(field, FilterBuilder.MappedValuesField) and value in field.mappings:
+                    current_filter_type = field.mappings[value]
+                    if current_filter_type in [FilterType.IS_EMPTY, FilterType.NIS_EMPTY]:
+                        current_value = "<No Value>"
+
+                search_values.append(
+                    {
+                        FilterBuilder.FIELD: field.field_name,
+                        FilterBuilder.TYPE: current_filter_type.value,
+                        FilterBuilder.VALUE: current_value,
+                    }
                 )
-                demisto.info(f"[AWS Automation Health Check] Successfully created client for {service.value}")
 
-            except Exception as service_error:
-                demisto.error(f"[AWS Automation Health Check] Failed to create client for {service.value}: {str(service_error)}")
-                failed_services.append(service.value)
+            if search_values:
+                search_obj = {field.filter_type.operator: search_values} if len(search_values) > 1 else search_values[0]
+                filter_structure[FilterBuilder.AND].append(search_obj)
 
-        # If any services failed, create a single aggregated error
-        if failed_services:
-            error_msg = f"Failed to connect to AWS services: {', '.join(failed_services)}"
-            connectivity_error = HealthCheckError(
-                account_id=account_id,
-                connector_id=connector_id,
-                message=error_msg,
-                error_type=ErrorType.CONNECTIVITY_ERROR,
-            )
-            demisto.info(f"[AWS Automation Health Check] Connectivity error: {error_msg}")
-            return connectivity_error
+        if not filter_structure[FilterBuilder.AND]:
+            filter_structure = {}
 
-        demisto.info("[AWS Automation Health Check] All services connected successfully")
-        return None
+        return filter_structure
 
-    except Exception as err:
-        demisto.error(f"[AWS Automation Health Check] Unexpected error during health check: {err}")
+    @staticmethod
+    def _prepare_time_range(start_time_str: str | None, end_time_str: str | None) -> tuple[int | None, int | None]:
+        """Prepare start and end time from args, parsing relative time strings."""
+        if end_time_str and not start_time_str:
+            raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
 
-        # Create a general internal error
-        internal_error = HealthCheckError(
-            account_id=account_id,
-            connector_id=connector_id,
-            message=f"Unexpected error during health check: {str(err)}",
-            error_type=ErrorType.INTERNAL_ERROR,
+        start_time, end_time = None, None
+
+        if start_time_str:
+            if start_dt := dateparser.parse(str(start_time_str)):
+                start_time = int(start_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse start_time: {start_time_str}")
+
+        if end_time_str:
+            if end_dt := dateparser.parse(str(end_time_str)):
+                end_time = int(end_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse end_time: {end_time_str}")
+
+        if start_time and not end_time:
+            # Set end_time to the current time if only start_time is provided
+            end_time = int(datetime.now().timestamp() * 1000)
+
+        return start_time, end_time
+
+
+FilterType = FilterBuilder.FilterType
+
+
+def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
+    """
+    Replace all occurrences of a substring in the keys of a dictionary with a new substring or in a string.
+
+    Args:
+        data (dict | str): The dictionary to replace keys in.
+        original (str): The substring to be replaced.
+        new (str): The substring to replace with.
+
+    Returns:
+        dict: The dictionary with all occurrences of `original` replaced by `new` in its keys.
+    """
+
+    if isinstance(data, str):
+        return data.replace(original, new)
+    if isinstance(data, dict):
+        for key in list(data.keys()):
+            if isinstance(key, str) and original in key:
+                new_key = key.replace(original, new)
+                data[new_key] = data.pop(key)
+    return data
+
+
+def issue_to_alert(args: dict | str) -> dict | str:
+    return replace_substring(args, "issue", "alert")
+
+
+def alert_to_issue(output: dict | str) -> dict | str:
+    return replace_substring(output, "alert", "issue")
+
+
+def incident_to_case(output: dict | str) -> dict | str:
+    return replace_substring(output, "incident", "case")
+
+
+def case_to_incident(args: dict | str) -> dict | str:
+    return replace_substring(args, "case", "incident")
+
+
+def preprocess_get_cases_args(args: dict):
+    demisto.debug(f"original args: {args}")
+    args["limit"] = min(int(args.get("limit", MAX_GET_INCIDENTS_LIMIT)), MAX_GET_INCIDENTS_LIMIT)
+    args = issue_to_alert(case_to_incident(args))
+    demisto.debug(f"after preprocess_get_cases_args args: {args}")
+    return args
+
+
+def preprocess_get_cases_outputs(outputs: list | dict):
+    def process(output: dict | str):
+        return alert_to_issue(incident_to_case(output))
+
+    if isinstance(outputs, list):
+        return [process(o) for o in outputs]
+    return process(outputs)
+
+
+def preprocess_get_case_extra_data_outputs(outputs: list | dict):
+    def process(output: dict | str):
+        if isinstance(output, dict):
+            if "incident" in output:
+                output["incident"] = alert_to_issue(incident_to_case(output.get("incident", {})))
+            alerts_data = output.get("alerts", {}).get("data", {})
+            modified_alerts_data = [alert_to_issue(incident_to_case(alert)) for alert in alerts_data]
+            if "alerts" in output and isinstance(output["alerts"], dict):
+                output["alerts"]["data"] = modified_alerts_data
+        return alert_to_issue(incident_to_case(output))
+
+    if isinstance(outputs, list):
+        return [process(o) for o in outputs]
+    return process(outputs)
+
+
+def filter_context_fields(output_keys: list, context: list):
+    """
+    Filters only specific keys from the context dictionary based on provided output_keys.
+    """
+    filtered_context = []
+    for alert in context:
+        filtered_context.append({key: alert.get(key) for key in output_keys})
+
+    return filtered_context
+
+
+class Client(CoreClient):
+    def test_module(self):
+        """
+        Performs basic get request to get item samples
+        """
+        try:
+            self.get_endpoints(limit=1)
+        except Exception as err:
+            if "API request Unauthorized" in str(err):
+                # this error is received from the Core server when the client clock is not in sync to the server
+                raise DemistoException(f"{err!s} please validate that your both XSOAR and Core server clocks are in sync")
+            else:
+                raise
+
+    def get_asset_details(self, asset_id):
+        reply = self._http_request(
+            method="POST",
+            json_data={"asset_id": asset_id},
+            headers=self._headers,
+            url_suffix="/unified-asset-inventory/get_asset/",
         )
 
-        return internal_error
+        return reply
+
+    def search_assets(self, filter, page_number, page_size, on_demand_fields):
+        reply = self._http_request(
+            method="POST",
+            headers=self._headers,
+            json_data={
+                "request_data": {
+                    "filters": filter,
+                    "search_from": page_number * page_size,
+                    "search_to": (page_number + 1) * page_size,
+                    "on_demand_fields": on_demand_fields,
+                },
+            },
+            url_suffix="/assets",
+        )
+
+        return reply
+
+    def search_asset_groups(self, filter):
+        reply = self._http_request(
+            method="POST",
+            headers=self._headers,
+            json_data={"request_data": {"filters": filter}},
+            url_suffix="/asset-groups",
+        )
+
+        return reply
+
+    def get_webapp_data(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/get_data",
+            json_data=request_data,
+        )
+        
+    def enable_scanners(self, payload: dict, repository_id: str) -> dict:
+        return self._http_request(
+            method="PUT",
+            url_suffix=f"/public_api/appsec/v1/repositories/{repository_id}/scan-configuration",
+            json_data=payload,
+            headers={**self._headers, "Content-Type": "application/json",},
+        )
+
+    def get_playbook_suggestion_by_issue(self, issue_id):
+        """
+        Get playbook suggestions for a specific issue.
+        Args:
+            issue_id (str): The ID of the issue to get playbook suggestions for.
+        Returns:
+            dict: The response containing playbook suggestions.
+        """
+        reply = self._http_request(
+            method="POST",
+            json_data={"alert_internal_id": issue_id},
+            headers=self._headers,
+            url_suffix="/incident/get_playbook_suggestion_by_alert/",
+        )
+
+        return reply
+    
+    def get_webapp_histograms(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/get_histograms",
+            json_data=request_data,
+        )
 
 
-def register_proxydome_header(boto_client: BotoClient) -> None:
+def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
     """
-    Register ProxyDome authentication header for all AWS API requests.
-
-    This function adds the ProxyDome caller ID header to every boto3 request
-    by registering an event handler that injects the header before sending requests.
-
-    Args:
-        boto_client (BotoClient): The boto3 client to configure with ProxyDome headers
+    Get comprehensive recommendations for an issue, including remediation steps and playbook suggestions.
+    Retrieves issue data with remediation field using the generic /api/webapp/get_data endpoint.
     """
-    event_system = boto_client.meta.events
-    proxydome_token: str = get_proxydome_token()
+    issue_id = args.get("issue_id")
+    if not issue_id:
+        raise DemistoException("issue_id is required.")
 
-    def _add_proxydome_header(request, **kwargs):
-        request.headers["x-caller-id"] = proxydome_token
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("internal_id", FilterType.CONTAINS, issue_id)
 
-    # Register the header injection function to be called before each request
-    event_system.register_last("before-send.*.*", _add_proxydome_header)
-
-
-def get_service_client(
-    credentials: dict = {},
-    params: dict = {},
-    args: dict = {},
-    command: str = "",
-    session: Optional[Session] = None,
-    service_name: str = "",
-    config: Optional[Config] = None,
-) -> tuple[BotoClient, Optional[Session]]:
-    """
-    Create and configure a boto3 client for the specified AWS service.
-
-    Args:
-        params (dict): Integration configuration parameters
-        args (dict): Command arguments containing region information
-        command (str): AWS command name used to determine the service type
-        credentials (dict): AWS credentials (access key, secret key, session token)
-
-    Returns:
-        BotoClient: Configured boto3 client with ProxyDome headers and proxy settings
-        Session: Boto3 session object
-    """
-    aws_session: Session = session or Session(
-        aws_access_key_id=credentials.get("key") or params.get("access_key_id"),
-        aws_secret_access_key=credentials.get("access_token") or params.get("secret_access_key", {}).get("password"),
-        aws_session_token=credentials.get("session_token"),
-        region_name=args.get("region") or params.get("region", "") or DEFAULT_REGION,
+    request_data = build_webapp_request_data(
+        table_name="ALERTS_VIEW_TABLE",
+        filter_dict=filter_builder.to_dict(),
+        limit=1,
+        sort_field="source_insert_ts",
+        sort_order="DESC",
+        on_demand_fields=[],
     )
 
-    # Resolve service name
-    service_name = service_name or command.split("-")[1]
-    service = AWSServices(service_name)
+    # Get issue data with remediation field
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    issue_data = reply.get("DATA", [])
 
-    client_config = Config(
-        proxies={"https": DEFAULT_PROXYDOME}, proxies_config={"proxy_ca_bundle": DEFAULT_PROXYDOME_CERTFICATE_PATH}
+    if not issue_data:
+        raise DemistoException(f"No issue found with ID: {issue_id}")
+
+    issue = issue_data[0]
+
+    # Get playbook suggestions
+    playbook_response = client.get_playbook_suggestion_by_issue(issue_id)
+    playbook_suggestions = playbook_response.get("reply", {})
+    demisto.debug(f"{playbook_response=}")
+
+    recommendation = {
+        "issue_id": issue.get("internal_id") or issue_id,
+        "issue_name": issue.get("alert_name"),
+        "severity": issue.get("severity"),
+        "description": issue.get("alert_description"),
+        "remediation": issue.get("remediation"),
+        "playbook_suggestions": playbook_suggestions,
+    }
+
+    headers = [
+        "issue_id",
+        "issue_name",
+        "severity",
+        "description",
+        "remediation",
+    ]
+
+    readable_output = tableToMarkdown(
+        f"Issue Recommendations for {issue_id}",
+        [recommendation],
+        headerTransform=string_to_table_header,
+        headers=headers,
     )
-    if config:
-        client_config.merge(config)
 
-    client = aws_session.client(service, verify=False, config=client_config)
+    if playbook_suggestions:
+        readable_output += "\n" + tableToMarkdown(
+            "Playbook Suggestions",
+            playbook_suggestions,
+            headerTransform=string_to_table_header,
+        )
 
-    register_proxydome_header(client)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.IssueRecommendations",
+        outputs_key_field="issue_id",
+        outputs=recommendation,
+        raw_response=response,
+    )
 
-    return client, session
 
-
-def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults:
+def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
     """
-    Execute an AWS command by retrieving credentials, creating a service client,
-    and routing to the appropriate service handler.
+    Retrieves asset groups from the Cortex platform based on provided filters.
 
     Args:
-        command (str): The AWS command to execute (e.g., "aws-s3-public-access-block-put")
-        args (dict): Command arguments including account_id, region, and service-specific parameters
-        params (dict): Integration configuration parameters
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - name (str, optional): Filter by asset group names
+                         - type (str, optional): Filter by asset group type
+                         - description (str, optional): Filter by description
+                         - id (str, optional): Filter by asset group ids
 
     Returns:
-        CommandResults: Command execution results with outputs and status
+        CommandResults: Object containing the formatted asset groups,
+                        raw response, and outputs for integration context.
     """
-    account_id: str = args.get("account_id", "")
-    credentials: dict = {}
-    if get_connector_id():
-        credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id)
+    limit = arg_to_number(args.get("limit")) or 50
+    filter_builder = FilterBuilder()
+    filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_name"], FilterType.CONTAINS, argToList(args.get("name")))
+    filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_type"], FilterType.EQ, args.get("type"))
+    filter_builder.add_field(
+        ASSET_GROUP_FIELDS["asset_group_description"], FilterType.CONTAINS, argToList(args.get("description"))
+    )
+    filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_id"], FilterType.EQ, argToList(args.get("id")))
 
-    service_client, _ = get_service_client(credentials, params, args, command)
-    return COMMANDS_MAPPING[command](service_client, args)
+    request_data = build_webapp_request_data(
+        table_name=ASSET_GROUPS_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=limit,
+        sort_field="XDM__ASSET_GROUP__LAST_UPDATE_TIME",
+    )
 
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    data = [
+        {(k.replace("XDM__ASSET_GROUP__", "") if k.startswith("XDM__ASSET_GROUP__") else k).lower(): v for k, v in item.items()}
+        for item in data
+    ]
+
+    return CommandResults(
+        readable_output=tableToMarkdown("AssetGroups", data, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups",
+        outputs_key_field="id",
+        outputs=data,
+        raw_response=response,
+    )
+
+
+def build_webapp_request_data(
+    table_name: str,
+    filter_dict: dict,
+    limit: int,
+    sort_field: str | None,
+    on_demand_fields: list | None = None,
+    sort_order: str | None = "DESC",
+) -> dict:
+    """
+    Builds the request data for the generic /api/webapp/get_data endpoint.
+    """
+    sort = [{"FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field), "ORDER": sort_order}] if sort_field else []
+
+    filter_data = {
+        "sort": sort,
+        "paging": {"from": 0, "to": limit},
+        "filter": filter_dict,
+    }
+    demisto.debug(f"{filter_data=}")
+
+    if on_demand_fields is None:
+        on_demand_fields = []
+
+    return {"type": "grid", "table_name": table_name, "filter_data": filter_data, "jsons": [], "onDemandFields": on_demand_fields}
+
+
+def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves vulnerabilities using the generic /api/webapp/get_data endpoint.
+    """
+    limit = arg_to_number(args.get("limit")) or 50
+    sort_field = args.get("sort_field", "LAST_OBSERVED")
+    sort_order = args.get("sort_order", "DESC")
+
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("CVE_ID", FilterType.CONTAINS, argToList(args.get("cve_id")))
+    filter_builder.add_field("CVSS_SCORE", FilterType.GTE, arg_to_number(args.get("cvss_score_gte")))
+    filter_builder.add_field("EPSS_SCORE", FilterType.GTE, arg_to_number(args.get("epss_score_gte")))
+    filter_builder.add_field("INTERNET_EXPOSED", FilterType.EQ, arg_to_bool_or_none(args.get("internet_exposed")))
+    filter_builder.add_field("EXPLOITABLE", FilterType.EQ, arg_to_bool_or_none(args.get("exploitable")))
+    filter_builder.add_field("HAS_KEV", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev")))
+    filter_builder.add_field("AFFECTED_SOFTWARE", FilterType.CONTAINS, argToList(args.get("affected_software")))
+    filter_builder.add_field(
+        "PLATFORM_SEVERITY", FilterType.EQ, argToList(args.get("severity")), VULNERABILITIES_SEVERITY_MAPPING
+    )
+    filter_builder.add_field("ISSUE_ID", FilterType.CONTAINS, argToList(args.get("issue_id")))
+    filter_builder.add_time_range_field("LAST_OBSERVED", args.get("start_time"), args.get("end_time"))
+    filter_builder.add_field_with_mappings(
+        "ASSIGNED_TO",
+        FilterType.CONTAINS,
+        argToList(args.get("assignee")),
+        {
+            "unassigned": FilterType.IS_EMPTY,
+            "assigned": FilterType.NIS_EMPTY,
+        },
+    )
+
+    request_data = build_webapp_request_data(
+        table_name=VULNERABLE_ISSUES_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=limit,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        on_demand_fields=argToList(args.get("on_demand_fields")),
+    )
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    output_keys = [
+        "ISSUE_ID",
+        "CVE_ID",
+        "CVE_DESCRIPTION",
+        "ASSET_NAME",
+        "PLATFORM_SEVERITY",
+        "EPSS_SCORE",
+        "CVSS_SCORE",
+        "ASSIGNED_TO",
+        "ASSIGNED_TO_PRETTY",
+        "AFFECTED_SOFTWARE",
+        "FIX_AVAILABLE",
+        "INTERNET_EXPOSED",
+        "HAS_KEV",
+        "EXPLOITABLE",
+        "ASSET_IDS",
+    ]
+    filtered_data = [{k: v for k, v in item.items() if k in output_keys} for item in data]
+
+    readable_output = tableToMarkdown(
+        "Vulnerabilities", filtered_data, headerTransform=string_to_table_header, sort_headers=False
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.VulnerabilityIssue",
+        outputs_key_field="ISSUE_ID",
+        outputs=filtered_data,
+        raw_response=response,
+    )
+
+
+def get_asset_details_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves details of a specific asset by its ID and formats the response.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - asset_id (str): The ID of the asset to retrieve.
+
+    Returns:
+        CommandResults: Object containing the formatted asset details,
+                        raw response, and outputs for integration context.
+    """
+    asset_id = args.get("asset_id")
+    response = client.get_asset_details(asset_id)
+    if not response:
+        raise DemistoException(f"Failed to fetch asset details for {asset_id}. Ensure the asset ID is valid.")
+
+    reply = response.get("reply")
+    return CommandResults(
+        readable_output=tableToMarkdown("Asset Details", reply, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CoreAsset",
+        outputs=reply,
+        raw_response=reply,
+    )
+
+
+def get_cases_command(client, args):
+    """
+    Retrieve a list of Cases from XDR, filtered by some filters.
+    """
+    args = preprocess_get_cases_args(args)
+    _, _, raw_incidents = get_incidents_command(client, args)
+    mapped_raw_cases = preprocess_get_cases_outputs(raw_incidents)
+    return CommandResults(
+        readable_output=tableToMarkdown("Cases", mapped_raw_cases, headerTransform=string_to_table_header),
+        outputs_prefix="Core.Case",
+        outputs_key_field="case_id",
+        outputs=mapped_raw_cases,
+        raw_response=mapped_raw_cases,
+    )
+
+
+def get_extra_data_for_case_id_command(client, args):
+    """
+    Retrieves extra data for a specific case ID.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - case_id (str): The ID of the case to retrieve extra data for.
+                         - issues_limit (int): The maximum number of issues to return per case. Default is 1000.
+
+    Returns:
+        CommandResults: Object containing the formatted extra data,
+                        raw response, and outputs for integration context.
+    """
+    case_id = args.get("case_id")
+    issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
+    response = client.get_incident_data(case_id, issues_limit)
+    mapped_response = preprocess_get_case_extra_data_outputs(response)
+    return CommandResults(
+        readable_output=tableToMarkdown("Case", mapped_response, headerTransform=string_to_table_header),
+        outputs_prefix="Core.CaseExtraData",
+        outputs=mapped_response,
+        raw_response=mapped_response,
+    )
+
+
+def search_assets_command(client: Client, args):
+    """
+    Search for assets in XDR based on the provided filters.
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - asset_names (list[str]): List of asset names to search for.
+                         - asset_types (list[str]): List of asset types to search for.
+                         - asset_tags (list[str]): List of asset tags to search for.
+                         - asset_ids (list[str]): List of asset IDs to search for.
+                         - asset_providers (list[str]): List of asset providers to search for.
+                         - asset_realms (list[str]): List of asset realms to search for.
+                         - asset_group_names (list[str]): List of asset group names to search for.
+    """
+    asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
+    filter = FilterBuilder()
+    filter.add_field(ASSET_FIELDS["asset_names"], FilterType.CONTAINS, argToList(args.get("asset_names", "")))
+    filter.add_field(ASSET_FIELDS["asset_types"], FilterType.EQ, argToList(args.get("asset_types", "")))
+    filter.add_field(ASSET_FIELDS["asset_tags"], FilterType.JSON_WILDCARD, safe_load_json(args.get("asset_tags", [])))
+    filter.add_field(ASSET_FIELDS["asset_ids"], FilterType.EQ, argToList(args.get("asset_ids", "")))
+    filter.add_field(ASSET_FIELDS["asset_providers"], FilterType.EQ, argToList(args.get("asset_providers", "")))
+    filter.add_field(ASSET_FIELDS["asset_realms"], FilterType.EQ, argToList(args.get("asset_realms", "")))
+    filter.add_field(ASSET_FIELDS["asset_group_ids"], FilterType.ARRAY_CONTAINS, asset_group_ids)
+    filter_str = filter.to_dict()
+
+    demisto.debug(f"Search Assets Filter: {filter_str}")
+    page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
+    page_number = arg_to_number(args.get("page_number", 0))
+    on_demand_fields = ["xdm.asset.tags"]
+    raw_response = client.search_assets(filter_str, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
+    # Remove "xdm.asset." suffix from all keys in the response
+    response = [
+        {k.replace("xdm.asset.", "") if k.startswith("xdm.asset.") else k: v for k, v in item.items()} for item in raw_response
+    ]
+    return CommandResults(
+        readable_output=tableToMarkdown("Assets", response, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
+        outputs=response,
+        raw_response=raw_response,
+    )
+
+
+def validate_scanner_name(scanner_name: str) -> bool:
+    """
+    Validate that a scanner name is allowed.
+
+    Args:
+        scanner_name (str): The name of the scanner to validate.
+
+    Returns:
+        bool: True if the scanner name is valid.
+
+    Raises:
+        ValueError: If the scanner name is not in the list of allowed scanners.
+    """
+    if scanner_name.upper() not in ALLOWED_SCANNERS:
+        raise ValueError(f"Invalid scanner '{scanner_name}'. Allowed scanners are: {', '.join(sorted(ALLOWED_SCANNERS))}")
+
+    return True
+
+
+def build_scanner_config_payload(args: dict) -> dict:
+    """
+    Build a scanner configuration payload for repository scanning.
+
+    Args:
+        args (dict): Dictionary containing configuration arguments.
+                    Expected to include:
+                        - repository_ids (list): List of repository IDs to configure scanning for.
+                        - enabled_scanners (list): List of scanners to enable.
+                        - disable_scanners (list): List of scanners to disable.
+                        - pr_scanning (bool): Whether to enable PR scanning.
+                        - block_on_error (bool): Whether to block on scanning errors.
+                        - tag_resource_blocks (bool): Whether to tag resource blocks.
+                        - tag_module_blocks (bool): Whether to tag module blocks.
+                        - exclude_paths (list): List of paths to exclude from scanning.
+
+    Returns:
+        dict: Scanner configuration payload containing repository IDs and scan configuration.
+
+    Raises:
+        ValueError: If the same scanner is specified in both enabled and disabled lists.
+    """
+    enabled_scanners = argToList(args.get("enabled_scanners", []))
+    disabled_scanners = argToList(args.get("disabled_scanners", []))
+    secret_validation = argToBoolean(args.get("secret_validation", "False"))
+    enable_pr_scanning = arg_to_bool_or_none(args.get("pr_scanning"))
+    block_on_error = arg_to_bool_or_none(args.get("block_on_error"))
+    tag_resource_blocks = arg_to_bool_or_none(args.get("tag_resource_blocks"))
+    tag_module_blocks = arg_to_bool_or_none(args.get("tag_module_blocks"))
+    exclude_paths = argToList(args.get("exclude_paths", []))
+
+    overlap = set(enabled_scanners) & set(disabled_scanners)
+    if overlap:
+        raise ValueError(f"Cannot enable and disable the same scanner(s) simultaneously: {', '.join(overlap)}")
+
+    # Build scanners configuration
+    scanners = {}
+    for scanner in enabled_scanners:
+        if validate_scanner_name(scanner):
+            if scanner.upper() == "SECRETS":
+                scanners["SECRETS"] = {"isEnabled": True, "scanOptions": {"secretValidation": secret_validation}}
+            else:
+                scanners[scanner.upper()] = {"isEnabled": True}
+
+    for scanner in disabled_scanners:
+        if validate_scanner_name(scanner):
+            scanners[scanner.upper()] = {"isEnabled": False}
+
+    # Build scan configuration payload with only relevant arguments
+    scan_configuration = {}
+
+    if scanners:
+        scan_configuration["scanners"] = scanners
+
+    if args.get("pr_scanning") is not None:
+        scan_configuration["prScanning"] = {
+            "isEnabled": enable_pr_scanning,
+            **({"blockOnError": block_on_error} if block_on_error is not None else {}),
+        }
+
+    if args.get("tag_resource_blocks") is not None or args.get("tag_module_blocks") is not None:
+        scan_configuration["taggingBot"] = {
+            **({"tagResourceBlocks": tag_resource_blocks} if tag_resource_blocks is not None else {}),
+            **({"tagModuleBlocks": tag_module_blocks} if tag_module_blocks is not None else {}),
+        }
+
+    if exclude_paths:
+        scan_configuration["excludedPaths"] = exclude_paths
+
+    demisto.debug(f"{scan_configuration=}")
+
+    return scan_configuration
+
+def build_histogram_request_data(table_name: str, filter_dict: dict, max_values_per_column: int, columns: list) -> dict:
+    """
+    Builds the request data for the generic /api/webapp//get_histograms endpoint.
+    """
+    filter_data = {
+        "filter": filter_dict,
+    }
+    demisto.debug(f"{filter_data=}")
+
+    return {
+        "table_name": table_name,
+        "filter_data": filter_data,
+        "max_values_per_column": max_values_per_column,
+        "columns": columns,
+    }
+
+def enable_scanners_command(client: Client, args: dict):
+    """
+    Updates repository scan configuration by enabling/disabling scanners and setting scan options.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing configuration arguments including repository_ids,
+                    enabled_scanners, disabled_scanners, and other scan settings.
+
+    Returns:
+        CommandResults: Command results with readable output showing update status and raw response.
+    """
+    repository_ids = argToList(args.get("repository_ids"))
+    payload = build_scanner_config_payload(args)
+
+    # Send request to update repository scan configuration
+    responses = []
+    for repository_id in repository_ids:
+        responses.append(client.enable_scanners(payload, repository_id))
+
+    readable_output = f"Successfully updated repositories: {', '.join(repository_ids)}"
+
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=responses,
+    )
+
+
+def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> list[str]:
+    """
+    Retrieves the IDs of asset groups based on their names.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        group_names (list[str]): List of asset group names to retrieve IDs for.
+
+    Returns:
+        list[str]: List of asset group IDs.
+    """
+    if not group_names:
+        return []
+
+    filter = FilterBuilder()
+    filter.add_field("XDM.ASSET_GROUP.NAME", FilterType.EQ, group_names)
+    filter_str = filter.to_dict()
+
+    groups = client.search_asset_groups(filter_str).get("reply", {}).get("data", [])
+
+    group_ids = [group.get("XDM.ASSET_GROUP.ID") for group in groups if group.get("XDM.ASSET_GROUP.ID")]
+
+    if len(group_ids) != len(group_names):
+        found_groups = [group.get("XDM.ASSET_GROUP.NAME") for group in groups if group.get("XDM.ASSET_GROUP.ID")]
+        missing_groups = [name for name in group_names if name not in found_groups]
+        raise DemistoException(f"Failed to fetch asset group IDs for {missing_groups}. Ensure the asset group names are valid.")
+
+    return group_ids
+
+def build_asset_coverage_filter(args: dict) -> FilterBuilder:
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("asset_id", FilterType.CONTAINS, argToList(args.get("asset_id")))
+    filter_builder.add_field("asset_name", FilterType.CONTAINS, argToList(args.get("asset_name")))
+    filter_builder.add_field(
+        "business_application_names", FilterType.ARRAY_CONTAINS, argToList(args.get("business_application_names"))
+    )
+    filter_builder.add_field("status_coverage", FilterType.EQ, argToList(args.get("status_coverage")))
+    filter_builder.add_field("is_scanned_by_vulnerabilities", FilterType.EQ, argToList(args.get("is_scanned_by_vulnerabilities")))
+    filter_builder.add_field("is_scanned_by_code_weakness", FilterType.EQ, argToList(args.get("is_scanned_by_code_weakness")))
+    filter_builder.add_field("is_scanned_by_secrets", FilterType.EQ, argToList(args.get("is_scanned_by_secrets")))
+    filter_builder.add_field("is_scanned_by_iac", FilterType.EQ, argToList(args.get("is_scanned_by_iac")))
+    filter_builder.add_field("is_scanned_by_malware", FilterType.EQ, argToList(args.get("is_scanned_by_malware")))
+    filter_builder.add_field("is_scanned_by_cicd", FilterType.EQ, argToList(args.get("is_scanned_by_cicd")))
+    filter_builder.add_field("last_scan_status", FilterType.EQ, argToList(args.get("last_scan_status")))
+    filter_builder.add_field("asset_type", FilterType.EQ, argToList(args.get("asset_type")))
+    filter_builder.add_field("unified_provider", FilterType.EQ, argToList(args.get("asset_provider")))
+    filter_builder.add_field("asset_provider", FilterType.EQ, argToList(args.get("vendor_name")))
+
+    return filter_builder
+
+
+def get_asset_coverage_command(client: Client, args: dict):
+    """
+    Retrieves ASPM assets coverage using the generic /api/webapp/get_data endpoint.
+    """
+
+    request_data = build_webapp_request_data(
+        table_name=ASSET_COVERAGE_TABLE,
+        filter_dict=build_asset_coverage_filter(args).to_dict(),
+        limit=arg_to_number(args.get("limit")) or 100,
+        sort_field=args.get("sort_field"),
+        sort_order=args.get("sort_order"),
+    )
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    readable_output = tableToMarkdown("ASPM Coverage", data, headerTransform=string_to_table_header, sort_headers=False)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Asset",
+        outputs_key_field="asset_id",
+        outputs=data,
+        raw_response=response,
+    )
+
+
+def get_asset_coverage_histogram_command(client: Client, args: dict):
+    """
+    Retrieves ASPM assets coverage histogrm using the generic /api/webapp/get_histograms endpoint.
+    """
+    columns = argToList(args.get("columns"))
+    columns = [COVERAGE_API_FIELDS_MAPPING.get(col, col) for col in columns]
+    if not columns:
+        raise ValueError("Please provide column value to create the histogram.")
+    request_data = build_histogram_request_data(
+        table_name=ASSET_COVERAGE_TABLE,
+        filter_dict=build_asset_coverage_filter(args).to_dict(),
+        columns=columns,
+        max_values_per_column=arg_to_number(args.get("max_values_per_column")) or 100,
+    )
+
+    response = client.get_webapp_histograms(request_data)
+    reply = response.get("reply", {})
+    outputs = [{"column_name": column_name, "data": data} for column_name, data in reply.items()]
+
+    readable_output = "\n".join(
+        tableToMarkdown(
+            f"ASPM Coverage {output['column_name']} Histogram",
+            output["data"],
+            headerTransform=string_to_table_header,
+            sort_headers=False,
+        )
+        for output in outputs
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Histogram",
+        outputs=outputs,
+        raw_response=response,
+    )
 
 def main():  # pragma: no cover
-    params = demisto.params()
+    """
+    Executes an integration command
+    """
     command = demisto.command()
+    demisto.debug(f"Command being called is {command}")
     args = demisto.args()
+    print(f"{args=}")
+    args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
+    args["integration_name"] = INTEGRATION_NAME
+    headers: dict = {}
 
-    demisto.debug(f"Params: {params}")
-    demisto.debug(f"Command: {command}")
-    demisto.debug(f"Args: {args}")
-    handle_proxy()
+    webapp_api_url = "/api/webapp"
+    public_api_url = f"{webapp_api_url}/public_api/v1"
+    data_platform_api_url = f"{webapp_api_url}/data-platform"
+
+    proxy = demisto.params().get("proxy", False)
+    print(f"{demisto.params()=}")
+    verify_cert = not demisto.params().get("insecure", False)
+
+    try:
+        timeout = int(demisto.params().get("timeout", 120))
+    except ValueError as e:
+        demisto.debug(f"Failed casting timeout parameter to int, falling back to 120 - {e}")
+        timeout = 120
+
+    client_url = public_api_url
+    if command in WEBAPP_COMMANDS:
+        client_url = webapp_api_url
+    elif command in DATA_PLATFORM_COMMANDS:
+        client_url = data_platform_api_url
+
+    client = Client(
+        base_url=client_url,
+        proxy=proxy,
+        verify=verify_cert,
+        headers=headers,
+        timeout=timeout,
+    )
 
     try:
         if command == "test-module":
-            results = (
-                run_health_check_for_accounts(connector_id, CloudTypes.AWS.value, health_check)
-                if (connector_id := get_connector_id())
-                else test_module(params)
-            )
-            demisto.info(f"[AWS Automation] Health Check Results: {results}")
-            return_results(results)
+            client.test_module()
+            demisto.results("ok")
 
-        elif command in COMMANDS_MAPPING:
-            return_results(execute_aws_command(command, args, params))
-        else:
-            raise NotImplementedError(f"Command {command} is not implemented")
+        elif command == "core-get-asset-details":
+            return_results(get_asset_details_command(client, args))
 
-    except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        elif command == "core-search-asset-groups":
+            return_results(search_asset_groups_command(client, args))
+
+        elif command == "core-get-issues":
+            # replace all dict keys that contain issue with alert
+            args = issue_to_alert(args)
+            # Extract output_keys before calling get_alerts_by_filter_command
+            output_keys = argToList(args.pop("output_keys", []))
+            issues_command_results: CommandResults = get_alerts_by_filter_command(client, args)
+            # Convert alert keys to issue keys
+            if issues_command_results.outputs:
+                issues_command_results.outputs = [alert_to_issue(output) for output in issues_command_results.outputs]  # type: ignore[attr-defined,arg-type]
+
+            # Apply output_keys filtering if specified
+            if output_keys and issues_command_results.outputs:
+                issues_command_results.outputs = filter_context_fields(output_keys, issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
+
+            return_results(issues_command_results)
+
+        elif command == "core-get-cases":
+            return_results(get_cases_command(client, args))
+
+        elif command == "core-get-case-extra-data":
+            return_results(get_extra_data_for_case_id_command(client, args))
+        elif command == "core-search-assets":
+            return_results(search_assets_command(client, args))
+
+        elif command == "core-get-vulnerabilities":
+            return_results(get_vulnerabilities_command(client, args))
+
+        elif command == "core-get-issue-recommendations":
+            return_results(get_issue_recommendations_command(client, args))
+        elif command == "core-enable-scanners":
+            client._base_url = "/api/webapp"
+            return_results(enable_scanners_command(client, args))
+        elif command == "core-get-asset-coverage":
+            return_results(get_asset_coverage_command(client, args))
+
+        elif command == "core-get-asset-coverage-histogram":
+            return_results(get_asset_coverage_histogram_command(client, args))
+
+    except Exception as err:
+        demisto.error(traceback.format_exc())
+        return_error(str(err))
 
 
-if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
