@@ -790,7 +790,6 @@ def main():  # pragma: no cover
 
     webapp_api_url = "/api/webapp"
     public_api_url = f"{webapp_api_url}/public_api/v1"
-    public_api_appsec_url = f"{webapp_api_url}/public_api/appsec/v1/issues/fix"
     data_platform_api_url = f"{webapp_api_url}/data-platform"
 
     proxy = demisto.params().get("proxy", False)
@@ -807,8 +806,6 @@ def main():  # pragma: no cover
         client_url = webapp_api_url
     elif command in DATA_PLATFORM_COMMANDS:
         client_url = data_platform_api_url
-    elif command in APPSEC_COMMANDS:
-        client_url = public_api_appsec_url
 
     client = Client(
         base_url=client_url,
