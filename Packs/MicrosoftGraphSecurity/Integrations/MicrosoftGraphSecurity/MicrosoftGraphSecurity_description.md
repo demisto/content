@@ -34,16 +34,3 @@ Follow one of these steps for authentication based on Azure Managed Identities:
    3. Select the **Use Azure Managed Identities** checkbox.
 
 For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
-
-### Using National Cloud
-
-Using a national cloud endpoint is supported by setting the **Azure Cloud** parameter to one of the following options:
-
-* Worldwide: `https://graph.microsoft.com`
-* US GCC: `https://graph.microsoft.us`
-* US GCC-High: `https://graph.microsoft.us`
-* DoD: `https://dod-graph.microsoft.us`
-* Germany: `https://graph.microsoft.de`
-* China: `https://microsoftgraph.chinacloudapi.cn`
-
-See [Microsoft Integrations - Using National Cloud](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud) for more information.
