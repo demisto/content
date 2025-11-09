@@ -124,10 +124,13 @@ def test_transform_scanner_histograms_outputs(mock_histogram_data):
     for k, v in output.items():
         if k in enabled_scanners:
             assert v["enabled"] == 6
+            assert v["coverage_percentage"] == 1.0
+
         else:
             assert v["enabled"] == 0
+            assert v["coverage_percentage"] == 0.0
+
         assert v["disabled"] == 0
-        assert v["coverage_percentage"] == 1.0
     assert coverage == 1.0
 
 
