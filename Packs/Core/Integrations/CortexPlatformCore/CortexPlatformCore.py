@@ -60,12 +60,12 @@ POLICY_FINDING_TYPE_MAPPING = {
 
 # Policy category mapping
 POLICY_CATEGORY_MAPPING = {
-    "application": "APPLICATION",
-    "repository": "REPOSITORY",
-    "cicd_instance": "CICD_INSTANCE",
-    "cicd_pipeline": "CICD_PIPELINE",
-    "vcs_collaborator": "VCS_COLLABORATOR",
-    "vcs_organization": "VCS_ORGANIZATION",
+    "Application": "APPLICATION",
+    "Repository": "REPOSITORY",
+    "CI/CD Instance": "CICD_INSTANCE",
+    "CI/CD Pipeline": "CICD_PIPELINE",
+    "VCS Collaborator": "VCS_COLLABORATOR",
+    "VCS Organization": "VCS_ORGANIZATION",
 }
 
 
