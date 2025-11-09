@@ -358,13 +358,13 @@ class Client(CoreClient):
             url_suffix="/get_data",
             json_data=request_data,
         )
-
-    def enable_scanners(self, payload: dict) -> dict:
+        
+    def enable_scanners(self, payload: dict, repository_id: str) -> dict:
         return self._http_request(
             method="PUT",
-            url_suffix="/cas/v1/repositories/scan-configuration",
+            url_suffix=f"/public_api/appsec/v1/repositories/{repository_id}/scan-configuration",
             json_data=payload,
-            headers={"Content-Type": "application/json"},
+            headers={**self._headers, "Content-Type": "application/json",},
         )
 
     def get_playbook_suggestion_by_issue(self, issue_id):
@@ -836,13 +836,15 @@ def enable_scanners_command(client: Client, args: dict):
     payload = build_scanner_config_payload(args)
 
     # Send request to update repository scan configuration
-    response = client.enable_scanners(payload)
+    responses = []
+    for repository_id in repository_ids:
+        responses.append(client.enable_scanners(payload, repository_id))
 
     readable_output = f"Successfully updated repositories: {', '.join(repository_ids)}"
 
     return CommandResults(
         readable_output=readable_output,
-        raw_response=response,
+        raw_response=responses,
     )
 
 
@@ -955,7 +957,7 @@ def main():  # pragma: no cover
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
         elif command == "core-enable-scanners":
-            client._base_url = "/api"
+            client._base_url = "/api/webapp"
             return_results(enable_scanners_command(client, args))
 
     except Exception as err:
