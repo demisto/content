@@ -32,7 +32,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/gdetect:1.0.0.3557423
+  dockerimage: demisto/gdetect:1.0.0.5492961
   commands:
   - name: gdetect-send
     arguments:

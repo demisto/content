@@ -20,7 +20,7 @@ comment: This script determines the most likely remediation owners from those su
 commonfields:
   id: RankRemediationOwners
   version: -1
-dockerimage: demisto/xpanse-ml-ev2:1.0.0.4101073
+dockerimage: demisto/xpanse-ml-ev2:1.0.0.5411729
 enabled: true
 name: RankRemediationOwners
 runas: DBotWeakRole

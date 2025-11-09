@@ -8944,7 +8944,7 @@ script:
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.urlBackToProduct
       description: URL to direct you to the source product console for this security event.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.4892936
+  dockerimage: demisto/googleapi-python3:1.0.0.5476125
   isfetch: true
   runonce: false
   script: ''

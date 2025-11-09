@@ -8050,7 +8050,7 @@ script:
     - contextPath: GoogleChronicleBackstory.ReferenceList.contentType
       description: The content type of the reference list.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.4114363
+  dockerimage: demisto/googleapi-python3:1.0.0.5476125
   isfetch: true
   runonce: false
   script: '-'
