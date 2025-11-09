@@ -4593,7 +4593,7 @@ script:
     - contextPath: RubrikPolaris.AdvanceIOCScan.__typename
       description: The GraphQL typename for the HuntResponse object.
       type: string
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.4889193
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.2072916
   isfetch: true
   runonce: false
   script: '-'
