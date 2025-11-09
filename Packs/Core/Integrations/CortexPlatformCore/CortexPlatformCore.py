@@ -920,7 +920,7 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
         builder.add_field("Severity", FilterType.EQ, severities)
 
     # Developer Suppression
-    if dev_supp := arg_to_bool_or_none(args.get("conditions_developer_suppression")):
+    if dev_supp := arg_to_bool_or_none(args.get("conditions_respect_developer_suppression")):
         builder.add_field("Respect Developer Suppression", FilterType.EQ, dev_supp)
 
     # Backlog

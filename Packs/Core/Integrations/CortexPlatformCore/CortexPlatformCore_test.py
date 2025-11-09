@@ -2523,7 +2523,7 @@ def test_create_policy_command_with_conditions(mocker: MockerFixture):
         "policy_name": "Test Policy",
         "conditions_finding_type": "Vulnerabilities,Secrets",
         "conditions_severity": "high,critical",
-        "conditions_developer_suppression": "true",
+        "conditions_respect_developer_suppression": "true",
         "conditions_has_a_fix": "true",
         "conditions_is_kev": "false",
         "conditions_appsec_rule_names": "Rule 1,Rule 2",
@@ -2688,7 +2688,7 @@ def test_create_policy_command_with_all_parameters(mocker: MockerFixture):
         # Conditions
         "conditions_finding_type": "Vulnerabilities,Secrets,Weaknesses",
         "conditions_severity": "high,critical",
-        "conditions_developer_suppression": "true",
+        "conditions_respect_developer_suppression": "true",
         "conditions_backlog_status": "active",
         "conditions_package_name": "vulnerable-package",
         "conditions_package_version": "1.0.0",
