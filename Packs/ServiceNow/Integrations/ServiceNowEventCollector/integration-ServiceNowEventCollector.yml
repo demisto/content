@@ -1,0 +1,1026 @@
+category: Analytics & SIEM
+commonfields:
+  id: ServiceNow Event Collector - test
+  version: -1
+sectionorder:
+- Connect
+- Collect
+configuration:
+- display: ServiceNow URL, in the format https://company.service-now.com/
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Username
+  name: credentials
+  type: 9
+  required: true
+  section: Connect
+- display: Client ID
+  displaypassword: Client Secret
+  name: client_credentials
+  type: 9
+  required: false
+  section: Connect
+- display: ServiceNow API Version (e.g., 'v1')
+  name: api_version
+  type: 0
+  required: false
+  section: Connect
+- additionalinfo: Select this checkbox to use OAuth 2.0 authentication.
+  display: Use OAuth Login
+  name: use_oauth
+  type: 8
+  required: false
+  section: Connect
+- display: Event Types To Fetch
+  section: Collect
+  name: event_types_to_fetch
+  type: 16
+  required: false
+  additionalinfo: Event types to fetch. Defaults to 'Audit' if no type is specified.
+  defaultvalue: Audit
+  options:
+  - Audit
+  - Syslog Transactions
+  - Case
+- additionalinfo: Maximum number of audit events per fetch.
+  defaultvalue: '10000'
+  display: Maximum audit events to fetch
+  name: max_fetch
+  type: 0
+  required: false
+  section: Collect
+- additionalinfo: Maximum number of syslog transactions events per fetch.
+  defaultvalue: '10000'
+  display: Maximum syslog transactions events to fetch
+  name: max_fetch_syslog_transactions
+  type: 0
+  required: false
+  section: Collect
+- additionalinfo: Maximum number of case events per fetch.
+  defaultvalue: '10000'
+  display: Maximum case events to fetch
+  name: max_fetch_case
+  type: 0
+  required: false
+  section: Collect
+- defaultvalue: 1
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+description: Use this integration to fetch audits, syslog transactions and cases from ServiceNow as Cortex XSIAM events.
+display: ServiceNow Event Collector - test
+name: ServiceNow Event Collector - test
+script:
+  commands:
+  - name: service-now-get-audit-logs
+    description: Returns events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
+    arguments:
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+    - description: Maximum audit events to fetch. Default is 1000.
+      name: limit
+    - name: from_date
+      description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
+      required: false
+      isArray: false
+      defaultValue: ''
+    - name: offset
+      description: Starting record index from which to begin retrieving records.
+      required: false
+      isArray: false
+      defaultValue: ''
+  - name: service-now-get-syslog-transactions
+    description: Returns syslog transactions events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
+    arguments:
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+    - description: Maximum syslog transactions events to fetch. Default is 1000.
+      name: limit
+    - name: from_date
+      description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
+      required: false
+      isArray: false
+      defaultValue: ''
+    - name: offset
+      description: Starting record index from which to begin retrieving records.
+      required: false
+      isArray: false
+      defaultValue: ''
+  - name: service-now-get-case-logs
+    description: Returns cases extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
+    arguments:
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+    - description: Maximum case events to fetch. Default is 1000.
+      name: limit
+    - name: from_date
+      description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
+      required: false
+      isArray: false
+      defaultValue: ''
+    - name: offset
+      description: Starting record index from which to begin retrieving records.
+      required: false
+      isArray: false
+      defaultValue: ''
+  - name: service-now-oauth-login
+    description: Generate a refresh token using your existing credentials. Use this command if you encounter access_denied or other errors related to your access token when using OAuth 2.0.
+    outputs: []
+  dockerimage: demisto/auth-utils:1.0.0.5427065
+  isfetchevents: false
+  runonce: false
+  script: >
+    register_module_line('ServiceNow Event Collector', 'start', __line__())
+
+    CONSTANT_PACK_VERSION = '2.8.14'
+
+    demisto.debug('pack id = ServiceNow, pack version = 2.8.14')
+
+    import urllib3
+
+    from enum import Enum
+
+
+
+
+
+    # Disable insecure warnings
+
+    urllib3.disable_warnings()
+
+
+    VENDOR = "servicenow"
+
+    PRODUCT = "servicenow"
+
+    LOGS_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"  # New format for processing events
+
+    DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSIAM
+
+
+    """ CLIENT CLASS """
+
+
+
+    class LogType(Enum):
+        """Enum to hold all configuration for different log types."""
+
+        AUDIT = ("audit", "Audit", "/api/now/", "table/sys_audit", "last_fetch_time", "previous_run_ids")
+        SYSLOG_TRANSACTIONS = (
+            "syslog transactions",
+            "Syslog Transactions",
+            "/api/now/",
+            "table/syslog_transaction",
+            "last_fetch_time_syslog",
+            "previous_run_ids_syslog",
+        )
+        CASE = ("case", "Case", "/api/sn_customerservice/", "case", "last_fetch_time_case", "previous_run_ids_case")
+
+        def __init__(
+            self, type_string: str, title: str, api_base: str, api_endpoint: str, last_fetch_time_key: str, previous_ids_key: str
+        ):
+            self.type_string = type_string
+            self.title = title
+            self.api_base = api_base
+            self.api_endpoint = api_endpoint
+            self.last_fetch_time_key = last_fetch_time_key
+            self.previous_ids_key = previous_ids_key
+
+
+    class Client:
+        def __init__(
+            self,
+            use_oauth,
+            credentials,
+            client_id,
+            client_secret,
+            server_url,
+            verify,
+            proxy,
+            api_version,
+            fetch_limit_audit,
+            fetch_limit_syslog,
+            fetch_limit_case,
+        ):
+            self.sn_client = ServiceNowClient(
+                credentials=credentials,
+                use_oauth=use_oauth,
+                client_id=client_id,
+                client_secret=client_secret,
+                url=server_url,
+                verify=verify,
+                headers={},
+                proxy=proxy,
+            )
+            self.server_url = server_url
+            self.api_version = api_version
+            self.fetch_limits = {
+                LogType.AUDIT: fetch_limit_audit,
+                LogType.SYSLOG_TRANSACTIONS: fetch_limit_syslog,
+                LogType.CASE: fetch_limit_case,
+            }
+
+        def _get_api_url(self, log_type: LogType) -> str:
+            """
+            Constructs the full API URL for a given log type.
+
+            Args:
+                log_type: The LogType Enum member containing API path details.
+
+            Returns:
+                The complete, formatted API URL for the request.
+
+            Notes:
+                - Audit and Syslog Transactions use the standard ServiceNow API (/api/now/)
+                - Case logs use a different API endpoint (/api/sn_customerservice/)
+                - API version is automatically inserted when provided in configuration
+            """
+
+            api_base = log_type.api_base
+            api_endpoint = log_type.api_endpoint
+
+            if self.api_version:
+                api_base = api_base.rstrip("/") + f"/{self.api_version}/"
+
+            return f"{self.server_url.rstrip('/')}{api_base}{api_endpoint}"
+
+        def search_events(
+            self, from_time: str, log_type: LogType, limit: Optional[int] = None, offset: int = 0
+        ) -> List[Dict[str, Any]]:
+            """
+            Queries the ServiceNow API for a specific log type with specified start_time, limit and offset.
+
+            Args:
+                from_time: The start time for which to get events in '%Y-%m-%d %H:%M:%S' format.
+                log_type: The LogType Enum member specifying which logs to fetch.
+                limit: The maximum number of events to return. If None, uses the default
+                       limit configured for the specific log type in the client.
+                offset: The starting record number for the query (for pagination). If None, will be 0.
+
+            Returns:
+                A list of event dictionaries returned from the API. Returns an empty list if no events are found.
+            """
+            if limit is None:
+                limit = self.fetch_limits.get(log_type)
+
+            api_query_params = {
+                "sysparm_limit": limit,
+                "sysparm_offset": offset,
+                "sysparm_query": f"sys_created_on>{from_time}",
+            }
+
+            full_url = self._get_api_url(log_type)
+
+            demisto.debug(f"ServiceNowEventCollector will make a GET request to: {full_url} with query params: {api_query_params}")
+
+            res = self.sn_client.http_request(
+                method="GET", full_url=full_url, url_suffix=None, params=remove_empty_elements(api_query_params)
+            )
+
+            return res.get("result", [])
+
+
+    """ HELPER METHODS """
+
+
+
+    def get_log_types_from_titles(event_types_to_fetch: List[str]) -> List[LogType]:
+        """
+        Converts a list of user-facing event type titles into a list of LogType Enum members.
+
+        Args:
+            event_types_to_fetch: A list of event type titles from the integration parameters
+                                  (e.g., ["Audit", "Case"]).
+
+        Raises:
+            DemistoException: If any of the provided event type titles are invalid.
+
+        Returns:
+            A list of LogType Enum members corresponding to the provided titles.
+        """
+        # Create a set of valid titles for quick lookup
+        valid_titles = {lt.title for lt in LogType}
+
+        # Check for invalid types
+        invalid_types = [title for title in event_types_to_fetch if title not in valid_titles]
+
+        if invalid_types:
+            valid_options = ", ".join(valid_titles)
+            raise DemistoException(
+                f"Invalid event type(s) provided: {invalid_types}. " f"Please select from the following list: {valid_options}"
+            )
+
+        # Return matching LogType members
+        return [lt for lt in LogType if lt.title in event_types_to_fetch]
+
+
+    def update_last_run(last_run: dict[str, Any], log_type: LogType, last_event_time: str, previous_run_ids: list) -> dict:
+        """
+        Updates the last run dictionary with the latest timestamp and processed event IDs.
+
+        Args:
+            last_run: The last run dictionary to be updated.
+            log_type: The LogType Enum member for the logs being processed.
+            last_event_time: The 'sys_created_on' timestamp of the last event fetched.
+            previous_run_ids: The list of event IDs from the latest time bracket to
+                              be used for de-duplication in the next run.
+
+        Returns:
+            The updated last run dictionary.
+        """
+        demisto.debug(f"Updating last run details for {log_type.name} with last fetch time: {last_event_time}")
+        last_run[log_type.last_fetch_time_key] = last_event_time
+        last_run[log_type.previous_ids_key] = previous_run_ids
+        return last_run
+
+
+    def get_from_date(last_run: dict[str, Any], log_type: LogType) -> str:
+        """
+        Retrieves the start timestamp in "%Y-%m-%d %H:%M:%S" format for fetching logs for the given log type.
+
+        If a timestamp exists in the last run for the given log type, it is returned.
+        Otherwise, it defaults to one minute ago.
+
+        Args:
+            last_run (dict[str, Any]): Dictionary containing the last fetch timestamps for different log types.
+            log_type (LogType): The log type for which to retrieve the start timestamp.
+
+        Returns:
+            str: The start timestamp for fetching logs.
+        """
+
+        start_timestamp = last_run.get(log_type.last_fetch_time_key)
+
+        if start_timestamp:
+            return start_timestamp
+
+        # In case there was no previous run for this log type, fall back to one min ago.
+        one_min_ago = datetime.utcnow() - timedelta(minutes=1)
+        return one_min_ago.strftime(LOGS_DATE_FORMAT)
+
+
+    def enrich_events(events: List[Dict[str, Any]], log_type: LogType) -> List[Dict[str, Any]]:
+        """
+        Enriches a list of events with the '_time' and 'source_log_type' fields.
+
+        Args:
+            events: A list of event dictionaries to enrich.
+            log_type: The LogType Enum member representing the source of these events.
+
+        Returns:
+            The enriched list of events.
+        """
+        for event in events:
+            event["_time"] = datetime.strptime(event["sys_created_on"], LOGS_DATE_FORMAT).strftime(DATE_FORMAT)
+            event["source_log_type"] = log_type.type_string
+
+        return events
+
+
+    def get_limit(args: Dict[str, Any], client: Client, log_type: LogType) -> int:
+        """
+        Retrieves the event limit for an API query.
+
+        It prioritizes the 'limit' argument if provided. Otherwise, it falls back
+        to the default limit for the specific log type configured in the client,
+        with a final default of 1000.
+
+        Args:
+            args: A dictionary of command arguments from the user.
+            client: The configured ServiceNow client instance.
+            log_type: The LogType Enum member for the query.
+
+        Returns:
+            The integer limit to use for the API call.
+        """
+
+        return arg_to_number(args.get("limit")) or client.fetch_limits.get(log_type) or 1000
+
+
+    def deduplicate_events(events: list, previous_run_ids: Set[str], from_date: str):
+        """
+        This function filters out events that were processed in the previous run.
+
+        Args:
+            events (list): List of events fetched from the API.
+            previous_run_ids (set): Set of event IDs matching the timestamp in the 'from_date' parameter.
+            from_date (str): Starting date for fetching events, based on the last run's timestamp.
+            log_type (str): Type of log to set as the 'source_log_type' for each event.
+
+        Returns:
+            A tuple containing:
+            - A list of unique, enriched event dictionaries.
+            - The new set of event IDs to be saved for the next run's de-duplication check.
+        """
+        unique_events = []
+        last_run_timestamp = datetime.strptime(from_date, LOGS_DATE_FORMAT)
+        duplicate_ids_found = []
+
+        for event in events:
+            event_create_time = datetime.strptime(event.get("sys_created_on"), LOGS_DATE_FORMAT)
+            event_id = event.get("sys_id")
+
+            # Skip this event if its ID was part of the last run's boundary check.
+            if event_id in previous_run_ids:
+                duplicate_ids_found.append(event_id)
+                continue
+
+            # If this event's timestamp is newer than the last one we were tracking,
+            # it means we have crossed the time boundary. We can safely reset the
+            # set of IDs to track, as we are now in a new time bracket.
+            if event_create_time > last_run_timestamp:
+                previous_run_ids = set()
+                last_run_timestamp = event_create_time
+
+            previous_run_ids.add(event_id)
+            unique_events.append(event)
+
+        demisto.debug(f"The new set of IDs to save for the next run is: {previous_run_ids}.")
+        demisto.debug(f"Filtered out the following event IDs due to duplication: {duplicate_ids_found}.")
+
+        return unique_events, previous_run_ids
+
+
+    """ COMMAND METHODS """
+
+
+
+    def get_events_command(client: Client, args: dict, log_type: LogType, last_run: dict) -> tuple[list, CommandResults]:
+        """
+        Handles command to fetch a specific type of event from ServiceNow.
+
+        This function queries events based on the provided arguments and log type,
+        enriches them, and prepares a CommandResults object for the war room.
+
+        Args:
+            client: The configured ServiceNow client.
+            args: A dictionary of command arguments (e.g., limit, offset, from_date).
+            log_type: The LogType Enum member specifying which logs to fetch.
+            last_run: The last run dictionary, used to determine the start time if
+                      'from_date' is not provided in args of command.
+
+        Returns:
+            A tuple containing:
+            - A list of the raw event dictionaries fetched.
+            - A CommandResults object for display in the war room.
+        """
+
+        from_date = args.get("from_date") or get_from_date(last_run, log_type)
+        offset = args.get("offset", 0)
+        limit = get_limit(args, client, log_type)
+
+        events = client.search_events(from_time=from_date, log_type=log_type, limit=limit, offset=offset)
+        events = enrich_events(events, log_type)
+
+        demisto.debug(f"Got a total of {len(events)} {log_type.name} events created after {from_date}")
+
+        hr = tableToMarkdown(
+            name=f"{log_type.title} Events",
+            t=events,
+            removeNull=True,
+            headerTransform=lambda x: string_to_table_header(camel_case_to_underscore(x)),
+        )
+
+        return events, CommandResults(readable_output=hr)
+
+
+    def fetch_events_command(client: Client, last_run: dict, log_types: List[LogType]):
+        """
+        Fetches events for all specified log types from ServiceNow.
+
+        This function iterates through each requested log type, fetches new events since the
+        last run, processes them to handle duplicates, and updates the last run state.
+
+        Args:
+            client: The configured ServiceNow client object.
+            last_run: The last run dictionary from demisto, containing timestamps
+                      and IDs from the previous fetch.
+            log_types: A list of LogType Enum members to fetch events for.
+
+        Returns:
+            A tuple containing:
+            - A list of all unique event dictionaries collected across all log types.
+            - The updated last_run dictionary with new timestamps and event IDs.
+        """
+
+        collected_events = []
+        for log_type in log_types:
+            previous_run_ids = set(last_run.get(log_type.previous_ids_key, set()))
+            from_date = get_from_date(last_run, log_type)
+
+            demisto.debug(f"Getting {log_type.type_string} Logs {from_date=}.")
+            new_events = client.search_events(from_date, log_type)
+
+            if new_events:
+                demisto.debug(f"Got {len(new_events)} {log_type.type_string} events. Begin removing duplicates.")
+                unseen_events, previous_run_ids = deduplicate_events(
+                    events=new_events, previous_run_ids=previous_run_ids, from_date=from_date
+                )
+
+                demisto.debug(f"Done de-duplicating. Received {len(unseen_events)} {log_type.type_string} unseen events.")
+                enriched_events = enrich_events(unseen_events, log_type)
+
+                last_fetch_time = (enriched_events and enriched_events[-1].get("sys_created_on")) or from_date
+                last_run = update_last_run(last_run, log_type, last_fetch_time, list(previous_run_ids))
+                collected_events.extend(enriched_events)
+
+        return collected_events, last_run
+
+
+    def login_command(client: Client, user_name: str, password: str):
+        """
+        Login the user using OAuth authorization
+        Args:
+            client: Client object with request.
+            user_name: Username.
+            password: Password.
+        Returns:
+            Demisto Outputs.
+        """
+        # Verify that the user selected the `Use OAuth Login` checkbox:
+        if not client.sn_client.use_oauth:
+            return_error(
+                "!service-now-oauth-login command can be used only when using OAuth 2.0 authorization.\n "
+                "Please select the `Use OAuth Login` checkbox in the instance configuration before running this "
+                "command."
+            )
+
+        try:
+            client.sn_client.login(user_name, password)
+            return (
+                "Logged in successfully.\n A refresh token was saved to the integration context and will be "
+                "used to generate a new access token once the current one expires."
+            )
+        except Exception as e:
+            return_error(
+                f"Failed to login. Please verify that the provided username and password are correct, and that you"
+                f" entered the correct client id and client secret in the instance configuration (see ? for"
+                f"correct usage when using OAuth).\n\n{e}"
+            )
+
+
+    def module_of_testing(client: Client, log_types: list[LogType]) -> str:  # pragma: no cover
+        """
+        Test API connectivity and authentication.
+
+        Returns "ok" if the connection to the service is successful and the integration functions correctly.
+        Raises exceptions if the test fails.
+
+        Args:
+            client (Client): Client instance used to test connectivity.
+            log_types (list): List of log types to test fetching events.
+
+        Returns:
+            str: "ok" if the test passed; any exception raised will indicate failure.
+        """
+
+        _, _ = fetch_events_command(client, {}, log_types=log_types)
+        return "ok"
+
+
+    """ MAIN FUNCTION """
+
+
+
+    def main() -> None:  # pragma: no cover
+        """main function, parses params and runs command functions"""
+        command = demisto.command()
+        args = demisto.args()
+        params = demisto.params()
+        server_url = params.get("url")
+        verify_certificate = params.get("insecure", False)
+        proxy = params.get("proxy", False)
+        use_oauth = params.get("use_oauth", False)
+        client_id = params.get("client_credentials", {}).get("identifier", "")
+        client_secret = params.get("client_credentials", {}).get("password", "")
+        credentials = params.get("credentials", {})
+        user_name = credentials.get("identifier")
+        password = credentials.get("password")
+        max_fetch_audit = arg_to_number(params.get("max_fetch")) or 10000
+        max_fetch_syslog = arg_to_number(params.get("max_fetch_syslog_transactions")) or 10000
+        max_fetch_case = arg_to_number(params.get("max_fetch_case")) or 10000
+        event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Audit"]))
+        log_types_to_fetch = get_log_types_from_titles(event_types_to_fetch)
+
+        demisto.debug(f"Command being called is {command}")
+
+        try:
+            client = Client(
+                use_oauth=use_oauth,
+                credentials=credentials,
+                client_id=client_id,
+                client_secret=client_secret,
+                server_url=server_url,
+                verify=verify_certificate,
+                proxy=proxy,
+                api_version=params.get("api_version"),
+                fetch_limit_audit=max_fetch_audit,
+                fetch_limit_syslog=max_fetch_syslog,
+                fetch_limit_case=max_fetch_case,
+            )
+            last_run = demisto.getLastRun()
+            if client.sn_client.use_oauth and not get_integration_context().get("refresh_token", None):
+                client.sn_client.login(username=user_name, password=password)
+
+            log_type_map = {
+                "service-now-get-audit-logs": LogType.AUDIT,
+                "service-now-get-syslog-transactions": LogType.SYSLOG_TRANSACTIONS,
+                "service-now-get-case-logs": LogType.CASE,
+            }
+
+            if command == "test-module":
+                return_results(module_of_testing(client, log_types_to_fetch))
+
+            # Check if the command is getting events
+            elif command in log_type_map:
+                log_type = log_type_map[command]
+
+                # Call the function and get the results
+                events, command_results = get_events_command(client=client, args=args, log_type=log_type, last_run=last_run)
+
+                # Return human-readable output to the War Room
+                return_results(command_results)
+
+                # Push events to XSIAM if needed
+                if argToBoolean(args.get("should_push_events", True)):
+                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
+            elif command == "fetch-events":
+                demisto.debug(f"Starting new fetch with last_run as {last_run}")
+                events, next_run = fetch_events_command(client=client, last_run=last_run, log_types=log_types_to_fetch)
+
+                demisto.debug("Done fetching events, sending to XSIAM.")
+
+                if events:
+                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                    if next_run:
+                        # saves next_run for the time fetch-events is invoked
+                        demisto.debug(f"Setting new last_run to {next_run}")
+                        demisto.setLastRun(next_run)
+
+            elif command == "service-now-oauth-login":
+                return_results(login_command(client=client, user_name=user_name, password=password))
+
+            else:
+                raise NotImplementedError(f"command {command} is not implemented.")
+
+        # Log exceptions and return errors
+        except Exception as e:
+            demisto.info(f"here {e!s}")
+            return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
+
+
+
+    ### GENERATED CODE ###: from ServiceNowApiModule import *  # noqa: E402
+
+    # This code was inserted in place of an API module.
+
+    register_module_line('ServiceNowApiModule', 'start', __line__(), wrapper=-3)
+
+    import uuid
+
+    from datetime import UTC
+
+
+    import jwt
+
+
+
+
+
+
+    OAUTH_URL = "/oauth_token.do"
+
+
+
+    class ServiceNowClient(BaseClient):
+        def __init__(
+            self,
+            credentials: dict,
+            use_oauth: bool = False,
+            client_id: str = "",
+            client_secret: str = "",
+            url: str = "",
+            verify: bool = False,
+            proxy: bool = False,
+            headers: dict = None,
+            jwt_params: dict = None,
+        ):
+            """
+            ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
+            Args:
+                - credentials: the username and password given by the user.
+                - client_id: the client id of the application of the user.
+                - client_secret - the client secret of the application of the user.
+                - url: the instance url of the user, i.e: https://<instance>.service-now.com.
+                       NOTE - url should be given without an API specific suffix as it is also used for the OAuth process.
+                - verify: Whether the request should verify the SSL certificate.
+                - proxy: Whether to run the integration using the system proxy.
+                - headers: The request headers, for example: {'Accept`: `application/json`}. Can be None.
+                - use_oauth: a flag indicating whether the user wants to use OAuth 2.0 or basic authorization.
+                - jwt_params: a dict containing the JWT parameters
+            """
+            self.auth = None
+            self.use_oauth = use_oauth
+            if self.use_oauth:  # if user selected the `Use OAuth` box use OAuth authorization, else use basic authorization
+                self.client_id = client_id
+                self.client_secret = client_secret
+            else:
+                self.username = credentials.get("identifier")
+                self.password = credentials.get("password")
+                self.auth = (self.username, self.password)
+
+            self.jwt = self.create_jwt(jwt_params) if jwt_params else None
+
+            if "@" in client_id:  # for use in OAuth test-playbook
+                self.client_id, refresh_token = client_id.split("@")
+                set_integration_context({"refresh_token": refresh_token})
+
+            self.base_url = url
+            super().__init__(base_url=self.base_url, verify=verify, proxy=proxy, headers=headers, auth=self.auth)  # type
+            # : ignore[misc]
+
+        def http_request(
+            self,
+            method,
+            url_suffix,
+            full_url=None,
+            headers=None,
+            json_data=None,
+            params=None,
+            data=None,
+            files=None,
+            return_empty_response=False,
+            auth=None,
+            timeout=None,
+        ):
+            ok_codes = (200, 201, 401)  # includes responses that are ok (200) and error responses that should be
+            # handled by the client and not in the BaseClient
+            try:
+                if self.use_oauth:  # add a valid access token to the headers when using OAuth
+                    access_token = self.get_access_token()
+                    self._headers.update({"Authorization": "Bearer " + access_token})
+                res = super()._http_request(
+                    method=method,
+                    url_suffix=url_suffix,
+                    full_url=full_url,
+                    resp_type="response",
+                    headers=headers,
+                    json_data=json_data,
+                    params=params,
+                    data=data,
+                    files=files,
+                    ok_codes=ok_codes,
+                    return_empty_response=return_empty_response,
+                    auth=auth,
+                    timeout=timeout,
+                )
+                if res.status_code in [200, 201]:
+                    try:
+                        return res.json()
+                    except ValueError as exception:
+                        raise DemistoException(f"Failed to parse json object from response: {res.content}", exception)
+
+                if res.status_code in [401]:
+                    if self.use_oauth:
+                        if demisto.getIntegrationContext().get("expiry_time", 0) <= date_to_timestamp(datetime.now()):
+                            access_token = self.get_access_token()
+                            self._headers.update({"Authorization": "Bearer " + access_token})
+                            return self.http_request(method, url_suffix, full_url=full_url, params=params)
+                        try:
+                            err_msg = f"Unauthorized request: \n{res.json()!s}"
+                        except ValueError:
+                            err_msg = f"Unauthorized request: \n{res!s}"
+                        raise DemistoException(err_msg)
+                    else:
+                        raise Exception(f"Authorization failed. Please verify that the username and password are correct.\n{res}")
+
+            except Exception as e:
+                if self._verify and "SSL Certificate Verification Failed" in e.args[0]:
+                    return_error(
+                        "SSL Certificate Verification Failed - try selecting 'Trust any certificate' "
+                        "checkbox in the integration configuration."
+                    )
+                raise DemistoException(e.args[0])
+
+        def login(self, username: str, password: str):
+            """
+            Generate a refresh token using the given client credentials and save it in the integration context.
+            """
+            data = {
+                "client_id": self.client_id,
+                "client_secret": self.client_secret,
+                "username": username,
+                "password": password,
+                "grant_type": "password",
+            }
+            try:
+                headers = {"Content-Type": "application/x-www-form-urlencoded"}
+                res = super()._http_request(method="POST", url_suffix=OAUTH_URL, resp_type="response", headers=headers, data=data)
+                try:
+                    res = res.json()
+                except ValueError as exception:
+                    raise DemistoException(f"Failed to parse json object from response: {res.content}", exception)
+                if "error" in res:
+                    return_error(
+                        f"Error occurred while creating an access token. Please check the Client ID, Client Secret "
+                        f"and that the given username and password are correct.\n{res}"
+                    )
+                if res.get("refresh_token"):
+                    refresh_token = {"refresh_token": res.get("refresh_token")}
+                    set_integration_context(refresh_token)
+            except Exception as e:
+                return_error(
+                    f"Login failed. Please check the instance configuration and the given username and password.\n{e.args[0]}"
+                )
+
+        @staticmethod
+        def _validate_and_format_private_key(private_key: str) -> str:
+            """
+            Validate the private key format and reformat it to a valid PEM format.
+
+            Supports these private key types:
+                - PRIVATE KEY
+                - RSA PRIVATE KEY
+                - EC PRIVATE KEY
+                - ENCRYPTED PRIVATE KEY
+
+            Args:
+                private_key (str): The user Private key.
+
+            Raises:
+                ValueError: If the private key format is incorrect.
+
+            Returns:
+                str: Key formatted in valid PEM with consistent newlines.
+            """
+            # Match and extract the first valid private key block
+            pem_pattern = re.compile(
+                r"-----BEGIN (?P<label>(ENCRYPTED )?(RSA |EC )?PRIVATE KEY)-----\s*" r"(?P<content>.*?)" r"\s*-----END \1-----",
+                re.DOTALL,
+            )
+
+            match = pem_pattern.search(private_key)
+            if not match:
+                raise ValueError("Invalid private key format.")
+
+            key_type = match.group("label")
+            key_content = match.group("content")
+
+            # Clean content: remove all non-base64 characters
+            key_content = re.sub(r"[^A-Za-z0-9+/=]", "", key_content)
+
+            # Format content into 64-character lines
+            key_lines = [key_content[i : i + 64] for i in range(0, len(key_content), 64)]
+
+            # Reattach markers
+            processed_key = f"-----BEGIN {key_type}-----\n" + "\n".join(key_lines) + f"\n-----END {key_type}-----"
+
+            return processed_key
+
+        def create_jwt(self, jwt_params: dict) -> str:
+            """
+            Create JWT token
+            Returns:
+                JWT token
+            """
+            private_key = self._validate_and_format_private_key(jwt_params.get("private_key", ""))
+
+            header = {
+                "alg": "RS256",  # Signing algorithm
+                "typ": "JWT",  # Token type
+                "kid": jwt_params.get("kid"),
+            }
+            now = datetime.now(UTC)
+            payload = {
+                "sub": jwt_params.get("sub"),
+                "aud": jwt_params.get("aud"),
+                "iss": jwt_params.get("iss"),
+                "iat": now,
+                "exp": now + timedelta(hours=1),
+                "jti": str(uuid.uuid4()),  # Unique JWT ID
+            }
+            try:
+                jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
+            except Exception:
+                # Regenerate if failed
+                jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
+            return jwt_token
+
+        def get_access_token(self):
+            """
+            Get an access token that was previously created if it is still valid, else, generate a new access token from
+            the client id, client secret and refresh token.
+            """
+            ok_codes = (200, 201, 401)
+            previous_token = get_integration_context()
+
+            # Check if there is an existing valid access token
+            if previous_token.get("access_token") and previous_token.get("expiry_time") > date_to_timestamp(datetime.now()):
+                return previous_token.get("access_token")
+            else:
+                data = {"client_id": self.client_id, "client_secret": self.client_secret}
+
+                # Check if a refresh token exists. If not, raise an exception indicating to call the login function first.
+                if previous_token.get("refresh_token"):
+                    data["refresh_token"] = previous_token.get("refresh_token")
+                    data["grant_type"] = "refresh_token"
+                elif not self.jwt:
+                    raise Exception(
+                        "Could not create an access token. User might be not logged in. Try running the oauth-login command first."
+                    )
+
+                try:
+                    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+                    if self.jwt:
+                        data["assertion"] = self.jwt
+                        data["grant_type"] = "urn:ietf:params:oauth:grant-type:jwt-bearer"
+
+                    res = super()._http_request(
+                        method="POST", url_suffix=OAUTH_URL, resp_type="response", headers=headers, data=data, ok_codes=ok_codes
+                    )
+                    try:
+                        res = res.json()
+                    except ValueError as exception:
+                        raise DemistoException(f"Failed to parse json object from response: {res.content}", exception)
+                    if "error" in res:
+                        return_error(
+                            f"Error occurred while creating an access token. Please check the Client ID, Client Secret "
+                            f"and try to run again the login command to generate a new refresh token as it "
+                            f"might have expired.\n{res}"
+                        )
+                    if res.get("access_token"):
+                        expiry_time = date_to_timestamp(datetime.now(), date_format="%Y-%m-%dT%H:%M:%S")
+                        expiry_time += res.get("expires_in", 0) * 1000 - 10
+                        new_token = {
+                            "access_token": res.get("access_token"),
+                            "refresh_token": res.get("refresh_token"),
+                            "expiry_time": expiry_time,
+                        }
+                        set_integration_context(new_token)
+                        return res.get("access_token")
+                except Exception as e:
+                    return_error(
+                        f"Error occurred while creating an access token. Please check the instance configuration.\n\n{e.args[0]}"
+                    )
+
+    register_module_line('ServiceNowApiModule', 'end', __line__(), wrapper=1)
+
+    ### END GENERATED CODE ###
+
+
+    """ ENTRY POINT """
+
+
+    if __name__ in ("__main__", "__builtin__", "builtins"):
+        main()
+
+    register_module_line('ServiceNow Event Collector', 'end', __line__())
+  subtype: python3
+  type: python
+  nativeimage:
+  - '8.8'
+  - '8.6'
+fromversion: 8.4.0
+marketplaces:
+- marketplacev2
+- platform
+tests:
+- No tests
+image: data:image/png;base64,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
+detaileddescription: "Use this integration to collect audit, case, and syslog transactions logs automatically from ServiceNow.\n\nTo use ServiceNow on Cortex XSIAM, ensure your user account has the rest_api_explorer and web_service_admin roles.\nThese roles are required to make API calls.\nHowever, they may not suffice for viewing records in some tables.\nPlease make sure you have the correct role so you have permissions to work with the relevant table.\n  \n### Instance Configuration\nThe integration supports two types of authorization:\n1. Basic authorization using username and password.\n2. OAuth 2.0 authorization.\n\n#### OAuth 2.0 Authorization\nTo use OAuth 2.0 authorization:\n1. Log in to your ServiceNow instance and create an endpoint for Cortex XSIAM to access your instance. For more information, see [Snow OAuth](https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/security/task/t_CreateEndpointforExternalClients.html) . \n2. Click the lock next to the Client Secret to reveal it.\n3. Copy the `Client Id` and `Client Secret` into the `ClientID` and `Client Secret` fields of the instance configuration. The `Client Id` and `Client Secret` were automatically generated when you created the endpoint.\n4. Select the `Use OAuth Login` checkbox and click `Done`.\n\nNote: If you encounter access_denied or access token errors while using OAuth 2.0, run the !service-now-oauth-login command to generate a new refresh token, as it may have expired.\n\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/service-now-event-collector)"

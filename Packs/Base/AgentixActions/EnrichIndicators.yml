@@ -1,0 +1,56 @@
+commonfields:
+  id: EnrichIndicators
+  version: -1
+display: Enrich Indicators
+name: EnrichIndicators
+tags:
+ - indicator enrichment
+ - threat intelligence
+ - reputation
+category: Data Enrichment & Threat Intelligence
+description: Get information about the specified indicators, stored in the system.
+args:
+- name: indicatorsValues
+  description: One or more indicator values to retrieve information about (e.g., IPs like 1.1.1.1, domains, file hashes, URLs).
+  type: string
+  underlyingargname: indicatorsValues
+outputs:
+  - underlyingoutputcontextpath: Indicators.ID
+    name: Indicators.ID
+    description: The ID of the indicator in the tenant's system.
+    type: string
+  - underlyingoutputcontextpath: Indicators.Value
+    name: Indicators.Value
+    description: The indicator value from which the data was retrieved.
+    type: string
+  - underlyingoutputcontextpath: Indicators.Type
+    name: Indicators.Type
+    description: The indicator type which its data was retrieved.
+    type: string
+  - underlyingoutputcontextpath: Indicators.Score
+    name: Indicators.Verdict
+    description: The indicator’s verdict. (e.g., 0 = Unknown, 1 = Benign, 2 = Suspicious, 3 = Malicious).
+    type: number
+  - underlyingoutputcontextpath: Indicators.CustomFields
+    name: Indicators.CustomFields
+    description: Additional custom fields stored for the indicator (e.g., geocountry, positivedetections, detectionengines).
+    type: json
+  - underlyingoutputcontextpath: Indicators.ExpirationStatus
+    name: Indicators.ExpirationStatus
+    description: Whether the indicator is currently active or expired.
+    type: string
+  - underlyingoutputcontextpath: Indicators.Expiration
+    name: Indicators.Expiration
+    description: The date and time when the indicator is set to expire, if defined. The format is ISO 8601 UTC datetime string.
+    type: date
+underlyingcontentitem:
+  id: _builtin_
+  name: _builtin_
+  type: command
+  version: -1
+  command: enrichIndicators
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix

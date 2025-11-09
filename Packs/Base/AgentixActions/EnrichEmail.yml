@@ -1,0 +1,62 @@
+commonfields:
+  id: EnrichEmail
+  version: -1
+display: Enrich Email
+name: EnrichEmail
+tags:
+ - Email
+ - Data Enrichment
+category: Data Enrichment & Threat Intelligence
+description: |-
+  Retrieves threat intelligence and reputation information for an email address,
+  including associations with phishing campaigns, malicious activity, breach data, and enrichment from external sources.
+  This command is supported by various integrations in Cortex Agentix, including but not limited to:
+  Email Hippo, Hudsonrock, MISP V3, Pipl, Ignite, DeHashed, Have I Been Pwned? V2, EclecticIQ Intelligence Center v3,
+  Awake Security, CofenseIntelligenceV2, SEKOIAIntelligenceCenter, EmailRepIO, ThreatQ v2, IPQualityScore, Analyst1 etc.
+  Ensure the relevant integration(s) are configured to enrich email indicators using the email command.
+args:
+  - description: The email address to search.
+    name: email
+    required: true
+    underlyingargname: email
+    type: string
+outputs:
+  - underlyingoutputcontextpath: DBotScore.Reliability
+    description: The reliability rating of the data source (A+ - Completely reliable, A - Reliable, B - Usually reliable, C - Fairly reliable, D - Not usually reliable, E - Unreliable, F - Reliability cannot be judged)
+    type: string
+    name: Reliability
+  - underlyingoutputcontextpath: Email.Address
+    description: The email address of the indicator.
+    type: string
+    name: Email.Address
+  - underlyingoutputcontextpath: Email.Malicious.Vendor
+    description: The vendor that determined the email address is malicious.
+    type: string
+    name: Email.Malicious.Vendor
+  - underlyingoutputcontextpath: Email.Malicious.Description
+    description: The Reason the email is considered malicious.
+    type: string
+    name: Email.Malicious.Description
+  - underlyingoutputcontextpath: DBotScore.Indicator
+    description: The email address being scored.
+    type: string
+    name: Indicator
+  - underlyingoutputcontextpath: DBotScore.Vendor
+    description: The vendor that provided the Verdict.
+    type: string
+    name: Vendor
+  - underlyingoutputcontextpath: DBotScore.Score
+    description: The verdict (0 - Unknown, 1 - Benign, 2 - Suspicious, 3 - Malicious).
+    type: string
+    name: Verdict
+underlyingcontentitem:
+  id: _any_
+  name: _any_
+  type: command
+  version: -1
+  command: email
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix

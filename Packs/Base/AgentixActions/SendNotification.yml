@@ -1,0 +1,35 @@
+commonfields:
+  id: SendNotification
+  version: -1
+display: Send Notification
+name: SendNotification
+tags:
+ - Messaging and Conferencing
+category: Messaging and Conferencing
+description: |
+  Sends a message to a user, group, or channel. Supports sending a message to Slack, Microsoft Teams, Mattermost or Zoom Chat.
+args:
+  - description: The message content.
+    name: message
+    underlyingargname: message
+    type: string
+    isgeneratable: true
+  - description: The user to whom to send the message. Can be either the username or email address.
+    name: to
+    underlyingargname: to
+    type: string
+  - description: The name of the channel to which to send the message.
+    name: channel
+    underlyingargname: channel
+    type: string
+underlyingcontentitem:
+  id: _any_
+  name: _any_
+  type: command
+  version: -1
+  command: send-notification
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix

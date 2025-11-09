@@ -1,0 +1,72 @@
+commonfields:
+  id: SetIssue
+  version: -1
+display: Update Issue Properties
+name: SetIssue
+category: Data Enrichment & Threat Intelligence
+description: Change the properties of an issue.
+args:
+  - name: id
+    description: The issue to set. If not given, it takes the current one.
+    type: string
+    underlyingargname: id
+  - name: severity
+    description: Change the severity of an issue. Low (1), Medium (2), High (3), Critical (4). Must be a number.
+    type: number
+    underlyingargname: severity
+  - name: details
+    description: Change the details of an issue.
+    type: string
+    underlyingargname: details
+  - name: systems
+    description: Add systems (system label) to an issue in a format of system,system - i.e. 1.1.1.1,2.2.2.2.
+    type: string
+    underlyingargname: systems
+  - name: labels
+    description: commands.local.cmd.set.incident.arg.label
+    type: string
+    underlyingargname: labels
+  - name: addLabels
+    description: commands.local.cmd.set.incident.arg.addlabel
+    type: string
+    underlyingargname: addLabels
+  - name: name
+    description: Change the issue name.
+    type: string
+    underlyingargname: name
+  - name: occurred
+    description: >
+      Change the occurred time of an issue. Supports different time formats, for example: 2017-09-27T10:00:00+03:00
+    type: date
+    underlyingargname: occurred
+  - name: type
+    description: Change the type of an issue.
+    type: string
+    underlyingargname: type
+  - name: owner
+    description: Change the owner of an issue.
+    type: string
+    underlyingargname: owner
+  - name: phase
+    description: Change the phase of an issue.
+    type: string
+    underlyingargname: phase
+  - name: replacePlaybook
+    description: If provided (any value), the playbook for the issue will be replaced according to the new type if such type is provided, different from the old one and is valid.
+    type: string
+    underlyingargname: replacePlaybook
+  - name: customFields
+    description: Set the custom fields of the issue in the form of a JSON string with field name as key and value as the value.
+    type: string
+    underlyingargname: customFields
+underlyingcontentitem:
+  id: _builtin_
+  name: _builtin_
+  type: command
+  version: -1
+  command: setIssue
+requiresuserapproval: false
+marketplaces:
+  - platform
+supportedModules:
+- agentix

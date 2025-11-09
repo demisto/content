@@ -1,0 +1,129 @@
+commonfields:
+  id: jiraCreateIssue
+  version: -1
+display: 1Jira Create Issue
+name: jiraCreateIssue
+tags:
+ - Case Management
+category: Case Management
+description: > 
+  Creates a new issue in a Jira project (Cloud or Server).
+  You can use this command to open incidents, tasks, or sub-tasks directly in Jira as part of an automated workflow or manual response.
+  It supports both basic field-based input (like summary, project, and issue type) and advanced use through a full issue_json object for maximum flexibility.
+  The command allows setting properties such as assignee, reporter, priority, due date, environment, components, and labels.
+  Compatible with Jira Cloud and Jira Server. Fields and behavior may vary slightly between platforms.
+args:
+  - name: issue_json
+    description: >
+      Not recommended to use.
+      A complete issue object in JSON format. This is intended for advanced users. When using this argument,
+      all other arguments are ignored, and the entire issue must be defined in JSON — including required fields
+      like `summary`, `project.key`, and `issuetype.id` or `issuetype.name`.
+      Note: Only the project key is supported (not the project name).  
+      Example: 
+      {
+        "fields": {
+          "summary": "New issue summary",
+          "project": {"key": "DEMO"},
+          "issuetype": {"name": "Task"}
+        }
+      }
+    underlyingargname: issue_json
+    type: string
+  - name: summary
+    description: The issue summary (short title of the issue). Required unless using `issue_json`.
+    underlyingargname: summary
+    type: string
+  - name: project_key
+    description: The key of the Jira project to associate the issue with (e.g., "IT", "HR"). Required unless using `project_name` or `issue_json`.
+    underlyingargname: project_key
+    type: string
+  - name: project_name
+    description: The name of the Jira project to associate the issue with. Required unless using `project_key` or `issue_json`.
+    underlyingargname: project_name
+    type: string
+  - name: issue_type_name
+    description: The name of the issue type (e.g., "Bug", "Task", "Story"). Required unless using `issue_type_id` or `issue_json`.
+    underlyingargname: issue_type_name
+    type: string
+  - name: issue_type_id
+    description: The numeric ID of the issue type. Required unless using `issue_type_name` or `issue_json`.
+    underlyingargname: issue_type_id
+    type: string
+  - name: description
+    description: The detailed description of the issue.
+    underlyingargname: description
+    type: string
+  - name: labels
+    description: A comma-separated string of labels to add to the issue (e.g., "phishing,automation").
+    underlyingargname: labels
+    type: string
+  - name: priority
+    description: The priority of the issue (e.g., "High", "Medium", "Low").
+    underlyingargname: priority
+    type: string
+  - name: due_date
+    description: The issue due date in `YYYY-MM-DD` format.
+    underlyingargname: due_date
+    type: date
+  - name: assignee
+    description: The username of the assignee (for Jira Server). For Jira Cloud, use `assignee_id`.
+    underlyingargname: assignee
+    type: string
+  - name: assignee_id
+    description: The account ID of the assignee (for Jira Cloud). Use `jira-get-id-by-attribute` to look this up.
+    underlyingargname: assignee_id
+    type: string
+  - name: reporter
+    description: The username of the reporter (for Jira Server). For Jira Cloud, use `reporter_id`.
+    underlyingargname: reporter
+    type: string
+  - name: reporter_id
+    description: The account ID of the reporter (for Jira Cloud). Use `jira-get-id-by-attribute` to look this up.
+    underlyingargname: reporter_id
+    type: string
+  - name: parent_issue_key
+    description: The issue key of the parent issue (used when creating a sub-task).
+    underlyingargname: parent_issue_key
+    type: string
+  - name: parent_issue_id
+    description: The numeric ID of the parent issue (used when creating a sub-task).
+    underlyingargname: parent_issue_id
+    type: string
+  - name: environment
+    description: >
+      Describes the environment in which the issue occurred. 
+      Example: "Windows 11, Chrome v100".
+    underlyingargname: environment
+    type: string
+  - name: security
+    description: >
+      The security level of the issue (e.g., "Anyone", "Developers only").
+    underlyingargname: security
+    type: string
+  - name: components
+    description: >
+      A list of component names to associate with the issue (e.g., "backend,API").
+      For Jira Server, these components must already exist in the project.
+    underlyingargname: components
+    type: string
+outputs:
+  - underlyingoutputcontextpath: Ticket.Id
+    description: The unique ID of the created Jira issue.
+    type: string
+    name: Ticket.Id
+  - underlyingoutputcontextpath: Ticket.Key
+    description: The issue key (e.g., "IT-123").
+    type: string
+    name: Ticket.Key
+underlyingcontentitem:
+  id: Jira V3
+  name: Jira V3
+  type: command
+  version: -1
+  command: jira-create-issue
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix

@@ -1,0 +1,85 @@
+commonfields:
+  id: EnrichIP
+  version: -1
+display: Enrich IP
+name: EnrichIP
+tags:
+ - ip
+ - enrichment
+category: Data Enrichment & Threat Intelligence
+description: |-
+    Retrieves threat intelligence and reputation data for a specified IP address, including geolocation,
+    malicious activity indicators, threat scores, and associations with known threat actors or campaigns.
+    The ip command is supported by various integrations in Cortex Agentix, including:
+    VirusTotal, Palo Alto Networks AutoFocus, CTIX, AlienVault OTX, Ipstack, CyberTotal, Whois, CrowdSec etc.
+    Ensure that one or more of these integrations are configured in your environment to retrieve enrichment using the ip command.
+args:
+  - name: ip
+    required: true
+    description: The IP address to search. E.g. 1.1.1.1
+    type: string
+    underlyingargname: ip
+outputs:
+  - underlyingoutputcontextpath: IP.Address
+    description: IP address.
+    type: string
+    name: IP.Address
+  - underlyingoutputcontextpath: IP.ASN
+    description: The Autonomous System Name for the IP address.
+    type: string
+    name: IP.ASN
+  - underlyingoutputcontextpath: IP.MalwareFamily
+    description: The malware family associated with the IP address.
+    type: string
+    name: IP.MalwareFamily
+  - underlyingoutputcontextpath: IP.Geo.Country
+    description: Country where the IP is located.
+    type: string
+    name: IP.Geo.Country
+  - underlyingoutputcontextpath: IP.Geo.Location
+    description: the IP Latitude and longitude.
+    type: string
+    name: IP.Geo.Location
+  - underlyingoutputcontextpath: IP.Geo.Region
+    description: Region or state where the IP is located.
+    type: string
+    name: IP.Geo.Region
+  - underlyingoutputcontextpath: IP.Tags
+    description: Tags associated with the IP.
+    type: string
+    name: IP.Tags
+  - underlyingoutputcontextpath: IP.Malicious.Vendor
+    description: Vendor that reported the IP as malicious.
+    type: string
+    name: IP.Malicious.Vendor
+  - underlyingoutputcontextpath: IP.Malicious.Description
+    description: Description of why the IP is considered malicious.
+    type: string
+    name: IP.Malicious.Description
+  - underlyingoutputcontextpath: DBotScore.Indicator
+    description: The IP address being scored.
+    type: string
+    name: Indicator
+  - underlyingoutputcontextpath: DBotScore.Vendor
+    description: The vendor that provided the verdict.
+    type: string
+    name: Vendor
+  - underlyingoutputcontextpath: DBotScore.Score
+    description: The verdict (0 - Unknown, 1 - Benign, 2 - Suspicious, 3 - Malicious).
+    type: string
+    name: Verdict
+  - underlyingoutputcontextpath: DBotScore.Reliability
+    description: The reliability rating of the data source (A+ - Completely reliable, A - Reliable, B - Usually reliable, C - Fairly reliable, D - Not usually reliable, E - Unreliable, F - Reliability cannot be judged)
+    type: string
+    name: Reliability
+underlyingcontentitem:
+  id: _any_
+  name: _any_
+  type: command
+  version: -1
+  command: ip
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix

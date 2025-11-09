@@ -1,0 +1,84 @@
+commonfields:
+  id: EnrichDomain
+  version: -1
+display: Enrich Domain
+name: EnrichDomain
+tags:
+ - domain
+ - threat-intelligence
+ - reputation
+category: Data Enrichment & Threat Intelligence
+description: |-
+  Retrieves reputation and threat intelligence information for a domain, including category, threat types, WHOIS data,
+  geolocation, DNS records, and associations with malicious activity.
+  This action is supported by various threat intelligence integrations in Cortex Agentix, including but not limited to:
+  CrowdStrike Falcon Intel, Microsoft Defender Threat Intelligence (MDTI), VirusTotal, Recorded Future, Cisco Umbrella,
+  Anomali ThreatStream, ThreatConnect, TruSTAR, Zscaler Internet Access (ZIA), etc.
+  Make sure the relevant integration is configured and enabled to enrich domain indicators using the domain command.
+args:
+  - name: domain
+    description: A list of domains names to check.
+    required: true
+    type: string
+    underlyingargname: domain
+outputs:
+  - underlyingoutputcontextpath: DBotScore.Vendor
+    description: The vendor used to calculate the score.
+    type: string
+    name: Vendor
+  - underlyingoutputcontextpath: DBotScore.Indicator
+    description: The domain that was analyzed.
+    type: string
+    name: Indicator
+  - underlyingoutputcontextpath: Domain.Name
+    description: The domain name being analyzed.
+    type: string
+    name: Domain.Name
+  - underlyingoutputcontextpath: Domain.DNS
+    description: List of DNS records associated with the domain.
+    type: string
+    name: Domain.DNS
+  - underlyingoutputcontextpath: Domain.Malicious.Vendor
+    description: Vendor that reported the domain as malicious.
+    type: string
+    name: Domain.Malicious.Vendor
+  - underlyingoutputcontextpath: Domain.Malicious.Description
+    description: Description or reason the domain is considered malicious.
+    type: string
+    name: Domain.Malicious.Description
+  - underlyingoutputcontextpath: DBotScore.Score
+    description: Verdict of the domain (0 - Unknown, 1 - Benign, 2 - Suspicious, 3 - Malicious).
+    type: string
+    name: Verdict
+  - underlyingoutputcontextpath: Domain.NameServers
+    description: Name of the servers of the domain.
+    type: string
+    name: Domain.NameServers
+  - underlyingoutputcontextpath: Domain.UpdatedDate
+    description: The date that the domain was last updated.
+    type: date
+    name: Domain.UpdatedDate
+  - underlyingoutputcontextpath: Domain.CreationDate
+    description: The creation date of the domain. Format is ISO8601 (i.e., '2020-04-30T10:35:00.000Z').
+    type: date
+    name: Domain.CreationDate
+  - underlyingoutputcontextpath: Domain.Admin.Email
+    description: The email address of the domain administrator.
+    type: string
+    name: Domain.Admin.Email
+  - underlyingoutputcontextpath: Domain.Admin.Name
+    description: The name of the domain administrator.
+    type: string
+    name: Domain.Admin.Name
+
+underlyingcontentitem:
+  id: _any_
+  name: _any_
+  type: command
+  version: -1
+  command: domain
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix

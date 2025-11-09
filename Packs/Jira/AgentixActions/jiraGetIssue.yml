@@ -1,0 +1,159 @@
+commonfields:
+  id: jiraGetIssue
+  version: -1
+display: Jira Get Issue Details
+name: jiraGetIssue
+tags:
+ - Case Management
+category: Case Management
+description: > 
+  Fetches detailed information about a specific issue from Jira by its issue details.
+  This command retrieves fields such as summary, description, status, assignee, reporter,
+  and other relevant metadata to help track and manage Jira issues efficiently.
+args:
+  - description: "A comma-separated string of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command."
+    name: fields
+    underlyingargname: fields
+    type: string
+  - description: The issue ID (Issue ID or key is required).
+    name: issue_id
+    underlyingargname: issue_id
+    type: string
+  - description: The issue key (Issue ID or key is required).
+    name: issue_key
+    underlyingargname: issue_key
+    type: string
+  - description: Displays the headers in human readable format.
+    name: headers
+    underlyingargname: headers
+    type: string
+  - defaultvalue: 'false'
+    description: >
+      If "true", retrieves the issue attachments and downloads the file to the tenant.
+      Valid values are: true or false.
+    name: get_attachments
+    underlyingargname: get_attachments
+    type: boolean
+  - defaultvalue: 'false'
+    description: >
+      If "true", expands the issue links (the linked issues and subtasks).
+      Valid values are: true or false.
+    name: expand_links
+    underlyingargname: expand_links
+    type: boolean
+outputs:
+  - underlyingoutputcontextpath: Ticket.Id
+    description: The ticket ID.
+    type: string
+    name: Ticket.Id
+  - underlyingoutputcontextpath: Ticket.Key
+    description: The ticket key.
+    type: string
+    name: Ticket.Key
+  - underlyingoutputcontextpath: Ticket.Assignee
+    description: The user assigned to the ticket, in the form `Username(User email address)`.
+    type: string
+    name: Ticket.Assignee
+  - underlyingoutputcontextpath: Ticket.Creator
+    description: The user who created the ticket.
+    type: string
+    name: Ticket.Creator
+  - underlyingoutputcontextpath: Ticket.Summary
+    description: The ticket summary.
+    type: string
+    name: Ticket.Summary
+  - underlyingoutputcontextpath: Ticket.Status
+    description: The ticket status.
+    type: string
+    name: Ticket.Status
+  - underlyingoutputcontextpath: Ticket.Labels
+    description: The ticket's labels.
+    type: string
+    name: Ticket.Labels
+  - underlyingoutputcontextpath: Ticket.Components
+    description: The ticket's components.
+    type: string
+    name: Ticket.Components
+  - underlyingoutputcontextpath: Ticket.Priority
+    description: The ticket priority.
+    type: string
+    name: Ticket.Priority
+  - underlyingoutputcontextpath: Ticket.ProjectName
+    description: The ticket project name.
+    type: string
+    name: Ticket.ProjectName
+  - underlyingoutputcontextpath: Ticket.DueDate
+    description: The due date.
+    type: date
+    name: Ticket.DueDate
+  - underlyingoutputcontextpath: Ticket.Created
+    description: The time the ticket was created.
+    type: date
+    name: Ticket.Created
+  - underlyingoutputcontextpath: Ticket.LastSeen
+    description: The last time the ticket was viewed.
+    type: date
+    name: Ticket.LastSeen
+  - underlyingoutputcontextpath: Ticket.LastUpdate
+    description: The last time the ticket was updated.
+    type: date
+    name: Ticket.LastUpdate
+  - underlyingoutputcontextpath: Ticket.Attachments.created
+    description: The created time of the attachment.
+    type: date
+    name: Ticket.Attachments.created
+  - underlyingoutputcontextpath: Ticket.Attachments.filename
+    description: The file name of the attachment.
+    type: string
+    name: Ticket.Attachments.filename
+  - underlyingoutputcontextpath: Ticket.Attachments.id
+    description: The id of the attachment.
+    type: string
+    name: Ticket.Attachments.id
+  - underlyingoutputcontextpath: Ticket.Attachments.size
+    description: The size (in bytes) of the attachment.
+    type: number
+    name: Ticket.Attachments.size
+  - underlyingoutputcontextpath: InfoFile.Name
+    description: The file name.
+    type: string
+    name: InfoFile.Name
+  - underlyingoutputcontextpath: InfoFile.EntryID
+    description: The ID for locating the file in the War Room.
+    type: string
+    name: InfoFile.EntryID
+  - underlyingoutputcontextpath: InfoFile.Size
+    description: The size of the file (in bytes).
+    type: number
+    name: InfoFile.Size
+  - underlyingoutputcontextpath: InfoFile.Type
+    description: The file type, as determined by libmagic (same as displayed in file entries).
+    type: string
+    name: InfoFile.Type
+  - underlyingoutputcontextpath: InfoFile.Extension
+    description: The file extension.
+    type: string
+    name: InfoFile.Extension
+  - underlyingoutputcontextpath: InfoFile.Info
+    description: Basic information about the file.
+    type: string
+    name: InfoFile.Info
+  - underlyingoutputcontextpath: Ticket.Description
+    description: The ticket's description.
+    type: string
+    name: Ticket.Description
+  - underlyingoutputcontextpath: Ticket.RawDescription
+    description: The ticket's raw description.
+    type: string
+    name: Ticket.RawDescription
+underlyingcontentitem:
+  id: Jira V3
+  name: Jira V3
+  type: command
+  version: -1
+  command: jira-get-issue
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix

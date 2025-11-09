@@ -1,0 +1,88 @@
+commonfields:
+  id: EnrichFile
+  version: -1
+display: Enrich File
+name: EnrichFile
+tags:
+ - threat-intelligence
+ - file
+ - reputation
+category: Data Enrichment & Threat Intelligence
+description: |-
+  Retrieves threat intelligence and reputation information for a file hash (MD5, SHA1, or SHA256),
+  including malware classifications, verdicts, sandbox analysis, and enrichment from global threat databases.
+  This command is supported by multiple integrations in Cortex Agentix, such as:
+  VirusTotal, WildFire (Palo Alto Networks), CrowdStrike Falcon Intelligence, Trellix (McAfee) Advanced Threat Defense,
+  Hybrid Analysis, ThreatConnect, Anomali ThreatStream, etc.
+  Make sure the appropriate integration is configured to support enrichment using the file command.
+args:
+  - name: file
+    description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
+    required: true
+    type: string
+    underlyingargname: file
+outputs:
+  - underlyingoutputcontextpath: DBotScore.Score
+    description: The Verdict (0 - Unknown, 1 - Benign, 2 - Suspicious, 3 - Malicious).
+    type: string
+    name: Verdict
+  - underlyingoutputcontextpath: DBotScore.Vendor
+    description: The vendor used to calculate the score.
+    type: string
+    name: Vendor
+  - underlyingoutputcontextpath: DBotScore.Indicator
+    description: The file hash that was analyzed.
+    type: string
+    name: Indicator
+  - underlyingoutputcontextpath: DBotScore.Reliability
+    description: The reliability rating of the data source (A+ - Completely reliable, A - Reliable, B - Usually reliable, C - Fairly reliable, D - Not usually reliable, E - Unreliable, F - Reliability cannot be judged)
+    type: string
+    name: Reliability
+  - underlyingoutputcontextpath: File.Size
+    description: The size of the file in bytes.
+    type: string
+    name: File.Size
+  - underlyingoutputcontextpath: File.MD5
+    description: The MD5 hash of the file
+    type: string
+    name: File.MD5
+  - underlyingoutputcontextpath: File.SHA1
+    description: The SHA1 hash of the file.
+    type: string
+    name: File.SHA1
+  - underlyingoutputcontextpath: File.SHA256
+    description: The SHA256 hash of the file.
+    type: string
+    name: File.SHA256
+  - underlyingoutputcontextpath: File.Name
+    description: The File name.
+    type: string
+    name: File.Name
+  - underlyingoutputcontextpath: File.SSDeep
+    description: The SSDeep hash of the file
+    type: string
+    name: File.SSDeep
+  - underlyingoutputcontextpath: File.Info
+    description: The File common metadata.
+    type: string
+    name: File.Info
+  - underlyingoutputcontextpath: File.Type
+    description: The File type.
+    type: string
+    name: File.Type
+  - underlyingoutputcontextpath: File.Extension
+    description: The file extension.
+    type: string
+    name: File.Extension
+
+underlyingcontentitem:
+  id: _any_
+  name: _any_
+  type: command
+  version: -1
+  command: file
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix

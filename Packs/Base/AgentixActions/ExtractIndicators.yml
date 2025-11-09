@@ -1,0 +1,59 @@
+commonfields:
+  id: ExtractIndicators
+  version: -1
+display: Extract Indicators
+name: ExtractIndicators
+tags:
+ - TIM
+category: Data Enrichment & Threat Intelligence
+description: >
+  Extract all indicators (such as IPs, domains, URLs, hashes) from text, files, or entries, based on the server’s indicator configuration.
+args:
+  - name: text
+    description: Provide text to extract indicators from.
+    type: string
+    underlyingargname: text
+  - name: filePath
+    description: Path to a file whose content should be scanned for indicators.
+    type: string
+    underlyingargname: filePath
+  - name: entryID
+    description: The ID of an entry in the tenant's playground from which to extract indicators.
+    type: string
+    underlyingargname: entryID
+  - name: investigationID
+    description: ID of the investigation where extraction should apply.
+    type: string
+    underlyingargname: investigationID
+outputs:
+  - underlyingoutputcontextpath: ExtractedIndicators.File
+    name: ExtractedIndicators.File
+    description: An array of extracted file hashes found in the input.
+    type: string
+  - underlyingoutputcontextpath: ExtractedIndicators.IP
+    name: ExtractedIndicators.IP
+    description: An array of extracted IP addresses from the provided input.
+    type: string
+  - underlyingoutputcontextpath: ExtractedIndicators.Domain
+    name: ExtractedIndicators.Domain
+    description: An array of extracted domain names found in the input.
+    type: string
+  - underlyingoutputcontextpath: ExtractedIndicators.Email
+    name: ExtractedIndicators.Email
+    description: An array of extracted email addresses from the input.
+    type: string
+  - underlyingoutputcontextpath: ExtractedIndicators.URL
+    name: ExtractedIndicators.URL
+    description: An array of extracted URLs found in the input content.
+    type: string
+underlyingcontentitem:
+  id: _builtin_
+  name: _builtin_
+  type: command
+  version: -1
+  command: extractIndicators
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix

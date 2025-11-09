@@ -1,0 +1,68 @@
+commonfields:
+  id: EnrichCVE
+  version: -1
+display: Enrich CVE
+name: EnrichCVE
+tags:
+  - cve
+  - vulnerability
+  - threat intelligence
+  - security
+  - enrichment
+  - indicators
+category: Data Enrichment & Threat Intelligence
+description: |-
+  Retrieves detailed information for one or more specified CVE IDs, including CVSS scores, descriptions,
+  publication dates, modification dates, tags, and relationships. Useful for understanding the severity, impact,
+  and affected configurations or products of known vulnerabilities.
+  This action is supported by multiple threat intelligence vendors, including but not limited to
+  CIRCL CVE Search, Mandiant Advantage Threat Intelligence, Mandiant, Recorded Future, QintelPMI,
+  VulnDB, CTIX, CrowdstrikeFalcon, GreyNoise, PaloAltoNetworks_PrismaCloudCompute, Palo Alto Networks Threat Vault, OpenCVE etc.
+  Ensure that the appropriate integration is enabled and configured for the cve command to return results.
+  Some vendors may provide richer enrichment (e.g., CVSS vectors, exploitability info, references, or affected products).
+args:
+  - name: cve
+    required: true
+    description: One or more CVE identifiers to retrieve information for. For example CVE-2014-1234, CVE-2020-0601.
+    type: string
+    underlyingargname: cve
+outputs:
+  - underlyingoutputcontextpath: DBotScore.Indicator
+    description: The indicator that was tested.
+    type: string
+    name: Indicator
+  - underlyingoutputcontextpath: DBotScore.Vendor
+    description: The vendor used to calculate the score.
+    type: string
+    name: Vendor
+  - underlyingoutputcontextpath: CVE.ID
+    description: The CVE ID.
+    type: string
+    name: CVE.ID
+  - underlyingoutputcontextpath: CVE.Description
+    description: The Description of the CVE.
+    type: string
+    name: CVE.Description
+  - underlyingoutputcontextpath: CVE.CVSS
+    description: The CVSS score.
+    type: number
+    name: CVE.CVSS
+  - underlyingoutputcontextpath: CVE.Published
+    description: The Date the CVE was published.
+    type: date
+    name: CVE.Published
+  - underlyingoutputcontextpath: CVE.Modified
+    description: The Date the CVE was last modified.
+    type: date
+    name: CVE.Modified
+underlyingcontentitem:
+  id: _any_
+  name: _any_
+  type: command
+  version: -1
+  command: cve
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix

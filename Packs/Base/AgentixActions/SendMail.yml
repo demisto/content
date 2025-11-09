@@ -1,0 +1,78 @@
+commonfields:
+  id: SendMail
+  version: -1
+display: Send Mail
+name: SendMail
+tags:
+ - Email
+category: Email
+description: |-
+    Sends an email to the desired mailbox using one of the configured mail integrations.
+    Supports sending messages with custom subject lines, plain-text or HTML bodies, and attachments.
+    You can specify multiple recipients (To, CC, BCC), and optionally define a reply-to address.
+
+    This command is supported by the following integrations:
+      - Mail Sender (New) – Generic SMTP integration (e.g., Exchange, Postfix, SendGrid)
+      - EWS Mail Sender / EWS On-Premise – Microsoft Exchange Web Services
+      - Gmail / Gmail Single User – Google Gmail API with OAuth 2.0
+      - Microsoft Graph Mail / Graph Mail Single User – Microsoft 365 Graph API
+
+    Common use cases include notifications, ticketing updates, report sharing, and automated alerting workflows.
+args:
+ - name: to
+   description: Comma-separated list of email addresses to send the email to.
+   required: true
+   type: string
+   underlyingargname: to
+ - name: subject
+   description: The subject of the email.
+   required: true
+   type: string
+   underlyingargname: subject
+   isgeneratable: true
+ - name: body
+   description: The plain-text or HTML body of the email.
+   required: true
+   type: string
+   underlyingargname: body
+   isgeneratable: true
+ - name: cc
+   description: Comma-separated list of CC email addresses.
+   type: string
+   underlyingargname: cc
+ - name: bcc
+   description: Comma-separated list of BCC email addresses.
+   type: string
+   underlyingargname: bcc
+ - name: replyTo
+   description: Email address for replies.
+   type: string
+   underlyingargname: replyTo
+ - name: attachIDs
+   description: Comma-separated list of War Room entry IDs to attach to the email.
+   type: string
+   underlyingargname: attachIDs
+ - name: htmlBody
+   description: The content (body) of the email to be sent in HTML format. For example, <div> "test mail" </div>.
+   type: string
+   underlyingargname: htmlBody
+ - name: templateParams
+   description: A JSON string of key-value pairs to populate dynamic variables in email templates.
+   type: string
+   underlyingargname: templateParams
+ - defaultvalue: Text
+   description: Whether message response body type is text or HTML. Optional values HTML or Text.
+   name: bodyType
+   type: string
+   underlyingargname: bodyType
+underlyingcontentitem:
+  id: _any_
+  name: _any_
+  type: command
+  version: -1
+  command: send-mail
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix

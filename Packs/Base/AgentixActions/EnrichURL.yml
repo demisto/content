@@ -1,0 +1,67 @@
+commonfields:
+  id: EnrichURL
+  version: -1
+display: Enrich URL
+name: EnrichURL
+tags:
+ - threat-intelligence
+ - url
+ - reputation
+category: Data Enrichment & Threat Intelligence
+description: |-
+  Retrieves threat intelligence, reputation, and categorization details for a specified URL.
+  This includes whether the URL is associated with phishing, malware, spam, or other types of malicious activity.
+  The url command is supported by a wide range of threat intelligence and enrichment integrations in Cortex Agentix, including:
+  VirusTotal, Palo Alto Networks AutoFocus, ThreatConnect, Anomali ThreatStream, Cisco Umbrella, IBM X-Force Exchange,
+  Check Point ThreatCloud, Microsoft Defender Threat Intelligence, Trellix (McAfee), Zscaler, URLhaus, etc.
+  To enrich URLs effectively, ensure that one or more of these integrations are enabled and authorized in your Cortex Agentix environment.
+args:
+  - description: One or more URLs to check the reputation of in AutoFocus.
+    name: url
+    required: true
+    type: string
+    underlyingargname: url
+outputs:
+  - underlyingoutputcontextpath: DBotScore.Reliability
+    description: The reliability rating of the data source (A+ - Completely reliable, A - Reliable, B - Usually reliable, C - Fairly reliable, D - Not usually reliable, E - Unreliable, F - Reliability cannot be judged)
+    type: string
+    name: Reliability
+  - underlyingoutputcontextpath: URL.Data
+    description: The URL being analyzed or enriched.
+    type: string
+    name: URL.Data
+  - underlyingoutputcontextpath: URL.Malicious.Vendor
+    description: The vendor that marked the URL as malicious.
+    type: string
+    name: URL.Malicious.Vendor
+  - underlyingoutputcontextpath: URL.Malicious.Description
+    description: Description or reason why the URL is considered malicious.
+    type: string
+    name: URL.Malicious.Description
+  - underlyingoutputcontextpath: URL.Tags
+    description: Tags associated with the URL.
+    type: string
+    name: URL.Tags
+  - underlyingoutputcontextpath: DBotScore.Indicator
+    description: The URL being scored.
+    type: string
+    name: Indicator
+  - underlyingoutputcontextpath: DBotScore.Vendor
+    description: The vendor that provided the verdict.
+    type: string
+    name: Vendor
+  - underlyingoutputcontextpath: DBotScore.Score
+    description: The reputation verdict (0 - Unknown, 1 - Benign, 2 - Suspicious, 3 - Malicious).
+    type: string
+    name: Verdict
+underlyingcontentitem:
+  id: _any_
+  name: _any_
+  type: command
+  version: -1
+  command: url
+requiresuserapproval: false
+marketplaces:
+- platform
+supportedModules:
+- agentix
