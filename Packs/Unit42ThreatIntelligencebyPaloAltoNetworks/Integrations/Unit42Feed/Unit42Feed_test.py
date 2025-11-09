@@ -1214,3 +1214,32 @@ def test_main_function_exception_handling(mocker):
     error_call = mock_return_error.call_args[0][0]
     assert "Failed to execute test-module command" in error_call
     assert "Test error" in error_call
+
+
+def test_unit42_error_handler_with_request_id(mocker):
+    """
+    Given:
+        - A mock requests.Response object with a status code, URL, and an X-Request-ID header.
+    When:
+        - Calling unit42_error_handler.
+    Then:
+        - demisto.return_error is called with a formatted error message including the X-Request-ID.
+    """
+    mock_response = mocker.Mock()
+    mock_response.status_code = 500
+    mock_response.url = "https://example.com/api"
+    mock_response.text = "Internal Server Error"
+    mock_response.headers = {"X-Request-ID": "test-request-id-123"}
+
+    mocker.patch.object(demisto, "debug")
+    mock_return_error = mocker.patch("Unit42Feed.return_error")
+
+    unit42_error_handler(mock_response)
+
+    expected_error_msg = (
+        f"Error in API request [Status: 500]\n"
+        f"[X-Request-ID: test-request-id-123]\n"
+        f"Response text - Internal Server Error"
+    )
+    mock_return_error.assert_called_once_with(expected_error_msg)
+    demisto.debug.assert_called_once_with(f"{INTEGRATION_NAME} API Error - X-Request-ID: test-request-id-123, Status: 500, URL: https://example.com/api")
