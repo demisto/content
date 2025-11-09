@@ -2481,7 +2481,7 @@ class TestIncidentFetch:
         _, incidents = fetch_items()
         for incident in incidents:
             assert '"incident_type": "incident"' in incident.get("rawJSON", "")
-    
+
     def test_last_run_uses_param(self, mocker: MockerFixture):
         """
         Given:
@@ -2497,12 +2497,10 @@ class TestIncidentFetch:
         mocker.patch("CrowdStrikeFalcon.get_fetch_run_time_range", return_value=(None,) * 2)
         mocker.patch("CrowdStrikeFalcon.get_detections_ids", return_value={})
         mock_func = mocker.patch("CrowdStrikeFalcon.update_last_run_object")
-        
-        fetch_detections_by_product_type(
-            {'limit': 10}, 0, '', '', '', '', ''
-        )
 
-        assert mock_func.call_args.kwargs['fetch_limit'] == 20
+        fetch_detections_by_product_type({"limit": 10}, 0, "", "", "", "", "")
+
+        assert mock_func.call_args.kwargs["fetch_limit"] == 20
 
 
 def get_fetch_data():
