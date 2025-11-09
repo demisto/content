@@ -5,7 +5,7 @@ from Unit42Intelligence import (
     domain_command,
     url_command,
     file_command,
-    test_module,
+    test_module as unit42_test_module,
     create_relationships,
     remove_mitre_technique_id_prefix,
     extract_response_data,
@@ -239,7 +239,7 @@ def test_test_module_success(client, mocker):
     mock_response_obj.status_code = 200
     mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
 
-    result = test_module(client)
+    result = unit42_test_module(client)
 
     assert result == "ok"
 
@@ -256,7 +256,7 @@ def test_test_module_failure(client, mocker):
     """
     mocker.patch.object(client, "lookup_indicator", side_effect=Exception("API Error"))
 
-    result = test_module(client)
+    result = unit42_test_module(client)
 
     assert "Test failed" in result
 
