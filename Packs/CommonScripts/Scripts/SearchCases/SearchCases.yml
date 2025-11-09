@@ -24,8 +24,15 @@ args:
   - description: 'Filters for cases with the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
     name: status
   - auto: PREDEFINED
-    description: 'Whether the case is starred.'
+    description: Whether the case is starred.
     name: starred
+    predefined:
+      - 'true'
+      - 'false'
+  - auto: PREDEFINED
+    description: Whether to include enriched case data in the response. Recommended for up to 10 cases.
+    name: get_enriched_case_data
+    defaultValue: 'false'
     predefined:
       - 'true'
       - 'false'
@@ -35,6 +42,7 @@ args:
   - defaultValue: '100'
     description: Maximum number of cases to return per page. The default and maximum is 100.
     name: page_size
+    
 outputs:
   - contextPath: Core.Case.case_id
     description: Unique ID assigned to each returned case.
@@ -153,6 +161,15 @@ outputs:
   - contextPath: Core.Case.custom_fields
     description: Custom fields for the case with standardized lowercase, whitespace-free names.
     type: Unknown
+  - contextPath: Core.Case.CaseExtraData.issue_ids
+    description: List of issue IDs associated with the case.
+    type: Array
+  - contextPath: Core.Case.CaseExtraData.file_artifacts
+    description: File artifacts associated with the case.
+    type: Array
+  - contextPath: Core.Case.CaseExtraData.network_artifacts
+    description: Network artifacts associated with the case.
+    type: Array
 subtype: python3
 dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.6.0
