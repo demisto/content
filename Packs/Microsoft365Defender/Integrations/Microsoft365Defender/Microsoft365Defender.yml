@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Microsoft 365 Defender
+  id: Microsoft 365 Defender - Noy
   version: -1
 configuration:
 - additionalinfo: |-
@@ -236,8 +236,8 @@ configuration:
   hidden: true
   required: false
 description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection, prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated protection against sophisticated attacks.
-display: Microsoft 365 Defender
-name: Microsoft 365 Defender
+display: Microsoft 365 Defender - Noy
+name: Microsoft 365 Defender - Noy
 script:
   commands:
   - arguments: []

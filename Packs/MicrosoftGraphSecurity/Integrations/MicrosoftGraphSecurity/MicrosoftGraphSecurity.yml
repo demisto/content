@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Microsoft Graph
+  id: Microsoft Graph - Noy
   version: -1
 configuration:
 - defaultvalue: https://graph.microsoft.com
@@ -26,11 +26,11 @@ configuration:
   name: auth_flow
   type: 15
   options:
-    - Not Selected
     - Client Credentials
     - Authorization Code
+    - Azure Managed Identities
   section: Connect
-  required: false
+  required: true
 - name: creds_auth_id
   type: 9
   section: Connect
@@ -193,8 +193,8 @@ configuration:
   hidden: true
   required: false
 description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
-display: Microsoft Graph Security
-name: Microsoft Graph
+display: Microsoft Graph Security - Noy
+name: Microsoft Graph - Noy
 script:
   commands:
   - arguments:

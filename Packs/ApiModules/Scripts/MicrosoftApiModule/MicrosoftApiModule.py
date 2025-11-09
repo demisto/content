@@ -671,13 +671,11 @@ def get_azure_cloud(params, integration_name):
 def get_auth_type_flow(auth_flow):
     auth_flow_dict = {
         "Not Selected": None,
+        "Azure Managed Identities": None,
         "Client Credentials": CLIENT_CREDENTIALS,
         "Authorization Code": AUTHORIZATION_CODE,
         "Device Code": DEVICE_CODE
     }
-    # in case azure managed identites is sent
-    return auth_flow_dict.get(auth_flow, None)
-
 
 class MicrosoftClient(BaseClient):
     def __init__(
