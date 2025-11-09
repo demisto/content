@@ -1530,6 +1530,9 @@ script:
             - Medium
             - Low
       outputs:
+        - contextPath: Core.Policy.executionSummary
+          description: The summary of the execution.
+          type: String
         - contextPath: Core.Policy.id
           description: The unique identifier of the created policy.
           type: String

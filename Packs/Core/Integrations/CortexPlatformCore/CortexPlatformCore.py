@@ -870,7 +870,7 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
 
     response = client.create_policy(payload)
     readable_output = tableToMarkdown(
-        "Cortex XDR Policy Created",
+        "Cortex XDR Policy Created Successfully",
         response,
         headers=["id", "name", "description", "createdAt"],
         headerTransform=string_to_table_header,
@@ -880,7 +880,7 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Policy",
         outputs_key_field="id",
-        outputs=response,
+        outputs=response | {"executionSummary": "Cortex XDR Policy Created Successfully"},
         raw_response=response,
     )
 
