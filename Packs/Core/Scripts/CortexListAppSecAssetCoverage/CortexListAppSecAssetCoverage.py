@@ -27,18 +27,36 @@ valid_args = {
     "limit",
 }
 
+def get_command_results(command: str, args: dict[str, Any]) -> Union[dict[str, Any], list]:
+    """Execute a Demisto command and return the parsed result.
 
-def get_command_results(command: str, args: dict[str, Any]) -> dict[str, Any] | list:
-    """Execute a Demisto command and return the result."""
-    try:
-        command_results = demisto.executeCommand(command, args)
-        if command_results and isinstance(command_results, list) and command_results[0].get("Contents"):
-            return command_results[0]["Contents"].get("reply", {})
-        return {}
-    except Exception as e:
-        demisto.error(f"Error executing command {command}: {str(e)}")
+    Args:
+        command (str): The Demisto command to execute.
+        args (dict[str, Any]): The arguments to pass to the command.
+
+    Returns:
+        Union[dict[str, Any], list]: The parsed result of the command, or an empty dict if no valid result is found.
+
+    Raises:
+        Exception: If the command execution returns an error.
+    """
+    results = demisto.executeCommand(command, args)
+
+    if not results or not isinstance(results, list):
         return {}
 
+    result = results[0]
+    if not isinstance(result, dict):
+        return {}
+
+    if result.get("Type") == EntryType.ERROR:
+        raise Exception(result.get("Contents", "Unknown error occurred."))
+
+    contents = result.get("Contents")
+    if isinstance(contents, dict):
+        return contents.get("reply", {})
+
+    return {}
 
 def transform_scanner_histograms_outputs(asset_coverage_histograms):
     def get_count(data, value):
