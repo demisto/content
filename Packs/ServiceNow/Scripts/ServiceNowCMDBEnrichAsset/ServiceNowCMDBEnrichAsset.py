@@ -48,10 +48,34 @@ class ConfigurationItem:
 
 
 def get_command_results(command: str, args: dict[str, Any]) -> Union[dict[str, Any], list]:
-    """Execute a Demisto command and return the result."""
-    command_results = demisto.executeCommand(command, args)
-    if command_results and isinstance(command_results, list) and command_results[0].get("Contents"):
-        return command_results[0]["Contents"].get("result", {})
+    """Execute a Demisto command and return the parsed result.
+
+    Args:
+        command (str): The Demisto command to execute.
+        args (dict[str, Any]): The arguments to pass to the command.
+
+    Returns:
+        Union[dict[str, Any], list]: The parsed result of the command, or an empty dict if no valid result is found.
+
+    Raises:
+        Exception: If the command execution returns an error.
+    """
+    results = demisto.executeCommand(command, args)
+
+    if not results or not isinstance(results, list):
+        return {}
+
+    result = results[0]
+    if not isinstance(result, dict):
+        return {}
+
+    if result.get("Type") == EntryType.ERROR:
+        raise Exception(result.get("Contents", "Unknown error occurred."))
+
+    contents = result.get("Contents")
+    if isinstance(contents, dict):
+        return contents.get("result", {})
+
     return {}
 
 
@@ -63,6 +87,7 @@ def build_servicenow_url(instance_url: str, table: str, sys_id: str) -> str:
 def get_network_adapter(sid: str) -> NetworkAdapter:
     """Fetch and parse network adapter details from ServiceNow."""
     result = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": CMDB_CI_NETWORK_ADAPTER, "sys_id": sid})
+    print(f"get_network_adapter {sid} {result}")
     if not isinstance(result, dict):
         result = {}
 
@@ -92,7 +117,7 @@ def get_related_configuration_item(sid: str, instance_url: str) -> Configuration
     result = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": "cmdb_ci", "sys_id": sid})
     if not isinstance(result, dict):
         result = {}
-
+    print(f"get_related_configuration_item 1 {result}")
     ci_class = result.get("attributes", {}).get("sys_class_name", "")
     if not ci_class:
         return ConfigurationItem(
@@ -103,6 +128,7 @@ def get_related_configuration_item(sid: str, instance_url: str) -> Configuration
     result = get_command_results(SERVICENOW_CMDB_RECORD_GET_BY_ID, {"class": ci_class, "sys_id": sid})
     if not isinstance(result, dict):
         result = {}
+    print(f"get_related_configuration_item 2 {result}")
 
     attributes = result.get("attributes", {})
     assigned_to = attributes.get("assigned_to", {}) if isinstance(attributes.get("assigned_to"), dict) else {}
@@ -140,6 +166,8 @@ def main():
         result = get_command_results(
             "servicenow-cmdb-records-list", {"class": CMDB_CI_NETWORK_ADAPTER, "query": f"ip_address={ip_address}"}
         )
+
+        print(result)
 
         if not isinstance(result, list):
             result = []
