@@ -241,8 +241,8 @@ def sync(client: Client):
         upload_file_to_bucket(temp_file_path)
         requests_kwargs = get_requests_kwargs(_json={"path_to_file": temp_file_path})
         res = client.http_request(url_suffix="sync_tim_iocs", requests_kwargs=requests_kwargs)
-        if res["reply"] is not True:
-            raise DemistoException(f"Unable to sync IOCs:\n{res['reply']}")
+        if res.get("reply") is not True:
+            raise DemistoException(f"Unable to sync IOCs:\n{res.get("reply")}")
     finally:
         os.remove(temp_file_path)
     set_integration_context(
@@ -264,8 +264,8 @@ def iocs_to_keep(client: Client):
         upload_file_to_bucket(temp_file_path)
         requests_kwargs = get_requests_kwargs(_json={"path_to_file": temp_file_path})
         res = client.http_request(url_suffix="iocs_to_keep", requests_kwargs=requests_kwargs)
-        if res["reply"] is not True:
-            raise DemistoException(f"Unable to sync IOCs:\n{res['reply']}")
+        if res.get("reply") is not True:
+            raise DemistoException(f"Unable to sync IOCs:\n{res.get("reply")}")
     finally:
         os.remove(temp_file_path)
     return_outputs("sync with XDR completed.")
@@ -435,6 +435,7 @@ def get_sync_file():
 
 
 def upload_file_to_bucket(file_path: str) -> None:
+    # get the buckets to sync the IOCs
     gcpconf_project_id = demisto.callingContext["context"]["ProjectID"]
     gcpconf_papi_bucket = demisto.callingContext["context"]["PAPIBucket"]
     try:
