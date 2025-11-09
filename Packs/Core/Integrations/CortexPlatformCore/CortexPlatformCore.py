@@ -946,7 +946,7 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
     for f, n in [("cvss", "CVSS"), ("epss", "EPSS")]:
         val = arg_to_number(args.get(f"conditions_{f}"))
         if val is not None:
-            builder.add_field(n, FilterType.EQ, val)
+            builder.add_field(n, FilterType.GTE, val)
 
     # Boolean Conditions
     for key, label in {
@@ -984,7 +984,7 @@ def create_policy_build_scope(args: dict) -> dict:
             - scope_repository_name: Repository name to filter
             - scope_is_public_repository: Boolean for public repository filter
             - scope_has_deployed_assets: Boolean for deployed assets filter
-            - scope_has_internet_exposed: Boolean for internet exposure filter
+            - scope_has_internet_exposed_deployed_assets: Boolean for internet exposure filter
             - scope_has_sensitive_data_access: Boolean for sensitive data access filter
             - scope_has_privileged_capabilities: Boolean for privileged capabilities filter
 
@@ -1012,9 +1012,9 @@ def create_policy_build_scope(args: dict) -> dict:
     for key, label in {
         "scope_is_public_repository": "Is Public Repository",
         "scope_has_deployed_assets": "Has Deployed Assets",
-        "scope_has_internet_exposed": "Has Internet Exposed",
-        "scope_has_sensitive_data_access": "Has Sensitive Data Access",
-        "scope_has_privileged_capabilities": "Has Privileged Capabilities",
+        "scope_has_internet_exposed_deployed_assets": "Has Internet-exposed deployed assets",
+        "scope_has_sensitive_data_access": "Has deployed assets with Access to sensitive data",
+        "scope_has_privileged_capabilities": "Has deployed assets with privileged capabilities",
     }.items():
         val = arg_to_bool_or_none(args.get(key))
         if val is not None:

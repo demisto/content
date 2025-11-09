@@ -1374,13 +1374,15 @@ script:
           description: "Filter findings by severity level to prioritize policy actions. Supported values: CRITICAL, HIGH, MEDIUM, LOW."
           isArray: true
         - name: conditions_developer_suppression
-          description: Determines whether to respect developer-suppressed findings or include them in policy evaluation.
+          description: "Controls whether a developer’s manual suppression should be honored. 
+          Set to 'true' to respect developer suppression (evaluate only non-suppressed findings). 
+          Set to 'false' to ignore suppression and always evaluate the finding."
           auto: PREDEFINED
           predefined:
             - "true"
             - "false"
         - name: conditions_backlog_status
-          description: Filter findings based on their current backlog status for workflow management.
+          description: Filter findings based on their backlog workflow status (NEW or BACKLOG).
           auto: PREDEFINED
           predefined:
             - NEW
@@ -1442,33 +1444,33 @@ script:
           predefined:
             - "true"
             - "false"
-        - name: scope_has_internet_exposed
-          description: Filter assets based on whether they are exposed to internet traffic for external attack surface management.
+        - name: scope_has_internet_exposed_deployed_assets
+          description: Filter assets based on whether the deployed components are exposed to internet traffic for external attack surface management.
           auto: PREDEFINED
           predefined:
             - "true"
             - "false"
         - name: scope_has_sensitive_data_access
-          description: Target assets that have access to sensitive data stores, databases, or classified information.
+          description: Target deployed assets that have access to sensitive data stores, databases, or classified information.
           auto: PREDEFINED
           predefined:
             - "true"
             - "false"
         - name: scope_has_privileged_capabilities
-          description: Filter assets with elevated privileges, admin access, or high-impact system capabilities.
+          description: Filter deployed assets with elevated privileges, admin access, or high-impact system capabilities.
           auto: PREDEFINED
           predefined:
             - "true"
             - "false"
         # Trigger Settings (Policy Execution Events)
         - name: triggers_periodic_report_issue
-          description: Automatically create issues for policy violations detected during scheduled periodic scans.
+          description: Enables detection during scheduled scans. When a violation is found in a periodic scan, an issue will be created ("Detect").
           auto: PREDEFINED
           predefined:
             - "true"
             - "false"
         - name: triggers_periodic_override_severity
-          description: Override the default severity level for issues created by periodic scan triggers.
+          description: Override the default severity level for issues created by periodic scan detections.
           auto: PREDEFINED
           predefined:
             - Critical
@@ -1476,25 +1478,25 @@ script:
             - Medium
             - Low
         - name: triggers_pr_report_issue
-          description: Create issues when policy violations are detected in pull request scans.
+          description: Enables detection during pull request scans. When a violation is found in a PR, an issue is created. Required for PR-based detection.
           auto: PREDEFINED
           predefined:
             - "true"
             - "false"
         - name: triggers_pr_block_pr
-          description: Block or prevent merge of pull requests that contain policy violations.
+          description: Blocks merging of pull requests that contain violations detected by the policy.
           auto: PREDEFINED
           predefined:
             - "true"
             - "false"
         - name: triggers_pr_report_pr_comment
-          description: Add automated comments to pull requests summarizing policy violations and remediation guidance.
+          description: Adds an automated comment to pull requests summarizing detected violations and guidance.
           auto: PREDEFINED
           predefined:
             - "true"
             - "false"
         - name: triggers_pr_override_severity
-          description: Override the default severity level for issues created by pull request triggers.
+          description: Override the default severity level for issues created by pull request detections.
           auto: PREDEFINED
           predefined:
             - Critical
@@ -1502,25 +1504,25 @@ script:
             - Medium
             - Low
         - name: triggers_cicd_report_issue
-          description: Create issues when policy violations are detected during CI/CD pipeline execution.
+          description: Enables detection during CI/CD pipeline scans. When a violation is found in a pipeline run, an issue is created.
           auto: PREDEFINED
           predefined:
             - "true"
             - "false"
         - name: triggers_cicd_block_cicd
-          description: Fail or block CI/CD pipeline execution when policy violations are found.
+          description: Blocks or fails CI/CD pipeline runs when violations occur.
           auto: PREDEFINED
           predefined:
             - "true"
             - "false"
         - name: triggers_cicd_report_cicd
-          description: Report policy evaluation results and violation status back to the CI/CD system for visibility.
+          description: Reports violation details back to the CI/CD system (pipeline logs, dashboards, status checks).
           auto: PREDEFINED
           predefined:
             - "true"
             - "false"
         - name: triggers_cicd_override_severity
-          description: Override the default severity level for issues created by CI/CD pipeline triggers.
+          description: Override the default severity level for issues created by CI/CD pipeline detections.
           auto: PREDEFINED
           predefined:
             - Critical
