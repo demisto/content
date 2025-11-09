@@ -104,9 +104,13 @@ def test_transform_scanner_histograms_outputs(mock_histogram_data):
     """
     output, coverage = cc.transform_scanner_histograms_outputs(mock_histogram_data)
 
+    enabled_scanners = ["is_scanned_by_malware" , "is_scanned_by_secrets" , "is_scanned_by_vulnerabilities"]
     assert all(k in output for k in cc.SCANNER_COLUMNS)
     for v in output.values():
-        assert v["enabled"] == 6
+        if v in enabled_scanners:
+            assert v["enabled"] == 6
+        else:
+            assert v["enabled"] == 0
         assert v["disabled"] == 0
         assert v["coverage_percentage"] == 1.0
     assert coverage == 1.0
