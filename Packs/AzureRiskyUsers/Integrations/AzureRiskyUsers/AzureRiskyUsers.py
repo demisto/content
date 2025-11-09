@@ -103,9 +103,23 @@ class Client:
         else:  # Device Code Flow
             return "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
 
-    def get_user_id_by_upn(self, upn: str) -> str:
-        return self.ms_client.http_request(method="GET", url_suffix=f"users/{upn}")["id"]
-    
+
+    def upn_to_user_id(self, user_id_or_upn: str) -> str:
+        """Retrieves the user ID of a user.
+
+        Args:
+            user_id_or_upn (str): A user ID or UPN
+
+        Returns:
+            str: The user ID
+        """
+        return (
+            self.ms_client.http_request(method="GET", url_suffix=f"users/{upn}")["id"]
+            if "@" in user_id_or_upn
+            else user_id_or_upn
+        )
+
+
     def risky_users_list_request(
         self,
         limit: int = None,
@@ -163,6 +177,7 @@ class Client:
     def confirm_compromised_request(self, user_ids: list) -> None:
         """
         Confirms user(s) as compromised.
+
         Args:
             user_ids (list): List of user IDs to confirm as compromised.
         Returns:
@@ -177,6 +192,7 @@ class Client:
     def confirm_safe_request(self, user_ids: list) -> None:
         """
         Confirms user(s) as safe.
+
         Args:
             user_ids (list): List of user IDs to confirm as safe.
         Returns:
@@ -321,9 +337,6 @@ def do_pagination(client: Client, response: dict[str, Any], limit: int = 1) -> d
         response_data.extend(response.get("value") or [])
     demisto.debug(f"The limited response contains: {len(response_data[:limit])}")
     return {"value": response_data[:limit], "@odata.context": response.get("@odata.context"), "@odata.nextLink": next_link}
-
-
-def get_user_from_upn
 
 
 def get_user_human_readable(users: list) -> Any:
@@ -619,35 +632,21 @@ def risk_detection_get_command(client: Client, args: dict[str, Any]) -> CommandR
 
 def risky_users_confirm_compromise_command(client: Client, args: dict[str, Any]) -> CommandResults:
     users = argToList(args["user"])
-    parsed_users = [
-        (
-            client.get_user_id_by_upn(user)
-            if "@" in user
-            else user
-        )
-        for user in users
-    ]
-    
+    parsed_users = list(map(client.upn_to_user_id, users))
+
     client.confirm_compromised_request(user_ids=parsed_users)
-    
+
     return CommandResults(
         readable_output=f"Request to confirm users {users} as compromised was successful."
     )
-    
-    
+
+
 def risky_users_confirm_safe_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    users = argToList(args["user"])
-    parsed_users = [
-        (
-            client.get_user_id_by_upn(user)
-            if "@" in user
-            else user
-        )
-        for user in users
-    ]
-    
+    users =  argToList(args["user"])
+    parsed_users = list(map(client.upn_to_user_id, users))
+
     client.confirm_safe_request(user_ids=parsed_users)
-    
+
     return CommandResults(
         readable_output=f"Request to confirm users {users} as safe was successful."  # TODO reformat
     )
