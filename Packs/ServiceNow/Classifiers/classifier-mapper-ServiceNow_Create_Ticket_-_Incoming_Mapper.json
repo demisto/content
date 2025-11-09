@@ -38,9 +38,7 @@
                 "ServiceNow Impact": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "impact",
                         "transformers": [
                             {
@@ -119,9 +117,7 @@
                 "ServiceNow Notify": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "notify",
                         "transformers": [
                             {
@@ -200,9 +196,7 @@
                 "ServiceNow Priority": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "priority",
                         "transformers": [
                             {
@@ -327,9 +321,7 @@
                 "ServiceNow State": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "state",
                         "transformers": [
                             {
@@ -477,9 +469,7 @@
                 "ServiceNow Urgency": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "urgency",
                         "transformers": [
                             {
@@ -574,9 +564,7 @@
                 "Ticket Opened Date": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "opened_at",
                         "transformers": [
                             {
@@ -643,9 +631,7 @@
                 "severity": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "severity",
                         "transformers": [
                             {
@@ -726,9 +712,7 @@
                 "ServiceNow Closed Date": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "closed_at",
                         "transformers": [
                             {
@@ -761,9 +745,7 @@
                                 "operator": "FormattedDateToEpoch"
                             },
                             {
-        "args": {
-
-        },
+                                "args": {},
                                 "operator": "TimeStampToDate"
                             }
                         ]
@@ -777,9 +759,7 @@
                 "ServiceNow Due Date": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "due_date",
                         "transformers": [
                             {
@@ -812,9 +792,7 @@
                                 "operator": "FormattedDateToEpoch"
                             },
                             {
-        "args": {
-
-        },
+                                "args": {},
                                 "operator": "TimeStampToDate"
                             }
                         ]
@@ -828,9 +806,7 @@
                 "ServiceNow Impact": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "impact",
                         "transformers": [
                             {
@@ -909,9 +885,7 @@
                 "ServiceNow Opened Date": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "sys_created_on",
                         "transformers": [
                             {
@@ -944,9 +918,7 @@
                                 "operator": "FormattedDateToEpoch"
                             },
                             {
-        "args": {
-
-        },
+                                "args": {},
                                 "operator": "TimeStampToDate"
                             }
                         ]
@@ -956,9 +928,7 @@
                 "ServiceNow Priority": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "priority",
                         "transformers": [
                             {
@@ -1091,9 +1061,7 @@
                 "ServiceNow Resolved Time": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "resolved_at",
                         "transformers": [
                             {
@@ -1126,9 +1094,7 @@
                                 "operator": "FormattedDateToEpoch"
                             },
                             {
-        "args": {
-
-        },
+                                "args": {},
                                 "operator": "TimeStampToDate"
                             }
                         ]
@@ -1138,9 +1104,7 @@
                 "ServiceNow Severity": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "severity",
                         "transformers": [
                             {
@@ -1219,9 +1183,7 @@
                 "ServiceNow State": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "state",
                         "transformers": [
                             {
@@ -1419,9 +1381,7 @@
                 "ServiceNow Urgency": {
                     "complex": {
                         "accessor": "",
-      "filters": [
-
-      ],
+                        "filters": [],
                         "root": "urgency",
                         "transformers": [
                             {
@@ -1509,6 +1469,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

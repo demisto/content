@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -196,6 +196,17 @@ configuration:
   hidden:
   - marketplacev2
   - platform
+  section: Collect
+  advanced: true
+  required: false
+- additionalinfo: 'The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched.'
+  display: Incident Statuses to Fetch
+  name: statuses_to_fetch
+  options:
+  - New
+  - Active
+  - Closed
+  type: 16
   section: Collect
   advanced: true
   required: false
@@ -2491,7 +2502,7 @@ script:
     - contextPath: AzureSentinel.Incident.Etag
       description: The Etag of the incident.
       type: String
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.4834757
   isfetch: true
   runonce: false
   script: '-'

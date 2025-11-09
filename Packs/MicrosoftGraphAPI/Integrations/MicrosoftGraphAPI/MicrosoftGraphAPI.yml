@@ -1,5 +1,5 @@
 category: Utilities
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -103,7 +103,7 @@ configuration:
   advanced: true
   required: false
   defaultvalue: https://login.microsoftonline.com
-  additionalinfo: Use this option when required to customize the URL to the Azure Active Directory endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  additionalinfo: Use this option when required to customize the URL to the Entra ID endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - display: Scope (Required for using Cortex XSOAR Azure app)
   name: scope
   type: 12
@@ -186,7 +186,7 @@ script:
   - description: Generate the login URL used for Authorization code flow.
     name: msgraph-api-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.5490413
   runonce: false
   script: '-'
   subtype: python3

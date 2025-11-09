@@ -1,7 +1,7 @@
 commonfields:
   id: Jira V3
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Jira V3
@@ -1601,9 +1601,9 @@ script:
     description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
     name: get-remote-data
   - arguments:
-      - description: The remote incident ID.
-        name: id
-        required: true
+    - description: The remote incident ID.
+      name: id
+      required: true
     description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
     name: get-remote-data-preview
   - description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
@@ -1834,7 +1834,7 @@ script:
       type: String
   - name: jira-reset-timezone-cache
     description: Clears the cached Jira user timezone used for fetching incidents and mirroring from the internal cache. Use if the timezone settings tied to the chosen authentication method were changed.
-  dockerimage: demisto/btfl-soup:1.0.1.4649489
+  dockerimage: demisto/btfl-soup:1.0.1.5185022
   isfetch: true
   ismappable: true
   isremotesyncin: true

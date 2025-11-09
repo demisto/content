@@ -335,6 +335,7 @@ class Client(BaseClient):
         jwt_token = self.retrieve_access_token(username, password)
         self._headers = {}
         self._headers["Authorization"] = f"AR-JWT {jwt_token}"
+        add_sensitive_log_strs(jwt_token)
 
     def retrieve_access_token(self, username: str, password: str) -> str:
         """
@@ -665,7 +666,9 @@ class Client(BaseClient):
                 "First_Name": first_name,
                 "Last_Name": last_name,
                 "Description": summary,
-                "Detailed_Decription": details,
+                # Note that when creating a new incident using the bmc-itsm-incident-create command,
+                # the details field is called "Detailed_Decription" with an underscore.
+                "Detailed Decription": details,
                 "Company": company,
                 "Urgency": urgency,
                 "Impact": impact,
@@ -1990,7 +1993,7 @@ def incident_update_command(client: Client, args: Dict[str, Any]) -> CommandResu
     last_name = args.get("last_name")
     service_type = args.get("service_type")
     reported_source = args.get("reported_source")
-    details = args.get("details")
+    details = args.get("detailed_description")
     company = args.get("location_company")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_company = args.get("assigned_support_company")

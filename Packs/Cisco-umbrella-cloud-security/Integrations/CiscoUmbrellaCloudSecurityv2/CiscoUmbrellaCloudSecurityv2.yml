@@ -1,7 +1,7 @@
 commonfields:
   id: Cisco Umbrella Cloud Security v2
   version: -1
-sectionOrder:
+sectionorder:
   - Connect
 name: Cisco Umbrella Cloud Security v2
 display: Cisco Umbrella Cloud Security v2

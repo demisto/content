@@ -6595,58 +6595,91 @@ def panorama_check_latest_dynamic_update_command(args: dict):
     outdated_item_count = 0
     outputs = {}
 
+    if not VSYS and not target:
+        # When the VSYS param is not set it meams that this is a panorama instance -> user must specify a target FW
+        raise DemistoException(
+            f"When running from a Panorama instance, you must specify the target argument. "
+            f"Set target to the serial number of the Panorama-managed firewall you want to check updates for."
+        )
+
     for update_type in DynamicUpdateType:
         # Call firewall API to check for the latest available update of each type
-        result = panorama_check_latest_dynamic_update_content(update_type, target)
+        try:
+            result = panorama_check_latest_dynamic_update_content(update_type, target)
 
-        if "result" in result["response"] and result["response"]["@status"] == "success":
-            versions = result["response"]["result"]["content-updates"]["entry"]
+            if "result" in result["response"] and result["response"]["@status"] == "success":
+                versions = result.get("response", {}).get("result", {}).get("content-updates", {}).get("entry", [])
+                if not versions:  # firewall probably doesn't have app/threat or Antivirus or WildFire or GP installed
+                    demisto.debug(f"No available updates (Firewall probably doesn't have any {update_type.value} installed).")
 
-            # Ensure versions is a list even if there's only one entry
-            if not isinstance(versions, list):
-                versions = [versions]
+                # Ensure versions is a list even if there's only one entry
+                if not isinstance(versions, list):
+                    versions = [versions]
 
-            latest_version = {}
-            current_version = {}
-            latest_version_parts = (0, 0)
+                latest_version = {}
+                current_version = {}
+                latest_version_parts = (0, 0)
 
-            # Identify the latest available version and what is currently installed
-            for entry in versions:
-                # Find current version
-                if entry.get("current") == "yes" or entry.get("installing") == "yes":
-                    current_version = entry
+                # Identify the latest available version and what is currently installed
+                for entry in versions:
+                    # Find current version
+                    if entry.get("current") == "yes" or entry.get("installing") == "yes":
+                        current_version = entry
 
-                # Parse version parts as integers for proper comparison
-                version_str = entry.get("version", "")
-                if "-" in version_str:
-                    major, minor = version_str.split("-")
-                    version_parts = (int(major), int(minor))
+                    # Parse version parts as integers for proper comparison
+                    version_str = entry.get("version", "")
+                    if "-" in version_str:
+                        major, minor = version_str.split("-")
+                        version_parts = (int(major), int(minor))
 
-                    # Check if this is the latest version
-                    if version_parts > latest_version_parts:
-                        latest_version_parts = version_parts
-                        latest_version = entry
+                        # Check if this is the latest version
+                        if version_parts > latest_version_parts:
+                            latest_version_parts = version_parts
+                            latest_version = entry
 
-            # Check if currently installed is the most recent available
-            is_up_to_date = current_version.get("version") == latest_version.get("version")
+                # Check if currently installed is the most recent available
+                is_up_to_date = False
+                if current_version and latest_version:
+                    is_up_to_date = current_version.get("version") == latest_version.get("version")
 
-            context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
+                context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
 
-            if not is_up_to_date:
-                outdated_item_count += 1
+                if not is_up_to_date:
+                    outdated_item_count += 1
 
-            # Add both latest and current versions to the output
-            outputs[context_prefix] = {
-                "LatestAvailable": latest_version,
-                "CurrentlyInstalled": current_version,
-                "IsUpToDate": is_up_to_date,
-            }
-        else:
-            # Raise error if API call failed
-            raise DemistoException(
-                f"Failed to retrieve dynamic update information for {update_type.value}.\nAPI response:\n"
-                f"{result['response']['msg']}"
-            )
+                # Add both latest and current versions to the output
+                outputs[context_prefix] = {
+                    "LatestAvailable": latest_version,
+                    "CurrentlyInstalled": current_version,
+                    "IsUpToDate": is_up_to_date,
+                }
+            else:
+                # Raise error if API call failed
+                raise DemistoException(
+                    f"Failed to retrieve dynamic update information for {update_type.value}.\nAPI response:\n"
+                    f"{result['response']['msg']}"
+                )
+        except Exception as e:
+            if "There is no Global Protext Gateway license on the box" in str(e):
+                outputs["GP"] = {
+                    "LatestAvailable": {
+                        "version": "An Error received from Panorama API: 'There is no Global Protect Gateway license on the box.'"
+                    },
+                    "CurrentlyInstalled": {},
+                    "IsUpToDate": False,
+                }
+                continue
+            elif "There is not wildfire license on the box" in str(e):
+                outputs["WILDFIRE"] = {
+                    "LatestAvailable": {
+                        "version": "An Error received from Panorama API: 'There is not wildfire license on the box.'"
+                    },
+                    "CurrentlyInstalled": {},
+                    "IsUpToDate": False,
+                }
+                continue
+            else:
+                raise e
 
     outputs["ContentTypesOutOfDate"] = {"Count": outdated_item_count}
 
@@ -6661,8 +6694,8 @@ def panorama_check_latest_dynamic_update_command(args: dict):
             {
                 "Update Type": update_type,
                 "Is Up To Date": "True" if data["IsUpToDate"] else "False",
-                "Latest Available Version": data["LatestAvailable"].get("version", "N/A"),  # type: ignore[union-attr]
-                "Currently Installed Version": data["CurrentlyInstalled"].get("version", "N/A"),  # type: ignore[union-attr]
+                "Latest Available Version": data["LatestAvailable"].get("version", "N/A"),  # type: ignore[attr-defined]
+                "Currently Installed Version": data["CurrentlyInstalled"].get("version", "N/A"),  # type: ignore[attr-defined]
             }
         )
 
@@ -15757,7 +15790,7 @@ def add_time_filter_to_query_parameter(query: str, last_fetch: datetime, time_ke
     Returns:
         str: a string representing a query with added time filter parameter
     """
-    return f"{query} and ({time_key} geq '{last_fetch.strftime(QUERY_DATE_FORMAT)}')"
+    return f"({query}) and ({time_key} geq '{last_fetch.strftime(QUERY_DATE_FORMAT)}')"
 
 
 def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[str, str]:
