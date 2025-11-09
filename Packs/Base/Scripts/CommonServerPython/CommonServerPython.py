@@ -627,7 +627,6 @@ class FeedIndicatorType(object):
     Location = "Location"
     Software = "Software"
     X509 = "X509 Certificate"
-    String = "String"
 
     @staticmethod
     def is_valid_type(_type):
@@ -653,7 +652,6 @@ class FeedIndicatorType(object):
             FeedIndicatorType.Location,
             FeedIndicatorType.Software,
             FeedIndicatorType.X509,
-            FeedIndicatorType.String,
         )
 
     @staticmethod
