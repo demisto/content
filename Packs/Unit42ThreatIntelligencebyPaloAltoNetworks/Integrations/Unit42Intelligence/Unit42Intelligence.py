@@ -83,6 +83,7 @@ def unit42_error_handler(res: requests.Response):
 
     return_error(error_msg)
 
+
 #### CLIENT CLASS ####
 
 

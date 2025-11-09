@@ -7,6 +7,7 @@ from Unit42Feed import (
     create_location_indicators_and_relationships,
     build_threat_object_description,
     test_module as unit42_test_module,
+    unit42_error_handler,
     main,
     INDICATOR_TYPE_MAPPING,
     VERDICT_TO_SCORE,
@@ -14,6 +15,8 @@ from Unit42Feed import (
     DATE_FORMAT,
     API_LIMIT,
     INTEGRATION_NAME,
+    RETRY_COUNT,
+    STATUS_CODES_TO_RETRY,
 )
 from CommonServerPython import *
 
@@ -84,6 +87,9 @@ def test_client_get_indicators(client, mocker):
     mock_http_request.assert_called_once_with(
         method="GET",
         url_suffix="/api/v1/feeds/indicators",
+        error_handler=unit42_error_handler,
+        retries=RETRY_COUNT,
+        status_list_to_retry=STATUS_CODES_TO_RETRY,
         params={
             "indicator_types": ["ip", "domain"],
             "limit": 100,
@@ -109,7 +115,12 @@ def test_client_get_indicators_file_type_mapping(client, mocker):
     client.get_indicators(indicator_types=["file"])
 
     mock_http_request.assert_called_once_with(
-        method="GET", url_suffix="/api/v1/feeds/indicators", params={"indicator_types": ["filehash_sha256"], "limit": 5000}
+        method="GET",
+        url_suffix="/api/v1/feeds/indicators",
+        error_handler=unit42_error_handler,
+        retries=RETRY_COUNT,
+        status_list_to_retry=STATUS_CODES_TO_RETRY,
+        params={"indicator_types": ["filehash_sha256"], "limit": 5000},
     )
 
 
@@ -132,7 +143,12 @@ def test_client_get_threat_objects(client, mocker):
 
     assert result == mock_response
     mock_http_request.assert_called_once_with(
-        method="GET", url_suffix="/api/v1/feeds/threat_objects", params={"limit": 50, "page_token": "test_token"}
+        method="GET",
+        url_suffix="/api/v1/feeds/threat_objects",
+        error_handler=unit42_error_handler,
+        retries=RETRY_COUNT,
+        status_list_to_retry=STATUS_CODES_TO_RETRY,
+        params={"limit": 50, "page_token": "test_token"},
     )
 
 
