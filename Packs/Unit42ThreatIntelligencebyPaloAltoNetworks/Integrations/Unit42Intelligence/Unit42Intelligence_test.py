@@ -1472,7 +1472,7 @@ def test_unit42_error_handler_with_request_id(mocker):
     mock_response.headers = {"X-Request-ID": "test-request-id-123"}
 
     mocker.patch.object(demisto, "debug")
-    mock_return_error = mocker.patch("Unit42Feed.return_error")
+    mock_return_error = mocker.patch("Unit42Intelligence.return_error")
 
     unit42_error_handler(mock_response)
 
