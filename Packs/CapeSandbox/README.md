@@ -1,6 +1,6 @@
 # Cape Sandbox
 
-CAPE Sandbox is an Open Source software for automating analysis of suspicious files. It provides comprehensive malware analysis capabilities including behavioral analysis, memory forensics, and network traffic capture.
+CAPE Sandbox is an open-source software for automating the analysis of suspicious files. It provides comprehensive malware analysis capabilities, including behavioral analysis, memory forensics, and network traffic capture.
 
 ## What does this pack do?
 
