@@ -40,7 +40,7 @@ configuration:
     type: 8
     section: Connect
     advanced: true
-description: CAPE Sandbox is an open-source software for automating analysis of suspicious files and URLs.
+description: CAPE Sandbox is an open-source software for automating the analysis of suspicious files and URLs.
 display: Cape Sandbox
 name: CapeSandbox
 sectionorder:
