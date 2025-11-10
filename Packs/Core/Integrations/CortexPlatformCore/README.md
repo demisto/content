@@ -645,15 +645,4 @@ Creates a new AppSec policy in Cortex Platform with defined conditions, scope, a
 
 #### Context Output
 
-| **Path**                     | **Type** | **Description**                                     |
-|------------------------------|----------|-----------------------------------------------------|
-| Core.Policy.executionSummary | String   | The summary of the execution.                       | 
-| Core.Policy.id               | String   | The unique identifier of the created policy.        | 
-| Core.Policy.name             | String   | The name of the policy.                             | 
-| Core.Policy.description      | String   | The description of the policy.                      | 
-| Core.Policy.conditions       | Object   | The conditions that trigger the policy.             | 
-| Core.Policy.scope            | Object   | The scope of assets the policy applies to.          | 
-| Core.Policy.assetGroupIds    | Array    | The IDs of asset groups the policy applies to.      | 
-| Core.Policy.triggers         | Object   | The triggers and actions configured for the policy. | 
-| Core.Policy.createdAt        | Date     | The timestamp when the policy was created.          | 
-| Core.Policy.updatedAt        | Date     | The timestamp when the policy was last updated.     | 
+There is no context output for this command.

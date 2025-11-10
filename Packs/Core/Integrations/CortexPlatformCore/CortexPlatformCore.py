@@ -24,7 +24,12 @@ ASSET_FIELDS = {
 }
 
 
-WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations", "core-create-appsec-policy"]
+WEBAPP_COMMANDS = [
+    "core-get-vulnerabilities",
+    "core-search-asset-groups",
+    "core-get-issue-recommendations",
+    "core-create-appsec-policy",
+]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
@@ -868,22 +873,9 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
     payload = json.dumps(payload)
     demisto.debug(f"{payload=}")
 
-    response = client.create_policy(payload)
-    execution_summary = {"executionSummary": "Cortex XDR Policy Created Successfully"}
+    client.create_policy(payload)
 
-    readable_output = tableToMarkdown(
-        "Cortex XDR Policy Created Successfully",
-        response if isinstance(response, dict) else execution_summary["executionSummary"],
-        headers=["id", "name", "description", "createdAt"],
-        headerTransform=string_to_table_header,
-    )
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Policy",
-        outputs_key_field="id",
-        outputs=response | execution_summary if isinstance(response, dict) else execution_summary,
-        raw_response=response,
-    )
+    return CommandResults(readable_output=f"AppSec policy '{policy_name}' created successfully.")
 
 
 def create_policy_get_asset_groups(client: Client, args: dict) -> list[str]:

@@ -1529,37 +1529,6 @@ script:
             - High
             - Medium
             - Low
-      outputs:
-        - contextPath: Core.Policy.executionSummary
-          description: The summary of the execution.
-          type: String
-        - contextPath: Core.Policy.id
-          description: The unique identifier of the created policy.
-          type: String
-        - contextPath: Core.Policy.name
-          description: The name of the policy.
-          type: String
-        - contextPath: Core.Policy.description
-          description: The description of the policy.
-          type: String
-        - contextPath: Core.Policy.conditions
-          description: The conditions that trigger the policy.
-          type: Object
-        - contextPath: Core.Policy.scope
-          description: The scope of assets the policy applies to.
-          type: Object
-        - contextPath: Core.Policy.assetGroupIds
-          description: The IDs of asset groups the policy applies to.
-          type: Array
-        - contextPath: Core.Policy.triggers
-          description: The triggers and actions configured for the policy.
-          type: Object
-        - contextPath: Core.Policy.createdAt
-          description: The timestamp when the policy was created.
-          type: Date
-        - contextPath: Core.Policy.updatedAt
-          description: The timestamp when the policy was last updated.
-          type: Date
   runonce: false
   script: "-"
   subtype: python3
