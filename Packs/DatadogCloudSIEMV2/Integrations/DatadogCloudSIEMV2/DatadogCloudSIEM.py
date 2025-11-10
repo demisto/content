@@ -93,6 +93,7 @@ SECURITY_FILTER_CONTEXT_NAME = f"{INTEGRATION_CONTEXT_NAME}.SecurityFilter"
 SECURITY_SUPPRESSION_CONTEXT_NAME = f"{INTEGRATION_CONTEXT_NAME}.SecuritySuppression"
 SECURITY_NOTIFICATION_RULE_CONTEXT_NAME = f"{INTEGRATION_CONTEXT_NAME}.SecurityNotificationRule"
 SECURITY_INVESTIGATION_CONTEXT_NAME = f"{INTEGRATION_CONTEXT_NAME}.SecurityInvestigation"
+SECURITY_RISK_INSIGHTS_CONTEXT_NAME = f"{INTEGRATION_CONTEXT_NAME}.SecurityRiskInsights"
 LOG_CONTEXT_NAME = f"{INTEGRATION_CONTEXT_NAME}.Log"
 NO_RESULTS_FROM_API_MSG = "API didn't return any results for given search parameters."
 ERROR_MSG = "Something went wrong!\n"
@@ -579,7 +580,6 @@ class Log:
             "raw": self.raw,
         }
 
-        # Remove None values recursively
         return remove_none_values(result)
 
 
@@ -683,7 +683,111 @@ class SecuritySignal:
                     "handle": self.triage.assignee.handle,
                 }
 
-        # Remove None values recursively
+        return remove_none_values(result)
+
+
+@dataclass
+class ConfigRisks:
+    has_misconfiguration: bool
+    has_identity_risk: bool
+    is_publicly_accessible: bool
+    is_production: bool
+    has_privileged_role: bool
+    is_privileged: bool
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "hasMisconfiguration": self.has_misconfiguration,
+            "hasIdentityRisk": self.has_identity_risk,
+            "isPubliclyAccessible": self.is_publicly_accessible,
+            "isProduction": self.is_production,
+            "hasPrivilegedRole": self.has_privileged_role,
+            "isPrivileged": self.is_privileged,
+        }
+
+
+@dataclass
+class EntityMetadata:
+    sources: list[str]
+    environments: list[str]
+    services: list[str]
+    mitre_tactics: list[str]
+    mitre_techniques: list[str]
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "sources": self.sources,
+            "environments": self.environments,
+            "services": self.services,
+            "mitreTactics": self.mitre_tactics,
+            "mitreTechniques": self.mitre_techniques,
+        }
+
+
+@dataclass
+class SecurityRiskInsight:
+    id: str
+    type: str
+    entity_name: str
+    entity_providers: list[str]
+    entity_roles: list[str]
+    entity_type: str
+    first_detected: datetime
+    last_detected: datetime
+    risk_score: int
+    risk_score_evolution: int
+    severity: str
+    signals_detected: int
+    config_risks: ConfigRisks
+    entity_metadata: EntityMetadata
+
+    # Raw risk insight data
+    raw: dict[str, Any]
+
+    def to_display_dict(self) -> dict[str, Any]:
+        """
+        Convert a SecurityRiskInsight to a dictionary optimized for human-readable display.
+
+        Returns:
+            Dict[str, Any]: Dictionary with display-friendly field names and values.
+        """
+        return {
+            "Entity Name": self.entity_name,
+            "Entity Type": self.entity_type,
+            "Risk Score": self.risk_score,
+            "Risk Evolution": self.risk_score_evolution,
+            "Severity": self.severity,
+            "Signals Detected": self.signals_detected,
+            "Providers": ", ".join(self.entity_providers) if self.entity_providers else None,
+            "First Detected": self.first_detected.isoformat() if self.first_detected else None,
+            "Last Detected": self.last_detected.isoformat() if self.last_detected else None,
+        }
+
+    def to_dict(self) -> dict[str, Any]:
+        """
+        Convert a SecurityRiskInsight to a plain dictionary for XSOAR context output.
+
+        Returns:
+            Dict[str, Any]: Dictionary for context output.
+        """
+        result = {
+            "id": self.id,
+            "type": self.type,
+            "entityName": self.entity_name,
+            "entityProviders": self.entity_providers,
+            "entityRoles": self.entity_roles,
+            "entityType": self.entity_type,
+            "firstDetected": int(self.first_detected.timestamp()),
+            "lastDetected": int(self.last_detected.timestamp()),
+            "riskScore": self.risk_score,
+            "riskScoreEvolution": self.risk_score_evolution,
+            "severity": self.severity,
+            "signalsDetected": self.signals_detected,
+            "configRisks": self.config_risks.to_dict(),
+            "entityMetadata": self.entity_metadata.to_dict(),
+            "raw": self.raw,
+        }
+
         return remove_none_values(result)
 
 
@@ -1286,6 +1390,65 @@ def parse_security_notification_rule(data: dict[str, Any]) -> SecurityNotificati
         selectors=selectors,
         time_aggregation=attrs.get("time_aggregation", 0),
         version=attrs.get("version", 0),
+        raw=data,
+    )
+
+
+def parse_security_risk_insight(data: dict[str, Any]) -> SecurityRiskInsight:
+    """
+    Parse raw security risk insight data from the Datadog API into a structured SecurityRiskInsight object.
+
+    Args:
+        data (Dict[str, Any]): Raw security risk insight data from the Datadog API response.
+                              Expected to contain 'id', 'type', and 'attributes' fields.
+
+    Returns:
+        SecurityRiskInsight: Structured dataclass containing parsed risk insight information.
+
+    Example:
+        >>> api_data = {"id": "DataDog/dd-source", "type": "SecurityEntityRiskScore", "attributes": {...}}
+        >>> risk_insight = parse_security_risk_insight(api_data)
+        >>> risk_insight.entity_name
+        "DataDog/dd-source"
+    """
+    attrs = data.get("attributes", {})
+
+    # Parse config risks
+    config_risks_data = attrs.get("configRisks", {})
+    config_risks = ConfigRisks(
+        has_misconfiguration=parse_bool(config_risks_data.get("hasMisconfiguration", False)),
+        has_identity_risk=parse_bool(config_risks_data.get("hasIdentityRisk", False)),
+        is_publicly_accessible=parse_bool(config_risks_data.get("isPubliclyAccessible", False)),
+        is_production=parse_bool(config_risks_data.get("isProduction", False)),
+        has_privileged_role=parse_bool(config_risks_data.get("hasPrivilegedRole", False)),
+        is_privileged=parse_bool(config_risks_data.get("isPrivileged", False)),
+    )
+
+    # Parse entity metadata
+    entity_metadata_data = attrs.get("entityMetadata", {})
+    entity_metadata = EntityMetadata(
+        sources=entity_metadata_data.get("sources", []),
+        environments=entity_metadata_data.get("environments", []),
+        services=entity_metadata_data.get("services", []),
+        mitre_tactics=entity_metadata_data.get("mitreTactics", []),
+        mitre_techniques=entity_metadata_data.get("mitreTechniques", []),
+    )
+
+    return SecurityRiskInsight(
+        id=data.get("id", ""),
+        type=data.get("type", ""),
+        entity_name=attrs.get("entityName", ""),
+        entity_providers=attrs.get("entityProviders", []),
+        entity_roles=attrs.get("entityRoles", []),
+        entity_type=attrs.get("entityType", ""),
+        first_detected=parse_timestamp(attrs.get("firstDetected")) or datetime.now(tz=timezone.utc),
+        last_detected=parse_timestamp(attrs.get("lastDetected")) or datetime.now(tz=timezone.utc),
+        risk_score=attrs.get("riskScore", 0),
+        risk_score_evolution=attrs.get("riskScoreEvolution", 0),
+        severity=attrs.get("severity", ""),
+        signals_detected=attrs.get("signalsDetected", 0),
+        config_risks=config_risks,
+        entity_metadata=entity_metadata,
         raw=data,
     )
 
@@ -2437,7 +2600,7 @@ def list_security_filter_command(
         raise DemistoException(f"Failed to get security filters: {str(e)}")
 
 
-def list_signal_notification_rule(
+def list_signal_notification_rule_command(
     configuration: Configuration,
     args: dict[str, Any],
 ) -> CommandResults:
@@ -2493,6 +2656,93 @@ def list_signal_notification_rule(
 
     except Exception as e:
         raise DemistoException(f"Failed to get signal notification rules: {str(e)}")
+
+
+def list_risk_scores_command(
+    configuration: Configuration,
+    args: dict[str, Any],
+) -> CommandResults:
+    """
+    List all security risk scores from Datadog Cloud SIEM V2.
+
+    Risk scores provide a quantitative assessment of security risks associated with
+    entities in your environment based on detected signals, misconfigurations, and
+    other security factors.
+
+    Args:
+        configuration: Datadog API configuration
+        args: Command arguments containing:
+            - query (str, optional): Filter query for risk scores
+            - sort (str, optional): Sort order (e.g., "-riskScore", "riskScore")
+            - page_size (int, optional): Number of results per page (default: 50)
+            - page_number (int, optional): Page number to retrieve (default: 1)
+
+    Returns:
+        CommandResults: XSOAR command results with list of risk insights
+
+    Raises:
+        DemistoException: If API call fails
+    """
+    try:
+        # Extract query parameters
+        query = args.get("query", "")
+        sort = args.get("sort", "-riskScore")
+        page_size = int(args.get("page_size", 50))
+        page_number = int(args.get("page_number", 1))
+
+        # Build query parameters
+        params = {
+            "filter[query]": query,
+            "filter[sort]": sort,
+            "page[size]": page_size,
+            "page[number]": page_number,
+        }
+
+        # This is not exposed by the Datadog API client, but still accessible via API tokens
+        risks_response = requests.get(
+            f"https://app.{SITE}/api/v2/security-entities/risk-scores",
+            headers={
+                "dd-api-key": configuration.api_key["apiKeyAuth"],
+                "dd-application-key": configuration.api_key["appKeyAuth"],
+            },
+            params=params,
+        )
+
+        if not risks_response.ok:
+            raise DemistoException(f"API request failed with status {risks_response.status_code}: {risks_response.text}")
+
+        risk_insights_data = risks_response.json().get("data", [])
+
+        if not risk_insights_data:
+            readable_output = "No security risk insights found."
+            return CommandResults(
+                readable_output=readable_output,
+                outputs_prefix=SECURITY_RISK_INSIGHTS_CONTEXT_NAME,
+                outputs_key_field="id",
+                outputs=[],
+            )
+
+        # Parse risk insights
+        risk_insights = []
+        display_data = []
+
+        for risk_data in risk_insights_data:
+            risk_insight = parse_security_risk_insight(risk_data)
+            risk_insights.append(risk_insight.to_dict())
+            display_data.append(risk_insight.to_display_dict())
+
+        # Create human-readable summary using the display dictionary
+        readable_output = lookup_to_markdown(display_data, f"Security Risk Insights ({len(risk_insights)} results)")
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=SECURITY_RISK_INSIGHTS_CONTEXT_NAME,
+            outputs_key_field="id",
+            outputs=risk_insights,
+        )
+
+    except Exception as e:
+        raise DemistoException(f"Failed to get risk scores: {str(e)}")
 
 
 def fetch_incidents(
@@ -2646,8 +2896,8 @@ def main() -> None:
             "datadog-logs-query": logs_query_command,
             "datadog-rule-suppression-list": suppressions_list_command,
             "datadog-security-filter-list": list_security_filter_command,
-            "datadog-signal-notification-rule-list": list_signal_notification_rule,
-            "datadog-risk-scores-list": None,  # /api/v2/security-entities/risk-scores
+            "datadog-signal-notification-rule-list": list_signal_notification_rule_command,
+            "datadog-risk-scores-list": list_risk_scores_command,
             "datadog-bitsai-get-investigation": get_security_signal_investigation_command,
         }
         if command == "test-module":

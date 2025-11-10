@@ -358,7 +358,7 @@ script:
           type: Boolean
         - contextPath: Datadog.SecurityRule.createdAt
           description: Timestamp when the rule was created.
-          type: String
+          type: Number
         - contextPath: Datadog.SecurityRule.message
           description: Message for the security rule.
           type: String
@@ -642,6 +642,94 @@ script:
         - contextPath: Datadog.SecurityInvestigation.steps.summary
           description: A summary of the findings for this investigation step.
           type: String
+    - arguments:
+        - description: Custom query string for filtering risk scores. Uses Datadog search syntax.
+          name: query
+        - description: Sort order for results. Use "-riskScore" for descending, "riskScore" for ascending. Default is "-riskScore".
+          name: sort
+          auto: PREDEFINED
+          predefined:
+            - riskScore
+            - -riskScore
+        - description: Number of results per page. Default is 50.
+          name: page_size
+        - description: Page number to retrieve. Default is 1.
+          name: page_number
+      name: datadog-risk-scores-list
+      description: List risk scores from Datadog Cloud SIEM V2. Risk scores provide a quantitative assessment of security risks associated with entities in your environment.
+      outputs:
+        - contextPath: Datadog.SecurityRiskInsights.id
+          description: The unique identifier of the entity.
+          type: String
+        - contextPath: Datadog.SecurityRiskInsights.type
+          description: The type of the entity risk score.
+          type: String
+        - contextPath: Datadog.SecurityRiskInsights.entityName
+          description: The name of the entity.
+          type: String
+        - contextPath: Datadog.SecurityRiskInsights.entityType
+          description: The type of the entity (e.g., "Code Repository", "User", "Host").
+          type: String
+        - contextPath: Datadog.SecurityRiskInsights.entityProviders
+          description: List of providers for the entity (e.g., "GitHub", "AWS").
+          type: Unknown
+        - contextPath: Datadog.SecurityRiskInsights.entityRoles
+          description: List of roles assigned to the entity.
+          type: Unknown
+        - contextPath: Datadog.SecurityRiskInsights.riskScore
+          description: The calculated risk score for the entity.
+          type: Number
+        - contextPath: Datadog.SecurityRiskInsights.riskScoreEvolution
+          description: The change in risk score over time.
+          type: Number
+        - contextPath: Datadog.SecurityRiskInsights.severity
+          description: The severity level of the risk (e.g., "critical", "high", "medium", "low").
+          type: String
+        - contextPath: Datadog.SecurityRiskInsights.signalsDetected
+          description: The number of security signals detected for this entity.
+          type: Number
+        - contextPath: Datadog.SecurityRiskInsights.firstDetected
+          description: Unix timestamp when the entity was first detected (in seconds since epoch).
+          type: Number
+        - contextPath: Datadog.SecurityRiskInsights.lastDetected
+          description: Unix timestamp when the entity was last detected (in seconds since epoch).
+          type: Number
+        - contextPath: Datadog.SecurityRiskInsights.configRisks.hasMisconfiguration
+          description: Whether the entity has a misconfiguration.
+          type: Boolean
+        - contextPath: Datadog.SecurityRiskInsights.configRisks.hasIdentityRisk
+          description: Whether the entity has identity-related risks.
+          type: Boolean
+        - contextPath: Datadog.SecurityRiskInsights.configRisks.isPubliclyAccessible
+          description: Whether the entity is publicly accessible.
+          type: Boolean
+        - contextPath: Datadog.SecurityRiskInsights.configRisks.isProduction
+          description: Whether the entity is in a production environment.
+          type: Boolean
+        - contextPath: Datadog.SecurityRiskInsights.configRisks.hasPrivilegedRole
+          description: Whether the entity has a privileged role.
+          type: Boolean
+        - contextPath: Datadog.SecurityRiskInsights.configRisks.isPrivileged
+          description: Whether the entity is privileged.
+          type: Boolean
+        - contextPath: Datadog.SecurityRiskInsights.entityMetadata.sources
+          description: List of sources associated with the entity.
+          type: Unknown
+        - contextPath: Datadog.SecurityRiskInsights.entityMetadata.environments
+          description: List of environments associated with the entity.
+          type: Unknown
+        - contextPath: Datadog.SecurityRiskInsights.entityMetadata.services
+          description: List of services associated with the entity.
+          type: Unknown
+        - contextPath: Datadog.SecurityRiskInsights.entityMetadata.mitreTactics
+          description: List of MITRE ATT&CK tactics associated with the entity.
+          type: Unknown
+        - contextPath: Datadog.SecurityRiskInsights.entityMetadata.mitreTechniques
+          description: List of MITRE ATT&CK techniques associated with the entity.
+          type: Unknown
+        - contextPath: Datadog.SecurityRiskInsights.raw
+          description: The raw risk insight object returned by the API.
+          type: Unknown
   dockerimage: demisto/datadog-api-client:1.0.0.4893383
   isfetch: true
   runonce: false
