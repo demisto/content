@@ -1361,10 +1361,7 @@ script:
         required: true
       - description: Custom title for the pull request.
         name: title
-      - description: Custom branch name for the fix.
-        name: fix_branch_name
       name: core-appsec-remediate-issue
-      polling: true
       description: Create automated pull requests to fix multiple security issues in a single bulk operation.
       outputs:
       - contextPath: Core.TriggerPR.message
