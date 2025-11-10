@@ -17,6 +17,7 @@ ANY.RUN Sandbox is an online interactive sandbox for malware analysis, a tool fo
 5. Download file submission sample, analysis network traffic dumps
 
 ## Requirements
+
 Integration is officially supported from XSOAR 8.x
 
 ## Generate API token
