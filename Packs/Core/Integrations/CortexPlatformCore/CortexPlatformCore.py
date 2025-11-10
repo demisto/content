@@ -9,9 +9,12 @@ urllib3.disable_warnings()
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 INTEGRATION_CONTEXT_BRAND = "Core"
-INTEGRATION_NAME = "Cortex Platform Core"
+INTEGRATION_NAME = "AWS"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
+
+COVERAGE_API_FIELDS_MAPPING = {"vendor_name": "asset_provider", "asset_provider": "unified_provider"}
+ASSET_COVERAGE_TABLE = "COVERAGE"
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -21,10 +24,13 @@ ASSET_FIELDS = {
     "asset_providers": "xdm.asset.provider",
     "asset_realms": "xdm.asset.realm",
     "asset_group_ids": "xdm.asset.group_ids",
+    "asset_categories": "xdm.asset.type.category",
 }
 
 
-WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations"]
+WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations", "core-get-asset-coverage",
+    "core-get-asset-coverage-histogram",]
+
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
@@ -79,6 +85,7 @@ class FilterBuilder:
         JSON_WILDCARD = ("JSON_WILDCARD", "OR")
         IS_EMPTY = ("IS_EMPTY", "OR")
         NIS_EMPTY = ("NIS_EMPTY", "AND")
+        WILDCARD = ("WILDCARD", "OR")
 
     AND = "AND"
     OR = "OR"
@@ -358,13 +365,13 @@ class Client(CoreClient):
             url_suffix="/get_data",
             json_data=request_data,
         )
-
-    def enable_scanners(self, payload: dict) -> dict:
+        
+    def enable_scanners(self, payload: dict, repository_id: str) -> dict:
         return self._http_request(
             method="PUT",
-            url_suffix="/cas/v1/repositories/scan-configuration",
+            url_suffix=f"/public_api/appsec/v1/repositories/{repository_id}/scan-configuration",
             json_data=payload,
-            headers={"Content-Type": "application/json"},
+            headers={**self._headers, "Content-Type": "application/json",},
         )
 
     def get_playbook_suggestion_by_issue(self, issue_id):
@@ -383,6 +390,13 @@ class Client(CoreClient):
         )
 
         return reply
+    
+    def get_webapp_histograms(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/get_histograms",
+            json_data=request_data,
+        )
 
 
 def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
@@ -516,15 +530,17 @@ def build_webapp_request_data(
     table_name: str,
     filter_dict: dict,
     limit: int,
-    sort_field: str,
+    sort_field: str | None,
     on_demand_fields: list | None = None,
-    sort_order: str = "DESC",
+    sort_order: str | None = "DESC",
 ) -> dict:
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
     """
+    sort = [{"FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field), "ORDER": sort_order}] if sort_field else []
+
     filter_data = {
-        "sort": [{"FIELD": sort_field, "ORDER": sort_order}],
+        "sort": sort,
         "paging": {"from": 0, "to": limit},
         "filter": filter_dict,
     }
@@ -696,6 +712,7 @@ def search_assets_command(client: Client, args):
                          - asset_realms (list[str]): List of asset realms to search for.
                          - asset_group_names (list[str]): List of asset group names to search for.
     """
+    #remove_nulls_from_dictionary(args)
     asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
     filter = FilterBuilder()
     filter.add_field(ASSET_FIELDS["asset_names"], FilterType.CONTAINS, argToList(args.get("asset_names", "")))
@@ -705,6 +722,7 @@ def search_assets_command(client: Client, args):
     filter.add_field(ASSET_FIELDS["asset_providers"], FilterType.EQ, argToList(args.get("asset_providers", "")))
     filter.add_field(ASSET_FIELDS["asset_realms"], FilterType.EQ, argToList(args.get("asset_realms", "")))
     filter.add_field(ASSET_FIELDS["asset_group_ids"], FilterType.ARRAY_CONTAINS, asset_group_ids)
+    filter.add_field(ASSET_FIELDS["asset_categories"], FilterType.EQ, argToList(args.get("asset_categories", "")))
     filter_str = filter.to_dict()
 
     demisto.debug(f"Search Assets Filter: {filter_str}")
@@ -765,7 +783,6 @@ def build_scanner_config_payload(args: dict) -> dict:
     Raises:
         ValueError: If the same scanner is specified in both enabled and disabled lists.
     """
-    repository_ids = argToList(args.get("repository_ids"))
     enabled_scanners = argToList(args.get("enabled_scanners", []))
     disabled_scanners = argToList(args.get("disabled_scanners", []))
     secret_validation = argToBoolean(args.get("secret_validation", "False"))
@@ -813,12 +830,25 @@ def build_scanner_config_payload(args: dict) -> dict:
     if exclude_paths:
         scan_configuration["excludedPaths"] = exclude_paths
 
-    scanner_configuration_payload = {"repositoryIds": repository_ids, "scanConfiguration": scan_configuration}
+    demisto.debug(f"{scan_configuration=}")
 
-    demisto.debug(f"{scanner_configuration_payload=}")
+    return scan_configuration
 
-    return scanner_configuration_payload
+def build_histogram_request_data(table_name: str, filter_dict: dict, max_values_per_column: int, columns: list) -> dict:
+    """
+    Builds the request data for the generic /api/webapp//get_histograms endpoint.
+    """
+    filter_data = {
+        "filter": filter_dict,
+    }
+    demisto.debug(f"{filter_data=}")
 
+    return {
+        "table_name": table_name,
+        "filter_data": filter_data,
+        "max_values_per_column": max_values_per_column,
+        "columns": columns,
+    }
 
 def enable_scanners_command(client: Client, args: dict):
     """
@@ -832,17 +862,17 @@ def enable_scanners_command(client: Client, args: dict):
     Returns:
         CommandResults: Command results with readable output showing update status and raw response.
     """
-    repository_ids = argToList(args.get("repository_ids"))
+    repository_ids = argToList(args.get("asset_ids"))
     payload = build_scanner_config_payload(args)
 
     # Send request to update repository scan configuration
-    response = client.enable_scanners(payload)
+    for repository_id in repository_ids:
+        client.enable_scanners(payload, repository_id)
 
     readable_output = f"Successfully updated repositories: {', '.join(repository_ids)}"
 
     return CommandResults(
         readable_output=readable_output,
-        raw_response=response,
     )
 
 
@@ -875,6 +905,90 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
 
     return group_ids
 
+def build_asset_coverage_filter(args: dict) -> FilterBuilder:
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("asset_id", FilterType.CONTAINS, argToList(args.get("asset_id")))
+    filter_builder.add_field("asset_name", FilterType.CONTAINS, argToList(args.get("asset_name")))
+    filter_builder.add_field(
+        "business_application_names", FilterType.ARRAY_CONTAINS, argToList(args.get("business_application_names"))
+    )
+    filter_builder.add_field("status_coverage", FilterType.EQ, argToList(args.get("status_coverage")))
+    filter_builder.add_field("is_scanned_by_vulnerabilities", FilterType.EQ, argToList(args.get("is_scanned_by_vulnerabilities")))
+    filter_builder.add_field("is_scanned_by_code_weakness", FilterType.EQ, argToList(args.get("is_scanned_by_code_weakness")))
+    filter_builder.add_field("is_scanned_by_secrets", FilterType.EQ, argToList(args.get("is_scanned_by_secrets")))
+    filter_builder.add_field("is_scanned_by_iac", FilterType.EQ, argToList(args.get("is_scanned_by_iac")))
+    filter_builder.add_field("is_scanned_by_malware", FilterType.EQ, argToList(args.get("is_scanned_by_malware")))
+    filter_builder.add_field("is_scanned_by_cicd", FilterType.EQ, argToList(args.get("is_scanned_by_cicd")))
+    filter_builder.add_field("last_scan_status", FilterType.EQ, argToList(args.get("last_scan_status")))
+    filter_builder.add_field("asset_type", FilterType.EQ, argToList(args.get("asset_type")))
+    filter_builder.add_field("unified_provider", FilterType.EQ, argToList(args.get("asset_provider")))
+    filter_builder.add_field("asset_provider", FilterType.EQ, argToList(args.get("vendor_name")))
+
+    return filter_builder
+
+
+def get_asset_coverage_command(client: Client, args: dict):
+    """
+    Retrieves ASPM assets coverage using the generic /api/webapp/get_data endpoint.
+    """
+    #remove_nulls_from_dictionary(args)
+    request_data = build_webapp_request_data(
+        table_name=ASSET_COVERAGE_TABLE,
+        filter_dict=build_asset_coverage_filter(args).to_dict(),
+        limit=arg_to_number(args.get("limit")) or 100,
+        sort_field=args.get("sort_field"),
+        sort_order=args.get("sort_order"),
+    )
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    readable_output = tableToMarkdown("ASPM Coverage", data, headerTransform=string_to_table_header, sort_headers=False)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Asset",
+        outputs_key_field="asset_id",
+        outputs=data,
+        raw_response=response,
+    )
+
+
+def get_asset_coverage_histogram_command(client: Client, args: dict):
+    """
+    Retrieves ASPM assets coverage histogrm using the generic /api/webapp/get_histograms endpoint.
+    """
+    #remove_nulls_from_dictionary(args)
+    columns = argToList(args.get("columns"))
+    columns = [COVERAGE_API_FIELDS_MAPPING.get(col, col) for col in columns]
+    if not columns:
+        raise ValueError("Please provide column value to create the histogram.")
+    request_data = build_histogram_request_data(
+        table_name=ASSET_COVERAGE_TABLE,
+        filter_dict=build_asset_coverage_filter(args).to_dict(),
+        columns=columns,
+        max_values_per_column=arg_to_number(args.get("max_values_per_column")) or 100,
+    )
+
+    response = client.get_webapp_histograms(request_data)
+    reply = response.get("reply", {})
+    outputs = [{"column_name": column_name, "data": data} for column_name, data in reply.items()]
+
+    readable_output = "\n".join(
+        tableToMarkdown(
+            f"ASPM Coverage {output['column_name']} Histogram",
+            output["data"],
+            headerTransform=string_to_table_header,
+            sort_headers=False,
+        )
+        for output in outputs
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Histogram",
+        outputs=outputs,
+        raw_response=response,
+    )
 
 def main():  # pragma: no cover
     """
@@ -883,6 +997,7 @@ def main():  # pragma: no cover
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     args = demisto.args()
+    print(f"{args=}")
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
     headers: dict = {}
@@ -892,6 +1007,7 @@ def main():  # pragma: no cover
     data_platform_api_url = f"{webapp_api_url}/data-platform"
 
     proxy = demisto.params().get("proxy", False)
+    print(f"{demisto.params()=}")
     verify_cert = not demisto.params().get("insecure", False)
 
     try:
@@ -955,8 +1071,13 @@ def main():  # pragma: no cover
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
         elif command == "core-enable-scanners":
-            client._base_url = "/api"
+            client._base_url = "/api/webapp"
             return_results(enable_scanners_command(client, args))
+        elif command == "core-get-asset-coverage":
+            return_results(get_asset_coverage_command(client, args))
+
+        elif command == "core-get-asset-coverage-histogram":
+            return_results(get_asset_coverage_histogram_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
