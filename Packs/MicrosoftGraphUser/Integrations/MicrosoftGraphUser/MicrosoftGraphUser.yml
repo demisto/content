@@ -172,7 +172,7 @@ script:
       name: user
       prettyname: User
       prettypredefined:
-        User UPN: ${original_alert_json.raw_abioc.event.auth_normalized_user.upn}
+        User UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
       required: true
     description: |-
       Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables the user 
@@ -244,7 +244,7 @@ script:
     - description: User ID or userPrincipalName to update properties for.
       prettyname: User
       prettypredefined:
-        User UPN: ${original_alert_json.raw_abioc.event.auth_normalized_user.upn}
+        User UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
       name: user
       required: true
     description: |-
@@ -694,7 +694,7 @@ script:
     - description: User ID or userPrincipalName.
       prettyname: User
       prettypredefined:
-        User UPN: ${original_alert_json.raw_abioc.event.auth_normalized_user.upn}
+        User UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
       name: user
       required: true
     description: |-

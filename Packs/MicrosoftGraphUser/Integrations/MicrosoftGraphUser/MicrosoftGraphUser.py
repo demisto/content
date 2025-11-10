@@ -162,6 +162,10 @@ class MsGraphClient:
             body[field] = value
         self.ms_client.http_request(method="PATCH", url_suffix=f"users/{quote(user)}", json_data=body, resp_type="text")
 
+    def force_reset_password(self, user):
+        body = {"passwordProfile": {"forceChangePasswordNextSignIn": True}}
+        self.ms_client.http_request(method="PATCH", url_suffix=f"users/{quote(user)}", json_data=body, resp_type="text")
+
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
     def password_change_user_saas(
@@ -459,17 +463,9 @@ def change_password_user_saas_command(client: MsGraphClient, args: dict):
 
 
 def force_reset_password(client: MsGraphClient, args: dict):
-    chars = string.ascii_letters + string.digits + string.punctuation
-    temp_password = "".join(secrets.choice(chars) for _ in range(TEMP_PASSWORD_LENGTH))
-    args = {**args, "password": temp_password, "force_change_password_next_sign_in": "true"}
-
-    command_results = change_password_user_saas_command(client, args)
-    human_readable = (
-        f"User {args['user']} will be required to change his password. "
-        f"To do so, they can use the temporary password {temp_password}."
-    )
-    command_results.readable_output = human_readable
-    return command_results
+    user = args.get("user")
+    client.force_reset_password(user)
+    return CommandResults(readable_output=f"User {args['user']} will be required to change his password.")
 
 
 def validate_input_password(args: dict[str, Any]) -> str:
@@ -836,6 +832,7 @@ def main():
         "msgraph-user-unblock": unblock_user_command,
         "msgraph-user-terminate-session": disable_user_account_command,
         "msgraph-user-account-disable": disable_user_account_command,
+        "msgraph-user-account-disable-quick-action": disable_user_account_command,
         "msgraph-user-update": update_user_command,
         "msgraph-user-update-quick-action": force_reset_password,
         "msgraph-user-change-password": change_password_user_saas_command,
@@ -849,6 +846,7 @@ def main():
         "msgraph-user-get-manager": get_manager_command,
         "msgraph-user-assign-manager": assign_manager_command,
         "msgraph-user-session-revoke": revoke_user_session_command,
+        "msgraph-user-session-revoke-quick-action": revoke_user_session_command,
         "msgraph-user-tap-policy-list": list_tap_policy_command,
         "msgraph-user-tap-policy-create": create_tap_policy_command,
         "msgraph-user-tap-policy-delete": delete_tap_policy_command,
