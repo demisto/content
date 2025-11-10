@@ -3730,7 +3730,7 @@ script:
     description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
     outputs:
     - contextPath: PaloAltoNetworksXDR.RiskyHost.subtype
-      description: Form of identification element.
+      description: the subtype of the risky host.
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyHost.type
       description: Form of identification element.
