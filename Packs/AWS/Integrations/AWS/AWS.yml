@@ -1127,7 +1127,7 @@ script:
 
   - name: aws-eks-disable-public-access-quick-action
     description: Disables public access to the EKS cluster's API endpoint, making it only accessible from within the cluster's VPC.
-    prettyname: Set EKS cluster to Private / Disable Public Access
+    prettyname: Set EKS Cluster to Private
     hidden: true
     quickaction: true
     arguments:
