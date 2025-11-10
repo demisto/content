@@ -8,7 +8,7 @@ This pack includes the Cape Sandbox integration that enables you to:
 
 ### Cape Sandbox Integration
 
-- **Submit files for analysis** - Upload suspicious files to CAPE Sandbox for automated malware analysis with support for PCAP files.
+- **Submit files for analysis** - Upload suspicious files to CAPE Sandbox for automated malware analysis, including support for PCAP files.
 - **Submit URLs for analysis** - Analyze potentially malicious URLs in a controlled sandbox environment.
 - **Retrieve analysis reports** - Get detailed analysis reports in multiple formats (JSON, MAEC, metadata, lite).
 - **Download artifacts** - Download samples, PCAP files, and screenshots from completed analyses.
