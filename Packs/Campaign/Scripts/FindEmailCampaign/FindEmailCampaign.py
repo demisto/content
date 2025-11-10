@@ -338,7 +338,7 @@ INCIDENTS_CONTEXT_TD = "incidents(obj.id == val.id)"
 
 
 def return_outputs_custom(readable_output, outputs=None, tag=None):
-    demisto.debug(f"Entering return_outputs_custom with tag: {tag}")
+    demisto.debug(f"Entering return_outputs_custom with {tag=}")
     return_entry = {
         "Type": entryTypes["note"],
         "HumanReadable": readable_output,
