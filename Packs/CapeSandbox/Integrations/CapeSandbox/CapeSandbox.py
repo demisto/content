@@ -132,8 +132,7 @@ def extract_entry_file_data(entry_id: str) -> tuple[str, str]:
             raise ValueError("Entry is not a valid file entry.")
 
     except ValueError as error:
-        demisto.debug(f"Error fetching file path for {entry_id!r}", error)
-        raise DemistoException(f"Could not find file or entry: {entry_id!r}")
+        raise DemistoException(f"Could not find file or entry: {entry_id!r}", error)
 
     except Exception as error:
         raise DemistoException(f"An unexpected error occurred while processing entry {entry_id!r}", error)
