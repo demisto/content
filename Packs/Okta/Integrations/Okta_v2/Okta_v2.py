@@ -253,7 +253,7 @@ class Client(OktaClient):
             if response.get("factorResult") != "WAITING":
                 return response
             counter += 1
-            time.sleep(polling_time) # noqa: E9003
+            time.sleep(polling_time)  # noqa: E9003
         response["factorResult"] = "TIMEOUT"
         return response
 
