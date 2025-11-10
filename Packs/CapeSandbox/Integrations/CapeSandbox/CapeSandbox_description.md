@@ -38,7 +38,7 @@ CAPE Sandbox supports two authentication methods:
 
 ### Testing the Connection
 
-After configuration, use the **Test** button in XSOAR to verify:
+After configuration, use the **Test** button in XSOAR/XSIAM to verify:
 
 - Server URL is accessible
 - Authentication credentials are valid
