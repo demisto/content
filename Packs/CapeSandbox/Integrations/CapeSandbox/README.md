@@ -118,7 +118,7 @@ There is no context output for this command. The command directly downloads the 
 ***
 Submit a URL for analysis to CAPE Sandbox. The command polls the CAPE server until the analysis task is reported as complete, and then returns the task view with the analysis results.
 
-**Note:** Analysis scans may take a long time to complete and could cause a timeout. If a timeout occurs, you can use the `!cape-tasks-list task_id=<task_id>` command to check the status of your task.
+**Note:** Analysis scans may take a long time to complete and could cause a timeout. If a timeout occurs, use the `!cape-tasks-list task_id=<task_id>` command to check the status of your task.
 
 #### Base Command
 
