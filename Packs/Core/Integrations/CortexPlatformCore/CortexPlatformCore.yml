@@ -1356,8 +1356,8 @@ script:
           description: The ID of the suggestion rule that generated this recommendation.
           type: String
     - arguments:
-        - description: List of repository IDs to configure scanners for.
-          name: repository_ids
+        - description: List of repository asset IDs to configure scanners for.
+          name: asset_ids
           isArray: true
           required: true
         - auto: PREDEFINED

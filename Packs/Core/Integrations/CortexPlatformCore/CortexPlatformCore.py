@@ -21,6 +21,7 @@ ASSET_FIELDS = {
     "asset_providers": "xdm.asset.provider",
     "asset_realms": "xdm.asset.realm",
     "asset_group_ids": "xdm.asset.group_ids",
+    "asset_categories": "xdm.asset.type.category",
 }
 
 
@@ -708,6 +709,7 @@ def search_assets_command(client: Client, args):
     filter.add_field(ASSET_FIELDS["asset_providers"], FilterType.EQ, argToList(args.get("asset_providers", "")))
     filter.add_field(ASSET_FIELDS["asset_realms"], FilterType.EQ, argToList(args.get("asset_realms", "")))
     filter.add_field(ASSET_FIELDS["asset_group_ids"], FilterType.ARRAY_CONTAINS, asset_group_ids)
+    filter.add_field(ASSET_FIELDS["asset_categories"], FilterType.EQ, argToList(args.get("asset_categories", "")))
     filter_str = filter.to_dict()
 
     demisto.debug(f"Search Assets Filter: {filter_str}")
@@ -768,7 +770,6 @@ def build_scanner_config_payload(args: dict) -> dict:
     Raises:
         ValueError: If the same scanner is specified in both enabled and disabled lists.
     """
-    repository_ids = argToList(args.get("repository_ids"))
     enabled_scanners = argToList(args.get("enabled_scanners", []))
     disabled_scanners = argToList(args.get("disabled_scanners", []))
     secret_validation = argToBoolean(args.get("secret_validation", "False"))
@@ -816,11 +817,9 @@ def build_scanner_config_payload(args: dict) -> dict:
     if exclude_paths:
         scan_configuration["excludedPaths"] = exclude_paths
 
-    scanner_configuration_payload = {"repositoryIds": repository_ids, "scanConfiguration": scan_configuration}
+    demisto.debug(f"{scan_configuration=}")
 
-    demisto.debug(f"{scanner_configuration_payload=}")
-
-    return scanner_configuration_payload
+    return scan_configuration
 
 
 def enable_scanners_command(client: Client, args: dict):
@@ -835,7 +834,7 @@ def enable_scanners_command(client: Client, args: dict):
     Returns:
         CommandResults: Command results with readable output showing update status and raw response.
     """
-    repository_ids = argToList(args.get("repository_ids"))
+    repository_ids = argToList(args.get("asset_ids"))
     payload = build_scanner_config_payload(args)
 
     # Send request to update repository scan configuration

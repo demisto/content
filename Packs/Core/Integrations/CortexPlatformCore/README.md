@@ -606,7 +606,7 @@ Enable or disable scanners with the specified configuration.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| repository_ids | List of repository IDs to configure scanners for. | Required |
+| asset_ids | List of repository asset IDs to configure scanners for. | Required |
 | enabled_scanners | List of scanners to enable. Possible values are: SECRETS, IAC, SCA. | Optional |
 | disabled_scanners | List of scanners to disable. Possible values are: SECRETS, IAC, SCA. | Optional |
 | secret_validation | Enable live validation of discovered secrets. Possible values are: true, false. | Optional |
