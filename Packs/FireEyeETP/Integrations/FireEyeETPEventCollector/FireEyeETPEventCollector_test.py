@@ -427,42 +427,72 @@ def test_client_get_activity_log(mocker):
 
 
 @pytest.mark.parametrize(
-    "client_id, client_secret, api_key, scopes, expected_result, expected_exception",
+    "client_id, client_secret, api_key, scopes, expected_exception",
     [
         # Case 1: SUCCESS - Full OAuth2 configuration
-        ("id", "secret", "", "scope", "oauth2", None),
+        ("id", "secret", "", "scope", None),
         # Case 2: SUCCESS - API Key configuration
-        ("", "", "key", "", "api_key", None),
+        ("", "", "key", "", None),
         # Case 3: FAILURE - Ambiguous Over-Configuration (OAuth2 + API Key)
-        ("id", "secret", "key", "scope", None, r"Both OAuth2 \(Client ID/Secret\) and API Key were provided\..*"),
+        ("id", "secret", "key", "scope", r"Both OAuth2 \(Client ID/Secret\) and API Key were provided\..*"),
         # Case 4: FAILURE - Incomplete OAuth2 (Missing Scopes)
-        ("id", "secret", "", "", None, r".*'OAuth Scopes' parameter is missing\..*"),
+        ("id", "secret", "", "", r".*'OAuth Scopes' parameter is missing\..*"),
         # Case 5: FAILURE - Incomplete OAuth2 (Missing Secret)
-        ("id", "", "", "scope", None, r"Client ID provided but Client Secret is missing\..*"),
+        ("id", "", "", "scope", r"Client ID provided but Client Secret is missing\..*"),
         # Case 6: FAILURE - Incomplete OAuth2 (Missing ID)
-        ("", "secret", "", "scope", None, r"Client Secret provided but Client ID is missing\..*"),
+        ("", "secret", "", "scope", r"Client Secret provided but Client ID is missing\..*"),
         # Case 7: FAILURE - No credentials provided
-        ("", "", "", "", None, r"No authentication credentials provided\."),
+        ("", "", "", "", r"No authentication credentials provided\."),
     ],
 )
-def test_validate_authentication_params_parametrized(
-    client_id, client_secret, api_key, scopes, expected_result, expected_exception, mocker
-):
+def test_validate_authentication_params(client_id, client_secret, api_key, scopes, expected_exception):
     """
     Given:
         - A set of authentication parameters (client ID, client secret, API key, scopes).
     When:
         - Calling the validate_authentication_params function.
     Then:
-        - Ensure the function returns the expected authentication method ('oauth2' or 'api_key'),
+        - Ensure the function validates successfully (returns None) for valid configurations,
           OR
         - Ensure the function raises the expected ValueError for invalid or over-configured parameters.
     """
-
     from FireEyeETPEventCollector import validate_authentication_params
 
     if expected_exception:
         with pytest.raises(ValueError, match=expected_exception):
             validate_authentication_params(client_id, client_secret, api_key, scopes)
     else:
-        assert validate_authentication_params(client_id, client_secret, api_key, scopes) == expected_result
+        # Should not raise an exception and returns None
+        result = validate_authentication_params(client_id, client_secret, api_key, scopes)
+        assert result is None
+
+
+@pytest.mark.parametrize(
+    "client_id, client_secret, api_key, expected_result, expected_exception",
+    [
+        # Case 1: SUCCESS - OAuth2 configuration
+        ("id", "secret", "", "oauth2", None),
+        # Case 2: SUCCESS - API Key configuration
+        ("", "", "key", "api_key", None),
+        # Case 3: FAILURE - No credentials provided
+        ("", "", "", None, r"No authentication credentials provided\."),
+    ],
+)
+def test_get_authentication_method(client_id, client_secret, api_key, expected_result, expected_exception):
+    """
+    Given:
+        - A set of authentication credentials (client ID, client secret, API key).
+    When:
+        - Calling the get_authentication_method function.
+    Then:
+        - Ensure the function returns the expected authentication method ('oauth2' or 'api_key'),
+          OR
+        - Ensure the function raises ValueError when no credentials are provided.
+    """
+    from FireEyeETPEventCollector import get_authentication_method
+
+    if expected_exception:
+        with pytest.raises(ValueError, match=expected_exception):
+            get_authentication_method(client_id, client_secret, api_key)
+    else:
+        assert get_authentication_method(client_id, client_secret, api_key) == expected_result

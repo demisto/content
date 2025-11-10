@@ -86,15 +86,14 @@ class Client(BaseClient):  # pragma: no cover
         # Set up headers based on authentication method
         self._headers = {"Content-Type": "application/json"}
 
-        if self.client_id and self.client_secret:
+        auth_method = get_authentication_method(client_id, client_secret, api_key)
+        if auth_method == "oauth2":
             demisto.debug(f"{LOG_LINE} Using OAuth2 authentication (Client ID/Secret)")
             self.access_token = self._get_valid_oauth_token()
             self._headers["Authorization"] = f"Bearer {self.access_token}"
-        elif self.api_key:
+        elif auth_method == "api_key":
             demisto.debug(f"{LOG_LINE} Using API Key authentication")
             self._headers["x-fireeye-api-key"] = self.api_key
-        else:
-            raise ValueError("Either Client ID/Secret (OAuth2) or API Key (legacy) must be provided for authentication")
 
     def _get_valid_oauth_token(self) -> str:
         """
@@ -721,63 +720,77 @@ def _get_max_events_to_fetch(params_max_fetch: str | int, arg_limit: str | int) 
         raise ValueError("Please provide a valid integer value for a fetch limit.")
 
 
-def validate_authentication_params(client_id: str, client_secret: str, api_key: str, scope: str) -> str:
+def validate_authentication_params(client_id: str, client_secret: str, api_key: str, scope: str) -> None:
     """
-    Validate authentication parameters and determine which method to use.
+    Validate authentication parameters.
+    
     Args:
         client_id: The Client ID for OAuth2 authentication.
         client_secret: The Client Secret for OAuth2 authentication.
         api_key: The API Key.
         scope: The space-separated OAuth Scopes.
 
-    Returns: 'oauth2' for Client ID/Secret, 'api_key' for API Key
     Raises: ValueError if authentication configuration is invalid or over-configured.
     """
-    # Use function arguments instead of global variables
     has_client_id = bool(client_id)
     has_client_secret = bool(client_secret)
     has_api_key = bool(api_key)
     has_scopes = bool(scope)
 
-    # 1. CHECK FOR AMBIGUOUS OVER-CONFIGURATION
+    # CHECK FOR AMBIGUOUS OVER-CONFIGURATION
     if has_client_id and has_client_secret and has_api_key:
         raise ValueError(
-            "Both OAuth2 (Client ID/Secret) and API Key were provided. " "Please configure only one authentication method."
+            "Both OAuth2 (Client ID/Secret) and API Key were provided. "
+            "Please configure only one authentication method."
         )
 
-    # 2. OAUTH2 VALIDATION
-    if has_client_id and has_client_secret:
+    # OAUTH2 VALIDATION
+    if has_client_id or has_client_secret:
+        # Check for incomplete OAuth2 configuration
+        if has_client_id and not has_client_secret:
+            raise ValueError(
+                "Client ID provided but Client Secret is missing. "
+                "Both Client ID and Client Secret are required for OAuth2 authentication."
+            )
+        
+        if has_client_secret and not has_client_id:
+            raise ValueError(
+                "Client Secret provided but Client ID is missing. "
+                "Both Client ID and Client Secret are required for OAuth2 authentication."
+            )
+        
         # Check for required SCOPES when using OAuth2
         if not has_scopes:
             raise ValueError(
                 "Client ID and Client Secret provided, but the 'OAuth Scopes' parameter is missing. "
                 "Scopes are required for OAuth2 authentication."
             )
+        return
 
-        # Assuming LOG_LINE is defined in your script environment
+    # NO AUTHENTICATION METHOD PROVIDED
+    if not has_api_key:
+        raise ValueError("No authentication credentials provided.")
+
+
+def get_authentication_method(client_id: str, client_secret: str, api_key: str) -> str:
+    """
+    Determine which authentication method to use based on provided credentials.
+    
+    Args:
+        client_id: The Client ID for OAuth2 authentication.
+        client_secret: The Client Secret for OAuth2 authentication.
+        api_key: The API Key.
+
+    Returns: 'oauth2' for Client ID/Secret, 'api_key' for API Key
+    """
+    if client_id and client_secret:
         demisto.debug(f"{LOG_LINE} Authentication: Using OAuth2 (Client ID/Secret)")
         return "oauth2"
-
-    # 3. API KEY VALIDATION
-    if has_api_key and not has_client_id and not has_client_secret:
+    elif api_key:
         demisto.debug(f"{LOG_LINE} Authentication: Using API Key")
         return "api_key"
-
-    # 4. INCOMPLETE OAUTH2 CONFIGURATION
-    if has_client_id and not has_client_secret:
-        raise ValueError(
-            "Client ID provided but Client Secret is missing. "
-            "Both Client ID and Client Secret are required for OAuth2 authentication."
-        )
-
-    if has_client_secret and not has_client_id:
-        raise ValueError(
-            "Client Secret provided but Client ID is missing. "
-            "Both Client ID and Client Secret are required for OAuth2 authentication."
-        )
-
-    # 5. NO AUTHENTICATION METHOD PROVIDED
-    raise ValueError("No authentication credentials provided.")
+    else:
+        raise ValueError("No authentication credentials provided.")
 
 
 def main() -> None:  # pragma: no cover

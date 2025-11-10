@@ -105,7 +105,7 @@ def fetch_oauth_token():
         expires_in = result.get("expires_in", 600)  # Default is 10 minutes
 
         if not access_token:
-            raise Exception("Failed to retrieve access token from OAuth response")
+            raise DemistoException("Failed to retrieve access token from OAuth response")
 
         # Store token and expiration time in integration context
         expires_at = time.time() + expires_in
@@ -118,7 +118,7 @@ def fetch_oauth_token():
         return access_token
 
     except Exception as e:
-        raise Exception(f"OAuth authentication failed: {str(e)}")
+        raise DemistoException(f"OAuth authentication failed: {str(e)}")
 
 
 def is_oauth_token_expired(ctx):
