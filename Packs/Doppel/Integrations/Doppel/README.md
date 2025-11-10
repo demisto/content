@@ -131,7 +131,7 @@ Retrieves the alert details by ID or entity. Must include either ID or entity.
 >
 >| ID | Entity | Brand | Queue State | Entity State | Severity | Product | Platform | Source | Created At | Doppel Link | Uploaded By |  
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |  
->| TST-31 | http://dummyrul.com | test_brand | doppel_review | active | medium | domains | domains | Analyst Upload | 2024-11-27T06:51:50.357664 | [Doppel Link](https://app.doppel.com/alerts/TST-31222) | currentuser@doppel.com |  
+>| TST-31 | <http://dummyrul.com> | test_brand | doppel_review | active | medium | domains | domains | Analyst Upload | 2024-11-27T06:51:50.357664 | [Doppel Link](https://app.doppel.com/alerts/TST-31222) | currentuser@doppel.com |  
 
 ### doppel-create-alert
 
@@ -179,7 +179,7 @@ Creates an alert for a specified entity. This command requires the entity to be 
 >
 >| ID | Entity | Doppel Link |  
 >| --- | --- | --- |  
->| TST-1001 | http://example.com | [Doppel Link](https://app.doppel.com/alerts/TST-1001) |  
+>| TST-1001 | <http://example.com> | [Doppel Link](https://app.doppel.com/alerts/TST-1001) |  
 
 ### doppel-update-alert
 
@@ -280,7 +280,7 @@ Updates an alert in the Doppel platform. Either `alert_id` or `entity` must be s
 >
 >| ID | Entity | Brand | Queue State | Entity State | Severity | Product | Platform | Source | Created At | Doppel Link | Uploaded By |  
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |  
->| TST-31 | http://dummyrul.com | test_brand | actioned | down | medium | domains | domains | Analyst Upload | 2024-11-27T06:51:50.357664 | [Doppel Link](https://app.doppel.com/alerts/TST-31222) | currentuser@doppel.com |  
+>| TST-31 | <http://dummyrul.com> | test_brand | actioned | down | medium | domains | domains | Analyst Upload | 2024-11-27T06:51:50.357664 | [Doppel Link](https://app.doppel.com/alerts/TST-31222) | currentuser@doppel.com |  
 
 ### doppel-create-abuse-alert
 
@@ -450,7 +450,7 @@ Retrieves a list of alerts. The result can be filtered by provided parameters.
 >
 >| ID | Entity | Brand | Queue State | Entity State | Severity | Product | Platform | Source | Created At | Doppel Link | Uploaded By |  
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |  
->| ALERT-12345 | http://example.com | Test Brand | doppel_review | active | high | domains | website | Analyst Upload | 2024-11-27T10:20:30Z | [Doppel Link](https://app.doppel.com/alerts/ALERT-12345) | analyst@example.com |  
+>| ALERT-12345 | <http://example.com> | Test Brand | doppel_review | active | high | domains | website | Analyst Upload | 2024-11-27T10:20:30Z | [Doppel Link](https://app.doppel.com/alerts/ALERT-12345) | analyst@example.com |  
 
 ### get-mapping-fields
 

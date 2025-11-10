@@ -78,7 +78,6 @@ class Client(BaseClient):
             f"backoff_factor={retry_backoff_factor}, status_list={retry_status_list}"
         )
 
-
     def get_alert(self, id: str, entity: str) -> dict[str, str]:
         """Return the alert's details when provided the Alert ID or Entity as input
 
@@ -729,7 +728,7 @@ def main() -> None:
     api_key = demisto.params().get("credentials", {}).get("password")
     user_api_key = demisto.params().get("user_credentials", {}).get("password")
     organization_code = demisto.params().get("organization_code")
-    verify = not demisto.params().get("insecure") 
+    verify = not demisto.params().get("insecure")
     proxy = demisto.params().get("proxy")
 
     demisto.debug(f"Verify SSL: {verify} and Proxy: {proxy}")

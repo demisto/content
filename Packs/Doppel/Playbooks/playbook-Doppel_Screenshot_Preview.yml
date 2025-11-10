@@ -6,25 +6,24 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d7e71b95-acbd-45f2-8aff-ab2613b41791
+    taskid: e519b1ba-2c26-4296-8204-7e849fb4a4d3
     type: start
     task:
-      id: d7e71b95-acbd-45f2-8aff-ab2613b41791
+      id: e519b1ba-2c26-4296-8204-7e849fb4a4d3
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "5"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 50
+          "x": 180,
+          "y": 40
         }
       }
     note: false
@@ -36,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 3f3b43d2-4818-4b3e-a55b-e4105e75ecd3
+    taskid: f9bab09f-a5e5-44a2-81cd-cc10c71b8a9f
     type: condition
     task:
-      id: 3f3b43d2-4818-4b3e-a55b-e4105e75ecd3
+      id: f9bab09f-a5e5-44a2-81cd-cc10c71b8a9f
       version: -1
       name: Check if Screenshot URL is present
       description: Check whether if screenshot url is present in the Doppel Alert
@@ -64,8 +63,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 210
+          "x": 470,
+          "y": 460
         }
       }
     note: false
@@ -77,10 +76,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 3306e22d-4158-4314-9fa7-baf98754b0b3
+    taskid: d2b2432b-58ca-4689-8e63-9842cb56b207
     type: regular
     task:
-      id: 3306e22d-4158-4314-9fa7-baf98754b0b3
+      id: d2b2432b-58ca-4689-8e63-9842cb56b207
       version: -1
       name: Preview URL
       description: Previews the Doppel Screenshot URL to an actual image in the Incident
@@ -89,6 +88,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
     scriptarguments:
       url:
         simple: ${inputs.screenshot_url}
@@ -97,8 +99,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 380
+          "x": 640,
+          "y": 660
         }
       }
     note: false
@@ -110,12 +112,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: a261a180-ea4e-49ec-9d83-029538f42430
+    taskid: 51e056ae-acd8-4794-bef2-188d959770a8
     type: title
     task:
-      id: a261a180-ea4e-49ec-9d83-029538f42430
+      id: 51e056ae-acd8-4794-bef2-188d959770a8
       version: -1
-      name: No URL is present (Stop Playbook)
+      name: Done
       description: No URL is present in the Doppel Alert
       type: title
       iscommand: false
@@ -126,8 +128,46 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 380
+          "x": 180,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 586fea0a-5698-4260-968a-c9c38b4afaf9
+    type: condition
+    task:
+      id: 586fea0a-5698-4260-968a-c9c38b4afaf9
+      version: -1
+      name: Is Doppel Instance enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: Doppel
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 230
         }
       }
     note: false
@@ -144,10 +184,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 400,
-        "width": 810,
-        "x": 50,
-        "y": 50
+        "height": 890,
+        "width": 840,
+        "x": 180,
+        "y": 40
       }
     }
   }
@@ -168,6 +208,7 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-sourceplaybookid: 78d4704a-1b65-41b6-86cd-b7fd3242579b
 quiet: true
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
