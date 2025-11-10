@@ -16,7 +16,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 DEFAULT_PORT = 443
 
-""" CLIENT CLASS """
+""" CLIENT CLASS  """
 
 
 class Client:
