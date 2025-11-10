@@ -142,7 +142,7 @@ Submit a URL for analysis to CAPE Sandbox. The command polls the CAPE server unt
 | clock | The VM clock time in the format `%m-%d-%Y %H:%M:%S`. | Optional |
 | polling | Enable or disable generic polling for the CAPE task. Possible values are: `true`, `false`. Default is `true`. | Optional |
 | pollingInterval | The polling interval in seconds. It is strongly recommended to use an interval of 60 seconds or more to prevent API throttling by the CAPE server. | Optional |
-| pollingTimeout | The total time allowed in seconds for the XSOAR polling sequence to complete. | Optional |
+| pollingTimeout | The total time allowed in seconds for the XSOAR/XSIAM polling sequence to complete. | Optional |
 
 #### Context Output
 
