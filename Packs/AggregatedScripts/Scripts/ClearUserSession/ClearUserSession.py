@@ -7,9 +7,21 @@ from typing import Any
 
 OKTA_BRAND = "Okta v2"
 MS_GRAPH_BRAND = "Microsoft Graph User"
-DEFAULT_BRANDS = [OKTA_BRAND, MS_GRAPH_BRAND]
+GSUITE_BRAND = "GSuiteAdmin"
+DEFAULT_BRANDS = [OKTA_BRAND, MS_GRAPH_BRAND, GSUITE_BRAND]
 SYSTEM_USERS = {"administrator", "system"}
 SUCCESS_MESSAGE = "User session was cleared."
+COMMANDS_BY_BRAND = {
+    OKTA_BRAND: "okta-clear-user-sessions",
+    MS_GRAPH_BRAND: "msgraph-user-session-revoke",
+    GSUITE_BRAND: ""
+}
+ARG_NAME_BY_BRAND = {
+    OKTA_BRAND: "userId",
+    MS_GRAPH_BRAND: "user",
+    GSUITE_BRAND: ""
+}
+
 
 
 class Command:
@@ -320,6 +332,31 @@ def create_readable_output(outputs: list):
 
     return readable_output
 
+def run_command(
+    user_id: str,
+    results_for_verbose: list[CommandResults],
+    clear_session_results: list[tuple[str, str, str]],
+    brand: str,
+    user_name: Optional[str] = None,
+):
+    clear_user_sessions_command = Command(
+        name=COMMANDS_BY_BRAND[brand],
+        args={ARG_NAME_BY_BRAND[brand]: user_id},
+        brand=brand,
+    )
+    if clear_user_sessions_command.is_valid_args():
+        readable_outputs, _, error_message = clear_user_sessions(clear_user_sessions_command)
+        results_for_verbose.extend(readable_outputs)
+        if not error_message:
+            clear_session_results.append((brand, "Success", f"User session was cleared for {user_name or user_id}"))
+        else:
+            failed_message = f"{brand}: {error_message.lstrip('#').strip()}"
+            demisto.debug(
+                f"Failed to clear sessions for {brand} user with ID {user_id}. "
+                f"Error message: {error_message}. Response details: {readable_outputs}."
+            )
+            clear_session_results.append((brand, "Failed", failed_message))
+
 
 """ MAIN FUNCTION """
 
@@ -328,11 +365,25 @@ def main():
     try:
         args = demisto.args()
         users_names = argToList(args.get("user_name", ""))
+        user_ids_arg = argToList(args.get("user_id", ""))
         verbose = argToBoolean(args.get("verbose", False))
         brands = argToList(args.get("brands", DEFAULT_BRANDS))
 
         outputs: list = []
         results_for_verbose: list[CommandResults] = []
+
+        for user_id in user_ids_arg:
+            clear_session_results: list[tuple[str, str, str]] = []
+            for brand in brands:
+                run_command(user_id, results_for_verbose, clear_session_results, brand)
+            for brand, result, message in clear_session_results:
+                user_output = {
+                    "Message": message,
+                    "Result": result,
+                    "Brand": brand,
+                    "UserId": user_id,
+                }
+                outputs.append(user_output)
 
         filtered_users_names, outputs = remove_system_user(users_names, brands)
 
@@ -353,61 +404,38 @@ def main():
             #################################
             ### Running for a single user ###
             #################################
+            okta_v2_id = get_user_id(users_ids, OKTA_BRAND, user_name)
+            microsoft_graph_id = get_user_id(users_ids, MS_GRAPH_BRAND, user_name)
+            gsuite_id = get_user_id(users_ids, GSUITE_BRAND, user_name)
+
+            # check if we already ran commands for this user with user_id provided in the script's argument
+            if okta_v2_id in user_ids_arg or microsoft_graph_id in user_ids_arg or gsuite_id in user_ids_arg:
+                used_id = okta_v2_id or microsoft_graph_id or gsuite_id
+                demisto.debug(f"Skipping user with {user_name=}. Already performed action for that user using their id {used_id}")
+                continue
 
             demisto.debug(f"Start getting user account data for user: {user_name=}")
 
             clear_session_results: list[tuple[str, str, str]] = []
-
             # Okta v2
-            if okta_v2_id := get_user_id(users_ids, OKTA_BRAND, user_name):
-                okta_clear_user_sessions_command = Command(
-                    name="okta-clear-user-sessions",
-                    args={"userId": okta_v2_id},
-                    brand=OKTA_BRAND,
-                )
-                if okta_clear_user_sessions_command.is_valid_args():
-                    readable_outputs, _, error_message = clear_user_sessions(okta_clear_user_sessions_command)
-                    results_for_verbose.extend(readable_outputs)
-                    if not error_message:
-                        clear_session_results.append((OKTA_BRAND, "Success", f"User session was cleared for {user_name}"))
-                    else:
-                        failed_message = f"Okta v2: {error_message.lstrip('#').strip()}"
-                        demisto.debug(
-                            f"Failed to clear sessions for Okta user with ID {okta_v2_id}. "
-                            f"Error message: {error_message}. Response details: {readable_outputs}."
-                        )
-                        clear_session_results.append((OKTA_BRAND, "Failed", failed_message))
+            if okta_v2_id:
+                run_command(okta_v2_id, results_for_verbose, clear_session_results, OKTA_BRAND)
             elif OKTA_BRAND in brands:
                 clear_session_results.append((OKTA_BRAND, "Failed", "Username not found or no integration configured."))
 
             # Microsoft Graph User
-            if microsoft_graph_id := get_user_id(users_ids, brand_name=MS_GRAPH_BRAND, user_name=user_name):
-                msgraph_user_session_revoke_command = Command(
-                    name="msgraph-user-session-revoke",
-                    args={"user": microsoft_graph_id},
-                    brand=MS_GRAPH_BRAND,
-                )
-                if msgraph_user_session_revoke_command.is_valid_args():
-                    readable_outputs, human_readable, _ = clear_user_sessions(msgraph_user_session_revoke_command)
-                    results_for_verbose.extend(readable_outputs)
-                    if "successfully" in human_readable:
-                        clear_session_results.append((MS_GRAPH_BRAND, "Success", f"User session was cleared for {user_name}"))
-                    else:
-                        failed_message = f"\nMG User: {human_readable.lstrip('#').strip()}"
-                        demisto.debug(
-                            f"Failed to clear sessions for Microsoft Graph user with ID {microsoft_graph_id}. "
-                            f"Response details: {readable_outputs}"
-                        )
-                        clear_session_results.append((MS_GRAPH_BRAND, "Failed", failed_message))
+            if microsoft_graph_id:
+                run_command(microsoft_graph_id, results_for_verbose, clear_session_results, MS_GRAPH_BRAND)
             elif MS_GRAPH_BRAND in brands:
                 clear_session_results.append((MS_GRAPH_BRAND, "Failed", "Username not found or no integration configured."))
 
+            user_id = okta_v2_id or microsoft_graph_id or gsuite_id
             for brand, result, message in clear_session_results:
                 user_output = {
                     "Message": message,
                     "Result": result,
                     "Brand": brand,
-                    "UserName": user_name,
+                    "UserId": user_id,
                 }
                 outputs.append(user_output)
 
