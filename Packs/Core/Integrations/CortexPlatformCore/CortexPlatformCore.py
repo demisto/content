@@ -24,7 +24,7 @@ ASSET_FIELDS = {
 }
 
 
-WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations", "core-create-policy"]
+WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations", "core-create-appsec-policy"]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
@@ -1187,7 +1187,7 @@ def main():  # pragma: no cover
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
 
-        elif command == "core-create-policy":
+        elif command == "core-create-appsec-policy":
             return_results(create_policy_command(client, args))
 
     except Exception as err:
