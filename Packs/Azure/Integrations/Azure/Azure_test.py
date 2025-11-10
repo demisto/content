@@ -39,6 +39,14 @@ from Azure import (
     storage_container_property_get_command,
     transform_response_to_context_format,
     convert_dict_time_format,
+    storage_container_create_command,
+    storage_container_delete_command,
+    storage_container_blob_get_command,
+    storage_container_blob_tag_get_command,
+    storage_container_blob_property_get_command,
+    storage_container_blob_tag_set_command,
+    storage_container_blob_property_set_command,
+    storage_container_block_public_access_command
 )
 from MicrosoftApiModule import Resources
 from requests import Response
@@ -2824,22 +2832,18 @@ def test_storage_container_blob_create_command(mocker, client, mock_params):
         args["container_name"], args["account_name"], args["file_entry_id"], args["blob_name"]
     )
 
-def test_storage_container_property_get_command(mocker):
+def test_storage_container_property_get_command(mocker, client, mock_params):
     """
-    Given: An Azure client mock and the update_blob_container.json file.
-    When: storage_blob_containers_update_command is called.
+    Given: An Azure client and a request to get storage container properties.
+    When: The storage_container_property_get_command function is called with valid parameters.
     Then:
-        1. It should call client.storage_blob_containers_create_update_request with correct parameters and PATCH method.
-        2. It should extract subscription_id, resource_group, and account_name from the response ID.
-        3. The CommandResults should have correct outputs, readable_output, and metadata.
+        1. It should call client.get_storage_container_properties_request with correct parameters.
+        2. It should transform the response headers into the expected format.
+        3. The CommandResults should have correct outputs, readable_output, and raw_response.
     """
-
-    params = {}
+    # Mock arguments
     args = {"container_name": "testcontainer", "account_name": "testaccount"}
 
-    # 3. Create the mock client and the mock HTTP response (using mocker.Mock())
-    mock_client = mocker.Mock()
-    
     # Prepare the mocked HTTP response object with headers
     mock_response = mocker.Mock()
     # The CaseInsensitiveDict is what the requests library returns for headers
@@ -2847,31 +2851,457 @@ def test_storage_container_property_get_command(mocker):
         "Content-Length": "0",
         "Etag": "0x8DB7F5589F2DC4A",
         "Last-Modified": "Wed, 14 Aug 2024 10:00:00 GMT",
+        "Date": "Wed, 14 Aug 2024 10:05:00 GMT",
         "x-ms-request-id": "req-id-12345",
         "x-ms-lease-status": "unlocked",
         "x-ms-lease-state": "available",
-        "x-ms-blob-public-access": "container"
+        "x-ms-has-immutability-policy": "false",
+        "x-ms-has-legal-hold": "false"
     }
     mock_response.headers = CaseInsensitiveDict(raw_response_data)
     
     # Configure the client method to return this mock response
-    mock_client.get_storage_container_properties_request.return_value = mock_response
+    mocker.patch.object(client, "get_storage_container_properties_request", return_value=mock_response)
+    
+    # Mock the transform_response_to_context_format function to return expected properties
+    expected_properties = {
+        "content_length": "0",
+        "etag": "0x8DB7F5589F2DC4A",
+        "last_modified": "Wed, 14 Aug 2024 10:00:00 GMT",
+        "date": "Wed, 14 Aug 2024 10:05:00 GMT",
+        "request_id": "req-id-12345",
+        "lease_status": "unlocked",
+        "lease_state": "available",
+        "has_immutability_policy": "false",
+        "has_legal_hold": "false"
+    }
+    mocker.patch("Azure.transform_response_to_context_format", return_value=expected_properties)
+    
+    # Mock the convert_dict_time_format function to avoid actual date conversion
+    mocker.patch("Azure.convert_dict_time_format")
+    
+    # Mock tableToMarkdown to return a predictable string
+    mock_table = "Container testcontainer Properties: Table with container properties"
+    mocker.patch("Azure.tableToMarkdown", return_value=mock_table)
 
-    result: CommandResults = storage_container_property_get_command(mock_client, params, args)
+    # Call the function
+    result = storage_container_property_get_command(client, mock_params, args)
 
-    mock_client.http_request.assert_called_once_with(
-        subscription_id="subid", resource_group_name="rg1", args=args, method="PATCH"
+    # Verify client.get_storage_container_properties_request was called with correct parameters
+    client.get_storage_container_properties_request.assert_called_once_with("testaccount", "testcontainer")
+    
+    # Verify transform_response_to_context_format was called with the correct parameters
+    Azure.transform_response_to_context_format.assert_called_once()
+    
+    # Verify convert_dict_time_format was called
+    Azure.convert_dict_time_format.assert_called_once()
+    
+    # Verify tableToMarkdown was called with the correct parameters
+    Azure.tableToMarkdown.assert_called_once_with(
+        f"Container {args['container_name']} Properties:",
+        mocker.ANY,  # We don't need to check the exact data here
+        headers=["last_modified", "etag", "lease_status", "lease_state", "has_immutability_policy", "has_legal_hold"],
+        headerTransform=Azure.string_to_table_header,
+        removeNull=True,
     )
 
+    # Verify results
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.StorageBlobContainer"
-    assert result.outputs_key_field == "id"
-    assert result.outputs == mock_response
-    assert result.raw_response == mock_response
+    assert result.outputs_prefix == "Azure.StorageContainer"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == "testcontainer"
+    assert "Property" in result.outputs
+    assert result.outputs["Property"] == expected_properties
+    assert result.readable_output == mock_table
 
-    assert "Azure Storage Blob Containers Properties" in result.readable_output
-    assert "container6185" in result.readable_output
-    assert "sto328" in result.readable_output
-    assert "subscription-id" in result.readable_output
-    assert "res3376" in result.readable_output
-    assert "Container" in result.readable_output
+
+def test_storage_container_create_command(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to create a storage container.
+    When: The storage_container_create_command function is called with valid parameters.
+    Then: The function should call the client's create_storage_container_request method and return a success message.
+    """
+    # Mock arguments
+    args = {
+        "container_name": "testcontainer",
+        "account_name": "testaccount"
+    }
+
+    # Mock the client's create_storage_container_request method
+    mock_response = mocker.Mock()
+    mock_response.status_code = 201
+    mocker.patch.object(client, "create_storage_container_request", return_value=mock_response)
+
+    # Call the function
+    result = storage_container_create_command(client, mock_params, args)
+
+    # Verify client.create_storage_container_request was called with correct parameters
+    client.create_storage_container_request.assert_called_once_with("testcontainer", "testaccount")
+    
+    # Verify results
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == f"Container {args['container_name']} successfully created."
+
+
+def test_storage_container_create_command_invalid_name(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to create a storage container with an invalid name.
+    When: The storage_container_create_command function is called with invalid container name.
+    Then: The function should raise an exception about the invalid container name.
+    """
+    # Mock arguments with invalid container name (uppercase not allowed)
+    args = {
+        "container_name": "TestContainer",
+        "account_name": "testaccount"
+    }
+
+    # Call the function and expect an exception
+    with pytest.raises(Exception) as excinfo:
+        storage_container_create_command(client, mock_params, args)
+    
+    # Verify the exception message
+    assert "The specified container name is invalid" in str(excinfo.value)
+    # Verify the client method was not called
+    client.create_storage_container_request.assert_not_called()
+
+
+def test_storage_container_delete_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to delete a storage container.
+    When: The storage_container_delete_command function is called with valid parameters.
+    Then: The function should call the client's delete_storage_container_request method and return a success message.
+    """
+    # Mock arguments
+    args = {
+        "container_name": "testcontainer",
+        "account_name": "testaccount"
+    }
+
+    # Mock the client's delete_storage_container_request method
+    mocker.patch.object(client, "delete_storage_container_request")
+
+    # Call the function
+    result = storage_container_delete_command(client, mock_params, args)
+
+    # Verify client.delete_storage_container_request was called with correct parameters
+    client.delete_storage_container_request.assert_called_once_with("testcontainer", "testaccount")
+    
+    # Verify results
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == f"Container {args['container_name']} successfully deleted."
+def test_storage_container_delete_command_error(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to delete a storage container that fails.
+    When: The storage_container_delete_command function is called and the API call raises an exception.
+    Then: The function should propagate the exception.
+    """
+    # Mock arguments
+    args = {
+        "container_name": "testcontainer",
+        "account_name": "testaccount"
+    }
+
+    # Mock the client's delete_storage_container_request method to raise an exception
+    error_message = "Container not found or you don't have permission to delete it"
+    mocker.patch.object(client, "delete_storage_container_request", side_effect=Exception(error_message))
+
+    # Call the function and expect an exception
+    with pytest.raises(Exception) as excinfo:
+        storage_container_delete_command(client, mock_params, args)
+    
+    # Verify the exception message
+    assert error_message in str(excinfo.value)
+
+
+def test_storage_container_blob_get_command(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to get a blob from a storage container.
+    When: The storage_container_blob_get_command function is called with valid parameters.
+    Then: The function should call the client's storage_container_blob_get_request method and return a fileResult.
+    """
+    # Mock arguments
+    args = {
+        "container_name": "testcontainer",
+        "blob_name": "testblob.txt",
+        "account_name": "testaccount"
+    }
+
+    # Mock the client's storage_container_blob_get_request method
+    mock_response = mocker.Mock()
+    mock_response.content = b"Test blob content"
+    mocker.patch.object(client, "storage_container_blob_get_request", return_value=mock_response)
+
+    # Mock fileResult function
+    mock_file_result = mocker.patch("Azure.fileResult", return_value="file_result_object")
+
+    # Call the function
+    result = storage_container_blob_get_command(client, mock_params, args)
+
+    # Verify client.storage_container_blob_get_request was called with correct parameters
+    client.storage_container_blob_get_request.assert_called_once_with(
+        "testcontainer", "testblob.txt", "testaccount"
+    )
+    
+    # Verify fileResult was called with correct parameters
+    mock_file_result.assert_called_once_with(filename="testblob.txt", data=b"Test blob content")
+    
+    # Verify result
+    assert result == "file_result_object"
+
+
+def test_storage_container_blob_tag_get_command(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to get tags for a blob.
+    When: The storage_container_blob_tag_get_command function is called with valid parameters.
+    Then: The function should call the client's storage_container_blob_tag_get_request method and return the tags.
+    """
+    # Mock arguments
+    args = {
+        "container_name": "testcontainer",
+        "blob_name": "testblob.txt",
+        "account_name": "testaccount"
+    }
+
+    # Mock XML response
+    xml_response = """<?xml version="1.0" encoding="utf-8"?>
+    <Tags>
+        <TagSet>
+            <Tag>
+                <Key>tag1</Key>
+                <Value>value1</Value>
+            </Tag>
+            <Tag>
+                <Key>tag2</Key>
+                <Value>value2</Value>
+            </Tag>
+        </TagSet>
+    </Tags>"""
+
+    # Mock the client's storage_container_blob_tag_get_request method
+    mocker.patch.object(client, "storage_container_blob_tag_get_request", return_value=xml_response)
+    
+    # Mock ElementTree parsing
+    mock_tree = mocker.Mock()
+    mock_root = mocker.Mock()
+    mock_tree.getroot.return_value = mock_root
+    
+    # Create mock Tag elements
+    tag1 = mocker.Mock()
+    tag1.findtext.side_effect = lambda x: "tag1" if x == "Key" else "value1"
+    tag2 = mocker.Mock()
+    tag2.findtext.side_effect = lambda x: "tag2" if x == "Key" else "value2"
+    
+    # Set up the iteration over Tag elements
+    mock_root.iter.return_value = [tag1, tag2]
+    
+    mocker.patch("Azure.ET.ElementTree", return_value=mock_tree)
+    mocker.patch("Azure.defused_ET.fromstring", return_value=mock_root)
+    
+    # Mock tableToMarkdown
+    mocker.patch("Azure.tableToMarkdown", return_value="Mocked Table")
+
+    # Call the function
+    result = storage_container_blob_tag_get_command(client, mock_params, args)
+
+    # Verify client.storage_container_blob_tag_get_request was called with correct parameters
+    client.storage_container_blob_tag_get_request.assert_called_once_with(
+        "testcontainer", "testblob.txt", "testaccount"
+    )
+    
+    # Verify result
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "Mocked Table"
+    assert result.outputs_prefix == "Azure.StorageContainer"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == "testcontainer"
+    assert "Blob" in result.outputs
+    assert result.outputs["Blob"]["name"] == "testblob.txt"
+    assert "Tag" in result.outputs["Blob"]
+
+
+def test_storage_container_blob_tag_set_command(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to set tags for a blob.
+    When: The storage_container_blob_tag_set_command function is called with valid parameters.
+    Then: The function should call the client's storage_container_blob_tags_set_request method.
+    """
+    # Mock arguments
+    args = {
+        "container_name": "testcontainer",
+        "blob_name": "testblob.txt",
+        "account_name": "testaccount",
+        "tags": '{"tag1": "value1", "tag2": "value2"}'
+    }
+
+    # Mock the client's storage_container_blob_tags_set_request method
+    mocker.patch.object(client, "storage_container_blob_tags_set_request")
+    
+    # Mock create_set_tags_request_body
+    mock_xml_data = b'<?xml version="1.0" encoding="utf-8"?><Tags><TagSet><Tag><Key>tag1</Key><Value>value1</Value></Tag><Tag><Key>tag2</Key><Value>value2</Value></Tag></TagSet></Tags>'
+    mocker.patch("Azure.create_set_tags_request_body", return_value=mock_xml_data)
+
+    # Call the function
+    result = storage_container_blob_tag_set_command(client, mock_params, args)
+
+    # Verify create_set_tags_request_body was called with correct parameters
+    Azure.create_set_tags_request_body.assert_called_once_with({"tag1": "value1", "tag2": "value2"})
+    
+    # Verify client.storage_container_blob_tags_set_request was called with correct parameters
+    client.storage_container_blob_tags_set_request.assert_called_once_with(
+        "testcontainer", "testblob.txt", mock_xml_data, "testaccount"
+    )
+    
+    # Verify result
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "testblob.txt Tags successfully updated."
+
+
+def test_storage_container_blob_property_get_command(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to get properties for a blob.
+    When: The storage_container_blob_property_get_command function is called with valid parameters.
+    Then: The function should call the client's storage_container_blob_property_get_request method and return the properties.
+    """
+    # Mock arguments
+    args = {
+        "container_name": "testcontainer",
+        "blob_name": "testblob.txt",
+        "account_name": "testaccount"
+    }
+
+    # Mock response headers
+    mock_headers = CaseInsensitiveDict({
+        "Content-Length": "1024",
+        "Content-Type": "text/plain",
+        "Etag": "0x8D8B92EFCFD9B41",
+        "Last-Modified": "Wed, 14 Aug 2024 10:00:00 GMT",
+        "x-ms-creation-time": "Wed, 14 Aug 2024 09:00:00 GMT"
+    })
+    
+    # Mock the client's storage_container_blob_property_get_request method
+    mock_response = mocker.Mock()
+    mock_response.headers = mock_headers
+    mocker.patch.object(client, "storage_container_blob_property_get_request", return_value=mock_response)
+    
+    # Mock transform_response_to_context_format
+    mock_properties = {
+        "content_length": "1024",
+        "content_type": "text/plain",
+        "etag": "0x8D8B92EFCFD9B41",
+        "last_modified": "Wed, 14 Aug 2024 10:00:00 GMT",
+        "creation_time": "Wed, 14 Aug 2024 09:00:00 GMT"
+    }
+    mocker.patch("Azure.transform_response_to_context_format", return_value=mock_properties)
+    
+    # Mock convert_dict_time_format
+    mocker.patch("Azure.convert_dict_time_format")
+    
+    # Mock tableToMarkdown
+    mocker.patch("Azure.tableToMarkdown", return_value="Mocked Table")
+
+    # Call the function
+    result = storage_container_blob_property_get_command(client, mock_params, args)
+
+    # Verify client.storage_container_blob_property_get_request was called with correct parameters
+    client.storage_container_blob_property_get_request.assert_called_once_with(
+        "testcontainer", "testblob.txt", "testaccount"
+    )
+    
+    # Verify transform_response_to_context_format was called
+    Azure.transform_response_to_context_format.assert_called_once()
+    
+    # Verify convert_dict_time_format was called
+    Azure.convert_dict_time_format.assert_called_once()
+    
+    # Verify result
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "Mocked Table"
+    assert result.outputs_prefix == "Azure.StorageContainer"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == "testcontainer"
+    assert "Blob" in result.outputs
+    assert result.outputs["Blob"]["name"] == "testblob.txt"
+    assert "Property" in result.outputs["Blob"]
+    assert result.outputs["Blob"]["Property"] == mock_properties
+
+
+def test_storage_container_blob_property_set_command(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to set properties for a blob.
+    When: The storage_container_blob_property_set_command function is called with valid parameters.
+    Then: The function should call the client's storage_container_blob_properties_set_request method.
+    """
+    # Mock arguments
+    args = {
+        "container_name": "testcontainer",
+        "blob_name": "testblob.txt",
+        "account_name": "testaccount",
+        "content_type": "application/json",
+        "content_encoding": "gzip",
+        "cache_control": "max-age=3600"
+    }
+
+    # Mock the client's storage_container_blob_properties_set_request method
+    mocker.patch.object(client, "storage_container_blob_properties_set_request")
+    
+    # Mock remove_empty_elements
+    expected_headers = {
+        "x-ms-blob-cache-control": "max-age=3600",
+        "x-ms-blob-content-type": "application/json",
+        "x-ms-blob-content-encoding": "gzip",
+        "Content-Length": "0"
+    }
+    mocker.patch("Azure.remove_empty_elements", return_value=expected_headers)
+
+    # Call the function
+    result = storage_container_blob_property_set_command(client, mock_params, args)
+
+    # Verify remove_empty_elements was called with correct parameters
+    Azure.remove_empty_elements.assert_called_once()
+    
+    # Verify client.storage_container_blob_properties_set_request was called with correct parameters
+    client.storage_container_blob_properties_set_request.assert_called_once_with(
+        "testcontainer", "testblob.txt", "testaccount", expected_headers
+    )
+    
+    # Verify result
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "Blob testblob.txt properties successfully updated."
+
+
+def test_storage_container_block_public_access_command(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to block public access to a container.
+    When: The storage_container_block_public_access_command function is called with valid parameters.
+    Then: The function should call the client's storage_container_block_public_access_request method.
+    """
+    # Mock arguments
+    args = {
+        "container_name": "testcontainer",
+        "account_name": "testaccount"
+    }
+
+    # Mock the client's storage_container_block_public_access_request method
+    mock_response = mocker.Mock()
+    mocker.patch.object(client, "storage_container_block_public_access_request", return_value=mock_response)
+    
+    # Mock debug log
+    mocker.patch.object(demisto, "debug")
+
+    # Call the function
+    result = storage_container_block_public_access_command(client, mock_params, args)
+
+    # Verify client.storage_container_block_public_access_request was called with correct parameters
+    client.storage_container_block_public_access_request.assert_called_once_with(
+        "testaccount", "testcontainer"
+    )
+    
+    # Verify debug was called
+    demisto.debug.assert_called_once()
+    
+    # Verify result
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "Public access to container 'testcontainer' has been successfully blocked"
+
+
+
