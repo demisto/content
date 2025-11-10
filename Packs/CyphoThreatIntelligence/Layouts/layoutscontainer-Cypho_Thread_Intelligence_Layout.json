@@ -1,0 +1,931 @@
+{
+	"cacheVersn": 0,
+	"close": null,
+	"definitionId": "",
+	"description": "",
+	"detached": false,
+	"details": null,
+	"detailsV2": {
+		"TypeName": "",
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 6,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 22,
+								"id": "incident-type-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 22,
+								"id": "incident-owner-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cyphotenantname",
+								"height": 22,
+								"id": "30d48500-ba41-11f0-96df-33e3698a4906",
+								"index": 2,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphotitle",
+								"height": 22,
+								"id": "493b29a0-ba41-11f0-96df-33e3698a4906",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 22,
+								"id": "incident-sourceBrand-field",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 22,
+								"id": "incident-sourceInstance-field",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cyphoticketid",
+								"height": 22,
+								"id": "41349110-ba41-11f0-96df-33e3698a4906",
+								"index": 6,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphostatus",
+								"height": 22,
+								"id": "1a163930-ba41-11f0-96df-33e3698a4906",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphorisklevel",
+								"height": 22,
+								"id": "0b33cc70-ba41-11f0-96df-33e3698a4906",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphoasset",
+								"height": 22,
+								"id": "498ebd50-ba40-11f0-96df-33e3698a4906",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphoattachments",
+								"height": 22,
+								"id": "4a628810-ba40-11f0-96df-33e3698a4906",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphocategoryname",
+								"height": 22,
+								"id": "4b40b310-ba40-11f0-96df-33e3698a4906",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphochecker",
+								"height": 22,
+								"id": "4c234ae0-ba40-11f0-96df-33e3698a4906",
+								"index": 12,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cyphostatusreason",
+								"height": 22,
+								"id": "1d9267a0-ba41-11f0-96df-33e3698a4906",
+								"index": 13,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphoconfidencescore",
+								"height": 22,
+								"id": "4dbb5000-ba40-11f0-96df-33e3698a4906",
+								"index": 14,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphocreatedattime",
+								"height": 22,
+								"id": "508e1f10-ba40-11f0-96df-33e3698a4906",
+								"index": 15,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodateofexposure",
+								"height": 22,
+								"id": "51b2f000-ba40-11f0-96df-33e3698a4906",
+								"index": 16,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodescription",
+								"height": 22,
+								"id": "531195a0-ba40-11f0-96df-33e3698a4906",
+								"index": 17,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetail",
+								"height": 22,
+								"id": "5495ebb0-ba40-11f0-96df-33e3698a4906",
+								"index": 18,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedcpes",
+								"height": 22,
+								"id": "71333520-ba40-11f0-96df-33e3698a4906",
+								"index": 19,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedattacktype",
+								"height": 22,
+								"id": "55bcb870-ba40-11f0-96df-33e3698a4906",
+								"index": 20,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedbasename",
+								"height": 22,
+								"id": "593a4670-ba40-11f0-96df-33e3698a4906",
+								"index": 21,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedcveid",
+								"height": 22,
+								"id": "72de2600-ba40-11f0-96df-33e3698a4906",
+								"index": 22,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedcontenttitle",
+								"height": 22,
+								"id": "6e3d9bd0-ba40-11f0-96df-33e3698a4906",
+								"index": 23,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedcontent",
+								"height": 44,
+								"id": "5b8d8540-ba40-11f0-96df-33e3698a4906",
+								"index": 24,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetecteddomains",
+								"height": 22,
+								"id": "804f9da0-ba40-11f0-96df-33e3698a4906",
+								"index": 25,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedcvescore",
+								"height": 22,
+								"id": "74e0d3d0-ba40-11f0-96df-33e3698a4906",
+								"index": 26,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedcontentauthorname",
+								"height": 22,
+								"id": "698b1040-ba40-11f0-96df-33e3698a4906",
+								"index": 27,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedgithubownername",
+								"height": 22,
+								"id": "84d35100-ba40-11f0-96df-33e3698a4906",
+								"index": 28,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedcontentpagecount",
+								"height": 22,
+								"id": "6b4eb940-ba40-11f0-96df-33e3698a4906",
+								"index": 29,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedhttprequestmethod",
+								"height": 22,
+								"id": "8a0768a0-ba40-11f0-96df-33e3698a4906",
+								"index": 30,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedhost",
+								"height": 22,
+								"id": "87bc6730-ba40-11f0-96df-33e3698a4906",
+								"index": 31,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedip",
+								"height": 22,
+								"id": "8c48a610-ba40-11f0-96df-33e3698a4906",
+								"index": 32,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetecteddeveloper",
+								"height": 22,
+								"id": "7a362f10-ba40-11f0-96df-33e3698a4906",
+								"index": 33,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedcveseverity",
+								"height": 22,
+								"id": "781523d0-ba40-11f0-96df-33e3698a4906",
+								"index": 34,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedoldrecord",
+								"height": 22,
+								"id": "952e2cf0-ba40-11f0-96df-33e3698a4906",
+								"index": 35,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedoldrecordip",
+								"height": 22,
+								"id": "98d87040-ba40-11f0-96df-33e3698a4906",
+								"index": 36,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectednewrecordip",
+								"height": 22,
+								"id": "9259b030-ba40-11f0-96df-33e3698a4906",
+								"index": 37,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectednewrecord",
+								"height": 22,
+								"id": "8e41b6f0-ba40-11f0-96df-33e3698a4906",
+								"index": 38,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedpayload",
+								"height": 22,
+								"id": "a86749a0-ba40-11f0-96df-33e3698a4906",
+								"index": 39,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedpackagename",
+								"height": 22,
+								"id": "9dda7b60-ba40-11f0-96df-33e3698a4906",
+								"index": 40,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedparameter",
+								"height": 22,
+								"id": "a0a2c320-ba40-11f0-96df-33e3698a4906",
+								"index": 41,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedresponseheaders",
+								"height": 22,
+								"id": "ba724690-ba40-11f0-96df-33e3698a4906",
+								"index": 42,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedserialnumber",
+								"height": 22,
+								"id": "bc374f20-ba40-11f0-96df-33e3698a4906",
+								"index": 43,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedservicename",
+								"height": 22,
+								"id": "bf1eb7a0-ba40-11f0-96df-33e3698a4906",
+								"index": 44,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedserviceversion",
+								"height": 22,
+								"id": "c130f5d0-ba40-11f0-96df-33e3698a4906",
+								"index": 45,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedrequestheaders",
+								"height": 22,
+								"id": "b8317e50-ba40-11f0-96df-33e3698a4906",
+								"index": 46,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectionsource",
+								"height": 22,
+								"id": "ea20b250-ba40-11f0-96df-33e3698a4906",
+								"index": 47,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedserviceversion",
+								"height": 22,
+								"id": "c683b900-ba40-11f0-96df-33e3698a4906",
+								"index": 48,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedphishingdomainname",
+								"height": 22,
+								"id": "ac178060-ba40-11f0-96df-33e3698a4906",
+								"index": 49,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedpassword",
+								"height": 22,
+								"id": "a4e5eb10-ba40-11f0-96df-33e3698a4906",
+								"index": 50,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphoid",
+								"height": 22,
+								"id": "f2a665f0-ba40-11f0-96df-33e3698a4906",
+								"index": 51,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphoimpact",
+								"height": 44,
+								"id": "f602fe70-ba40-11f0-96df-33e3698a4906",
+								"index": 52,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodomainsameascompanykeywordscore",
+								"height": 22,
+								"id": "edb523b0-ba40-11f0-96df-33e3698a4906",
+								"index": 53,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedtargetedbrandname",
+								"height": 22,
+								"id": "e4ff5f60-ba40-11f0-96df-33e3698a4906",
+								"index": 54,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphologinname",
+								"height": 22,
+								"id": "f857eaf0-ba40-11f0-96df-33e3698a4906",
+								"index": 55,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedurl",
+								"height": 22,
+								"id": "e8589c80-ba40-11f0-96df-33e3698a4906",
+								"index": 56,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphohostpath",
+								"height": 22,
+								"id": "f02f9990-ba40-11f0-96df-33e3698a4906",
+								"index": 57,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphonotparkedfactorscore",
+								"height": 22,
+								"id": "fcaee900-ba40-11f0-96df-33e3698a4906",
+								"index": 58,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphossltlscertificateexpiredate",
+								"height": 22,
+								"id": "15b9bce0-ba41-11f0-96df-33e3698a4906",
+								"index": 59,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphotargettype",
+								"height": 22,
+								"id": "2f801890-ba41-11f0-96df-33e3698a4906",
+								"index": 60,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphosubjectalternativenames",
+								"height": 22,
+								"id": "2b94d4a0-ba41-11f0-96df-33e3698a4906",
+								"index": 61,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphomessages",
+								"height": 22,
+								"id": "fa990150-ba40-11f0-96df-33e3698a4906",
+								"index": 62,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedrequestbody",
+								"height": 22,
+								"id": "b2d5e180-ba40-11f0-96df-33e3698a4906",
+								"index": 63,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphosubjectcommonname",
+								"height": 22,
+								"id": "2d39d210-ba41-11f0-96df-33e3698a4906",
+								"index": 64,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphorecommendation",
+								"height": 44,
+								"id": "ff27d840-ba40-11f0-96df-33e3698a4906",
+								"index": 65,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphoupdatedattime",
+								"height": 22,
+								"id": "4bb6d800-ba41-11f0-96df-33e3698a4906",
+								"index": 66,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphosimilarityrate",
+								"height": 22,
+								"id": "13941dc0-ba41-11f0-96df-33e3698a4906",
+								"index": 67,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "datedetectedbycypho",
+								"height": 22,
+								"id": "4d830c80-ba41-11f0-96df-33e3698a4906",
+								"index": 68,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphosearchingkeyword",
+								"height": 22,
+								"id": "11b63600-ba41-11f0-96df-33e3698a4906",
+								"index": 69,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedport",
+								"height": 22,
+								"id": "ae65b620-ba40-11f0-96df-33e3698a4906",
+								"index": 70,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphodetectedrepositoryname",
+								"height": 22,
+								"id": "b0a60930-ba40-11f0-96df-33e3698a4906",
+								"index": 71,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-7f8c5830-ba41-11f0-96df-33e3698a4906",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 22,
+								"id": "967a6690-ba41-11f0-96df-33e3698a4906",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 44,
+								"id": "9915d1f0-ba41-11f0-96df-33e3698a4906",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 22,
+								"id": "9b96fe90-ba41-11f0-96df-33e3698a4906",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 22,
+								"id": "9fcba790-ba41-11f0-96df-33e3698a4906",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-abf499a0-ba41-11f0-96df-33e3698a4906",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "cyphocomments",
+								"height": 44,
+								"id": "4cdbc570-ba40-11f0-96df-33e3698a4906",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Comments",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 3
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-ce50ae80-ba41-11f0-96df-33e3698a4906",
+						"items": [
+							{
+								"args": {},
+								"buttonClass": "success",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "3e62de00-ba42-11f0-96df-33e3698a4906",
+								"index": 0,
+								"name": "Assign To Me Button",
+								"scriptId": "CyphoAssignToMeButton",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "primary",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "438bd210-ba42-11f0-96df-33e3698a4906",
+								"index": 1,
+								"name": "Add Comment Button",
+								"scriptId": "CyphoAddCommentButton",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "warning",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "3f89f8e0-ba42-11f0-96df-33e3698a4906",
+								"index": 2,
+								"name": "Cypho Download Attachments",
+								"scriptId": "CyphoDownloadAttachments",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "success",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "41028f20-ba42-11f0-96df-33e3698a4906",
+								"index": 3,
+								"name": "Cypho Approve Issue",
+								"scriptId": "CyphoApproveIssue",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "error",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "421f70d0-ba42-11f0-96df-33e3698a4906",
+								"index": 4,
+								"name": "Cypho Dismiss Issue",
+								"scriptId": "CyphoDismissIssue",
+								"sectionItemType": "button",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Action buttons",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-cded8a70-ba42-11f0-96df-33e3698a4906",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "cyphotimetoassignment",
+								"height": 22,
+								"id": "f2317220-ba42-11f0-96df-33e3698a4906",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cyphoremediationsla",
+								"height": 22,
+								"id": "f692d070-ba42-11f0-96df-33e3698a4906",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "SLAs",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 3
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		]
+	},
+	"edit": null,
+	"fromServerVersion": "",
+	"group": "incident",
+	"id": "Cypho Thread Intelligence Layout",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
+	"name": "Cypho Thread Intelligence Layout",
+	"packID": "889f9bc8-82b6-4d51-80fa-5e4ad6372f4b",
+	"packName": "Cypho Threat Intelligence",
+	"propagationLabels": [
+		"all"
+	],
+	"quickView": null,
+	"quickViewV2": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1
+}

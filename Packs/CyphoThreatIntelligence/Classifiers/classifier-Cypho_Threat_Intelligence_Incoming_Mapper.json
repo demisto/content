@@ -1,0 +1,1581 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "Maps incoming Cypho Threat Intelligence incidents fields.\n",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "Cypho Threat Intelligence Incoming Mapper",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 34,
+	"mapping": {
+		"Cypho Critical Ports Monitoring": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected Port": {
+					"simple": "description.port"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Product Name": {
+					"simple": "description.product_name"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho Dark Web Exposure Monitoring": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Description": {
+					"simple": "description.detail"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected Content": {
+					"simple": "description.content"
+				},
+				"Cypho Detected URL": {
+					"simple": "description.url"
+				},
+				"Cypho Detection Source": {
+					"simple": "description.detection_source"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho Dns Information Monitoring": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Description": {
+					"simple": "description.description"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected New Record": {
+					"simple": "description.new_record.record"
+				},
+				"Cypho Detected New Record IP": {
+					"simple": "description.new_record.value"
+				},
+				"Cypho Detected Old Record": {
+					"simple": "description.old_record.record"
+				},
+				"Cypho Detected Old Record IP": {
+					"simple": "description.old_record.value"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho Email Dns Records Monitoring": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Checker": {
+					"simple": "description.checker"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Messages": {
+					"simple": "description.message.message"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Searching keyword": {
+					"simple": "description.message.keyword"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho Exploitable Ports Monitoring": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected CVE ID": {
+					"simple": "description.cves.cve_id"
+				},
+				"Cypho Detected CVE Score": {
+					"simple": "description.cves.score"
+				},
+				"Cypho Detected CVE Severity": {
+					"simple": "description.cves.severity"
+				},
+				"Cypho Detected Host": {
+					"simple": "description.host"
+				},
+				"Cypho Detected Port": {
+					"simple": "description.port"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho File Sharing Services Monitoring": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected Content Author Name": {
+					"simple": "description.content.author_name"
+				},
+				"Cypho Detected Content Page Count": {
+					"simple": "description.content.page_count"
+				},
+				"Cypho Detected Content Title": {
+					"simple": "description.content.title"
+				},
+				"Cypho Detected URL": {
+					"simple": "description.url"
+				},
+				"Cypho Detection Source": {
+					"simple": "description.detection_source"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Searching keyword": {
+					"simple": "description.search_keyword"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho Github Secrets Monitoring": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected Repository Name": {
+					"simple": "description.repository_name"
+				},
+				"Cypho Detected URL": {
+					"simple": "description.url"
+				},
+				"Cypho Detection Source": {
+					"simple": "description.detection_source"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Login Name": {
+					"simple": "description.owner_login"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Searching keyword": {
+					"simple": "description.search_keyword"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho IM Platform Suspicious Content": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected Content": {
+					"simple": "description.content"
+				},
+				"Cypho Detected URL": {
+					"simple": "description.url"
+				},
+				"Cypho Detection Source": {
+					"simple": "description.detection_source"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Searching keyword": {
+					"simple": "description.search_keyword"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho Improper Access Control": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected Host": {
+					"simple": "description.host"
+				},
+				"Cypho Detected Http Request Method": {
+					"simple": "description.http_method"
+				},
+				"Cypho Detected Parameter": {
+					"simple": "description.parameter"
+				},
+				"Cypho Detected Payload": {
+					"simple": "description.payload"
+				},
+				"Cypho Detected Request Body": {
+					"simple": "description.body"
+				},
+				"Cypho Detected Request Headers": {
+					"simple": "description.request_headers"
+				},
+				"Cypho Detected Response Headers": {
+					"simple": "description.response_headers"
+				},
+				"Cypho Host Path": {
+					"simple": "description.host_path"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Messages": {
+					"simple": "description.detail"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at"
+				}
+			}
+		},
+		"Cypho Injection Attacks": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Description": {
+					"simple": "description.detail"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected Attack Type": {
+					"simple": "description.attack_type"
+				},
+				"Cypho Detected Host": {
+					"simple": "description.host"
+				},
+				"Cypho Detected Http Request Method": {
+					"simple": "description.http_method"
+				},
+				"Cypho Detected Parameter": {
+					"simple": "description.parameter"
+				},
+				"Cypho Detected Payload": {
+					"simple": "description.payload"
+				},
+				"Cypho Host Path": {
+					"simple": "description.host_path"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Messages": {
+					"simple": "description.recommendation"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho Insecure Subdomains Monitoring": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho Malware Analysis Services Monitoring": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected Base Name": {
+					"simple": "description.basename"
+				},
+				"Cypho Detected Content": {
+					"simple": "description.content"
+				},
+				"Cypho Detected URL": {
+					"simple": "description.url"
+				},
+				"Cypho Detection Source": {
+					"simple": "description.detection_source"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Searching keyword": {
+					"simple": "description.search_keyword"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho PII Exposure Monitoring": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected Host": {
+					"simple": "description.host"
+				},
+				"Cypho Detected Password": {
+					"simple": "description.password"
+				},
+				"Cypho Detected URL": {
+					"simple": "description.url"
+				},
+				"Cypho Detection Source": {
+					"simple": "description.source"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Login Name": {
+					"simple": "description.login"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				},
+				"Date Detected by Cypho": {
+					"simple": "description.date"
+				}
+			}
+		},
+		"Cypho Phishing Monitoring": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Confidence Score": {
+					"simple": "description.confidence_score"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Description": {
+					"simple": "description.note"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected Domains": {
+					"simple": "description.domains"
+				},
+				"Cypho Detected Package Name": {
+					"simple": "description.parked"
+				},
+				"Cypho Detected Phishing Domain Name": {
+					"simple": "description.phishing_domain"
+				},
+				"Cypho Detection Source": {
+					"simple": "description.detection_source"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Not Parked Factor Score": {
+					"simple": "description.factors.not_parked"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Similarity Rate": {
+					"simple": "description.similarity_rate"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho Rogue Mobile Application Detection": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Description": {
+					"simple": "description.description"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected Developer": {
+					"simple": "description.developer"
+				},
+				"Cypho Detected Package Name": {
+					"simple": "description.package_name"
+				},
+				"Cypho Detected Targeted Brand Name": {
+					"simple": "description.targeted_brand"
+				},
+				"Cypho Detected URL": {
+					"simple": "description.url"
+				},
+				"Cypho Detection Source": {
+					"simple": "description.detection_source"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Messages": {
+					"simple": "description.detail"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho SSL Certificate Expiry Monitoring": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Description": {
+					"simple": "description.description"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected Host": {
+					"simple": "description.host"
+				},
+				"Cypho Detected IP": {
+					"simple": "description.ip"
+				},
+				"Cypho Detected Serial Number": {
+					"simple": "description.serial"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho SSL/TLS Certificate Expire Date": {
+					"simple": "description.expire_date"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Subject Alternative Names": {
+					"simple": "description.subject_an"
+				},
+				"Cypho Subject Common Name": {
+					"simple": "description.subject_cn"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho SSL Certificate Hostname Mismatch Monitoring": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected Host": {
+					"simple": "description.host"
+				},
+				"Cypho Detected IP": {
+					"simple": "description.ip"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Subject Alternative Names": {
+					"simple": "description.subject_an"
+				},
+				"Cypho Subject Common Name": {
+					"simple": "description.subject_cn"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho Security Misconfiguration": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Description": {
+					"simple": "description.detail"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected Request Headers": {
+					"simple": "description.request_headers"
+				},
+				"Cypho Detected Response Headers": {
+					"simple": "description.response_headers"
+				},
+				"Cypho Detected URL": {
+					"simple": "description.link"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho Sensitive Data Exposure Monitoring": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected Content": {
+					"simple": "description.content"
+				},
+				"Cypho Detected Content Title": {
+					"simple": "description.title"
+				},
+				"Cypho Detected URL": {
+					"simple": "description.link"
+				},
+				"Cypho Detection Source": {
+					"simple": "description.detection_source"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Searching keyword": {
+					"simple": "description.search_keyword"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho Social Media Account Impersonation Monitoring": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected Targeted Brand Name": {
+					"simple": "description.targeted_brand"
+				},
+				"Cypho Detected URL": {
+					"simple": "description.link"
+				},
+				"Cypho Detection Source": {
+					"simple": "description.detection_source"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho URL and Domain Analysis Services Monitoring": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected IP": {
+					"simple": "description.ip_addresses"
+				},
+				"Cypho Detected URL": {
+					"simple": "description.url"
+				},
+				"Cypho Detection Source": {
+					"simple": "description.detection_source"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Searching keyword": {
+					"simple": "description.search_keyword"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho Unclassified Incident": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		},
+		"Cypho Under Review Issues": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Attachments": {
+					"simple": "attachments.name"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Cypho Asset": {
+					"simple": "asset"
+				},
+				"Cypho Category Name": {
+					"simple": "category_name"
+				},
+				"Cypho Created at Time": {
+					"simple": "created_at_text"
+				},
+				"Cypho Description": {
+					"simple": "description.detail"
+				},
+				"Cypho Detail": {
+					"simple": "detail"
+				},
+				"Cypho Detected Request Headers": {
+					"simple": "description.request_headers"
+				},
+				"Cypho Detected Response Headers": {
+					"simple": "description.response_headers"
+				},
+				"Cypho Detected URL": {
+					"simple": "description.link"
+				},
+				"Cypho ID": {
+					"simple": "id"
+				},
+				"Cypho Impact": {
+					"simple": "impact"
+				},
+				"Cypho Recommendation": {
+					"simple": "recommendation"
+				},
+				"Cypho Risk Level": {
+					"simple": "risk_level"
+				},
+				"Cypho Status": {
+					"simple": "status"
+				},
+				"Cypho Status Reason": {
+					"simple": "status_reason"
+				},
+				"Cypho Target Type": {
+					"simple": "target_field_type"
+				},
+				"Cypho Tenant Name": {
+					"simple": "tenant_name"
+				},
+				"Cypho Ticket Id": {
+					"simple": "ticket_id"
+				},
+				"Cypho Title": {
+					"simple": "title"
+				},
+				"Cypho Updated at Time": {
+					"simple": "updated_at_text"
+				}
+			}
+		}
+	},
+	"name": "Cypho Threat Intelligence Incoming Mapper",
+	"nameRaw": "Cypho Threat Intelligence Incoming Mapper",
+	"packID": "889f9bc8-82b6-4d51-80fa-5e4ad6372f4b",
+	"packName": "Cypho Threat Intelligence",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}

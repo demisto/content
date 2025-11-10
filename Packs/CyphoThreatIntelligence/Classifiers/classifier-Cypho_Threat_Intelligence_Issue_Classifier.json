@@ -1,0 +1,40 @@
+{
+    "defaultIncidentType": "Cypho Unclassified Incident",
+    "description": "Classifies Cypho Threat Intelligence incidents.\n",
+    "feed": false,
+    "id": "Cypho Threat Intelligence Issue Classifier",
+    "keyTypeMap": {
+        "Critical Ports Monitoring": "Cypho Critical Ports Monitoring",
+        "DNS Information Monitoring": "Cypho Dns Information Monitoring",
+        "Dark Web Exposure Monitoring": "Cypho Dark Web Exposure Monitoring",
+        "Data Leak Monitoring": "Cypho Data Leak Monitoring",
+        "Email DNS Records Monitoring": "Cypho Email Dns Records Monitoring",
+        "Exploitable Ports Monitoring": "Cypho Exploitable Ports Monitoring",
+        "File Sharing Services Monitoring": "Cypho File Sharing Services Monitoring",
+        "Github Secrets Monitoring": "Cypho Github Secrets Monitoring",
+        "IM Platform Suspicious Content": "Cypho IM Platform Suspicious Content",
+        "Improper Access Control": "Cypho Improper Access Control",
+        "Injection Attacks": "Cypho Injection Attacks",
+        "Insecure Subdomains Monitoring": "Cypho Insecure Subdomains Monitoring",
+        "Malware Analysis Services Monitoring": "Cypho Malware Analysis Services Monitoring",
+        "PII Exposure Monitoring": "Cypho PII Exposure Monitoring",
+        "Phishing Monitoring": "Cypho Phishing Monitoring",
+        "Rogue Mobile Application Detection": "Cypho Rogue Mobile Application Detection",
+        "SSL Certificate Expiry Monitoring": "Cypho SSL Certificate Expiry Monitoring",
+        "SSL Certificate Hostname Mismatch Monitoring": "Cypho SSL Certificate Hostname Mismatch Monitoring",
+        "Security Misconfiguration": "Cypho Security Misconfiguration",
+        "Sensitive Data Exposure Monitoring": "Cypho Sensitive Data Exposure Monitoring",
+        "Social Media Account Impersonation Monitoring": "Cypho Social Media Account Impersonation Monitoring",
+        "URL and Domain Analysis Services Monitoring": "Cypho URL and Domain Analysis Services Monitoring"
+    },
+    "name": "Cypho Threat Intelligence Issue Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "category_name"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

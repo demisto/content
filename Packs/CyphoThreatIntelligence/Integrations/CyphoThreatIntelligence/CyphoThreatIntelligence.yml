@@ -1,0 +1,110 @@
+category: Utilities
+commonfields:
+  id: Cypho Threat Intelligence
+  version: -1
+configuration:
+- defaultvalue: https://soar.monstersofhack.com
+  display: Server URL (e.g. https://soar.monstersofhack.com)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- display: ''
+  displaypassword: API Key
+  hiddenusername: true
+  name: apikey
+  required: true
+  type: 9
+- defaultvalue: 3 days ago
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 0
+- display: Tenant Name
+  name: tenant
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: This integration enables your organization to efficiently collect, analyze, and respond to actionable cyber alerts generated within the Cypho platform  enhancing visibility, automation, and overall security posture.
+display: Cypho Threat Intelligence
+name: Cypho Threat Intelligence
+script:
+  commands:
+  - arguments:
+    - description: The ticket_id is the unique ID used to identify and manage each incident across automations and integrations.
+      name: ticket_id
+    description: Retrieves the full details of a specific security incident from Cypho using its unique ticket_id. This command returns the raw response from the Cypho API, including metadata such as title, status, risk level, category, timestamps, impacted asset, and more.This command is intended for debugging purposes only and should not be used in production playbooks.
+    name: cypho-get-incident
+  - arguments:
+    - description: The ticket_id is the unique ID used to identify and manage each incident across automations and integrations.
+      name: ticket_id
+    - description: The user_email field stores the email address of the user, and it must match the email of a registered user in the Cypho platform to ensure correct user mapping and permission handling.
+      name: user_email
+    description: Assign a Cypho issue to an analyst by constructing their email from the given username and domain. The incident is assigned and updated with this user’s email.
+    name: cypho-assign-incident
+  - arguments:
+    - description: The ticket_id is the unique ID used to identify and manage each incident across automations and integrations.
+      name: ticket_id
+    - description: The status_reason field stores a comment or explanation describing the reason for an incident’s current status, and this note is added directly to the incident record in the Cypho platform.
+      name: status_reason
+    - description: The user_email field stores the email address of the user, and it must match the email of a registered user in the Cypho platform to ensure correct user mapping and permission handling.
+      name: user_email
+    description: This command sends a comment as the status_reason parameter and attributes it to a user constructed from the provided username and domain. It is used to log investigation notes or analyst input directly on the issue.
+    name: cypho-add-comment
+  - arguments:
+    - description: The ticket_id is the unique ID used to identify and manage each incident across automations and integrations.
+      name: ticket_id
+    - description: The user_email field stores the email address of the user, and it must match the email of a registered user in the Cypho platform to ensure correct user mapping and permission handling.
+      name: user_email
+    - description: The severity field indicates the criticality level of an incident, helping teams prioritize and manage response efforts effectively.
+      name: severity
+    description: Updates the severity level of a specific Cypho issue using its unique ticket ID. This command is used to escalate or de-escalate the risk level ("Low", "Moderate", or "Critical") based on analysis or triage.
+    name: cypho-update-severity
+  - arguments:
+    - description: The ticket_id is the unique ID used to identify and manage each incident across automations and integrations.
+      name: ticket_id
+    description: Downloads one or more attachments from a Cypho incident using the incident's unique "ticket_id". The command retrieves the attachment URLs from the issue and returns the files directly to the War Room. Useful for reviewing screenshots, logs, or other evidence related to the incident.
+    name: cypho-download-attachment
+  - arguments:
+    - description: The ticket_id is the unique ID used to identify and manage each incident across automations and integrations.
+      name: ticket_id
+    - description: The user_email field stores the email address of the user, and it must match the email of a registered user in the Cypho platform to ensure correct user mapping and permission handling.
+      name: user_email
+    - auto: PREDEFINED
+      description: A boolean argument that, when set to true, approves the issue, and when set to false, dismisses it.
+      name: approve
+      predefined:
+      - 'True'
+      - 'False'
+    description: Approves or dismisses a Cypho issue based on the provided ticket ID, user email, and approval decision.
+    name: cypho-approve-dismiss-issue
+  dockerimage: demisto/python3:3.12.12.5490952
+  isFetchSamples: true
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
