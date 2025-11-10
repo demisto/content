@@ -223,28 +223,17 @@ def initiate_polling(command: str, args: dict, task_id: int | str, api_target: s
     )
 
 
-# Hash validators (regex-based)
-_MD5_RE = re.compile(r"^[A-Fa-f0-9]{32}$")
-_SHA1_RE = re.compile(r"^[A-Fa-f0-9]{40}$")
-_SHA256_RE = re.compile(r"^[A-Fa-f0-9]{64}$")
-
-
+# Hash validators (using CommonServerPython regex patterns)
 def is_valid_md5(value: str | None) -> bool:
-    if not value:
-        return False
-    return bool(_MD5_RE.fullmatch(value))
+    return bool(value and md5Regex.fullmatch(value))
 
 
 def is_valid_sha1(value: str | None) -> bool:
-    if not value:
-        return False
-    return bool(_SHA1_RE.fullmatch(value))
+    return bool(value and sha1Regex.fullmatch(value))
 
 
 def is_valid_sha256(value: str | None) -> bool:
-    if not value:
-        return False
-    return bool(_SHA256_RE.fullmatch(value))
+    return bool(value and sha256Regex.fullmatch(value))
 
 
 # endregion
