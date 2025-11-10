@@ -834,7 +834,7 @@ def create_appsec_issues_filter_and_tables(args: dict) -> tuple[list, FilterBuil
     if not tables:
         raise DemistoException(f"No matching issue type found for the given filter combination: {special_filter_args}")
 
-    filter_builder.add_field("cas_issues_cvss_score", FilterType.GTE, arg_to_float(args.get("cvss_score_gte", "")))
+    filter_builder.add_field("cas_issues_cvss_score", FilterType.GTE, arg_to_float(args.get("cvss_score_gte")))
     filter_builder.add_field("cas_issues_epss_score", FilterType.GTE, arg_to_float(args.get("epss_score_gte")))
     filter_builder.add_field("cas_issues_is_kev", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev")))
     filter_builder.add_field("cas_sla_status", FilterType.EQ, argToList(args.get("sla")))
@@ -979,6 +979,7 @@ def main():  # pragma: no cover
     args = demisto.args()
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
+    remove_nulls_from_dictionary(args)
     headers: dict = {}
 
     webapp_api_url = "/api/webapp"

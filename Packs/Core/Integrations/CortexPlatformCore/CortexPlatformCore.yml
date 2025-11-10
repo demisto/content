@@ -1421,10 +1421,10 @@ script:
           isArray: true
           auto: PREDEFINED
           predefined:
-            - n/a
-            - not_urgent
-            - urgent
-            - top_urgent
+            - N/A
+            - NOT_URGENT
+            - URGENT
+            - TOP_URGENT
         - name: fix_available
           description: Is there an available automated fix.
           isArray: true
