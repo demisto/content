@@ -3,7 +3,7 @@ import os
 import re
 import time
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 from pathlib import Path
 from typing import Any, Literal
 
@@ -242,13 +242,13 @@ def is_valid_sha256(value: str | None) -> bool:
 # =================================
 
 
-class ApiPrefix(Enum):
+class ApiPrefix(StrEnum):
     """Base versioning prefixes for the API."""
 
     V2 = "apiv2"
 
 
-class Resource(Enum):
+class Resource(StrEnum):
     """Core resource names."""
 
     API_TOKEN_AUTH = "api-token-auth"
@@ -257,7 +257,7 @@ class Resource(Enum):
     MACHINES = "machines"
 
 
-class Action(Enum):
+class Action(StrEnum):
     """Common actions or sub-paths."""
 
     CREATE = "create"
@@ -274,57 +274,57 @@ class Action(Enum):
     PCAP = "pcap"
 
 
-class CustomHeaders(Enum):
-    FILES_STREAM = {"Content-Type": "application/octet-stream"}
-
-
-class ResponseTypes(Enum):
+class ResponseTypes(StrEnum):
     JSON = "json"
     CONTENT = "content"
 
 
-class AuthParams(Enum):
+class AuthParams(StrEnum):
     TOKEN_KEY = "token"
     VALID_UNTIL_KEY = "valid_until"
     CACHE_KEY = "auth_info"
-    TOKEN_TTL_SECONDS = 60 * 60 * 24 * 1
+
+
+TOKEN_TTL_SECONDS = 60 * 60 * 24 * 1
+FILES_STREAM_HEADERS = {"Content-Type": "application/octet-stream"}
 
 
 # ---------- API Path Templates ----------
-BASE_PREFIX = ApiPrefix.V2.value
+BASE_PREFIX = f"{ApiPrefix.V2}"
 
 # Resource base paths for convenience
-TASKS_BASE = f"{BASE_PREFIX}/{Resource.TASKS.value}"
-FILES_BASE = f"{BASE_PREFIX}/{Resource.FILES.value}"
-MACHINES_BASE = f"{BASE_PREFIX}/{Resource.MACHINES.value}"
+TASKS_BASE = f"{BASE_PREFIX}/{Resource.TASKS}"
+FILES_BASE = f"{BASE_PREFIX}/{Resource.FILES}"
+MACHINES_BASE = f"{BASE_PREFIX}/{Resource.MACHINES}"
 
 # -- Authentication --
-API_AUTH = f"{BASE_PREFIX}/{Resource.API_TOKEN_AUTH.value}/"
+API_AUTH = f"{BASE_PREFIX}/{Resource.API_TOKEN_AUTH}/"
 
 # -- Tasks --
-TASK_CREATE_FILE = f"{TASKS_BASE}/{Action.CREATE.value}/{Action.FILE.value}/"
-TASK_CREATE_URL = f"{TASKS_BASE}/{Action.CREATE.value}/{Action.URL.value}/"
-TASK_STATUS = f"{TASKS_BASE}/{Action.STATUS.value}/{{task_id}}/"
-TASK_VIEW = f"{TASKS_BASE}/{Action.VIEW.value}/{{task_id}}/"
+TASK_CREATE_FILE = f"{TASKS_BASE}/{Action.CREATE}/{Action.FILE}/"
+TASK_CREATE_URL = f"{TASKS_BASE}/{Action.CREATE}/{Action.URL}/"
+TASK_STATUS = f"{TASKS_BASE}/{Action.STATUS}/{{task_id}}/"
+TASK_VIEW = f"{TASKS_BASE}/{Action.VIEW}/{{task_id}}/"
 TASK_LIST = f"{TASKS_BASE}/list/{{limit}}/{{offset}}/"
-TASK_DELETE = f"{TASKS_BASE}/{Action.DELETE.value}/{{task_id}}/"
-TASK_GET_REPORT_BASE = f"{TASKS_BASE}/{Action.GET.value}/report/{{task_id}}/"
-TASK_GET_PCAP = f"{TASKS_BASE}/{Action.GET.value}/{Action.PCAP.value}/{{task_id}}/"
-CUCKOO_STATUS_URL = f"{BASE_PREFIX}/cuckoo/{Action.STATUS.value}/"
-TASK_SCREENSHOTS_LIST = f"{TASKS_BASE}/{Action.GET.value}/screenshot/{{task_id}}/"
-TASK_SCREENSHOT_GET = f"{TASKS_BASE}/{Action.GET.value}/screenshot/{{task_id}}/{{number}}/"
+TASK_DELETE = f"{TASKS_BASE}/{Action.DELETE}/{{task_id}}/"
+TASK_GET_REPORT_BASE = f"{TASKS_BASE}/{Action.GET}/report/{{task_id}}/"
+TASK_GET_PCAP = f"{TASKS_BASE}/{Action.GET}/{Action.PCAP}/{{task_id}}/"
+CUCKOO_STATUS_URL = f"{BASE_PREFIX}/cuckoo/{Action.STATUS}/"
+TASK_SCREENSHOTS_LIST = f"{TASKS_BASE}/{Action.GET}/screenshot/{{task_id}}/"
+TASK_SCREENSHOT_GET = f"{TASKS_BASE}/{Action.GET}/screenshot/{{task_id}}/{{number}}/"
+
 # -- Files --
-FILE_VIEW_BY_TASK = f"{FILES_BASE}/{Action.VIEW.value}/{Action.ID.value}/{{task_id}}/"
-FILE_VIEW_BY_MD5 = f"{FILES_BASE}/{Action.VIEW.value}/{Action.MD5.value}/{{md5}}/"
-FILE_VIEW_BY_SHA256 = f"{FILES_BASE}/{Action.VIEW.value}/{Action.SHA256.value}/{{sha256}}/"
-FILES_GET_BY_TASK = f"{FILES_BASE}/{Action.GET.value}/task/{{task_id}}"
-FILES_GET_BY_MD5 = f"{FILES_BASE}/{Action.GET.value}/{Action.MD5.value}/{{md5}}"
-FILES_GET_BY_SHA1 = f"{FILES_BASE}/{Action.GET.value}/{Action.SHA1.value}/{{sha1}}"
-FILES_GET_BY_SHA256 = f"{FILES_BASE}/{Action.GET.value}/{Action.SHA256.value}/{{sha256}}"
+FILE_VIEW_BY_TASK = f"{FILES_BASE}/{Action.VIEW}/{Action.ID}/{{task_id}}/"
+FILE_VIEW_BY_MD5 = f"{FILES_BASE}/{Action.VIEW}/{Action.MD5}/{{md5}}/"
+FILE_VIEW_BY_SHA256 = f"{FILES_BASE}/{Action.VIEW}/{Action.SHA256}/{{sha256}}/"
+FILES_GET_BY_TASK = f"{FILES_BASE}/{Action.GET}/task/{{task_id}}"
+FILES_GET_BY_MD5 = f"{FILES_BASE}/{Action.GET}/{Action.MD5}/{{md5}}"
+FILES_GET_BY_SHA1 = f"{FILES_BASE}/{Action.GET}/{Action.SHA1}/{{sha1}}"
+FILES_GET_BY_SHA256 = f"{FILES_BASE}/{Action.GET}/{Action.SHA256}/{{sha256}}"
 
 # -- Machines --
 MACHINES_LIST = f"{MACHINES_BASE}/list/"
-MACHINE_VIEW = f"{MACHINES_BASE}/{Action.VIEW.value}/{{name}}/"
+MACHINE_VIEW = f"{MACHINES_BASE}/{Action.VIEW}/{{name}}"
 
 
 # ---------- Client: Auth & HTTP ----------
@@ -378,14 +378,14 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         """
         time_now = int(time.time())
         integration_context = get_integration_context() or {}
-        cached_auth_info = integration_context.get(AuthParams.CACHE_KEY.value)
+        cached_auth_info = integration_context.get(AuthParams.CACHE_KEY)
 
         if not cached_auth_info or not isinstance(cached_auth_info, dict):
             demisto.debug("Auth cache is empty or corrupt.")
             return None
 
-        cached_token = cached_auth_info.get(AuthParams.TOKEN_KEY.value)
-        valid_until_str = cached_auth_info.get(AuthParams.VALID_UNTIL_KEY.value)
+        cached_token = cached_auth_info.get(AuthParams.TOKEN_KEY)
+        valid_until_str = cached_auth_info.get(AuthParams.VALID_UNTIL_KEY)
 
         if not cached_token or not valid_until_str:
             demisto.debug("Cached auth info is missing token or expiry time.")
@@ -414,7 +414,7 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         If an error is detected, logs the failure and raises a DemistoException.
         """
         # If response type is content (bytes), try to parse as JSON to check for errors
-        if resp_type == ResponseTypes.CONTENT.value and isinstance(response, bytes):
+        if resp_type == ResponseTypes.CONTENT and isinstance(response, bytes):
             try:
                 response = json.loads(response.decode("utf-8"))
             except (json.JSONDecodeError, UnicodeDecodeError, AttributeError):
@@ -467,15 +467,15 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
 
         demisto.debug("Successfully received new API token.")
 
-        new_valid_until = time_now + AuthParams.TOKEN_TTL_SECONDS.value
+        new_valid_until = time_now + TOKEN_TTL_SECONDS
 
         new_auth_info = {
-            AuthParams.TOKEN_KEY.value: token,
-            AuthParams.VALID_UNTIL_KEY.value: str(new_valid_until),
+            AuthParams.TOKEN_KEY: token,
+            AuthParams.VALID_UNTIL_KEY: str(new_valid_until),
         }
 
         integration_context = get_integration_context() or {}  # Re-fetch context to avoid race condition or stale data
-        integration_context[AuthParams.CACHE_KEY.value] = new_auth_info
+        integration_context[AuthParams.CACHE_KEY] = new_auth_info
         set_integration_context(integration_context)
 
         demisto.debug(f"Successfully **regenerated and cached** a new token. It is valid until {time.ctime(new_valid_until)}.")
@@ -536,7 +536,7 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         headers: dict[str, str] | None = None,
         data: dict[str, Any] | None = None,
         files: dict[str, Any] | None = None,
-        resp_type: str = ResponseTypes.JSON.value,
+        resp_type: str = ResponseTypes.JSON,
     ) -> Any:
         """
         Execute HTTP request with automatic retry on 429 (rate limit) errors.
@@ -689,7 +689,7 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
             suffix += f"{format}/"
         if zip_download:
             suffix += "zip/"
-            return self.http_request("GET", url_suffix=suffix, resp_type=ResponseTypes.CONTENT.value)
+            return self.http_request("GET", url_suffix=suffix, resp_type=ResponseTypes.CONTENT)
 
         return self.http_request("GET", url_suffix=suffix)
 
@@ -698,7 +698,7 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         return self.http_request(
             "GET",
             url_suffix=TASK_GET_PCAP.format(task_id=task_id),
-            resp_type=ResponseTypes.CONTENT.value,
+            resp_type=ResponseTypes.CONTENT,
         )
 
     def list_task_screenshots(self, task_id: int | str) -> Any:
@@ -706,7 +706,7 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         return self.http_request(
             "GET",
             url_suffix=TASK_SCREENSHOTS_LIST.format(task_id=task_id),
-            resp_type=ResponseTypes.CONTENT.value,
+            resp_type=ResponseTypes.CONTENT,
         )
 
     def get_task_screenshot(self, task_id: int | str, number: int | str) -> bytes:
@@ -714,7 +714,7 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         return self.http_request(
             "GET",
             url_suffix=TASK_SCREENSHOT_GET.format(task_id=task_id, number=number),
-            resp_type=ResponseTypes.CONTENT.value,
+            resp_type=ResponseTypes.CONTENT,
         )
 
     def download_all_screenshots_zip(self, task_id: int | str) -> bytes:
@@ -722,7 +722,7 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         return self.http_request(
             "GET",
             url_suffix=TASK_SCREENSHOTS_LIST.format(task_id=task_id),
-            resp_type=ResponseTypes.CONTENT.value,
+            resp_type=ResponseTypes.CONTENT,
         )
 
     # ---------- File View & Download ----------
@@ -745,8 +745,8 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         return self.http_request(
             "GET",
             url_suffix=FILES_GET_BY_TASK.format(task_id=task_id),
-            headers=CustomHeaders.FILES_STREAM.value,
-            resp_type=ResponseTypes.CONTENT.value,
+            headers=FILES_STREAM_HEADERS,
+            resp_type=ResponseTypes.CONTENT,
         )
 
     def files_get_by_md5(self, md5: str) -> dict[str, Any]:
@@ -756,8 +756,8 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         return self.http_request(
             "GET",
             url_suffix=FILES_GET_BY_MD5.format(md5=md5),
-            headers=CustomHeaders.FILES_STREAM.value,
-            resp_type=ResponseTypes.CONTENT.value,
+            headers=FILES_STREAM_HEADERS,
+            resp_type=ResponseTypes.CONTENT,
         )
 
     def files_get_by_sha1(self, sha1: str) -> dict[str, Any]:
@@ -767,8 +767,8 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         return self.http_request(
             "GET",
             url_suffix=FILES_GET_BY_SHA1.format(sha1=sha1),
-            headers=CustomHeaders.FILES_STREAM.value,
-            resp_type=ResponseTypes.CONTENT.value,
+            headers=FILES_STREAM_HEADERS,
+            resp_type=ResponseTypes.CONTENT,
         )
 
     def files_get_by_sha256(self, sha256: str) -> dict[str, Any]:
@@ -778,8 +778,8 @@ class CapeSandboxClient(BaseClient):  # noqa: F405
         return self.http_request(
             "GET",
             url_suffix=FILES_GET_BY_SHA256.format(sha256=sha256),
-            headers=CustomHeaders.FILES_STREAM.value,
-            resp_type=ResponseTypes.CONTENT.value,
+            headers=FILES_STREAM_HEADERS,
+            resp_type=ResponseTypes.CONTENT,
         )
 
     # ---------- Machines ----------
