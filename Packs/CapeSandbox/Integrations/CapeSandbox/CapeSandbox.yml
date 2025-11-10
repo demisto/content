@@ -195,7 +195,7 @@ script:
           description: The polling interval in seconds. It is strongly recommended to use an interval of 60 seconds or more to prevent API throttling by the CAPE server.
           required: false
         - name: pollingTimeout
-          description: The total time allowed in seconds for the XSOAR polling sequence to complete.
+          description: The total time allowed in seconds for the XSOAR/XSIAM polling sequence to complete.
           required: false
 
       outputs:
