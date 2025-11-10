@@ -723,7 +723,7 @@ def _get_max_events_to_fetch(params_max_fetch: str | int, arg_limit: str | int) 
 def validate_authentication_params(client_id: str, client_secret: str, api_key: str, scope: str) -> None:
     """
     Validate authentication parameters.
-    
+
     Args:
         client_id: The Client ID for OAuth2 authentication.
         client_secret: The Client Secret for OAuth2 authentication.
@@ -740,8 +740,7 @@ def validate_authentication_params(client_id: str, client_secret: str, api_key: 
     # CHECK FOR AMBIGUOUS OVER-CONFIGURATION
     if has_client_id and has_client_secret and has_api_key:
         raise ValueError(
-            "Both OAuth2 (Client ID/Secret) and API Key were provided. "
-            "Please configure only one authentication method."
+            "Both OAuth2 (Client ID/Secret) and API Key were provided. " "Please configure only one authentication method."
         )
 
     # OAUTH2 VALIDATION
@@ -752,13 +751,13 @@ def validate_authentication_params(client_id: str, client_secret: str, api_key: 
                 "Client ID provided but Client Secret is missing. "
                 "Both Client ID and Client Secret are required for OAuth2 authentication."
             )
-        
+
         if has_client_secret and not has_client_id:
             raise ValueError(
                 "Client Secret provided but Client ID is missing. "
                 "Both Client ID and Client Secret are required for OAuth2 authentication."
             )
-        
+
         # Check for required SCOPES when using OAuth2
         if not has_scopes:
             raise ValueError(
@@ -775,7 +774,7 @@ def validate_authentication_params(client_id: str, client_secret: str, api_key: 
 def get_authentication_method(client_id: str, client_secret: str, api_key: str) -> str:
     """
     Determine which authentication method to use based on provided credentials.
-    
+
     Args:
         client_id: The Client ID for OAuth2 authentication.
         client_secret: The Client Secret for OAuth2 authentication.
