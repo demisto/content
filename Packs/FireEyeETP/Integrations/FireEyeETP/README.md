@@ -40,9 +40,9 @@ We support two different authentication methods depending on the endpoint domain
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | Valid URLs (US, EMEA, USGOV): https://us.etp.trellix.com / https://etp.us.fireeye.com, https://eu.etp.trellix.com / https://etp.eu.fireeye.com, https://etp.us.fireeyegov.com | True |
-| Client ID | For the Trellix server URL. |  |
-| Client Secret | For the Trellix server URL |  |
-| OAuth Scopes | For the Trellix server URL. Space-separated list of OAuth scopes. <br>**Note:** Only include scopes that your application's Client ID has already been authorized to use. The full list is: `etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw` | False || API Key | Use the Api key for the FireEye base URL. | False |
+| Client ID | For the Trellix server URL (OAuth). |  |
+| Client Secret | For the Trellix server URL (OAuth).|  |
+| OAuth Scopes | For the Trellix server URL (OAuth).<br> Space-separated list of OAuth scopes. <br>**Note:** Only include scopes that your application's Client ID has already been authorized to use. The full list is: `etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw` | False || API Key | Use the Api key for the FireEye base URL. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Fetch incidents |  | False |

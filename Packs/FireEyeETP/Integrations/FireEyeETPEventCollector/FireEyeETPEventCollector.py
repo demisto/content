@@ -809,10 +809,7 @@ def main() -> None:  # pragma: no cover
     hide_sensitive = argToBoolean(params.get("hide_sensitive", True))
 
     # Validate authentication configuration
-    try:
-        validate_authentication_params(client_id, client_secret, api_key, scope)
-    except ValueError as e:
-        return_error(str(e))
+    validate_authentication_params(client_id, client_secret, api_key, scope)
 
     last_run = demisto.getLastRun()
 

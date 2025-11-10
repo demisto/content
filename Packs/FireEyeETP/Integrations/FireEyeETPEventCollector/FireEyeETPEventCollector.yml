@@ -12,12 +12,12 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: Client ID
+- display: Client ID (OAuth)
   name: oauth_credentials
-  displaypassword: Client Secret
+  displaypassword: Client Secret (OAuth)
   type: 9
   section: Connect
-- display: OAuth Scopes
+- display: OAuth Scopes (OAuth)
   name: oauth_scopes
   defaultvalue: etp.alrt.ro etp.trce.ro
   type: 0

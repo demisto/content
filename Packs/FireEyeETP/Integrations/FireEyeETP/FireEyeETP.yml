@@ -16,13 +16,13 @@ configuration:
   required: true
   additionalinfo: "Valid URLs (US, EMEA, USGOV): https://us.etp.trellix.com / https://etp.us.fireeye.com, https://eu.etp.trellix.com / https://etp.eu.fireeye.com, https://etp.us.fireeyegov.com"
   section: Connect
-- display: Client ID
+- display: Client ID (OAuth)
   name: credentials
-  displaypassword: Client Secret
+  displaypassword: Client Secret (OAuth)
   type: 9
   additionalinfo: Use the Client ID and Client Secret for the Trellix base URL.
   section: Connect
-- display: OAuth Scopes
+- display: OAuth Scopes (OAuth)
   name: oauth_scopes
   defaultvalue: etp.alrt.ro etp.trce.ro
   type: 0

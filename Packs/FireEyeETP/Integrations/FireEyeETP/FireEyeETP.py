@@ -856,15 +856,11 @@ def main():
 
     verify_certificate = not params.get("unsecure", False)
 
-    # Validate authentication configuration
-    try:
-        validate_authentication_params()
-    except ValueError as e:
-        return_error(str(e))
-
     set_proxies()
 
     try:
+        # Validate authentication configuration
+        validate_authentication_params()
         headers = get_auth_headers()
 
         client = Client(base_url=BASE_PATH, verify=verify_certificate, headers=headers, proxy=proxy)
