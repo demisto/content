@@ -1,0 +1,7 @@
+{
+    "name": "projects/dummy_project_id/locations/us/instances/dummy_instance_id/rules/dummy_rule_id",
+    "alerting": true,
+    "runFrequency": "LIVE",
+    "executionState": "DEFAULT",
+    "lastAlertStatusChangeTime": "2025-07-16T05:41:51.366874Z"
+}

@@ -1,4 +1,4 @@
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -366,7 +366,7 @@ script:
       description: Benign.
       type: String
     description: Gets URL enrichment from the feed.
-  dockerimage: demisto/python3:3.12.11.3982393
+  dockerimage: demisto/python3:3.12.11.4819260
   feed: true
   subtype: python3
 tests:

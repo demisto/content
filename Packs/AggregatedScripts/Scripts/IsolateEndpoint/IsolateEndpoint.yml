@@ -38,8 +38,10 @@ outputs:
 script: '-'
 timeout: '0'
 type: python
+compliantpolicies:
+  - EndPoint Isolation
 subtype: python3
-dockerimage: demisto/python3:3.12.11.4284848
+dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.10.0
 tests:
 - IsolateEndpoint - Testplaybook

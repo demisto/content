@@ -1,5 +1,5 @@
 category: Case Management
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -11,11 +11,6 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: Username/Client ID
-  name: credentials
-  type: 9
-  required: false
-  section: Connect
 - additionalinfo: Select this checkbox if to use OAuth 2.0 authentication. See (?) for more information.
   display: Use OAuth Login
   name: use_oauth
@@ -26,6 +21,12 @@ configuration:
   display: Use JWT Authentication
   name: use_jwt
   type: 8
+  required: false
+  section: Connect
+- display: Username/Client ID/JWT Audience (aud)
+  displaypassword: Password/Client Secret
+  name: credentials
+  type: 9
   required: false
   section: Connect
 - displaypassword: Private key
@@ -41,6 +42,12 @@ configuration:
   section: Connect
 - display: sub
   name: sub
+  type: 0
+  required: false
+  section: Connect
+- additionalinfo: If not set, Client ID will be used.
+  display: iss (Issuer)
+  name: iss
   type: 0
   required: false
   section: Connect
@@ -943,6 +950,13 @@ script:
       - sn_si_incident
     description: Deletes a ticket from ServiceNow.
     name: servicenow-delete-ticket
+    outputs:
+    - contextPath: ServiceNow.Ticket.ID
+      description: Ticket ID.
+      type: string
+    - contextPath: ServiceNow.Ticket.DeleteMessage
+      description: A Message indicating the result of the ticket deletion operation.
+      type: string
   - arguments:
     - description: Attachment File ID.
       name: file_sys_id
@@ -1598,9 +1612,9 @@ script:
     description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
     name: get-remote-data
   - arguments:
-      - description: The ticket ID.
-        name: id
-        required: true
+    - description: The ticket ID.
+      name: id
+      required: true
     description: Get remote data preview from a remote incident. This method does not update the current incident, and is used to preview the ticket which would be updated.
     name: get-remote-data-preview
   - arguments:
@@ -1944,7 +1958,7 @@ script:
       description: Ticket close code.
       type: string
 
-  dockerimage: demisto/auth-utils:1.0.0.4578605
+  dockerimage: demisto/auth-utils:1.0.0.5427065
   isfetch: true
   ismappable: true
   isremotesyncin: true

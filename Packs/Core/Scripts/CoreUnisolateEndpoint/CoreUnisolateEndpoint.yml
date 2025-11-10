@@ -5,7 +5,7 @@ name: CoreUnisolateEndpoint
 script: ''
 type: python
 tags:
-  - Utilities
+- Utilities
 comment: A polling wrapper script; Unisolates the specified endpoint.
 enabled: true
 args:
@@ -36,3 +36,4 @@ marketplaces:
 - platform
 supportedModules:
 - agentix_xsiam
+- xsiam

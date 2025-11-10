@@ -1,5 +1,5 @@
 category: Endpoint
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -1769,7 +1769,29 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-  dockerimage: demisto/python3:3.12.8.3296088
+  - description: Get license information about the tenant such as number of connectors
+      registered, tier level, licensed seats count etc.
+    name: cisco-amp-license-get
+    outputs:
+    - contextPath: CiscoAMP.LicenseInformation.number_of_connectors_registered
+      description: The number of currently registered connectors.
+      type: Number
+    - contextPath: CiscoAMP.LicenseInformation.number_of_connectors_seen_in_the_last_30_days
+      description: The number of recently seen connectors in the last 30 days.
+      type: Number
+    - contextPath: CiscoAMP.LicenseInformation.license_summaries.end_date
+      description: The end date of the license.
+      type: String
+    - contextPath: CiscoAMP.LicenseInformation.license_summaries.start_date
+      description: The start date of the license.
+      type: String
+    - contextPath: CiscoAMP.LicenseInformation.license_summaries.licensed_seats_count
+      description: The number of licensed seats.
+      type: Number
+    - contextPath: CiscoAMP.LicenseInformation.license_summaries.tier
+      description: The tier type of the license.
+      type: String
+  dockerimage: demisto/python3:3.12.11.4819260
   isfetch: true
   runonce: false
   script: '-'
