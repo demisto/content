@@ -1823,7 +1823,7 @@ script:
     description: Creates a new issue in Jira.
     name: jira-create-issue-quick-action
     prettyname: Create Jira Ticket
-    hidden:platform: true
+    hidden:marketplacev2: true
     quickaction:platform: true
     outputs:
     - contextPath: Ticket.Id
