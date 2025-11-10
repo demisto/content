@@ -1235,7 +1235,7 @@ There is no context output for this command.
 
 ---
 
-Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
+Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSAIM/XSOAR from version 6.1.
 
 #### Base Command
 
@@ -1253,20 +1253,20 @@ There is no context output for this command.
 
 ## Incident Mirroring
 
-You can enable incident mirroring between Cortex XSOAR incidents and Netskope (API v2) LOCAL corresponding events (available from Cortex XSOAR version 6.0.0).
+You can enable incident mirroring between Cortex XSAIM/XSOAR incidents and Netskope (API v2) LOCAL corresponding events (available from Cortex XSAIM/XSOAR version 6.0.0).
 To set up the mirroring:
 
 1. Enable _Fetching incidents_ in your instance configuration.
 2. In the _Mirroring Direction_ integration parameter, select in which direction the incidents should be mirrored:
 
-    | **Option**            | **Description**                                                                                                        |
-    | --------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-    | None                  | Turns off incident mirroring.                                                                                          |
-    | Incoming              | Any changes in Netskope (API v2) LOCAL events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
-    | Outgoing              | Any changes in Cortex XSOAR incidents will be reflected in Netskope (API v2) LOCAL events (outgoing mirrored fields).  |
-    | Incoming and Outgoing |                                                                                                                        |
+    | **Option**            | **Description**                                                                                                              |
+    | --------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+    | None                  | Turns off incident mirroring.                                                                                                |
+    | Incoming              | Any changes in Netskope (API v2) LOCAL events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents.       |
+    | Outgoing              | Any changes in Cortex XSAIM/XSOAR incidents will be reflected in Netskope (API v2) LOCAL events (outgoing mirrored fields).  |
+    | Incoming and Outgoing |                                                                                                                              |
 
-3. Optional: Check the _Close Mirrored XSOAR Incident_ integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in Netskope (API v2) LOCAL.
+3. Optional: Check the _Close Mirrored XSAIM/XSOAR Incident_ integration parameter to close the Cortex XSAIM/XSOAR incident when the corresponding event is closed in Netskope (API v2) LOCAL.
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
-**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Netskope (API v2) LOCAL.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSAIM/XSOAR and Netskope (API v2) LOCAL.
