@@ -557,3 +557,57 @@ Read the properties and relationships of a riskDetection object.
 >|Id|User Id|User Display Name|User Principal Name|Risk Detail|Risk Event Type|Risk Level|Risk State|Ip Address|Detection Timing Type|Last Updated Date Time|Location|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 6565 | 999 | Svetlana Israeli | SvetlanaI@test.com | userPassedMFADrivenByRiskBasedPolicy | unfamiliarFeatures | low | remediated | 3.3.3.3 | realtime | 2021-07-03T13:38:04.6531838Z | city: Lviv<br/>state: L'vivs'ka Oblast'<br/>countryOrRegion: UA<br/>geoCoordinates: {"latitude": 49, "longitude": 24} |
+
+### azure-risky-users-confirm-safe
+
+***
+Confirms user(s) as safe (post-investigation).
+
+#### Base Command
+
+`azure-risky-users-confirm-safe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or UPN of the user(s) to confirm as safe. Supports an array of values. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!azure-risky-users-confirm-safe user=name@test.com```
+
+#### Human Readable Output
+
+> TODO
+
+### azure-risky-users-confirm-compromise
+
+***
+Confirms user(s) as compromised.
+
+#### Base Command
+
+`azure-risky-users-confirm-compromise`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or UPN of the user(s) to confirm as compromised. Supports an array of values. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!azure-risky-users-confirm-compromise user=name@test.com```
+
+#### Human Readable Output
+
+> TODO
