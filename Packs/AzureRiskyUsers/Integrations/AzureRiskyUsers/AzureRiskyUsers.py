@@ -103,7 +103,6 @@ class Client:
         else:  # Device Code Flow
             return "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
 
-
     def upn_to_user_id(self, user_id_or_upn: str) -> str:
         """Retrieves the user ID of a user.
 
@@ -114,11 +113,10 @@ class Client:
             str: The user ID
         """
         return (
-            self.ms_client.http_request(method="GET", url_suffix=f"users/{upn_to_user_id}")["id"]
+            self.ms_client.http_request(method="GET", url_suffix=f"users/{user_id_or_upn}")["id"]
             if "@" in user_id_or_upn
             else user_id_or_upn
         )
-
 
     def risky_users_list_request(
         self,
@@ -199,7 +197,7 @@ class Client:
             Response (dict): API response from AzureRiskyUsers.
         """
         res: requests.Response =  self.ms_client.http_request(
-            method="POST", url_suffix="identityProtection/riskyUsers/confirm", json_data={"userIds": user_ids}, resp_type="response"
+            method="POST", url_suffix="identityProtection/riskyUsers/confirmSafe", json_data={"userIds": user_ids}, resp_type="response"
         )
         if res.status_code != 204:
             raise DemistoException(f"Unable to confirm risky user:\n{res.text}")
