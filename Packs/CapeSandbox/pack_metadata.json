@@ -1,6 +1,6 @@
 {
     "name": "Cape Sandbox",
-    "description": "CAPE Sandbox is an Open Source software for automating analysis of suspicious files.",
+    "description": "CAPE Sandbox is an open-source software for automating the analysis of suspicious files.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
