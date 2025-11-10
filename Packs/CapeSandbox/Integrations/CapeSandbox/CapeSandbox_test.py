@@ -14,6 +14,10 @@ sys.modules["DemistoClassApiModule"] = mock_demisto_class_api_module
 # Import CapeSandbox after mock setup - this is intentional and required
 import CapeSandbox  # noqa: E402
 from CapeSandbox import (  # noqa: E402
+    FILE_TYPE_FILE,
+    FILE_TYPE_NETWORK_DUMP,
+    FILE_TYPE_REPORT,
+    FILE_TYPE_SCREENSHOT,
     CapeSandboxClient,
     build_file_name,
     build_submit_form,
@@ -290,21 +294,21 @@ def test_build_submit_form_all_parameters(args, url_mode, check_keys_present, ch
 
 
 @pytest.mark.parametrize(
-    "identifier,file_type,file_format,screenshot_number,expected",
+    "identifier,file_type_info,file_format,screenshot_number,expected",
     [
-        (101, "screenshot", None, 5, "cape_task_101_screenshot_5.png"),
-        (102, "report", "csv", None, "cape_task_102_report.csv"),
-        (MOCK_MD5, "file", None, None, f"cape_task_{MOCK_MD5}_file.json"),
-        (103, "network_dump", None, None, "cape_task_103_network_dump.pcap"),
-        ("12345", "unknown_type", "txt", None, "cape_task_12345.txt"),
+        (101, FILE_TYPE_SCREENSHOT, None, 5, "cape_task_101_screenshot_5.png"),
+        (102, FILE_TYPE_REPORT, "csv", None, "cape_task_102_report.csv"),
+        (MOCK_MD5, FILE_TYPE_FILE, None, None, f"cape_task_{MOCK_MD5}_file.json"),
+        (103, FILE_TYPE_NETWORK_DUMP, None, None, "cape_task_103_network_dump.pcap"),
+        ("12345", None, "txt", None, "cape_task_12345.txt"),
         ("404", None, None, None, "cape_task_404.dat"),
     ],
 )
-def test_build_file_name_all_types(identifier, file_type, file_format, screenshot_number, expected):
+def test_build_file_name_all_types(identifier, file_type_info, file_format, screenshot_number, expected):
     """Tests build_file_name constructs filenames for all supported types."""
     result = build_file_name(
         identifier,
-        file_type=file_type,
+        file_type_info=file_type_info,
         file_format=file_format,
         screenshot_number=screenshot_number,
     )
@@ -312,20 +316,20 @@ def test_build_file_name_all_types(identifier, file_type, file_format, screensho
 
 
 @pytest.mark.parametrize(
-    "identifier,file_type,file_format,expected",
+    "identifier,file_type_info,file_format,expected",
     [
         # Report with different formats
-        (101, "report", "pdf", "cape_task_101_report.pdf"),
-        (102, "report", "html", "cape_task_102_report.html"),
-        (103, "report", "zip", "cape_task_103_report.zip"),
+        (101, FILE_TYPE_REPORT, "pdf", "cape_task_101_report.pdf"),
+        (102, FILE_TYPE_REPORT, "html", "cape_task_102_report.html"),
+        (103, FILE_TYPE_REPORT, "zip", "cape_task_103_report.zip"),
         # File with different formats
-        (201, "file", "bin", "cape_task_201_file.bin"),
-        (202, "file", "exe", "cape_task_202_file.exe"),
+        (201, FILE_TYPE_FILE, "bin", "cape_task_201_file.bin"),
+        (202, FILE_TYPE_FILE, "exe", "cape_task_202_file.exe"),
     ],
 )
-def test_build_file_name_report_formats(identifier, file_type, file_format, expected):
+def test_build_file_name_report_formats(identifier, file_type_info, file_format, expected):
     """Tests build_file_name with various report and file formats."""
-    result = build_file_name(identifier, file_type=file_type, file_format=file_format)
+    result = build_file_name(identifier, file_type_info=file_type_info, file_format=file_format)
     assert result == expected
 
 

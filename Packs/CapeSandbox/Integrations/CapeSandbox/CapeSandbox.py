@@ -2,6 +2,7 @@ import json
 import os
 import re
 import time
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Any, Literal
@@ -33,6 +34,21 @@ POLLING_TIMEOUT_SECONDS = 60 * 15
 LIST_DEFAULT_LIMIT = 50
 MAX_RETRY_ATTEMPTS = 3
 RETRY_BASE_DELAY = 5
+
+
+@dataclass(frozen=True)
+class FileTypeInfo:
+    """File type metadata for building standardized filenames."""
+
+    ext: str
+    part: str
+
+
+# File type configurations
+FILE_TYPE_SCREENSHOT = FileTypeInfo(ext="png", part="screenshot")
+FILE_TYPE_REPORT = FileTypeInfo(ext="json", part="report")
+FILE_TYPE_FILE = FileTypeInfo(ext="json", part="file")
+FILE_TYPE_NETWORK_DUMP = FileTypeInfo(ext="pcap", part="network_dump")
 
 
 def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
@@ -130,39 +146,39 @@ def extract_entry_file_data(entry_id: str) -> tuple[str, str]:
     return path, final_name
 
 
-TYPE_MAP = {
-    "screenshot": {"ext": "png", "part": "screenshot"},
-    "report": {"ext": "json", "part": "report"},
-    "file": {"ext": "json", "part": "file"},
-    "network_dump": {"ext": "pcap", "part": "network_dump"},
-}
-
-
 def build_file_name(
     file_identifier: str | int,
-    file_type: Literal["file", "report", "screenshot", "network_dump"] | None = None,
+    file_type_info: FileTypeInfo | None = None,
     screenshot_number: int | None = None,
     file_format: (Literal["pdf", "html", "csv", "zip", "pcap", "bin"] | str | None) = None,
 ) -> str:
     """
     Constructs a standardized filename based on the task identifier and file metadata.
+
+    Args:
+        file_identifier: Task ID or other identifier for the file
+        file_type_info: FileTypeInfo instance containing extension and part information
+        screenshot_number: Optional screenshot number for screenshot files
+        file_format: Optional format override for the file extension
+
+    Returns:
+        Standardized filename string
     """
 
     extension = "dat"
     middle_part_base = None
 
-    # Get defaults from map if type is known
-    if file_type in TYPE_MAP:
-        info = TYPE_MAP[file_type]
-        extension = info["ext"]
-        middle_part_base = info["part"]
+    # Get defaults from FileTypeInfo if provided
+    if file_type_info:
+        extension = file_type_info.ext
+        middle_part_base = file_type_info.part
 
     # Apply overrides based on other args
     if file_format:
         extension = str(file_format)
 
     # Special handling for screenshot number always overrides
-    if file_type == "screenshot" and screenshot_number is not None:
+    if file_type_info is FILE_TYPE_SCREENSHOT and screenshot_number is not None:
         middle_part_base = f"screenshot_{screenshot_number}"
         extension = "png"  # Ensure it's always png
 
@@ -947,7 +963,7 @@ def _handle_reported_task(client: CapeSandboxClient, task_id: str, final_output_
     report_file_content = client.get_task_report(task_id=task_id, format="json", zip_download=True)
     demisto.debug(f"Report ZIP size: {len(report_file_content)} bytes")
 
-    filename = build_file_name(file_identifier=task_id, file_type="report", file_format="zip")
+    filename = build_file_name(file_identifier=task_id, file_type_info=FILE_TYPE_REPORT, file_format="zip")
     demisto.debug(f"Generated report filename: {filename}")
     file_result = fileResult(filename, report_file_content)
 
@@ -1106,7 +1122,7 @@ def cape_pcap_file_download_command(client: CapeSandboxClient, args: dict[str, A
 
     filename = build_file_name(
         file_identifier=task_id,
-        file_type="network_dump",
+        file_type_info=FILE_TYPE_NETWORK_DUMP,
         file_format="pcap",
     )
 
@@ -1159,7 +1175,7 @@ def cape_sample_file_download_command(client: CapeSandboxClient, args: dict[str,
 
     filename = build_file_name(
         file_identifier=filename_base,
-        file_type="file",
+        file_type_info=FILE_TYPE_FILE,
         file_format="bin",
     )
 
@@ -1292,7 +1308,7 @@ def cape_task_report_get_command(client: CapeSandboxClient, args: dict[str, Any]
         demisto.debug(f"Downloading ZIP report for task_id: {task_id}")
         content = client.get_task_report(task_id=task_id, format=file_format, zip_download=True)
         demisto.debug(f"Successfully retrieved ZIP report. Size: {len(content)} bytes")
-        filename = build_file_name(file_identifier=task_id, file_type="report", file_format="zip")
+        filename = build_file_name(file_identifier=task_id, file_type_info=FILE_TYPE_REPORT, file_format="zip")
 
         demisto.debug(f"Command '{command}' execution finished successfully (Returning ZIP file).")
         return fileResult(filename, content)
@@ -1558,7 +1574,11 @@ def _download_single_screenshot(client: CapeSandboxClient, task_id: str, number:
 
     demisto.debug(f"Downloading single screenshot {number} for task {task_id}")
     content = client.get_task_screenshot(task_id=task_id, number=number)
-    filename = build_file_name(file_identifier=task_id, file_type="screenshot", screenshot_number=int(number))
+    filename = build_file_name(
+        file_identifier=task_id,
+        file_type_info=FILE_TYPE_SCREENSHOT,
+        screenshot_number=int(number),
+    )
 
     file_meta = fileResult(filename, content)
     file_meta["TaskID"] = task_id
@@ -1576,7 +1596,7 @@ def _download_all_screenshots_zip(client: CapeSandboxClient, task_id: str) -> tu
     demisto.debug(f"Downloading all screenshots as ZIP for task {task_id}")
     content = client.download_all_screenshots_zip(task_id=task_id)
 
-    filename = build_file_name(file_identifier=task_id, file_type="file", file_format="zip")
+    filename = build_file_name(file_identifier=task_id, file_type_info=FILE_TYPE_FILE, file_format="zip")
 
     file_meta = fileResult(filename, content)
     file_meta["TaskID"] = task_id
