@@ -54,9 +54,10 @@ TAXII_REQUIRED_FILTER_FIELDS = {
 TAXII_V20_REQUIRED_FILTER_FIELDS = {"tags", "identity_class"}
 TAXII_V21_REQUIRED_FILTER_FIELDS = {"ismalwarefamily", "published"}
 SEARCH_AFTER_KEY_NAME = "search_after_cache"
-# TODO: revert
-# PAGE_SIZE = 500
-PAGE_SIZE = 1000
+RELATIONSHIPS_THRESHOLD = 0.9
+
+# PAGE_SIZE = 1000
+PAGE_SIZE = int(int(demisto.params().get("res_size",2000)) * RELATIONSHIPS_THRESHOLD)
 
 
 
@@ -501,6 +502,10 @@ class TAXII2Server:
                 raise RequestedRangeNotSatisfiable
             objects = limited_iocs
 
+        if len(objects) < len(iocs):
+            demisto.info(f"T2S: WARNING: number of IOCs is higher than limit {len(objects)=} {len(iocs)=}")
+
+
         demisto.info(f"T2S: in get_objects {objects=}")
 
         if SERVER.has_extension:
@@ -523,7 +528,7 @@ class TAXII2Server:
                 response["next"] = str(limit + offset)
 
         content_range = f"items {offset}-{len(limited_iocs)}/{total}"
-        demisto.info(f"T2S:  {len(objects)=}")
+        demisto.info(f"T2S: {len(objects)=}")
         return response, first_added, last_added, content_range
 
 
@@ -824,6 +829,7 @@ def find_indicators(
     Returns: Created indicators and its extensions.
     """
     new_query = create_query(query, types, added_after)
+    limit = PAGE_SIZE
     new_limit = offset + limit
     field_filters = set_field_filters(is_manifest)
     use_search_after = False
@@ -833,16 +839,17 @@ def find_indicators(
     remove_old_cache(integration_context)
 
     # check if there is a search_after value for this collection with this offset
-    if integration_context.get(SEARCH_AFTER_KEY_NAME, {}).get(collection_id, {}).get(str(offset)):
-        search_after = integration_context[SEARCH_AFTER_KEY_NAME][collection_id][str(offset)]
-        demisto.info(f"found search_after_cache for {offset=}: {search_after}")
+    search_after_offset = int(offset * RELATIONSHIPS_THRESHOLD)
+    if integration_context.get(SEARCH_AFTER_KEY_NAME, {}).get(collection_id, {}).get(str(search_after_offset)):
+        search_after = integration_context[SEARCH_AFTER_KEY_NAME][collection_id][str(search_after_offset)]
+        demisto.info(f"found search_after_cache for {search_after_offset=}: {search_after}")
         demisto.info(
             f"{INTEGRATION_NAME}: search indicators parameters is {field_filters=}, {new_query=}, {limit=}, {search_after=}"
         )
         indicator_searcher = search_indicators(field_filters, new_query, limit, search_after["search_after"])
         use_search_after = True
     else:
-        demisto.info("could not found search_after_cache")
+        demisto.info(f"could not found search_after_cache for {search_after_offset}")
         demisto.info(f"{INTEGRATION_NAME}: search indicators parameters is {field_filters=}, {new_query=}, {new_limit=}")
         indicator_searcher = search_indicators(field_filters, new_query, new_limit)
 
@@ -868,12 +875,12 @@ def find_indicators(
             integration_context[SEARCH_AFTER_KEY_NAME][collection_id] = {}
 
         # Set the value
-        integration_context[SEARCH_AFTER_KEY_NAME][collection_id][str(indicator_searcher._total_iocs_fetched + offset)] = {
+        integration_context[SEARCH_AFTER_KEY_NAME][collection_id][str(indicator_searcher._total_iocs_fetched + search_after_offset)] = {
             "search_after": indicator_searcher._search_after_param,
             "last_updated": datetime.now(timezone.utc).isoformat(),
         }
 
-        demisto.info(f" {integration_context=}")
+        demisto.info(f"{integration_context=}")
 
         set_integration_context(integration_context)
 
@@ -883,9 +890,8 @@ def find_indicators(
 def remove_old_cache(integration_context: dict) -> None:
     """Remove expired entries from cache['search_after_cache'] if older than 24 hours."""
     now = datetime.now(timezone.utc)
-    # TODO: revert
-    # expiry_time = timedelta(hours=24)
-    expiry_time = timedelta(minutes=5)
+    expiry_time = timedelta(hours=24)
+    # expiry_time = timedelta(minutes=10)
 
     search_cache = integration_context.get(SEARCH_AFTER_KEY_NAME)
     if not isinstance(search_cache, dict):
