@@ -753,7 +753,7 @@ def test_get_user_factors_command(mocker, args, expected_context):
         return_value={"X-Rate-Limit-Limit": 1, "X-Rate-Limit-Remaining": 1, "X-Rate-Limit-Reset": 1},
     )
 
-    readable, outputs, _ = get_user_factors_command(client, args)
+    _, outputs, _ = get_user_factors_command(client, args)
     assert expected_context == outputs.get("Account(val.ID && val.ID === obj.ID)").get("Factor")[0]
     assert outputs.get("Account(val.ID && val.ID === obj.ID)").get("ID") == args.get("userId") or "TestID"
 
