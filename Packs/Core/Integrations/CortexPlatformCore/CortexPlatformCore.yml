@@ -1421,7 +1421,7 @@ script:
 
         # Scope Filters (Asset Criteria)
         - name: scope_category
-          description: "Define asset categories to include in policy scope. Supported values: Application, Repository, CI/CD Instance, CI/CD Pipeline, VCS Collaborator, VCS Organization"
+          description: "Define asset categories to include in policy scope. Supported values: Application, Repository, CI/CD Instance, CI/CD Pipeline, VCS Collaborator, VCS Organization."
           isArray: true
         - name: scope_business_application_names
           description: Target specific business applications by name for focused policy enforcement.
