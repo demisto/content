@@ -125,9 +125,6 @@ script:
       name: username
     - description: User ID of the user for which to get all enrolled factors.
       name: userId
-    - description: Time to wait between subsequent polling calls. Value is in seconds. Default time is 5 seconds.
-      name: polling_time
-      defaultValue: 5
     description: Returns all the enrolled factors for the specified user.
     name: okta-get-user-factors
     outputs:

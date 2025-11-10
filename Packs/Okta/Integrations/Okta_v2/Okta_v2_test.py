@@ -740,10 +740,21 @@ def test_delete_limit_param_function(url, expected_url):
     ],
 )
 def test_get_user_factors_command(mocker, args, expected_context):
+    mock_raw_response = MagicMock()
+    mock_raw_response.json.return_value = expected_context
+    mock_raw_response.headers = {"x-rate-limit-limit": 1, "x-rate-limit-remaining": 1, "x-rate-limit-reset": 1}
     mocker.patch.object(client, "get_user_id", return_value="TestID")
-    mocker.patch.object(client, "get_user_factors", return_value=factors_data)
+    mocker.patch.object(client, "get_user_factors", return_value=mock_raw_response)
+    mocker.patch.object(client, "get_readable_factors", return_value=[expected_context])
+
+    mocker.patch.object(
+        client,
+        "get_rate_limit_context",
+        return_value={"X-Rate-Limit-Limit": 1, "X-Rate-Limit-Remaining": 1, "X-Rate-Limit-Reset": 1},
+    )
+
     readable, outputs, _ = get_user_factors_command(client, args)
-    assert expected_context == outputs.get("Account(val.ID && val.ID === obj.ID)").get("Factor")[1]
+    assert expected_context == outputs.get("Account(val.ID && val.ID === obj.ID)").get("Factor")[0]
     assert outputs.get("Account(val.ID && val.ID === obj.ID)").get("ID") == args.get("userId") or "TestID"
 
 
@@ -1178,15 +1189,25 @@ def test_get_user_factors_command_no_factors_found(mocker):
         - Ensure the readable output indicates no factors were found.
     """
     args = {"userId": "TestID"}
-    mock_raw_response = MagicMock()
-    mock_raw_response.json.return_value = [{"id": "id", "factorType": "factorType", "provider": "provider", "status": "status", "profile": "profile"}]  # noqa: E501
-    mock_raw_response.headers = {"x-rate-limit-limit": 1, "x-rate-limit-remaining": 1, "x-rate-limit-reset": 1}
 
+    mock_raw_response = MagicMock()
+    expected_content = [
+        {"id": "id", "factorType": "factorType", "provider": "provider", "status": "status", "profile": "profile"}
+    ]
+    mock_raw_response.json.return_value = expected_content
+    mock_raw_response.headers = {"x-rate-limit-limit": 1, "x-rate-limit-remaining": 1, "x-rate-limit-reset": 1}
     mocker.patch.object(client, "get_user_id", return_value="TestID")
     mocker.patch.object(client, "get_user_factors", return_value=mock_raw_response)
 
-    readable, outputs, raw_response = get_user_factors_command(client, args)
+    mocker.patch.object(client, "get_readable_factors", return_value=[{"Factor Name": "factorType", "Provider": "provider"}])
+    mocker.patch.object(
+        client,
+        "get_rate_limit_context",
+        return_value={"X-Rate-Limit-Limit": 1, "X-Rate-Limit-Remaining": 1, "X-Rate-Limit-Reset": 1},
+    )
+
+    readable, outputs, raw_content_returned = get_user_factors_command(client, args)
 
     assert "Factors for user: TestID" in readable
     assert outputs.get("Okta").get("Metadata") == {"X-Rate-Limit-Limit": 1, "X-Rate-Limit-Remaining": 1, "X-Rate-Limit-Reset": 1}
-    assert raw_response == [{'id': 'id', 'factorType': 'factorType', 'provider': 'provider', 'status': 'status', 'profile': 'profile'}]  # noqa: E501
+    assert raw_content_returned == expected_content

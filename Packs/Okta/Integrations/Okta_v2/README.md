@@ -235,6 +235,9 @@ Returns all the enrolled factors for the specified user.
 | Account.Factor.Profile | String | Okta account factor profile. |
 | Account.Factor.FactorType | String | Okta account factor type. |
 | Account.Factor.Status | Unknown | Okta account factor status. |
+| Okta.Metadata.X-Rate-Limit-Limit | Unknown | The Rate Limit limit. |
+| Okta.Metadata.X-Rate-Limit-Remaining | Unknown | The remaining Rate Limit.|
+| Okta.Metadata.X-Rate-Limit-Reset | Unknown | The time to resetting the Rate Limit.. |
 
 ##### Command Example
 
@@ -503,6 +506,8 @@ Enrolls and verifies a push factor for the specified user.
 | --- | --- | --- |
 | userId | The ID of the user to enroll and verify. | Required |
 | factorId | The push factor ID. | Required |
+| polling_time | Time to wait between subsequent polling calls. Value is in seconds. Default time is 5 seconds. | Optional |
+| max_polling_calls | Maximum number of polling calls. Default value is 10. | Optional |
 
 #### Context Output
 

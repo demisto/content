@@ -3,7 +3,6 @@ from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from OktaApiModule import *
-from urllib3 import response  # noqa: E402
 
 # CONSTANTS
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -60,6 +59,7 @@ MAX_LOGS_LIMIT = 1000
 DEFAULT_POLLING_TIME = 5
 DEFAULT_MAX_POLLING_CALLS = 10
 
+
 class Client(OktaClient):
     # Getting Group Id with a given group name
     def get_group_id(self, group_name):
@@ -112,7 +112,7 @@ class Client(OktaClient):
 
     def get_user_factors(self, user_id):
         uri = f"/api/v1/users/{user_id}/factors"
-        return self.http_request(method="GET", url_suffix=uri, resp_type='response')
+        return self.http_request(method="GET", url_suffix=uri, resp_type="response")
 
     def reset_factor(self, user_id, factor_id):
         uri = f"/api/v1/users/{user_id}/factors/{factor_id}"
@@ -216,7 +216,7 @@ class Client(OktaClient):
             }
             factors.append(factor)
         return factors
-    
+
     @staticmethod
     def get_rate_limit_context(headers: dict) -> dict:
         """Takes the response headers and returns the rate limit data to the context
@@ -227,12 +227,12 @@ class Client(OktaClient):
         Returns:
             dict: The rate limit data to the context
         """
-        rate_limit_context = {"X-Rate-Limit-Limit": headers["x-rate-limit-limit"],
-                              "X-Rate-Limit-Remaining": headers["x-rate-limit-remaining"],
-                              "X-Rate-Limit-Reset": headers["x-rate-limit-reset"]
-                              }
+        rate_limit_context = {
+            "X-Rate-Limit-Limit": headers["x-rate-limit-limit"],
+            "X-Rate-Limit-Remaining": headers["x-rate-limit-remaining"],
+            "X-Rate-Limit-Reset": headers["x-rate-limit-reset"],
+        }
         return rate_limit_context
-
 
     def verify_push_factor(self, user_id, factor_id):
         """
@@ -588,12 +588,13 @@ def unsuspend_user_command(client, args):
     readable_output = f"### {args.get('username')} is no longer SUSPENDED"
     return (readable_output, {}, raw_response)
 
+
 def deconstruct_raw_response(raw_response):
-    """deconstruct the raw response to headers and content
-    """
+    """deconstruct the raw response to headers and content"""
     headers = raw_response.headers
     content = raw_response.json()
     return content, headers
+
 
 def get_user_factors_command(client, args):
     user_id = args.get("userId")
@@ -612,8 +613,10 @@ def get_user_factors_command(client, args):
     factors = client.get_readable_factors(content)
     rate_limit_context = client.get_rate_limit_context(headers)
     context = createContext(factors, removeNull=True)
-    outputs = {"Account(val.ID && val.ID === obj.ID)": {"Factor": context, "ID": user_id},
-               "Okta": {"Metadata": rate_limit_context}}
+    outputs = {
+        "Account(val.ID && val.ID === obj.ID)": {"Factor": context, "ID": user_id},
+        "Okta": {"Metadata": rate_limit_context},
+    }
     readable_output = f"Factors for user: {user_id}\n {tableToMarkdown('Factors', factors)}"
     return (readable_output, outputs, content)
 
