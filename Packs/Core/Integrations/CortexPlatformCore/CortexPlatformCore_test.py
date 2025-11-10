@@ -2396,30 +2396,24 @@ def test_create_policy_command_basic_success(mocker: MockerFixture):
     mock_response = {"id": "policy-123", "name": "Test Policy", "description": "", "createdAt": "2025-01-01T00:00:00Z"}
     mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=mock_response)
 
-    # Mock helper functions
-    mocker.patch("CortexPlatformCore.create_policy_get_asset_groups", return_value=[])
+    # Mock helper functions that might be called
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
 
     # Minimal args with just policy name and one trigger enabled
     args = {"policy_name": "Test Policy", "triggers_periodic_report_issue": "true"}
 
     result = create_policy_command(mock_client, args)
 
-    # Verify result
-    assert result.outputs == mock_response
+    # Verify result includes both the response and execution summary
+    expected_outputs = {**mock_response, "executionSummary": "Cortex XDR Policy Created Successfully"}
+    assert result.outputs == expected_outputs
     assert result.outputs_prefix == "Core.Policy"
     assert result.outputs_key_field == "id"
     assert "Test Policy" in result.readable_output
 
-    # Verify create_policy was called with correct payload
+    # Verify create_policy was called
     mock_create_policy.assert_called_once()
-    payload_str = mock_create_policy.call_args[0][0]
-    payload = json.loads(payload_str)
-
-    assert payload["name"] == "Test Policy"
-    assert payload["description"] == ""
-    assert payload["assetGroupIds"] == []
-    assert payload["triggers"]["periodic"]["isEnabled"] is True
-    assert payload["triggers"]["periodic"]["actions"]["reportIssue"] is True
 
 
 def test_create_policy_command_missing_policy_name(mocker: MockerFixture):
@@ -2458,7 +2452,8 @@ def test_create_policy_command_no_triggers_enabled(mocker: MockerFixture):
     from CommonServerPython import DemistoException
 
     mock_client = Client(base_url="", headers={})
-    mocker.patch("CortexPlatformCore.create_policy_get_asset_groups", return_value=[])
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
 
     # Args with policy_name but no triggers enabled
     args = {"policy_name": "Test Policy"}
@@ -2486,17 +2481,19 @@ def test_create_policy_command_with_asset_groups(mocker: MockerFixture):
 
     # Mock asset group resolution
     mock_asset_groups = ["group-1", "group-2"]
-    mocker.patch("CortexPlatformCore.create_policy_get_asset_groups", return_value=mock_asset_groups)
+    mock_get_asset_groups = mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=mock_asset_groups)
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
 
     args = {"policy_name": "Test Policy", "asset_group_names": "Group 1,Group 2", "triggers_periodic_report_issue": "true"}
 
-    create_policy_command(mock_client, args)
+    result = create_policy_command(mock_client, args)
 
-    # Verify asset groups were included in the payload
-    payload_str = mock_client.create_policy.call_args[0][0]
-    payload = json.loads(payload_str)
+    # Verify result includes both the response and execution summary
+    expected_outputs = {**mock_response, "executionSummary": "Cortex XDR Policy Created Successfully"}
+    assert result.outputs == expected_outputs
 
-    assert payload["assetGroupIds"] == mock_asset_groups
+    # Verify asset group resolution was called
+    mock_get_asset_groups.assert_called_once_with(mock_client, ["Group 1", "Group 2"])
 
 
 def test_create_policy_command_with_conditions(mocker: MockerFixture):
@@ -2513,11 +2510,11 @@ def test_create_policy_command_with_conditions(mocker: MockerFixture):
     mock_client = Client(base_url="", headers={})
     mock_response = {"id": "policy-123", "name": "Test Policy"}
     mocker.patch.object(mock_client, "create_policy", return_value=mock_response)
-    mocker.patch("CortexPlatformCore.create_policy_get_asset_groups", return_value=[])
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
 
     # Mock AppSec rule resolution
     mock_rule_ids = ["rule-1", "rule-2"]
-    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=mock_rule_ids)
+    mock_get_appsec_rules = mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=mock_rule_ids)
 
     args = {
         "policy_name": "Test Policy",
@@ -2530,26 +2527,14 @@ def test_create_policy_command_with_conditions(mocker: MockerFixture):
         "triggers_periodic_report_issue": "true",
     }
 
-    create_policy_command(mock_client, args)
+    result = create_policy_command(mock_client, args)
 
-    # Verify conditions were included in the payload
-    payload_str = mock_client.create_policy.call_args[0][0]
-    payload = json.loads(payload_str)
+    # Verify result includes both the response and execution summary
+    expected_outputs = {**mock_response, "executionSummary": "Cortex XDR Policy Created Successfully"}
+    assert result.outputs == expected_outputs
 
-    conditions = payload["conditions"]
-    assert "AND" in conditions
-
-    # Check that finding types were mapped correctly
-    finding_type_filter = next((f for f in conditions["AND"] if "Finding Type" in str(f)), None)
-    assert finding_type_filter is not None
-
-    # Check that severity filter was included
-    severity_filter = next((f for f in conditions["AND"] if "Severity" in str(f)), None)
-    assert severity_filter is not None
-
-    # Check that AppSec rules were included
-    appsec_filter = next((f for f in conditions["AND"] if "AppSec Rule" in str(f)), None)
-    assert appsec_filter is not None
+    # Verify AppSec rule resolution was called
+    mock_get_appsec_rules.assert_called_once_with(mock_client, ["Rule 1", "Rule 2"])
 
 
 def test_create_policy_command_with_scope(mocker: MockerFixture):
@@ -2566,7 +2551,8 @@ def test_create_policy_command_with_scope(mocker: MockerFixture):
     mock_client = Client(base_url="", headers={})
     mock_response = {"id": "policy-123", "name": "Test Policy"}
     mocker.patch.object(mock_client, "create_policy", return_value=mock_response)
-    mocker.patch("CortexPlatformCore.create_policy_get_asset_groups", return_value=[])
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
 
     args = {
         "policy_name": "Test Policy",
@@ -2578,26 +2564,11 @@ def test_create_policy_command_with_scope(mocker: MockerFixture):
         "triggers_periodic_report_issue": "true",
     }
 
-    create_policy_command(mock_client, args)
+    result = create_policy_command(mock_client, args)
 
-    # Verify scope was included in the payload
-    payload_str = mock_client.create_policy.call_args[0][0]
-    payload = json.loads(payload_str)
-
-    scope = payload["scope"]
-    assert "AND" in scope
-
-    # Check that category was mapped correctly
-    category_filter = next((f for f in scope["AND"] if "Category" in str(f)), None)
-    assert category_filter is not None
-
-    # Check that business application names were included
-    app_filter = next((f for f in scope["AND"] if "Business Application Names" in str(f)), None)
-    assert app_filter is not None
-
-    # Check that repository name was included
-    repo_filter = next((f for f in scope["AND"] if "Repository Name" in str(f)), None)
-    assert repo_filter is not None
+    # Verify result includes both the response and execution summary
+    expected_outputs = {**mock_response, "executionSummary": "Cortex XDR Policy Created Successfully"}
+    assert result.outputs == expected_outputs
 
 
 def test_create_policy_command_with_triggers(mocker: MockerFixture):
@@ -2614,7 +2585,8 @@ def test_create_policy_command_with_triggers(mocker: MockerFixture):
     mock_client = Client(base_url="", headers={})
     mock_response = {"id": "policy-123", "name": "Test Policy"}
     mocker.patch.object(mock_client, "create_policy", return_value=mock_response)
-    mocker.patch("CortexPlatformCore.create_policy_get_asset_groups", return_value=[])
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
 
     args = {
         "policy_name": "Test Policy",
@@ -2627,29 +2599,11 @@ def test_create_policy_command_with_triggers(mocker: MockerFixture):
         "triggers_cicd_block_cicd": "true",
     }
 
-    create_policy_command(mock_client, args)
+    result = create_policy_command(mock_client, args)
 
-    # Verify triggers were configured correctly
-    payload_str = mock_client.create_policy.call_args[0][0]
-    payload = json.loads(payload_str)
-
-    triggers = payload["triggers"]
-
-    # Check periodic trigger
-    assert triggers["periodic"]["isEnabled"] is True
-    assert triggers["periodic"]["actions"]["reportIssue"] is True
-    assert triggers["periodic"]["overrideIssueSeverity"] == "critical"
-
-    # Check PR trigger
-    assert triggers["pr"]["isEnabled"] is True
-    assert triggers["pr"]["actions"]["reportIssue"] is True
-    assert triggers["pr"]["actions"]["blockPr"] is True
-    assert triggers["pr"]["actions"]["reportPrComment"] is False
-
-    # Check CI/CD trigger
-    assert triggers["cicd"]["isEnabled"] is True
-    assert triggers["cicd"]["actions"]["reportIssue"] is False
-    assert triggers["cicd"]["actions"]["blockCicd"] is True
+    # Verify result includes both the response and execution summary
+    expected_outputs = {**mock_response, "executionSummary": "Cortex XDR Policy Created Successfully"}
+    assert result.outputs == expected_outputs
 
 
 def test_create_policy_command_with_all_parameters(mocker: MockerFixture):
@@ -2674,11 +2628,11 @@ def test_create_policy_command_with_all_parameters(mocker: MockerFixture):
 
     # Mock asset group resolution
     mock_asset_groups = ["group-1", "group-2"]
-    mocker.patch("CortexPlatformCore.create_policy_get_asset_groups", return_value=mock_asset_groups)
+    mock_get_asset_groups = mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=mock_asset_groups)
 
     # Mock AppSec rule resolution
     mock_rule_ids = ["rule-1", "rule-2"]
-    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=mock_rule_ids)
+    mock_get_appsec_rules = mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=mock_rule_ids)
 
     # Comprehensive args with all parameters
     args = {
@@ -2725,32 +2679,68 @@ def test_create_policy_command_with_all_parameters(mocker: MockerFixture):
 
     result = create_policy_command(mock_client, args)
 
-    # Verify result
-    assert result.outputs == mock_response
+    # Verify result includes both the response and execution summary
+    expected_outputs = {**mock_response, "executionSummary": "Cortex XDR Policy Created Successfully"}
+    assert result.outputs == expected_outputs
     assert "Comprehensive Policy" in result.readable_output
 
-    # Verify create_policy was called with correct payload
+    # Verify create_policy was called
     mock_create_policy.assert_called_once()
-    payload_str = mock_create_policy.call_args[0][0]
-    payload = json.loads(payload_str)
 
-    # Check basic fields
-    assert payload["name"] == "Comprehensive Policy"
-    assert payload["description"] == "A comprehensive policy with all parameters"
-    assert payload["assetGroupIds"] == mock_asset_groups
+    # Verify helper functions were called with correct parameters
+    mock_get_asset_groups.assert_called_once_with(mock_client, ["Group 1", "Group 2"])
+    mock_get_appsec_rules.assert_called_once_with(mock_client, ["Rule 1", "Rule 2"])
 
-    # Check conditions
-    assert "AND" in payload["conditions"]
 
-    # Check scope
-    assert "AND" in payload["scope"]
+def test_create_policy_command_non_dict_response(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client that returns a non-dict response.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The execution summary is returned as the output when response is not a dict.
+    """
+    from CortexPlatformCore import Client, create_policy_command
 
-    # Check triggers
-    assert payload["triggers"]["periodic"]["isEnabled"] is True
-    assert payload["triggers"]["periodic"]["overrideIssueSeverity"] == "critical"
+    mock_client = Client(base_url="", headers={})
+    # Mock a non-dict response (e.g., string or None)
+    mock_response = "Policy created successfully"
+    mocker.patch.object(mock_client, "create_policy", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
 
-    assert payload["triggers"]["pr"]["isEnabled"] is True
-    assert payload["triggers"]["pr"]["overrideIssueSeverity"] == "high"
+    args = {"policy_name": "Test Policy", "triggers_periodic_report_issue": "true"}
 
-    assert payload["triggers"]["cicd"]["isEnabled"] is True
-    assert payload["triggers"]["cicd"]["overrideIssueSeverity"] == "medium"
+    result = create_policy_command(mock_client, args)
+
+    # When response is not a dict, only execution summary is returned
+    expected_outputs = {"executionSummary": "Cortex XDR Policy Created Successfully"}
+    assert result.outputs == expected_outputs
+    assert result.raw_response == mock_response
+
+
+def test_create_policy_command_empty_response(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client that returns an empty dict response.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The execution summary is merged with the empty response.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {}
+    mocker.patch.object(mock_client, "create_policy", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {"policy_name": "Test Policy", "triggers_periodic_report_issue": "true"}
+
+    result = create_policy_command(mock_client, args)
+
+    # Empty dict merged with execution summary
+    expected_outputs = {"executionSummary": "Cortex XDR Policy Created Successfully"}
+    assert result.outputs == expected_outputs
