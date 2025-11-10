@@ -30,7 +30,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### cape-file-submit
 
 ***
-Submit a file for analysis to CAPE Sandbox. This command supports PCAP files and automatically sets the `pcap` option to `1`. The command polls the CAPE server until the analysis task is reported as complete, and then returns the task view with the analysis results.
+Submits a file for analysis to CAPE Sandbox. This command supports PCAP files and automatically sets the `pcap` option to `1`. The command polls the CAPE server until the analysis task is complete, and then returns the task results.
 
 **Note:** Analysis scans may take a long time to complete and could cause a timeout. If a timeout occurs, you can use the `!cape-tasks-list task_id=<task_id>` command to check the status of your task.
 
