@@ -10,7 +10,7 @@ import json
 import urllib3
 from pyzabbix import ZabbixAPI
 
-# Disable insecure  warnings
+# Disable insecure warnings
 urllib3.disable_warnings()
 
 
