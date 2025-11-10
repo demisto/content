@@ -2128,7 +2128,7 @@ class EC2:
             client (BotoClient): The initialized Boto3 EC2 client.
             args (Dict[str, Any]): Command arguments, typically containing:
                   Expected keys include 'executable_by', 'filters', 'owners', 'image_id',
-                  'include_deprecated', 'include_disabled', 'limit', and 'next_token'.
+                  'include_deprecated', and 'include_disabled'.
 
         Returns:
             CommandResults: An object containing the raw image details as outputs,
@@ -2141,8 +2141,6 @@ class EC2:
             "ImageIds": parse_resource_ids(args.get("image_ids")) if args.get("image_ids") else None,
             "IncludeDeprecated": arg_to_bool_or_none(args.get("include_deprecated")),
             "IncludeDisabled": arg_to_bool_or_none(args.get("include_disabled")),
-            "MaxResults": arg_to_number(args.get("limit")),
-            "NextToken": args.get("next_token"),
         }
 
         remove_nulls_from_dictionary(kwargs)
@@ -2151,9 +2149,8 @@ class EC2:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
         amis = response.get("Images", [])
         iterates = 1
-        limit = args.get("limit", float("inf"))
 
-        while response.get("nextToken") and limit > len(amis):
+        while response.get("nextToken"):
             demisto.info(f"iterate #{iterates}")
             kwargs["NextToken"] = response.get("nextToken")
             response = client.describe_images(**kwargs)

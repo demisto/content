@@ -2583,10 +2583,7 @@ Get The latest AMI.
 | owners | Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon \| aws-marketplace \| microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership. Separated by ','. | Optional |
 | image_ids | The image IDs separated by ','. | Optional |
 | include_deprecated | Specifies whether to include deprecaed AMIs. Possible values are: true, false. | Optional |
-
 | include_disabled | Specifies whether to include disabled AMIs. Possible values are: true, false. | Optional |
-| limit | The maximum number of items to return for this request. To get the next page of items, make another request with the token returned in the output. | Optional |
-| next_token | The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request. | Optional |
 
 #### Context Output
 

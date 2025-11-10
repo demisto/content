@@ -4580,10 +4580,6 @@ script:
         predefined:
           - 'true'
           - 'false'
-      - name: limit
-        description: The maximum number of items to choose the latest AMI from. To get the next page of items, make another request with the token returned in the output.
-      - name: next_token
-        description: The token returned from a previous paginated request. Pagination continues from the end of the items returned by the previous request.
     outputs:
       - contextPath: AWS.EC2.Images.Architecture
         description: The architecture of the image.
