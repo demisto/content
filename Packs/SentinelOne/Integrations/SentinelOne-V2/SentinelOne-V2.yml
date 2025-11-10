@@ -510,6 +510,25 @@ script:
       description: Number of unmitigated and unresolved threats in the system.
       type: Number
   - arguments:
+    - description: 'Threat ID to get the analysis, for example: "2341398296147451190'
+      name: threat_id
+      required: true
+    description: Returns threat analysis. Can only be used with API V2.1.
+    name: sentinelone-threat-analysis
+    outputs:
+    - contextPath: SentinelOne.Threat.AccountName
+      description: AccountName
+      type: String
+    - contextPath: SentinelOne.Threat.AgentComputerName
+      description: AgentComputerName
+      type: String
+    - contextPath: SentinelOne.Threat.ThreatID
+      description: ThreatID
+      type: String
+    - contextPath: SentinelOne.Threat.ThreatName
+      description: ThreatName
+      type: String
+  - arguments:
     - description: A comma-separated list of threat IDs.
       isArray: true
       name: threat_ids

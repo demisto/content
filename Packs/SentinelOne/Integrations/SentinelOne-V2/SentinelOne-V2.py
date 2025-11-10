@@ -404,6 +404,11 @@ class Client(BaseClient):
         response = self._http_request(method="GET", url_suffix=endpoint_url, params=params)
         return response.get("data", {})
 
+    def get_threat_analysis_request(self, threat_id):
+        endpoint_url = f"private/threats/{threat_id}/analysis"
+        response = self._http_request(method="GET", url_suffix=endpoint_url)
+        return response.get("data", {})
+
     def list_agents_request(self, params: dict):
         response = self._http_request(method="GET", url_suffix="agents", params=params)
         return response.get("data", {})
@@ -2931,6 +2936,35 @@ def get_threat_summary_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def get_threat_analysis_command(client: Client, args: dict) -> CommandResults:
+    """
+    Get threat analysis
+    """
+    context_entries = {}
+
+    threat_id = args.get("threat_id")
+
+    # Make request and get raw response
+    threat_analysis_response = client.get_threat_analysis_request(threat_id)
+
+    # Parse response into context & content entries
+    if threat_analysis_response:
+        context_entries = {
+            "AccountName": threat_analysis_response.get("agentRealtimeInfo", {}).get("accountName"),
+            "AgentComputerName": threat_analysis_response.get("agentRealtimeInfo", {}).get("agentComputerName"),
+            "ThreatID": threat_analysis_response.get("threatInfo", {}).get("threatId"),
+            "ThreatName": threat_analysis_response.get("threatInfo", {}).get("threatName"),
+        }
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Sentinel One - Threat Analysis", context_entries, removeNull=True),
+        outputs_prefix="SentinelOne.Threat",
+        outputs_key_field="Threat ID",
+        outputs=context_entries,
+        raw_response=threat_analysis_response,
+    )
+
+
 # Agents Commands
 
 
@@ -4532,6 +4566,7 @@ def main():
         },
         "2.1": {
             "sentinelone-threat-summary": get_threat_summary_command,
+            "sentinelone-threat-analysis": get_threat_analysis_command,
             "sentinelone-update-threats-verdict": update_threat_analyst_verdict,
             "sentinelone-update-alerts-verdict": update_alert_analyst_verdict,
             "sentinelone-create-star-rule": create_star_rule,
