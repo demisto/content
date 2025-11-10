@@ -1152,3 +1152,41 @@ def test_apply_zone_update_append_with_range():
         "gateways": [{"type": "CIDR", "value": "192.168.1.1/32"}, {"type": "RANGE", "value": "192.168.1.2-192.168.1.10"}],
         "proxies": [{"type": "CIDR", "value": "10.0.0.1/32"}, {"type": "RANGE", "value": "10.0.0.2-10.0.0.5"}],
     }
+
+
+def test_get_user_factors_command_missing_args():
+    """
+    Given:
+        - No 'username' or 'userId' arguments.
+    When:
+        - Calling get_user_factors_command.
+    Then:
+        - Ensure an exception is raised with the correct error message.
+    """
+    with pytest.raises(Exception) as excinfo:
+        get_user_factors_command(client, {})
+    assert "You must supply either 'Username' or 'userId" in str(excinfo.value)
+
+
+def test_get_user_factors_command_no_factors_found(mocker):
+    """
+    Given:
+        - A client object that returns no factors.
+    When:
+        - Calling get_user_factors_command.
+    Then:
+        - Ensure the readable output indicates no factors were found.
+    """
+    args = {"userId": "TestID"}
+    mock_raw_response = MagicMock()
+    mock_raw_response.json.return_value = [{"id": "id", "factorType": "factorType", "provider": "provider", "status": "status", "profile": "profile"}]  # noqa: E501
+    mock_raw_response.headers = {"x-rate-limit-limit": 1, "x-rate-limit-remaining": 1, "x-rate-limit-reset": 1}
+
+    mocker.patch.object(client, "get_user_id", return_value="TestID")
+    mocker.patch.object(client, "get_user_factors", return_value=mock_raw_response)
+
+    readable, outputs, raw_response = get_user_factors_command(client, args)
+
+    assert "Factors for user: TestID" in readable
+    assert outputs.get("Okta").get("Metadata") == {"X-Rate-Limit-Limit": 1, "X-Rate-Limit-Remaining": 1, "X-Rate-Limit-Reset": 1}
+    assert raw_response == [{'id': 'id', 'factorType': 'factorType', 'provider': 'provider', 'status': 'status', 'profile': 'profile'}]  # noqa: E501
