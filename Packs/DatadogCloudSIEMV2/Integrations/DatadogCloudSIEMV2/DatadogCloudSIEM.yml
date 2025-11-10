@@ -2,7 +2,7 @@ category: Analytics & SIEM
 commonfields:
   id: DatadogCloudSIEMV2
   version: -1
-sectionOrder:
+sectionorder:
   - Connect
   - Collect
 configuration:
@@ -46,22 +46,26 @@ configuration:
     name: isFetch
     type: 8
     required: false
+    section: Collect
   - display: Incident type
     name: incidentType
     type: 13
     required: false
+    section: Collect
   - additionalinfo: First fetch time range. How far back to fetch security signals on the first run. Examples "3 days", "7 days", "1 week"
     display: First fetch time
     name: first_fetch
     type: 0
     defaultvalue: "3 days"
     required: false
+    section: Collect
   - additionalinfo: Maximum number of incidents to fetch per cycle. Maximum is 200, recommended less than 100.
     display: Max fetch
     name: max_fetch
     type: 0
     defaultvalue: "50"
     required: false
+    section: Collect
   - additionalinfo: Fetch only security signals with these severity levels or higher.
     display: Fetch severity
     name: fetch_severity
@@ -74,6 +78,7 @@ configuration:
       - critical
     defaultvalue: "medium"
     required: false
+    section: Collect
   - additionalinfo: Fetch only security signals in this state. Default is "open".
     display: Fetch state
     name: fetch_state
@@ -84,12 +89,30 @@ configuration:
       - archived
     defaultvalue: "open"
     required: false
+    section: Collect
   - additionalinfo: Additional custom query filter for fetching security signals. Uses Datadog search syntax.
     display: Fetch query
     name: fetch_query
     type: 0
     required: false
-description: Datadog Cloud SIEM V2 integration for XSOAR provides security signal management capabilities. This integration allows you to retrieve, filter, and manage security signals from Datadog's Cloud SIEM platform, enabling security teams to investigate threats, manage signal triage states, and assign signals to team members.
+    section: Collect
+  - display: Incident Mirroring Direction
+    name: mirror_direction
+    type: 15
+    options:
+      - None
+      - Incoming
+    defaultvalue: None
+    additionalinfo: Choose the mirroring direction for incidents. Incoming mirrors changes from Datadog to XSOAR.
+    required: false
+    section: Collect
+  - display: Close Mirrored XSOAR Incident
+    name: close_incident
+    type: 8
+    additionalinfo: When selected, archiving the Datadog security signal is mirrored in XSOAR and closes the XSOAR incident.
+    required: false
+    section: Collect
+description: Datadog Cloud SIEM V2 integration for XSOAR provides security signal management capabilities. This integration allows you to retrieve, filter, and manage security signals from Datadog's Cloud SIEM platform, enabling security teams to investigate threats, manage signal triage states, and assign signals to team members. Supports incoming mirroring of signals to XSOAR incidents.
 display: Datadog Cloud SIEM V2
 name: DatadogCloudSIEMV2
 script:
@@ -732,6 +755,8 @@ script:
           type: Unknown
   dockerimage: demisto/datadog-api-client:1.0.0.4893383
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
   runonce: false
   script: "-"
   subtype: python3

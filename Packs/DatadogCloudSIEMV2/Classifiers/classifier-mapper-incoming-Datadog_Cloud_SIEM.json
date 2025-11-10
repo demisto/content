@@ -7,6 +7,27 @@
         "Datadog Cloud SIEM V2": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "name": {
+                    "simple": "title"
+                },
+                "details": {
+                    "simple": "message"
+                },
+                "occurred": {
+                    "simple": "timestamp"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
                 "Datadog Cloud SIEM V2 Security Signal ID": {
                     "simple": "id"
                 },

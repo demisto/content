@@ -4,8 +4,13 @@
     "type": "classification",
     "description": "Classifier for Datadog Cloud SIEM V2 security signals",
     "defaultIncidentType": "Datadog Cloud SIEM V2",
-    "keyTypeMap": {},
-    "transformer": {},
+    "keyTypeMap": {
+        "Datadog Cloud SIEM V2": "Datadog Cloud SIEM V2"
+    },
+    "transformer": {
+        "complex": null,
+        "simple": "incident_type"
+    },
     "version": -1,
     "fromVersion": "6.8.0"
 }
