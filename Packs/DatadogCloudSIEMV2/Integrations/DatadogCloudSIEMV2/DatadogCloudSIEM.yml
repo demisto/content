@@ -108,7 +108,7 @@ script:
           type: String
         - contextPath: Datadog.SecuritySignal.timestamp
           description: The timestamp when the security signal was generated.
-          type: String
+          type: Number
         - contextPath: Datadog.SecuritySignal.title
           description: The title of the security signal.
           type: String
@@ -203,7 +203,7 @@ script:
           type: String
         - contextPath: Datadog.SecuritySignal.timestamp
           description: The timestamp when the security signal was generated.
-          type: String
+          type: Number
         - contextPath: Datadog.SecuritySignal.host
           description: Host associated with the security signal.
           type: String
@@ -289,7 +289,7 @@ script:
           type: String
         - contextPath: Datadog.SecuritySignal.timestamp
           description: The timestamp when the security signal was generated.
-          type: String
+          type: Number
         - contextPath: Datadog.SecuritySignal.title
           description: The title of the security signal.
           type: String
@@ -411,10 +411,10 @@ script:
           description: Whether the suppression is enabled.
           type: Boolean
         - contextPath: Datadog.SecuritySuppression.creationAt
-          description: Timestamp when the suppression was created (in milliseconds).
+          description: Unix timestamp when the suppression was created (in seconds since epoch).
           type: Number
         - contextPath: Datadog.SecuritySuppression.updateAt
-          description: Timestamp when the suppression was last updated (in milliseconds).
+          description: Unix timestamp when the suppression was last updated (in seconds since epoch).
           type: Number
         - contextPath: Datadog.SecuritySuppression.creator
           description: The creator of the suppression (name and email).
@@ -518,7 +518,7 @@ script:
           type: String
         - contextPath: Datadog.Log.timestamp
           description: The timestamp when the log was generated.
-          type: String
+          type: Number
         - contextPath: Datadog.Log.message
           description: The log message content.
           type: String
@@ -583,13 +583,13 @@ script:
           description: Whether the notification rule is enabled.
           type: Boolean
         - contextPath: Datadog.SecurityNotificationRule.createdAt
-          description: Timestamp when the notification rule was created (in milliseconds).
+          description: Unix timestamp when the notification rule was created (in seconds since epoch).
           type: Number
         - contextPath: Datadog.SecurityNotificationRule.createdBy
           description: The creator of the notification rule (name and email).
           type: String
         - contextPath: Datadog.SecurityNotificationRule.modifiedAt
-          description: Timestamp when the notification rule was last modified (in milliseconds).
+          description: Unix timestamp when the notification rule was last modified (in seconds since epoch).
           type: Number
         - contextPath: Datadog.SecurityNotificationRule.modifiedBy
           description: The user who last modified the notification rule (name and email).
@@ -618,6 +618,30 @@ script:
         - contextPath: Datadog.SecurityNotificationRule.raw
           description: The raw notification rule object returned by the API.
           type: Unknown
+    - arguments:
+        - description: The unique identifier of the security signal to get investigation for. If not provided, will attempt to get it from the current incident.
+          name: signal_id
+      name: datadog-bitsai-get-investigation
+      description: Get the BitsAI investigation for a security signal from Datadog Cloud SIEM V2. BitsAI provides AI-powered analysis and investigation steps for security signals.
+      outputs:
+        - contextPath: Datadog.SecurityInvestigation.signal_id
+          description: The unique identifier of the security signal being investigated.
+          type: String
+        - contextPath: Datadog.SecurityInvestigation.verdict
+          description: The overall verdict of the AI investigation (e.g., "benign", "suspicious", "malicious").
+          type: String
+        - contextPath: Datadog.SecurityInvestigation.steps
+          description: List of investigation steps performed by BitsAI.
+          type: Unknown
+        - contextPath: Datadog.SecurityInvestigation.steps.name
+          description: The name of the investigation step.
+          type: String
+        - contextPath: Datadog.SecurityInvestigation.steps.verdict
+          description: The verdict for this specific investigation step.
+          type: String
+        - contextPath: Datadog.SecurityInvestigation.steps.summary
+          description: A summary of the findings for this investigation step.
+          type: String
   dockerimage: demisto/datadog-api-client:1.0.0.4893383
   isfetch: true
   runonce: false
