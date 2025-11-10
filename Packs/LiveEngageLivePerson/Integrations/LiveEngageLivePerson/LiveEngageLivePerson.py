@@ -1,15 +1,14 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-import requests
+import traceback
 from typing import Any
 from datetime import datetime, timedelta
 
 """ CONSTANTS """
 
 INTEGRATION_NAME = "LivePerson"
-INTEGRATION_PREFIX = "[LivePerson]"
+INTEGRATION_PREFIX = f"[{INTEGRATION_NAME}]"
 DEFAULT_MAX_FETCH = 5000
 API_PAGE_SIZE = 500  # The max allowed by the API is 500
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # Standard ISO format for last_run
@@ -268,9 +267,10 @@ class Client(BaseClient):
 
             except Exception as e:
                 # We break the loop but will process any events we already got
+                tb = traceback.format_exc()
                 demisto.error(
                     f"{INTEGRATION_PREFIX} Error during event fetch loop: {str(e)}. "
-                    f"Will process {len(all_events)} events already fetched."
+                    f"Will process {len(all_events)} events already fetched.\nTraceback:\n{tb}"
                 )
                 break
 
@@ -301,8 +301,9 @@ def test_module(client: Client) -> str:
         demisto.info(f"{INTEGRATION_PREFIX} test-module PASSED.")
         return "ok"
     except Exception as e:
-        demisto.error(f"{INTEGRATION_PREFIX} test-module FAILED. Error: {str(e)}")
-        return f"Test failed: {str(e)}"
+        tb = traceback.format_exc()
+        demisto.error(f"{INTEGRATION_PREFIX} test-module FAILED. Error: {str(e)}\nTraceback:\n{tb}")
+        return f"Test failed: {str(e)}\nTraceback:\n{tb}"
 
 
 def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -311,9 +312,15 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     try:
         limit = arg_to_number(args.get("limit", 50))
+        if limit is None or limit <= 0:
+            limit = 50  # Default to 50 if invalid
         start_time_str = args.get("start_time", "3 days")
+        should_push_events = argToBoolean(args.get("should_push_events", False))
 
-        demisto.info(f"{INTEGRATION_PREFIX} Running get-events command. Limit: {limit}, Start Time: {start_time_str}")
+        demisto.info(
+            f"{INTEGRATION_PREFIX} Running get-events command. "
+            f"Limit: {limit}, Start Time: {start_time_str}, Should Push Events: {should_push_events}"
+        )
 
         start_time, _ = parse_date_range(start_time_str)
         if not start_time:
@@ -321,6 +328,11 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
         events, _ = client.fetch_events(max_fetch=limit, last_run_time=start_time)
         demisto.info(f"{INTEGRATION_PREFIX} get-events command fetched {len(events)} events.")
+
+        # Push events to XSIAM if requested
+        if should_push_events:
+            demisto.info(f"{INTEGRATION_PREFIX} Pushing {len(events)} events to XSIAM.")
+            send_events_to_xsiam(events, vendor=INTEGRATION_NAME, product="liveperson")
 
         readable_output = tableToMarkdown(
             f"LivePerson Audit Events (Last {limit})",
@@ -333,13 +345,21 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
             readable_output=readable_output, outputs_prefix="LivePerson.Event", outputs_key_field="changeDate", outputs=events
         )
     except Exception as e:
-        demisto.error(f"{INTEGRATION_PREFIX} get-events command failed: {str(e)}")
+        tb = traceback.format_exc()
+        demisto.error(f"{INTEGRATION_PREFIX} get-events command failed: {str(e)}\nTraceback:\n{tb}")
         raise
 
 
-def fetch_events_command(client: Client, max_fetch: int, first_fetch_time: datetime) -> list[dict[str, Any]]:
+def fetch_events_command(
+    client: Client, max_fetch: int, first_fetch_time: datetime
+) -> tuple[list[dict[str, Any]], datetime, datetime]:
     """
-    Fetches events for XSIAM, tracks last run time, and handles state.
+    Fetches events for XSIAM and returns the events along with timestamp information.
+    
+    :param client: The LivePerson client
+    :param max_fetch: Maximum number of events to fetch
+    :param first_fetch_time: The first fetch time to use if no last run exists
+    :return: A tuple of (events, last_run_time, new_max_timestamp)
     """
     last_run = demisto.getLastRun()
     last_run_time_str = last_run.get("last_fetch_time")
@@ -353,6 +373,17 @@ def fetch_events_command(client: Client, max_fetch: int, first_fetch_time: datet
 
     events, new_max_timestamp = client.fetch_events(max_fetch=max_fetch, last_run_time=last_run_time)
 
+    return events, last_run_time, new_max_timestamp
+
+
+def update_last_run(last_run_time: datetime, new_max_timestamp: datetime, events: list[dict[str, Any]]) -> None:
+    """
+    Updates the last run time after successful event submission.
+    
+    :param last_run_time: The previous last run time
+    :param new_max_timestamp: The maximum timestamp from the fetched events
+    :param events: The list of events that were fetched
+    """
     # Save the new last run time
     if new_max_timestamp > last_run_time:
         # Add 1 second to the last timestamp to avoid fetching the same event again
@@ -375,8 +406,6 @@ def fetch_events_command(client: Client, max_fetch: int, first_fetch_time: datet
         demisto.info(f"{INTEGRATION_PREFIX} Setting new last run time to {new_last_run_time_str} to avoid duplicates.")
     else:
         demisto.info(f"{INTEGRATION_PREFIX} No new events found. Last run time not updated.")
-
-    return events
 
 
 """ MAIN FUNCTION """
@@ -401,28 +430,28 @@ def main() -> None:
     first_fetch_str = params.get("first_fetch", "3 days")
 
     command = demisto.command()
-    demisto.info(f"{INTEGRATION_PREFIX} Command being run: {command}")
+    demisto.debug(f"{INTEGRATION_PREFIX} Command being run: {command}")
 
     try:
         # --- Parameter Validation ---
         if not (auth_url and account_id and client_id and client_secret):
             raise DemistoException(
-                "Missing required parameters: Authorization Server URL, Account ID, " "Client ID, or Client Secret."
+                "Missing required parameters: Authorization Server URL, Account ID, Client ID, or Client Secret."
             )
 
         first_fetch_time, _ = parse_date_range(first_fetch_str)
         if not first_fetch_time:
             raise DemistoException(
-                f"Invalid 'first_fetch' format: {first_fetch_str}. " "Use phrases like '3 days ago' or '2023-10-25T10:00:00Z'."
+                f"Invalid 'first_fetch' format: {first_fetch_str}. Use phrases like '3 days ago' or '2023-10-25T10:00:00Z'."
             )
         if max_fetch is None or max_fetch <= 0:
             raise DemistoException(f"'max_fetch' must be a positive integer. Got: {max_fetch}")
 
         # --- Dynamic Domain Lookup ---
         # This is the first network call. It validates account_id and proxy/SSL.
-        demisto.info(f"{INTEGRATION_PREFIX} Attempting to discover Event API domain for account {account_id}...")
+        demisto.debug(f"{INTEGRATION_PREFIX} Attempting to discover Event API domain for account {account_id}...")
         event_base_url = Client._get_event_domain(account_id, verify_ssl, proxies)
-        demisto.info(f"{INTEGRATION_PREFIX} Successfully discovered Event API domain: {event_base_url}")
+        demisto.debug(f"{INTEGRATION_PREFIX} Successfully discovered Event API domain: {event_base_url}")
 
         # --- Client Initialization ---
         client = Client(
@@ -444,14 +473,24 @@ def main() -> None:
             return_results(get_events_command(client, demisto.args()))
 
         elif command == "fetch-events":
-            events = fetch_events_command(client, max_fetch, first_fetch_time)
-            demisto.info(f"{INTEGRATION_PREFIX} Sending {len(events)} events to XSIAM.")
-            # send_events_to_xsiam handles event hashing for deduplication
-            send_events_to_xsiam(events, vendor=INTEGRATION_NAME, product="liveperson")
+            events, last_run_time, new_max_timestamp = fetch_events_command(client, max_fetch, first_fetch_time)
+            
+            if events:
+                demisto.debug(f"{INTEGRATION_PREFIX} Sending {len(events)} events to XSIAM.")
+                # send_events_to_xsiam handles event hashing for deduplication
+                send_events_to_xsiam(events, vendor=INTEGRATION_NAME, product="liveperson")
+                
+                # Only update last run after successful event submission
+                demisto.info(f"{INTEGRATION_PREFIX} Events successfully sent to XSIAM. Updating last run time.")
+                update_last_run(last_run_time, new_max_timestamp, events)
+            else:
+                demisto.debug(f"{INTEGRATION_PREFIX} No events to send to XSIAM.")
 
     except Exception as e:
-        demisto.error(f"{INTEGRATION_PREFIX} Failed to execute {command} command. Error: {str(e)}")
-        return_error(f"Failed to execute {command} command. Error: {str(e)}", error=e)
+        # Get the full traceback for debugging
+        tb = traceback.format_exc()
+        demisto.error(f"{INTEGRATION_PREFIX} Failed to execute {command} command. Error: {str(e)}\nTraceback:\n{tb}")
+        return_error(f"Failed to execute {command} command. Error: {str(e)}\nTraceback:\n{tb}", error=e)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
