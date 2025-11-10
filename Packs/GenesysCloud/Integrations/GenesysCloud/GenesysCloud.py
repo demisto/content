@@ -1,19 +1,32 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import aiohttp
+from http import HTTPStatus
 import asyncio
 from typing import Any
 from datetime import datetime, timedelta, UTC
 
 """ CONSTANTS """
 
+# Dataset
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "Genesys"
 PRODUCT = "Cloud"
 
+# Access Token
+ACCESS_TOKEN_KEY = "access_token"
+TOKEN_TYPE_KEY = "token_type"
+TOKEN_TTL_KEY = "expires_in"  # TTL in seconds
+TOKEN_ERROR_KEY = "error"  # Optional error message if request fails
+TOKEN_VALID_UNTIL_KEY = "valid_until"
+
+# Default Values
 DEFAULT_SERVER_URL = "https://api.mypurecloud.com"
+DEFAULT_AUDIT_PAGE_SIZE = 500
 DEFAULT_GET_EVENTS_LIMIT = 10
 DEFAULT_FETCH_EVENTS_LIMIT = 2500  # per service
+DEFAULT_TOKEN_TTL = 86400
+DEFAULT_TOKEN_TYPE = "bearer"
 
 """ CLIENT CLASS """
 
@@ -27,10 +40,10 @@ class AsyncClient:
         self._client_secret = client_secret
         self._access_token: str | None = None
         self._verify = verify
-        self._proxy_url = handle_proxy().get("http") if proxy else None
+        self._proxy_url = handle_proxy().get("http", "") if proxy else None
 
     async def __aenter__(self):
-        self._session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=self._verify))
+        self._session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=self._verify), proxy=self._proxy_url)
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -43,35 +56,170 @@ class AsyncClient:
         # Always ensure HTTP client session is closed
         await self._session.close()
 
-    async def get_access_token(self) -> str:
+    async def _generate_new_access_token(self) -> dict[str, Any]:
         """
-        Obtains an OAuth2 access token using client credentials flow.
+        Generates a new OAuth2 access token using client credentials flow.
+
+        Raises:
+            ClientResponseError: If request failed.
+            DemistoException: If response contains an error message and/or no access token.
 
         Returns:
-            str: The access token.
+            dict[str, Any]: The token raw API response.
+
+        Example:
+            >>> async_client.generate_access_token()
+            {
+                "access_token": "token",
+                "token_type": "bearer",
+                "expires_in": 86400,
+                "error": "optional-error-message",
+            }
         """
-        # Implement OAuth2 token retrieval
-        return "token"
+        login_url = self.base_url.replace("api.", "login.")
+        token_url = urljoin(login_url, "/oauth/token")
+
+        demisto.debug(f"Requesting new OAuth2 access token using {token_url=}.")
+        async with self._session.post(
+            url=token_url,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            data={"grant_type": "client_credentials"},
+            auth=aiohttp.BasicAuth(self._client_id, self._client_secret),
+        ) as response:
+            response.raise_for_status()
+            response_json = await response.json()
+            error_message = response_json.get(TOKEN_ERROR_KEY)  # Optional error message if request fails
+            access_token = response_json.get(ACCESS_TOKEN_KEY)
+
+            if error_message or not access_token:
+                raise DemistoException(f"Failed to obtain access token using {token_url=}. {error_message=}.")
+
+            token_type = response_json.get(TOKEN_TYPE_KEY)
+            token_ttl = response_json.get(TOKEN_TTL_KEY)  # TTL in seconds
+
+            demisto.debug(f"Successfully obtained OAuth2 access token. {token_type=}, {token_ttl=}.")
+            return response_json
+
+    async def get_authorization_header(self, force_generate_new_token: bool = False) -> str:
+        """
+        Constructs Authorization header using the access token in the integration context (if found), or generating a new one.
+
+        Args:
+            force_generate_new_token (bool, optional): Whether to request a new OAuth access token. Defaults to False.
+
+        Returns:
+            str: The Authorization header containing the token type and access token.
+
+        Example:
+            >>> async_client.get_authorization_header()
+            "Bearer MyToken1245"
+        """
+        integration_context = get_integration_context()
+        access_token = integration_context.get(ACCESS_TOKEN_KEY)
+        token_type = integration_context.get(TOKEN_TYPE_KEY, DEFAULT_TOKEN_TYPE)
+        token_valid_until = arg_to_datetime(integration_context.get(TOKEN_VALID_UNTIL_KEY))
+        is_valid_token = token_valid_until and token_valid_until < datetime.now(tz=UTC)
+
+        if access_token and is_valid_token and not force_generate_new_token:
+            demisto.debug("Using valid access token in context to construct Authorization header.")
+        else:
+            demisto.debug("Generating new access token.")
+            token_response = await self._generate_new_access_token()
+            access_token = token_response.get(ACCESS_TOKEN_KEY)
+            token_type = token_response.get(TOKEN_TYPE_KEY, DEFAULT_TOKEN_TYPE)
+            token_ttl = token_response.get(TOKEN_TTL_KEY, DEFAULT_TOKEN_TTL) - 300  # subtract 5 minutes as a safety margin
+            token_response[TOKEN_VALID_UNTIL_KEY] = datetime.now(tz=UTC) + timedelta(seconds=token_ttl)
+            demisto.debug("Saving token in integration context.")
+            set_integration_context(token_response)
+
+        demisto.debug(f"Constructed Authorization header using {token_type=}.")
+        return f"{token_type.capitalize()} {access_token}"
+
+    async def _send_audits_post_request(
+        self,
+        url: str,
+        params: dict[str, str],
+        headers: dict[str, str],
+        body: dict[str, Any],
+    ) -> dict[str, Any]:
+        """
+        Sends HTTP POST request to get realtime audits.
+
+        Args:
+            url (str): The full URL.
+            params (dict[str, str]): The URL query parameters.
+            headers (dict[str, str]): The request headers, including the "Authorization" header.
+            body (dict[str, Any]): The request body, including "interval", "serviceName", and "pageNumber".
+
+        Raises:
+            ClientResponseError: If the request fails.
+
+        Returns:
+            dict[str, Any]: The audit events raw API response.
+        """
+        async with self._session.post(url=url, params=params, headers=headers, json=body) as response:
+            response.raise_for_status()
+            return await response.json()
 
     async def get_realtime_audits(
         self,
         from_date: str,
         to_date: str,
         service_name: str,
+        page_number: int,
+        page_size: int = DEFAULT_AUDIT_PAGE_SIZE,
     ) -> dict[str, Any]:
         """
-        Retrieves audit events from Genesys Cloud for a specific service.
+        Retrieves audit events from Genesys Cloud for a specific service using the realtime audit query API.
 
         Args:
             from_date (str): The start date for the audit events in ISO 8601 format.
             to_date (str): The end date for the audit events in ISO 8601 format.
             service_name (str): The name of the service to fetch events for.
+            page_number (int): The page number to retrieve.
+            page_size (int): The number of items per page. Defaults to 500.
+
+        Raises:
+            ClientResponseError: If the request fails (after retry on 401 error or some other status code).
 
         Returns:
             dict[str, Any]: A dictionary containing the audit events raw API response.
         """
-        # Implement audit query here
-        return {}
+        url = urljoin(self.base_url, "/api/v2/audits/query/realtime")
+        params = {"expand": "user"}
+        body = {
+            "interval": f"{from_date}/{to_date}",
+            "serviceName": service_name,
+            "sort": [{"name": "Timestamp", "sortOrder": "ascending"}],
+            "pageNumber": page_number,
+            "pageSize": page_size,
+        }
+        # Get authorization header (will try to get token from integration context or generate new one if needed)
+        headers = {"Content-Type": "application/json", "Authorization": await self.get_authorization_header()}
+
+        demisto.debug(f"[{service_name}] Requesting audits using {from_date=}, {to_date=}, {page_number=}.")
+        try:
+            response_json = await self._send_audits_post_request(url, params=params, headers=headers, body=body)
+
+        except aiohttp.ClientResponseError as e:
+            status_code = e.status
+            error_message = e.message
+            if status_code == HTTPStatus.UNAUTHORIZED:
+                demisto.debug("Received HTTP 401 Unauthorized error. Forcing new token generation and retrying...")
+                headers["Authorization"] = await self.get_authorization_header(force_generate_new_token=True)
+                response_json = await self._send_audits_post_request(url, params=params, headers=headers, body=body)
+
+            else:
+                demisto.error(
+                    f"[{service_name}] Request using {from_date=}, {to_date=}, {page_number=} failed. "
+                    f"Got {status_code=}, {error_message=}."
+                )
+                raise
+
+        entities_count = len(response_json.get("entities", []))
+        demisto.debug(f"[{service_name}] Fetched {entities_count} audits using {from_date=}, {to_date=}, {page_number=}.")
+
+        return response_json
 
 
 """ HELPER FUNCTIONS """
@@ -126,10 +274,41 @@ async def get_audit_events_for_service(
         list[dict[str, Any]]: A list of new audit events for the service.
     """
     last_fetched_ids = last_fetched_ids or []
-    # all_fetched_ids = set(last_fetched_ids)
+    all_fetched_ids = set(last_fetched_ids)
     all_events: list[dict[str, Any]] = []
 
-    return all_events[:limit]
+    # Calculate number of pages needed based on limit and page size
+    max_page_number = (limit + DEFAULT_AUDIT_PAGE_SIZE - 1) // DEFAULT_AUDIT_PAGE_SIZE  # Ceiling division
+    demisto.debug(f"[{service_name}] Fetching {max_page_number} pages concurrently to retrieve up to {limit} events.")
+
+    # Create tasks for fetching all pages concurrently
+    page_tasks = [
+        client.get_realtime_audits(
+            from_date=from_date,
+            to_date=to_date,
+            service_name=service_name,
+            page_number=page_number,
+            page_size=DEFAULT_AUDIT_PAGE_SIZE,
+        )
+        for page_number in range(max_page_number)  # Page numbers start from 0
+    ]
+
+    # Fetch all pages concurrently
+    page_responses = await asyncio.gather(*page_tasks)
+
+    # Process results from all pages
+    for page_number, page_response in enumerate(page_responses):
+        # Process and deduplicate events from this page
+        page_events = deduplicate_and_format_events(page_response, all_fetched_ids)
+        all_events.extend(page_events)
+
+        # Stop if limit was reached
+        if len(all_events) >= limit:
+            demisto.debug(f"[{service_name}] Reached {limit=} after processing events on {page_number=}.")
+            break
+
+    demisto.debug(f"[{service_name}] Fetched total of {len(all_events)} events from {max_page_number} pages.")
+    return all_events
 
 
 async def get_events_command(
@@ -151,23 +330,18 @@ async def get_events_command(
     from_date = arg_to_datetime(args.get("from_date")) or (datetime.now(tz=UTC) - timedelta(hours=1))
     to_date = datetime.now(tz=UTC)
     limit = arg_to_number(args.get("limit")) or DEFAULT_GET_EVENTS_LIMIT
-    service_name = args.get("service_name")
+    service_name = args["service_name"]
 
-    # If specific service is requested, use only that one
-    services_to_fetch = [service_name] if service_name else service_names
+    events = await get_audit_events_for_service(
+        client=client,
+        from_date=from_date.strftime(DATE_FORMAT),
+        to_date=to_date.strftime(DATE_FORMAT),
+        service_name=service_name,
+        limit=limit,
+    )
 
-    all_events = []
-    for service in services_to_fetch:
-        events = await get_audit_events_for_service(
-            client=client,
-            from_date=from_date.strftime(DATE_FORMAT),
-            to_date=to_date.strftime(DATE_FORMAT),
-            service_name=service,
-            limit=limit,
-        )
-        all_events.extend(events)
-
-    return all_events, CommandResults(readable_output=tableToMarkdown(name="Genesys Cloud Audit Events", t=all_events))
+    human_readable = tableToMarkdown(name=f"Genesys Cloud Audit Events from Service: {service_name}", t=events)
+    return events, CommandResults(readable_output=human_readable)
 
 
 async def fetch_events_command(
@@ -179,52 +353,91 @@ async def fetch_events_command(
     """
     Implements `fetch-events` command. Fetches audit events using the AsyncClient.
 
+    Fetches events from multiple services concurrently. If one service fails,
+    it will not impact the fetching of events from other services.
+
     Args:
         client (AsyncClient): An instance of the AsyncClient.
         last_run (dict): The last run object.
-        max_fetch (int): The maximum number of events to fetch.
+        max_fetch (int): The maximum number of events to fetch per service.
         service_names (list[str]): List of service names to fetch events from.
 
     Returns:
         tuple[dict[str, Any], list[dict[str, Any]]]: A tuple of the next run object and a list of fetched events.
     """
     demisto.debug(f"Starting fetching events with {last_run=}.")
-
     default_from_date = (datetime.now(tz=UTC) - timedelta(hours=1)).strftime(DATE_FORMAT)
-    from_date = last_run.get("from_date") or default_from_date
     to_date = datetime.now(tz=UTC).strftime(DATE_FORMAT)
-    last_fetched_ids = last_run.get("last_fetched_ids", [])
 
-    all_events = []
-
-    # Fetch events from each service
+    service_tasks = []
+    # Create tasks for fetching events from each service concurrently
     for service_name in service_names:
-        events = await get_audit_events_for_service(
-            client=client,
-            from_date=from_date,
-            to_date=to_date,
-            service_name=service_name,
-            limit=max_fetch,
-            last_fetched_ids=last_fetched_ids,
+        service_last_run = last_run.get(service_name, {})
+        from_date = service_last_run.get("from_date") or default_from_date
+        last_fetched_ids = service_last_run.get("last_fetched_ids", [])
+
+        service_tasks.append(
+            get_audit_events_for_service(
+                client=client,
+                from_date=from_date,
+                to_date=to_date,
+                service_name=service_name,
+                limit=max_fetch,
+                last_fetched_ids=last_fetched_ids,
+            )
         )
-        all_events.extend(events)
 
-    if not all_events:
-        demisto.debug(f"No new events found since {last_run=}.")
-        return last_run, []
+    # Gather results with `return_exceptions=True` to prevent one failure from affecting others
+    demisto.debug(f"Fetching events from {len(service_names)} services concurrently: {service_names}")
+    results = await asyncio.gather(*service_tasks, return_exceptions=True)
 
-    # Sort events by timestamp
-    all_events.sort(key=lambda event: event.get("eventTime", ""))
+    # Process results and handle any exceptions
+    next_run = {}
+    all_events = []
+    failed_services = []
 
-    # Get the newest event timestamp
-    newest_event_timestamp = all_events[-1].get("eventTime")
-    demisto.debug(f"Got {len(all_events)} deduplicated events with {newest_event_timestamp=}.")
+    for service_name, result in zip(service_names, results):
+        service_last_run = last_run.get(service_name, {})
 
-    # Get the IDs of the events that have the newest timestamp
-    new_last_fetched_ids = [event.get("id") for event in all_events if event.get("eventTime") == newest_event_timestamp]
+        if isinstance(result, Exception):
+            # Log the error but continue processing events from other services
+            service_traceback = "".join(traceback.format_exception(type(result), result, result.__traceback__))
+            demisto.error(f"[{service_name}] Failed to fetch events. Traceback: {service_traceback}.")
+            failed_services.append(service_name)
 
-    next_run = {"from_date": newest_event_timestamp, "last_fetched_ids": new_last_fetched_ids}
-    demisto.debug(f"Updating {next_run=} after fetching {len(all_events)} events.")
+        elif isinstance(result, list):
+            # Successfully fetched events from service
+            service_events = result
+            demisto.debug(f"[{service_name}] Fetched {len(service_events)} events using {from_date=}, {to_date=}, {max_fetch=}.")
+
+            # If no new events from service, set its next run same as last run
+            if not service_events:
+                demisto.debug(f"[{service_names}] No new events found since {service_last_run=}.")
+                next_run[service_name] = service_last_run
+                continue
+
+            # Get the newest event timestamp
+            newest_event_time = service_events[-1].get("eventTime")
+            demisto.debug(f"[{service_name}] Got {len(service_events)} deduplicated events with {newest_event_time=}.")
+
+            # Get the IDs of the service events that have the newest time
+            new_last_fetched_ids = [event.get("id") for event in service_events if event.get("eventTime") == newest_event_time]
+
+            # Update next run for service
+            service_next_run = {"from_date": newest_event_time, "last_fetched_ids": new_last_fetched_ids}
+            demisto.debug(f"[{service_name}] Updating {service_next_run=} after fetching {len(service_events)} events.")
+
+            # Set next run
+            all_events.extend(service_events)
+            next_run[service_name] = service_next_run
+
+        else:
+            # Unlikely case of getting unknown / unexpected result
+            demisto.debug(f"[{service_name}] Unexpected result type: {type(result)}.")
+
+    # If all services failed, raise an exception
+    if len(failed_services) == len(service_names):
+        raise DemistoException(f"Fetching events failed from all services: {service_names}.")
 
     return next_run, all_events
 
