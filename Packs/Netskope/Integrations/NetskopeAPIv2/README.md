@@ -42,6 +42,7 @@ For the **URL List**, set to **Manage and Apply**.
 ![Manage and Apply](../../doc_files/NetskopeAPIv2_step2_manage_and_apply.png)
 
 #### For DLP
+
 For **DLP Incident**, set to **View**.
 ![DLP Incident](../../doc_files/NetskopeAPIv2_step2_dlp.png)
 
