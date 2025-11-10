@@ -3732,6 +3732,9 @@ script:
     - contextPath: PaloAltoNetworksXDR.RiskyHost.type
       description: Form of identification element.
       type: String
+    - contextPath: PaloAltoNetworksXDR.RiskyHost.type
+      description: Form of identification element.
+      type: String
     - contextPath: PaloAltoNetworksXDR.RiskyHost.id
       description: Identification value of the type field.
       type: String
