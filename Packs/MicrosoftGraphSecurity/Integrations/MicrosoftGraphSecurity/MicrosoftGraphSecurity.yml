@@ -22,8 +22,7 @@ configuration:
   additionalinfo: When selecting the Custom option, the Host URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
   section: Connect
   advanced: true
-- defaultvalue: https://graph.microsoft.com
-  display: Host URL
+- display: Host URL
   name: host
   required: false
   type: 0
