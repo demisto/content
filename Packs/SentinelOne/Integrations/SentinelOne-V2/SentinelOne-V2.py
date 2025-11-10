@@ -2949,17 +2949,31 @@ def get_threat_analysis_command(client: Client, args: dict) -> CommandResults:
 
     # Parse response into context & content entries
     if threat_analysis_response:
+        agent_detection_info = threat_analysis_response.get("agentDetectionInfo", {})
+        agent_realtime_info = threat_analysis_response.get("agentRealtimeInfo", {})
+        threat_info = threat_analysis_response.get("threatInfo", {})
+
+        # Build multi-section markdown (each dict → single row table)
+        readable_output = ""
+        if agent_detection_info:
+            readable_output += tableToMarkdown("SentinelOne - Agent Detection Info", [agent_detection_info], removeNull=True)
+
+        if agent_realtime_info:
+            readable_output += tableToMarkdown("SentinelOne - Agent Realtime Info", [agent_realtime_info], removeNull=True)
+
+        if threat_info:
+            readable_output += tableToMarkdown("SentinelOne - Threat Info", [threat_info], removeNull=True)
+
         context_entries = {
-            "AccountName": threat_analysis_response.get("agentRealtimeInfo", {}).get("accountName"),
-            "AgentComputerName": threat_analysis_response.get("agentRealtimeInfo", {}).get("agentComputerName"),
-            "ThreatID": threat_analysis_response.get("threatInfo", {}).get("threatId"),
-            "ThreatName": threat_analysis_response.get("threatInfo", {}).get("threatName"),
+            "AgentDetectionInfo": agent_detection_info,
+            "AgentRealtimeInfo": agent_realtime_info,
+            "ThreatInfo": threat_info,
         }
 
     return CommandResults(
-        readable_output=tableToMarkdown("Sentinel One - Threat Analysis", context_entries, removeNull=True),
+        readable_output=readable_output,
         outputs_prefix="SentinelOne.Threat",
-        outputs_key_field="Threat ID",
+        outputs_key_field="ThreatInfo.threatId",
         outputs=context_entries,
         raw_response=threat_analysis_response,
     )
