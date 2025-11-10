@@ -265,7 +265,10 @@ class ServiceNowClient(BaseClient):
                 except ValueError as exception:
                     raise DemistoException(f"Failed to parse json object from response: {res.content}", exception)
                 if "error" in res:
-                    # Retry by generating new refresh token (only once to prevent infinite loops)
+                    # NOTE: This token regeneration logic is inherited by all integrations but currently relies on
+                    # the 'username' and 'password' fields. The Event Collector is the only integration that
+                    # supplies these fields under the OAuth method to utilize this retry logic.
+                    # Other inherited integrations require modification to function here
                     if self.use_oauth and self.username and self.password and not retry_attempted:
                         demisto.debug("Refresh token may have expired, automatically generating new refresh token via login")
                         self.login(self.username, self.password)
