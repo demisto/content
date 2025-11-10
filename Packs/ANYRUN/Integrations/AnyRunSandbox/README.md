@@ -49,6 +49,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### anyrun-detonate-file-windows
 
 ***
+
 Perform File analysis using Windows VM.
 
 #### Base Command
