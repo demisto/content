@@ -2,7 +2,8 @@ from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from OktaApiModule import *  # noqa: E402
+from OktaApiModule import *
+from urllib3 import response  # noqa: E402
 
 # CONSTANTS
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -56,7 +57,8 @@ PROFILE_ARGS = [
 GROUP_PROFILE_ARGS = ["name", "description"]
 
 MAX_LOGS_LIMIT = 1000
-
+DEFAULT_POLLING_TIME = 5
+DEFAULT_MAX_POLLING_CALLS = 10
 
 class Client(OktaClient):
     # Getting Group Id with a given group name
@@ -110,7 +112,7 @@ class Client(OktaClient):
 
     def get_user_factors(self, user_id):
         uri = f"/api/v1/users/{user_id}/factors"
-        return self.http_request(method="GET", url_suffix=uri)
+        return self.http_request(method="GET", url_suffix=uri, resp_type='response')
 
     def reset_factor(self, user_id, factor_id):
         uri = f"/api/v1/users/{user_id}/factors/{factor_id}"
@@ -214,6 +216,23 @@ class Client(OktaClient):
             }
             factors.append(factor)
         return factors
+    
+    @staticmethod
+    def get_rate_limit_context(headers: dict) -> dict:
+        """Takes the response headers and returns the rate limit data to the context
+
+        Args:
+            headers (dict): The response headers
+
+        Returns:
+            dict: The rate limit data to the context
+        """
+        rate_limit_context = {"X-Rate-Limit-Limit": headers["x-rate-limit-limit"],
+                              "X-Rate-Limit-Remaining": headers["x-rate-limit-remaining"],
+                              "X-Rate-Limit-Reset": headers["x-rate-limit-reset"]
+                              }
+        return rate_limit_context
+
 
     def verify_push_factor(self, user_id, factor_id):
         """
@@ -223,18 +242,18 @@ class Client(OktaClient):
         uri = f"/api/v1/users/{user_id}/factors/{factor_id}/verify"
         return self.http_request(method="POST", url_suffix=uri)
 
-    def poll_verify_push(self, url):
+    def poll_verify_push(self, url, polling_time: int = DEFAULT_POLLING_TIME, max_polling_calls: int = DEFAULT_MAX_POLLING_CALLS):
         """
         Keep polling authentication transactions with WAITING result until the challenge completes or expires.
         time limit defined by us = one minute
         """
         counter = 0
-        while counter < 10:
+        while counter < max_polling_calls:
             response = self.http_request(method="GET", full_url=url, url_suffix="")
             if response.get("factorResult") != "WAITING":
                 return response
             counter += 1
-            time.sleep(5)
+            time.sleep(polling_time)
         response["factorResult"] = "TIMEOUT"
         return response
 
@@ -569,6 +588,12 @@ def unsuspend_user_command(client, args):
     readable_output = f"### {args.get('username')} is no longer SUSPENDED"
     return (readable_output, {}, raw_response)
 
+def deconstruct_raw_response(raw_response):
+    """deconstruct the raw response to headers and content
+    """
+    headers = raw_response.headers
+    content = raw_response.json()
+    return content, headers
 
 def get_user_factors_command(client, args):
     user_id = args.get("userId")
@@ -580,14 +605,17 @@ def get_user_factors_command(client, args):
         user_id = client.get_user_id(args.get("username"))
 
     raw_response = client.get_user_factors(user_id)
-    if not raw_response or len(raw_response) == 0:
+    content, headers = deconstruct_raw_response(raw_response)
+    if not content or len(content) == 0:
         return "No Factors found"
 
-    factors = client.get_readable_factors(raw_response)
+    factors = client.get_readable_factors(content)
+    rate_limit_context = client.get_rate_limit_context(headers)
     context = createContext(factors, removeNull=True)
-    outputs = {"Account(val.ID && val.ID === obj.ID)": {"Factor": context, "ID": user_id}}
+    outputs = {"Account(val.ID && val.ID === obj.ID)": {"Factor": context, "ID": user_id},
+               "Okta": {"Metadata": rate_limit_context}}
     readable_output = f"Factors for user: {user_id}\n {tableToMarkdown('Factors', factors)}"
-    return (readable_output, outputs, raw_response)
+    return (readable_output, outputs, content)
 
 
 def reset_factor_command(client, args):
@@ -687,12 +715,14 @@ def get_groups_for_user_command(client, args):
 def verify_push_factor_command(client, args):
     user_id = args.get("userId")
     factor_id = args.get("factorId")
+    polling_time = arg_to_number(args.get("polling_time", DEFAULT_POLLING_TIME))
+    max_polling_calls = arg_to_number(args.get("max_polling_calls", DEFAULT_MAX_POLLING_CALLS))
 
     raw_response = client.verify_push_factor(user_id, factor_id)
     poll_link = raw_response.get("_links").get("poll")
     if not poll_link:
         raise Exception("No poll link for the push factor challenge")
-    poll_response = client.poll_verify_push(poll_link.get("href"))
+    poll_response = client.poll_verify_push(poll_link.get("href"), polling_time, max_polling_calls)
 
     outputs = {"Account(val.ID && val.ID === obj.ID)": {"ID": user_id, "VerifyPushResult": poll_response.get("factorResult")}}
     readable_output = f"Verify push factor result for user {user_id}: {poll_response.get('factorResult')}"

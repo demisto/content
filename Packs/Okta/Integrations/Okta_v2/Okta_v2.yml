@@ -125,6 +125,9 @@ script:
       name: username
     - description: User ID of the user for which to get all enrolled factors.
       name: userId
+    - description: Time to wait between subsequent polling calls. Value is in seconds. Default time is 5 seconds.
+      name: polling_time
+      defaultValue: 5
     description: Returns all the enrolled factors for the specified user.
     name: okta-get-user-factors
     outputs:
@@ -145,6 +148,15 @@ script:
       type: String
     - contextPath: Account.Factor.Status
       description: Okta account factor status.
+      type: Unknown
+    - contextPath: Okta.Metadata.X-Rate-Limit-Limit
+      description: The Rate Limit limit.
+      type: Unknown
+    - contextPath: Okta.Metadata.X-Rate-Limit-Remaining
+      description: The remaining Rate Limit.
+      type: Unknown
+    - contextPath: Okta.Metadata.X-Rate-Limit-Reset
+      description: The time to resetting the Rate Limit.
       type: Unknown
   - arguments:
     - description: The user ID.
@@ -244,6 +256,12 @@ script:
     - description: The push factor ID.
       name: factorId
       required: true
+    - description: Time to wait between subsequent polling calls. Value is in seconds. Default time is 5 seconds.
+      name: polling_time
+      defaultValue: 5
+    - description: Maximum number of polling calls. Default value is 10.
+      name: max_polling_calls
+      defaultValue: 10
     description: Enrolls and verifies a push factor for the specified user.
     name: okta-verify-push-factor
     outputs:
