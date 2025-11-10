@@ -117,7 +117,7 @@ def add_time_key_to_alerts(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]
                 create_time = arg_to_datetime(arg=create_time_str)
             except Exception as e:
                 demisto.error(
-                    f"arg_to_datetime failed unexpectedly for AlertId: {alert_id} "
+                    f"arg_to_datetime failed unexpectedly while parsing for AlertId: {alert_id} "
                     f"with value '{create_time_str}', setting fallback time {now_utc}. Error: {e}"
                 )
                 create_time = now_utc
