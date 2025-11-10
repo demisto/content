@@ -150,8 +150,8 @@ def is_supported_modules_modified(pr: PullRequest, file_path: str) -> bool:
     """
 
     # Get file extension
-    file_ext = file_path[file_path.rfind('.'):].lower()
-    if file_ext not in ('.yaml', '.yml', '.json'):
+    file_ext = file_path[file_path.rfind(".") :].lower()
+    if file_ext not in (".yaml", ".yml", ".json"):
         return False
 
     # Get the file content before and after the PR
@@ -161,19 +161,19 @@ def is_supported_modules_modified(pr: PullRequest, file_path: str) -> bool:
         head_sha = pr.head.sha
 
         # Get base version (before PR)
-        base_content = repo.get_contents(file_path, ref=base_sha).decoded_content.decode('utf-8')
+        base_content = repo.get_contents(file_path, ref=base_sha).decoded_content.decode("utf-8")
         base_data = parse_yml_or_json(base_content, file_path)
 
         # Get head version (after PR)
-        head_content = repo.get_contents(file_path, ref=head_sha).decoded_content.decode('utf-8')
+        head_content = repo.get_contents(file_path, ref=head_sha).decoded_content.decode("utf-8")
         head_data = parse_yml_or_json(head_content, file_ext)
 
         if not base_data or not head_data:
             return False
 
         # Compare the supportedModules field
-        base_modules = base_data.get('supportedModules', [])
-        head_modules = head_data.get('supportedModules', [])
+        base_modules = base_data.get("supportedModules", [])
+        head_modules = head_data.get("supportedModules", [])
 
         # Convert to sets for comparison
         base_set = set(base_modules) if isinstance(base_modules, list) else set()
@@ -207,7 +207,7 @@ def check_pr_contains_supported_modules_changes(pr: PullRequest) -> bool:
 
             try:
                 # For new files, just check if they contain supportedModules
-                if file.status == 'added':
+                if file.status == "added":
                     response = requests.get(file.raw_url, timeout=10)
                     response.raise_for_status()
                     content = response.text
@@ -215,7 +215,7 @@ def check_pr_contains_supported_modules_changes(pr: PullRequest) -> bool:
                     if parsed_content and has_supported_modules_field(parsed_content):
                         modified_files.append(f"- New file with 'supportedModules': {file.filename}")
                 # For modified files, check if supportedModules was modified
-                elif file.status == 'modified':
+                elif file.status == "modified":
                     if is_supported_modules_modified(pr, file.filename):
                         modified_files.append(f"- Modified 'supportedModules' in file: {file.filename}")
 
