@@ -242,7 +242,7 @@ def sync(client: Client):
         requests_kwargs = get_requests_kwargs(_json={"path_to_file": temp_file_path})
         res = client.http_request(url_suffix="sync_tim_iocs", requests_kwargs=requests_kwargs)
         if res.get("reply") is not True:
-            raise DemistoException(f"Unable to sync IOCs:\n{res.get("reply")}")
+            raise DemistoException(f"Unable to sync IOCs:\n{res.get('reply')}")
     finally:
         os.remove(temp_file_path)
     set_integration_context(
@@ -265,7 +265,7 @@ def iocs_to_keep(client: Client):
         requests_kwargs = get_requests_kwargs(_json={"path_to_file": temp_file_path})
         res = client.http_request(url_suffix="iocs_to_keep", requests_kwargs=requests_kwargs)
         if res.get("reply") is not True:
-            raise DemistoException(f"Unable to sync IOCs:\n{res.get("reply")}")
+            raise DemistoException(f"Unable to sync IOCs:\n{res.get('reply')}")
     finally:
         os.remove(temp_file_path)
     return_outputs("sync with XDR completed.")
