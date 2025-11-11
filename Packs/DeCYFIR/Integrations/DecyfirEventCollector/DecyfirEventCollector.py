@@ -232,23 +232,34 @@ def update_fetched_event_ids(current_run: dict[str, Any], event_type: str, logs:
     log(f"Updated fetched_event_ids for {event_type}", {"count": len(ids)})
 
 
-def compute_next_fetch_time(events: list[dict[str, Any]], previous_time: datetime, event_type: str) -> str | None:
+def compute_next_fetch_time(
+    events: List[dict[str, Any]],
+    previous_time: Optional[datetime],
+    event_type: str
+) -> Optional[str]:
     """
-    Determine next fetch time based on latest event.
+    Determine next fetch time based on the latest event timestamp.
 
     Args:
         events (List[Dict[str, Any]]): List of fetched events.
-        previous_time (datetime): Last recorded fetch time.
+        previous_time (Optional[datetime]): Last recorded fetch time.
         event_type (str): Type of event.
 
     Returns:
-        Optional[str]: ISO formatted datetime for next run.
+        Optional[str]: ISO formatted datetime for the next fetch cycle.
     """
-    times = [extract_event_time(e, event_type) for e in events if extract_event_time(e, event_type)]
+    # Extract valid datetimes only (filter out None explicitly)
+    times: List[datetime] = [
+        t for e in events if (t := extract_event_time(e, event_type)) is not None
+    ]
+
     if not times:
+        # Fall back to previous time if no valid timestamps found
         return previous_time.isoformat() if previous_time else None
-    latest = max(times)
-    next_time = latest + timedelta(milliseconds=1)
+
+    # mypy-safe: times only contains datetime objects
+    latest: datetime = max(times)
+    next_time: datetime = latest + timedelta(milliseconds=1)
     return next_time.isoformat()
 
 
