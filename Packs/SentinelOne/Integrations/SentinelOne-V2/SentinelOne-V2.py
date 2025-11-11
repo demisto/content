@@ -1953,7 +1953,7 @@ def run_powerquery(client: Client, args: dict) -> CommandResults:
     outputs = {}
 
     # Get arguments
-    sdl_url = args.get("singularity_xdr_Url")
+    sdl_url = args.get("singularity_xdr_url")
     sdl_api_key = args.get("singularity_xdr_api_key")
     query = args.get("query")
     start_time = args.get("startTime")

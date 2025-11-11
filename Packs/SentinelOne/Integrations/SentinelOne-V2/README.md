@@ -2096,7 +2096,7 @@ Run a PowerQuery, where you can pipe one or many search expressions into a set o
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| singularity_xdr_Url | Singularity Data Lake XDR URL. | Required |
+| singularity_xdr_url | Singularity Data Lake XDR URL. | Required |
 | singularity_xdr_api_key | A Log Read Access API key. | Required |
 | query | The query, in PowerQuery syntax. | Required |
 | startTime | Start time for your query. | Optional |

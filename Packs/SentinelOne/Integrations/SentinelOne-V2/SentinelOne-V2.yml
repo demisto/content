@@ -1936,7 +1936,7 @@ script:
     - Domain Blockage
     - IP Blockage
   - arguments:
-    - name: singularity_xdr_Url
+    - name: singularity_xdr_url
       required: true
       description: Singularity Data Lake XDR URL.
     - name: singularity_xdr_api_key
