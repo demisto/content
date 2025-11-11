@@ -1362,7 +1362,7 @@ script:
           required: true
         - auto: PREDEFINED
           description: List of scanners to enable.
-          name: enabled_scanners
+          name: enable_scanners
           isArray: true
           predefined:
             - SECRETS
@@ -1370,21 +1370,21 @@ script:
             - SCA
         - auto: PREDEFINED
           description: List of scanners to disable.
-          name: disabled_scanners
+          name: disable_scanners
           isArray: true
           predefined:
             - SECRETS
             - IAC
             - SCA
         - auto: PREDEFINED
-          description: Enable live validation of discovered secrets.
+          description: Enable live validation of discovered secrets. This argument only relevant when SECRETS scanner is enabled.
           type: boolean
           name: secret_validation
           predefined:
             - "true"
             - "false"
         - auto: PREDEFINED
-          description: Enable scanning on pull requests. This argument only relevant when SECRETS scanner is enabled.
+          description: Enable scanning on pull requests.
           type: boolean
           name: pr_scanning
           predefined:

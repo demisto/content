@@ -29,10 +29,10 @@ WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
     "core-search-asset-groups",
     "core-get-issue-recommendations",
-    "core-enable-scanners",
 ]
-DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 
+DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
+APPSEC_COMMANDS = ["core-enable-scanners"]
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 
@@ -368,7 +368,7 @@ class Client(CoreClient):
     def enable_scanners(self, payload: dict, repository_id: str) -> dict:
         return self._http_request(
             method="PUT",
-            url_suffix=f"/public_api/appsec/v1/repositories/{repository_id}/scan-configuration",
+            url_suffix=f"/v1/repositories/{repository_id}/scan-configuration",
             json_data=payload,
             headers={
                 **self._headers,
@@ -734,7 +734,7 @@ def search_assets_command(client: Client, args):
     )
 
 
-def validate_scanner_name(scanner_name: str) -> bool:
+def validate_scanner_name(scanner_name: str):
     """
     Validate that a scanner name is allowed.
 
@@ -749,8 +749,6 @@ def validate_scanner_name(scanner_name: str) -> bool:
     """
     if scanner_name.upper() not in ALLOWED_SCANNERS:
         raise ValueError(f"Invalid scanner '{scanner_name}'. Allowed scanners are: {', '.join(sorted(ALLOWED_SCANNERS))}")
-
-    return True
 
 
 def build_scanner_config_payload(args: dict) -> dict:
@@ -774,8 +772,8 @@ def build_scanner_config_payload(args: dict) -> dict:
     Raises:
         ValueError: If the same scanner is specified in both enabled and disabled lists.
     """
-    enabled_scanners = argToList(args.get("enabled_scanners", []))
-    disabled_scanners = argToList(args.get("disabled_scanners", []))
+    enabled_scanners = argToList(args.get("enable_scanners", []))
+    disabled_scanners = argToList(args.get("disable_scanners", []))
     secret_validation = argToBoolean(args.get("secret_validation", "False"))
     enable_pr_scanning = arg_to_bool_or_none(args.get("pr_scanning"))
     block_on_error = arg_to_bool_or_none(args.get("block_on_error"))
@@ -790,15 +788,15 @@ def build_scanner_config_payload(args: dict) -> dict:
     # Build scanners configuration
     scanners = {}
     for scanner in enabled_scanners:
-        if validate_scanner_name(scanner):
-            if scanner.upper() == "SECRETS":
-                scanners["SECRETS"] = {"isEnabled": True, "scanOptions": {"secretValidation": secret_validation}}
-            else:
-                scanners[scanner.upper()] = {"isEnabled": True}
+        validate_scanner_name(scanner)
+        if scanner.upper() == "SECRETS":
+            scanners["SECRETS"] = {"isEnabled": True, "scanOptions": {"secretValidation": secret_validation}}
+        else:
+            scanners[scanner.upper()] = {"isEnabled": True}
 
     for scanner in disabled_scanners:
-        if validate_scanner_name(scanner):
-            scanners[scanner.upper()] = {"isEnabled": False}
+        validate_scanner_name(scanner)
+        scanners[scanner.upper()] = {"isEnabled": False}
 
     # Build scan configuration payload with only relevant arguments
     scan_configuration = {}
@@ -898,7 +896,7 @@ def main():  # pragma: no cover
     webapp_api_url = "/api/webapp"
     public_api_url = f"{webapp_api_url}/public_api/v1"
     data_platform_api_url = f"{webapp_api_url}/data-platform"
-
+    appsec_api_url = f"{webapp_api_url}/public_api/appsec"
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
 
@@ -913,6 +911,8 @@ def main():  # pragma: no cover
         client_url = webapp_api_url
     elif command in DATA_PLATFORM_COMMANDS:
         client_url = data_platform_api_url
+    elif command in APPSEC_COMMANDS:
+        client_url = appsec_api_url
 
     client = Client(
         base_url=client_url,
