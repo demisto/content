@@ -368,9 +368,13 @@ class Client(BaseClient):
         :type whitelist_id: str
         :param whitelist_id: id of the whitelisted ioc to be removed
         """
-        url_suffix = f"conversion/allowed_indicators/{whitelist_id}/"
+        url_suffix = "conversion/allowed_indicators/bulk-actions/"
+        payload = {
+            "ids": whitelist_id,
+            "action": "delete",
+        }
         client_url = self.base_url + url_suffix
-        return self.delete_http_request(full_url=client_url)
+        return self.post_http_request(full_url=client_url,payload=payload,params={})
 
     def get_threat_data(self, page: int, page_size: int, query: str):
         """
@@ -981,7 +985,7 @@ def disable_or_enable_tags_command(client: Client, args: dict[str, Any]) -> Comm
         return final_result
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Tag Response", final_result, removeNull=True),
+            readable_output=tableToMarkdown("Tag Response", [final_result], removeNull=True),
             outputs_prefix="CTIX.TagAction",
             outputs_key_field="result",
             outputs=final_result,
@@ -1049,7 +1053,7 @@ def remove_whitelisted_ioc_command(client: Client, args=dict[str, Any]) -> Comma
     """
     remove_whitelist_ioc: Deletes a whitelisted ioc with given id
     """
-    whitelist_id = args.get("ids")
+    whitelist_id = argToList(args.get("ids"))
     response = client.remove_whitelisted_ioc(whitelist_id)
     data = response.get("data")
     data = no_result_found(data)
