@@ -161,7 +161,7 @@ script:
     - description: Comma separated list of tags to add.
       name: tags
       required: true
-    description: Add tags to a given message.
+    description: Add tags to a given message. If you have existing PhishER actions that would trigger for the tag that you're adding, you'll need to manually run the actions. 
     name: phisher-tags-create
   - arguments:
     - description: Message ID.
