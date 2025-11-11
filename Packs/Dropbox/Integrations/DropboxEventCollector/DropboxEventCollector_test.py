@@ -102,10 +102,10 @@ def test_fetch_events_max_fetch_set_to_one(mocker):
         - Verify last_run was set as expected.
     """
 
-    params = DEMISTO_PARAMS
+    params = DEMISTO_PARAMS.copy()
     params["limit"] = 1
 
-    mocker.patch.object(demisto, "params", return_value=DEMISTO_PARAMS)
+    mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "args", return_value={"should_push_events": True})
     mocker.patch.object(demisto, "getIntegrationContext", return_value={"refresh_token": "111111"})
     mocker.patch("DropboxEventCollector.send_events_to_xsiam")
