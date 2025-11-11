@@ -2181,7 +2181,7 @@ class EC2:
         return CommandResults(
             outputs=image,
             outputs_prefix="AWS.EC2.Images",
-            readable_output=tableToMarkdown("AWS EC2 Images", data, headerTransform=pascalToSpace),
+            readable_output=tableToMarkdown("AWS EC2 latest Image", data, headerTransform=pascalToSpace),
             outputs_key_field="ImageId",
         )
 

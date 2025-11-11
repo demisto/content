@@ -4881,7 +4881,7 @@ script:
         type: string
 
   - name: aws-ec2-tags-create
-    description: Adds or overwrites one or more tags for the specified Amazon EC2 resource or resources.
+    description: Adds or overwrites one or more tags for the specified Amazon EC2 resource or resources. When you specify an existing tag key, the value is overwritten with the new value.
     arguments:
       - name: account_id
         description: The AWS account ID.
@@ -4924,7 +4924,7 @@ script:
           - me-central-1
           - sa-east-1
       - name: resources
-        description: The IDs of one or more resources to tag. For example, ami-1a2b3c4d.
+        description: The IDs of one or more resources to tag, separated by a comma. For example, ami-1a2b3c4d.
         required: true
       - name: tags
         description: One or more tags. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456".
