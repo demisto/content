@@ -17,7 +17,6 @@ NO_OUTPUTS: dict = {}
 APP_NAME = "ms-graph-user"
 INVALID_USER_CHARS_REGEX = re.compile(r"[%&*+/=?`{|}]")
 API_VERSION: str = "v1.0"
-TEMP_PASSWORD_LENGTH = 8
 
 
 def camel_case_to_readable(text):
