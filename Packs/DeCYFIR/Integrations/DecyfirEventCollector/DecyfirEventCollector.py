@@ -1,14 +1,11 @@
 import math
-import uuid
-from datetime import timezone
-from xml.etree.ElementTree import Element
-
-from requests import Response
+import json
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional, Tuple
+import urllib3
 
 import demistomock as demisto
 from CommonServerPython import *
-import urllib3
-from typing import Any, Dict, List
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -20,373 +17,392 @@ VENDOR = "decyfir"
 PRODUCT = "decyfir"
 PAGE_SIZE = 1000
 MAX_EVENTS_PER_FETCH = 3000
+
 ACCESS_LOGS = "Access Logs"
 ASSETS_LOGS = "Assets Logs"
 DRK_LOGS = "Digital Risk Keywords Logs"
-EVENT_LOGS_API_SUFFIX = {
+
+EVENT_LOGS_API_SUFFIX: Dict[str, str] = {
     ACCESS_LOGS: "access-logs",
     ASSETS_LOGS: "assets-logs",
-    DRK_LOGS: "dr-keywords-logs"
+    DRK_LOGS: "dr-keywords-logs",
 }
 
-SOURCE_LOG_TYPES = {
+SOURCE_LOG_TYPES: Dict[str, str] = {
     ACCESS_LOGS: "access_logs",
     ASSETS_LOGS: "asset_logs",
-    DRK_LOGS: "dr_keywords_logs"
+    DRK_LOGS: "dr_keywords_logs",
 }
+
+
+""" UTILITY FUNCTIONS """
+
+
+def log(message: str, data: Optional[Any] = None) -> None:
+    """
+    Unified logging function for debug output.
+
+    Args:
+        message (str): Message to be logged.
+        data (Optional[Any]): Optional additional context (dict, list, str, etc.).
+    """
+    try:
+        if data is not None:
+            message += f" | data={json.dumps(data, default=str)[:1000]}"
+    except Exception:
+        pass
+    demisto.debug(message)
 
 
 def get_timestamp_from_datetime(value: datetime, event_type: str) -> int:
     """
-    Convert a datetime object to a Unix timestamp in milliseconds.
+    Convert a datetime object into a Unix timestamp (milliseconds precision).
 
     Args:
-        value (datetime): The datetime object to convert.
-        event_type (str): The type of event (e.g., 'access_logs').
+        value (datetime): The datetime to convert.
+        event_type (str): The type of event, used for rounding logic.
 
     Returns:
-        int: The corresponding Unix timestamp in milliseconds.
+        int: Unix timestamp in milliseconds.
     """
-    # Convert to milliseconds since epoch
     timestamp_ms = int(value.timestamp() * 1000)
-
-    # For ACCESS_LOGS, round down to the nearest second (in ms)
     if event_type == ACCESS_LOGS:
-        timestamp_ms -= timestamp_ms % 1000
-
+        timestamp_ms -= timestamp_ms % 1000  # Round down to nearest second
     return timestamp_ms
 
 
-""" CLIENT CLASS """
+""" CLIENT """
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
+    """
+    Client for interacting with the Decyfir event logs API.
     """
 
-    def __init__(self, base_url, verify, proxy, api_key):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        self._api_key = api_key
-
-    def get_event_logs(self, url_suffix: str, page: int, after: Optional[int] = None,
-                       size: int = PAGE_SIZE) -> dict | str | bytes | Element | Response:
-
-        params = assign_params(key=self._api_key, after=after, page=page, size=size)
-        raw_response = self._http_request(url_suffix=url_suffix, method="GET", params=params)
-        return raw_response
-
-    def search_events(self, event_type: str, max_events_per_fetch: int, after: Optional[int]) -> list[dict]:
+    def __init__(self, base_url: str, verify: bool, proxy: bool, api_key: str) -> None:
         """
-        Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
+        Initialize the client.
 
         Args:
-            limit: limit.
-            from_date: get events from from_date.
+            base_url (str): Base URL of the Decyfir API.
+            verify (bool): Whether to verify SSL certificates.
+            proxy (bool): Whether to use system proxy settings.
+            api_key (str): Decyfir API key.
+        """
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self.api_key = api_key
+        log("Client initialized", {"base_url": base_url, "verify": verify, "proxy": proxy})
+
+    def get_event_logs(self, url_suffix: str, page: int, after: Optional[int], size: int = PAGE_SIZE) -> List[Dict[str, Any]]:
+        """
+        Retrieve raw event log data from a specific API endpoint.
+
+        Args:
+            url_suffix (str): API path suffix for the log type.
+            page (int): Page number to retrieve.
+            after (Optional[int]): Timestamp (ms) after which to fetch events.
+            size (int): Page size (default is PAGE_SIZE).
 
         Returns:
-            List[Dict]: the next event
+            List[Dict[str, Any]]: List of raw event records.
         """
-        events = []
-        url_suffix = EVENT_LOGS_API_SUFFIX.get(event_type)
+        params = assign_params(key=self.api_key, after=after, page=page, size=size)
+        log(f"Fetching logs (suffix={url_suffix}, page={page}, after={after})")
+        return self._http_request(url_suffix=url_suffix, method="GET", params=params)
+
+    def search_events(self, event_type: str, max_events_per_fetch: int, after: Optional[int]) -> List[Dict[str, Any]]:
+        """
+        Paginate and retrieve multiple pages of events for a specific event type.
+
+        Args:
+            event_type (str): Type of log to fetch.
+            max_events_per_fetch (int): Maximum number of events to retrieve.
+            after (Optional[int]): Timestamp to filter logs created after.
+
+        Returns:
+            List[Dict[str, Any]]: Aggregated list of event logs.
+        """
+        url_suffix = EVENT_LOGS_API_SUFFIX[event_type]
         total_pages = math.ceil(max_events_per_fetch / PAGE_SIZE)
-        demisto.debug(f"after for suffix: {url_suffix} {after}")
+        all_events: List[Dict[str, Any]] = []
+
         for page in range(total_pages):
-            response = self.get_event_logs(url_suffix=url_suffix, page=page, after=after, size=PAGE_SIZE)
+            response = self.get_event_logs(url_suffix, page, after)
             if not response:
                 break
-            events.extend(response)
+            all_events.extend(response)
             if len(response) < PAGE_SIZE:
                 break
-        return events
+
+        log(f"Fetched {len(all_events)} {event_type} events")
+        return all_events
 
 
-def time_field_mapping(event: dict, event_type: str) -> str | None:
+""" EVENT PROCESSING """
+
+
+def extract_event_time(event: Dict[str, Any], event_type: str) -> Optional[datetime]:
     """
-    Determines the relevant timestamp for the event based on its type.
+    Extract event timestamp as a datetime object.
 
     Args:
-        event: A dictionary representing the event.
-        event_type: A string indicating the event type.
+        event (Dict[str, Any]): Event record.
+        event_type (str): Type of event log.
 
     Returns:
-        A formatted datetime string or None.
+        Optional[datetime]: Parsed datetime or None if unavailable.
     """
-    if event_type == ACCESS_LOGS:
-        raw_time = event.get("event_date")
-    else:
-        raw_time = event.get("created_date") or event.get("modified_date")
-
-    if not raw_time:
-        return None
-
-    return arg_to_datetime(raw_time).strftime(DATE_FORMAT)
+    field = "event_date" if event_type == ACCESS_LOGS else "created_date"
+    raw = event.get(field) or event.get("modified_date")
+    return arg_to_datetime(raw).replace(tzinfo=timezone.utc) if raw else None
 
 
-def set_entry_status(event: dict) -> str | None:
+def add_event_fields(events: List[Dict[str, Any]], event_type: str) -> None:
     """
-    Determines if the entry is 'new' or 'modified' based on timestamps.
+    Enrich events with XSIAM-required fields (_time, source_log_type, _ENTRY_STATUS).
 
     Args:
-        event: A dictionary representing the event.
-
-    Returns:
-        'new', 'modified', or None if dates are invalid.
+        events (List[Dict[str, Any]]): List of events to modify.
+        event_type (str): Type of events being processed.
     """
-    created_date = arg_to_datetime(event.get("created_date"))
-    modified_date = arg_to_datetime(event.get("modified_date"))
+    for e in events:
+        event_time = extract_event_time(e, event_type)
+        e["_time"] = event_time.strftime(DATE_FORMAT) if event_time else None
+        e["source_log_type"] = SOURCE_LOG_TYPES.get(event_type)
 
-    if not created_date or not modified_date:
-        return
-
-    if modified_date == created_date:
-        event["_ENTRY_STATUS"] = 'new'
-    if modified_date > created_date:
-        event["_ENTRY_STATUS"] = 'modified'
-
-
-def add_fields_to_events(events: list[dict], event_type: str) -> None:
-    """
-    Enhances each event with '_time', 'source_log_type', and optionally '_ENTRY_STATUS'.
-
-    Args:
-        events: A list of event dictionaries.
-        event_type: The event type.
-    """
-    for event in events:
-        event["_time"] = time_field_mapping(event, event_type)
-        event["source_log_type"] = SOURCE_LOG_TYPES.get(event_type)
         if event_type in {ASSETS_LOGS, DRK_LOGS}:
-            set_entry_status(event)
+            created = arg_to_datetime(e.get("created_date"))
+            modified = arg_to_datetime(e.get("modified_date"))
+            if created and modified:
+                e["_ENTRY_STATUS"] = "new" if created == modified else "modified"
 
 
-def test_module(client: Client, first_fetch_time: datetime, event_types_to_fetch: list[str],
-                max_events_per_fetch: dict[str, int]) -> str:
+""" FETCH HELPERS """
+
+
+def get_after_param(last_run: Dict[str, Any], event_type: str, first_fetch_time: datetime) -> int:
     """
-    Tests API connectivity and authentication.
-
-    This function performs a sample fetch of events to verify that the integration is correctly configured
-    and that the connection to the external service is functioning properly.
-
-    If the fetch is successful, the integration is considered operational.
+    Compute the 'after' parameter for API queries.
 
     Args:
-        client (Client): An instance of the  API client used for making requests.
-        first_fetch_time (datetime): The starting point in time from which to begin fetching events.
-        event_types_to_fetch (list[str]): A list of event types to fetch during the test.
-        max_events_per_fetch (dict[str, int]): A dictionary specifying the maximum number of events to fetch
-                                               per event type.
+        last_run (Dict[str, Any]): Last run metadata.
+        event_type (str): Event type.
+        first_fetch_time (datetime): Initial fetch start time.
 
     Returns:
-        str: 'ok' if the test passed successfully.
-
-    Raises:
-        Exception: If any error occurs during the event fetching process, the function will raise an exception,
-                   indicating the test failed.
+        int: Unix timestamp (ms) for next fetch start.
     """
+    last_time = arg_to_datetime(last_run.get(event_type, {}).get("next_fetch_time"))
+    start_date = last_time or first_fetch_time
+    after = get_timestamp_from_datetime(start_date, event_type)
+    log(f"After parameter computed for {event_type}", {"start_date": str(start_date), "after": after})
+    return after
 
-    fetch_events(client, {}, first_fetch_time, event_types_to_fetch, max_events_per_fetch)
 
+def remove_duplicate_logs(logs: List[Dict[str, Any]], last_run: Dict[str, Any], event_type: str) -> List[Dict[str, Any]]:
+    """
+    Remove logs already fetched in the previous run.
+
+    Args:
+        logs (List[Dict[str, Any]]): Current logs.
+        last_run (Dict[str, Any]): Previous run data.
+        event_type (str): Event type.
+
+    Returns:
+        List[Dict[str, Any]]: Deduplicated list of logs.
+    """
+    prev_ids = set(last_run.get(event_type, {}).get("fetched_events_ids", []))
+    unique_logs = [log for log in logs if log.get("uid") not in prev_ids]
+    log(f"Removed duplicates for {event_type}", {"before": len(logs), "after": len(unique_logs)})
+    return unique_logs
+
+
+def update_fetched_event_ids(current_run: Dict[str, Any], event_type: str, logs: List[Dict[str, Any]]) -> None:
+    """
+    Update 'fetched_events_ids' in current_run for deduplication.
+
+    Args:
+        current_run (Dict[str, Any]): Run state dictionary.
+        event_type (str): Event type.
+        logs (List[Dict[str, Any]]): Fetched logs.
+    """
+    current_run.setdefault(event_type, {})
+    ids = [log.get("uid") for log in logs if log.get("uid")]
+    current_run[event_type]["fetched_events_ids"] = ids
+    log(f"Updated fetched_event_ids for {event_type}", {"count": len(ids)})
+
+
+def compute_next_fetch_time(events: List[Dict[str, Any]], previous_time: datetime, event_type: str) -> Optional[str]:
+    """
+    Determine next fetch time based on latest event.
+
+    Args:
+        events (List[Dict[str, Any]]): List of fetched events.
+        previous_time (datetime): Last recorded fetch time.
+        event_type (str): Type of event.
+
+    Returns:
+        Optional[str]: ISO formatted datetime for next run.
+    """
+    times = [extract_event_time(e, event_type) for e in events if extract_event_time(e, event_type)]
+    if not times:
+        return previous_time.isoformat() if previous_time else None
+    latest = max(times)
+    next_time = latest + timedelta(milliseconds=1)
+    return next_time.isoformat()
+
+
+""" FETCH EVENTS """
+
+
+def fetch_events(
+    client: Client,
+    last_run: Dict[str, Any],
+    first_fetch_time: datetime,
+    event_types_to_fetch: List[str],
+    max_events_per_fetch: Dict[str, int],
+) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+    """
+    Fetch and process events for all configured event types.
+
+    Args:
+        client (Client): API client instance.
+        last_run (Dict[str, Any]): State of last execution.
+        first_fetch_time (datetime): Initial fetch baseline.
+        event_types_to_fetch (List[str]): List of log types to fetch.
+        max_events_per_fetch (Dict[str, int]): Max number of events per type.
+
+    Returns:
+        Tuple[Dict[str, Any], List[Dict[str, Any]]]: Updated run state and fetched events.
+    """
+    log("Starting fetch_events")
+    current_run: Dict[str, Dict[str, Any]] = {}
+    all_events: List[Dict[str, Any]] = []
+
+    for event_type in event_types_to_fetch:
+        log(f"Fetching for {event_type}")
+        after = get_after_param(last_run, event_type, first_fetch_time)
+        events = client.search_events(event_type, max_events_per_fetch.get(event_type, MAX_EVENTS_PER_FETCH), after)
+
+        if not events:
+            continue
+
+        if event_type == ACCESS_LOGS:
+            update_fetched_event_ids(current_run, event_type, events)
+            events = remove_duplicate_logs(events, last_run, event_type)
+
+        add_event_fields(events, event_type)
+        all_events.extend(events)
+
+        latest_time = compute_next_fetch_time(events, first_fetch_time, event_type)
+        current_run.setdefault(event_type, {})["next_fetch_time"] = latest_time
+
+    log("Fetch complete", {"total_events": len(all_events)})
+    return current_run, all_events
+
+
+""" COMMANDS """
+
+
+def test_module(client: Client, first_fetch_time: datetime, event_types: List[str], max_events: Dict[str, int]) -> str:
+    """
+    Test connectivity and authentication.
+
+    Returns:
+        str: "ok" if successful.
+    """
+    log("Running test-module")
+    fetch_events(client, {}, first_fetch_time, event_types, max_events)
     return "ok"
 
 
-def get_events(client: Client, event_types_to_fetch: list[str], max_events_per_fetch: Dict[str, int],
-               from_date: Optional[datetime] = None, should_add_fields=False) -> tuple[
-    List[Dict], CommandResults]:
-    """Gets events from API
+def get_events_command(
+    client: Client,
+    event_types: List[str],
+    max_events: Dict[str, int],
+    from_date: Optional[datetime],
+    should_push: bool,
+) -> None:
+    """
+    Manual command for retrieving and optionally pushing events.
 
     Args:
-        client (Client): The client
-        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
-        args (dict): Additional arguments
-
-    Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of events that will be created in XSIAM.
+        client (Client): API client instance.
+        event_types (List[str]): Types of events to fetch.
+        max_events (Dict[str, int]): Limits per event type.
+        from_date (Optional[datetime]): Optional start date.
+        should_push (bool): Whether to send results to XSIAM.
     """
+    after = get_timestamp_from_datetime(from_date, event_types[0]) if from_date else None
+    all_events: List[Dict[str, Any]] = []
 
-    all_events = []
-    hr = ""
-    for event_type in event_types_to_fetch:
-        after = get_timestamp_from_datetime(from_date, event_type) if from_date else None
-        events = client.search_events(
-            event_type=event_type,
-            max_events_per_fetch=max_events_per_fetch.get(event_type, MAX_EVENTS_PER_FETCH),
-            after=after
-        )
-        if events:
-            hr += tableToMarkdown(name=f"{event_type}", t=events)
-            if should_add_fields:
-                add_fields_to_events(events, event_type=event_type)
-            all_events.extend(events)
-        else:
-            hr += f"###  No events found for {event_type}.\n"
+    for event_type in event_types:
+        events = client.search_events(event_type, max_events.get(event_type, MAX_EVENTS_PER_FETCH), after)
+        add_event_fields(events, event_type)
+        all_events.extend(events)
 
-    return all_events, CommandResults(readable_output=hr)
+    log("Manual get-events completed", {"count": len(all_events)})
+    hr = "\n".join(tableToMarkdown(name=t, t=all_events) for t in event_types)
+    return_results(CommandResults(readable_output=hr))
+
+    if should_push:
+        log("Pushing events to XSIAM", {"count": len(all_events)})
+        send_events_to_xsiam(all_events, vendor=VENDOR, product=PRODUCT)
 
 
-def increase_datetime_for_next_fetch(
-    events: List[Dict],
-    prev_dt: datetime,
-    next_dt,
-    event_type: str
-) -> Optional[str]:
+""" MAIN """
+
+
+def main() -> None:
     """
-    Gets the latest datetime from events based on event_type and the previous fetch datetime,
-    adds 1 millisecond, and returns it as ISO 8601 string for the next fetch.
-
-    Args:
-        events: List of event dicts.
-        latest_datetime_previous_fetch: ISO 8601 datetime string from the previous fetch.
-        event_type: String specifying event type (affects which date field is used).
-
-    Returns:
-        ISO 8601 datetime string for next fetch, or None if no dates found.
+    Integration entry point.
+    Handles Cortex XSOAR command routing and lifecycle.
     """
-
-    def extract_event_time(event: Dict) -> Optional[datetime]:
-
-        if event_type == ACCESS_LOGS:
-            raw_time = event.get("event_date")
-        else:
-            raw_time = event.get("created_date") or event.get("modified_date")
-        extracted_time = arg_to_datetime(raw_time).replace(tzinfo=timezone.utc)
-        demisto.debug(f"extracted_time {extracted_time}")
-        return extracted_time
-
-    # Extract all valid datetimes from events
-
-    event_datetimes = [extract_event_time(e) for e in events]
-    event_datetimes = [dt for dt in event_datetimes if dt is not None]
-
-    # If no event datetimes and no previous datetime, return None
-    if not event_datetimes and prev_dt is None and next_dt is None:
-        return None
-
-    next_dt = arg_to_datetime(next_dt)
-    next_dt = next_dt.replace(tzinfo=timezone.utc) if next_dt else None
-    # Find the max datetime between current events and previous fetch
-    candidates = event_datetimes + ([prev_dt] if prev_dt else []) + ([next_dt] if next_dt else [])
-    latest_date_time = max(candidates)
-
-    # Add 1 millisecond
-    next_fetch_time = latest_date_time.replace(tzinfo=timezone.utc) + timedelta(milliseconds=1)
-
-    return next_fetch_time.isoformat()
-
-def get_after_param_fetch_events(last_run, event_type, first_fetch_time):
-    last_time = arg_to_datetime(last_run.get(event_type, {}).get("next_fetch_time", None))
-    last_time = last_time.replace(tzinfo=timezone.utc) if last_time else None
-    start_date = first_fetch_time if not last_time else last_time
-    after = get_timestamp_from_datetime(start_date, event_type)
-    demisto.debug(f"start date, after {event_type} {start_date} {after}")
-    return after
-
-def remove_duplicate_logs(log_events, last_run, event_type = ACCESS_LOGS):
-    return [log_event for log_event in log_events if
-                  log_event.get("uid") not in last_run.get(event_type, {}).get("fetched_events_ids", None)]
-def set_fetched_events_ids(log_events, current_run, event_type = ACCESS_LOGS):
-    fetched_events_ids = [log_event.get("uid") for log_event in log_events]
-    current_run[event_type]["fetched_events_ids"] = fetched_events_ids
-
-
-def set_next_fetch_time(log_events, current_run, last_run, event_type):
-    next_fetch_time = increase_datetime_for_next_fetch(log_events, start_date, last_run.get(event_type), event_type)
-    current_run[event_type] = {"next_fetch_time": next_fetch_time}
-def fetch_events(client: Client, last_run: dict[str, int],
-                 first_fetch_time, event_types_to_fetch: list[str], max_events_per_fetch: Dict[str, int]
-                 ) -> tuple[Dict, List[Dict]]:
-    current_run: dict[str, dict] = {}
-    events = []
-
-    for event_type in event_types_to_fetch:
-        log_events = client.search_events(
-            event_type=event_type,
-            max_events_per_fetch=max_events_per_fetch.get(event_type, MAX_EVENTS_PER_FETCH),
-            after=get_after_param_fetch_events(last_run, event_type, first_fetch_time)
-        )
-        if event_type == ACCESS_LOGS:
-            set_fetched_events_ids(log_events, current_run)
-            log_events = remove_duplicate_logs(log_events, last_run)
-
-
-        demisto.debug(f"Received {len(log_events)} events for event type {event_type}")
-        add_fields_to_events(log_events, event_type)
-        events.extend(log_events)
-
-
-
-
-    demisto.debug(f"Returning {len(events)} events in total")
-    demisto.debug(f"Returning next run {last_run}.")
-    return last_run, events
-
-
-""" MAIN FUNCTION """
-
-
-def main() -> None:  # pragma: no cover
-    """
-    main function, parses params and runs command functions
-    """
-
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
+    log(f"Command received: {command}")
+
     api_key = params.get("api_key", "")
     base_url = urljoin(params.get("url"), "/org/api-ua/v1/event-logs/")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
-    first_fetch_time = datetime.now(tz=timezone.utc)
-    event_types_to_fetch = [event_type.strip() for event_type in argToList(params.get("event_types_to_fetch", []))]
+    event_types_to_fetch = [e.strip() for e in argToList(params.get("event_types_to_fetch", []))]
     max_events_per_fetch = {
         ACCESS_LOGS: int(params.get("max_access_logs_events_per_fetch", MAX_EVENTS_PER_FETCH)),
         ASSETS_LOGS: int(params.get("max_assets_logs_events_per_fetch", MAX_EVENTS_PER_FETCH)),
         DRK_LOGS: int(params.get("max_drkl_events_per_fetch", MAX_EVENTS_PER_FETCH)),
     }
 
-    demisto.debug(f"Command being called is {command}")
-    try:
-        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, api_key=api_key)
+    first_fetch_time = datetime.now(tz=timezone.utc)
+    client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, api_key=api_key)
 
+    try:
         if command == "test-module":
             result = test_module(client, first_fetch_time, event_types_to_fetch, max_events_per_fetch)
             return_results(result)
 
         elif command == "decyfir-event-collector-get-events":
-            should_push_events = argToBoolean(args.get("should_push_events", False))
-            from_date = arg_to_datetime(args.get("from_date"))
-            event_types = argToList(args.get("event_types")) or event_types_to_fetch
-            events, results = get_events(client, event_types, max_events_per_fetch, from_date, should_push_events)
-            return_results(results)
-            if should_push_events:
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-
-        elif command == "fetch-events":
-            last_run = demisto.getLastRun()
-            current_run, events = fetch_events(
+            get_events_command(
                 client=client,
-                last_run=last_run,
-                first_fetch_time=first_fetch_time,
-                event_types_to_fetch=event_types_to_fetch,
-                max_events_per_fetch=max_events_per_fetch,
+                event_types=argToList(args.get("event_types")) or event_types_to_fetch,
+                max_events=max_events_per_fetch,
+                from_date=arg_to_datetime(args.get("from_date")),
+                should_push=argToBoolean(args.get("should_push_events", False)),
             )
 
-            demisto.debug(f"Sending {len(events)} events to XSIAM.")
+        elif command == "fetch-events":
+            last_run = demisto.getLastRun() or {}
+            current_run, events = fetch_events(client, last_run, first_fetch_time, event_types_to_fetch, max_events_per_fetch)
+            log("Sending fetched events to XSIAM", {"count": len(events)})
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            demisto.debug("Sent events to XSIAM successfully")
             demisto.setLastRun(current_run)
-            demisto.debug(f"Setting last run to {current_run}.")
+            log("Updated last_run", current_run)
 
-    # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        log("Exception occurred", {"error": str(e)})
+        return_error(f"Failed to execute {command}. Error: {str(e)}")
 
 
 """ ENTRY POINT """
