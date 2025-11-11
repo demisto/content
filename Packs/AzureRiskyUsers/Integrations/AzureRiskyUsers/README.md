@@ -579,11 +579,15 @@ There is no context output for this command.
 
 #### Command Example
 
-```!azure-risky-users-confirm-safe user=name@test.com```
+```!azure-risky-users-confirm-safe user=name1@test.com,name2@test.com```
 
 #### Human Readable Output
 
-> TODO
+> ### Successfully confirmed users as safe.
+> |User|
+> |---|
+> | name1@test.com |
+> | name2@test.com |
 
 ### azure-risky-users-confirm-compromise
 
@@ -606,8 +610,12 @@ There is no context output for this command.
 
 #### Command Example
 
-```!azure-risky-users-confirm-compromise user=name@test.com```
+```!azure-risky-users-confirm-compromise user=name1@test.com,name2@test.com```
 
 #### Human Readable Output
 
-> TODO
+> ### Successfully confirmed users as compromised.
+> |User|
+> |---|
+> | name1@test.com |
+> | name2@test.com |

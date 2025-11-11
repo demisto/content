@@ -467,7 +467,7 @@ def test_risky_users_confirm_compromise_command(mocker):
      - Ensure client.confirm_compromised_request is called with the correct user IDs.
      - Ensure the readable output is as expected.
     """
-    from AzureRiskyUsers import risky_users_confirm_compromise_command
+    from AzureRiskyUsers import risky_users_confirm_compromise_command, tableToMarkdown
 
     mock_client_instance = mock_client()
     mocker.patch.object(mock_client_instance, "upn_to_user_id", side_effect=lambda x: f"id_{x}")
@@ -483,7 +483,7 @@ def test_risky_users_confirm_compromise_command(mocker):
         mocker.call("user2@example.com")
     ])
     mock_client_instance.confirm_compromised_request.assert_called_once_with(user_ids=["id_user1@example.com", "id_user2@example.com"])
-    assert result.readable_output == f"Request to confirm users {users_to_compromise} as compromised was successful."
+    assert result.readable_output == tableToMarkdown("Successfully confirmed users as compromised.", {"User": users_to_compromise})
 
 
 def test_risky_users_confirm_safe_command(mocker):
@@ -498,8 +498,8 @@ def test_risky_users_confirm_safe_command(mocker):
      - Ensure client.confirm_safe_request is called with the correct user IDs.
      - Ensure the readable output is as expected.
     """
-    from AzureRiskyUsers import risky_users_confirm_safe_command
-
+    from AzureRiskyUsers import risky_users_confirm_safe_command, tableToMarkdown
+    
     mock_client_instance = mock_client()
     mocker.patch.object(mock_client_instance, "upn_to_user_id", side_effect=lambda x: f"id_{x}")
     mocker.patch.object(mock_client_instance, "confirm_safe_request")
@@ -514,4 +514,4 @@ def test_risky_users_confirm_safe_command(mocker):
         mocker.call("user4@example.com")
     ])
     mock_client_instance.confirm_safe_request.assert_called_once_with(user_ids=["id_user3@example.com", "id_user4@example.com"])
-    assert result.readable_output == f"Request to confirm users {users_to_safe} as safe was successful."
+    assert result.readable_output == tableToMarkdown("Successfully confirmed users as safe.", {"User": users_to_safe})

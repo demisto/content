@@ -635,7 +635,7 @@ def risky_users_confirm_compromise_command(client: Client, args: dict[str, Any])
     client.confirm_compromised_request(user_ids=parsed_users)
 
     return CommandResults(
-        readable_output=f"Request to confirm users {users} as compromised was successful."
+        readable_output=tableToMarkdown("Successfully confirmed users as compromised.", {"User": users})
     )
 
 
@@ -646,7 +646,7 @@ def risky_users_confirm_safe_command(client: Client, args: dict[str, Any]) -> Co
     client.confirm_safe_request(user_ids=parsed_users)
 
     return CommandResults(
-        readable_output=f"Request to confirm users {users} as safe was successful."  # TODO reformat
+        readable_output=tableToMarkdown("Successfully confirmed users as safe.", {"User": users})
     )
 
 
