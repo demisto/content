@@ -4854,7 +4854,7 @@ script:
       - name: filters
         description: One or more filters. Filters must be separated by a semicolon (;) and specified using the format "key=key,values=val". Refer to the AWS documentation for detailed filter options.
       - name: limit
-        description: The maximum number of results to return in a single call. Specify a value between 5 and 1000.
+        description: The maximum number of results to return in a single call. Specify a value between 1000 and 5000.
       - name: next_token
         description: The token for the next set of results.
     outputs:

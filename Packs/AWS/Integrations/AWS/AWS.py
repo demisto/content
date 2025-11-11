@@ -2231,14 +2231,14 @@ class EC2:
             outputs_key_field="VpcId",
             readable_output=(
                 tableToMarkdown(
-                    "AWS EC2 ACL Entries",
-                    [entry for entry in network_acl.get("Entries")],  # noqa: C416
+                    "The AWS EC2 Instance ACL that the entries belong to",
+                    readable_data,
                     removeNull=True,
                     headerTransform=pascalToSpace,
                 )
                 + tableToMarkdown(
-                    "The AWS EC2 Instance ACL that the entries belong to",
-                    readable_data,
+                    "AWS EC2 ACL Entries",
+                    [entry for entry in network_acl.get("Entries")],  # noqa: C416
                     removeNull=True,
                     headerTransform=pascalToSpace,
                 )
