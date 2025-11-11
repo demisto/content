@@ -3108,7 +3108,7 @@ def test_storage_container_blob_tag_set_command(mocker, client, mock_params):
     mocker.patch.object(client, "storage_container_blob_tags_set_request")
 
     # Mock create_set_tags_request_body
-    mock_xml_data = b'<?xml version="1.0" encoding="utf-8"?><Tags><TagSet><Tag><Key>tag1</Key><Value>value1</Value></Tag><Tag><Key>tag2</Key><Value>value2</Value></Tag></TagSet></Tags>'
+    mock_xml_data = b'<?xml version="1.0" encoding="utf-8"?><Tags><TagSet><Tag><Key>tag1</Key><Value>value1</Value></Tag><Tag><Key>tag2</Key><Value>value2</Value></Tag></TagSet></Tags>'  # noqa: E501
     mocker.patch("Azure.create_set_tags_request_body", return_value=mock_xml_data)
 
     # Call the function
