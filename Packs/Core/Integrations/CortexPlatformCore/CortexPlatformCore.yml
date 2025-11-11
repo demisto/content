@@ -1357,7 +1357,7 @@ script:
           type: String
     - arguments:
         - description: List of repository asset IDs to configure scanners for.
-          name: asset_ids
+          name: repository_ids
           isArray: true
           required: true
         - auto: PREDEFINED

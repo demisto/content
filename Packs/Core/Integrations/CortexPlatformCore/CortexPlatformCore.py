@@ -25,7 +25,7 @@ ASSET_FIELDS = {
 }
 
 
-WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations"]
+WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations", "core-enable-scanners"]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
@@ -755,7 +755,6 @@ def build_scanner_config_payload(args: dict) -> dict:
     Args:
         args (dict): Dictionary containing configuration arguments.
                     Expected to include:
-                        - repository_ids (list): List of repository IDs to configure scanning for.
                         - enabled_scanners (list): List of scanners to enable.
                         - disable_scanners (list): List of scanners to disable.
                         - pr_scanning (bool): Whether to enable PR scanning.
@@ -765,7 +764,7 @@ def build_scanner_config_payload(args: dict) -> dict:
                         - exclude_paths (list): List of paths to exclude from scanning.
 
     Returns:
-        dict: Scanner configuration payload containing repository IDs and scan configuration.
+        dict: Scanner configuration payload.
 
     Raises:
         ValueError: If the same scanner is specified in both enabled and disabled lists.
@@ -834,7 +833,7 @@ def enable_scanners_command(client: Client, args: dict):
     Returns:
         CommandResults: Command results with readable output showing update status and raw response.
     """
-    repository_ids = argToList(args.get("asset_ids"))
+    repository_ids = argToList(args.get("repository_ids"))
     payload = build_scanner_config_payload(args)
 
     # Send request to update repository scan configuration
@@ -959,7 +958,6 @@ def main():  # pragma: no cover
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
         elif command == "core-enable-scanners":
-            client._base_url = "/api/webapp"
             return_results(enable_scanners_command(client, args))
 
     except Exception as err:
