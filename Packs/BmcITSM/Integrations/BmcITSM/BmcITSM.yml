@@ -795,12 +795,8 @@ script:
     arguments:
     - name: first_name
       description: The customer first name the incident ticket is for.
-      required: true
-      defaultValue: ""
     - name: last_name
       description: The customer last name the incident ticket is for.
-      required: true
-      defaultValue: ""
     - name: template_instance_id
       description: The instance ID of the template to use. Required only when the ticket attributes should be based on the template's fields. The instance ID can be retrieved by executing the bmc-itsm-incident-template-list command.
       defaultValue: ""
@@ -819,8 +815,6 @@ script:
       - Security Incident
     - name: urgency
       description: The ticket urgency. Required when the ticket creation is without a template.
-      required: true
-      defaultValue: ""
       auto: PREDEFINED
       predefined:
       - 1-Critical
@@ -829,8 +823,6 @@ script:
       - 4-Low
     - name: impact
       description: The ticket impact. Required when the creation is without a template.
-      required: true
-      defaultValue: ""
       auto: PREDEFINED
       predefined:
       - 1-Extensive/Widespread
@@ -839,8 +831,6 @@ script:
       - 4-Minor/Localized
     - name: status
       description: Incident status.
-      required: true
-      defaultValue: ""
       auto: PREDEFINED
       predefined:
       - New
