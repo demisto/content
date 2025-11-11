@@ -1,45 +1,41 @@
-This is the Hello World event collector integration for XSIAM.
+Collects event logs from Decyfir for ingestion into Cortex XSIAM.
+This integration was integrated and tested with version xx of DecyfirEventCollector.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+## Configure Decyfir Event Collector in Cortex
 
-## Configure HelloWorld Event Collector on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for HelloWorld Event Collector.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | False |
-    | Fetch alerts with status (ACTIVE, CLOSED) | False |
-    | Max number of events per fetch | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| API Key | True |
+| Event types to fetch | True |
+| Maximum number of Access Logs events per fetch | False |
+| Maximum number of Assets Logs events per fetch | False |
+| Maximum number of Digital Risk Keywords Logs events per fetch | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### hello-world-get-events
+### decyfir-event-collector-get-events
 
 ***
-Gets events from Hello World.
+Retrieve Decyfir events manually. This command is primarily used for testing or debugging.
 
 #### Base Command
 
-`hello-world-get-events`
+`decyfir-event-collector-get-events`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| status | Filter by alert status. Possible values are: ACTIVE, CLOSED. | Optional | 
-| limit | Maximum number of results to return. | Required | 
-| from_date | Date from which to get events. | Optional | 
+| event_types | Comma-separated list of event types to fetch. Possible values are: Access Logs, Assets Logs, Digital Risk Keywords Logs. Default is Access Logs,Assets Logs,Digital Risk Keywords Logs. | Required | 
+| should_push_events | Set this argument to True to send the fetched events to Cortex XSIAM.  If False, the command will only display them in the War Room.<br/>. Possible values are: True, False. Default is False. | Required | 
+| from_date | Fetch events created after the specified time (e.g., "12 hours", "7 days").  If not provided, defaults to "3 months".<br/>. Default is 3 months. | Optional | 
 
 #### Context Output
 
