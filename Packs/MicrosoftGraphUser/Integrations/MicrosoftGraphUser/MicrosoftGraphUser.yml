@@ -632,7 +632,7 @@ script:
     description: |-
       Changes the password of an on-premise user. See documentation for full permissions and roles to execute this command. 
       Providing a password is required (password auto-generation is not supported).
-    execution: true
+    polling: true
     arguments:
     - description: User ID or userPrincipalName to update password for.
       name: user
