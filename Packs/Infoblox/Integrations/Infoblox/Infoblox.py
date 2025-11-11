@@ -322,7 +322,7 @@ class InfoBloxNIOSClient(BaseClient):
         ip_type: Optional[str] = "ipv4",
     ) -> dict:
         """
-        Get IPv4 information based on an IP address.
+        Get IPv4 or IPv6 information based on an IP address.
         Args:
         - `ip` (``str``): ip to retrieve.
         - `status` (``str``): status of the IP address.
@@ -359,7 +359,7 @@ class InfoBloxNIOSClient(BaseClient):
         ip_type: Optional[str] = "ipv4",
     ) -> dict:
         """
-        Get IPv4 network information based on a netmask.
+        Get IPv4 or IPv6 network information based on a netmask.
 
         Args:
         - `network` (``str``): Netmask to retrieve the IPv4 for.
@@ -396,7 +396,7 @@ class InfoBloxNIOSClient(BaseClient):
         ip_type: Optional[str] = "ipv4",
     ) -> dict:
         """
-        Get IPv4 address range information based on a start and end IP.
+        Get IPv4 or IPv6 address range information based on a start and end IP.
 
         Args:
         - `start_ip` (``str``): Start IP of the range.
@@ -709,16 +709,16 @@ class InfoBloxNIOSClient(BaseClient):
 
     def update_rpz_rule(
         self,
-        reference_id: str | None,
-        rule_type: str | None,
-        name: str | None,
-        rp_zone: str | None,
+        reference_id: str,
+        rule_type: str,
+        name: str,
+        rp_zone: str,
         view: str | None,
         substitute_name: str | None,
         comment: str | None = None,
         additional_parameters: dict | None = None,
     ) -> dict:
-        """Creates new response policy zone rule.
+        """Updates an existing response policy zone rule.
         Args:
             reference_id: Reference ID of the rule to update.
             rule_type: Type of rule to create.
@@ -758,7 +758,7 @@ class InfoBloxNIOSClient(BaseClient):
         view: str | None = None,
         comment: str | None = None,
         aliases: list | None = [],
-        configure_for_dns: bool | None = None,
+        configure_for_dns: bool = True,
         extended_attributes: str | None = None,
         additional_parameters: dict | None = None,
     ) -> dict:
@@ -771,7 +771,7 @@ class InfoBloxNIOSClient(BaseClient):
             data.update({"ipv6addrs": ipv6_address})
         if aliases:
             data.update({"aliases": aliases})
-        if configure_for_dns:
+        if configure_for_dns is not None:
             data.update({"configure_for_dns": argToBoolean(configure_for_dns)})
         request_params = self.REQUEST_PARAM_CREATE_HOST
         record = self._http_request("POST", "record:host", data=json.dumps(data), params=request_params)
@@ -780,7 +780,7 @@ class InfoBloxNIOSClient(BaseClient):
 
     def dhcp_lease_lookup(
         self,
-        ip_address: str,
+        ip_address: str | None = None,
         hardware: str | None = None,
         hostname: str | None = None,
         ipv6_duid: str | None = None,
@@ -936,7 +936,7 @@ def transform_ip_context(ip_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return output
 
 
-def get_ip_type(value: str) -> str | None:
+def get_ip_type(value: str) -> str:
     """
     Get the type of IP address or network (IPv4 or IPv6) for the given value.
     Supports both individual IP addresses and CIDR notation.
@@ -945,9 +945,8 @@ def get_ip_type(value: str) -> str | None:
         value (str): The string value to check (IP address or CIDR network)
 
     Returns:
-        Union[str, None]: 'ipv4' if it's a valid IPv4 address or network,
-                         'ipv6' if it's a valid IPv6 address or network,
-                         None if it's not a valid IP address or network
+        str: 'ipv4' if it's a valid IPv4 address or network,
+             'ipv6' if it's a valid IPv6 address or network
     """
     try:
         # First try to parse as an IP address
@@ -1891,7 +1890,14 @@ def update_rpz_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str
     if rule_type.lower() == "substitute (domain name)" and not substitute_name:  # type: ignore
         raise DemistoException("Substitute (domain name) rules requires a substitute name argument")
     raw_response = client.update_rpz_rule(
-        reference_id, rule_type, name, rp_zone, view, substitute_name, comment, additional_parameters
+        reference_id,  # type: ignore
+        rule_type,  # type: ignore
+        name,  # type: ignore
+        rp_zone,  # type: ignore
+        view,
+        substitute_name,
+        comment,
+        additional_parameters,
     )
     rule = raw_response.get("result", {})
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in rule.items()}
@@ -1940,7 +1946,7 @@ def create_host_record_command(client: InfoBloxNIOSClient, args: dict) -> tuple[
         view,
         comment,
         aliases,
-        configure_for_dns,
+        configure_for_dns,  # type: ignore
         extended_attributes,
         additional_parameters,
     )

@@ -255,7 +255,9 @@ tasks:
                 iscontext: true
           - operator: splitAndTrim
             args:
-              delimiter: {}
+              delimiter:
+                value:
+                  simple: ','
           - operator: RemoveEmpty
             args:
               empty_values: {}
