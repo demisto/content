@@ -2031,7 +2031,7 @@ def test_search_asset_groups_command_success_with_all_filters(mocker):
     assert len(result[0].outputs) == 2
     assert result[0].outputs[0]["id"] == "group_1"
     assert result[0].outputs[1]["id"] == "group_2"
-    assert result[0].outputs_prefix == "Core.AssetGroups.groups"
+    assert result[0].outputs_prefix == "Core.AssetGroups"
     assert result[0].outputs_key_field == "id"
     assert "Test Group 1" in result[0].readable_output
     assert "Test Group 2" in result[0].readable_output
@@ -2071,7 +2071,7 @@ def test_search_asset_groups_command_success_with_partial_filters(mocker):
     assert len(result[0].outputs) == 1
     assert result[0].outputs[0]["id"] == "group_3"
     assert result[0].outputs[0]["name"] == "Security Group"
-    assert result[0].outputs_prefix == "Core.AssetGroups.groups"
+    assert result[0].outputs_prefix == "Core.AssetGroups"
     assert "Security Group" in result[0].readable_output
     assert mock_get_webapp_data.call_count == 1
 
@@ -2115,7 +2115,7 @@ def test_search_asset_groups_command_success_no_filters(mocker):
     assert len(result[0].outputs) == 2
     assert result[0].outputs[0]["id"] == "group_all_1"
     assert result[0].outputs[1]["id"] == "group_all_2"
-    assert result[0].outputs_prefix == "Core.AssetGroups.groups"
+    assert result[0].outputs_prefix == "Core.AssetGroups"
     assert "All Groups 1" in result[0].readable_output
     assert "All Groups 2" in result[0].readable_output
     assert mock_get_webapp_data.call_count == 1
@@ -2141,7 +2141,7 @@ def test_search_asset_groups_command_empty_response(mocker):
     result = search_asset_groups_command(mock_client, args)
 
     assert len(result[0].outputs) == 0
-    assert result[0].outputs_prefix == "Core.AssetGroups.groups"
+    assert result[0].outputs_prefix == "Core.AssetGroups"
     assert result[0].outputs_key_field == "id"
     assert mock_get_webapp_data.call_count == 1
 
@@ -2166,7 +2166,7 @@ def test_search_asset_groups_command_missing_reply_key(mocker):
     result = search_asset_groups_command(mock_client, args)
 
     assert len(result[0].outputs) == 0
-    assert result[0].outputs_prefix == "Core.AssetGroups.groups"
+    assert result[0].outputs_prefix == "Core.AssetGroups"
     assert result[0].outputs_key_field == "id"
     assert mock_get_webapp_data.call_count == 1
 
@@ -2191,7 +2191,7 @@ def test_search_asset_groups_command_missing_data_key(mocker):
     result = search_asset_groups_command(mock_client, args)
 
     assert len(result[0].outputs) == 0
-    assert result[0].outputs_prefix == "Core.AssetGroups.groups"
+    assert result[0].outputs_prefix == "Core.AssetGroups"
     assert result[0].outputs_key_field == "id"
     assert mock_get_webapp_data.call_count == 1
 
@@ -2235,7 +2235,7 @@ def test_search_asset_groups_command_multiple_values_in_filters(mocker):
     assert len(result[0].outputs) == 2
     assert result[0].outputs[0]["id"] == "group_multi_1"
     assert result[0].outputs[1]["id"] == "group_multi_2"
-    assert result[0].outputs_prefix == "Core.AssetGroups.groups"
+    assert result[0].outputs_prefix == "Core.AssetGroups"
     assert "Multi Group 1" in result[0].readable_output
     assert "Multi Group 2" in result[0].readable_output
     assert mock_get_webapp_data.call_count == 1

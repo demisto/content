@@ -493,7 +493,7 @@ def search_asset_groups_command(client: Client, args: dict) -> List[CommandResul
     command_results.append(
         CommandResults(
             readable_output=tableToMarkdown("AssetGroups", data, headerTransform=string_to_table_header),
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups.groups",
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups",
             outputs_key_field="id",
             outputs=data,
             raw_response=response,
@@ -504,7 +504,7 @@ def search_asset_groups_command(client: Client, args: dict) -> List[CommandResul
 
     command_results.append(
         CommandResults(
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups.returned_count",
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Metadata.AssetGroups.returned_count",
             outputs=min(int(filter_count), limit),
             raw_response=response,
         )
@@ -512,7 +512,7 @@ def search_asset_groups_command(client: Client, args: dict) -> List[CommandResul
 
     command_results.append(
         CommandResults(
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups.filtered_count",
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Metadata.AssetGroups.filtered_count",
             outputs=filter_count,
             raw_response=response,
         )
