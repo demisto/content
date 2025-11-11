@@ -381,7 +381,7 @@ class AzureClient:
         method: str,
         url_suffix: str | None = None,
         full_url: str | None = None,
-        params: dict | None = None,
+        params: dict | None = {},
         resp_type: str = "json",
         json_data: dict | None = None,
         data: dict | bytes | None = None,

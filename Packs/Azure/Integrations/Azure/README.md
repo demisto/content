@@ -2843,7 +2843,7 @@ Set Blob properties.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| container_name | The name of the Blob Container. | Required |
+| container_name | The name of the Blob Container. | Required | 
 | blob_name | The name of the blob. | Required | 
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | The resource group name. | Required 

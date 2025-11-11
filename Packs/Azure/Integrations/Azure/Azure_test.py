@@ -32,7 +32,6 @@ from Azure import (
     FLEXIBLE_API_VERSION,
     CommandResults,
     DemistoException,
-    CloudTypes,
     API_VERSION,
     SCOPE_BY_CONNECTION,
     PREFIX_URL_AZURE,
@@ -3406,6 +3405,8 @@ class TestGetAzureClient:
             scope=STORAGE_SCOPE,
             headers={"Authorization": "Bearer test-token", "Content-Type": "application/json", "Accept": "application/json"},
         )
+
+
 def test_start_vm_command(mocker):
     """
     Given: A subscription, resource group, and VM name.
