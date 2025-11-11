@@ -311,18 +311,13 @@ async def get_audit_events_for_service(
     return all_events
 
 
-async def get_events_command(
-    client: AsyncClient,
-    args: dict[str, Any],
-    service_names: list[str],
-) -> tuple[list[dict[str, Any]], CommandResults]:
+async def get_events_command(client: AsyncClient, args: dict[str, Any]) -> tuple[list[dict[str, Any]], CommandResults]:
     """
     Implements the `genesis-cloud-get-events` command. Gets audit events using the AsyncClient.
 
     Args:
         client (AsyncClient): An instance of the AsyncClient.
         args (dict[str, Any]): The command arguments.
-        service_names (list[str]): List of service names to fetch events from.
 
     Returns:
         tuple[list[dict[str, Any]], CommandResults]: A tuple of the events list and the CommandResults.
@@ -482,7 +477,7 @@ async def main() -> None:
 
             elif command == "genesis-cloud-get-events":
                 should_push_events = argToBoolean(args.pop("should_push_events", False))
-                events, command_results = await get_events_command(async_client, args, service_names)
+                events, command_results = await get_events_command(async_client, args)
                 return_results(command_results)
                 if should_push_events:
                     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)

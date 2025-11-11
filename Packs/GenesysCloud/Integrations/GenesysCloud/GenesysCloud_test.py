@@ -1,4 +1,21 @@
 import json
+import pytest
+from pytest_mock import MockerFixture
+from aiohttp import ClientResponseError, RequestInfo
+from unittest.mock import AsyncMock
+from freezegun import freeze_time
+from CommonServerPython import *
+from GenesysCloud import (
+    AsyncClient,
+    deduplicate_and_format_events,
+    get_audit_events_for_service,
+    get_events_command,
+    fetch_events_command,
+    DATE_FORMAT,
+    DEFAULT_SERVER_URL,
+)
+
+SERVER_URL = DEFAULT_SERVER_URL
 
 
 def util_load_json(path):
@@ -6,5 +23,478 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_baseintegration_dummy():
-    assert True
+@pytest.fixture()
+def async_client():
+    return AsyncClient(
+        base_url=SERVER_URL,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+        verify=False,
+        proxy=False,
+    )
+
+
+def mock_async_session_response(
+    response_json: dict | None = None,
+    error_status_code: int | None = None,
+    error_message: str = "Server error",
+) -> AsyncMock | ClientResponseError:
+    """Helper function to create mock async session responses."""
+    mock_response = AsyncMock()
+    mock_response.json = AsyncMock(return_value=response_json)
+    if error_status_code:
+        return ClientResponseError(
+            status=error_status_code,
+            history=(),
+            request_info=RequestInfo("", "POST", {}),
+            message=error_message,
+        )
+    else:
+        mock_response.raise_for_status = AsyncMock()
+        mock_response.status = 200
+    return AsyncMock(__aenter__=AsyncMock(return_value=mock_response))
+
+
+@pytest.mark.asyncio
+async def test_async_client_generate_new_access_token(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - An AsyncClient instance.
+    When:
+     - Calling _generate_new_access_token.
+    Then:
+     - Ensure the correct HTTP POST request is made to the OAuth token endpoint.
+     - Ensure the correct token response is returned.
+    """
+    mock_token_response = {
+        "access_token": "test_access_token_12345",
+        "token_type": "bearer",
+        "expires_in": 86400,
+    }
+
+    mock_response = mock_async_session_response(mock_token_response)
+
+    async with async_client as _client:
+        mocker.patch.object(_client._session, "post", return_value=mock_response)
+        token_response = await _client._generate_new_access_token()
+
+    assert token_response == mock_token_response
+    assert _client._session.post.call_args.kwargs["url"] == "https://login.mypurecloud.com/oauth/token"
+    assert _client._session.post.call_args.kwargs["headers"]["Content-Type"] == "application/x-www-form-urlencoded"
+    assert _client._session.post.call_args.kwargs["data"]["grant_type"] == "client_credentials"
+
+
+@pytest.mark.asyncio
+async def test_async_client_generate_new_access_token_error(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - An AsyncClient instance.
+    When:
+     - Calling _generate_new_access_token and the response contains an error.
+    Then:
+     - Ensure a DemistoException is raised with the appropriate error message.
+    """
+    token_url = urljoin(SERVER_URL.replace("api.", "login."), "/oauth/token")
+    error_message = "Invalid client credentials"
+
+    mock_response = mock_async_session_response(response_json={"error": error_message})
+
+    async with async_client as _client:
+        mocker.patch.object(_client._session, "post", return_value=mock_response)
+        with pytest.raises(DemistoException, match=f"Failed to obtain access token using {token_url=}. {error_message=}."):
+            await _client._generate_new_access_token()
+
+
+@pytest.mark.asyncio
+async def test_async_client_get_realtime_audits(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - An AsyncClient instance.
+    When:
+     - Calling get_realtime_audits with specific parameters.
+    Then:
+     - Ensure the correct HTTP POST request is made to the audits endpoint.
+     - Ensure the correct response is returned.
+    """
+    from_date = "2025-01-01T00:00:00Z"
+    to_date = "2025-01-02T00:00:00Z"
+    service_name = "Architect"
+    page_number = 0
+    page_size = 500
+
+    mock_response_json = {
+        "entities": [
+            {"id": "event-1", "eventTime": "2025-01-01T00:00:00Z"},
+            {"id": "event-2", "eventTime": "2025-01-01T01:00:00Z"},
+        ],
+        "pageNumber": 0,
+        "pageSize": 500,
+    }
+
+    mock_response = mock_async_session_response(response_json=mock_response_json)
+    mock_get_auth_header = mocker.patch.object(async_client, "get_authorization_header", return_value="Bearer test_token")
+
+    async with async_client as _client:
+        mocker.patch.object(_client._session, "post", return_value=mock_response)
+        response_json = await _client.get_realtime_audits(
+            from_date=from_date,
+            to_date=to_date,
+            service_name=service_name,
+            page_number=page_number,
+            page_size=page_size,
+        )
+
+    assert response_json == mock_response_json
+    assert mock_get_auth_header.call_count == 1
+    assert _client._session.post.call_args.kwargs["url"] == f"{SERVER_URL}/api/v2/audits/query/realtime"
+    assert _client._session.post.call_args.kwargs["json"]["serviceName"] == service_name
+    assert _client._session.post.call_args.kwargs["json"]["pageNumber"] == page_number
+
+
+@pytest.mark.asyncio
+async def test_async_client_get_realtime_audits_401_retry(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - An AsyncClient instance.
+    When:
+     - Calling get_realtime_audits and receiving a 401 Unauthorized error.
+    Then:
+     - Ensure the client forces a new token generation and retries the request.
+    """
+    from_date = "2025-01-01T00:00:00Z"
+    to_date = "2025-01-02T00:00:00Z"
+    service_name = "Architect"
+    page_number = 0
+
+    mock_response_json = {"entities": [{"id": "event-1", "eventTime": "2025-01-01T00:00:00Z"}]}
+
+    mock_responses = [
+        mock_async_session_response(error_status_code=401, error_message="Unauthorized"),  # First call -> expired token error
+        mock_async_session_response(mock_response_json),  # Second call (after token refresh) -> new events
+    ]
+
+    mock_get_auth_header = mocker.patch.object(async_client, "get_authorization_header", return_value="Bearer test_token")
+
+    async with async_client as _client:
+        mocker.patch.object(_client._session, "post", side_effect=mock_responses)
+        response_json = await _client.get_realtime_audits(
+            from_date=from_date,
+            to_date=to_date,
+            service_name=service_name,
+            page_number=page_number,
+        )
+
+    assert response_json == mock_response_json
+    assert mock_get_auth_header.call_count == 2  # First call + retry with `force_generate_new_token=True`
+    assert _client._session.post.call_count == 2
+
+
+@pytest.mark.parametrize(
+    "raw_response, all_fetched_ids, expected_events_count, expected_all_ids_count",
+    [
+        pytest.param(
+            {
+                "entities": [
+                    {"id": "event-1", "eventTime": "2025-01-01T00:00:00Z"},
+                    {"id": "event-2", "eventTime": "2025-01-01T01:00:00Z"},
+                ]
+            },
+            set(),
+            2,
+            2,
+            id="No duplicates",
+        ),
+        pytest.param(
+            {
+                "entities": [
+                    {"id": "event-1", "eventTime": "2025-01-01T00:00:00Z"},
+                    {"id": "event-2", "eventTime": "2025-01-01T01:00:00Z"},
+                ]
+            },
+            {"event-1"},
+            1,
+            2,
+            id="With duplicates",
+        ),
+        pytest.param(
+            {"entities": []},
+            {"event-1"},
+            0,
+            1,
+            id="Empty raw response",
+        ),
+        pytest.param(
+            {"entities": [{"id": "event-1", "eventTime": "2025-01-01T00:00:00Z"}]},
+            {"event-1"},
+            0,
+            1,
+            id="All duplicates",
+        ),
+    ],
+)
+def test_deduplicate_and_format_events(
+    raw_response: dict[str, Any],
+    all_fetched_ids: set[str],
+    expected_events_count: int,
+    expected_all_ids_count: int,
+):
+    """
+    Given:
+     - A raw API response and a set of already fetched event IDs.
+    When:
+     - Calling deduplicate_and_format_events.
+    Then:
+     - Ensure that events are correctly deduplicated and formatted.
+     - Ensure that the set of fetched IDs is correctly updated.
+    """
+    new_events = deduplicate_and_format_events(raw_response, all_fetched_ids)
+
+    assert len(new_events) == expected_events_count
+    assert len(all_fetched_ids) == expected_all_ids_count
+
+    for event in new_events:
+        assert event["_time"] == arg_to_datetime(event["eventTime"]).strftime(DATE_FORMAT)
+
+
+@pytest.mark.asyncio
+async def test_get_audit_events_for_service_pagination(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - A limit that requires fetching multiple pages of events.
+    When:
+     - Calling get_audit_events_for_service.
+    Then:
+     - Ensure that multiple API calls are made concurrently and events are aggregated.
+    """
+    from_date = "2025-01-01T00:00:00Z"
+    to_date = "2025-01-02T00:00:00Z"
+    service_name = "Architect"
+    limit = 1000  # Requires 2 pages (500 each)
+
+    mock_response_jsons = [
+        {  # Page 0
+            "entities": [{"id": f"event-A{i}", "eventTime": "2025-01-01T00:00:00Z"} for i in range(500)],
+        },
+        {  # Page 1
+            "entities": [{"id": f"event-B{i}", "eventTime": "2025-01-01T01:00:00Z"} for i in range(500)],
+        },
+    ]
+
+    async with async_client as _client:
+        # Mock get_realtime_audits to return the actual JSON responses
+        mocker.patch.object(_client, "get_realtime_audits", side_effect=mock_response_jsons)
+        events = await get_audit_events_for_service(
+            client=_client,
+            from_date=from_date,
+            to_date=to_date,
+            service_name=service_name,
+            limit=limit,
+        )
+
+    assert len(events) == limit
+    assert _client.get_realtime_audits.call_count == 2  # Two pages fetched concurrently
+
+
+@pytest.mark.asyncio
+async def test_get_audit_events_for_service_with_deduplication(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - A limit and a list of previously fetched event IDs.
+    When:
+     - Calling get_audit_events_for_service.
+    Then:
+     - Ensure that duplicate events are filtered out.
+    """
+    from_date = "2025-01-01T00:00:00Z"
+    to_date = "2025-01-02T00:00:00Z"
+    service_name = "Architect"
+    limit = 500
+    last_fetched_ids = ["event-A0", "event-A1"]
+
+    mock_response_json = {
+        "entities": [
+            {"id": "event-A0", "eventTime": "2025-01-01T00:00:00Z"},  # Duplicate
+            {"id": "event-A1", "eventTime": "2025-01-01T00:00:00Z"},  # Duplicate
+            {"id": "event-A2", "eventTime": "2025-01-01T00:00:00Z"},  # New
+        ],
+    }
+
+    async with async_client as _client:
+        # Mock get_realtime_audits to return the actual JSON response
+        mocker.patch.object(_client, "get_realtime_audits", return_value=mock_response_json)
+        events = await get_audit_events_for_service(
+            client=_client,
+            from_date=from_date,
+            to_date=to_date,
+            service_name=service_name,
+            limit=limit,
+            last_fetched_ids=last_fetched_ids,
+        )
+
+    assert len(events) == 1  # Only one new event after deduplication
+    assert events[0]["id"] == "event-A2"
+
+
+@freeze_time("2025-01-02T00:00:00Z")
+@pytest.mark.asyncio
+async def test_get_events_command(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - An AsyncClient and command arguments.
+    When:
+     - Calling get_events_command.
+    Then:
+     - Ensure get_audit_events_for_service is called with the correct arguments.
+     - Ensure tableToMarkdown is called with the correct arguments.
+    """
+    mock_events = [{"id": "event-1", "eventTime": "2025-01-01T00:00:00Z", "_time": "2025-01-01T00:00:00Z"}]
+
+    mock_get_audit_events = mocker.patch("GenesysCloud.get_audit_events_for_service", return_value=mock_events)
+    mock_table_to_markdown = mocker.patch("GenesysCloud.tableToMarkdown")
+
+    args = {"service_name": "Architect", "limit": "10", "from_date": "1 day ago"}
+
+    events, _ = await get_events_command(async_client, args)
+
+    assert events == mock_events
+    assert mock_get_audit_events.call_args.kwargs["service_name"] == "Architect"
+    assert mock_get_audit_events.call_args.kwargs["limit"] == 10
+    assert mock_table_to_markdown.call_args.kwargs["name"] == "Genesys Cloud Audit Events from Service: Architect"
+    assert mock_table_to_markdown.call_args.kwargs["t"] == mock_events
+
+
+@pytest.mark.parametrize(
+    "last_run, max_fetch, mock_events_per_service, expected_next_run",
+    [
+        pytest.param(
+            {},
+            100,
+            {
+                "Architect": [
+                    {"id": "event-1", "eventTime": "2025-01-01T00:00:00Z"},
+                    {"id": "event-2", "eventTime": "2025-01-01T01:00:00Z"},
+                ],
+                "PeoplePermissions": [
+                    {"id": "event-3", "eventTime": "2025-01-01T00:30:00Z"},
+                ],
+            },
+            {
+                "Architect": {"from_date": "2025-01-01T01:00:00Z", "last_fetched_ids": ["event-2"]},
+                "PeoplePermissions": {"from_date": "2025-01-01T00:30:00Z", "last_fetched_ids": ["event-3"]},
+            },
+            id="Initial run with multiple services",
+        ),
+        pytest.param(
+            {
+                "Architect": {"from_date": "2025-01-01T00:00:00Z", "last_fetched_ids": ["event-1"]},
+            },
+            50,
+            {
+                "Architect": [
+                    {"id": "event-2", "eventTime": "2025-01-01T01:00:00Z"},
+                    {"id": "event-3", "eventTime": "2025-01-01T01:00:00Z"},
+                ],
+            },
+            {
+                "Architect": {"from_date": "2025-01-01T01:00:00Z", "last_fetched_ids": ["event-2", "event-3"]},
+            },
+            id="Subsequent run with events at same timestamp",
+        ),
+        pytest.param(
+            {
+                "Architect": {"from_date": "2025-01-01T01:00:00Z", "last_fetched_ids": ["event-2"]},
+            },
+            100,
+            {"Architect": []},
+            {
+                "Architect": {"from_date": "2025-01-01T01:00:00Z", "last_fetched_ids": ["event-2"]},
+            },
+            id="No new events",
+        ),
+    ],
+)
+@pytest.mark.asyncio
+async def test_fetch_events_command(
+    async_client: AsyncClient,
+    mocker: MockerFixture,
+    last_run: dict,
+    max_fetch: int,
+    mock_events_per_service: dict,
+    expected_next_run: dict,
+):
+    """
+    Given:
+     - An AsyncClient, last_run, and max_fetch parameters.
+    When:
+     - Calling fetch_events_command.
+    Then:
+     - Ensure that get_audit_events_for_service is called for each service.
+     - Ensure that the next_run object and events are returned correctly.
+    """
+    service_names = list(mock_events_per_service.keys())
+
+    async def mock_get_audit_events(client, from_date, to_date, service_name, limit, last_fetched_ids=None):
+        return mock_events_per_service.get(service_name, [])
+
+    mocker.patch("GenesysCloud.get_audit_events_for_service", side_effect=mock_get_audit_events)
+
+    next_run, events = await fetch_events_command(async_client, last_run, max_fetch, service_names)
+
+    assert next_run == expected_next_run
+    total_expected_events = sum(len(evts) for evts in mock_events_per_service.values())
+    assert len(events) == total_expected_events
+
+
+@pytest.mark.asyncio
+async def test_fetch_events_command_service_failure_isolation(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - Multiple services to fetch events from.
+    When:
+     - One service fails but others succeed.
+    Then:
+     - Ensure that successful services' events are still returned.
+     - Ensure that the failure is logged but doesn't stop other services.
+    """
+    service_names = ["Architect", "PeoplePermissions", "ContactCenter"]
+    last_run = {}
+    max_fetch = 100
+
+    async def mock_get_audit_events(client, from_date, to_date, service_name, limit, last_fetched_ids=None):
+        if service_name == "PeoplePermissions":
+            raise Exception("Service error")
+        return [{"id": f"{service_name}-event-1", "eventTime": "2025-01-01T00:00:00Z"}]
+
+    mocker.patch("GenesysCloud.get_audit_events_for_service", side_effect=mock_get_audit_events)
+    mock_demisto_error = mocker.patch.object(demisto, "error")
+
+    next_run, events = await fetch_events_command(async_client, last_run, max_fetch, service_names)
+
+    # Should have events from 2 successful services
+    assert len(events) == 2
+    assert mock_demisto_error.call_count == 1
+    assert "PeoplePermissions" in mock_demisto_error.call_args[0][0]
+
+
+@pytest.mark.asyncio
+async def test_fetch_events_command_all_services_fail(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - Multiple services to fetch events from.
+    When:
+     - All services fail.
+    Then:
+     - Ensure a DemistoException is raised.
+    """
+    service_names = ["Architect", "PeoplePermissions"]
+    last_run = {}
+    max_fetch = 100
+
+    async def mock_get_audit_events(client, from_date, to_date, service_name, limit, last_fetched_ids=None):
+        raise Exception("Service error")
+
+    mocker.patch("GenesysCloud.get_audit_events_for_service", side_effect=mock_get_audit_events)
+    mocker.patch.object(demisto, "error")
+
+    with pytest.raises(DemistoException, match="Fetching events failed from all services"):
+        await fetch_events_command(async_client, last_run, max_fetch, service_names)
