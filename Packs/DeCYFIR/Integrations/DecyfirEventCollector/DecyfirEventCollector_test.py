@@ -1,5 +1,5 @@
 import pytest
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from DecyfirEventCollector import (
     Client,
     ACCESS_LOGS,
@@ -30,7 +30,7 @@ def mock_demisto(monkeypatch):
 @pytest.fixture
 def client(monkeypatch):
     """Mocked API client with fake event response."""
-    c = Client(base_url="https://api.fake", verify=False, proxy=False, api_key="abc123")
+    c = Client(base_url="https://fake.fake", verify=False, proxy=False, api_key="abc123")
     # Simulate always returning a single Access Log event
     monkeypatch.setattr(
         c,
@@ -57,11 +57,11 @@ def drk_event():
         "asset_name": "test_name",
         "vendor": "",
         "asset_type": "LinkedIn",
-        "modified_by": "xx@gmail.com",
+        "modified_by": "xx@test.com",
         "created_date": "2025-06-10T13:18:35.001",
         "modified_date": "2025-06-10T13:18:35.001",
         "version": "",
-        "created_by": ""
+        "created_by": "",
     }
 
 
@@ -80,8 +80,9 @@ def access_event():
 
 # --- Utility Tests ---
 
+
 def test_get_timestamp_from_datetime_rounding():
-    dt = datetime(2025, 11, 6, 4, 24, 12, 500_000, tzinfo=timezone.utc)
+    dt = datetime(2025, 11, 6, 4, 24, 12, 500_000, tzinfo=UTC)
     ts_access = get_timestamp_from_datetime(dt, ACCESS_LOGS)
     ts_drk = get_timestamp_from_datetime(dt, DRK_LOGS)
     assert ts_access % 1000 == 0  # Rounded to seconds for access logs
@@ -90,10 +91,11 @@ def test_get_timestamp_from_datetime_rounding():
 
 # --- Event Extraction & Enrichment ---
 
+
 def test_extract_event_time_access(access_event):
     dt = extract_event_time(access_event, ACCESS_LOGS)
     assert isinstance(dt, datetime)
-    assert dt.tzinfo == timezone.utc
+    assert dt.tzinfo == UTC
     assert dt.hour == 4 and dt.minute == 24
 
 
@@ -120,6 +122,7 @@ def test_add_event_fields_drk(drk_event):
 
 # --- Deduplication & ID Tracking ---
 
+
 def test_remove_duplicate_logs():
     logs = [{"uid": "1"}, {"uid": "2"}]
     last_run = {"Access Logs": {"fetched_events_ids": ["1"]}}
@@ -137,17 +140,19 @@ def test_update_fetched_event_ids():
 
 # --- Compute Next Fetch Time ---
 
+
 def test_compute_next_fetch_time_from_latest(access_event):
     events = [access_event]
-    prev_time = datetime(2025, 11, 6, 4, 0, 0, tzinfo=timezone.utc)
+    prev_time = datetime(2025, 11, 6, 4, 0, 0, tzinfo=UTC)
     result = compute_next_fetch_time(events, prev_time, ACCESS_LOGS)
     assert "2025-11-06T04:24:12" in result
 
 
 # --- Fetch Logic ---
 
+
 def test_fetch_events_basic_flow(client):
-    first_fetch_time = datetime(2025, 11, 6, 0, 0, tzinfo=timezone.utc)
+    first_fetch_time = datetime(2025, 11, 6, 0, 0, tzinfo=UTC)
     last_run = {}
     max_events = {ACCESS_LOGS: 10}
 
@@ -160,13 +165,15 @@ def test_fetch_events_basic_flow(client):
 
 # --- Test Module ---
 
+
 def test_test_module_returns_ok(client):
-    first_fetch_time = datetime(2025, 11, 6, tzinfo=timezone.utc)
+    first_fetch_time = datetime(2025, 11, 6, tzinfo=UTC)
     result = test_module(client, first_fetch_time, [ACCESS_LOGS], {ACCESS_LOGS: 10})
     assert result == "ok"
 
 
 # --- Manual get-events Command ---
+
 
 def test_get_events_command_without_push(monkeypatch, client):
     called = {}

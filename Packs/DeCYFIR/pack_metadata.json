@@ -55,6 +55,7 @@
         "CommonTypes",
         "CoreAlertFields"
     ],
+    "defaultDataSource": "decyfir",
     "supportedModules": [
         "X1",
         "X3",

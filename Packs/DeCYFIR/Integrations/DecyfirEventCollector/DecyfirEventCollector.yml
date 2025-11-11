@@ -15,10 +15,9 @@ configuration:
 
 - display: API Key
   name: api_key
+  type: 9
   required: true
-  type: 4
   section: Connect
-
 - defaultvalue: Access Logs,Assets Logs,Digital Risk Keywords Logs
   section: Collect
   display: Event types to fetch
@@ -103,7 +102,7 @@ script:
       required: false
       defaultValue: '3 months'
 
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetchevents: true
   runonce: false
   script: '-'
