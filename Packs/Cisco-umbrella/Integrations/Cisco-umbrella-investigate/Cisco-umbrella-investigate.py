@@ -1820,10 +1820,9 @@ def get_request_error_message(err) -> str:
         try:
             error_dict = err.res.json()
             return (
-                error_dict.get("errorMessage") or 
-                error_dict.get("message") or 
-                error_dict.get("error") or
-                str(error_dict)
+                error_dict.get("errorMessage") or
+                error_dict.get("message") or
+                str(json.dumps(error_dict))
             )
         except (ValueError, json.JSONDecodeError):
             demisto.debug("Failed to parse JSON response, falling back to text")
