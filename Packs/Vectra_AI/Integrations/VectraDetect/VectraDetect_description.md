@@ -43,7 +43,7 @@ To fetch Vectra Account or Vectra Host as a Cortex XSOAR incident:
 3. Under Incident type, select "N/A".
 4. Under Mapper (incoming), select "Vectra Detect - Incoming Mapper" for default mapping.
 5. Select the "Authentication Type" (Default - API Token).
-6. Enter connection parameters. (Vectra Detect FQDN or IP, API Token, Client ID, Client Secret Key)
+6. Enter connection parameters. (Vectra Detect FQDN or IP, API Token or Client ID and Client Secret Key)
 7. Select SSL certificate validation and Proxy if required.
 8. Update "Max created incidents per fetch" & "First fetch timestamp" based on your requirements.
 9. Select the Incident Mirroring Direction:

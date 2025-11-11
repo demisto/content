@@ -27,8 +27,7 @@ This integration was integrated and tested with version 7.1 of Vectra Detect
     | Vectra Detect FQDN or IP | Enter the FQDN or IP to reach the Vectra Detect API. \(e.g. "my-vectra-box.local" or "192.168.1.1"\) | True |
     | Authentication Type | Select the authentication type \(Default - API Token\). | False |
     | API Token | Enter the API token that can be retrieved from the Vectra UI &amp;gt; My Profile &amp;gt; General \(tab\) &amp;gt; API Token. You can also use the XSOAR credentials wallet to store it. In that case, the token should be the password. | False |
-    | Client ID | Enter the Client ID and Client Secret Key that can be retrieved from the Vectra UI &amp;gt; Manage &amp;gt; API Clients. You can also use the XSOAR credentials wallet to store it. | False |
-    | Client Secret Key |  | False |
+    | Client ID and Client Secret Key | Enter the Client ID and Client Secret Key that can be retrieved from the Vectra UI &amp;gt; Manage &amp;gt; API Clients. You can also use the XSOAR credentials wallet to store it. | False |
     | Trust any certificate (not secure) | When checked, no SSL certificates check will be done when interacting with the Vectra Detect API. It's insecure. \(Default - unchecked\) | False |
     | Use system proxy settings | Use the system proxy settings to reach with the Vectra Detect API. | False |
     | Fetch incidents |  | False |
@@ -59,7 +58,7 @@ To fetch Vectra Account or Vectra Host as a Cortex XSOAR incident:
 3. Under Incident type, select "N/A".
 4. Under Mapper (incoming), select "Vectra Detect - Incoming Mapper" for default mapping.
 5. Select the "Authentication Type" (Default - API Token).
-6. Enter connection parameters. (Vectra Detect FQDN or IP, API Token, Client ID, Client Secret Key)
+6. Enter connection parameters. (Vectra Detect FQDN or IP, API Token or Client ID and Client Secret Key)
 7. Select SSL certificate validation and Proxy if required.
 8. Update "Max created incidents per fetch" & "First fetch timestamp" based on your requirements.
 9. Select the Incident Mirroring Direction:
@@ -1456,7 +1455,7 @@ List all notes of the specific detection.
 ### vectra-detections-mark-asclosed
 
 ***
-Mark detections as close with provided detection IDs in the argument.
+Mark detections as closed with provided detection IDs in the argument.
 
 #### Base Command
 

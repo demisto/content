@@ -1104,7 +1104,7 @@ script:
       type: String
 
   - name: vectra-detections-mark-asclosed
-    description: Mark detections as close with provided detection IDs in the argument.
+    description: Mark detections as closed with provided detection IDs in the argument.
     execution: true    # This command modifies the Vectra system
     arguments:
     - name: detection_ids
@@ -1116,8 +1116,8 @@ script:
       description: Provide the close reason.
       auto: PREDEFINED
       predefined:
-      - "benign"
-      - "remediated"
+      - benign
+      - remediated
 
   - name: vectra-detections-mark-asopen
     description: Open detections with provided detection IDs in the argument.
