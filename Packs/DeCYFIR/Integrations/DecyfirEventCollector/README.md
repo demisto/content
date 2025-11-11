@@ -1,5 +1,11 @@
 Collects event logs from Decyfir for ingestion into Cortex XSIAM.
-This integration was integrated and tested with version xx of DecyfirEventCollector.
+
+Once configured, the integration periodically fetches event logs from Decyfir’s APIs and sends them to **Cortex XSIAM** for ingestion and analysis.
+
+- Events are fetched in real time (starting from the moment the integration is enabled).  
+- Each event type (`Access Logs`, `Assets Logs`, `Digital Risk Keywords Logs`) is fetched separately using its own pagination and limit.  
+- The integration automatically tracks and stores the last fetched timestamp and event IDs to prevent duplication.
+
 
 ## Configure Decyfir Event Collector in Cortex
 
