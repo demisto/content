@@ -15,7 +15,7 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
-  section: Connect
+  section: Collect
   required: false
   defaultvalue: 'Cortex XDR - Lite'
 - name: url
