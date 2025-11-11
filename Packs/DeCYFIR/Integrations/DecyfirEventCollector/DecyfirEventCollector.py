@@ -34,7 +34,6 @@ SOURCE_LOG_TYPES: dict[str, str] = {
     DRK_LOGS: "dr_keywords_logs",
 }
 
-
 """ UTILITY FUNCTIONS """
 
 
@@ -304,15 +303,14 @@ def fetch_events(
 """ COMMANDS """
 
 
-def test_module(client: Client, first_fetch_time: datetime, event_types: list[str], max_events: dict[str, int]) -> str:
+def test_module(client: Client) -> str:
     """
     Test connectivity and authentication.
 
     Returns:
         str: "ok" if successful.
     """
-    log("Running test-module")
-    fetch_events(client, {}, first_fetch_time, event_types, max_events)
+    fetch_events(client, {}, datetime.now(tz=UTC), [ACCESS_LOGS], {ACCESS_LOGS: 1})
     return "ok"
 
 
@@ -381,7 +379,7 @@ def main() -> None:
 
     try:
         if command == "test-module":
-            result = test_module(client, first_fetch_time, event_types_to_fetch, max_events_per_fetch)
+            result = test_module(client, first_fetch_time, [DRK_LOGS], 1)
             return_results(result)
 
         elif command == "decyfir-event-collector-get-events":
