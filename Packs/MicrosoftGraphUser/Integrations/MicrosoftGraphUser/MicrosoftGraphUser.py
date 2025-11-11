@@ -1,5 +1,3 @@
-import secrets
-import string
 import demistomock as demisto
 from CommonServerUserPython import *
 from urllib.parse import quote
