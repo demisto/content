@@ -14,12 +14,12 @@ SUCCESS_MESSAGE = "User session was cleared."
 COMMANDS_BY_BRAND = {
     OKTA_BRAND: "okta-clear-user-sessions",
     MS_GRAPH_BRAND: "msgraph-user-session-revoke",
-    GSUITE_BRAND: ""
+    GSUITE_BRAND: "gsuite-user-signout"
 }
 ARG_NAME_BY_BRAND = {
     OKTA_BRAND: "userId",
     MS_GRAPH_BRAND: "user",
-    GSUITE_BRAND: ""
+    GSUITE_BRAND: "user_key"
 }
 
 
@@ -428,6 +428,12 @@ def main():
                 run_command(microsoft_graph_id, results_for_verbose, clear_session_results, MS_GRAPH_BRAND)
             elif MS_GRAPH_BRAND in brands:
                 clear_session_results.append((MS_GRAPH_BRAND, "Failed", "Username not found or no integration configured."))
+
+            # GSuiteAdmin
+            if gsuite_id:
+                run_command(gsuite_id, results_for_verbose, clear_session_results, GSUITE_BRAND)
+            elif GSUITE_BRAND in brands:
+                clear_session_results.append((GSUITE_BRAND, "Failed", "Username not found or no integration configured."))
 
             user_id = okta_v2_id or microsoft_graph_id or gsuite_id
             for brand, result, message in clear_session_results:
