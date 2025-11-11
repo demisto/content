@@ -40,7 +40,7 @@ Once the configuration is complete, the following collections become available i
 |------------|-------------|----------------------|
 | `compromised/account_group` | In your compromised accounts, there CNCs in place which can be used as IOCs. Usually included in IOC Common. | 2-4 years |
 | `compromised/bank_card_group` | In your compromised cards, there CNCs in place which can be used as IOCs. Usually included in IOC Common. | 2 years |
-| `compromised/mule` | Information on compromised accounts used by threat actors for money laundering and fund transfers. Collection is currently depricated - only legacy information is avaliable | 90 days |
+| `compromised/mule` | Information on compromised accounts used by threat actors for money laundering and fund transfers. Collection is currently deprecated - only legacy information is available | 90 days |
 | `attacks/ddos` | Data on Distributed Denial of Service (DDoS) attacks, including targeted resources and attack durations. | 5-10 days |
 | `attacks/deface` | Records of defacement attacks, highlighting compromised websites and related actors. | 5-10 days |
 | `attacks/phishing_group` | Information on phishing attacks, including URLs of phishing websites. **Note:** Do not use IPs for detection - it may cause many false positives. Focus only on URLs. | 3-5 days |
