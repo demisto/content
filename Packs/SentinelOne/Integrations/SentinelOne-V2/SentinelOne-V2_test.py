@@ -1344,7 +1344,7 @@ def test_abort_endpoint_scan(mocker, requests_mock):
 
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
-    assert command_results.outputs == [{"Agent ID": "123456", "Aborte": True}]
+    assert command_results.outputs == [{"Agent ID": "123456", "Aborted": True}]
 
 
 def test_endpoint_fetch_logs(mocker, requests_mock):
@@ -1378,7 +1378,7 @@ def test_endpoint_fetch_logs(mocker, requests_mock):
 
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
-    assert command_results.outputs == [{"Affected": 1}]
+    assert command_results.outputs == {"Affected": 1}
 
 
 def test_run_powerquery(mocker, requests_mock):
@@ -1404,7 +1404,7 @@ def test_run_powerquery(mocker, requests_mock):
         "omittedEvents": 0.0,
     }
     requests_mock.post(
-        "https://xdr.sentinelone.net/api/powerQuery",
+        "https://example.com/api/powerQuery",
         json=mock_response_data,
     )
     mocker.patch.object(
@@ -1417,8 +1417,8 @@ def test_run_powerquery(mocker, requests_mock):
         demisto,
         "args",
         return_value={
-            "query": "dataSource.name = \"Microsoft O365\" | columns dataSource.name, dataSource.vendor| limit 3",
-            "singularity_xdr_url": "https://xdr.sentinelone.net",
+            "query": 'dataSource.name = "Microsoft O365" | columns dataSource.name, dataSource.vendor| limit 3',
+            "singularity_xdr_url": "https://example.com",
             "singularity_xdr_api_key": "api_key",
         },
     )

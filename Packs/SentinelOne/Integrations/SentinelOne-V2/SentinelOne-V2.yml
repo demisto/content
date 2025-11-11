@@ -510,7 +510,7 @@ script:
       description: Number of unmitigated and unresolved threats in the system.
       type: Number
   - arguments:
-    - description: 'Threat ID to get the analysis, for example: "2341398296147451190"'
+    - description: 'Threat ID to get the analysis, for example: "2341398296147451190".'
       name: threat_id
       required: true
     description: Returns threat analysis. Can only be used with API V2.1.
