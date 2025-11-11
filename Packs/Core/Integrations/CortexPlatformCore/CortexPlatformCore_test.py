@@ -2395,7 +2395,7 @@ def test_enable_scanners_command_single_repository(mocker: MockerFixture):
     mock_build_payload = mocker.patch("CortexPlatformCore.build_scanner_config_payload", return_value={"test": "payload"})
     mock_enable_scanners = mocker.patch.object(mock_client, "enable_scanners", return_value={"status": "success"})
 
-    args = {"asset_ids": "repo_001", "enabled_scanners": "scanner1,scanner2", "disabled_scanners": "scanner3"}
+    args = {"repository_ids": "repo_001", "enabled_scanners": "scanner1,scanner2", "disabled_scanners": "scanner3"}
 
     result = enable_scanners_command(mock_client, args)
 
@@ -2404,10 +2404,10 @@ def test_enable_scanners_command_single_repository(mocker: MockerFixture):
     assert "Successfully updated repositories: repo_001" in result.readable_output
 
 
-def test_enable_scanners_command_asset_ids_as_list(mocker: MockerFixture):
+def test_enable_scanners_command_repository_ids_as_list(mocker: MockerFixture):
     """
     Given:
-        A client and args where asset_ids is already a list.
+        A client and args where repository_ids is already a list.
     When:
         enable_scanners_command is called.
     Then:
@@ -2419,7 +2419,7 @@ def test_enable_scanners_command_asset_ids_as_list(mocker: MockerFixture):
     mock_build_payload = mocker.patch("CortexPlatformCore.build_scanner_config_payload", return_value={"payload": "test"})
     mock_enable_scanners = mocker.patch.object(mock_client, "enable_scanners", return_value={"success": True})
 
-    args = {"asset_ids": ["repo_alpha", "repo_beta"], "enabled_scanners": "vulnerability_scan"}
+    args = {"repository_ids": ["repo_alpha", "repo_beta"], "enabled_scanners": "vulnerability_scan"}
 
     result = enable_scanners_command(mock_client, args)
 
