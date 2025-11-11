@@ -153,7 +153,8 @@ def extract_event_time(event: dict[str, Any], event_type: str) -> datetime | Non
     """
     field = "event_date" if event_type == ACCESS_LOGS else "created_date"
     raw = event.get(field) or event.get("modified_date")
-    return arg_to_datetime(raw).replace(tzinfo=UTC) if raw else None
+    datetime_arg = arg_to_datetime(raw)
+    return datetime_arg.replace(tzinfo=UTC) if datetime_arg else None
 
 
 def add_event_fields(events: list[dict[str, Any]], event_type: str) -> None:
@@ -379,7 +380,7 @@ def main() -> None:
 
     try:
         if command == "test-module":
-            result = test_module(client, first_fetch_time, [DRK_LOGS], 1)
+            result = test_module(client)
             return_results(result)
 
         elif command == "decyfir-event-collector-get-events":

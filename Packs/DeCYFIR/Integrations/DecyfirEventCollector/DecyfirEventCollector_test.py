@@ -105,7 +105,8 @@ def test_extract_event_time_access(access_event):
     dt = extract_event_time(access_event, ACCESS_LOGS)
     assert isinstance(dt, datetime)
     assert dt.tzinfo == UTC
-    assert dt.hour == 4 and dt.minute == 24
+    assert dt.hour == 4
+    assert dt.minute == 24
 
 
 def test_extract_event_time_drk(drk_event):
@@ -217,8 +218,7 @@ def test_test_module_returns_ok(client):
     WHEN test_module is called
     THEN it runs fetch_events successfully and returns 'ok'.
     """
-    first_fetch_time = datetime(2025, 11, 6, tzinfo=UTC)
-    result = test_module(client, first_fetch_time, [ACCESS_LOGS], {ACCESS_LOGS: 10})
+    result = test_module(client)
     assert result == "ok"
 
 
