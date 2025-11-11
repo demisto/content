@@ -12,11 +12,13 @@ configuration:
   required: true
   type: 0
   section: Connect
+
 - display: API Key
   name: api_key
   required: true
   type: 4
   section: Connect
+
 - defaultvalue: Access Logs,Assets Logs,Digital Risk Keywords Logs
   section: Collect
   display: Event types to fetch
@@ -28,77 +30,92 @@ configuration:
   required: true
   advanced: true
   type: 16
+
 - defaultvalue: 3000
   section: Collect
-  display: Maximum number of Access Logs events
+  display: Maximum number of Access Logs events per fetch
   name: max_access_logs_events_per_fetch
   required: false
   advanced: true
   type: 0
+
 - defaultvalue: 3000
   section: Collect
-  display: Maximum number of Assets Logs events
+  display: Maximum number of Assets Logs events per fetch
   name: max_assets_logs_events_per_fetch
   required: false
   advanced: true
   type: 0
+
 - defaultvalue: 3000
   section: Collect
-  display: Maximum number of Digital Risk Keywords Logs events
+  display: Maximum number of Digital Risk Keywords Logs events per fetch
   name: max_drkl_events_per_fetch
   required: false
   advanced: true
   type: 0
+
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
   section: Connect
+
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
   section: Connect
-description: This is the Hello World event collector integration for Cortex XSIAM.
-display: DecyfirEventCollector
+
+description: Collects event logs from Decyfir for ingestion into Cortex XSIAM.
+display: Decyfir Event Collector
 name: DecyfirEventCollector
 script:
   commands:
-  - description: Manual command to fetch events.
+  - description: Retrieve Decyfir events manually. This command is primarily used for testing or debugging.
     name: decyfir-event-collector-get-events
     arguments:
     - auto: PREDEFINED
       defaultValue: 'Access Logs,Assets Logs,Digital Risk Keywords Logs'
-      description: Event types to fetch
+      description: Comma-separated list of event types to fetch.
       name: event_types
       predefined:
-        - "Access Logs"
-        - "Assets Logs"
-        - "Digital Risk Keywords Logs"
+      - Access Logs
+      - Assets Logs
+      - Digital Risk Keywords Logs
       required: true
+
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      description: >
+        Set this argument to True to send the fetched events to Cortex XSIAM. 
+        If False, the command will only display them in the War Room.
       name: should_push_events
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
       required: true
-    - auto: PREDEFINED
-      defaultValue: '3 months'
-      description: Set this argument in order to receive events created after the value specified in this parameter (<number> <time unit>, e.g., 12 hours, 7 days). If not specified, default value is '3 months'.
+
+    - description: >
+        Fetch events created after the specified time (e.g., "12 hours", "7 days"). 
+        If not provided, defaults to "3 months".
       name: from_date
       required: false
+      defaultValue: '3 months'
+
   dockerimage: demisto/python3:3.12.8.1983910
   isfetchevents: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
+
 supportlevelheader: xsoar
+
 marketplaces:
 - marketplacev2
 - platform
+
 fromversion: 8.4.0
 tests:
 - No tests (auto formatted)
