@@ -72,7 +72,7 @@ name: DecyfirEventCollector
 script:
   commands:
   - description: Retrieve Decyfir events manually. This command is primarily used for testing or debugging.
-    name: decyfir-event-collector-get-events
+    name: decyfir-get-events
     arguments:
     - auto: PREDEFINED
       defaultValue: 'Access Logs,Assets Logs,Digital Risk Keywords Logs'

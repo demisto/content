@@ -232,11 +232,7 @@ def update_fetched_event_ids(current_run: dict[str, Any], event_type: str, logs:
     log(f"Updated fetched_event_ids for {event_type}", {"count": len(ids)})
 
 
-def compute_next_fetch_time(
-    events: List[dict[str, Any]],
-    previous_time: Optional[datetime],
-    event_type: str
-) -> Optional[str]:
+def compute_next_fetch_time(events: List[dict[str, Any]], previous_time: Optional[datetime], event_type: str) -> Optional[str]:
     """
     Determine next fetch time based on the latest event timestamp.
 
@@ -249,9 +245,7 @@ def compute_next_fetch_time(
         Optional[str]: ISO formatted datetime for the next fetch cycle.
     """
     # Extract valid datetimes only (filter out None explicitly)
-    times: List[datetime] = [
-        t for e in events if (t := extract_event_time(e, event_type)) is not None
-    ]
+    times: List[datetime] = [t for e in events if (t := extract_event_time(e, event_type)) is not None]
 
     if not times:
         # Fall back to previous time if no valid timestamps found
@@ -394,7 +388,7 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        elif command == "decyfir-event-collector-get-events":
+        elif command == "decyfir-get-events":
             get_events_command(
                 client=client,
                 event_types=argToList(args.get("event_types")) or event_types_to_fetch,

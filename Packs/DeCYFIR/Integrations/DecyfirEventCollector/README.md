@@ -26,14 +26,14 @@ Once configured, the integration periodically fetches event logs from Decyfir’
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### decyfir-event-collector-get-events
+### decyfir-get-events
 
 ***
 Retrieve Decyfir events manually. This command is primarily used for testing or debugging.
 
 #### Base Command
 
-`decyfir-event-collector-get-events`
+`decyfir-get-events`
 
 #### Input
 
