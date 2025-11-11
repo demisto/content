@@ -13,8 +13,13 @@
     "tags": [
         "IAM"
     ],
-    "useCases": ["Identity and Access Management"],
-    "keywords": ["advanced server access", "ScaleFT"],
+    "useCases": [
+        "Identity and Access Management"
+    ],
+    "keywords": [
+        "advanced server access",
+        "ScaleFT"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"
