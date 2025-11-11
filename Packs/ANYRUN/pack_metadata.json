@@ -2,10 +2,10 @@
     "name": "ANY.RUN",
     "description": "Empowers SOC teams with a Cloud Sandbox for real-time malware analysis, Threat Intelligence Lookup, and high-quality feeds to enhance detection and threat coverage.",
     "support": "partner",
-    "currentVersion": "2.0.0",
+    "currentVersion": "2.1.0",
     "author": "ANY.RUN",
     "url": "https://any.run/",
-    "email": "anyrun-integrations@any.run",
+    "email": "support@any.run",
     "created": "2025-07-01T00:00:00Z",
     "categories": [
         "Forensics & Malware Analysis",
@@ -43,6 +43,10 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam",
+        "edr",
+        "cloud",
+        "cloud_runtime_security"
     ]
 }
