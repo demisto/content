@@ -621,8 +621,12 @@ def hit_to_indicator(
     if ELASTIC_SEARCH_CLIENT not in [ELASTICSEARCH_V8, OPEN_SEARCH] and isinstance(hit, dict):
         # For client version elastic <= v7, we get a different hit structure during the fetch indicators (due to BC code changes).
         ioc_dict = hit.get("_source", {})
+        if "id" not in ioc_dict:
+            ioc_dict["id"] = hit.get("_id")
     else:
         ioc_dict = hit.to_dict()
+        if "id" not in ioc_dict and hasattr(hit, 'meta') and hasattr(hit.meta, 'id'):
+                ioc_dict["id"] = hit.meta.id
     ioc_dict["value"] = ioc_dict.get(ioc_val_key)
     ioc_dict["rawJSON"] = dict(ioc_dict)
     if default_ioc_type:
