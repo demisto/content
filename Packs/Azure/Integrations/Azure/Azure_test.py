@@ -72,6 +72,7 @@ def mock_params():
         "credentials": {"password": "test_enc_key"},
     }
 
+
 @pytest.fixture
 def client(mocker, mock_params):
     mocker.patch("MicrosoftApiModule.MicrosoftClient.http_request")
@@ -84,9 +85,9 @@ def client(mocker, mock_params):
         proxy=mock_params.get("proxy", False),
         tenant_id=mock_params.get("tenant_id"),
         enc_key=mock_params.get("credentials", {}).get("password"),
-        headers={}
+        headers={},
     )
-        
+
 
 def util_load_json(path):
     with open(path, encoding="utf-8") as f:

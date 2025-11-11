@@ -781,7 +781,7 @@ class AzureClient:
 
         return response
 
-    def storage_container_blob_tag_get_request(self, container_name: str, blob_name: str, account_name: str) -> requests.Response:
+    def storage_container_blob_tag_get_request(self, container_name: str, blob_name: str, account_name: str) -> str:
         """
         Get the tags of a blob from a storage container.
         Args:
@@ -2363,6 +2363,66 @@ def storage_container_blob_tag_get_command(client: AzureClient, params: dict, ar
     return command_results
 
 
+def create_set_tags_request_body(tags: dict) -> bytes:
+    """
+    Create XML request body for set blob tags.
+    Args:
+        tags (dict): Tags data. Key represents tag name , and value represents tag Value.
+
+    Returns:
+        str: Set tags request body.
+
+    """
+    tags_element = ET.Element("Tags")
+    tag_set_element = ET.SubElement(tags_element, "TagSet")
+
+    for key, value in tags.items():
+        tag_element = ET.SubElement(tag_set_element, "Tag")
+        ET.SubElement(tag_element, "Key").text = key
+        ET.SubElement(tag_element, "Value").text = value
+
+    return ET.tostring(tags_element, encoding="utf-8", xml_declaration=True)
+
+
+def storage_container_blob_tag_set_command(client: AzureClient, params: dict, args: dict):
+    """
+    Sets the tags for the specified Blob.
+
+    Args:
+        client (Client): Azure Blob Storage API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    account_name = args.get("account_name", "")
+    container_name = args["container_name"]
+    blob_name = args["blob_name"]
+    tags = args["tags"]
+    append_tags = argToBoolean(args.get("append", False))
+
+    try:
+        tags = json.loads(tags)
+    except ValueError:
+        raise ValueError("Failed to parse tags argument. Please provide valid JSON format tags data.")
+
+    if append_tags:
+        results = storage_container_blob_tag_get_command(client, params, args)
+        original_tags = results["Blob"]["Tag"]
+        tags.update(original_tags)
+
+    xml_data = create_set_tags_request_body(tags)
+
+    client.storage_container_blob_tags_set_request(container_name, blob_name, xml_data, account_name)
+
+    command_results = CommandResults(
+        readable_output=f"{blob_name} Tags successfully updated.",
+    )
+
+    return command_results
+
+
 def convert_dict_time_format(data: dict, keys: list, date_format=DATE_FORMAT):
     """
     Convert dictionary data values time format.
@@ -2440,14 +2500,14 @@ def storage_container_blob_property_set_command(client: AzureClient, params: dic
     """
     container_name = args["container_name"]
     blob_name = args["blob_name"]
-    content_type = args.get("content_type")
-    content_md5 = args.get("content_md5")
-    content_encoding = args.get("content_encoding")
-    content_language = args.get("content_language")
-    content_disposition = args.get("content_disposition")
-    cache_control = args.get("cache_control")
-    request_id = args.get("request_id")
-    lease_id = args.get("lease_id")
+    content_type = args.get("content_type", "")
+    content_md5 = args.get("content_md5", "")
+    content_encoding = args.get("content_encoding", "")
+    content_language = args.get("content_language", "")
+    content_disposition = args.get("content_disposition", "")
+    cache_control = args.get("cache_control", "")
+    request_id = args.get("request_id", "")
+    lease_id = args.get("lease_id", "")
     account_name = args.get("account_name", "")
 
     headers = remove_empty_elements(
@@ -2486,68 +2546,14 @@ def storage_container_block_public_access_command(client: AzureClient, params: d
 
     """
 
-    account_name = args.get("account_name")
-    container_name = args.get("container_name")
+    account_name = args.get("account_name", "")
+    container_name = args.get("container_name", "")
 
     response = client.storage_container_block_public_access_request(account_name, container_name)
     demisto.debug(f"Response from block public access API:- {response}")
     command_results = CommandResults(
         readable_output=f"Public access to container '{container_name}' has been successfully blocked",
     )
-    return command_results
-
-
-def create_set_tags_request_body(tags: dict) -> bytes:
-    """
-    Create XML request body for set blob tags.
-    Args:
-        tags (dict): Tags data. Key represents tag name , and value represents tag Value.
-
-    Returns:
-        str: Set tags request body.
-
-    """
-    tags_element = ET.Element("Tags")
-    tag_set_element = ET.SubElement(tags_element, "TagSet")
-
-    for key, value in tags.items():
-        tag_element = ET.SubElement(tag_set_element, "Tag")
-        ET.SubElement(tag_element, "Key").text = key
-        ET.SubElement(tag_element, "Value").text = value
-
-    return ET.tostring(tags_element, encoding="utf-8", xml_declaration=True)
-
-
-def storage_container_blob_tag_set_command(client: AzureClient, params: dict, args: dict):
-    """
-    Sets the tags for the specified Blob.
-
-    Args:
-        client (Client): Azure Blob Storage API client.
-        args (dict): Command arguments from XSOAR.
-
-    Returns:
-        CommandResults: outputs, readable outputs and raw response for XSOAR.
-
-    """
-    account_name = args.get("account_name", "")
-    container_name = args["container_name"]
-    blob_name = args["blob_name"]
-    tags = args["tags"]
-
-    try:
-        tags = json.loads(tags)
-    except ValueError:
-        raise ValueError("Failed to parse tags argument. Please provide valid JSON format tags data.")
-
-    xml_data = create_set_tags_request_body(tags)
-
-    client.storage_container_blob_tags_set_request(container_name, blob_name, xml_data, account_name)
-
-    command_results = CommandResults(
-        readable_output=f"{blob_name} Tags successfully updated.",
-    )
-
     return command_results
 
 
