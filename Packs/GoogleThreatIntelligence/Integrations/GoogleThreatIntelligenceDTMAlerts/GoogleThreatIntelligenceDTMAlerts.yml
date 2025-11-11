@@ -215,7 +215,7 @@ script:
       - High
     - name: mscore_gte
       required: false
-      description: "Filter alerts with mscore greater than or equal to the given value.\n\nNote: The value can range in between from 0 to 100."
+      description: "Filter alerts with mscore greater than or equal to the given value.\n\nNote: Valid range is 0 to 100."
     - auto: PREDEFINED
       name: include_more_details
       required: false

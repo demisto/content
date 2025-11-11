@@ -219,6 +219,9 @@
                         "root": "mirror_tags",
                         "transformers": []
                     }
+                },
+                "occurred": {
+                    "simple": "first_seen"
                 }
             }
         },

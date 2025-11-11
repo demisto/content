@@ -1,4 +1,4 @@
-## Google Threat Intelligence - ASM Issues
+## Google Threat Intelligence - ASM Issues Help
 
 To use the integration, an API Key will be required from your Google Threat Intelligence account.
 

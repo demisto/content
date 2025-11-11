@@ -1310,3 +1310,62 @@ def test_update_remote_system_command_no_mirror_issue_id(mocker, requests_mock, 
 
     # Verify no API calls were made
     assert requests_mock.call_count == 0
+
+
+def test_update_remote_system_command_closing_notes_mirroring(mocker, requests_mock, mock_client):
+    """
+    Given:
+    - Incident is DONE and delta contains 'closingUserId'
+
+    When:
+    - Running update_remote_system_command
+
+    Then:
+    - Status should be updated to 'closed'
+    - A closing note should be sent with the expected payload
+    """
+    from GoogleThreatIntelligenceASMIssues import update_remote_system_command
+
+    # Mock UpdateRemoteSystemArgs to simulate a closed incident with closingUserId
+    mock_args = mocker.Mock(
+        remote_incident_id="remote_123",
+        data={
+            "gtiasmissueuid": "issue_456",
+            "id": "xsoar_incident_123",
+            "closeNotes": "All good",
+            "closeReason": "Resolved",
+            "closingUserId": "user_789",
+        },
+        inc_status=2,  # IncidentStatus.DONE
+        delta={"closingUserId": "user_789"},
+        incident_changed=True,
+        entries=[],
+    )
+    mocker.patch("GoogleThreatIntelligenceASMIssues.UpdateRemoteSystemArgs", return_value=mock_args)
+
+    # Mock API endpoints
+    requests_mock.post(f"{BASE_URL}/{ENDPOINTS['issue_status_update'].format('issue_456')}", json={"success": True})
+    requests_mock.post(f"{BASE_URL}/{ENDPOINTS['issue_update_notes'].format('issue_456')}", json={"success": True})
+
+    # Execute
+    result = update_remote_system_command(
+        mock_client,
+        {
+            "remote_incident_id": "remote_123",
+            "data": mock_args.data,
+            "inc_status": 2,
+            "delta": {"closingUserId": "user_789"},
+            "incident_changed": True,
+            "entries": [],
+        },
+    )
+
+    # Assert
+    assert result == "remote_123"
+    history = requests_mock.request_history
+    assert history[0].json() == {"status": "closed"}
+    expected_note = (
+        "[Mirrored From XSOAR] | Incident ID: xsoar_incident_123 | Close Reason: Resolved |"
+        "Closed By: user_789 | Close Notes: All good"
+    )
+    assert history[1].json() == {"note_text": expected_note}

@@ -22,7 +22,7 @@ MAX_FETCH = 200
 DEFAULT_API_MAX_FETCH = 50
 DEFAULT_MAX_FETCH = 100
 MAX_ISSUE_SIZE = 1000
-MAX_OUTGOING_NOTE_LIMIT = 8000
+MAX_OUTGOING_NOTE_LIMIT = 50000
 DEFAULT_FETCH_TIME = "1 days"
 OUTPUT_PREFIX = {"ISSUE_LIST": "GoogleThreatIntelligenceASMIssues.Issues"}
 MIRROR_DIRECTION = {"Outgoing": "Out"}
@@ -899,21 +899,39 @@ def update_remote_system_command(client: Client, args: Dict) -> str:
             # Get note content and user
             entry_content = entry.get("contents", "")
             entry_user = entry.get("user", "dbot") or "dbot"
-
-            if len(entry_content) > MAX_OUTGOING_NOTE_LIMIT:
+            note_text = (
+                f"[Mirrored From XSOAR] | Incident ID: {xsoar_incident_id} | Note: {entry_content} | Added By: {entry_user}"
+            )
+            if len(note_text) > MAX_OUTGOING_NOTE_LIMIT:
                 demisto.info(
                     f"Skipping outgoing mirroring for issue note with XSOAR Incident ID:{xsoar_incident_id}, "
                     "because the note length exceeds 8000 characters."
                 )
             else:
-                note_text = (
-                    f"[Mirrored From XSOAR] | Incident ID: {xsoar_incident_id} | "
-                    f"Note: {entry_content} | Added By: {entry_user}"
-                )
-
                 # API request for adding notes
                 payload = {"note_text": note_text}
                 client.asm_issue_notes_update(issue_id=mirror_issue_id, payload=payload)
+
+    # For Closing notes
+    delta_keys = parsed_args.delta.keys()
+    if "closingUserId" in delta_keys and parsed_args.incident_changed and parsed_args.inc_status == IncidentStatus.DONE:
+        # Check if incident status is Done
+        close_notes = parsed_args.data.get("closeNotes", "")
+        close_reason = parsed_args.data.get("closeReason", "")
+        close_user_id = parsed_args.data.get("closingUserId", "")
+        closing_note = (
+            f"[Mirrored From XSOAR] | Incident ID: {xsoar_incident_id} | Close Reason: {close_reason} |"
+            f"Closed By: {close_user_id} | Close Notes: {close_notes}"
+        )
+        if len(closing_note) > MAX_OUTGOING_NOTE_LIMIT:
+            demisto.info(
+                f"Skipping outgoing mirroring for closing notes with XSOAR Incident ID {xsoar_incident_id}, "
+                f"because the note length exceeds {MAX_OUTGOING_NOTE_LIMIT} characters."
+            )
+        else:
+            # API request for adding notes
+            payload = {"note_text": closing_note}
+            client.asm_issue_notes_update(issue_id=mirror_issue_id, payload=payload)
 
     return remote_issue_id
 

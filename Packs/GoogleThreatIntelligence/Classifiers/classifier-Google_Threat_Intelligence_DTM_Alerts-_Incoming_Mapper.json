@@ -77,7 +77,7 @@
                 },
                 "GTI DTM Alert Doc Description": {
                     "complex": {
-                        "accessor":"description",
+                        "accessor": "description",
                         "filters": [],
                         "root": "doc",
                         "transformers": []
@@ -343,6 +343,9 @@
                         "root": "mirror_instance",
                         "transformers": []
                     }
+                },
+                "occurred": {
+                    "simple": "created_at"
                 }
             }
         },

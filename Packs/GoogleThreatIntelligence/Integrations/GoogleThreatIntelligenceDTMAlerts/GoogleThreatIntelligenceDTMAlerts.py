@@ -97,7 +97,7 @@ MESSAGES = {
 ERROR_MESSAGES = {
     "INVALID_MAX_FETCH": "'{}' is invalid 'max_fetch' value. Max fetch for DTM Alerts should be between 1 and 25.",
     "INVALID_PAGE_SIZE": "'{}' is an invalid value for 'page_size'. Value must be between 1 and 25.",
-    "INVALID_MSCORE_GTE": "'{}' is Invalid 'mscore_gte' value. Mscore should be an integer between 0 and 100.",
+    "INVALID_MSCORE_GTE": "'{}' is an invalid value for 'mscore_gte'. Value must be between 0 and 100.",
     "INVALID_OBJECT": "Failed to parse {} object from response: {}",
     "UNAUTHORIZED_REQUEST": "{} Unauthorized request: Invalid API key provided {}.",
     "INVALID_DTM_ALERT_TRUNCATE": "'{}' is Invalid 'truncate' value. Value must be a non-negative integer.",

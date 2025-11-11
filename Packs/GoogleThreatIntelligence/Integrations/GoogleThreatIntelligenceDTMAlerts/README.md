@@ -58,7 +58,7 @@ Search the DTM Alerts with provided filter arguments.
 | tags | Filter alerts by tags value. Supports comma-separated values. | Optional |
 | status | Filter alerts by the provided status. Supports comma-separated values. Possible values are: New, Read, In Progress, Escalated, Closed, No Action Required, Duplicate, Not Relevant, Tracked External. | Optional |
 | severity | Filter alerts by severity. Supports comma-separated values. Possible values are: Low, Medium, High. | Optional |
-| mscore_gte | Filter alerts with mscore greater than or equal to the given value.<br/><br/>Note: The value can range in between from 0 to 100. | Optional |
+| mscore_gte | Filter alerts with mscore greater than or equal to the given value.<br/><br/>Note: Valid range is 0 to 100. | Optional |
 | include_more_details | If yes, doc, labels, and topics are returned in the context data. Possible values are: Yes, No. Default is Yes. | Optional |
 | include_monitor_name | If yes, then the monitor's name that created the alert is returned in the alert response body. Possible values are: Yes, No. Default is No. | Optional |
 | has_analysis | If yes, then only alerts that have analysis are returned. An alert has analysis if it has either analysis text or analysis file attachments. Possible values are: Yes, No. | Optional |
