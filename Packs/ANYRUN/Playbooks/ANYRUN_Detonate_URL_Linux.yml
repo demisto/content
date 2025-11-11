@@ -4,7 +4,7 @@ name: ANYRUN Detonate Url Linux
 fromversion: 6.0.0
 description: This playbook submits a URL extracted from an indicator to the 
   ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. 
-  It automates the analysis of potentially malicious URLs on Ubuntu OS.
+  It automates the analysis of potentially malicious URLs on Linux OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -45,7 +45,7 @@ tasks:
       id: 68f15f73-9164-4f65-9544-c96cf90f9def
       version: -1
       name: '[ANY.RUN] Detonate URL Linux'
-      description: Perform URL analysis using Ubuntu VM.
+      description: Perform URL analysis using Linux VM.
       script: '|||anyrun-detonate-url-linux'
       type: regular
       iscommand: true
@@ -400,7 +400,7 @@ inputs:
   value:
     simple: ubuntu
   required: false
-  description: Operation system
+  description: Operation system. Possible values - ubuntu, debian
   playbookInputQuery: null
 - key: opt_network_connect
   value:
