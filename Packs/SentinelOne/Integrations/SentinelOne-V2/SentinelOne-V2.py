@@ -750,16 +750,16 @@ class Client(BaseClient):
             if missing:
                 return_error(f"IOC at index {idx} missing required field(s): {', '.join(missing)}")
             # Normalize to API expectations (upper-case TYPE and METHOD)
-            ioc_type = (ioc.get("type") or "").upper()
-            method = (ioc.get("method") or "").upper()
+            ioc_type = ioc["type"].strip().upper()
+            method = ioc["method"].strip().upper()
             # Build the outbound object preserving optional fields if present
             outbound = {
-                "source": ioc.get("source"),
+                "source": ioc["source"],
                 "type": ioc_type,
                 "method": method,
-                "value": ioc.get("value"),
-                "validUntil": ioc.get("validUntil"),
-                "name": ioc.get("name"),
+                "value": ioc["value"],
+                "validUntil": ioc["validUntil"],
+                "name": ioc["name"],
             }
             # Optional fields as per current single-IOC code
             for opt in ("externalId", "description"):
