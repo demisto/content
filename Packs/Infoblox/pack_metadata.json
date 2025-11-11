@@ -10,8 +10,8 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": ["Network","Security"],
+    "useCases": ["Network Security"],
     "keywords": [
         "Infoblox",
         "NIOS",
