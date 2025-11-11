@@ -2661,7 +2661,7 @@ def fetch_incidents(client: Client) -> list:
                 continue
             parse_dict_ticket_fields(client, ticket)
         except Exception as e:
-            demisto.debug(f"Got the following error: {e}")
+            demisto.debug(f"Got the following error: {e}") 
 
         incidents.append(
             {
