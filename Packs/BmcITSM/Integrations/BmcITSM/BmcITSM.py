@@ -335,6 +335,7 @@ class Client(BaseClient):
         jwt_token = self.retrieve_access_token(username, password)
         self._headers = {}
         self._headers["Authorization"] = f"AR-JWT {jwt_token}"
+        add_sensitive_log_strs(jwt_token)
 
     def retrieve_access_token(self, username: str, password: str) -> str:
         """
@@ -665,7 +666,9 @@ class Client(BaseClient):
                 "First_Name": first_name,
                 "Last_Name": last_name,
                 "Description": summary,
-                "Detailed_Decription": details,
+                # Note that when creating a new incident using the bmc-itsm-incident-create command,
+                # the details field is called "Detailed_Decription" with an underscore.
+                "Detailed Decription": details,
                 "Company": company,
                 "Urgency": urgency,
                 "Impact": impact,
@@ -1926,7 +1929,16 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     validate_related_arguments_provided(assignee_login_id=assignee_login_id, assignee=assignee)
     if not template_id:
-        validate_related_arguments_provided(summary=summary, service_type=service_type, reported_source=reported_source)
+        validate_required_arguments_provided(
+            summary=summary,
+            service_type=service_type,
+            reported_source=reported_source,
+            first_name=first_name,
+            last_name=last_name,
+            status=status,
+            urgency=urgency,
+            impact=impact,
+        )
 
     response = client.create_incident_request(  # type: ignore[arg-type,call-arg]
         template_id,  # type: ignore[arg-type]
@@ -1990,7 +2002,7 @@ def incident_update_command(client: Client, args: Dict[str, Any]) -> CommandResu
     last_name = args.get("last_name")
     service_type = args.get("service_type")
     reported_source = args.get("reported_source")
-    details = args.get("details")
+    details = args.get("detailed_description")
     company = args.get("location_company")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_company = args.get("assigned_support_company")
@@ -2998,6 +3010,21 @@ def format_ticket_request_id(request_id: str) -> str:
     if "|" not in request_id:
         return f"{request_id}|{request_id}"
     return request_id
+
+
+def validate_required_arguments_provided(**required_args):
+    """
+    Validates that all passed keyword arguments have non-None values.
+
+    Args:
+        **required_args: Keyword arguments to validate.
+
+    Raises:
+        ValueError: If any of the arguments has a None value.
+    """
+    missing_args = [key for key, value in required_args.items() if not value]
+    if missing_args:
+        raise ValueError(f"The following required arguments are missing: {missing_args}")
 
 
 def validate_related_arguments_provided(**related_args):

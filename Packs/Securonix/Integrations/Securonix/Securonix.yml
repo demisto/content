@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -318,6 +318,9 @@ script:
       required: true
     - description: "Free-text query. For example, query=\"resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation\".\nNote: Use the XSOAR automation browser to run the command if the \"query\" argument contains the special characters."
       name: query
+    - defaultValue: '1000'
+      description: Maximum number of activity records to retrieve. Maximum allowed value is 10000.
+      name: max
     description: Gets a list of activity data for the specified resource group.
     name: securonix-list-activity-data
     outputs:
@@ -1767,7 +1770,7 @@ script:
       required: true
     description: Deletes the entries from the lookup table.
     name: securonix-lookup-table-entries-delete
-  dockerimage: demisto/python3:3.12.8.3720084
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   runonce: false
   script: '-'
