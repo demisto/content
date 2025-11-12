@@ -481,11 +481,28 @@ class BrandManager:
 
     @cached_property
     def enabled(self) -> set[str]:
-        """Set of active integration brands."""
+        """Return set of active integration brands."""
+        return BrandManager.enabled_brands()
+    
+    @staticmethod
+    def enabled_brands() -> set[str]:
+        """Return set of active integration brands."""
         all_modules = demisto.getModules()
         enabled_brands = {module.get("brand") for module in all_modules.values() if module.get("state") == "active"}
         demisto.debug(f"[BrandManager] enabled={enabled_brands}")
         return enabled_brands
+    
+    @staticmethod
+    def get_brands_by_type(command_batches:list[list[Command]] | None, command_type:CommandType) -> list[str]:
+        """Return the brands list of the command type"""
+        if not command_batches:
+            return []
+        brands:list[str] = []
+        for batch in command_batches:
+            for command in batch:
+                if command.command_type == command_type:
+                    brands.append(command.brand)
+        return brands
 
     @cached_property
     def to_run(self) -> list[str]:
@@ -576,6 +593,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         final_context_path: str,
         external_enrichment: bool = False,
         additional_fields: bool = False,
+        internal_enrichment_brands: list[str] = [],
         verbose: bool = False,
         commands: list[list[Command]] | None = None,
     ):
@@ -591,6 +609,9 @@ class ReputationAggregatedCommand(AggregatedCommand):
                                       ExampleEnrichment(val.Value && val.Value == obj.Value).
             external_enrichment (bool): Whether to run external enrichment (e.g enrichIndicators).
             additional_fields (bool): Whether to include additional fields in the output.
+            internal_enrichment_brands (list[str]): A list of internal brands to use for enrichment when no brands are provided
+                                                    and external_enrichment is False. Applied only if those brands are available;
+                                                    ignored otherwise.
             verbose (bool): Whether to add verbose outputs.
             commands (list[list[Command]]): List of batches of commands to run.
         """
@@ -599,6 +620,11 @@ class ReputationAggregatedCommand(AggregatedCommand):
         self.additional_fields = additional_fields
         self.data = data
         self.indicator = indicator
+        # If no brands and external_enrichment is false, will insert internal enrichment if available
+        # Addes internal command brands as well to make sure they also will run
+        if not brands and not external_enrichment:
+            if active_internal_enrichment_brands := list(set(internal_enrichment_brands) & BrandManager.enabled_brands()):
+                brands = active_internal_enrichment_brands + BrandManager.get_brands_by_type(commands,CommandType.INTERNAL)
         super().__init__(args, brands, verbose, commands)
 
     @cached_property

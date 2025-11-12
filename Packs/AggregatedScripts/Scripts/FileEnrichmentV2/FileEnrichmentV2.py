@@ -43,8 +43,6 @@ def file_enrichment_script(
     demisto.debug("Extracting indicators")
     file_list = extract_indicators(file_list, "file")
 
-    enrichment_brands = enrichment_brands or ([] if external_enrichment else INTERNAL_ENRICHMENT_BRANDS)
-
     indicator_mapping = {
         "MD5": "MD5",
         "SHA1": "SHA1",
@@ -113,6 +111,7 @@ def file_enrichment_script(
         verbose=verbose,
         commands=commands,
         additional_fields=additional_fields,
+        internal_enrichment_brands=INTERNAL_ENRICHMENT_BRANDS,
         external_enrichment=external_enrichment,
         final_context_path="FileEnrichmentV2(val.Value && val.Value == obj.Value)",
         args=args,
