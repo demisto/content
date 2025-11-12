@@ -194,7 +194,7 @@ Looks up the reputation of the indicator in the Enterprise collection only.
 
 ## Troubleshooting
 
-## Rate-Limiting or IP Blocking Issues
+### Rate-Limiting or IP Blocking Issues
 
 **Problem:** You may encounter a "Too Many Requests" error for the URL `https://attack-taxii.mitre.org/taxii2/` when accessing the MITRE ATT&CK API. This occurs because the MITRE ATT&CK API enforces rate limits and may block requests based on the IP address. This often happens when multiple users or systems are making requests from the same IP address.
 
