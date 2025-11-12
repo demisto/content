@@ -6,9 +6,7 @@ Once configured, the integration periodically fetches event logs from DeCYFIR’
 - Each event type (`Access Logs`, `Assets Logs`, `Digital Risk Keywords Logs`) is fetched separately using its own pagination and limit.  
 - The integration automatically tracks and stores the last fetched timestamp and event IDs to prevent duplication.
 
-
 ## Configure DeCYFIR Event Collector in Cortex
-
 
 | **Parameter** | **Required** |
 | --- | --- |
@@ -39,9 +37,9 @@ Retrieve Decyfir events manually. This command is primarily used for testing or 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event_types | Comma-separated list of event types to fetch. Possible values are: Access Logs, Assets Logs, Digital Risk Keywords Logs. Default is Access Logs,Assets Logs,Digital Risk Keywords Logs. | Required | 
-| should_push_events | Set this argument to True to send the fetched events to Cortex XSIAM.  If False, the command will only display them in the War Room.<br/>. Possible values are: True, False. Default is False. | Required | 
-| from_date | Fetch events created after the specified time (e.g., "12 hours", "7 days").  If not provided, defaults to "3 months".<br/>. Default is 3 months. | Optional | 
+| event_types | Comma-separated list of event types to fetch. Possible values are: Access Logs, Assets Logs, Digital Risk Keywords Logs. Default is Access Logs,Assets Logs,Digital Risk Keywords Logs. | Required |
+| should_push_events | Set this argument to True to send the fetched events to Cortex XSIAM.  If False, the command will only display them in the War Room.<br/>. Possible values are: True, False. Default is False. | Required |
+| from_date | Fetch events created after the specified time (e.g., "12 hours", "7 days").  If not provided, defaults to "3 months".<br/>. Default is 3 months. | Optional |
 
 #### Context Output
 
