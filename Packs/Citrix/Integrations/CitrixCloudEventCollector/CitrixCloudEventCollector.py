@@ -38,7 +38,10 @@ class Client(BaseClient):
             "post", url_suffix=f"/cctrustoauth2/{self.customer_id}/tokens/clients", headers=headers, data=data
         )
 
-        access_token = token_res["access_token"]
+        access_token = token_res.get("access_token")
+        if not access_token:
+            raise DemistoException("Failed to obtain access token from Citrix Cloud response.")
+
         demisto.setIntegrationContext({ACCESS_TOKEN_CONST: access_token})
         demisto.debug("access token created")
         return access_token
@@ -75,7 +78,7 @@ class Client(BaseClient):
         )
 
         if response.status_code == 401:
-            demisto.info("Invalid bearer token")
+            demisto.info("Access token expired; refreshing...")
             access_token = self.request_access_token()
             headers["Authorization"] = f"CwsAuth Bearer={access_token}"
             demisto.info(f"Sending http request to get records with {params=}")
