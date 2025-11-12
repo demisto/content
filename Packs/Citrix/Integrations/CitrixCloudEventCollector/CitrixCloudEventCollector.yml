@@ -62,7 +62,7 @@ script:
       required: true
     - description: The maximum number of logs to return.
       name: limit
-      defaultValue: 100
+      defaultValue: 2000
     - description: start date.
       name: start_date_time
     description: Returns system log events extracted from Citrix.

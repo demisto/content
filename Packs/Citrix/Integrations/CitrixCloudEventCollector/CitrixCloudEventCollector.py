@@ -10,11 +10,10 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 VENDOR = "Citrix"
 PRODUCT = "Cloud"
-#max value
-RECORDS_REQUEST_LIMIT = "200"
+# max value
+RECORDS_REQUEST_LIMIT = 200
 ACCESS_TOKEN_CONST = "access_token"
 SOURCE_LOG_TYPE = "systemlog"
-
 
 
 """ CLIENT CLASS """
@@ -29,7 +28,6 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
 
     def request_access_token(self):
-
         demisto.debug("prepare to create access token")
 
         headers = {"Accept": "application/json", "Content-Type": "application/x-www-form-urlencoded"}
@@ -45,7 +43,7 @@ class Client(BaseClient):
         demisto.debug("access token created")
         return access_token
 
-    def get_records(self, start_date_time, continuation_token=None, limit=None):
+    def get_records(self, start_date_time: str | None, continuation_token: str = None, limit: int = None):
         # get access token value
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get(ACCESS_TOKEN_CONST)
@@ -59,7 +57,7 @@ class Client(BaseClient):
             startDateTime=start_date_time,
         )
 
-        if limit and int(limit) <= 200:
+        if limit and limit <= 200:
             params["Limit"] = limit
 
         headers = {
@@ -68,14 +66,12 @@ class Client(BaseClient):
             "Citrix-CustomerId": self.customer_id,
         }
 
-        # print(f"{integration_context=}")
-        # print(access_token)
-        print(params)
         demisto.info(f"Sending http request to get records with {params=}")
-        response = self._http_request("get", url_suffix="systemlog/records", headers=headers, params=params, ok_codes=[200, 401], resp_type="response")
+        response = self._http_request(
+            "get", url_suffix="systemlog/records", headers=headers, params=params, ok_codes=[200, 401], resp_type="response"
+        )
 
         if response.status_code == 401:
-            print("Invalid bearer token")
             demisto.info("Invalid bearer token")
             access_token = self.request_access_token()
             headers["Authorization"] = f"CwsAuth Bearer={access_token}"
@@ -85,12 +81,12 @@ class Client(BaseClient):
         else:
             return response.json()
 
-    def get_records_with_pagination(self, limit, start_date_time):
+    def get_records_with_pagination(self, limit: int, start_date_time: str | None):
         records: list[dict] = []
         continuation_token = None
         raw_res = None
 
-        while len(records) < limit:
+        while len(records) < int(limit):
             raw_res = self.get_records(start_date_time=start_date_time, continuation_token=continuation_token, limit=limit)
             records.extend(raw_res.get("items", []))
             continuation_token = raw_res.get("continuationToken")
@@ -104,19 +100,17 @@ class Client(BaseClient):
         return records[:limit], raw_res
 
 
-
-
 """ HELPER FUNCTIONS """
 
 
 def get_events_command(client: Client, args: dict):  # type: ignore
-    limit = args.get("limit", "100")
+    limit = int(args.get("limit", "100"))
     start_date_time = args.get("start_date_time")
     should_push_events = argToBoolean(args.get("should_push_events", False))
 
     demisto.debug(f"Running citrix-cloud-get-events with {should_push_events=}")
 
-    records, raw_res = client.get_records_with_pagination(limit=int(limit), start_date_time=start_date_time)
+    records, raw_res = client.get_records_with_pagination(limit=limit, start_date_time=start_date_time)
 
     results = CommandResults(
         outputs_prefix="CitrixCloud.Event",
@@ -134,12 +128,10 @@ def get_events_command(client: Client, args: dict):  # type: ignore
 
 
 def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
-    records, _ = client.get_records_with_pagination(
-        limit=max_fetch, start_date_time=last_run.get("LastRun")
-    )
+    records, _ = client.get_records_with_pagination(limit=max_fetch, start_date_time=last_run.get("LastRun"))
 
     if records:
-        last_run =  {"LastRun": records[0]["_time"]}
+        last_run = {"LastRun": records[0]["_time"]}
 
     return records, last_run
 
@@ -178,7 +170,7 @@ def main():
             return_results(results)
 
         elif command == "fetch-events":
-            max_fetch = int(params.get("max_fetch", "10000"))
+            max_fetch = int(params.get("max_fetch", "2000"))
             last_run = demisto.getLastRun()
             demisto.debug(f"last run is: {last_run}")
 
@@ -188,6 +180,8 @@ def main():
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(last_run)
             demisto.debug(f"Last run set to: {last_run}")
+        else:
+            raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as e:
         demisto.error(f"{type(e).__name__} in {command}: {str(e)}\nTraceback:\n{traceback.format_exc()}")
