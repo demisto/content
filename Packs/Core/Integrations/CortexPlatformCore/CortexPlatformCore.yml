@@ -1130,6 +1130,12 @@ script:
           - Investigation
           - Containment
           - Response
+      - name: type
+        description: Change the type of an issue.
+        type: string
+      - name: description
+        description: Change the description of an issue.
+        type: string
       name: core-update-issue
       description: Updates the properties of an issue. This command does not provide an explicit indication of success.
     - arguments:

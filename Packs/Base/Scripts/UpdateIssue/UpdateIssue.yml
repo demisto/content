@@ -46,11 +46,8 @@ args:
 - name: type
   description: Change the type of an issue.
   type: string
-- name: custom_fields
-  description: Set the custom fields of the issue in the form of a JSON string with field name as key and value as the value.
-  type: string
-- name: details
-  description: Change the details of an issue.
+- name: description
+  description: Change the description of an issue.
   type: string
 scripttarget: 0
 subtype: python3
