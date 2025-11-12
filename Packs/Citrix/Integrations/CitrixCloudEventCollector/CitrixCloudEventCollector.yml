@@ -63,8 +63,10 @@ script:
     - description: The maximum number of logs to return.
       name: limit
       defaultValue: 2000
-    - description: start date.
+    - description: Start DateTime for the records to be retrieved.
       name: start_date_time
+    - description: End DateTime for the records to be retrieved.
+      name: end_date_time
     description: Returns system log events extracted from Citrix.
     name: citrix-cloud-get-events
   dockerimage: demisto/python3:3.12.11.4508456

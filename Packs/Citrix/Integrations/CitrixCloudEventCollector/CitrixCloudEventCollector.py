@@ -43,7 +43,9 @@ class Client(BaseClient):
         demisto.debug("access token created")
         return access_token
 
-    def get_records(self, start_date_time: str | None, continuation_token: str = None, limit: int = None):
+    def get_records(
+        self, start_date_time: str | None, end_date_time: str | None, continuation_token: str = None, limit: int = None
+    ):
         # get access token value
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get(ACCESS_TOKEN_CONST)
@@ -55,6 +57,7 @@ class Client(BaseClient):
             Limit=RECORDS_REQUEST_LIMIT,
             continuationToken=continuation_token,
             startDateTime=start_date_time,
+            endDateTime=end_date_time,
         )
 
         if limit and limit <= 200:
@@ -81,13 +84,15 @@ class Client(BaseClient):
         else:
             return response.json()
 
-    def get_records_with_pagination(self, limit: int, start_date_time: str | None):
+    def get_records_with_pagination(self, limit: int, start_date_time: str | None, end_date_time: str | None = None):
         records: list[dict] = []
         continuation_token = None
         raw_res = None
 
         while len(records) < int(limit):
-            raw_res = self.get_records(start_date_time=start_date_time, continuation_token=continuation_token, limit=limit)
+            raw_res = self.get_records(
+                start_date_time=start_date_time, end_date_time=end_date_time, continuation_token=continuation_token, limit=limit
+            )
             records.extend(raw_res.get("items", []))
             continuation_token = raw_res.get("continuationToken")
 
@@ -106,11 +111,14 @@ class Client(BaseClient):
 def get_events_command(client: Client, args: dict):  # type: ignore
     limit = int(args.get("limit", "100"))
     start_date_time = args.get("start_date_time")
+    end_date_time = args.get("end_date_time")
     should_push_events = argToBoolean(args.get("should_push_events", False))
 
     demisto.debug(f"Running citrix-cloud-get-events with {should_push_events=}")
 
-    records, raw_res = client.get_records_with_pagination(limit=limit, start_date_time=start_date_time)
+    records, raw_res = client.get_records_with_pagination(
+        limit=limit, start_date_time=start_date_time, end_date_time=end_date_time
+    )
 
     results = CommandResults(
         outputs_prefix="CitrixCloud.Event",
