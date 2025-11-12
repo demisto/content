@@ -451,7 +451,7 @@ Retrieve asset groups from the Cortex platform with optional filtering.
 
 #### Input
 
-| name | A JSON-encoded string of asset group names to search for. Supports substring matching. (e.g., `["group1", "group2"]`. | Optional |
+| name | A JSON-encoded string of asset group names to search for. Supports substring matching. (e.g., `["group1", "group2"]`). | Optional |
 | type | Filter asset groups by type. | Optional |
 | description | A JSON-encoded string of asset group descriptions to search for. Supports substring matching. (e.g., `["description1", "description2"]`). | Optional |
 | limit | The maximum number of groups to return. | Optional |
