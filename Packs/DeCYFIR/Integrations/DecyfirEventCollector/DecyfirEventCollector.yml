@@ -12,11 +12,11 @@ configuration:
   required: true
   type: 0
   section: Connect
-- displaypassword: API Key
-  name: credentials
-  required: false
-  section: Connect
+- name: credentials
+  type: 9
+  displaypassword: API Key
   hiddenusername: true
+  required: true
 - defaultvalue: Access Logs,Assets Logs,Digital Risk Keywords Logs
   section: Collect
   display: Event types to fetch

@@ -323,14 +323,15 @@ def get_events_command(
     after = get_timestamp_from_datetime(from_date, event_types[0]) if from_date else None
     all_events: list[dict[str, Any]] = []
 
+    hrs = []
     for event_type in event_types:
         events = client.search_events(event_type, max_events.get(event_type, MAX_EVENTS_PER_FETCH), after)
         add_event_fields(events, event_type)
         all_events.extend(events)
+        hrs.append(tableToMarkdown(name=event_type, t=events))
 
     demisto.debug("Manual get-events completed")
-    hr = "\n".join(tableToMarkdown(name=t, t=all_events) for t in event_types)
-    return_results(CommandResults(readable_output=hr))
+    return_results(CommandResults(readable_output="\n".join(hrs)))
 
     if should_push:
         demisto.debug(f"Pushing {len(all_events)} events to XSIAM")
