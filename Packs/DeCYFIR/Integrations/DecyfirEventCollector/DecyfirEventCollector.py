@@ -298,7 +298,7 @@ def test_module(client: Client) -> str:
     Returns:
         str: "ok" if successful.
     """
-    fetch_events(client, {}, datetime.now(tz=UTC), [ACCESS_LOGS], {ACCESS_LOGS: 1})
+    fetch_events(client, {}, datetime.now(tz=UTC) - timedelta(minutes=5), [ACCESS_LOGS], {ACCESS_LOGS: 1})
     return "ok"
 
 
