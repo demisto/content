@@ -1,5 +1,5 @@
 args:
-- description: 'A comma-separated list of File hashes to enrich Supported types are: MD5, SHA1, SHA256, and SHA512.'
+- description: 'A comma-separated list of File hashes to enrich. Supported types are: MD5, SHA1, SHA256, and SHA512.'
   name: file_hash
   required: true
   isArray: true

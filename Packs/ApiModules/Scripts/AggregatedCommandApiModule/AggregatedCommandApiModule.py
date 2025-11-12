@@ -497,12 +497,12 @@ class BrandManager:
         """Return the brands list of the command type"""
         if not command_batches:
             return []
-        brands:list[str] = []
+        brands:set[str] = set()
         for batch in command_batches:
             for command in batch:
                 if command.command_type == command_type:
-                    brands.append(command.brand)
-        return brands
+                    brands.add(command.brand)
+        return list(brands)
 
     @cached_property
     def to_run(self) -> list[str]:
@@ -793,7 +793,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         all_parsed_indicators = []
         tim_indicator = self.create_tim_indicator(ioc)
         if self.indicator.type == "file":
-            value = map_back_to_input(self.data, self.indicator.get_all_values_from(tim_indicator))
+            value = map_back_to_input(self.data, self.indicator.get_all_values_from(tim_indicator)) or value
         all_parsed_indicators.append(tim_indicator)
         
         found_brands = []
