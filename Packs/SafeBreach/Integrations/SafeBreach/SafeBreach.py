@@ -3575,24 +3575,19 @@ def get_all_running_tests_summary(client: Client):
     running_tests = client.get_active_tests()
     demisto.debug(f"Get all running tests summary result is: {running_tests}")
 
-    # ADDED: Validate response structure to prevent 'str' object has no attribute 'keys' error
     if isinstance(running_tests, str):
         return_error(f"API returned error: {running_tests}")
     elif not isinstance(running_tests, dict):
         return_error(f"Unexpected API response type: {type(running_tests)}")
 
-    # ADDED: Extract data object from response
     data = running_tests.get("data", {})
     if not isinstance(data, dict):
         return_error(f"Invalid 'data' field in response: {type(data)}")
 
-    # ADDED: Extract both testRunState (running tests) and queue (queued tests)
     # API returns: {"data": {"queue": [], "testRunState": {"planRunId1": {...}, "planRunId2": {...}}}}
-    # We need to convert testRunState dict values to a list and combine with queue array
     test_run_state = data.get("testRunState", {})
     tests_list = list(test_run_state.values()) if isinstance(test_run_state, dict) else []
 
-    # ADDED: Also include queued tests from queue array
     queued_tests = data.get("queue", [])
     if isinstance(queued_tests, list):
         tests_list.extend(queued_tests)
@@ -4868,6 +4863,7 @@ def main() -> None:
         account_id=demisto.params().get("account_id"),
         base_url=demisto.params().get("base_url"),
         verify=demisto.params().get("verify"),
+        proxy=demisto.params().get("proxy"),
     )
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
