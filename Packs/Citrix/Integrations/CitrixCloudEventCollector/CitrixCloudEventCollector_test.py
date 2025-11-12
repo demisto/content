@@ -1,6 +1,4 @@
 import pytest
-import requests_mock
-from unittest.mock import patch
 from CommonServerPython import *
 from unittest.mock import MagicMock
 
@@ -13,13 +11,16 @@ CUSTOMER_ID = "TEST_CUSTOMER"
 CLIENT_ID = "TEST_CLIENT"
 CLIENT_SECRET = "TEST_CLIENT_SECRET"
 
+
 @pytest.fixture
 def client() -> Client:
     """
     Fixture to create and return a Client instance for testing.
     Uses mock credentials defined at the top of the file.
     """
-    return Client(base_url=BASE_URL, customer_id=CUSTOMER_ID,client_id=CLIENT_ID,client_secret=CLIENT_SECRET, verify=True, proxy=False)
+    return Client(
+        base_url=BASE_URL, customer_id=CUSTOMER_ID, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, verify=True, proxy=False
+    )
 
 
 @pytest.fixture(autouse=True)
@@ -31,6 +32,7 @@ def mock_demisto(mocker):
 # ----------------------------------------------------------------------
 # CLIENT TESTS
 # ----------------------------------------------------------------------
+
 
 def test_request_access_token(mocker):
     """
@@ -71,6 +73,7 @@ def test_get_records_with_valid_token(mocker):
 
     res = client.get_records("2024-01-01", "2024-01-02")
     assert res["items"][0]["id"] == 1
+
 
 def test_get_records_refreshes_token_on_401(mocker):
     """
@@ -121,11 +124,12 @@ def test_get_records_with_pagination(mocker):
     assert len(records) == 2
     assert records[0]["_time"] == "2024-01-01T00:00:00Z"
     assert raw_res["continuationToken"] is None
-    
+
 
 # ----------------------------------------------------------------------
 # COMMAND TESTS
 # ----------------------------------------------------------------------
+
 
 def test_get_events_command_returns_results(mocker):
     """
@@ -137,13 +141,15 @@ def test_get_events_command_returns_results(mocker):
         - A CommandResults object is returned containing the event data.
     """
     client = Client("url", "cust", "id", "secret", False, True)
-    mocker.patch.object(client, "get_records_with_pagination",
-                        return_value=([{"recordId": "r1", "utcTimestamp": "2024-01-01T00:00:00Z"}], {"meta": "ok"}))
+    mocker.patch.object(
+        client,
+        "get_records_with_pagination",
+        return_value=([{"recordId": "r1", "utcTimestamp": "2024-01-01T00:00:00Z"}], {"meta": "ok"}),
+    )
 
     results = get_events_command(client, {"limit": "1", "should_push_events": "false"})
     assert isinstance(results, CommandResults)
     assert results.outputs[0]["recordId"] == "r1"
-
 
 
 def test_fetch_events_command_sets_last_run(mocker):
@@ -156,8 +162,7 @@ def test_fetch_events_command_sets_last_run(mocker):
         - The function should return events and set a new LastRun value.
     """
     client = Client("url", "cust", "id", "secret", False, True)
-    mocker.patch.object(client, "get_records_with_pagination",
-                        return_value=([{"_time": "2024-01-01T00:00:00Z"}], {}))
+    mocker.patch.object(client, "get_records_with_pagination", return_value=([{"_time": "2024-01-01T00:00:00Z"}], {}))
 
     events, last_run = fetch_events_command(client, 5, {"LastRun": "2024-01-01T00:00:00Z"})
 
