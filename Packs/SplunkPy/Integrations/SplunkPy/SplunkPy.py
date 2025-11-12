@@ -4013,7 +4013,6 @@ def splunk_create_investigation(
     response = requests.post(url, headers=headers, json=payload, verify=verify)
 
     if response.status_code not in (200, 201):
-        demisto.error(f"[Investigation] Creation failed. Status: {response.status_code}, Body: {response.text}")
         return_error(f"[Investigation] Creation failed. Status: {response.status_code}, Body: {response.text}")
 
     return response.json()
@@ -4047,7 +4046,6 @@ def splunk_create_investigation_command(base_url: str, token: str, auth_token: s
         ))
 
     except Exception as e:
-        demisto.error(f"Error: {str(e)}")
         return_error(f"Error: {str(e)}")
 
 def splunk_update_investigation(
@@ -4091,20 +4089,16 @@ def splunk_update_investigation(
     if sensitivity:
         payload["sensitivity"] = sensitivity
 
-    demisto.info(f"[splunk_update_investigation] Sending POST to: {url}")
-    demisto.info(f"[splunk_update_investigation] Payload: {json.dumps(payload, indent=2)}")
 
     try:
         response = requests.post(url, headers=headers, json=payload, verify=verify)
 
         if response.status_code not in (200, 204):
-            demisto.error(f"[splunk_update_investigation] Failed with status {response.status_code}: {response.text}")
             return_error(f"[splunk_update_investigation] Failed with status {response.status_code}: {response.text}")
 
         return response.json() if response.status_code == 200 else {"message": "Update successful"}
 
     except Exception as e:
-        demisto.error(f"[splunk_update_investigation] Unexpected error: {str(e)}")
         return_error(f"Unexpected error while updating investigation: {str(e)}")
 
 def splunk_update_investigation_command(base_url: str, token: str, auth_token: str | None, args: dict) -> None:
@@ -4135,8 +4129,7 @@ def splunk_update_investigation_command(base_url: str, token: str, auth_token: s
         ))
 
     except Exception as e:
-        demisto.error(f"[ERROR] Failed to update investigation {investigation_guid}: {str(e)}")
-        return_error(f"Error: {str(e)}")
+        return_error(f"[ERROR] Failed to update investigation: {investigation_guid}: {str(e)}")
 
 
 def splunk_add_finding_to_investigation(
@@ -4159,7 +4152,7 @@ def splunk_add_finding_to_investigation(
         "Content-Type": "application/json"
     }
 
-    url = f"{base_url}servicesNS/nobody/missioncontrol/public/v2/investigations/{investigation_guid}/findings"
+    url = f"{base_url}servicesNS/nobody/missioncontrol/v1/incidents/{investigation_guid}/child_incidents"
 
     payload = {
         "incident_ids": finding_ids,
@@ -4171,10 +4164,7 @@ def splunk_add_finding_to_investigation(
     response = requests.post(url, headers=headers, json=payload, verify=verify)
 
     if response.status_code not in (200, 201):
-        demisto.error(f"[AddFinding] Failed. Status: {response.status_code}, Body: {response.text}")
         return_error(f"[AddFinding] Failed. Status: {response.status_code}, Body: {response.text}")
-
-    demisto.info(f"[AddFinding] Success. Status: {response.status_code}")
     return response.json()
 
 def splunk_add_finding_to_investigation_command(base_url: str, token: str, auth_token: str | None, args: dict) -> None:
@@ -4198,10 +4188,8 @@ def splunk_add_finding_to_investigation_command(base_url: str, token: str, auth_
         )
 
         return_results(f"Finding(s) added to investigation `{investigation_guid}`.")
-        demisto.debug(json.dumps(result, indent=2))
 
     except Exception as e:
-        demisto.error(f"Failed to add finding to investigation. Error: {str(e)}")
         return_error(f"Failed to add finding to investigation. Error: {str(e)}")
 
 def splunk_remove_finding_from_investigation(
@@ -4231,10 +4219,8 @@ def splunk_remove_finding_from_investigation(
     response = requests.delete(url, headers=headers, verify=verify)
 
     if response.status_code not in (200, 201):
-        demisto.error(f"[RemoveFinding] Failed. Status: {response.status_code}, Body: {response.text}")
         return_error(f"[RemoveFinding] Failed. Status: {response.status_code}, Body: {response.text}")
 
-    demisto.info(f"[RemoveFinding] Success. Status: {response.status_code}")
     return response.json()
 
 def splunk_remove_finding_from_investigation_command(base_url: str, token: str, auth_token: str | None, args: dict) -> None:
@@ -4247,7 +4233,7 @@ def splunk_remove_finding_from_investigation_command(base_url: str, token: str, 
         return_error("investigation_guid and finding_ids are required arguments.")
 
     try:
-        result = splunk_remove_finding_from_investigation(
+        splunk_remove_finding_from_investigation(
             base_url=base_url,
             investigation_guid=investigation_guid,
             finding_ids=finding_ids,
@@ -4255,11 +4241,9 @@ def splunk_remove_finding_from_investigation_command(base_url: str, token: str, 
             sessionKey=session_key
         )
 
-        demisto.debug(json.dumps(result, indent=2))
         return_results(f"Finding(s) removed from investigation `{investigation_guid}`.")
 
     except Exception as e:
-        demisto.error(f"Failed to remove finding from investigation. Error: {str(e)}")
         return_error(f"Failed to remove finding from investigation. Error: {str(e)}")
 
 def splunk_get_investigation_details(
@@ -4270,8 +4254,7 @@ def splunk_get_investigation_details(
     verify=VERIFY_CERTIFICATE
 ):
     if not sessionKey and not auth_token:
-        demisto.error("[InvestigationDetails] Missing sessionKey and auth_token")
-        raise Exception("A session_key/auth_token was not provided")
+        return_error("[InvestigationDetails] Missing sessionKey and auth_token")
 
     headers = {
         "Authorization": f"Bearer {auth_token}" if auth_token else sessionKey,
@@ -4284,18 +4267,14 @@ def splunk_get_investigation_details(
         "output_mode": "json"
     }
 
-    demisto.info(f"[InvestigationDetails] Preparing GET request:\nURL: {url}\nHeaders: {headers}\nParams: {params}")
-
     try:
         response = requests.get(url, headers=headers, params=params, verify=verify)
         demisto.info(f"[InvestigationDetails] Response status: {response.status_code}")
         demisto.info(f"[InvestigationDetails] Response text: {response.text}")
     except Exception as e:
-        demisto.error(f"[InvestigationDetails] Exception during GET request: {str(e)}")
         return_error(f"[InvestigationDetails] Exception during GET request: {str(e)}")
 
     if response.status_code != 200:
-        demisto.error(f"[InvestigationDetails] Failed. Status: {response.status_code}, Body: {response.text}")
         return_error(f"[InvestigationDetails] Failed. Status: {response.status_code}, Body: {response.text}")
 
     return response.json()
@@ -4303,13 +4282,11 @@ def splunk_get_investigation_details(
 
 
 def splunk_get_investigation_details_command(base_url: str, token: str, auth_token: str | None, args: dict) -> None:
-    demisto.info(f"[InvestigationDetails] splunk_get_investigation_details_command triggered with args: {args}")
 
     session_key = None if auth_token else token
     investigation_guid = args.get("investigation_guid")
 
     if not investigation_guid:
-        demisto.error("[InvestigationDetails] No investigation_guid provided.")
         return_error("You must provide 'investigation_guid'.")
 
     try:
@@ -4350,7 +4327,6 @@ def splunk_get_investigation_details_command(base_url: str, token: str, auth_tok
             }
         }
 
-        demisto.info(f"[InvestigationDetails] Parsed investigation details: {output}")
         return_results({
             "Contents": output,
             "ContentsFormat": "json",
@@ -4360,8 +4336,79 @@ def splunk_get_investigation_details_command(base_url: str, token: str, auth_tok
         )
 
     except Exception as e:
-        demisto.error(f"[InvestigationDetails] Failed to fetch investigation details for {investigation_guid}. Error: {str(e)}")
-        return_error(f"Failed to fetch investigation details. Error: {str(e)}")
+        return_error(f"[InvestigationDetails] Failed to fetch investigation details for {investigation_guid}. Error: {str(e)}")
+
+def splunk_update_investigation_summary(
+    base_url,
+    incident_id,
+    summary_data,
+    auth_token=None,
+    sessionKey=None,
+    verify=VERIFY_CERTIFICATE,
+):
+    if not sessionKey and not auth_token:
+        return_error("A session_key/auth_token was not provided")
+
+    headers = {
+        "Authorization": f"Bearer {auth_token}" if auth_token else sessionKey,
+        "Content-Type": "application/json",
+    }
+
+    url = (
+        f"{base_url}servicesNS/nobody/missioncontrol/v1/incidents/{incident_id}"
+    )
+
+    payload = {"summary": summary_data}
+    
+    response = requests.post(url, headers=headers, json=payload, verify=verify)
+
+    if response.status_code not in (200, 201):
+        return_error(
+            f"[Summary] Failed to update investigation. Status: {response.status_code}, Body: {response.text}"
+        )
+
+    return response.json()
+
+
+def splunk_update_summary_command(
+    base_url: str, token: str, auth_token: str | None, args: dict
+) -> None:
+    session_key = None if auth_token else token
+    incident_id = args.get("incident_id") or args.get("investigation_guid")
+    if not incident_id:
+        return_error(
+            "You must provide either 'incident_id' or 'investigation_guid'."
+        )
+
+    try:
+        # Parse summary argument as a JSON string
+        summary_arg = args.get("summary")
+        if not summary_arg:
+            return_error(
+                "The 'summary' argument is required and must be a JSON string."
+            )
+
+        try:
+            summary_data = json.loads(summary_arg)
+        except Exception as parse_err:
+            return_error(f"Invalid JSON in 'summary': {parse_err}")
+
+        splunk_update_investigation_summary(
+            base_url=base_url,
+            incident_id=incident_id,
+            summary_data=summary_data,
+            auth_token=auth_token,
+            sessionKey=session_key,
+            verify=VERIFY_CERTIFICATE,
+        )
+
+        return_results(
+            f"Summary field updated for investigation `{incident_id}` successfully."
+        )
+
+    except Exception as e:
+        return_error(f"Failed to update summary. Error: {str(e)}")
+
         
 def main():  # pragma: no cover
     command = demisto.command()
