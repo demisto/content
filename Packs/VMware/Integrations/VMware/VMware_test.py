@@ -11,6 +11,12 @@ from pyVmomi import vim
 device_info = namedtuple("device_info", ["label", "key", "macAddress", "backing", "wakeOnLanEnabled"])
 
 
+CLIENT_FULL_URL = "vcenter.example.com:443"
+CLIENT_USER_NAME = "test_user"
+CLIENT_PASSWORD = "test_pass"
+CLIENT_SESSION_ID = "test-session-id"
+
+
 class Runtime:
     powerState = None
 
@@ -326,8 +332,6 @@ category = namedtuple("category", ["name", "id"])
 tag = namedtuple("tag", ["name", "id"])
 obj = namedtuple("obj", ["name", "id", "type"])
 
-PARAMS_GET_TAG = [({"category": "test1", "tag": "tag-test"}, "1"), ({"category": "test1", "tag": "tag"}, None)]
-
 PARAMS_GET_VM_FILTERS = [
     (
         {"ip": "1111", "vm_name": "test_vm", "uuid": "12345", "hostname": "test_host"},
@@ -544,27 +548,6 @@ def test_apply_get_vms_filters(args, params, res):
     assert VMware.apply_get_vms_filters(args, summary) == res
 
 
-@pytest.mark.parametrize("args, res", PARAMS_GET_TAG)
-def test_get_tag(monkeypatch, args, res):
-    """
-    Given:
-        - Tag and Category name.
-
-    When:
-        - Running a tag related command.
-
-    Then:
-        - Make sure a correct tag is returned, or None if tag does not exist.
-    """
-    client = VsphereClient()
-    monkeypatch.setattr(client.tagging.Category, "list", lambda: ["test1"])
-    monkeypatch.setattr(client.tagging.Category, "get", lambda cat: category("test1", "1"))
-    monkeypatch.setattr(client.tagging.Tag, "list_tags_for_category", lambda cat: ["tag-test"])
-    monkeypatch.setattr(client.tagging.Tag, "get", lambda tag_name: tag("tag-test", "1"))
-
-    assert VMware.get_tag(client, args) == res
-
-
 def test_create_vm_config_creator(monkeypatch):
     """
     Given:
@@ -590,30 +573,6 @@ def test_create_vm_config_creator(monkeypatch):
     assert res.memoryMB == int(args.get("virtual-memory"))
     assert res.files.vmPathName == "[test1]test1"
     assert res.guestId == args.get("guest-id")
-
-
-def test_list_vms_by_tag(monkeypatch):
-    """
-    Given:
-        - Tag name and Category.
-
-    When:
-        - Running a list vms by tag.
-
-    Then:
-        - Make sure a correct vm list is returned.
-    """
-    client = VsphereClient()
-    objs = [obj("vm1", "1", "VirtualMachine"), obj("vm2", "2", "VirtualMachine"), obj("not_vm", "3", "not_vm")]
-    monkeypatch.setattr(VMware, "get_tag", value=lambda v_client, tag_id: "1")
-    monkeypatch.setattr(client.tagging.TagAssociation, "list_attached_objects", lambda tag_name: objs)
-    monkeypatch.setattr(client.vcenter.VM, "FilterSpec", lambda vms: vms)
-    monkeypatch.setattr(client.vcenter.VM, "list", lambda vms: [obj("vm" + vm_id, vm_id, "VirtualMachine") for vm_id in vms])
-
-    res = VMware.list_vms_by_tag(client, {"tag": "test_tag", "category": "test_category"})
-
-    assert len(res.get("Contents")) == 2
-    assert "Virtual Machines with Tag test_tag" in res.get("HumanReadable")
 
 
 def test_create_vm(monkeypatch):
@@ -991,3 +950,262 @@ def test_change_nic_state(monkeypatch):
     assert list(res.get("Contents").values())[0].get("UUID") == "1234"
     assert list(res.get("Contents").values())[0].get("NICState") == "connected"
     assert "Virtual Machine's NIC was connected successfully" in res.get("HumanReadable")
+
+
+class TestClient:
+    """Tests for the Client class."""
+
+    def test_init(self, mocker):
+        """
+        Given:
+            - Client initialization parameters.
+
+        When:
+            - Creating a new Client instance.
+
+        Then:
+            - Ensure the client is initialized correctly with session ID.
+        """
+        mock_http_request = mocker.patch.object(VMware.Client, "_http_request", return_value=f'"{CLIENT_SESSION_ID}"')
+
+        client = VMware.Client(full_url=CLIENT_FULL_URL, user_name=CLIENT_USER_NAME, password=CLIENT_PASSWORD)
+
+        assert client.user_name == CLIENT_USER_NAME
+        assert client.password == CLIENT_PASSWORD
+        assert client.session_id == CLIENT_SESSION_ID
+        assert client._headers == {"vmware-api-session-id": CLIENT_SESSION_ID, "Content-Type": "application/json"}
+        assert mock_http_request.call_args.kwargs == {
+            "method": "POST",
+            "url_suffix": "/api/session",
+            "auth": (CLIENT_USER_NAME, CLIENT_PASSWORD),
+            "resp_type": "text",
+        }
+
+    def test_get_session_id(self, mocker):
+        """
+        Given:
+            - Valid credentials.
+
+        When:
+            - Calling _get_session_id method.
+
+        Then:
+            - Ensure session ID is returned correctly.
+        """
+        mocker.patch.object(VMware.Client, "_http_request", return_value=f'"{CLIENT_SESSION_ID}"')
+
+        client = VMware.Client(full_url=CLIENT_FULL_URL, user_name=CLIENT_USER_NAME, password=CLIENT_PASSWORD)
+        assert client.session_id == CLIENT_SESSION_ID
+
+    def test_logout(self, mocker):
+        """
+        Given:
+            - An active client session.
+
+        When:
+            - Calling logout method.
+
+        Then:
+            - Ensure the session is closed via DELETE request.
+        """
+        mock_http_request = mocker.patch.object(
+            VMware.Client, "_http_request", side_effect=['"test-session-id"', None]
+        )  # login, logout
+
+        client = VMware.Client(full_url=CLIENT_FULL_URL, user_name=CLIENT_USER_NAME, password=CLIENT_PASSWORD)
+
+        client.logout()
+
+        assert mock_http_request.call_count == 2
+        assert mock_http_request.call_args_list[1].kwargs == {
+            "method": "DELETE",
+            "url_suffix": "/api/session",
+            "resp_type": "response",
+        }
+
+    def test_get_category_id(self, mocker):
+        """
+        Given:
+            - A category name to search for.
+
+        When:
+            - Calling get_category_id method.
+
+        Then:
+            - Ensure the correct category ID is returned.
+        """
+        category_name = "test-category"  # Name of category whose ID we would like to get
+        category_id = "cat-id-2"  # Assume this is the corresponding ID
+
+        mock_http_request = mocker.patch.object(
+            VMware.Client,
+            "_http_request",
+            side_effect=[
+                f'"{CLIENT_SESSION_ID}"',  # INIT - Get session ID
+                ["cat-id-1", category_id],  # STEP 1 - Get list of category IDs
+                {"name": "wrong-category", "id": "cat-id-1"},  # STEP 2 - Get category details per ID (find match by name)
+                {"name": category_name, "id": category_id},
+            ],
+        )
+
+        client = VMware.Client(full_url=CLIENT_FULL_URL, user_name=CLIENT_USER_NAME, password=CLIENT_PASSWORD)
+
+        assert client.get_category_id(category_name) == category_id
+        # STEP 1 - Get list of category IDs
+        assert mock_http_request.call_args_list[1].kwargs == {"method": "GET", "url_suffix": "/api/cis/tagging/category"}
+        # STEP 2 - Get category details per ID (find match by name)
+        assert mock_http_request.call_args_list[2].kwargs == {"method": "GET", "url_suffix": "/api/cis/tagging/category/cat-id-1"}
+        assert mock_http_request.call_args_list[3].kwargs == {
+            "method": "GET",
+            "url_suffix": f"/api/cis/tagging/category/{category_id}",
+        }
+
+    def test_get_tag_id(self, mocker):
+        """
+        Given:
+            - A tag name and category ID.
+
+        When:
+            - Calling get_tag_id method.
+
+        Then:
+            - Ensure the correct tag ID is returned.
+        """
+        tag_name = "test-tag"  # Name of tag whose ID we would like to get
+        tag_id = "tag-id-2"  # Assume this is the corresponding ID
+        category_id = "cat-id-123"  # Category ID we are querying by
+
+        mock_http_request = mocker.patch.object(
+            VMware.Client,
+            "_http_request",
+            side_effect=[
+                f'"{CLIENT_SESSION_ID}"',  # INIT - Get session ID
+                ["tag-id-1", tag_id],  # STEP 1 - Get list of tag IDs associated with category
+                {"name": "wrong-tag", "id": "tag-id-1"},  # STEP 2 - Get tag details per ID (find match by name)
+                {"name": tag_name, "id": tag_id},
+            ],
+        )
+
+        client = VMware.Client(full_url=CLIENT_FULL_URL, user_name=CLIENT_USER_NAME, password=CLIENT_PASSWORD)
+
+        assert client.get_tag_id(tag_name=tag_name, category_id=category_id) == tag_id
+        # STEP 1 - Get list of tag IDs associated with category
+        assert mock_http_request.call_args_list[1].kwargs == {
+            "method": "POST",
+            "url_suffix": "/api/cis/tagging/tag?action=list-tags-for-category",
+            "json_data": {"category_id": "cat-id-123"},
+        }
+        # STEP 2 - Get tag details per ID (find match by name)
+        assert mock_http_request.call_args_list[2].kwargs == {"method": "GET", "url_suffix": "/api/cis/tagging/tag/tag-id-1"}
+        assert mock_http_request.call_args_list[3].kwargs == {"method": "GET", "url_suffix": f"/api/cis/tagging/tag/{tag_id}"}
+
+    def test_list_associated_objects(self, mocker):
+        """
+        Given:
+            - A tag ID.
+
+        When:
+            - Calling list_associated_objects method.
+
+        Then:
+            - Ensure the list of associated objects is returned.
+        """
+        tag_id = "tag-id-123"
+        associated_objects = [{"id": "vm-1", "type": "VirtualMachine"}, {"id": "vm-2", "type": "VirtualMachine"}]
+
+        mock_http_request = mocker.patch.object(
+            VMware.Client, "_http_request", side_effect=[f'"{CLIENT_SESSION_ID}"', associated_objects]
+        )
+
+        client = VMware.Client(full_url=CLIENT_FULL_URL, user_name=CLIENT_USER_NAME, password=CLIENT_PASSWORD)
+
+        assert client.list_associated_objects(tag_id=tag_id) == associated_objects
+        assert mock_http_request.call_args_list[1].kwargs == {
+            "method": "POST",
+            "url_suffix": f"/api/cis/tagging/tag-association/{tag_id}?action=list-attached-objects",
+        }
+
+    def test_list_vms(self, mocker):
+        """
+        Given:
+            - A list of VM IDs.
+
+        When:
+            - Calling list_vms method.
+
+        Then:
+            - Ensure the list of VMs is returned.
+        """
+        vm_ids = ["vm-1", "vm-2"]
+        vms_list = [{"vm": vm_ids[0], "name": "VM1"}, {"vm": vm_ids[1], "name": "VM2"}]
+        mock_http_request = mocker.patch.object(VMware.Client, "_http_request", side_effect=[f'"{CLIENT_SESSION_ID}"', vms_list])
+
+        client = VMware.Client(full_url=CLIENT_FULL_URL, user_name=CLIENT_USER_NAME, password=CLIENT_PASSWORD)
+
+        vms = client.list_vms(vm_ids=vm_ids)
+
+        assert vms == vms_list
+        assert mock_http_request.call_args_list[1].kwargs == {
+            "method": "GET",
+            "url_suffix": "/api/vcenter/vm",
+            "params": {"vms": vm_ids},
+        }
+
+
+def test_list_vms_by_tag(mocker):
+    """
+    Given:
+        - A category name and tag name.
+
+    When:
+        - Calling list_vms_by_tag function.
+
+    Then:
+        - Ensure the function returns CommandResults with correct outputs.
+    """
+    category_name = "Environment"
+    category_id = "category-123"
+    tag_name = "Production"
+    tag_id = "tag-456"
+    vm_ids = ["vm-1", "vm-2"]
+
+    # Mock the Client methods
+    mock_get_category_id = mocker.patch.object(VMware.Client, "get_category_id", return_value=category_id)
+    mock_get_tag_id = mocker.patch.object(VMware.Client, "get_tag_id", return_value=tag_id)
+    mock_list_associated_objects = mocker.patch.object(
+        VMware.Client,
+        "list_associated_objects",
+        return_value=[
+            {"id": vm_ids[0], "type": "VirtualMachine"},
+            {"id": vm_ids[1], "type": "VirtualMachine"},
+            {"id": "host-1", "type": "HostSystem"},
+        ],
+    )
+    mock_list_vms = mocker.patch.object(
+        VMware.Client,
+        "list_vms",
+        return_value=[
+            {"vm": vm_ids[0], "name": "TestVM1"},
+            {"vm": vm_ids[1], "name": "TestVM2"},
+        ],
+    )
+    mocker.patch.object(VMware.Client, "_get_session_id", return_value=CLIENT_SESSION_ID)
+
+    client = VMware.Client(full_url=CLIENT_FULL_URL, user_name=CLIENT_USER_NAME, password=CLIENT_PASSWORD)
+
+    command_results = VMware.list_vms_by_tag(client, args={"category": category_name, "tag": tag_name})
+
+    # Check outputs
+    assert command_results.outputs_prefix == "VMwareTag"
+    assert command_results.outputs_key_field == ["VM", "TagName", "Category"]
+    assert command_results.outputs == [
+        {"VM": "TestVM1", "TagName": tag_name, "Category": category_name},
+        {"VM": "TestVM2", "TagName": tag_name, "Category": category_name},
+    ]
+    assert f"VMs with category: '{category_name}' and tag: '{tag_name}'" in command_results.readable_output
+
+    # Verify method calls
+    assert mock_get_category_id.call_args[0] == (category_name,)
+    assert mock_get_tag_id.call_args[0] == (tag_name, category_id)
+    assert mock_list_associated_objects.call_args[0] == (tag_id,)
+    assert mock_list_vms.call_args[0] == (vm_ids,)

@@ -17,7 +17,4 @@ API-KEY from your ANY.RUN account is required.
 
 | **Parameter**    | **Description**                                                                                                                                                | **Required** |
 |------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| Password         | ANY.RUN API-KEY without prefix                                                                                                                               | True |
-| Server's FQDN    | Go to Settings &amp; Info → Settings → Integrations → API Keys. Click Copy API URL. Your FQDN is saved in the clipboard. Inline it without http/https protocol | True |
-| XSOAR API-KEY ID | In the API Keys table, locate the ID field. Note your corresponding ID number                                                                                  | True |
-| XSOAR API-KEY    | XSOAR API-KEY                                                                                                                                                  | True |
+| Password         | ANY.RUN API-KEY without prefix                                                                                                                               | True | | True |

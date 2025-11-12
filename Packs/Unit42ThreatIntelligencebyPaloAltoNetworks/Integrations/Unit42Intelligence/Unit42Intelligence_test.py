@@ -5,7 +5,7 @@ from Unit42Intelligence import (
     domain_command,
     url_command,
     file_command,
-    test_module,
+    test_module as unit42_test_module,
     create_relationships,
     remove_mitre_technique_id_prefix,
     extract_response_data,
@@ -25,6 +25,8 @@ from Unit42Intelligence import (
     create_actor_relationships,
     create_location_indicators_and_relationships,
     get_threat_object_score,
+    unit42_error_handler,
+    INTEGRATION_NAME,
 )
 from CommonServerPython import *
 
@@ -239,7 +241,7 @@ def test_test_module_success(client, mocker):
     mock_response_obj.status_code = 200
     mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
 
-    result = test_module(client)
+    result = unit42_test_module(client)
 
     assert result == "ok"
 
@@ -256,7 +258,7 @@ def test_test_module_failure(client, mocker):
     """
     mocker.patch.object(client, "lookup_indicator", side_effect=Exception("API Error"))
 
-    result = test_module(client)
+    result = unit42_test_module(client)
 
     assert "Test failed" in result
 
@@ -1453,3 +1455,32 @@ def test_remove_mitre_technique_id_prefix():
     # Test edge cases
     assert remove_mitre_technique_id_prefix("T123 - Multiple - Separators") == "Multiple - Separators"
     assert remove_mitre_technique_id_prefix("123 - No T prefix") == "123 - No T prefix"
+
+
+def test_unit42_error_handler_with_request_id(mocker):
+    """
+    Given:
+        - A mock requests.Response object with a status code, URL, and an X-Request-ID header.
+    When:
+        - Calling unit42_error_handler.
+    Then:
+        - demisto.return_error is called with a formatted error message including the X-Request-ID.
+    """
+    mock_response = mocker.Mock()
+    mock_response.status_code = 500
+    mock_response.url = "https://example.com/api"
+    mock_response.text = "Internal Server Error"
+    mock_response.headers = {"X-Request-ID": "test-request-id-123"}
+
+    mocker.patch.object(demisto, "debug")
+    mock_return_error = mocker.patch("Unit42Intelligence.return_error")
+
+    unit42_error_handler(mock_response)
+
+    expected_error_msg = (
+        "Error in API request [Status: 500]\n" "[X-Request-ID: test-request-id-123]\n" "Response text - Internal Server Error"
+    )
+    mock_return_error.assert_called_once_with(expected_error_msg)
+    demisto.debug.assert_called_once_with(
+        f"{INTEGRATION_NAME} API Error - X-Request-ID: test-request-id-123, Status: 500, URL: https://example.com/api"
+    )

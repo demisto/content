@@ -1929,7 +1929,16 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     validate_related_arguments_provided(assignee_login_id=assignee_login_id, assignee=assignee)
     if not template_id:
-        validate_related_arguments_provided(summary=summary, service_type=service_type, reported_source=reported_source)
+        validate_required_arguments_provided(
+            summary=summary,
+            service_type=service_type,
+            reported_source=reported_source,
+            first_name=first_name,
+            last_name=last_name,
+            status=status,
+            urgency=urgency,
+            impact=impact,
+        )
 
     response = client.create_incident_request(  # type: ignore[arg-type,call-arg]
         template_id,  # type: ignore[arg-type]
@@ -3001,6 +3010,21 @@ def format_ticket_request_id(request_id: str) -> str:
     if "|" not in request_id:
         return f"{request_id}|{request_id}"
     return request_id
+
+
+def validate_required_arguments_provided(**required_args):
+    """
+    Validates that all passed keyword arguments have non-None values.
+
+    Args:
+        **required_args: Keyword arguments to validate.
+
+    Raises:
+        ValueError: If any of the arguments has a None value.
+    """
+    missing_args = [key for key, value in required_args.items() if not value]
+    if missing_args:
+        raise ValueError(f"The following required arguments are missing: {missing_args}")
 
 
 def validate_related_arguments_provided(**related_args):

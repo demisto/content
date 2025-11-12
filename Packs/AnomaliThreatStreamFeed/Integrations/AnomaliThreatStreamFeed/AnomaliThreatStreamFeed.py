@@ -549,7 +549,7 @@ def create_relationships(reliability: str, indicator: dict[str, Any]) -> list[di
                 relationships.append(
                     EntityRelationship(
                         entity_a=indicator_value,
-                        entity_a_type=INDICATOR_TYPE.get(indicator_type),
+                        entity_a_type=INDICATOR_TYPE.get(indicator_type, "Unknown"),
                         name=relationship_name,
                         entity_b=entity_b_values,  # entity_b_item,
                         entity_b_type=entity_b_type,
@@ -585,7 +585,7 @@ def parse_indicator_for_fetch(
         relationships = create_relationships(reliability, indicator)
 
     # indicator_type = indicator.get("type")  # e.g., "ip", "domain", "email", "md5", "url"
-    indicator_type = INDICATOR_TYPE.get(str(indicator.get("type")))
+    indicator_type = INDICATOR_TYPE.get(str(indicator.get("type", "Unknown")))
     indicator_value = indicator.get("value")  # The actual value of the indicator (e.g., "1.1.1.1", "example.com")
 
     if not indicator_type or not indicator_value:
