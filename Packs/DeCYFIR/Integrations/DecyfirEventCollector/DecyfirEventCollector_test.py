@@ -271,27 +271,25 @@ def test_access_logs_fetch_with_same_second_overlap(monkeypatch):
     assert events2[0]["uid"] == "event2"
     assert events2[0]["_time"].startswith("2025-11-06T04:24:12")
     # Ensure dedup did not remove this valid event
-    assert current_run2[ACCESS_LOGS]["fetched_events_ids"] == ["event2"]
+    assert current_run2[ACCESS_LOGS]["fetched_events_ids"] == ['event1', 'event2']
 
     # The 'after' timestamp used in the second fetch should be rounded down to nearest second
-    after2 = get_after_param(current_run, ACCESS_LOGS, first_fetch_time)
+    after2 = get_after_param(current_run2, ACCESS_LOGS, first_fetch_time)
     assert after2 % 1000 == 0, "Access Logs timestamps must round to seconds"
 
-    current_run3, events3 = fetch_events(client, current_run, first_fetch_time, [ACCESS_LOGS], max_events)
+    current_run3, events3 = fetch_events(client, current_run2, first_fetch_time, [ACCESS_LOGS], max_events)
 
     # --- Assertions ---
     assert len(events3) == 0, "Should fetch no events - all are duplicates"
 
     # Ensure dedup did not remove this valid event
-    assert current_run2[ACCESS_LOGS]["fetched_events_ids"] == ["event1", "event2"]
+    assert current_run3[ACCESS_LOGS]["fetched_events_ids"] == ["event1", "event2"]
 
-    # The 'after' timestamp used in the second fetch should be rounded down to nearest second
-    after3 = get_after_param(current_run, ACCESS_LOGS, first_fetch_time)
+    # The 'after' timestamp used in the third fetch should be rounded down to nearest second
+    after3 = get_after_param(current_run3, ACCESS_LOGS, first_fetch_time)
     assert after3 % 1000 == 0, "Access Logs timestamps must round to seconds"
 
     assert after2 == after3
-
-
 
 
 # --- Test Module ---
