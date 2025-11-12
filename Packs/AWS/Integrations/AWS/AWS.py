@@ -2181,7 +2181,7 @@ class EC2:
         return CommandResults(
             outputs=image,
             outputs_prefix="AWS.EC2.Images",
-            readable_output=tableToMarkdown("AWS EC2 latest Image", data, headerTransform=pascalToSpace,removeNull=True),
+            readable_output=tableToMarkdown("AWS EC2 latest Image", data, headerTransform=pascalToSpace, removeNull=True),
             outputs_key_field="ImageId",
         )
 
@@ -2275,7 +2275,10 @@ class EC2:
 
         output = json.loads(json.dumps(response, cls=DatetimeEncoder))
         human_readable = tableToMarkdown(
-            "Ipam Discovered Public Addresses", output.get("IpamDiscoveredPublicAddresses"), headerTransform=pascalToSpace, removeNull=True
+            "Ipam Discovered Public Addresses",
+            output.get("IpamDiscoveredPublicAddresses"),
+            headerTransform=pascalToSpace,
+            removeNull=True,
         )
         return CommandResults(
             outputs_prefix="AWS.EC2.IpamDiscoveredPublicAddresses",
