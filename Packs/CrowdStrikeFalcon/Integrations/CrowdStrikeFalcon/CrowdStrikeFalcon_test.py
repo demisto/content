@@ -2031,8 +2031,6 @@ class TestFetch:
 
         from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
-
         last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
         set_last_run_per_type(
             last_run_object, index=LastRunIndex.DETECTIONS, data={"time": "2020-09-04T09:16:10.000000Z", "offset": 2}
@@ -2040,8 +2038,21 @@ class TestFetch:
 
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
         # Override post to have 1 results so FETCH_LIMIT won't be reached
+        requests_mock.get(
+            f"{SERVER_URL}/alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bcreated_timestamp%3A%3E%272020-09-04T09%3A14%3A10.000000Z%27&sort=created_timestamp.asc&offset=2&limit=2",
+            json={
+                "resources": [
+                    {
+                        "detection_id": "ldt:1",
+                        "created_timestamp": "2020-09-04T09:16:11.000000Z",
+                        "max_severity_displayname": "Low",
+                    }
+                ],
+            },
+        )
+
         requests_mock.post(
-            f"{SERVER_URL}/detects/entities/summaries/GET/v1",
+            f"{SERVER_URL}/alerts/entities/alerts/v2",
             json={
                 "resources": [
                     {
@@ -2054,12 +2065,10 @@ class TestFetch:
         )
 
         fetch_items()
-        assert demisto.setLastRun.mock_calls[0][1][0][LastRunIndex.DETECTIONS] == {
-            "time": "2020-09-04T09:16:11.000000Z",
-            "limit": 2,
-            "offset": 0,
-            "found_incident_ids": {"Detection ID: ldt:1": 1599210970},
-        }
+        actual = demisto.setLastRun.mock_calls[0][1][0][LastRunIndex.DETECTIONS]
+        assert actual["time"] == "2020-09-04T09:16:10.000000Z"
+        assert actual["limit"] == 2
+        assert actual["found_incident_ids"] == {"Detection ID: ldt:1": 1599210970}
 
     @freeze_time("2020-09-04T09:16:10Z")
     def test_fetch_with_offset(self, set_up_mocks, mocker, requests_mock):
@@ -2076,7 +2085,6 @@ class TestFetch:
         """
         from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
         # mock the total number of detections to be 4, so offset will be set
         requests_mock.get(
             f"{SERVER_URL}/detects/queries/detects/v1",
@@ -2156,7 +2164,6 @@ class TestFetch:
             "incident_type": "detection" is in raw result returned by the indicator
 
         """
-        mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
         from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
         last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
@@ -2253,7 +2260,6 @@ class TestFetch:
             Validate the results contains only IDP detection when fetch_incidents_or_detections = ['IDP Detections'],
 
         """
-        mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
         from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
         last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
@@ -2421,7 +2427,6 @@ class TestIncidentFetch:
         """
         from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
         # mock the total number of detections to be 4, so offset will be set
         requests_mock.get(
             f"{SERVER_URL}/incidents/queries/incidents/v1",
@@ -2485,7 +2490,6 @@ class TestIncidentFetch:
         """
         from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
         last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
         set_last_run_per_type(
             last_run_object,
@@ -4227,7 +4231,6 @@ def test_get_remote_data_command(mocker, remote_id, close_incident, incident_sta
         - the mirrored_object in the GetRemoteDataResponse contains the modified incident fields
         - the entries in the GetRemoteDataResponse contain expected entries (an incident closure/reopen entry when needed)
     """
-    mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
     from CrowdStrikeFalcon import get_remote_data_command
 
     incident_entity = input_data.response_incident.copy()
@@ -4256,7 +4259,7 @@ def test_find_incident_type():
     from CrowdStrikeFalcon import IncidentType, find_incident_type
 
     assert find_incident_type(input_data.remote_incident_id) == IncidentType.INCIDENT
-    assert find_incident_type(input_data.remote_detection_id) == IncidentType.LEGACY_ENDPOINT_DETECTION
+    assert find_incident_type(input_data.remote_incident_id) == IncidentType.LEGACY_ENDPOINT_DETECTION
     assert find_incident_type(input_data.remote_ngsiem_detection_id) == IncidentType.NGSIEM
     assert find_incident_type(input_data.remote_third_party_detection_id) == IncidentType.THIRD_PARTY
     assert find_incident_type("") is None
@@ -4298,12 +4301,11 @@ def test_get_remote_detection_data(mocker):
     Then
         - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
     """
-    mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
     from CrowdStrikeFalcon import get_remote_detection_data
 
     detection_entity = input_data.response_detection.copy()
     mocker.patch("CrowdStrikeFalcon.get_detections_entities", return_value={"resources": [detection_entity.copy()]})
-    mirrored_data, updated_object = get_remote_detection_data(input_data.remote_detection_id)
+    mirrored_data, updated_object = get_remote_detection_data(input_data.remote_incident_id)
     detection_entity["severity"] = 2
     assert mirrored_data == detection_entity
     assert updated_object == {
@@ -4585,7 +4587,7 @@ def test_set_xsoar_detection_entries_empty_check(mocker, updated_object):
     mocker.patch.object(demisto, "debug", return_value=None)
     entries = []
     reopen_statuses = []  # don't add a reopen entry in any case
-    set_xsoar_entries(updated_object, entries, input_data.remote_detection_id, "Detection", reopen_statuses)
+    set_xsoar_entries(updated_object, entries, input_data.remote_incident_id, "Detection", reopen_statuses)
     assert entries == []
 
 
@@ -4673,20 +4675,19 @@ def test_get_modified_remote_data_command(mocker):
     Then
         - returns a list of incidents, detections, and idp detections IDs that were modified since the lastUpdate time
     """
-    mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
     from CrowdStrikeFalcon import get_modified_remote_data_command
 
     mock_get_incidents = mocker.patch(
         "CrowdStrikeFalcon.get_incidents_ids", return_value={"resources": [input_data.remote_incident_id]}
     )
     mock_get_detections = mocker.patch(
-        "CrowdStrikeFalcon.get_fetch_detections", return_value={"resources": [input_data.remote_detection_id]}
+        "CrowdStrikeFalcon.get_fetch_detections", return_value={"resources": [input_data.remote_incident_id]}
     )
     last_update = "2022-03-08T08:17:09Z"
     result = get_modified_remote_data_command({"lastUpdate": last_update})
     assert mock_get_incidents.call_args.kwargs["last_updated_timestamp"] == last_update
     assert mock_get_detections.call_args.kwargs["last_updated_timestamp"] == last_update
-    assert result.modified_incident_ids == [input_data.remote_incident_id, input_data.remote_detection_id]
+    assert result.modified_incident_ids == [input_data.remote_incident_id, input_data.remote_incident_id]
 
 
 @pytest.mark.parametrize("status", ["new", "in_progress", "closed", "reopened"])
@@ -4703,8 +4704,8 @@ def test_update_detection_request_good(mocker, status):
     from CrowdStrikeFalcon import update_detection_request
 
     mock_resolve_detection = mocker.patch("CrowdStrikeFalcon.resolve_detection")
-    update_detection_request([input_data.remote_detection_id], status)
-    assert mock_resolve_detection.call_args[1]["ids"] == [input_data.remote_detection_id]
+    update_detection_request([input_data.remote_incident_id], status)
+    assert mock_resolve_detection.call_args[1]["ids"] == [input_data.remote_incident_id]
     assert mock_resolve_detection.call_args[1]["status"] == status
 
 
@@ -4722,7 +4723,7 @@ def test_update_detection_request_bad__lagacy(status):
     from CrowdStrikeFalcon import update_detection_request
 
     with pytest.raises(DemistoException) as de:
-        update_detection_request([input_data.remote_detection_id], status)
+        update_detection_request([input_data.remote_incident_id], status)
     assert "CrowdStrike Falcon Error" in str(de.value)
 
 
@@ -4741,7 +4742,7 @@ def test_update_detection_request_bad(status, mocker):
     from CrowdStrikeFalcon import update_detection_request
 
     with pytest.raises(DemistoException) as de:
-        update_detection_request([input_data.remote_detection_id], status)
+        update_detection_request([input_data.remote_incident_id], status)
     assert "CrowdStrike Falcon Error" in str(de.value)
 
 
@@ -4807,7 +4808,7 @@ def test_update_remote_detection(mocker, delta, inc_status, close_in_cs_falcon, 
 
     mocker.patch.object(demisto, "params", return_value={"close_in_cs_falcon": close_in_cs_falcon})
     mock_update_detection_request = mocker.patch("CrowdStrikeFalcon.update_detection_request")
-    update_remote_detection(delta, inc_status, input_data.remote_detection_id)
+    update_remote_detection(delta, inc_status, input_data.remote_incident_id)
     if detection_request_status:
         assert mock_update_detection_request.call_args[0][1] == detection_request_status
     else:
@@ -6003,7 +6004,7 @@ def test_cs_falcon_ods_create_scheduled_scan_command(mocker):
         (
             {"quarantine": "false", "schedule_interval": "every other week", "schedule_start_timestamp": "tomorrow"},
             True,
-            {"quarantine": False, "schedule": {"interval": 14, "start_timestamp": "2020-09-27T17:22"}},
+            {"quarantine": False, "schedule": {"interval": 14, "start_timestamp": "2020-09-27T20:22"}},
         ),
         ({"cpu_priority": "Low"}, False, {"cpu_priority": 2}),
     ),
@@ -7667,7 +7668,7 @@ def test_detections_to_human_readable(mocker):
     """
     from CrowdStrikeFalcon import detections_to_human_readable
 
-    expected_output = {"status": "open", "max_severity": "critical", "detection_id": "123", "created_time": "2022-01-01T00:00:00Z"}
+    expected_output = [{"status": "open", "max_severity": "critical", "detection_id": "123", "created_time": "2022-01-01T00:00:00Z"}]
     mock_table_to_markdown = mocker.patch("CrowdStrikeFalcon.tableToMarkdown")
     input = (
         {
