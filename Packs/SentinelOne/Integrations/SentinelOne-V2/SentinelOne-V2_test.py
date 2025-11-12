@@ -4,6 +4,7 @@ import demistomock as demisto
 from importlib import import_module
 import os
 import sys
+import builtins
 
 sentinelone_v2 = import_module("SentinelOne-V2")
 main = sentinelone_v2.main
@@ -1431,6 +1432,43 @@ def test_run_powerquery(mocker, requests_mock):
     assert command_results.outputs["matchingEvents"] == 3.0
     assert command_results.outputs["results"][0]["dataSource.name"] == "Microsoft O365"
     assert command_results.outputs["results"][0]["dataSource.vendor"] == "Microsoft"
+
+
+def test_create_bulk_ioc(mocker, requests_mock):
+    """
+    Given
+        - required arguments i.e entry_id, account_ids
+    When
+        - running sentinelone-create-bulk-ioc command
+    Then
+        - returns a table of result had the list of data from the API response
+    """
+    mock_ioc_payload = util_load_json("test_data/iocs_payload.json")
+    mock_ioc_raw_response = util_load_json("test_data/iocs_raw_response.json")
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/threat-intelligence/iocs", json=mock_ioc_raw_response)
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-create-bulk-ioc")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"entry_id": "fake-entry-id", "account_ids": "123456"},
+    )
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "fake_path", "name": "iocs.json"})
+    mocker.patch.object(builtins, "open", mocker.mock_open(read_data=json.dumps(mock_ioc_payload)))
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+
+    assert command_results.outputs_prefix == "SentinelOne.IOCs"
+    assert len(command_results.outputs) == len(mock_ioc_raw_response["data"])
+    assert command_results.outputs[0]["Creator"] == "mark@test.com"
 
 
 def test_get_installed_applications(mocker, requests_mock):
