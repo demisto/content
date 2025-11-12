@@ -758,7 +758,7 @@ def build_scanner_config_payload(args: dict) -> dict:
     Args:
         args (dict): Dictionary containing configuration arguments.
                     Expected to include:
-                        - enabled_scanners (list): List of scanners to enable.
+                        - enable_scanners (list): List of scanners to enable.
                         - disable_scanners (list): List of scanners to disable.
                         - pr_scanning (bool): Whether to enable PR scanning.
                         - block_on_error (bool): Whether to block on scanning errors.
@@ -770,7 +770,7 @@ def build_scanner_config_payload(args: dict) -> dict:
         dict: Scanner configuration payload.
 
     Raises:
-        ValueError: If the same scanner is specified in both enabled and disabled lists.
+        ValueError: If the same scanner is specified in both enable and disabled lists.
     """
     enabled_scanners = argToList(args.get("enable_scanners", []))
     disabled_scanners = argToList(args.get("disable_scanners", []))
