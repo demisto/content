@@ -2563,7 +2563,6 @@ Describes resource discovery association with an Amazon VPC IPAM. An associated 
 | AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion | String | The IPAM home region. |
 | AWS.EC2.IpamResourceDiscoveryAssociations.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
 
-
 ### aws-acm-certificate-options-update
 
 ***
