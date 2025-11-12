@@ -5990,7 +5990,7 @@ def test_create_network_acl_command_success(mocker):
     args = {"vpc_id": "mock_vpc_id"}
     result = EC2.create_network_acl_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert "AWS EC2 ACL Entries" in result.readable_output
+    assert "The AWS EC2 Instance ACL" in result.readable_output
 
 
 def test_create_network_acl_command_failure(mocker):

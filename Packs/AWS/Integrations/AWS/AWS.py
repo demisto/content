@@ -2237,7 +2237,7 @@ class EC2:
                     headerTransform=pascalToSpace,
                 )
                 + tableToMarkdown(
-                    f"The Entries of AWS EC2 ACL {network_acl.get("NetworkAclId")}",
+                    f"The Entries of AWS EC2 ACL {network_acl.get('NetworkAclId')}",
                     [entry for entry in network_acl.get("Entries")],  # noqa: C416
                     removeNull=True,
                     headerTransform=pascalToSpace,
