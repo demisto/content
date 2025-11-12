@@ -29,7 +29,7 @@ def mock_demisto(monkeypatch):
 @pytest.fixture
 def client(monkeypatch):
     """Create a fake Decyfir client returning mock Access Log events."""
-    c = Client(base_url="https://fake.fake", verify=False, proxy=False, api_key="abc123")
+    c = Client(base_url="https://test.test", verify=False, proxy=False, api_key="abc123")
     monkeypatch.setattr(
         c,
         "_http_request",

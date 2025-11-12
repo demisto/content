@@ -17,6 +17,7 @@ configuration:
   displaypassword: API Key
   hiddenusername: true
   required: true
+  section: Connect
 - defaultvalue: Access Logs,Assets Logs,Digital Risk Keywords Logs
   section: Collect
   display: Event types to fetch
