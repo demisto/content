@@ -917,6 +917,7 @@ def main():
     command = demisto.command()
     access_token = params.get("access_token")
     url = params.get("environment")
+    region = params.get("region", "us")
 
     verify_certificate = not params.get("insecure", False)
     first_fetch_time = params.get("first_fetch", "3 days").strip()
@@ -926,6 +927,7 @@ def main():
     try:
         client = Client(
             base_url=base_url,
+            region=region,
             verify_ssl=verify_certificate,
             access_token=access_token,
             proxy=proxy,
