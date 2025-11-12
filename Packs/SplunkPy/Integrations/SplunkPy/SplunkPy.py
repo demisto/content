@@ -3969,7 +3969,400 @@ def handle_message(item: results.Message | dict) -> bool:
         return True
     return False
 
+def splunk_create_investigation(
+    base_url,
+    name,
+    description=None,
+    investigation_type=None,
+    status=None,
+    disposition=None,
+    owner=None,
+    urgency=None,
+    sensitivity=None,
+    finding_ids=None,
+    finding_times=None,
+    auth_token=None,
+    sessionKey=None,
+    verify=VERIFY_CERTIFICATE
+):
+    if not sessionKey and not auth_token:
+        return_error("A session_key/auth_token was not provided")
 
+    headers = {
+        "Authorization": f"Bearer {auth_token}" if auth_token else sessionKey,
+        "Content-Type": "application/json"
+    }
+
+    url = f"{base_url}servicesNS/nobody/missioncontrol/public/v2/investigations"
+
+    payload = {
+        "name": name,
+        "description": description,
+        "investigation_type": investigation_type,
+        "status": status,
+        "disposition": disposition,
+        "owner": owner,
+        "urgency": urgency,
+        "sensitivity": sensitivity,
+        "finding_ids": finding_ids,
+        "finding_times": finding_times
+    }
+    payload = {k: v for k, v in payload.items() if v is not None}
+
+
+    response = requests.post(url, headers=headers, json=payload, verify=verify)
+
+    if response.status_code not in (200, 201):
+        demisto.error(f"[Investigation] Creation failed. Status: {response.status_code}, Body: {response.text}")
+        return_error(f"[Investigation] Creation failed. Status: {response.status_code}, Body: {response.text}")
+
+    return response.json()
+
+def splunk_create_investigation_command(base_url: str, token: str, auth_token: str | None, args: dict) -> None:
+    session_key = None if auth_token else token
+
+    try:
+        result = splunk_create_investigation(
+            base_url=base_url,
+            auth_token=auth_token,
+            sessionKey=session_key,
+            name=args.get("name"),
+            description=args.get("description"),
+            investigation_type=args.get("investigation_type"),
+            status=args.get("status"),
+            disposition=args.get("disposition"),
+            owner=args.get("owner"),
+            urgency=args.get("urgency"),
+            sensitivity=args.get("sensitivity"),
+            finding_ids=argToList(args.get("finding_ids")),
+            finding_times=argToList(args.get("finding_times")),
+        )
+
+        investigation_guid = result.get("investigation_guid")
+        return_results(CommandResults(
+            outputs_prefix="Splunk.Investigation",
+            outputs={"investigation_guid": investigation_guid},
+            readable_output=f"Investigation created successfully. ID: **{investigation_guid}**",
+            raw_response=result
+        ))
+
+    except Exception as e:
+        demisto.error(f"Error: {str(e)}")
+        return_error(f"Error: {str(e)}")
+
+def splunk_update_investigation(
+    base_url,
+    investigation_guid,
+    name=None,
+    description=None,
+    status=None,
+    disposition=None,
+    owner=None,
+    urgency=None,
+    sensitivity=None,
+    auth_token=None,
+    sessionKey=None,
+    verify=VERIFY_CERTIFICATE
+):
+    if not sessionKey and not auth_token:
+        return_error("A session_key or auth_token must be provided.")
+
+
+    headers = {
+        "Authorization": f"Bearer {auth_token}" if auth_token else sessionKey,
+        "Content-Type": "application/json"
+    }
+
+    url = f"{base_url}servicesNS/nobody/missioncontrol/public/v2/investigations/{investigation_guid}"
+
+    payload = {}
+    if name:
+        payload["name"] = name
+    if description:
+        payload["description"] = description
+    if status:
+        payload["status"] = status
+    if disposition:
+        payload["disposition"] = disposition
+    if owner:
+        payload["owner"] = owner
+    if urgency:
+        payload["urgency"] = urgency
+    if sensitivity:
+        payload["sensitivity"] = sensitivity
+
+    demisto.info(f"[splunk_update_investigation] Sending POST to: {url}")
+    demisto.info(f"[splunk_update_investigation] Payload: {json.dumps(payload, indent=2)}")
+
+    try:
+        response = requests.post(url, headers=headers, json=payload, verify=verify)
+
+        if response.status_code not in (200, 204):
+            demisto.error(f"[splunk_update_investigation] Failed with status {response.status_code}: {response.text}")
+            return_error(f"[splunk_update_investigation] Failed with status {response.status_code}: {response.text}")
+
+        return response.json() if response.status_code == 200 else {"message": "Update successful"}
+
+    except Exception as e:
+        demisto.error(f"[splunk_update_investigation] Unexpected error: {str(e)}")
+        return_error(f"Unexpected error while updating investigation: {str(e)}")
+
+def splunk_update_investigation_command(base_url: str, token: str, auth_token: str | None, args: dict) -> None:
+    session_key = None if auth_token else token
+
+    investigation_guid = args.get("investigation_guid")
+    if not investigation_guid:
+        return_error("The 'investigation_guid' argument is required.")
+
+    try:
+        updated_response = splunk_update_investigation(
+            base_url=base_url,
+            investigation_guid=investigation_guid,
+            name=args.get("name"),
+            description=args.get("description"),
+            status=args.get("status"),
+            disposition=args.get("disposition"),
+            owner=args.get("owner"),
+            urgency=args.get("urgency"),
+            sensitivity=args.get("sensitivity"),
+            auth_token=auth_token,
+            sessionKey=session_key,
+        )
+
+        return_results(CommandResults(
+            readable_output=f"Investigation {investigation_guid} updated successfully.",
+            raw_response=updated_response
+        ))
+
+    except Exception as e:
+        demisto.error(f"[ERROR] Failed to update investigation {investigation_guid}: {str(e)}")
+        return_error(f"Error: {str(e)}")
+
+
+def splunk_add_finding_to_investigation(
+    base_url,
+    investigation_guid,
+    finding_ids,
+    finding_times,
+    auth_token=None,
+    sessionKey=None,
+    verify=VERIFY_CERTIFICATE
+):
+    if not sessionKey and not auth_token:
+        raise Exception("A session_key/auth_token was not provided")
+
+    if not investigation_guid or not finding_ids or not finding_times:
+        return_error("investigation_guid, finding_ids, and finding_times are required.")
+
+    headers = {
+        "Authorization": f"Bearer {auth_token}" if auth_token else sessionKey,
+        "Content-Type": "application/json"
+    }
+
+    url = f"{base_url}servicesNS/nobody/missioncontrol/public/v2/investigations/{investigation_guid}/findings"
+
+    payload = {
+        "incident_ids": finding_ids,
+        "notable_times": finding_times
+    }
+
+    demisto.info(f"[AddFinding] Sending POST to {url} with payload: {json.dumps(payload)}")
+
+    response = requests.post(url, headers=headers, json=payload, verify=verify)
+
+    if response.status_code not in (200, 201):
+        demisto.error(f"[AddFinding] Failed. Status: {response.status_code}, Body: {response.text}")
+        return_error(f"[AddFinding] Failed. Status: {response.status_code}, Body: {response.text}")
+
+    demisto.info(f"[AddFinding] Success. Status: {response.status_code}")
+    return response.json()
+
+def splunk_add_finding_to_investigation_command(base_url: str, token: str, auth_token: str | None, args: dict) -> None:
+    session_key = None if auth_token else token
+
+    finding_ids = argToList(args.get("finding_ids"))
+    finding_times = argToList(args.get("finding_times"))
+    investigation_guid = args.get("investigation_guid")
+
+    if not investigation_guid or not finding_ids or not finding_times:
+        return_error("investigation_guid, finding_ids, and finding_times are required arguments.")
+
+    try:
+        result = splunk_add_finding_to_investigation(
+            base_url=base_url,
+            investigation_guid=investigation_guid,
+            finding_ids=finding_ids,
+            finding_times=finding_times,
+            auth_token=auth_token,
+            sessionKey=session_key
+        )
+
+        return_results(f"Finding(s) added to investigation `{investigation_guid}`.")
+        demisto.debug(json.dumps(result, indent=2))
+
+    except Exception as e:
+        demisto.error(f"Failed to add finding to investigation. Error: {str(e)}")
+        return_error(f"Failed to add finding to investigation. Error: {str(e)}")
+
+def splunk_remove_finding_from_investigation(
+    base_url,
+    investigation_guid,
+    finding_ids,
+    auth_token=None,
+    sessionKey=None,
+    verify=VERIFY_CERTIFICATE
+):
+    if not sessionKey and not auth_token:
+        raise Exception("A session_key/auth_token was not provided")
+
+    if not investigation_guid or not finding_ids:
+        return_error("investigation_guid and finding_ids are required.")
+
+    headers = {
+        "Authorization": f"Bearer {auth_token}" if auth_token else sessionKey,
+        "Content-Type": "application/json"
+    }
+
+    joined_ids = ",".join(finding_ids)
+    url = f"{base_url}servicesNS/nobody/missioncontrol/v1/incidents/{investigation_guid}/child_incidents?finding_ids={joined_ids}"
+
+    demisto.info(f"[RemoveFinding] Sending DELETE to {url}")
+
+    response = requests.delete(url, headers=headers, verify=verify)
+
+    if response.status_code not in (200, 201):
+        demisto.error(f"[RemoveFinding] Failed. Status: {response.status_code}, Body: {response.text}")
+        return_error(f"[RemoveFinding] Failed. Status: {response.status_code}, Body: {response.text}")
+
+    demisto.info(f"[RemoveFinding] Success. Status: {response.status_code}")
+    return response.json()
+
+def splunk_remove_finding_from_investigation_command(base_url: str, token: str, auth_token: str | None, args: dict) -> None:
+    session_key = None if auth_token else token
+
+    finding_ids = argToList(args.get("finding_ids"))
+    investigation_guid = args.get("investigation_guid")
+
+    if not investigation_guid or not finding_ids:
+        return_error("investigation_guid and finding_ids are required arguments.")
+
+    try:
+        result = splunk_remove_finding_from_investigation(
+            base_url=base_url,
+            investigation_guid=investigation_guid,
+            finding_ids=finding_ids,
+            auth_token=auth_token,
+            sessionKey=session_key
+        )
+
+        demisto.debug(json.dumps(result, indent=2))
+        return_results(f"Finding(s) removed from investigation `{investigation_guid}`.")
+
+    except Exception as e:
+        demisto.error(f"Failed to remove finding from investigation. Error: {str(e)}")
+        return_error(f"Failed to remove finding from investigation. Error: {str(e)}")
+
+def splunk_get_investigation_details(
+    base_url,
+    investigation_guid,
+    auth_token=None,
+    sessionKey=None,
+    verify=VERIFY_CERTIFICATE
+):
+    if not sessionKey and not auth_token:
+        demisto.error("[InvestigationDetails] Missing sessionKey and auth_token")
+        raise Exception("A session_key/auth_token was not provided")
+
+    headers = {
+        "Authorization": f"Bearer {auth_token}" if auth_token else sessionKey,
+        "Content-Type": "application/json"
+    }
+
+    url = f"{base_url}servicesNS/nobody/missioncontrol/public/v2/investigations"
+    params = {
+        "ids": investigation_guid,
+        "output_mode": "json"
+    }
+
+    demisto.info(f"[InvestigationDetails] Preparing GET request:\nURL: {url}\nHeaders: {headers}\nParams: {params}")
+
+    try:
+        response = requests.get(url, headers=headers, params=params, verify=verify)
+        demisto.info(f"[InvestigationDetails] Response status: {response.status_code}")
+        demisto.info(f"[InvestigationDetails] Response text: {response.text}")
+    except Exception as e:
+        demisto.error(f"[InvestigationDetails] Exception during GET request: {str(e)}")
+        return_error(f"[InvestigationDetails] Exception during GET request: {str(e)}")
+
+    if response.status_code != 200:
+        demisto.error(f"[InvestigationDetails] Failed. Status: {response.status_code}, Body: {response.text}")
+        return_error(f"[InvestigationDetails] Failed. Status: {response.status_code}, Body: {response.text}")
+
+    return response.json()
+
+
+
+def splunk_get_investigation_details_command(base_url: str, token: str, auth_token: str | None, args: dict) -> None:
+    demisto.info(f"[InvestigationDetails] splunk_get_investigation_details_command triggered with args: {args}")
+
+    session_key = None if auth_token else token
+    investigation_guid = args.get("investigation_guid")
+
+    if not investigation_guid:
+        demisto.error("[InvestigationDetails] No investigation_guid provided.")
+        return_error("You must provide 'investigation_guid'.")
+
+    try:
+        result = splunk_get_investigation_details(
+            base_url=base_url,
+            investigation_guid=investigation_guid,
+            auth_token=auth_token,
+            sessionKey=session_key,
+            verify=VERIFY_CERTIFICATE
+        )
+
+        if not result:
+            return_results(f"No investigation found for GUID {investigation_guid}.")
+            return
+
+        raw = result[0]
+
+        output = {
+            "investigation_guid": raw.get("investigation_guid"),
+            "name": raw.get("name"),
+            "description": raw.get("description"),
+            "investigation_type": raw.get("investigation_type"),
+            "status": raw.get("status"),
+            "disposition": raw.get("disposition"),
+            "owner": raw.get("owner"),
+            "urgency": raw.get("urgency"),
+            "sensitivity": raw.get("sensitivity"),
+            "create_time": raw.get("create_time"),
+            "update_time": raw.get("update_time"),
+            "attachments": raw.get("attachments"),
+            "findings": {
+                "incident_ids": raw.get("findings", {}).get("incident_ids"),
+                "consolidated_findings": {
+                    "_time": raw.get("consolidated_findings", {}).get("_time"),
+                    "count": raw.get("consolidated_findings", {}).get("count"),
+                    "event_id": raw.get("consolidated_findings", {}).get("event_id"),
+                }
+            }
+        }
+
+        demisto.info(f"[InvestigationDetails] Parsed investigation details: {output}")
+        return_results({
+            "Contents": output,
+            "ContentsFormat": "json",
+            "ReadableContentsFormat": "markdown",
+            "HumanReadable": f"### JSON Results\n\n```\n{json.dumps(output, indent=2, ensure_ascii=False)}\n```"
+        }
+        )
+
+    except Exception as e:
+        demisto.error(f"[InvestigationDetails] Failed to fetch investigation details for {investigation_guid}. Error: {str(e)}")
+        return_error(f"Failed to fetch investigation details. Error: {str(e)}")
+        
 def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
@@ -4098,6 +4491,30 @@ def main():  # pragma: no cover
         return_results(update_remote_system_command(args, params, service, auth_token, mapper, comment_tag_to_splunk))
     elif command == "splunk-get-username-by-xsoar-user":
         return_results(mapper.get_splunk_user_by_xsoar_command(args))
+    elif command == "splunk-create-investigation":
+        base_url = f"https://{connection_args['host']}:{connection_args['port']}/"
+        token = get_auth_session_key(service)
+        splunk_create_investigation_command(base_url, token, auth_token, args)
+    elif command == "splunk-update-investigation":
+        base_url = f"https://{connection_args['host']}:{connection_args['port']}/"
+        token = get_auth_session_key(service)
+        splunk_update_investigation_command(base_url, token, auth_token, args)
+    elif command == "splunk-add-finding-to-investigation":
+        base_url = f"https://{connection_args['host']}:{connection_args['port']}/"
+        token = get_auth_session_key(service)
+        splunk_add_finding_to_investigation_command(base_url, token, auth_token, args)
+    elif command == "splunk-remove-finding-from-investigation":
+        base_url = f"https://{connection_args['host']}:{connection_args['port']}/"
+        token = get_auth_session_key(service)
+        splunk_remove_finding_from_investigation_command(base_url, token, auth_token, args)
+    elif command == "splunk-get-investigation":
+        base_url = f"https://{connection_args['host']}:{connection_args['port']}/"
+        token = get_auth_session_key(service)
+        splunk_get_investigation_details_command(base_url, token, auth_token, args)
+    elif command == "splunk-update-incident-summary":
+        base_url = f"https://{connection_args['host']}:{connection_args['port']}/"
+        token = get_auth_session_key(service)
+        splunk_update_summary_command(base_url, token, auth_token, args)
     else:
         raise NotImplementedError(f"Command not implemented: {command}")
 

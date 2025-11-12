@@ -711,6 +711,122 @@ script:
       name: ttl
     description: Change job settings to share its results to all Splunk users, and change its TTL.
     name: splunk-job-share
+  - arguments:
+    - name: name
+      required: true
+      description: Name of the investigation.
+      type: TextArea
+    - name: description
+      description: Description of the investigation.
+      type: TextArea
+    - name: investigation_type
+      description: Type of the investigation.
+      type: TextArea
+    - name: status
+      description: Status of the investigation.
+      type: TextArea
+    - name: disposition
+      description: Disposition of the investigation.
+      type: TextArea
+    - name: owner
+      description: Owner of the investigation.
+      type: TextArea
+    - name: urgency
+      description: Urgency level.
+      type: String
+    - name: sensitivity
+      description: Sensitivity level.
+      type: String
+    - name: finding_ids
+      description: Comma-separated list of finding IDs.
+      type: String
+    - name: finding_times
+      description: Comma-separated list of finding times.
+      type: String
+    description: Create a new investigation in Splunk ES8 (Mission Control).
+    name: splunk-create-investigation
+    outputs:
+    - contextPath: Splunk.Investigation.investigation_guid
+      description: GUID of the created investigation.
+      type: String
+
+  - arguments:
+    - name: investigation_guid
+      required: true
+      description: GUID of the investigation to update.
+      type: String
+    - name: name
+      description: New name.
+      type: TextArea
+    - name: description
+      description: New description.
+      type: TextArea
+    - name: status
+      description: New status.
+      type: TextArea
+    - name: disposition
+      description: New disposition.
+      type: TextArea
+    - name: owner
+      description: New owner.
+      type: TextArea
+    - name: urgency
+      description: New urgency.
+      type: String
+    - name: sensitivity
+      description: New sensitivity.
+      type: String
+    description: Update an existing investigation in Splunk ES8 (Mission Control).
+    name: splunk-update-investigation
+
+  - arguments:
+    - name: finding_ids
+      required: true
+      description: Comma-separated list of finding IDs to add.
+      type: TextArea
+    - name: finding_times
+      required: true
+      description: Comma-separated list of finding times.
+      type: TextArea
+    - name: investigation_guid
+      required: true
+      description: Target investigation GUID.
+      type: TextArea
+    description: Add one or more Splunk ES8 (Mission Control) findings to an investigation.
+    name: splunk-add-finding-to-investigation
+
+  - arguments:
+    - name: investigation_guid
+      required: true
+      description: ID of the target investigation.
+      type: TextArea
+    - name: finding_ids
+      required: true
+      description: Incident ID of the finding to be removed. Note that this is not the same ID used to add the finding to the investigation.
+      type: TextArea
+    description: Remove one or more findings from a Splunk ES8 (Mission Control) investigation.
+    name: splunk-remove-finding-from-investigation
+
+  - arguments:
+    - name: investigation_guid
+      required: true
+      description: ID of the target investigation.
+      type: TextArea
+    description: Retrieve details of a Splunk ES8 (Mission Control) investigation.
+    name: splunk-get-investigation
+
+  - arguments:
+    - name: summary
+      required: true
+      description: JSON object with key-value pairs to update in the investigation summary field.
+      type: TextArea
+    - name: investigation_guid
+      required: true
+      description: Investigation GUID or incident ID.
+      type: TextArea
+    description: Update summary fields for an investigation or incident in Splunk ES8 (Mission Control).
+    name: splunk-update-incident-summary
+
   dockerimage: demisto/splunksdk-py3:1.0.0.4887903
   isfetch: true
   ismappable: true
