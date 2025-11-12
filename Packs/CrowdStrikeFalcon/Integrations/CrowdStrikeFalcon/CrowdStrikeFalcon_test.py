@@ -2367,23 +2367,43 @@ class TestIncidentFetch:
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
         from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
         last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
-        set_last_run_per_type(last_run_object, index=LastRunIndex.INCIDENTS, data={"time": "2020-09-04T09:16:10Z", "offset": 2})
+        set_last_run_per_type(
+            last_run_object,
+            index=LastRunIndex.INCIDENTS,
+            data={"time": "2020-09-04T09:16:10Z", "offset": 2},
+        )
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
 
-        # Override post to have 1 results so FETCH_LIMIT won't be reached
+        requests_mock.get(
+            f"{SERVER_URL}/alerts/queries/alerts/v2",
+            json={"resources": ["ldt:1"]},  # only one ID
+        )
         requests_mock.post(
-            f"{SERVER_URL}/incidents/entities/incidents/GET/v1",
-            json={"resources": [{"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z"}]},
+            f"{SERVER_URL}/alerts/entities/alerts/v2",
+            json={
+                "resources": [
+                    {
+                        "id": "ldt:1",
+                        "created_timestamp": "2020-09-04T09:16:11Z",
+                        "type": "ldt",
+                        "product": "epp",
+                    }
+                ]
+            },
         )
 
         fetch_items()
+
+        # assert that last_run updated correctly
         assert demisto.setLastRun.mock_calls[0][1][0][LastRunIndex.INCIDENTS] == {
             "time": "2020-09-04T09:16:11Z",
             "limit": 2,
             "offset": 0,
-            "found_incident_ids": {"Incident ID: ldt:1": 1598462533},
+            "found_incident_ids": {
+                "Incident ID: ldt:1": 1598462533,
+                "Incident ID: ldt:2": 1598462533,
+            },
         }
 
     @freeze_time("2020-09-04T09:16:10.000000Z")

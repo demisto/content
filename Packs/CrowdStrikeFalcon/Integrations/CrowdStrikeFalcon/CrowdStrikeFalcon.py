@@ -2523,13 +2523,9 @@ def get_remote_data_command(args: dict[str, Any]):
                 set_xsoar_entries(updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list)
         # for legacy endpoint detections
         elif incident_type == IncidentType.LEGACY_ENDPOINT_DETECTION:
-            mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
-            if updated_object:
-                demisto.debug(f"Update detection {remote_incident_id} with fields: {updated_object}")
-                detection_type = "Detection"
-                set_xsoar_entries(
-                    updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list
-                )  # sets in place
+            demisto.debug(
+                f"Skipping legacy endpoint detection {remote_incident_id} – legacy mirroring is no longer supported."
+            )
         # for endpoint in the new version
         elif incident_type in (
             IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
@@ -2840,8 +2836,11 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
                 result = update_remote_incident(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f"Incident updated successfully. Result: {result}")
-
-            elif incident_type in (IncidentType.LEGACY_ENDPOINT_DETECTION, IncidentType.ON_DEMAND):
+            elif incident_type == IncidentType.LEGACY_ENDPOINT_DETECTION:
+                demisto.debug(
+                    f"Skipping legacy endpoint detection {remote_incident_id} – legacy mirroring is no longer supported."
+                )
+            elif incident_type == IncidentType.ON_DEMAND:
                 result = update_remote_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f"Detection updated successfully. Result: {result}")
