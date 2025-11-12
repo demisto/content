@@ -36,23 +36,6 @@ SOURCE_LOG_TYPES: dict[str, str] = {
 
 """ UTILITY FUNCTIONS """
 
-
-def log(message: str, data: Any | None = None) -> None:
-    """
-    Unified logging function for debug output.
-
-    Args:
-        message (str): Message to be logged.
-        data (Optional[Any]): Optional additional context (dict, list, str, etc.).
-    """
-    try:
-        if data is not None:
-            message += f" | data={json.dumps(data, default=str)[:1000]}"
-    except Exception:
-        pass
-    demisto.debug(message)
-
-
 def get_timestamp_from_datetime(value: datetime, event_type: str) -> int:
     """
     Convert a datetime object into a Unix timestamp (milliseconds precision).
@@ -90,7 +73,6 @@ class Client(BaseClient):
         """
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.api_key = api_key
-        log("Client initialized", {"base_url": base_url, "verify": verify, "proxy": proxy})
 
     def get_event_logs(self, url_suffix: str, page: int, after: int | None, size: int = PAGE_SIZE) -> list[dict[str, Any]]:
         """
@@ -106,7 +88,7 @@ class Client(BaseClient):
             List[Dict[str, Any]]: List of raw event records.
         """
         params = assign_params(key=self.api_key, after=after, page=page, size=size)
-        log(f"Fetching logs (suffix={url_suffix}, page={page}, after={after})")
+        demisto.debug(f"Fetching logs {url_suffix}, {page}, {after}")
         return self._http_request(url_suffix=url_suffix, method="GET", params=params)
 
     def search_events(self, event_type: str, max_events_per_fetch: int, after: int | None) -> list[dict[str, Any]]:
@@ -133,7 +115,7 @@ class Client(BaseClient):
             if len(response) < PAGE_SIZE:
                 break
 
-        log(f"Fetched {len(all_events)} {event_type} events")
+        demisto.debug(f"Fetched {len(all_events)} {event_type} events")
         return all_events
 
 
@@ -195,7 +177,7 @@ def get_after_param(last_run: dict[str, Any], event_type: str, first_fetch_time:
     last_time = arg_to_datetime(last_run.get(event_type, {}).get("next_fetch_time"))
     start_date = last_time or first_fetch_time
     after = get_timestamp_from_datetime(start_date, event_type)
-    log(f"After parameter computed for {event_type}", {"start_date": str(start_date), "after": after})
+    demisto.debug(f"After parameter computed for {event_type} -  {start_date}  {after}" )
     return after
 
 
@@ -213,7 +195,7 @@ def remove_duplicate_logs(logs: list[dict[str, Any]], last_run: dict[str, Any], 
     """
     prev_ids = set(last_run.get(event_type, {}).get("fetched_events_ids", []))
     unique_logs = [log for log in logs if log.get("uid") not in prev_ids]
-    log(f"Removed duplicates for {event_type}", {"before": len(logs), "after": len(unique_logs)})
+    demisto.debug(f"Removed duplicates for {event_type} -  before {len(logs)} after {len(unique_logs)}")
     return unique_logs
 
 
@@ -229,7 +211,7 @@ def update_fetched_event_ids(current_run: dict[str, Any], event_type: str, logs:
     current_run.setdefault(event_type, {})
     ids = [log.get("uid") for log in logs if log.get("uid")]
     current_run[event_type]["fetched_events_ids"] = ids
-    log(f"Updated fetched_event_ids for {event_type}", {"count": len(ids)})
+    demisto.debug(f"Updated fetched_event_ids for {event_type}. Count : {len(ids)}")
 
 
 def compute_next_fetch_time(events: List[dict[str, Any]], previous_time: Optional[datetime], event_type: str) -> Optional[str]:
@@ -280,12 +262,12 @@ def fetch_events(
     Returns:
         Tuple[Dict[str, Any], List[Dict[str, Any]]]: Updated run state and fetched events.
     """
-    log("Starting fetch_events")
+    demisto.debug("Starting fetch_events")
     current_run: dict[str, dict[str, Any]] = {}
     all_events: list[dict[str, Any]] = []
 
     for event_type in event_types_to_fetch:
-        log(f"Fetching for {event_type}")
+        demisto.debug(f"Fetching for {event_type}")
         after = get_after_param(last_run, event_type, first_fetch_time)
         events = client.search_events(event_type, max_events_per_fetch.get(event_type, MAX_EVENTS_PER_FETCH), after)
 
@@ -302,7 +284,7 @@ def fetch_events(
         latest_time = compute_next_fetch_time(events, first_fetch_time, event_type)
         current_run.setdefault(event_type, {})["next_fetch_time"] = latest_time
 
-    log("Fetch complete", {"total_events": len(all_events)})
+    demisto.debug(f"Fetch complete. Total events: {len(all_events)}")
     return current_run, all_events
 
 
@@ -345,12 +327,12 @@ def get_events_command(
         add_event_fields(events, event_type)
         all_events.extend(events)
 
-    log("Manual get-events completed", {"count": len(all_events)})
+    demisto.debug("Manual get-events completed")
     hr = "\n".join(tableToMarkdown(name=t, t=all_events) for t in event_types)
     return_results(CommandResults(readable_output=hr))
 
     if should_push:
-        log("Pushing events to XSIAM", {"count": len(all_events)})
+        demisto.debug(f"Pushing {len(all_events)} events to XSIAM")
         send_events_to_xsiam(all_events, vendor=VENDOR, product=PRODUCT)
 
 
@@ -365,7 +347,7 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    log(f"Command received: {command}")
+    demisto.debug(f"Command received: {command}")
 
     credentials = params.get("credentials", {})
     api_key = credentials.get("identifier")
@@ -400,13 +382,13 @@ def main() -> None:
         elif command == "fetch-events":
             last_run = demisto.getLastRun() or {}
             current_run, events = fetch_events(client, last_run, first_fetch_time, event_types_to_fetch, max_events_per_fetch)
-            log("Sending fetched events to XSIAM", {"count": len(events)})
+            demisto.debug(f"Sending {len(events)} fetched events to XSIAM")
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(current_run)
-            log("Updated last_run", current_run)
+            demisto.debug(f"Updated last_run {current_run}")
 
     except Exception as e:
-        log("Exception occurred", {"error": str(e)})
+        demisto.error("Exception occurred", {"error": str(e)})
         return_error(f"Failed to execute {command}. Error: {str(e)}")
 
 
