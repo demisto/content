@@ -66,12 +66,12 @@ configuration:
   type: 8
   section: Connect
 
-description: Collects event logs from Decyfir for ingestion into Cortex XSIAM.
-display: Decyfir Event Collector
+description: Collects event logs from DeCYFIR for ingestion into Cortex XSIAM.
+display: DeCYFIR Event Collector
 name: DecyfirEventCollector
 script:
   commands:
-  - description: Retrieve Decyfir events manually. This command is primarily used for testing or debugging.
+  - description: Retrieve DeCYFIR events manually. This command is primarily used for testing or debugging.
     name: decyfir-get-events
     arguments:
     - auto: PREDEFINED
