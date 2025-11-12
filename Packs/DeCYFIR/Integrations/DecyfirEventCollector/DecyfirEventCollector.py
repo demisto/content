@@ -1,5 +1,4 @@
 import math
-import json
 from datetime import datetime, timedelta, UTC
 from typing import Any
 import urllib3
@@ -35,6 +34,7 @@ SOURCE_LOG_TYPES: dict[str, str] = {
 }
 
 """ UTILITY FUNCTIONS """
+
 
 def get_timestamp_from_datetime(value: datetime, event_type: str) -> int:
     """
@@ -178,7 +178,7 @@ def get_after_param(last_run: dict[str, Any], event_type: str, first_fetch_time:
     last_time = arg_to_datetime(last_run.get(event_type, {}).get("next_fetch_time"))
     start_date = last_time or first_fetch_time
     after = get_timestamp_from_datetime(start_date, event_type)
-    demisto.debug(f"After parameter computed for {event_type} -  {start_date}  {after}" )
+    demisto.debug(f"After parameter computed for {event_type} -  {start_date}  {after}")
     return after
 
 
