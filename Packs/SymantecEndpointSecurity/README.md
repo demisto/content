@@ -1,9 +1,11 @@
 # Symantec Endpoint Security
+
 Symantec Endpoint Security (SES) is a Broadcom solution that safeguards endpoints from malware, ransomware, and advanced cyber threats using AI, behavioral analysis, and EDR to deliver intelligent, real-time protection.
 
 <~XSIAM>
 
 ## This pack includes
+
 - Rest API alert integration.
 - Modeling Rules for alert logs.
 
