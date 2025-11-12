@@ -2,12 +2,30 @@ Use this integration to fetch email security incidents from Trellix Email Securi
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
+## Authentication Prerequisites
+
+To ensure a successful connection, you must select the correct authentication method based on the **Server URL** (Instance URL) you are configuring.
+
+### Dual Authentication Methods
+
+We support two different authentication methods depending on the endpoint domain:
+
+| Domain Used in Server URL | Authentication Method | Required Parameters |
+| :--- | :--- | :--- |
+| **Ends in `trellix.com`** | **OAuth 2.0** | **Client ID**, **Client Secret**, and **OAuth Scopes** |
+| **Ends in `fireeye.com`** | **API Key** | **API Key** (only) |
+
+<br>
+
 ## Configure Trellix Email Security - Cloud Event Collector in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., https://etp.us.fireeye.com) |  | True |
-| API Secret Key | The API Key allows you to integrate with the Trellix Email Security - Cloud. | True |
+| Server URL (e.g., https://etp.us.fireeye.com)| List of valid URLs:<br>US Instance:<br> https://etp.us.fireeye.com or https://us.etp.<br>trellix.com <br>EMEA Instance:<br> https://etp.eu.fireeye.com or https://eu.etp.trellix.com<br>APJ Instance:<br> https://etp.ap.fireeye.com or https://ap.etp.trellix.com<br>USGOV Instance: <br>https://etp.us.fireeyegov.com<br>CA Instance:<br> https://etp.ca.fireeye.com or https://ca.etp.trellix.com | True |
+| Client ID | For the Trellix server URL (OAuth). | False |
+| Client Secret | For the Trellix server URL (OAuth). |  False|
+| OAuth Scopes | For the Trellix server URL (OAuth). <br> Space-separated list of OAuth scopes. <br>**Note:** Only include scopes that your application's Client ID has already been authorized to use. The full list is: `etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw` | False |
+| API Secret Key | For the FireEye server URL. The API Key allows you to integrate with the Trellix Email Security - Cloud. | False |
 | Maximum number of Alerts to fetch. | The maximum number of Alert events to fetch from Trellix Email Security - Cloud. |  |
 | Maximum number of Email Trace to fetch. | The maximum number of Email Trace events to fetch from Trellix Email Security - Cloud. |  |
 | Maximum number of Activity Log fetch. | The maximum number of Activity Log events to fetch from Trellix Email Security - Cloud. |  |
@@ -15,6 +33,8 @@ This is the default integration for this content pack when configured by the Dat
 | Use system proxy settings |  |  |
 | Fetch outbound traffic | Outbound traffic will be fetched in addition to inbound traffic. |  |
 | Hide sensitive details from email | Hide subject and attachments details from emails. |  |
+
+**Note:** If API access permissions are not properly set for the user/role, the authentication attempt will fail with a `400 Client Error: Bad Request` even if the Client ID and Secret are otherwise correct.
 
 ## Access control
 
