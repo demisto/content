@@ -1,20 +1,19 @@
 {
     "name": "Citrix",
-    "description": "",
+    "description": "Integration for Citrix cloud.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2025-09-04T00:00:00Z",
+    "created": "2025-11-11T00:00:00Z",
     "categories": [
-        "Citrix"
+        "Analytics & SIEM"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["citrix"],
     "marketplaces": [
-        "xsoar",
         "marketplacev2",
         "platform"
     ]

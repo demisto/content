@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -46,7 +46,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Citrix Cloud Event Collector integration
+description: Citrix Cloud Event Collector integration.
 display: Citrix Cloud Event Collector
 name: CitrixCloudEventCollector
 script:
