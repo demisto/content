@@ -205,6 +205,6 @@ This technique is distinct from [Threat Intel Vendors](https://attack.mitre.org/
 
 ### Rate-Limiting or IP Blocking Issues
 
-**Problem:** You may encounter a "Too Many Requests" error for the URL `https://attack-taxii.mitre.org/taxii2/` when accessing the MITRE ATT&CK API. This occurs because the MITRE ATT&CK API enforces rate limits and may block requests based on the IP address. This often happens when multiple users or systems are making requests from the same IP address.
+**Problem:** You may encounter a "Too Many Requests" error for the URL `https://attack-taxii.mitre.org/taxii2/` when accessing the MITRE ATT&CK API, because the MITRE ATT&CK API enforces rate limits and may block requests based on the IP address. This often occurs when multiple users or systems are making requests from the same IP address.
 
 **Solution:** To resolve this issue, it is recommended to use a dedicated engine for your MITRE ATT&CK Feed integration. This will provide a unique IP address for the integration instance, preventing it from being blocked due to shared usage. Additionally, ensure that your fetch interval is set to a reasonable value to avoid exceeding the rate limits.
