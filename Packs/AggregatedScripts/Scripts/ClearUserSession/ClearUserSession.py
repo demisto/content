@@ -294,6 +294,16 @@ def clear_user_sessions(command: Command) -> tuple[list[CommandResults], str, Op
 
 
 def create_readable_output(outputs: list):
+    data_users_list = [
+        {
+            "UserId": details.get("UserId"),
+            "UserName": details.get("UserName"),
+            "Message": details["Message"],
+            "Result": details["Result"],
+            "Brand": details["Brand"],
+        }
+        for details in outputs
+    ]
     """
     Generates a markdown table summarizing user session status.
 
@@ -304,7 +314,7 @@ def create_readable_output(outputs: list):
     Args:
         outputs (dict): A dictionary where each key is a username and the value is
             another dictionary containing:
-            - "UserName" (str): The user name a session cleared for.
+            - "UserId" (str): The user id a session cleared for.
             - "Message" (str): A detailed message related to the session status.
             - "Result" (str): The session result (e.g., Success, Failure).
             - "Brand" (str): The brand associated with the session.
@@ -313,20 +323,11 @@ def create_readable_output(outputs: list):
     Returns:
         str: A markdown-formatted table summarizing user session statuses.
     """
-    data_users_list = [
-        {
-            "UserName": details["UserName"],
-            "Message": details["Message"],
-            "Result": details["Result"],
-            "Brand": details["Brand"],
-        }
-        for details in outputs
-    ]
 
     readable_output = tableToMarkdown(
         name="User(s) Session Status",
         t=data_users_list,
-        headers=["UserName", "Message", "Result", "Brand"],
+        headers=["UserId", "UserName", "Message", "Result", "Brand"],
         removeNull=True,
     )
 
