@@ -115,10 +115,10 @@ class Indicator:
                 out["Value"] = val
             return out
 
-        # value_field is a list
+
+        lower_data = {k.lower():v for k,v in data.items()}
         for candidate in self.value_field:
-            val = data.get(candidate)
-            if val:
+            if (val := lower_data.get(candidate.lower())):
                 out[candidate] = val
         return out
 
@@ -791,9 +791,11 @@ class ReputationAggregatedCommand(AggregatedCommand):
         value = ioc.get("value")
         demisto.debug(f"Processing TIM results for indicator: {value}")
         all_parsed_indicators = []
-
-        all_parsed_indicators.append(self.create_tim_indicator(ioc))
-
+        tim_indicator = self.create_tim_indicator(ioc)
+        if self.indicator.type == "file":
+            value = map_back_to_input(self.data, self.indicator.get_all_values_from(tim_indicator))
+        all_parsed_indicators.append(tim_indicator)
+        
         found_brands = []
         for brand, brand_data in ioc.get("insightCache", {}).get("scores", {}).items():
             demisto.debug(f"Processing TIM indicators from brand: {brand}")
@@ -838,10 +840,6 @@ class ReputationAggregatedCommand(AggregatedCommand):
             }
         )
 
-        # If File, value fields contain list of fields such as MD5,SHA256... under the CustomFields
-        # Otherwise the value of the indicator is unique under "value" key of the indicator
-        if self.indicator.type == "file":
-            mapped_indicator.update({"Hashes": self.indicator.get_all_values_from(customFields)})
         mapped_indicator.update({"Value": ioc.get("value")})
         return mapped_indicator
 
@@ -1099,7 +1097,12 @@ class ReputationAggregatedCommand(AggregatedCommand):
 
 
 """HELPER FUNCTIONS"""
-
+def map_back_to_input(values:list[str], mapping:dict[str,str]):
+    lower_mapping_values = [v.lower() for v in mapping.values()]
+    for v in values:
+        if v.lower() in lower_mapping_values:
+            return v
+    return None
 
 def extract_indicators(data: list[str], type: str) -> list[str]:
     """

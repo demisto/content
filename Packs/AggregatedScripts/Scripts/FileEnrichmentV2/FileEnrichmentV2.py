@@ -126,7 +126,7 @@ def file_enrichment_script(
 
 def main():  # pragma: no cover
     args = demisto.args()
-    file_list = argToList(args.get("file_list"))
+    file_list = argToList(args.get("file_hash"))
     external_enrichment = argToBoolean(args.get("external_enrichment", False))
     verbose = argToBoolean(args.get("verbose", False))
     brands = argToList(args.get("brands", []))
