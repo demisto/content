@@ -26,10 +26,362 @@ def client():
 
     return Client(
         base_url=BASE_URL,
+        region="us",
         access_token="xxx",
         verify_ssl=False,
         proxy=False,
     )
+
+
+@pytest.fixture()
+def client_with_eu_region():
+    from Cyberint import Client
+
+    return Client(
+        base_url=BASE_URL,
+        region="eu",
+        access_token="xxx",
+        verify_ssl=False,
+        proxy=False,
+    )
+
+
+@pytest.fixture()
+def client_without_region():
+    from Cyberint import Client
+
+    return Client(
+        base_url=BASE_URL,
+        region="",
+        access_token="xxx",
+        verify_ssl=False,
+        proxy=False,
+    )
+
+
+def test_client_initialization_with_region():
+    """
+    Scenario: Initialize client with a specific region.
+    Given:
+     - User provides a region parameter.
+    When:
+     - Client is initialized.
+    Then:
+     - Ensure the region is stored correctly in lowercase.
+    """
+    from Cyberint import Client
+
+    client = Client(
+        base_url=BASE_URL,
+        region="US",
+        access_token="xxx",
+        verify_ssl=False,
+        proxy=False,
+    )
+
+    assert client._region == "us"
+
+
+def test_client_initialization_with_lowercase_region():
+    """
+    Scenario: Initialize client with a lowercase region.
+    Given:
+     - User provides a lowercase region parameter.
+    When:
+     - Client is initialized.
+    Then:
+     - Ensure the region is stored correctly.
+    """
+    from Cyberint import Client
+
+    client = Client(
+        base_url=BASE_URL,
+        region="eu",
+        access_token="xxx",
+        verify_ssl=False,
+        proxy=False,
+    )
+
+    assert client._region == "eu"
+
+
+def test_client_initialization_without_region():
+    """
+    Scenario: Initialize client without providing a region.
+    Given:
+     - User does not provide a region parameter (empty string).
+    When:
+     - Client is initialized.
+    Then:
+     - Ensure the region defaults to "us".
+    """
+    from Cyberint import Client
+
+    client = Client(
+        base_url=BASE_URL,
+        region="",
+        access_token="xxx",
+        verify_ssl=False,
+        proxy=False,
+    )
+
+    assert client._region == "us"
+
+
+def test_client_initialization_with_none_region():
+    """
+    Scenario: Initialize client with None as region.
+    Given:
+     - User provides None as the region parameter.
+    When:
+     - Client is initialized.
+    Then:
+     - Ensure the region defaults to "us".
+    """
+    from Cyberint import Client
+
+    client = Client(
+        base_url=BASE_URL,
+        region=None,
+        access_token="xxx",
+        verify_ssl=False,
+        proxy=False,
+    )
+
+    assert client._region == "us"
+
+
+def test_list_alerts_with_region(requests_mock):
+    """
+    Scenario: List alerts with a specific region.
+    Given:
+     - User has provided valid credentials with a region.
+    When:
+     - list_alerts is called.
+    Then:
+     - Ensure the URL includes the region prefix.
+    """
+    from Cyberint import Client
+
+    client = Client(
+        base_url=BASE_URL,
+        region="eu",
+        access_token="xxx",
+        verify_ssl=False,
+        proxy=False,
+    )
+
+    mock_response = {"alerts": [], "total": 0}
+    requests_mock.post(f"{BASE_URL}/eu/api/v1/alerts", json=mock_response)
+
+    result = client.list_alerts(
+        page="1",
+        page_size=10,
+        created_date_from=None,
+        created_date_to=None,
+        modification_date_from=None,
+        modification_date_to=None,
+        update_date_from=None,
+        update_date_to=None,
+        environments=None,
+        statuses=None,
+        severities=None,
+        types=None,
+    )
+
+    assert result is not None
+    assert requests_mock.last_request.url == f"{BASE_URL}/eu/api/v1/alerts"
+
+
+def test_list_alerts_with_default_region(requests_mock):
+    """
+    Scenario: List alerts with default region (us).
+    Given:
+     - User has not provided a region (defaults to "us").
+    When:
+     - list_alerts is called.
+    Then:
+     - Ensure the URL includes the "us" region prefix.
+    """
+    from Cyberint import Client
+
+    client = Client(
+        base_url=BASE_URL,
+        region="",
+        access_token="xxx",
+        verify_ssl=False,
+        proxy=False,
+    )
+
+    mock_response = {"alerts": [], "total": 0}
+    requests_mock.post(f"{BASE_URL}/us/api/v1/alerts", json=mock_response)
+
+    result = client.list_alerts(
+        page="1",
+        page_size=10,
+        created_date_from=None,
+        created_date_to=None,
+        modification_date_from=None,
+        modification_date_to=None,
+        update_date_from=None,
+        update_date_to=None,
+        environments=None,
+        statuses=None,
+        severities=None,
+        types=None,
+    )
+
+    assert result is not None
+    assert requests_mock.last_request.url == f"{BASE_URL}/us/api/v1/alerts"
+
+
+def test_update_alerts_with_region(requests_mock):
+    """
+    Scenario: Update alerts with a specific region.
+    Given:
+     - User has provided valid credentials with a region.
+    When:
+     - update_alerts is called.
+    Then:
+     - Ensure the URL includes the region prefix.
+    """
+    from Cyberint import Client
+
+    client = Client(
+        base_url=BASE_URL,
+        region="ap",
+        access_token="xxx",
+        verify_ssl=False,
+        proxy=False,
+    )
+
+    mock_response = {}
+    requests_mock.put(f"{BASE_URL}/ap/api/v1/alerts/status", json=mock_response)
+
+    result = client.update_alerts(
+        alerts=["alert1"],
+        status="acknowledged",
+    )
+
+    assert result is not None
+    assert requests_mock.last_request.url == f"{BASE_URL}/ap/api/v1/alerts/status"
+
+
+def test_get_alert_with_region(requests_mock):
+    """
+    Scenario: Get a single alert with a specific region.
+    Given:
+     - User has provided valid credentials with a region.
+    When:
+     - get_alert is called.
+    Then:
+     - Ensure the URL includes the region prefix.
+    """
+    from Cyberint import Client
+
+    client = Client(
+        base_url=BASE_URL,
+        region="EU",
+        access_token="xxx",
+        verify_ssl=False,
+        proxy=False,
+    )
+
+    mock_response = {"alert": {"ref_id": "ARG-1"}}
+    requests_mock.get(f"{BASE_URL}/eu/api/v1/alerts/ARG-1", json=mock_response)
+
+    result = client.get_alert("ARG-1")
+
+    assert result is not None
+    assert requests_mock.last_request.url == f"{BASE_URL}/eu/api/v1/alerts/ARG-1"
+
+
+def test_get_alert_attachment_with_region(requests_mock):
+    """
+    Scenario: Get an alert attachment with a specific region.
+    Given:
+     - User has provided valid credentials with a region.
+    When:
+     - get_alert_attachment is called.
+    Then:
+     - Ensure the URL includes the region prefix.
+    """
+    from Cyberint import Client
+
+    client = Client(
+        base_url=BASE_URL,
+        region="us",
+        access_token="xxx",
+        verify_ssl=False,
+        proxy=False,
+    )
+
+    with open("test_data/attachment_file_mock.png", "rb") as png_content_mock:
+        requests_mock.get(f"{BASE_URL}/us/api/v1/alerts/ARG-3/attachments/X", content=png_content_mock.read())
+
+    result = client.get_alert_attachment("ARG-3", "X")
+
+    assert result is not None
+    assert requests_mock.last_request.url == f"{BASE_URL}/us/api/v1/alerts/ARG-3/attachments/X"
+
+
+def test_get_analysis_report_with_region(requests_mock):
+    """
+    Scenario: Get an analysis report with a specific region.
+    Given:
+     - User has provided valid credentials with a region.
+    When:
+     - get_analysis_report is called.
+    Then:
+     - Ensure the URL includes the region prefix.
+    """
+    from Cyberint import Client
+
+    client = Client(
+        base_url=BASE_URL,
+        region="eu",
+        access_token="xxx",
+        verify_ssl=False,
+        proxy=False,
+    )
+
+    with open("test_data/expert_analysis_mock.pdf", "rb") as pdf_content_mock:
+        requests_mock.get(f"{BASE_URL}/eu/api/v1/alerts/ARG-4/analysis_report", content=pdf_content_mock.read())
+
+    result = client.get_analysis_report("ARG-4")
+
+    assert result is not None
+    assert requests_mock.last_request.url == f"{BASE_URL}/eu/api/v1/alerts/ARG-4/analysis_report"
+
+
+def test_region_case_insensitive():
+    """
+    Scenario: Verify that region parameter is case-insensitive.
+    Given:
+     - User provides region in different cases (upper, lower, mixed).
+    When:
+     - Client is initialized.
+    Then:
+     - Ensure the region is always stored in lowercase.
+    """
+    from Cyberint import Client
+
+    test_cases = [
+        ("US", "us"),
+        ("Eu", "eu"),
+        ("AP", "ap"),
+        ("UsA", "usa"),
+    ]
+
+    for input_region, expected_region in test_cases:
+        client = Client(
+            base_url=BASE_URL,
+            region=input_region,
+            access_token="xxx",
+            verify_ssl=False,
+            proxy=False,
+        )
+        assert client._region == expected_region, f"Expected {expected_region}, but got {client._region}"
 
 
 def test_cyberint_alerts_fetch_command(requests_mock, client):
@@ -47,9 +399,9 @@ def test_cyberint_alerts_fetch_command(requests_mock, client):
     from Cyberint import cyberint_alerts_fetch_command
 
     mock_response = load_mock_response("csv_example.csv")
-    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-3/attachments/X", json=mock_response)
+    requests_mock.get(f"{BASE_URL}/us/api/v1/alerts/ARG-3/attachments/X", json=mock_response)
     mock_response = json.loads(load_mock_response("list_alerts.json"))
-    requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
+    requests_mock.post(f"{BASE_URL}/us/api/v1/alerts", json=mock_response)
 
     result = cyberint_alerts_fetch_command(client, {})
     assert len(result.outputs) == 3
