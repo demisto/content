@@ -625,8 +625,8 @@ def hit_to_indicator(
             ioc_dict["id"] = hit.get("_id")
     else:
         ioc_dict = hit.to_dict()
-        if "id" not in ioc_dict and hasattr(hit, 'meta') and hasattr(hit.meta, 'id'):
-                ioc_dict["id"] = hit.meta.id
+        if "id" not in ioc_dict and hasattr(hit, "meta") and hasattr(hit.meta, "id"):
+            ioc_dict["id"] = hit.meta.id
     ioc_dict["value"] = ioc_dict.get(ioc_val_key)
     ioc_dict["rawJSON"] = dict(ioc_dict)
     if default_ioc_type:
