@@ -111,6 +111,7 @@ class Client(BaseClient):
             response = self.get_event_logs(url_suffix, page, after)
             if not response:
                 break
+
             all_events.extend(response)
             if len(response) < PAGE_SIZE:
                 break
