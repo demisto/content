@@ -2706,7 +2706,7 @@ Gets the public IP addresses that have been discovered by IPAM.
 ### aws-ec2-tags-create
 
 ***
-Adds or overwrites one or more tags for the specified Amazon EC2 resource or resources.
+Adds or overwrites one or more tags for the specified Amazon EC2 resource or resources. When you specify an existing tag key, the value is overwritten with the new value.
 
 #### Base Command
 
@@ -2718,13 +2718,12 @@ Adds or overwrites one or more tags for the specified Amazon EC2 resource or res
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| resources | The IDs of one or more resources to tag. For example, ami-1a2b3c4d. | Required |
+| resources | The IDs of one or more resources to tag, separated by a comma. For example, ami-1a2b3c4d. | Required |
 | tags | One or more tags. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456". | Required |
 
 #### Context Output
 
 There is no context output for this command.
-
 ### aws-s3-bucket-website-get
 
 ***
