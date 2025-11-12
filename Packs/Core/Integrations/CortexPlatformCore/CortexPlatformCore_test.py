@@ -2399,8 +2399,8 @@ def test_get_appsec_issues_command_success(mocker: MockerFixture):
                     "internal_id": "issue_001",
                     "severity": "SEV_040_HIGH",
                     "alert_name": "SQL Injection",
-                    "cas_issues_extended_fields": {
-                        "status.progress": "New",
+                    "status_progress": "STATUS_010_NEW",
+                    "cas_issues_normalized_fields": {
                         "xdm.vulnerability.cvss_score": 8.8,
                     },
                 }
@@ -2421,8 +2421,8 @@ def test_get_appsec_issues_command_success(mocker: MockerFixture):
 
     assert len(result.outputs) == 1
     assert result.outputs[0]["internal_id"] == "issue_001"
-    assert result.outputs[0]["severity"] == "SEV_040_HIGH"
-    assert result.outputs[0]["status_progress"] == "New"
+    assert result.outputs[0]["severity"] == "high"
+    assert result.outputs[0]["status"] == "New"
     assert result.outputs[0]["cvss_score"] == 8.8
     assert "SQL Injection" in result.readable_output
     assert result.outputs_prefix == "Core.AppsecIssue"
@@ -2464,17 +2464,18 @@ def test_create_appsec_issues_filter_and_tables_simple_filter():
     from CortexPlatformCore import create_appsec_issues_filter_and_tables
 
     args = {"urgency": "high"}
-    tables, filter_builder = create_appsec_issues_filter_and_tables(args)
-    assert set(tables) == {
+    tables_filters = create_appsec_issues_filter_and_tables(args)
+    assert set(tables_filters.keys()) == {
         "ISSUES_IAC",
         "ISSUES_CVES",
         "ISSUES_SECRETS",
         "ISSUES_WEAKNESSES",
     }
-    filter_dict = filter_builder.to_dict()
-    assert any(
-        field.get("SEARCH_VALUE") == "high" and field.get("SEARCH_FIELD") == "urgency" for field in filter_dict.get("AND", [])
-    )
+    for _, filter_builder in tables_filters.items():
+        filter_dict = filter_builder.to_dict()
+        assert any(
+            field.get("SEARCH_VALUE") == "high" and field.get("SEARCH_FIELD") == "urgency" for field in filter_dict.get("AND", [])
+        )
 
 
 def test_create_appsec_issues_filter_and_tables_cves_specific_filter():
@@ -2489,8 +2490,8 @@ def test_create_appsec_issues_filter_and_tables_cves_specific_filter():
     from CortexPlatformCore import create_appsec_issues_filter_and_tables
 
     args = {"has_kev": "true"}
-    tables, _ = create_appsec_issues_filter_and_tables(args)
-    assert tables == ["ISSUES_CVES"]
+    tables_filters = create_appsec_issues_filter_and_tables(args)
+    assert list(tables_filters.keys()) == ["ISSUES_CVES"]
 
 
 def test_create_appsec_issues_filter_and_tables_all_filters():
@@ -2520,8 +2521,9 @@ def test_create_appsec_issues_filter_and_tables_all_filters():
         "end_time": "2023-01-31",
         "assignee": "assigned",
     }
-    tables, filter_builder = create_appsec_issues_filter_and_tables(args)
-    assert "ISSUES_CVES" in tables
+    tables_filters = create_appsec_issues_filter_and_tables(args)
+    assert "ISSUES_CVES" in tables_filters
+    filter_builder = tables_filters["ISSUES_CVES"]
     filter_dict = filter_builder.to_dict()
     assert len(filter_dict["AND"]) >= 10
 
@@ -2543,32 +2545,29 @@ def test_normalize_and_filter_appsec_issue():
         "alert_name": "Insecure Configuration",
         "issue_source": "Prisma Cloud",
         "issue_category": "Misconfiguration",
-        "cas_issues_extended_fields": {
-            "status.progress": "Resolved",
-            "xdm.repository.name": "my-app",
-            "repo_org": "my-org",
-        },
+        "status_progress": "STATUS_025_RESOLVED",
+        "cas_issues_is_fixable": True,
         "cas_issues_normalized_fields": {
+            "xdm.repository.name": "my-app",
+            "xdm.repository.organization": "my-org",
             "xdm.vulnerability.cvss_score": 9.5,
-            "cas_issues_is_fixable": True,
         },
-        "sla": {"status": "not_breached"},
+        "cas_sla_status": "IN_SLA",
         "extra_field": "should be removed",
     }
 
     normalized_issue = normalize_and_filter_appsec_issue(raw_issue)
 
     assert normalized_issue["internal_id"] == "issue_001"
-    assert normalized_issue["severity"] == "SEV_050_CRITICAL"
+    assert normalized_issue["severity"] == "critical"
     assert normalized_issue["issue_name"] == "Insecure Configuration"
-    assert normalized_issue["status_progress"] == "Resolved"
+    assert normalized_issue["status"] == "Resolved"
     assert normalized_issue["repository_name"] == "my-app"
     assert normalized_issue["repository_organization"] == "my-org"
     assert normalized_issue["cvss_score"] == 9.5
     assert normalized_issue["is_fixable"] is True
-    assert normalized_issue["sla_status"] == "not_breached"
+    assert normalized_issue["sla_status"] == "On Track"
     assert "extra_field" not in normalized_issue
-    assert "Insecure Configuration" in normalized_issue["issue_name"]
 
 
 def test_create_appsec_issues_filter_and_tables_no_matching_table():

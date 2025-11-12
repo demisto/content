@@ -1363,7 +1363,7 @@ script:
           defaultValue: "50"
         - name: sort_field
           description: The field by which to sort the results.
-          defaultValue: local_insert_ts
+          defaultValue: severity
         - name: sort_order
           description: The order in which to sort the results.
           auto: PREDEFINED
@@ -1396,6 +1396,22 @@ script:
         - name: issue_name
           isArray: true
           description: The issue name. Accepts a comma-separated list.
+        - name: asset_name
+          isArray: true
+          description: The name of the affected asset for the issue. Accepts a comma-separated list.
+        - name: repository
+          isArray: true
+          description: The repository of the issue. Accepts a comma-separated list.
+        - name: file_path
+          isArray: true
+          description: The path of the relevant file for the issue. Accepts a comma-separated list.
+        - name: backlog_status
+          isArray: true
+          description: The backlog status of the issue. Accepts a comma-separated list.
+          predefined:
+            - BACKLOG
+            - NEW
+          auto: PREDEFINED
         - name: cvss_score_gte
           description: "The minimum CVSS score."
         - name: epss_score_gte
@@ -1425,7 +1441,7 @@ script:
             - NOT_URGENT
             - URGENT
             - TOP_URGENT
-        - name: fix_available
+        - name: automated_fix_available
           description: Is there an available automated fix.
           isArray: true
           auto: PREDEFINED
@@ -1437,9 +1453,9 @@ script:
           isArray: true
           auto: PREDEFINED
           predefined:
-            - APPROACHING
-            - IN_SLA
-            - OVERDUE
+            - Approaching
+            - On Track
+            - Overdue
         - name: validation
           description: Validation status of the issue. Accepts a comma-separated list.
           isArray: true
@@ -1454,7 +1470,7 @@ script:
         - contextPath: Core.AppsecIssue.internal_id
           description: The unique identifier for the issue.
           type: String
-        - contextPath: Core.AppsecIssue.asset_names
+        - contextPath: Core.AppsecIssue.asset_name
           description: The names of the assets related to the issue.
           type: String
         - contextPath: Core.AppsecIssue.severity
@@ -1466,7 +1482,7 @@ script:
         - contextPath: Core.AppsecIssue.cvss_score
           description: The Common Vulnerability Scoring System (CVSS) score.
           type: Number
-        - contextPath: Core.AppsecIssue.assigned_to_pretty
+        - contextPath: Core.AppsecIssue.assignee
           description: The full name of the user assigned to the issue.
           type: String
         - contextPath: Core.AppsecIssue.is_fixable
@@ -1487,10 +1503,10 @@ script:
         - contextPath: Core.AppsecIssue.issue_description
           description: The description of the issue.
           type: String
-        - contextPath: Core.AppsecIssue.status_progress
+        - contextPath: Core.AppsecIssue.status
           description: The status of the issue.
           type: String
-        - contextPath: Core.AppsecIssue.source_insert_ts
+        - contextPath: Core.AppsecIssue.time_added
           description: The timestamp when the issue was inserted.
           type: Number
         - contextPath: Core.AppsecIssue.urgency
@@ -1514,9 +1530,12 @@ script:
         - contextPath: Core.AppsecIssue.collaborator
           description: The collaborator associated with the issue.
           type: String
-        - contextPath: Core.AppsecIssue.is_kev
+        - contextPath: Core.AppsecIssue.has_kev
           description: Whether the issue is part of the Known Exploited Vulnerabilities catalog (KEV).
           type: Boolean
+        - contextPath: Core.AppsecIssue.backlog_status
+          description: The backlog status of the issue.
+          type: String
   runonce: false
   script: "-"
   subtype: python3

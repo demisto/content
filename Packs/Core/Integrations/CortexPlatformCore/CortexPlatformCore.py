@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 import dateparser
 from enum import Enum
+import copy
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -43,16 +44,38 @@ class AppsecIssues:
             self.filters: set = filters or set()
 
     ISSUE_TYPES = [
-        AppsecIssueType("ISSUES_IAC", {"urgency", "fix_available", "sla"}),
-        AppsecIssueType("ISSUES_CVES", {"urgency", "fix_available", "sla", "cvss_score_gte", "epss_score_gte", "has_kev"}),
-        AppsecIssueType("ISSUES_SECRETS", {"urgency", "fix_available", "sla", "validation"}),
-        AppsecIssueType("ISSUES_WEAKNESSES", {"urgency", "fix_available", "sla"}),
-        AppsecIssueType("ISSUES_OPERATIONAL_RISK", {"fix_available", "sla"}),
-        AppsecIssueType("ISSUES_LICENSES", {"fix_available", "sla"}),
+        AppsecIssueType("ISSUES_IAC", {"urgency", "repository", "file_path", "automated_fix_available", "sla"}),
+        AppsecIssueType(
+            "ISSUES_CVES",
+            {
+                "urgency",
+                "repository",
+                "file_path",
+                "automated_fix_available",
+                "sla",
+                "cvss_score_gte",
+                "epss_score_gte",
+                "has_kev",
+            },
+        ),
+        AppsecIssueType("ISSUES_SECRETS", {"urgency", "repository", "file_path", "sla", "validation"}),
+        AppsecIssueType("ISSUES_WEAKNESSES", {"urgency", "repository", "file_path", "sla"}),
+        AppsecIssueType("ISSUES_OPERATIONAL_RISK", {"repository", "file_path", "sla"}),
+        AppsecIssueType("ISSUES_LICENSES", {"repository", "file_path", "sla"}),
         AppsecIssueType("ISSUES_CI_CD", {"sla"}),
     ]
 
-    SPECIAL_FILTERS = {"urgency", "fix_available", "sla", "epss_score_gte", "cvss_score_gte", "has_kev", "validation"}
+    SPECIAL_FILTERS = {
+        "urgency",
+        "repository",
+        "file_path",
+        "automated_fix_available",
+        "sla",
+        "epss_score_gte",
+        "cvss_score_gte",
+        "has_kev",
+        "validation",
+    }
 
     SEVERITY_MAPPINGS = {
         "info": "SEV_010_INFO",
@@ -63,10 +86,44 @@ class AppsecIssues:
         "unknown": "SEV_090_UNKNOWN",
     }
 
+    SEVERITY_OUTPUT_MAPPINGS = {
+        "SEV_010_INFO": "info",
+        "SEV_020_LOW": "low",
+        "SEV_030_MEDIUM": "medium",
+        "SEV_040_HIGH": "high",
+        "SEV_050_CRITICAL": "critical",
+        "SEV_090_UNKNOWN": "unknown",
+    }
+
     STATUS_MAPPINGS = {
         "New": "STATUS_010_NEW",
         "In Progress": "STATUS_020_UNDER_INVESTIGATION",
         "Resolved": "STATUS_025_RESOLVED",
+    }
+
+    STATUS_OUTPUT_MAPPINGS = {
+        "STATUS_010_NEW": "New",
+        "STATUS_020_UNDER_INVESTIGATION": "In Progress",
+        "STATUS_025_RESOLVED": "Resolved",
+    }
+
+    SLA_MAPPING = {
+        "Approaching": "APPROACHING",
+        "On Track": "IN_SLA",
+        "Overdue": "OVERDUE",
+    }
+
+    SLA_OUTPUT_MAPPING = {
+        "APPROACHING": "Approaching",
+        "IN_SLA": "On Track",
+        "OVERDUE": "Overdue",
+    }
+
+    URGENCY_OUTPUT_MAPPING = {
+        "NOT_URGENT": "Not Urgent",
+        "N/A": "N/A",
+        "TOP_URGENT": "Top Urgent",
+        "URGENT": "Urgent",
     }
 
 
@@ -811,7 +868,7 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
     return group_ids
 
 
-def create_appsec_issues_filter_and_tables(args: dict) -> tuple[list, FilterBuilder]:
+def create_appsec_issues_filter_and_tables(args: dict) -> dict[str, FilterBuilder]:
     """
     Generate a filter and determine applicable tables for fetching AppSec issues based on input filter arguments.
 
@@ -824,26 +881,29 @@ def create_appsec_issues_filter_and_tables(args: dict) -> tuple[list, FilterBuil
             - A FilterBuilder instance with configured filters
     """
     special_filter_args = {filter for filter in args if filter in AppsecIssues.SPECIAL_FILTERS}
-    tables = []
+    tables_filters = {}
     filter_builder = FilterBuilder()
 
     for issue_type in AppsecIssues.ISSUE_TYPES:
         if special_filter_args.issubset(issue_type.filters):
-            tables.append(issue_type.table_name)
+            tables_filters[issue_type.table_name] = filter_builder
 
-    if not tables:
+    if not tables_filters:
         raise DemistoException(f"No matching issue type found for the given filter combination: {special_filter_args}")
 
     filter_builder.add_field("cas_issues_cvss_score", FilterType.GTE, arg_to_float(args.get("cvss_score_gte")))
     filter_builder.add_field("cas_issues_epss_score", FilterType.GTE, arg_to_float(args.get("epss_score_gte")))
     filter_builder.add_field("cas_issues_is_kev", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev")))
-    filter_builder.add_field("cas_sla_status", FilterType.EQ, argToList(args.get("sla")))
-    filter_builder.add_field("cas_issues_is_fixable", FilterType.EQ, arg_to_bool_or_none(args.get("fix_available")))
+    filter_builder.add_field("cas_sla_status", FilterType.EQ, argToList(args.get("sla")), AppsecIssues.SLA_MAPPING)
+    filter_builder.add_field("cas_issues_is_fixable", FilterType.EQ, arg_to_bool_or_none(args.get("automated_fix_available")))
     filter_builder.add_field("cas_issues_validation", FilterType.EQ, argToList(args.get("validation")))
     filter_builder.add_field("urgency", FilterType.EQ, argToList(args.get("urgency")))
     filter_builder.add_field("severity", FilterType.EQ, argToList(args.get("severity")), AppsecIssues.SEVERITY_MAPPINGS)
     filter_builder.add_field("internal_id", FilterType.CONTAINS, argToList(args.get("issue_id")))
     filter_builder.add_field("alert_name", FilterType.CONTAINS, argToList(args.get("issue_name")))
+    filter_builder.add_field("cas_issues_asset_name", FilterType.CONTAINS, argToList(args.get("asset_name")))
+    filter_builder.add_field("cas_issues_repository", FilterType.CONTAINS, argToList(args.get("repository")))
+    filter_builder.add_field("cas_issues_file_path", FilterType.CONTAINS, argToList(args.get("file_path")))
     filter_builder.add_field("cas_issues_git_user", FilterType.CONTAINS, argToList(args.get("collaborator")))
     filter_builder.add_field("status_progress", FilterType.EQ, argToList(args.get("status")))
     filter_builder.add_time_range_field("local_insert_ts", args.get("start_time"), args.get("end_time"))
@@ -857,7 +917,15 @@ def create_appsec_issues_filter_and_tables(args: dict) -> tuple[list, FilterBuil
         },
     )
 
-    return tables, filter_builder
+    if "backlog_status" in args and "ISSUES_CI_CD" in tables_filters:
+        # backlog filter is different for the CI/CD issue table
+        cicd_filter_builder = copy.deepcopy(filter_builder)
+        cicd_filter_builder.add_field("issue_backlog_status", FilterType.EQ, argToList(args.get("backlog_status")))
+        tables_filters["ISSUES_CI_CD"] = cicd_filter_builder
+
+    filter_builder.add_field("backlog_status", FilterType.EQ, argToList(args.get("backlog_status")))
+
+    return tables_filters
 
 
 def normalize_and_filter_appsec_issue(issue: dict) -> dict:
@@ -870,58 +938,45 @@ def normalize_and_filter_appsec_issue(issue: dict) -> dict:
     Returns:
         dict: issue with standard Appsec fields.
     """
-    # Unpack extended and normalized field dicts for easier searching, with priority for the top level keys
-    issue_all_fields = {}
-    issue_all_fields.update(issue.get("cas_issues_extended_fields", {}))
-    issue_all_fields.update(issue.get("cas_issues_normalized_fields", {}))
-    issue_all_fields.update(issue)
+    issue_all_fields = cast(dict, alert_to_issue(issue))
 
-    issue_all_fields = cast(dict, alert_to_issue(issue_all_fields))
-
-    if "sla" in issue_all_fields:
-        issue_all_fields["sla_status"] = issue_all_fields.get("sla", {}).get("status")
-
-    filtered_output_keys = {
-        "internal_id",
-        "severity",
-        "issue_name",
-        "issue_source",
-        "issue_category",
-        "issue_domain",
-        "issue_description",
-        "status_progress",
-        "asset_names",
-        "assigned_to_pretty",
-        "source_insert_ts",
-        "epss_score",
-        "cvss_score",
-        "is_kev",
-        "urgency",
-        "sla_status",
-        "secret_validation",
-        "is_fixable",
-        "repository_name",
-        "repository_organization",
-        "file_path",
-        "collaborator",
+    filtered_output_keys: dict[str, dict] = {
+        "internal_id": {"path": ["internal_id"]},
+        "severity": {"path": ["severity"], "mapper": AppsecIssues.SEVERITY_OUTPUT_MAPPINGS},
+        "issue_name": {"path": ["issue_name"]},
+        "issue_source": {"path": ["issue_source"]},
+        "issue_category": {"path": ["issue_category"]},
+        "issue_domain": {"path": ["issue_domain"]},
+        "issue_description": {"path": ["issue_description"]},
+        "status": {"path": ["status_progress"], "mapper": AppsecIssues.STATUS_OUTPUT_MAPPINGS},
+        "asset_name": {"path": ["cas_issues_asset_name"]},
+        "assignee": {"path": ["assigned_to_pretty"]},
+        "time_added": {"path": ["source_insert_ts"]},
+        "epss_score": {"path": ["cas_issues_extended_fields", "epss_score"]},
+        "cvss_score": {"path": ["cas_issues_normalized_fields", "xdm.vulnerability.cvss_score"]},
+        "has_kev": {"path": ["cas_issues_is_kev"]},
+        "urgency": {"path": ["urgency"], "mapper": AppsecIssues.URGENCY_OUTPUT_MAPPING},
+        "sla_status": {"path": ["cas_sla_status"], "mapper": AppsecIssues.SLA_OUTPUT_MAPPING},
+        "secret_validation": {"path": ["secret_validation"]},
+        "is_fixable": {"path": ["cas_issues_is_fixable"]},
+        "repository_name": {"path": ["cas_issues_normalized_fields", "xdm.repository.name"]},
+        "repository_organization": {"path": ["cas_issues_normalized_fields", "xdm.repository.organization"]},
+        "file_path": {"path": ["cas_issues_normalized_fields", "xdm.file.path"]},
+        "collaborator": {"path": ["cas_issues_normalized_fields", "xdm.code.git.commit.author.name"]},
+        "is_deployed": {"path": ["cas_issues_extended_fields", "urgency", "metric", "is_deployed"]},
+        "backlog_status": {"path": ["backlog_status"]},
     }
-    output_mapping = {
-        "status.progress": "status_progress",
-        "cas_issues_asset_name": "asset_names",
-        "xdm.vulnerability.cvss_score": "cvss_score",
-        "cas_issues_is_fixable": "is_fixable",
-        "cas_issues_is_kev": "is_kev",
-        "xdm.repository.name": "repository_name",
-        "repo_org": "repository_organization",
-        "xdm.file.path": "file_path",
-        "xdm.code.git.commit.author.name": "collaborator",
-    }
+    appsec_issue = {}
+    for output_key, output_info in filtered_output_keys.items():
+        current_value = issue_all_fields
+        path = output_info.get("path", {})
+        for key in path:
+            current_value = current_value.get(key, {})
 
-    for key, new_key in output_mapping.items():
-        if key in issue_all_fields:
-            issue_all_fields[new_key] = issue_all_fields.pop(key)
+        if current_value:
+            value = current_value if "mapper" not in output_info else output_info.get("mapper", {}).get(current_value)
+            appsec_issue[output_key] = value
 
-    appsec_issue = {k: v for k, v in issue_all_fields.items() if k in filtered_output_keys}
     return appsec_issue
 
 
@@ -930,13 +985,13 @@ def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
     Retrieves application security issues based on specified filters across multiple issue types.
     """
     limit = arg_to_number(args.get("limit")) or 50
-    sort_field = args.get("sort_field", "local_insert_ts")
+    sort_field = args.get("sort_field", "severity")
     sort_order = args.get("sort_order", "DESC")
 
-    tables, filter_builder = create_appsec_issues_filter_and_tables(args)
+    tables_filters: dict[str, FilterBuilder] = create_appsec_issues_filter_and_tables(args)
 
     all_appsec_issues: list[dict] = []
-    for table_name in tables:
+    for table_name, filter_builder in tables_filters.items():
         request_data = build_webapp_request_data(
             table_name=table_name,
             filter_dict=filter_builder.to_dict(),
