@@ -1805,21 +1805,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.8.0",
-    "description": "",
-    "supportedModules": [
-        "C1",
-        "C3",
-        "X0",
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
-        "exposure_management",
-        "cloud",
-        "cloud_runtime_security",
-        "agentix",
-        "cloud_posture",
-        "xsiam",
-        "edr"
-    ]
+    "description": ""
 }
