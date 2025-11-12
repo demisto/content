@@ -2181,7 +2181,7 @@ class EC2:
         return CommandResults(
             outputs=image,
             outputs_prefix="AWS.EC2.Images",
-            readable_output=tableToMarkdown("AWS EC2 latest Image", data, headerTransform=pascalToSpace),
+            readable_output=tableToMarkdown("AWS EC2 latest Image", data, headerTransform=pascalToSpace,removeNull=True),
             outputs_key_field="ImageId",
         )
 
@@ -2231,13 +2231,13 @@ class EC2:
             outputs_key_field="VpcId",
             readable_output=(
                 tableToMarkdown(
-                    "The AWS EC2 Instance ACL that the entries belong to",
+                    "The AWS EC2 Instance ACL",
                     readable_data,
                     removeNull=True,
                     headerTransform=pascalToSpace,
                 )
                 + tableToMarkdown(
-                    "AWS EC2 ACL Entries",
+                    f"The Entries of AWS EC2 ACL {network_acl.get("NetworkAclId")}",
                     [entry for entry in network_acl.get("Entries")],  # noqa: C416
                     removeNull=True,
                     headerTransform=pascalToSpace,
@@ -2275,7 +2275,7 @@ class EC2:
 
         output = json.loads(json.dumps(response, cls=DatetimeEncoder))
         human_readable = tableToMarkdown(
-            "Ipam Discovered Public Addresses", output.get("IpamDiscoveredPublicAddresses"), headerTransform=pascalToSpace
+            "Ipam Discovered Public Addresses", output.get("IpamDiscoveredPublicAddresses"), headerTransform=pascalToSpace, removeNull=True
         )
         return CommandResults(
             outputs_prefix="AWS.EC2.IpamDiscoveredPublicAddresses",
