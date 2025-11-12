@@ -5,6 +5,7 @@ import dateparser
 from enum import Enum
 # Disable insecure warnings
 urllib3.disable_warnings()
+import json
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 INTEGRATION_CONTEXT_BRAND = "Core"
@@ -44,6 +45,12 @@ VULNERABILITIES_SEVERITY_MAPPING = {
     "critical": "SEV_070_CRITICAL",
 }
 
+def format_code_for_json(code: str, language: str = "hcl") -> str:
+    obj = {
+        "text": f"```{language}\n{code.strip()}\n```",
+        "data": None
+    }
+    return json.dumps(obj, indent=4)
 
 class FilterBuilder:
     """
@@ -388,7 +395,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         raise DemistoException("issue_id is required.")
 
     filter_builder = FilterBuilder()
-    filter_builder.add_field("internal_id", FilterType.CONTAINS, issue_id)
+    filter_builder.add_field("internal_id", FilterType.EQ, issue_id)
 
     request_data = build_webapp_request_data(
         table_name="ALERTS_VIEW_TABLE",
@@ -432,13 +439,16 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     ]
     
     # Application Security issue
-    appsec_sources = ["CAS_CVE_SCANNER", "CAS_IAC_SCANNER"]
+    appsec_sources = ["CAS_CVE_SCANNER", "CAS_IAC_SCANNER", "CAS_SECRET_SCANNER"]
     if issue.get("alert_source") in appsec_sources:
+        manual_fix = format_code_for_json(issue.get("extended_fields", {}).get("action"))
         fix_suggestion = client.get_appsec_suggested_fix(issue_id)
         if fix_suggestion:
-            recommendation.update({
-                "existing_code_block": fix_suggestion.get("existingCodeBlock"),
-                "suggested_code_block": fix_suggestion.get("suggestedCodeBlock")
+            recommendation.update(
+                {
+                "existing_code_block": format_code_for_json(fix_suggestion.get("existingCodeBlock", "")),
+                "suggested_code_block": format_code_for_json(fix_suggestion.get("suggestedCodeBlock", "")),
+                "remediation": manual_fix if manual_fix else format_code_for_json(recommendation.get("remediation", ""))
             })
             headers.append("existing_code_block")
             headers.append("suggested_code_block")
