@@ -607,8 +607,8 @@ Enable or disable scanners with the specified configuration.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | asset_ids | List of repository asset IDs to configure scanners for. | Required |
-| enabled_scanners | List of scanners to enable. Possible values are: SECRETS, IAC, SCA. | Optional |
-| disabled_scanners | List of scanners to disable. Possible values are: SECRETS, IAC, SCA. | Optional |
+| enable_scanners | List of scanners to enable. Possible values are: SECRETS, IAC, SCA. | Optional |
+| disable_scanners | List of scanners to disable. Possible values are: SECRETS, IAC, SCA. | Optional |
 | secret_validation | Enable live validation of discovered secrets. Possible values are: true, false. | Optional |
 | pr_scanning | Enable scanning on pull requests. This argument only relevant when SECRETS scanner is enabled. Possible values are: true, false. | Optional |
 | block_on_error | Block deployment on scanner errors. Possible values are: true, false. | Optional |
