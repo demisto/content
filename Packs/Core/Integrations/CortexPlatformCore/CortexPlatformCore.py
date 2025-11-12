@@ -699,7 +699,7 @@ def update_issue_command(client: Client, args: dict):
         "occurred": arg_to_timestamp(args.get("occurred"), "occurred"),
         "phase": args.get("phase"),
         "type": args.get("type"),
-        "description": args.get("description")
+        "description": args.get("description"),
     }
 
     # Remove None values before sending to API
