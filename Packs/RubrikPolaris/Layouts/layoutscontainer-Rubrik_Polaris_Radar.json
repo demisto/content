@@ -216,7 +216,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "rubrikpolarislastactivitystatus",
-                                "height": 22,
+                                "height": 53,
                                 "id": "55d3ced0-f9a1-11ef-98dc-ef869f4670b6",
                                 "index": 5,
                                 "sectionItemType": "field",
@@ -225,10 +225,21 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
+                                "fieldId": "incidentlink",
+                                "height": 53,
+                                "id": "f84a9ec0-7f4b-11f0-9017-992963622ec4",
+                                "index": 0,
+                                "listId": "caseinfoid-2ec41170-454a-11eb-ba5e-05d9566e6d05",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
                                 "fieldId": "rubrikcdmclusterid",
                                 "height": 53,
                                 "id": "62032d90-a44b-11eb-82ca-4d054531f5f7",
-                                "index": 0,
+                                "index": 1,
                                 "listId": "caseinfoid-2ec41170-454a-11eb-ba5e-05d9566e6d05",
                                 "sectionItemType": "field",
                                 "startCol": 2
@@ -238,7 +249,7 @@
                                 "fieldId": "rubrikcdmclustername",
                                 "height": 53,
                                 "id": "f12222d0-a4ee-11eb-9bb3-6df13f2ef3ea",
-                                "index": 1,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 2
                             },
@@ -247,7 +258,7 @@
                                 "fieldId": "rubrikcdmclusterlocation",
                                 "height": 53,
                                 "id": "6658a500-a44b-11eb-82ca-4d054531f5f7",
-                                "index": 2,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 2
                             },
@@ -256,7 +267,7 @@
                                 "fieldId": "rubrikpolarisclusterlocationpath",
                                 "height": 53,
                                 "id": "07b02120-37be-11ec-8878-41b30c8936ff",
-                                "index": 3,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 2
                             },
@@ -265,7 +276,7 @@
                                 "fieldId": "rubrikpolarisactivitytype",
                                 "height": 53,
                                 "id": "412c7c20-f9a1-11ef-98dc-ef869f4670b6",
-                                "index": 4,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 2
                             }

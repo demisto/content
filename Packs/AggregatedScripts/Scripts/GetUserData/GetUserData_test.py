@@ -1,4 +1,5 @@
 import demistomock as demisto
+import pytest
 from CommonServerPython import *
 from GetUserData import (
     Command,
@@ -2138,3 +2139,196 @@ def test_run_list_users_command_empty_outputs_from_api(mocker: MockerFixture):
     assert len(users) == 2  # Both emails marked as not found
     assert all(user["Status"] == "not found" for user in users)
     assert {user["Email"] for user in users} == set(email_list)
+
+
+# --- helpers to mute all other adapters so main can run quietly ---
+def _mute_all_other_adapters(mocker: MockerFixture, except_fn: str | None = None):
+    fns = {
+        "ad_get_user",
+        "okta_get_user",
+        "aws_iam_get_user",
+        "msgraph_user_get",
+        "prisma_cloud_get_user",
+        "iam_get_user",  # <- shared by Okta IAM and AWS-ILM
+        "gsuite_get_user",
+        "azure_get_risky_user",
+    }
+    for fn in fns:
+        if fn == except_fn:
+            continue
+        mocker.patch(f"GetUserData.{fn}", return_value=([], []))
+
+
+# -------------- Testing Calling the right argument per command --------------
+# ---------- Username flows (no domain) ----------
+@pytest.mark.parametrize(
+    "brand_name,command_name,adapter_fn,expected_key,expected_value",
+    [
+        ("Active Directory Query v2", "ad-get-user", "ad_get_user", "username", "alice"),
+        ("Okta v2", "okta-get-user", "okta_get_user", "username", "alice"),
+        ("AWS - IAM", "aws-iam-get-user", "aws_iam_get_user", "userName", "alice"),
+        ("Microsoft Graph User", "msgraph-user-get", "msgraph_user_get", "user", "alice"),
+        ("PrismaCloud v2", "prisma-cloud-users-list", "prisma_cloud_get_user", "usernames", "alice"),
+        ("Okta IAM", "iam-get-user", "iam_get_user", "user-profile", '{"login":"alice"}'),
+        ("AWS-ILM", "iam-get-user", "iam_get_user", "user-profile", '{"login":"alice"}'),
+    ],
+)
+def test_username_arg_mapping_to_adapter(
+    mocker: MockerFixture, brand_name, command_name, adapter_fn, expected_key, expected_value
+):
+    """
+    Given:
+        - calling get-user-data with username = alice.
+        - brand_name = brand_name.
+    When:
+        - main() executes by username flows.
+    Then:
+        - The right command is being called with the right argument name.
+    """
+    mocker.patch.object(demisto, "args", return_value={"user_name": ["alice"]})
+    mocker.patch.object(demisto, "getModules", return_value={})
+    mocker.patch.object(Modules, "is_brand_in_brands_to_run", return_value=True)
+    mocker.patch.object(Modules, "is_brand_available", return_value=True)
+    mocker.patch("GetUserData.get_core_and_xdr_data", return_value=([], []))
+    mocker.patch("GetUserData.return_results")
+
+    _mute_all_other_adapters(mocker, except_fn=adapter_fn)
+    seen = {"ok": False}
+
+    def _assert_adapter(command: Command, additional_fields: bool):
+        # Only assert for the exact brand+command under test; ignore other calls to the same adapter.
+        if command.brand != brand_name or command.name != command_name:
+            return ([], [])
+        assert command.args.get(expected_key) == expected_value
+        assert command.args.get("using-brand") == brand_name
+        if expected_key == "username":
+            assert "name" not in command.args  # regression guard
+        seen["ok"] = True
+        return ([], [])
+
+    mocker.patch(f"GetUserData.{adapter_fn}", side_effect=_assert_adapter)
+    main()
+    assert seen["ok"] is True
+
+
+# ---------- Username flow with domain prefix (DOMAIN\\username) ----------
+def test_domain_username_branch_uses_username_key_for_ad(mocker: MockerFixture):
+    """
+    Given:
+        - calling get-user-data with username = ACME\\alice.
+        - brand_name = brand_name.
+    When:
+        - main() executes by username flows.
+    Then:
+        - The right command is being called with the right argument name.
+    """
+    mocker.patch.object(demisto, "args", return_value={"user_name": ["ACME\\alice"]})
+    mocker.patch.object(demisto, "getModules", return_value={})
+    mocker.patch.object(Modules, "is_brand_in_brands_to_run", return_value=True)
+    mocker.patch.object(Modules, "is_brand_available", return_value=True)
+    mocker.patch("GetUserData.get_core_and_xdr_data", return_value=([], []))
+    mocker.patch("GetUserData.return_results")
+
+    _mute_all_other_adapters(mocker, except_fn="ad_get_user")
+    hit = {"seen": False}
+
+    def _assert_ad(command: Command, additional_fields: bool):
+        if command.brand != "Active Directory Query v2" or command.name != "ad-get-user":
+            return ([], [])
+        assert command.args.get("username") == "alice"
+        assert "name" not in command.args
+        assert command.args.get("using-brand") == "Active Directory Query v2"
+        hit["seen"] = True
+        return ([], [])
+
+    mocker.patch("GetUserData.ad_get_user", side_effect=_assert_ad)
+    main()
+    assert hit["seen"] is True
+
+
+# ---------- User ID flows ----------
+@pytest.mark.parametrize(
+    "brand_name,command_name,adapter_fn,expected_key,expected_value",
+    [
+        ("Okta v2", "okta-get-user", "okta_get_user", "userId", "u123"),
+        ("Microsoft Graph User", "msgraph-user-get", "msgraph_user_get", "user", "u123"),
+        ("AzureRiskyUsers", "azure-risky-user-get", "azure_get_risky_user", "id", "u123"),
+        ("Okta IAM", "iam-get-user", "iam_get_user", "user-profile", '{"id":"u123"}'),
+        ("AWS-ILM", "iam-get-user", "iam_get_user", "user-profile", '{"id":"u123"}'),
+        ("GSuiteAdmin", "gsuite-user-get", "gsuite_get_user", "user", "u123"),
+    ],
+)
+def test_userid_arg_mapping_to_adapter(mocker: MockerFixture, brand_name, command_name, adapter_fn, expected_key, expected_value):
+    """
+    Given:
+        - calling get-user-data with user_id = u123.
+        - brand_name = brand_name.
+    When:
+        -main() executes by user ID flows.
+    Then:
+        - The right command is being called with the right argument name.
+    """
+    mocker.patch.object(demisto, "args", return_value={"user_id": ["u123"]})
+    mocker.patch.object(demisto, "getModules", return_value={})
+    mocker.patch.object(Modules, "is_brand_in_brands_to_run", return_value=True)
+    mocker.patch.object(Modules, "is_brand_available", return_value=True)
+    mocker.patch("GetUserData.get_core_and_xdr_data", return_value=([], []))
+    mocker.patch("GetUserData.return_results")
+
+    _mute_all_other_adapters(mocker, except_fn=adapter_fn)
+    seen = {"ok": False}
+
+    def _assert_adapter(command: Command, additional_fields: bool):
+        if command.brand != brand_name or command.name != command_name:
+            return ([], [])
+        assert command.args.get(expected_key) == expected_value
+        assert command.args.get("using-brand") == brand_name
+        seen["ok"] = True
+        return ([], [])
+
+    mocker.patch(f"GetUserData.{adapter_fn}", side_effect=_assert_adapter)
+    main()
+    assert seen["ok"] is True
+
+
+# ---------- Email flows ----------
+@pytest.mark.parametrize(
+    "brand_name,command_name,adapter_fn,expected_key,expected_value",
+    [
+        ("Active Directory Query v2", "ad-get-user", "ad_get_user", "email", "john@example.com"),
+        ("Okta IAM", "iam-get-user", "iam_get_user", "user-profile", '{"email":"john@example.com"}'),
+        ("AWS-ILM", "iam-get-user", "iam_get_user", "user-profile", '{"email":"john@example.com"}'),
+        ("GSuiteAdmin", "gsuite-user-get", "gsuite_get_user", "user", "john@example.com"),
+    ],
+)
+def test_email_arg_mapping_to_adapter(mocker: MockerFixture, brand_name, command_name, adapter_fn, expected_key, expected_value):
+    """
+    Given:
+        - calling get-user-data with user_email = john@example.com.
+        - brand_name = brand_name.
+    When:
+        - main() executes by email flows.
+    Then:
+        - The right command is being called with the right argument name.
+    """
+    mocker.patch.object(demisto, "args", return_value={"user_email": ["john@example.com"]})
+    mocker.patch.object(demisto, "getModules", return_value={})
+    mocker.patch.object(Modules, "is_brand_in_brands_to_run", return_value=True)
+    mocker.patch.object(Modules, "is_brand_available", return_value=True)
+    mocker.patch("GetUserData.get_core_and_xdr_data", return_value=([], []))
+    mocker.patch("GetUserData.return_results")
+
+    _mute_all_other_adapters(mocker, except_fn=adapter_fn)
+    seen = {"ok": False}
+
+    def _assert_adapter(command: Command, additional_fields: bool):
+        if command.brand != brand_name or command.name != command_name:
+            return ([], [])
+        assert command.args.get(expected_key) == expected_value
+        assert command.args.get("using-brand") == brand_name
+        seen["ok"] = True
+        return ([], [])
+
+    mocker.patch(f"GetUserData.{adapter_fn}", side_effect=_assert_adapter)
+    main()
+    assert seen["ok"] is True

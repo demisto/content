@@ -520,6 +520,7 @@ class DBotScoreReliability(object):
     :rtype: ``None``
     """
 
+    A_PLUS_PLUS = 'A++ - Reputation script'
     A_PLUS = 'A+ - 3rd party enrichment'
     A = 'A - Completely reliable'
     B = 'B - Usually reliable'
@@ -537,6 +538,7 @@ class DBotScoreReliability(object):
         # type: (str) -> bool
 
         return _type in (
+            DBotScoreReliability.A_PLUS_PLUS,
             DBotScoreReliability.A_PLUS,
             DBotScoreReliability.A,
             DBotScoreReliability.B,
@@ -548,6 +550,8 @@ class DBotScoreReliability(object):
 
     @staticmethod
     def get_dbot_score_reliability_from_str(reliability_str):  # pragma: no cover
+        if reliability_str == DBotScoreReliability.A_PLUS_PLUS:
+            return DBotScoreReliability.A_PLUS_PLUS
         if reliability_str == DBotScoreReliability.A_PLUS:
             return DBotScoreReliability.A_PLUS
         elif reliability_str == DBotScoreReliability.A:
@@ -8511,6 +8515,29 @@ def response_to_context(reponse_obj, user_predefiend_keys=None):
         return reponse_obj
 
 
+def safe_strptime(date_str, datetime_format, strptime=datetime.strptime):
+    """
+    Parses a date string to a datetime object, handling cases where the microsecond component is missing.
+    
+    :type date_str: ``str``
+    :param date_str: The date string to parse (required)
+    
+    :type datetime_format: ``str``
+    :param datetime_format: The format of the date string (required)
+    
+    :type strptime: ``Callable``
+    :param strptime: The function to use for parsing the date string (optional)
+    
+    :return: The parsed datetime object
+    :rtype: ``datetime.datetime``
+    """
+    try:
+        return strptime(date_str, datetime_format)
+    except ValueError as e:
+        demisto.debug('Failed to parse date {} with format {}: {}'.format(date_str, datetime_format, str(e)))
+        return strptime(date_str, datetime_format.replace('.%f', ''))
+
+
 def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
     """
         THIS FUNCTTION IS DEPRECATED - USE dateparser.parse instead
@@ -8626,7 +8653,7 @@ def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
       :rtype: ``int``
     """
     if isinstance(date_str_or_dt, STRING_OBJ_TYPES):
-        return int(time.mktime(time.strptime(date_str_or_dt, date_format)) * 1000)
+        return int(time.mktime(safe_strptime(date_str_or_dt, date_format, time.strptime)) * 1000)
 
     # otherwise datetime.datetime
     return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
@@ -9115,7 +9142,7 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
         :rtype: ``(datetime.datetime, datetime.datetime)``
     """
     try:
-        return datetime.strptime(date_string, date_format)
+        return safe_strptime(date_string, date_format)
     except ValueError as e:
         error_message = str(e)
 
@@ -9162,7 +9189,7 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
         #      '2022-01-23T12:34:56.123456789' to '2022-01-23T12:34:56.123456'
         date_string = re.sub(r'([0-9]+\.[0-9]{6})[0-9]*([Zz]|[+-]\S+?)?', '\\1\\2', date_string)
 
-        return datetime.strptime(date_string, date_format)
+        return safe_strptime(date_string, date_format)
 
 
 def build_dbot_entry(indicator, indicator_type, vendor, score, description=None, build_malicious=True):
@@ -9401,6 +9428,7 @@ if 'requests' in sys.modules:
         def _implement_retry(self, retries=0,
                              status_list_to_retry=None,
                              backoff_factor=5,
+                             backoff_jitter=0.0,
                              raise_on_redirect=False,
                              raise_on_status=False):
             """
@@ -9428,6 +9456,10 @@ if 'requests' in sys.modules:
                 than :attr:`Retry.BACKOFF_MAX`.
 
                 By default, backoff_factor set to 5
+                
+            :type backoff_jitter ``float``
+            :param backoff_jitter: the sleep (backoff factor) is extended by
+                random.uniform(0, {backoff jitter})
 
             :type raise_on_redirect ``bool``
             :param raise_on_redirect: Whether, if the number of redirects is
@@ -9451,6 +9483,7 @@ if 'requests' in sys.modules:
                     read=retries,
                     connect=retries,
                     backoff_factor=backoff_factor,
+                    backoff_jitter=backoff_jitter,
                     status=retries,
                     status_forcelist=status_list_to_retry,
                     raise_on_status=raise_on_status,
@@ -9478,7 +9511,7 @@ if 'requests' in sys.modules:
         def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
                           params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
-                          backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
+                          backoff_factor=5, backoff_jitter=0.0, raise_on_redirect=False, raise_on_status=False,
                           error_handler=None, empty_valid_codes=None, params_parser=None, with_metrics=False, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -9553,6 +9586,10 @@ if 'requests' in sys.modules:
 
                 By default, backoff_factor set to 5
 
+            :type backoff_jitter ``float``
+            :param backoff_jitter: the sleep (backoff factor) is extended by
+                random.uniform(0, {backoff jitter})
+
             :type raise_on_redirect ``bool``
             :param raise_on_redirect: Whether, if the number of redirects is
                 exhausted, to raise a MaxRetryError, or to return a response with a
@@ -9589,7 +9626,7 @@ if 'requests' in sys.modules:
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
                 if retries:
-                    self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
+                    self._implement_retry(retries, status_list_to_retry, backoff_factor, backoff_jitter, raise_on_redirect, raise_on_status)
                 if not timeout:
                     timeout = self.timeout
                 if IS_PY3 and params_parser:  # The `quote_via` parameter is supported only in python3.
@@ -11662,10 +11699,10 @@ def get_latest_incident_created_time(incidents, created_time_field, date_format=
     :rtype: ``str``
     """
     demisto.debug('lb: Getting latest incident created time')
-    latest_incident_time = datetime.strptime(incidents[0][created_time_field], date_format)
+    latest_incident_time = safe_strptime(incidents[0][created_time_field], date_format)
 
     for incident in incidents:
-        incident_time = datetime.strptime(incident[created_time_field], date_format)
+        incident_time = safe_strptime(incident[created_time_field], date_format)
         if incident_time > latest_incident_time:
             latest_incident_time = incident_time
 
@@ -11697,9 +11734,15 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     deletion_threshold_in_seconds = look_back_in_seconds * 2
 
     new_found_incidents_ids = {}
+    latest_incident_time = max(found_incidents_ids.values() or [current_time])
+    demisto.debug('lb: latest_incident_time is {}'.format(latest_incident_time))
+
     for inc_id, addition_time in found_incidents_ids.items():
 
-        if current_time - addition_time <= deletion_threshold_in_seconds:
+        if (
+            current_time - addition_time <= deletion_threshold_in_seconds
+            or addition_time == latest_incident_time  # The latest IDs must be kept to avoid duplicate incidents
+        ):
             new_found_incidents_ids[inc_id] = addition_time
             demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(
                 inc_id, addition_time, deletion_threshold_in_seconds))
@@ -11708,6 +11751,7 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
                 inc_id, addition_time, deletion_threshold_in_seconds))
     demisto.debug('lb: Number of new found ids: {}, their ids: {}'.format(
         len(new_found_incidents_ids), new_found_incidents_ids.keys()))
+
     return new_found_incidents_ids
 
 
@@ -12891,7 +12935,7 @@ class ExecutionTimeout(object):
         demisto.debug("Resetting timed signal")
         signal.alarm(0)  # Cancel SIGALRM if it's scheduled
         return exc_type is SignalTimeoutError  # True if a timeout is reacched, False otherwise
-    
+
     @classmethod
     def limit_time(cls, seconds, default_return_value=None):
         """
@@ -12913,6 +12957,21 @@ class ExecutionTimeout(object):
                 return return_value
             return wrapped
         return wrapper
+
+
+class ISOEncoder(json.JSONEncoder):
+    """
+    A custom JSONEncoder that converts datetime objects to ISO 8601 strings.
+
+    :return: The ISOEncoder object
+    :rtype: ``ISOEncoder``
+    """
+
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        # Let the base class handle other objects
+        return json.JSONEncoder.default(self, obj)
 
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402

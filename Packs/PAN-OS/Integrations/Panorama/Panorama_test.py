@@ -8299,7 +8299,7 @@ def test_fetch_incidents_correlation(mocker: MockerFixture):
     assert "CORRELATION" in entries[0]["rawJSON"]
     assert mock_get_query_entries.call_args_list[0].args == (
         "Correlation",
-        "query and (match_time geq '2024/04/08 07:22:54')",
+        "(query) and (match_time geq '2024/04/08 07:22:54')",
         10,
         1,
         0,
@@ -8348,7 +8348,7 @@ def test_fetch_incidents_offset(mocker: MockerFixture):
     assert "CORRELATION" in entries[0]["rawJSON"]
     assert mock_get_query_entries.call_args_list[0].args == (
         "Correlation",
-        "query and (match_time geq '2024/04/08 07:22:54')",
+        "(query) and (match_time geq '2024/04/08 07:22:54')",
         5,
         1,
         0,
@@ -8365,7 +8365,7 @@ def test_fetch_incidents_offset(mocker: MockerFixture):
     assert "CORRELATION" in entries[0]["rawJSON"]
     assert mock_get_query_entries.call_args_list[1].args == (
         "Correlation",
-        "query and (match_time geq '2024/04/08 07:22:54')",
+        "(query) and (match_time geq '2024/04/08 07:22:54')",
         5,
         1,
         5,
@@ -8623,7 +8623,7 @@ class TestDynamicUpdateCommands:
 
         mock_return_results = mocker.patch("Panorama.return_results")
 
-        panorama_check_latest_dynamic_update_command({"args": {"target": "1337"}})
+        panorama_check_latest_dynamic_update_command({"target": "1337"})
 
         # Prepare results for comparison
         returned_commandresults: CommandResults = mock_return_results.call_args[0][0]
@@ -8633,6 +8633,211 @@ class TestDynamicUpdateCommands:
             "Version|Currently Installed Version|\n|---|---|---|---|\n| Content | True | 8987-9481 | 8987-9481 |\n| "
             "AntiVirus | False | 5212-5732 | 5211-5731 |\n| WildFire | False | 986250-990242 | 986026-990018 |\n| GP | "
             "True | 98-260 | 98-260 |\n\n\n**Total Content Types Outdated: 2**"
+        )
+
+        assert returned_commandresults.outputs == expected_returned_output
+        assert returned_commandresults.readable_output == expected_returned_readable
+
+    def test_panorama_check_latest_dynamic_update_panorama_instance(self, mocker):
+        """
+        Given:
+            - A panorama instance (VSYS instance parameter is set to '').
+            - target argument is not specified (set to '').
+
+        When:
+            - Calling the panorama_check_latest_dynamic_update_command.
+
+        Then:
+            - Verify that an exception is raised askung the user to specify a target firewall
+            when running from a Panorama instance.
+
+        """
+        from Panorama import panorama_check_latest_dynamic_update_command
+
+        # VSYS global variable is set to '' by default, which means we are simulating a run from a Panorama instance.
+
+        mocker.patch("Panorama.VSYS", "")
+
+        with pytest.raises(DemistoException) as e:
+            panorama_check_latest_dynamic_update_command({"target": ""})
+        assert "When running from a Panorama instance, you must specify the target argument." in str(e.value)
+
+    def test_panorama_check_latest_dynamic_update_command_empty_response(self, mocker):
+        """
+        Tests the scenario were the response from the 'panorama_check_latest_dynamic_update_content' api call, includes no
+        entries - which means that the Firewall probably doesn't have any App/Threat or Antivirus, or Wildfire or GP
+        installed.
+
+        Given:
+            - a Panorama instance.
+            - Mock response for the 'panorama_check_latest_dynamic_update_content' api call, with no entries.
+
+        When:
+            - Calling the panorama_check_latest_dynamic_update_command.
+
+        Then:
+            - Verify that the outputs include no versions (all versions set to N/A).
+            - Verify that the expected debug log is created.
+
+        """
+        from Panorama import panorama_check_latest_dynamic_update_command
+
+        mocker.patch(
+            "Panorama.panorama_check_latest_dynamic_update_content",
+            return_value={
+                "response": {
+                    "@status": "success",
+                    "result": {"content-updates": {"@last-updated-at": "2025/06/11 13:40:16 PDT", "entry": []}},
+                }
+            },
+        )
+
+        mock_return_results = mocker.patch("Panorama.return_results")
+        mock_debug = mocker.patch.object(demisto, "debug")
+
+        panorama_check_latest_dynamic_update_command({"target": "1337"})
+
+        # Prepare results for comparison
+        returned_commandresults: CommandResults = mock_return_results.call_args[0][0]
+        expected_returned_output = {
+            "Content": {"LatestAvailable": {}, "CurrentlyInstalled": {}, "IsUpToDate": False},
+            "AntiVirus": {"LatestAvailable": {}, "CurrentlyInstalled": {}, "IsUpToDate": False},
+            "WildFire": {"LatestAvailable": {}, "CurrentlyInstalled": {}, "IsUpToDate": False},
+            "GP": {"LatestAvailable": {}, "CurrentlyInstalled": {}, "IsUpToDate": False},
+            "ContentTypesOutOfDate": {"Count": 4},
+        }
+        expected_returned_readable = (
+            "### Dynamic Update Status Summary\n|Update Type|Is Up To Date|Latest Available "
+            "Version|Currently Installed Version|\n|---|---|---|---|\n| Content | False | N/A | N/A |"
+            "\n| AntiVirus | False | N/A | N/A |\n| WildFire | False | N/A | N/A |\n| GP | False | N/A "
+            "| N/A |\n\n\n**Total Content Types Outdated: 4**"
+        )
+
+        assert mock_debug.call_args[0][0] == (
+            "No available updates " "(Firewall probably doesn't have any global-protect-clientless-vpn installed)."
+        )
+        assert returned_commandresults.outputs == expected_returned_output
+        assert returned_commandresults.readable_output == expected_returned_readable
+
+    def test_panorama_check_latest_dynamic_update_command_no_gp_license(self, mocker):
+        """
+        Tests the scenario were there is no Global Protect license on the Firewall.
+
+        Given:
+            - a Panorama instance.
+            - Mock response for the 'panorama_check_latest_dynamic_update_content' api call, with an exception regfarding the
+            GP missing license.
+
+        When:
+            - Calling the panorama_check_latest_dynamic_update_command.
+
+        Then:
+            - Verify that the outputs include the versions of the content, wildfire and antivirus, and the error message
+              egarding the gp missing license.
+            - Verify that the human readable output includes the versions of the versions of the content, wildfire and
+              antivirus, and the error message regarding the gp missing license.
+        """
+
+        from Panorama import panorama_check_latest_dynamic_update_command
+
+        # Side-effect function to return the proper NGFW API response for the requested dynamic update type
+        def side_effect_function(update_type, target):
+            if update_type.name == "APP_THREAT":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_app-threat.json")
+
+            elif update_type.name == "ANTIVIRUS":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_antivirus.json")
+
+            elif update_type.name == "WILDFIRE":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_wildfire.json")
+
+            elif update_type.name == "GP":
+                raise Exception("There is no Global Protext Gateway license on the box")
+
+            else:
+                return None
+
+        mock_api_call = mocker.patch("Panorama.panorama_check_latest_dynamic_update_content")
+        mock_api_call.side_effect = side_effect_function
+
+        mock_return_results = mocker.patch("Panorama.return_results")
+
+        panorama_check_latest_dynamic_update_command({"target": "1337"})
+
+        # Prepare results for comparison
+        returned_commandresults: CommandResults = mock_return_results.call_args[0][0]
+        expected_returned_output = load_json(
+            "test_data/pan-os-check-latest-dynamic-update-status_expected-returned-outputs-no-gp" "-license.json"
+        )
+        expected_returned_readable = (
+            "### Dynamic Update Status Summary\n|Update Type|Is Up To Date|Latest Available "
+            "Version|Currently Installed Version|\n|---|---|---|---|\n| Content | True | 8987-9481 | 8987-9481 |\n| "
+            "AntiVirus | False | 5212-5732 | 5211-5731 |\n| WildFire | False | 986250-990242 | 986026-990018 |\n| GP | "
+            "False | An Error received from Panorama API: 'There is no Global Protect Gateway license on the box.' |"
+            " N/A |\n\n\n**Total Content Types Outdated: 2**"
+        )
+
+        assert returned_commandresults.outputs == expected_returned_output
+        assert returned_commandresults.readable_output == expected_returned_readable
+
+    def test_panorama_check_latest_dynamic_update_command_no_wildfire_license(self, mocker):
+        """
+        Tests the scenario were there is no WildFire license on the Firewall.
+
+        Given:
+            - a Panorama instance.
+            - Mock response for the 'panorama_check_latest_dynamic_update_content' api call, with an exception regarding the
+            WildFire missing license.
+
+        When:
+            - Calling the panorama_check_latest_dynamic_update_command.
+
+        Then:
+            - Verify that the outputs include the versions of the content, antivirus and the error message regarding
+              the WildFire missing license.
+            - Verify that the human-readable output includes the versions of the versions of the content, antivirus and
+              the error message regarding the WildFire missing license.
+        """
+
+        from Panorama import panorama_check_latest_dynamic_update_command
+
+        # Side-effect function to return the proper NGFW API response for the requested dynamic update type
+        def side_effect_function(update_type, target):
+            if update_type.name == "APP_THREAT":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_app-threat.json")
+
+            elif update_type.name == "ANTIVIRUS":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_antivirus.json")
+
+            elif update_type.name == "GP":
+                return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_gp.json")
+
+            elif update_type.name == "WILDFIRE":
+                raise Exception("There is not wildfire license on the box")
+
+            else:
+                return None
+
+        mock_api_call = mocker.patch("Panorama.panorama_check_latest_dynamic_update_content")
+        mock_api_call.side_effect = side_effect_function
+
+        mock_return_results = mocker.patch("Panorama.return_results")
+
+        panorama_check_latest_dynamic_update_command({"target": "1337"})
+
+        # Prepare results for comparison
+        returned_commandresults: CommandResults = mock_return_results.call_args[0][0]
+        expected_returned_output = load_json(
+            "test_data/pan-os-check-latest-dynamic-update-status_expected-returned-outputs-no-wildfire" "-license.json"
+        )
+        expected_returned_readable = (
+            "### Dynamic Update Status Summary\n|Update Type|Is Up To Date|Latest Available "
+            "Version|Currently Installed Version|\n|---|---|---|---|\n|"
+            " Content | True | 8987-9481 | 8987-9481 |\n| "
+            "AntiVirus | False | 5212-5732 | 5211-5731 |\n|"
+            " WILDFIRE | False | An Error received from Panorama API: 'There is not wildfire license on the box.' | N/A |\n|"
+            " GP | True | 98-260 | 98-260 |\n\n\n"
+            "**Total Content Types Outdated: 1**"
         )
 
         assert returned_commandresults.outputs == expected_returned_output

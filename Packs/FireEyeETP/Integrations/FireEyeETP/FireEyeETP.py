@@ -314,7 +314,9 @@ def search_messages_command():
     # create readable data
     messages_readable_data = [readable_message_data(message) for message in messages_context]
     messages_md_headers = ["Message ID", "Accepted Time", "From", "Recipients", "Subject", "Message Status"]
-    md_table = tableToMarkdown("FireEye ETP - Search Messages", messages_readable_data, headers=messages_md_headers)
+    md_table = tableToMarkdown(
+        "Trellix Email Security - Cloud - Search Messages", messages_readable_data, headers=messages_md_headers
+    )
 
     entry = {
         "Type": entryTypes["note"],
@@ -346,7 +348,9 @@ def get_message_command():
         # create readable data
         message_readable_data = readable_message_data(context_data)
         messages_md_headers = ["Message ID", "Accepted Time", "From", "Recipients", "Subject", "Message Status"]
-        md_table = tableToMarkdown("FireEye ETP - Get Message", message_readable_data, headers=messages_md_headers)
+        md_table = tableToMarkdown(
+            "Trellix Email Security - Cloud - Get Message", message_readable_data, headers=messages_md_headers
+        )
 
         entry = {
             "Type": entryTypes["note"],
@@ -364,7 +368,7 @@ def get_message_command():
             "Contents": {},
             "ContentsFormat": formats["text"],
             "ReadableContentsFormat": formats["markdown"],
-            "HumanReadable": "### FireEye ETP - Get Message \n no results",
+            "HumanReadable": "### Trellix Email Security - Cloud - Get Message \n no results",
         }
         demisto.results(entry)
 
@@ -477,7 +481,9 @@ def get_alerts_command():
         "Email Status",
         "Threat Intel",
     ]
-    md_table = tableToMarkdown("FireEye ETP - Get Alerts", alerts_readable_data, headers=alerts_summery_headers)
+    md_table = tableToMarkdown(
+        "Trellix Email Security - Cloud - Get Alerts", alerts_readable_data, headers=alerts_summery_headers
+    )
     entry = {
         "Type": entryTypes["note"],
         "Contents": alerts_raw,
@@ -611,7 +617,7 @@ def get_alert_command():
             "Contents": alert_raw,
             "ContentsFormat": formats["json"],
             "ReadableContentsFormat": formats["markdown"],
-            "HumanReadable": f"## FireEye ETP - Get Alert\n{alert_md_table}\n{malware_md_table}",
+            "HumanReadable": f"## Trellix Email Security - Cloud - Get Alert\n{alert_md_table}\n{malware_md_table}",
             "EntryContext": {"FireEyeETP.Alerts(obj.id==val.id)": alert_context},
         }
         demisto.results(entry)
@@ -622,7 +628,7 @@ def get_alert_command():
             "Contents": {},
             "ContentsFormat": formats["json"],
             "ReadableContentsFormat": formats["markdown"],
-            "HumanReadable": "### FireEye ETP - Get Alert\nno results",
+            "HumanReadable": "### Trellix Email Security - Cloud - Get Alert\nno results",
         }
         demisto.results(entry)
 

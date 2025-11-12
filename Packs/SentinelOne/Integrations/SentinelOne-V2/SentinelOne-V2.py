@@ -115,14 +115,24 @@ class Client(BaseClient):
         response = self._http_request(method="DELETE", url_suffix="restrictions", json_data=body)
         return response.get("data") or {}
 
-    def add_hash_to_blocklist_request(self, value, os_type, description="", source="") -> dict:
+    def add_hash_to_blocklist_request(self, value, sha256Value, os_type, description="", source="") -> dict:
         """
         Only supports adding to the Global block list
         """
         # We do not use the assign_params function, because if these values are empty or None, we still want them
         # sent to the server
 
-        data = {"value": value, "source": source, "osType": os_type, "type": "black_hash", "description": description}
+        value = value or ""
+        sha256Value = sha256Value or ""
+
+        data = {
+            "value": value,
+            "sha256Value": sha256Value,
+            "source": source,
+            "osType": os_type,
+            "type": "black_hash",
+            "description": description,
+        }
 
         filt = {"tenant": True}
 
@@ -134,6 +144,7 @@ class Client(BaseClient):
     def add_hash_to_blocklists_request(
         self,
         value,
+        sha256Value,
         os_type,
         site_ids="",
         description="",
@@ -156,8 +167,12 @@ class Client(BaseClient):
         if not filt:
             filt["tenant"] = True
 
+        value = value or ""
+        sha256Value = sha256Value or ""
+
         data = {
             "value": value,
+            "sha256Value": sha256Value,
             "source": source,
             "osType": os_type,
             "type": "black_hash",
@@ -3069,11 +3084,23 @@ def get_processes(client: Client, args: dict) -> CommandResults:
 
 def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
     """
-    Add a hash to the blocklist (SentinelOne Term: Blacklist)
+    Add a hash (SHA1 and/or SHA256) to the blocklist (SentinelOne Term: Blacklist)
     """
     sha1 = args.get("sha1")
-    if not sha1:
-        raise DemistoException("You must specify a valid SHA1 hash")
+    sha256 = args.get("sha256Value")
+
+    if not sha1 and not sha256:
+        raise DemistoException("You must specify at least one valid SHA1 or SHA256 hash")
+
+    # Build hash string for readable_output
+    if sha1 and sha256:
+        hash_str = f"sha1={sha1}, sha256={sha256}"
+    elif sha1:
+        hash_str = f"sha1={sha1}"
+    elif sha256:
+        hash_str = f"sha256={sha256}"
+    else:
+        hash_str = "no hash provided"
 
     # Combine block_site_ids from integration params with site_ids from command args
     block_site_ids = client.block_site_ids or []
@@ -3085,7 +3112,7 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
     account_ids = args.get("account_ids")
 
     try:
-        # If any scope is provided, use the scoped request
+        # Scoped request if any scope provided
         if site_ids_str or group_ids or account_ids:
             scope_map = {
                 "site_ids": ("site", site_ids_str),
@@ -3094,10 +3121,11 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
             }
             scope_parts = [f"{label}: {value}" for key, (label, value) in scope_map.items() if value]
             scope_str = ", ".join(scope_parts) if scope_parts else "unknown"
-            demisto.debug(f"Adding sha1 {sha1} to blocklist with scopes: {scope_str}")
+            demisto.debug(f"Adding {hash_str} to blocklist with scopes: {scope_str}")
 
             result = client.add_hash_to_blocklists_request(
                 value=sha1,
+                sha256Value=sha256,
                 description=args.get("description"),
                 os_type=args.get("os_type"),
                 site_ids=site_ids_str,
@@ -3105,24 +3133,38 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
                 account_ids=account_ids,
                 source=args.get("source"),
             )
-            status = {"hash": sha1, "status": f"Added to {scope_str} blocklist"}
-            # Add scope info to status if present
-            scope_vars = {
-                "site_ids": site_ids_str,
-                "group_ids": group_ids,
-                "account_ids": account_ids,
-            }
-            for key, value in scope_vars.items():
-                if value:
-                    status[key] = value
+
+            status = {"hash": sha1 or sha256, "status": f"Added to {scope_str} blocklist"}
+            if sha1:
+                status["sha1"] = sha1
+            if sha256:
+                status["sha256"] = sha256
+
+            # Add scope info dynamically
+            if site_ids_str:
+                status["site_ids"] = site_ids_str
+            if group_ids:
+                status["group_ids"] = group_ids
+            if account_ids:
+                status["account_ids"] = account_ids
+
         else:
+            # Global blocklist
+            demisto.debug(f"Adding {hash_str} to global blocklist")
             result = client.add_hash_to_blocklist_request(
                 value=sha1,
+                sha256Value=sha256,
                 description=args.get("description"),
                 os_type=args.get("os_type"),
                 source=args.get("source"),
             )
-            status = {"hash": sha1, "status": "Added to global blocklist"}
+
+            status = {"hash": sha1 or sha256, "status": "Added to global blocklist"}
+            if sha1:
+                status["sha1"] = sha1
+            if sha256:
+                status["sha256"] = sha256
+
     except DemistoException as e:
         # When adding a hash to the blocklist that is already on the blocklist,
         # SentinelOne returns an error code, resuliting in the request raising an exception
@@ -3138,18 +3180,28 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
             detail = error.get("detail", "")
 
             if code == 4000030 and title == "Already Exists Error":
-                status = {"hash": sha1, "status": "Already on blocklist"}
+                status = {"hash": sha1 or sha256, "status": "Already on blocklist"}
+                if sha1:
+                    status["sha1"] = sha1
+                if sha256:
+                    status["sha256"] = sha256
                 result = js
             elif code == 4000010 and title == "Validation Error":
-                status = {"hash": sha1, "status": f"Error: Invalid siteId - {detail}"}
+                status = {"hash": sha1 or sha256, "status": f"Error: Invalid siteId - {detail}"}
+                if sha1:
+                    status["sha1"] = sha1
+                if sha256:
+                    status["sha256"] = sha256
                 result = js
             else:
                 raise e
         else:
             raise e
 
+    readable_output = f"{hash_str}: {status['status']}."
+
     return CommandResults(
-        readable_output=f"{sha1}: {status['status']}.",
+        readable_output=readable_output,
         outputs_prefix="SentinelOne.AddHashToBlocklist",
         outputs_key_field="Value",
         # `status` instead of `result` because we modify status based on the error/exception comments above
@@ -3159,12 +3211,12 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
 
 
 def get_hash_ids_from_blocklist(
-    client: Client, sha1: str, os_type: str = None, site_ids: str = None, group_ids: str = None, account_ids: str = None
+    client: Client, hash_value: str, os_type: str = None, site_ids: str = None, group_ids: str = None, account_ids: str = None
 ) -> list[str | None]:
     """
     Return the IDs of the hash from the blocklist. Helper function for remove_hash_from_blocklist
 
-    A hash can occur more than once if it is blocked on more than one platform (Windwos, MacOS, Linux)
+    A hash (SHA1 or SHA256) can occur more than once if it is blocked on more than one platform (Windows, MacOS, Linux)
     """
     ret: list = []
 
@@ -3191,12 +3243,18 @@ def get_hash_ids_from_blocklist(
             # This is important because the blocklist can have multiple entries for the same hash
             sort_by="updatedAt",
             sort_order="asc",
-            value_contains=sha1,
+            value_contains=hash_value,
         )
     else:
         PAGE_SIZE = 4
         block_list = client.get_blocklist_request(
-            tenant=True, skip=0, limit=PAGE_SIZE, os_type=os_type, sort_by="updatedAt", sort_order="asc", value_contains=sha1
+            tenant=True,
+            skip=0,
+            limit=PAGE_SIZE,
+            os_type=os_type,
+            sort_by="updatedAt",
+            sort_order="asc",
+            value_contains=hash_value,
         )
 
         # Validation check first
@@ -3204,9 +3262,14 @@ def get_hash_ids_from_blocklist(
             raise DemistoException("Received more than 3 results when querying by hash. This condition should not occur")
 
     for block_entry in block_list:
-        # Second validation. E.g. if user passed in a hash value shorter than SHA1 length
-        if (value := block_entry.get("value")) and value.lower() == sha1.lower():
-            ret.append(block_entry.get("id"))
+        # Second validation. E.g. if user passed in a hash value shorter than SHA1/SHA256 length
+        candidates = [
+            block_entry.get("value"),
+            block_entry.get("sha256Value"),
+        ]
+        for candidate in candidates:
+            if candidate and candidate.lower() == hash_value.lower():
+                ret.append(block_entry.get("id"))
 
     return ret
 
@@ -3216,42 +3279,42 @@ def remove_hash_from_blocklist(client: Client, args: dict) -> CommandResults:
     Remove a hash from the blocklist (SentinelOne Term: Blacklist)
     """
     sha1 = args.get("sha1")
-    if not sha1:
-        raise DemistoException("You must specify a valid Sha1 hash")
+    sha256 = args.get("sha256Value")
     os_type = args.get("os_type", None)
 
     site_ids = args.get("site_ids")
     group_ids = args.get("group_ids")
     account_ids = args.get("account_ids")
 
-    if site_ids or group_ids or account_ids:
-        # If any scope is provided, use the scoped request
-        scope_parts = []
-        if site_ids:
-            scope_parts.append(f"sites={site_ids}")
-        if group_ids:
-            scope_parts.append(f"groups={group_ids}")
-        if account_ids:
-            scope_parts.append(f"accounts={account_ids}")
-        scope_str = ", ".join(scope_parts)
-        demisto.debug(f"Removing sha1 {sha1} from blocklist with scopes: {scope_str}")
-    else:
-        demisto.debug(f"Removing sha1 {sha1} from blocklist with all scopes")
+    hash_ids = []
+    # Separate lists: one for context (raw hashes), one for War Room readability
+    hash_values = []
+    readable_labels = []
 
     try:
-        hash_ids = get_hash_ids_from_blocklist(client, sha1, os_type, site_ids, group_ids, account_ids)
+        if sha1:
+            hash_values.append(sha1)
+            ids = get_hash_ids_from_blocklist(client, sha1, os_type, site_ids, group_ids, account_ids)
+            hash_ids.extend(ids)
+            readable_labels.append(f"sha1={sha1}")
+
+        if sha256:
+            hash_values.append(sha256)
+            ids = get_hash_ids_from_blocklist(client, sha256, os_type, site_ids, group_ids, account_ids)
+            hash_ids.extend(ids)
+            readable_labels.append(f"sha256={sha256}")
 
         if not hash_ids:
-            status = {"hash": sha1, "status": "Not on blocklist"}
+            status = {"hash": ", ".join(hash_values), "status": "Not on blocklist"}
             result = None
         else:
             result = []
             numRemoved = 0
-            for hash_id in hash_ids:
+            for hash_id in set(hash_ids):
                 numRemoved += 1
                 result.append(client.remove_hash_from_blocklist_request(hash_id=hash_id))
 
-            status = {"hash": sha1, "status": f"Removed {numRemoved} entries from blocklist"}
+            status = {"hash": ", ".join(hash_values), "status": f"Removed {numRemoved} entries from blocklist"}
 
     except DemistoException as e:
         # Handle validation error for invalid siteId (4000010 error code)
@@ -3263,15 +3326,14 @@ def remove_hash_from_blocklist(client: Client, args: dict) -> CommandResults:
             and (error := errors[0]).get("code") == 4000010
             and error.get("title") == "Validation Error"
         ):
-            # Specific case for invalid siteId
-            status = {"hash": sha1, "status": f"Error: Invalid siteId - {error.get('detail')}"}
-            result = js  # You can return the full response for debugging or logging purposes
+            status = {"hash": ", ".join(hash_values), "status": f"Error: Invalid siteId - {error.get('detail')}"}
+            result = js
         else:
             # Reraise the exception if it's not the expected validation error
             raise e
 
     return CommandResults(
-        readable_output=f"{sha1}: {status['status']}.",
+        readable_output=f"{', '.join(readable_labels)}: {status['status']}.",
         outputs_prefix="SentinelOne.RemoveHashFromBlocklist",
         outputs_key_field="Value",
         outputs=status,
@@ -3294,7 +3356,11 @@ def get_blocklist(client: Client, args: dict) -> CommandResults:
     group_ids = args.get("group_ids", None)
     site_ids = args.get("site_ids", None)
     account_ids = args.get("account_ids", None)
-    value = args.get("hash", None)
+    # Accept legacy 'hash' argument, fallback to sha1 or sha256
+    legacy_hash = args.get("hash")
+    sha1 = args.get("sha1")
+    sha256 = args.get("sha256Value")
+    value_contains = legacy_hash or sha1 or sha256
 
     contents = []
 
@@ -3307,8 +3373,12 @@ def get_blocklist(client: Client, args: dict) -> CommandResults:
         limit=limit,
         sort_by=sort_by,
         sort_order=sort_order,
-        value_contains=value,
+        value_contains=value_contains,
     )
+
+    def get_hash_from_block_entry(block: dict) -> str | None:
+        return block.get("value") or block.get("sha256Value")
+
     for block in block_list:
         contents.append(
             {
@@ -3322,7 +3392,7 @@ def get_blocklist(client: Client, args: dict) -> CommandResults:
                 "Type": block.get("type"),
                 "UpdatedAt": block.get("updatedAt"),
                 "UserId": block.get("userId"),
-                "Value": block.get("value"),
+                "Value": get_hash_from_block_entry(block),
             }
         )
 

@@ -31,7 +31,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.12.11.4417419
+dockerimage: demisto/python3:3.12.12.5490952
 enabled: true
 name: SearchIndicatorAgentix
 outputs:
@@ -65,5 +65,3 @@ tests:
 - No tests (auto formatted)
 marketplaces:
   - platform
-supportedModules:
-  - agentix

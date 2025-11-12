@@ -2,7 +2,7 @@
     "name": "Splunk",
     "description": "Run queries on Splunk servers.",
     "support": "xsoar",
-    "currentVersion": "3.2.19",
+    "currentVersion": "3.3.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -56,6 +56,11 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam",
+        "cloud_posture",
+        "edr",
+        "cloud",
+        "cloud_runtime_security"
     ]
 }
