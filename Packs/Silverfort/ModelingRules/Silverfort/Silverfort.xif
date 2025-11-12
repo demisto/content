@@ -24,7 +24,7 @@ alter
     xdm.target.domain = if(dntdom != "", dntdom),
     xdm.event.description = if(msg != "", msg),
     xdm.alert.severity = cs1,
-    xdm.event.outcome = if(cs2 contains "Allowed", XDM_CONST.OUTCOME_SUCCESS, cs2 contains "Denied", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome = if(cs2 contains "Allowed", XDM_CONST.OUTCOME_SUCCESS, cs2 contains "Denied", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
     xdm.observer.action = if(cs3 != "n/a",cs3),
     xdm.alert.risks = split(risks ,","),
     xdm.network.rule = if(cs8 != "n/a", replace(cs8, "_", " ")),
