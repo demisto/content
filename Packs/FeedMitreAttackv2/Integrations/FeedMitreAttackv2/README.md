@@ -187,10 +187,19 @@ Looks up the reputation of the indicator in the Enterprise collection only.
 
 #### Command Example
 
-``````
+```!attack-pattern attack_pattern="Search Threat Vendor Data"```
 
 #### Human Readable Output
 
+##### MITRE ATTACK
+
+###### Name: Search Threat Vendor Data - ID: T1681
+
+Threat actors may seek information/indicators from closed or open threat intelligence sources gathered about their own campaigns, as well as those conducted by other adversaries that may align with their target industries, capabilities/objectives, or other operational concerns. These reports may include descriptions of behavior, detailed breakdowns of attacks, atomic indicators such as malware hashes or IP addresses, timelines of a group’s activity, and more. Adversaries may change their behavior when planning their future operations.
+
+Adversaries have been observed replacing atomic indicators mentioned in blog posts in under a week. Adversaries have also been seen searching for their own domain names in threat vendor data and then taking them down, likely to avoid seizure or further investigation.
+
+This technique is distinct from [Threat Intel Vendors](https://attack.mitre.org/techniques/T1597/001) in that it describes threat actors performing reconnaissance on their own activity, not in search of victim information.
 
 ## Troubleshooting
 
