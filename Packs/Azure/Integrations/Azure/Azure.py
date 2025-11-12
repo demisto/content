@@ -381,11 +381,15 @@ class AzureClient:
         method: str,
         url_suffix: str | None = None,
         full_url: str | None = None,
-        params: dict | None = {},
+        params: dict[str, Any] = {},
         resp_type: str = "json",
         json_data: dict | None = None,
         data: dict | bytes | None = None,
     ) -> requests.Response | dict[str, Any]:
+        if not params:
+            params = {}
+        if not self.headers:
+            self.headers = {}
         if not params.get("api-version") and "x-ms-version" not in self.headers:
             params["api-version"] = API_VERSION
 
@@ -760,7 +764,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def storage_container_set_headers(self, custom_headers: dict = None):
+    def storage_container_set_headers(self, custom_headers: dict = {}):
         """
         Set the headers for the storage container request.
         Args:
@@ -797,7 +801,7 @@ class AzureClient:
 
         response = self.http_request(method="GET", full_url=full_url, params=params, resp_type="response")
 
-        return response
+        return response  # type: ignore[return-value]
 
     def create_storage_container_request(self, container_name: str, account_name: str) -> requests.Response:
         """
@@ -817,7 +821,7 @@ class AzureClient:
 
         response = self.http_request(method="PUT", full_url=full_url, params=params, resp_type="response")
 
-        return response
+        return response  # type: ignore[return-value]
 
     def delete_storage_container_request(self, container_name: str, account_name: str) -> None:
         """
@@ -867,13 +871,21 @@ class AzureClient:
                 }
                 self.storage_container_set_headers(headers)
 
-                response = self.http_request(method="PUT", full_url=full_url, data=file_data, resp_type="response")
+                # Convert file_data to bytes if it's not already
+                response = self.http_request(
+                    method="PUT",
+                    full_url=full_url,
+                    data=file_data.read() if hasattr(file_data, "read") else file_data,  # type: ignore[attr-defined]
+                    resp_type="response",
+                )
 
-                return response
+                return response  # type: ignore[return-value]
         except Exception as e:
             raise DemistoException(f"Unable to read file with id {file_entry_id}", e)
 
-    def storage_container_blob_get_request(self, container_name: str, blob_name: str, account_name: str) -> requests.Response:
+    def storage_container_blob_get_request(
+        self, container_name: str, blob_name: str, account_name: str
+    ) -> requests.Response | dict[str, Any]:  # noqa: E501
         """
         Get a blob from a storage container.
         Args:
@@ -890,7 +902,9 @@ class AzureClient:
 
         return response
 
-    def storage_container_blob_tag_get_request(self, container_name: str, blob_name: str, account_name: str) -> str:
+    def storage_container_blob_tag_get_request(
+        self, container_name: str, blob_name: str, account_name: str
+    ) -> requests.Response | dict[str, Any] | str:  # noqa: E501
         """
         Get the tags of a blob from a storage container.
         Args:
@@ -913,7 +927,7 @@ class AzureClient:
         blob_name: str,
         tags: bytes,
         account_name: str,
-    ) -> requests.Response:
+    ) -> requests.Response | dict[str, Any]:
         """
         Set the tags for a blob in a storage container.
         Args:
@@ -938,7 +952,7 @@ class AzureClient:
 
     def storage_container_blob_property_get_request(
         self, container_name: str, blob_name: str, account_name: str
-    ) -> requests.Response:
+    ) -> requests.Response | dict[str, Any]:
         """
         Retrieve Blob properties.
 
@@ -960,7 +974,7 @@ class AzureClient:
 
     def storage_container_blob_properties_set_request(
         self, container_name: str, blob_name: str, account_name: str, headers: dict
-    ) -> requests.Response:
+    ) -> requests.Response | dict[str, Any]:
         """
         Set Blob properties.
 
@@ -2845,7 +2859,7 @@ def storage_container_blob_create_command(client: AzureClient, params: dict, arg
     return command_results
 
 
-def storage_container_blob_get_command(client: AzureClient, params: dict, args: dict) -> fileResult:
+def storage_container_blob_get_command(client: AzureClient, params: dict, args: dict) -> Any:
     """
     Retrieve Blob from Container.
 
@@ -2863,7 +2877,10 @@ def storage_container_blob_get_command(client: AzureClient, params: dict, args: 
 
     response = client.storage_container_blob_get_request(container_name, blob_name, account_name)
 
-    return fileResult(filename=blob_name, data=response.content)
+    if hasattr(response, "content"):
+        return fileResult(filename=blob_name, data=response.content)  # type: ignore[attr-defined]
+    else:
+        raise DemistoException(f"Failed to get content from response for blob {blob_name}")
 
 
 def storage_container_blob_tag_get_command(client: AzureClient, params: dict, args: dict):
@@ -3003,7 +3020,10 @@ def storage_container_blob_property_get_command(client: AzureClient, params: dic
 
     response = client.storage_container_blob_property_get_request(container_name, blob_name, account_name)
 
-    raw_response = response.headers
+    if not hasattr(response, "headers"):
+        raise DemistoException(f"Failed to get headers from response for blob {blob_name}")
+
+    raw_response = response.headers  # type: ignore[attr-defined]
     raw_response = dict(raw_response)  # Convert raw_response from 'CaseInsensitiveDict' to 'dict'
 
     response_headers = list(raw_response.keys())
