@@ -138,7 +138,10 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
         limit=max_fetch, start_date_time=last_run.get("LastRun")
     )
 
-    return records, {"LastRun": records[-1]["_time"]}
+    if records:
+        last_run =  {"LastRun": records[0]["_time"]}
+
+    return records, last_run
 
 
 def test_module(client: Client, args: dict):
