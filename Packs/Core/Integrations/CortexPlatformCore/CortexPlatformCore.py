@@ -464,7 +464,7 @@ def search_asset_groups_command(client: Client, args: dict) -> List[CommandResul
         CommandResults: Object containing the formatted asset groups,
                         raw response, and outputs for integration context.
     """
-    limit = args.get("limit") or 50
+    limit = arg_to_number(args.get("limit")) or 50
     filter_builder = FilterBuilder()
     filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_name"], FilterType.CONTAINS, argToList(args.get("name")))
     filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_type"], FilterType.EQ, args.get("type"))
@@ -502,20 +502,10 @@ def search_asset_groups_command(client: Client, args: dict) -> List[CommandResul
 
     filter_count = reply.get("FILTER_COUNT", "0")
     returned_count = min(int(filter_count), limit)
-
     command_results.append(
         CommandResults(
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Metadata.AssetGroups.returned_count",
-            outputs=returned_count,
-            readable_output= f"returned_count = {returned_count}"
-        )
-    )
-
-    command_results.append(
-        CommandResults(
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Metadata.AssetGroups.filtered_count",
-            outputs=filter_count,
-            readable_output= f"filter_count = {filter_count}"
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroupsMetadata",
+            outputs={"filter_count": filter_count, "returned_count": returned_count},
         )
     )
 
