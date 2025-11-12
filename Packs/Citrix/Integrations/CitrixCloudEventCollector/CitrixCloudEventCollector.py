@@ -10,76 +10,11 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 VENDOR = "Citrix"
 PRODUCT = "Cloud"
+#max value
 RECORDS_REQUEST_LIMIT = "200"
 ACCESS_TOKEN_CONST = "access_token"
-CONTINUATION_TOKEN_CONST = "continuation_token"
 SOURCE_LOG_TYPE = "systemlog"
-RECORDS_DATE_FORMAT = "%m/%d/%Y %H:%M:%S"
-EVENT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
-RES_EXAMPLE = {
-    "Items": [
-        {
-            "RecordId": "1",
-            "UtcTimestamp": "2020-07-20T14:26:59.6103585Z",
-            "CustomerId": "hulk",
-            "EventType": "delegatedadministration:administrator/create",
-            "TargetId": "6233644161364977157",
-            "TargetDisplayName": "[testcduser1@gmail.com](mailto:testcduser1@gmail.com)",
-            "TargetEmail": "[testcduser1@gmail.com](mailto:testcduser1@gmail.com)",
-            "TargetUserId": "a90b4449675f4fcf97e1663623334d74",
-            "TargetType": "administrator",
-            "BeforeChanges": None,
-            "AfterChanges": {
-                "CustomerId": "hulk",
-                "Principal": "[testcduser1@gmail.com](mailto:testcduser1@gmail.com)",
-                "UserId": "6233644161364977157",
-                "AccessType": "Full",
-                "CreatedDate": "09/10/2025 14:26:53",
-                "UpdatedDate": "09/10/2025 14:26:53",
-                "DisplayName": "Rafa Doe",
-                "Pending": "False",
-            },
-            "AgentId": "delegatedadministration",
-            "ServiceProfileName": None,
-            "ActorId": None,
-            "ActorDisplayName": "CwcSystem",
-            "ActorType": "system",
-            "Message": {"en-US": "Created new administrator user '6233644161364977157'."},
-        },
-        {
-            "RecordId": "2",
-            "UtcTimestamp": "2020-07-20T14:26:59.6103585Z",
-            "CustomerId": "hulk",
-            "EventType": "delegatedadministration:administrator/create",
-            "TargetId": "6233644161364977157",
-            "TargetDisplayName": "[testcduser1@gmail.com](mailto:testcduser1@gmail.com)",
-            "TargetEmail": "[testcduser1@gmail.com](mailto:testcduser1@gmail.com)",
-            "TargetUserId": "a90b4449675f4fcf97e1663623334d74",
-            "TargetType": "administrator",
-            "BeforeChanges": None,
-            "AfterChanges": {
-                "CustomerId": "hulk",
-                "Principal": "[testcduser1@gmail.com](mailto:testcduser1@gmail.com)",
-                "UserId": "6233644161364977157",
-                "AccessType": "Full",
-                "CreatedDate": "09/10/2025 14:26:53",
-                "UpdatedDate": "09/10/2025 15:26:53",
-                "DisplayName": "Rafa Doe",
-                "Pending": "False",
-            },
-            "AgentId": "delegatedadministration",
-            "ServiceProfileName": None,
-            "ActorId": None,
-            "ActorDisplayName": "CwcSystem",
-            "ActorType": "system",
-            "Message": {"en-US": "Created new administrator user '6233644161364977157'."},
-        },
-    ],
-    "Count": 74,
-    "EstimatedTotalItems": 250,
-    "ContinuationToken": "+RID:~ry4EAP",
-}
 
 
 """ CLIENT CLASS """
@@ -94,9 +29,6 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
 
     def request_access_token(self):
-        # TODO: remove
-        demisto.setIntegrationContext({ACCESS_TOKEN_CONST: "access_token"})
-        return
 
         demisto.debug("prepare to create access token")
 
@@ -113,20 +45,22 @@ class Client(BaseClient):
         demisto.debug("access token created")
         return access_token
 
-    def get_records(self, start_date_time=None, continuation_token=None):
+    def get_records(self, start_date_time, continuation_token=None, limit=None):
         # get access token value
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get(ACCESS_TOKEN_CONST)
+
         if not access_token:
             access_token = self.request_access_token()
 
-        # set request params
-        params = {"limit": RECORDS_REQUEST_LIMIT}
-        if continuation_token:
-            params["continuationToken"] = continuation_token
+        params = assign_params(
+            Limit=RECORDS_REQUEST_LIMIT,
+            continuationToken=continuation_token,
+            startDateTime=start_date_time,
+        )
 
-        if start_date_time:
-            params["startDateTime"] = start_date_time
+        if limit and int(limit) <= 200:
+            params["Limit"] = limit
 
         headers = {
             "Authorization": f"CwsAuth Bearer={access_token}",
@@ -134,53 +68,42 @@ class Client(BaseClient):
             "Citrix-CustomerId": self.customer_id,
         }
 
-        # TODO: remove
-        return RES_EXAMPLE
-
+        # print(f"{integration_context=}")
+        # print(access_token)
+        print(params)
         demisto.info(f"Sending http request to get records with {params=}")
-        response = self._http_request("get", url_suffix="systemlog/records", headers=headers, params=params, ok_codes=[200, 401])
+        response = self._http_request("get", url_suffix="systemlog/records", headers=headers, params=params, ok_codes=[200, 401], resp_type="response")
 
         if response.status_code == 401:
+            print("Invalid bearer token")
             demisto.info("Invalid bearer token")
-            self.request_access_token()
-            access_token = integration_context.get(ACCESS_TOKEN_CONST)
-            headers["Authorization"] = (f"CwsAuth Bearer={access_token}",)
+            access_token = self.request_access_token()
+            headers["Authorization"] = f"CwsAuth Bearer={access_token}"
             demisto.info(f"Sending http request to get records with {params=}")
+
             return self._http_request("get", url_suffix="systemlog/records", headers=headers, params=params)
         else:
-            return response
+            return response.json()
 
-    def get_records_with_pagination(self, limit, start_date_time=None, continuation_token=None):
+    def get_records_with_pagination(self, limit, start_date_time):
         records: list[dict] = []
+        continuation_token = None
+        raw_res = None
 
-        while len(records) <= limit:
-            raw_res = self.get_records(start_date_time=start_date_time, continuation_token=continuation_token)
-            records.extend(raw_res.get("Items", []))
-            continuation_token = raw_res.get("ContinuationToken")
+        while len(records) < limit:
+            raw_res = self.get_records(start_date_time=start_date_time, continuation_token=continuation_token, limit=limit)
+            records.extend(raw_res.get("items", []))
+            continuation_token = raw_res.get("continuationToken")
 
             if not continuation_token:
                 break
 
-        self.add_fields_to_events(records)
-        return records[:limit], raw_res, continuation_token
+        for record in records:
+            record["_time"] = record.get("utcTimestamp")
 
-    def add_fields_to_events(self, events: list[dict]):
-        for event in events:
-            created_date = event.get("AfterChanges", {}).get("CreatedDate")
-            updated_date = event.get("AfterChanges", {}).get("UpdatedDate")
-            if created_date:
-                created_date = datetime.strptime(created_date, RECORDS_DATE_FORMAT)
-            if updated_date:
-                updated_date = datetime.strptime(updated_date, RECORDS_DATE_FORMAT)
+        return records[:limit], raw_res
 
-            event["source_log_type"] = SOURCE_LOG_TYPE
-            event["_time"] = created_date.strftime(EVENT_DATE_FORMAT)
 
-            # add _ENTRY_STATUS field
-            if updated_date == created_date or not updated_date:
-                event["_ENTRY_STATUS"] = "new"
-            elif updated_date > created_date:
-                event["_ENTRY_STATUS"] = "updated"
 
 
 """ HELPER FUNCTIONS """
@@ -193,7 +116,7 @@ def get_events_command(client: Client, args: dict):  # type: ignore
 
     demisto.debug(f"Running citrix-cloud-get-events with {should_push_events=}")
 
-    records, raw_res, _ = client.get_records_with_pagination(limit=int(limit), start_date_time=start_date_time)
+    records, raw_res = client.get_records_with_pagination(limit=int(limit), start_date_time=start_date_time)
 
     results = CommandResults(
         outputs_prefix="CitrixCloud.Event",
@@ -211,10 +134,11 @@ def get_events_command(client: Client, args: dict):  # type: ignore
 
 
 def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
-    records, _, continuation_token = client.get_records_with_pagination(
-        limit=max_fetch, continuation_token=last_run.get(CONTINUATION_TOKEN_CONST)
+    records, _ = client.get_records_with_pagination(
+        limit=max_fetch, start_date_time=last_run.get("LastRun")
     )
-    return records, {CONTINUATION_TOKEN_CONST: continuation_token}
+
+    return records, {"LastRun": records[-1]["_time"]}
 
 
 def test_module(client: Client, args: dict):
