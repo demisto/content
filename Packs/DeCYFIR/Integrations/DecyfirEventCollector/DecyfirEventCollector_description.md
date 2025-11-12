@@ -5,7 +5,6 @@
 Use this integration to collect Access Logs, Asset Logs, and Digital Risk Keyword Logs automatically from **DeCYFIR** into **Cortex XSIAM**.
 
 [DeCYFIR](https://www.cyfirma.com/products/decyfir/) by **Cyfirma** combines cyber threat intelligence with indicators and risk insights to deliver predictive, personalized, contextual, and multi-layered threat intelligence.  
-With DeCYFIR’s APIs, security teams gain complete visibility into their external threat landscape and receive actionable insights to strengthen their cybersecurity posture.
 
 ---
 

@@ -272,15 +272,13 @@ def fetch_events(
         after = get_after_param(last_run, event_type, first_fetch_time)
         events = client.search_events(event_type, max_events_per_fetch.get(event_type, MAX_EVENTS_PER_FETCH), after)
 
-        if not events:
-            continue
+        if events:
+            if event_type == ACCESS_LOGS:
+                update_fetched_event_ids(current_run, event_type, events)
+                events = remove_duplicate_logs(events, last_run, event_type)
 
-        if event_type == ACCESS_LOGS:
-            update_fetched_event_ids(current_run, event_type, events)
-            events = remove_duplicate_logs(events, last_run, event_type)
-
-        add_event_fields(events, event_type)
-        all_events.extend(events)
+            add_event_fields(events, event_type)
+            all_events.extend(events)
 
         latest_time = compute_next_fetch_time(events, first_fetch_time, event_type)
         current_run.setdefault(event_type, {})["next_fetch_time"] = latest_time
