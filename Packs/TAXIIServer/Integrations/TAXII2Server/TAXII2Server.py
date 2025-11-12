@@ -221,10 +221,7 @@ class IndicatorsSearcher:
             search_args['sort'] = self._sort
         demisto.info('IndicatorsSearcher: page {}, search_args: {}'.format(self._page, search_args))
         res = demisto.searchIndicators(**search_args)
-        demisto.info(f'IndicatorsSearcher search_args = {search_args}')
 
-        if res.get('iocs'):
-            demisto.info(f'first item id: {res["iocs"][0].get("value")}')
 
         self._total = res.get('total')
         demisto.info('IndicatorsSearcher: page {}, result size: {}'.format(self._page, self._total))
@@ -485,7 +482,6 @@ class TAXII2Server:
         iocs, extensions, total, use_search_after = find_indicators(
             query=query, types=types, added_after=added_after, limit=limit, offset=offset, collection_id=collection_id
         )
-        demisto.info(f"T2S: after find_indicators {iocs}")
         demisto.info(f"T2S: after find_indicators len: {len(iocs)}")
 
         first_added = None
@@ -523,7 +519,9 @@ class TAXII2Server:
             response = {
                 "objects": objects,
             }
-            if total > offset + limit:
+
+            demisto.info(f"T2S: total IOCs fetched  {(offset + limit) * RELATIONSHIPS_THRESHOLD}")
+            if total > (offset + limit) * RELATIONSHIPS_THRESHOLD:
                 response["more"] = True
                 response["next"] = str(limit + offset)
 
@@ -860,7 +858,6 @@ def find_indicators(
         types_for_indicator_sdo=SERVER.types_for_indicator_sdo,
     )
     iocs, extensions, total = XSOAR2STIXParser_client.create_indicators(indicator_searcher, is_manifest)
-    demisto.info(f"T2S: find_indicators {iocs=}")
 
 
     if indicator_searcher._search_after_param:
