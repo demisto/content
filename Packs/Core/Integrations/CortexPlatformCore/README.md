@@ -468,8 +468,8 @@ Retrieve asset groups from the Cortex platform with optional filtering.
 | Core.AssetGroups.modified_by_pretty | String | The formatted name of the user who created the asset group. |
 | Core.AssetGroups.created_by | String | The user who created the asset group. |
 | Core.AssetGroups.created_by_pretty | String | The formatted name of the user who created the asset group. |
-| Core.MetaData.AssetGroups.returned_count | String | The actual number of asset groups that match all filter criteria and returned in this specific response. |
-| Core.MetaData.AssetGroups.filtered_count | String | The total number of asset groups in the system that match all filter criteria. |
+| Core.AssetGroupsMetadata.returned_count | String | The actual number of asset groups that match all filter criteria and returned in this specific response. |
+| Core.AssetGroupsMetadata.filtered_count | String | The total number of asset groups in the system that match all filter criteria. |
 
 ### core-get-vulnerabilities
 
