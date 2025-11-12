@@ -209,6 +209,91 @@ def test_fetch_events_basic_flow(client):
     assert "next_fetch_time" in current_run["Access Logs"]
 
 
+def test_access_logs_fetch_with_same_second_overlap(monkeypatch):
+    """
+    GIVEN:
+        - First fetch occurs with an event at t = 04:24:12.250
+        - Next fetch is computed at t + 1ms = 04:24:12.251
+        - Access Logs timestamps round down to seconds
+        - Second fetch returns an event that happened at 04:24:12.750 (same second)
+    WHEN:
+        - fetch_events is called twice sequentially
+    THEN:
+        - The second event is fetched (not skipped)
+        - Deduplication prevents re-fetch of the first event
+    """
+
+    from DecyfirEventCollector import (
+        Client,
+        fetch_events,
+        ACCESS_LOGS,
+        get_after_param,
+    )
+    from datetime import datetime, timedelta, UTC
+
+    # --- Setup ---
+    base_time = datetime(2025, 11, 6, 4, 24, 12, tzinfo=UTC)
+
+    # Simulate a client returning one event at t=base_time
+    first_event = {
+        "uid": "event1",
+        "event_date": base_time.isoformat(),
+        "event_type": "AUTH",
+    }
+    second_event = {
+        "uid": "event2",
+        "event_date": base_time.isoformat(),  # same second!
+        "event_type": "AUTH",
+    }
+
+    client = Client("https://fake.fake", verify=False, proxy=False, api_key="abc")
+
+    # First _http_request returns event1
+    monkeypatch.setattr(client, "_http_request", lambda **_: [first_event])
+
+    first_fetch_time = base_time - timedelta(seconds=1)
+    max_events = {ACCESS_LOGS: 10}
+
+    # --- First fetch ---
+    last_run = {}
+    current_run, events = fetch_events(client, last_run, first_fetch_time, [ACCESS_LOGS], max_events)
+    assert len(events) == 1
+    assert events[0]["uid"] == "event1"
+
+    # --- Second fetch ---
+    # Now client returns event2 (same second but different UID)
+    monkeypatch.setattr(client, "_http_request", lambda **_: [first_event, second_event])
+
+    current_run2, events2 = fetch_events(client, current_run, first_fetch_time, [ACCESS_LOGS], max_events)
+
+    # --- Assertions ---
+    assert len(events2) == 1, "Should fetch the new event even if same second"
+    assert events2[0]["uid"] == "event2"
+    assert events2[0]["_time"].startswith("2025-11-06T04:24:12")
+    # Ensure dedup did not remove this valid event
+    assert current_run2[ACCESS_LOGS]["fetched_events_ids"] == ["event2"]
+
+    # The 'after' timestamp used in the second fetch should be rounded down to nearest second
+    after2 = get_after_param(current_run, ACCESS_LOGS, first_fetch_time)
+    assert after2 % 1000 == 0, "Access Logs timestamps must round to seconds"
+
+    current_run3, events3 = fetch_events(client, current_run, first_fetch_time, [ACCESS_LOGS], max_events)
+
+    # --- Assertions ---
+    assert len(events3) == 0, "Should fetch no events - all are duplicates"
+
+    # Ensure dedup did not remove this valid event
+    assert current_run2[ACCESS_LOGS]["fetched_events_ids"] == ["event1", "event2"]
+
+    # The 'after' timestamp used in the second fetch should be rounded down to nearest second
+    after3 = get_after_param(current_run, ACCESS_LOGS, first_fetch_time)
+    assert after3 % 1000 == 0, "Access Logs timestamps must round to seconds"
+
+    assert after2 == after3
+
+
+
+
 # --- Test Module ---
 
 
