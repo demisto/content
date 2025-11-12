@@ -95,20 +95,6 @@ TIMEOUT_ON_ENRICHMENT = 15
 
 """ KEY DICTIONARY """
 
-LEGACY_DETECTIONS_BASE_KEY_MAP = {
-    "device.hostname": "System",
-    "device.cid": "CustomerID",
-    "hostinfo.domain": "MachineDomain",
-    "detection_id": "ID",
-    "created_timestamp": "ProcessStartTime",
-    "max_severity": "MaxSeverity",
-    "show_in_ui": "ShowInUi",
-    "status": "Status",
-    "first_behavior": "FirstBehavior",
-    "last_behavior": "LastBehavior",
-    "max_confidence": "MaxConfidence",
-}
-
 DETECTIONS_BASE_KEY_MAP = {
     "device.hostname": "System",
     "device.cid": "CustomerID",
@@ -262,11 +248,6 @@ ENDPOINT_KEY_MAP = {
         'Index': Split Array Index
     }
 """
-LEGACY_DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
-    {"Path": "parent_details.parent_process_graph_id", "NewKey": "SensorID", "Delim": ":", "Index": 1},
-    {"Path": "parent_details.parent_process_graph_id", "NewKey": "ParentProcessID", "Delim": ":", "Index": 2},
-    {"Path": "triggering_process_graph_id", "NewKey": "ProcessID", "Delim": ":", "Index": 2},
-]
 
 DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
     {"Path": "parent_details.process_graph_id", "NewKey": "SensorID", "Delim": ":", "Index": 1},
@@ -292,9 +273,7 @@ STATUS_NUM_TO_TEXT = {20: "New", 25: "Reopened", 30: "In Progress", 40: "Closed"
 
 """ MIRRORING DICTIONARIES & PARAMS """
 
-LEGACY_DETECTION_STATUS = {"new", "in_progress", "true_positive", "false_positive", "ignored", "closed", "reopened"}
 STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES = {"new", "in_progress", "closed", "reopened"}
-LEGACY_CS_FALCON_DETECTION_OUTGOING_ARGS = {"status": f'Updated detection status, one of {"/".join(LEGACY_DETECTION_STATUS)}'}
 
 CS_FALCON_DETECTION_OUTGOING_ARGS = {
     "status": f'Updated detection status, one of {"/".join(STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES)}'
@@ -305,17 +284,6 @@ CS_FALCON_INCIDENT_OUTGOING_ARGS = {
     "status": f'Updated incident status, one of {"/".join(STATUS_TEXT_TO_NUM.keys())}',
 }
 
-LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS = [
-    "status",
-    "severity",
-    "behaviors.tactic",
-    "behaviors.scenario",
-    "behaviors.objective",
-    "behaviors.technique",
-    "device.hostname",
-    "detection_id",
-    "behaviors.display_name",
-]
 CS_FALCON_DETECTION_INCOMING_ARGS = [
     "status",
     "severity",
