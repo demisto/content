@@ -14,7 +14,8 @@
         "Graph Security Alert",
         "CrowdStrike Falcon IDP Detection",
         "Stamus Networks DoC",
-        "Exabeam Notable User"
+        "Exabeam Notable User",
+        "CrowdStrike Falcon NGSIEM Detection"
     ],
     "breachScript": "",
     "caseInsensitive": true,

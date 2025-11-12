@@ -53,7 +53,7 @@ fi
 echo "======================="
 if [ -z "${INSTALL_POETRY}" ]; then
     if ! command -v poetry >/dev/null 2>&1; then
-        echo "ERROR: poetry is missing. Please run the following command to install poetry:
+        echo "ERROR: poetry is missing. Please run the following command to install it:
                curl -sSL https://install.python-poetry.org | python3 -" 1>&2
         exit 1
     fi
@@ -61,10 +61,10 @@ else
     should_install_poetry="yes"
     if command -v poetry >/dev/null 2>&1; then
         if [[ "$(poetry --version)" == "Poetry (version ${POETRY_VERSION})" ]]; then
-            echo "Poetry already installed:$(poetry --version) with correct version"
+            echo "Poetry is already installed with the correct version: $(poetry --version)"
             should_install_poetry="no"
         else
-            echo "Poetry installed with a different version:$(poetry --version) required:${POETRY_VERSION}"
+            echo "Poetry is already installed with a different version: $(poetry --version), required version: ${POETRY_VERSION}"
         fi
     else
         echo "Poetry isn't installed"
@@ -75,7 +75,7 @@ else
         # curl -sSL https://install.python-poetry.org | python3 - --version "${POETRY_VERSION}"
         error_code=$?
         if [ -n "${ARTIFACTS_FOLDER}" ] && [ "${error_code}" -ne 0 ]; then
-            cp ${PWD}/poetry-installer-error-*.log "${ARTIFACTS_FOLDER}"
+            cp "${PWD}"/poetry-installer-error-*.log "${ARTIFACTS_FOLDER}"
         fi
         if ! command -v poetry >/dev/null 2>&1; then
             exit_on_error $? "Poetry isn't installed"
@@ -96,7 +96,7 @@ if [ -n "${CI}" ]; then
     exit_on_error $? "Failed to check poetry files"
     echo "Installing dependencies..."
     poetry install --no-interaction
-    exit_on_error "${exit_code}" "Failed to install dependencies"
+    exit_on_error $? "Failed to install dependencies"
 else
     echo "Detected local environment"
     echo "Check if poetry files are valid"
@@ -109,7 +109,7 @@ fi
 
 echo "=========================="
 echo "Done setting up virtualenv with poetry"
-echo "Activate the venv by running: poetry shell"
+echo "Activate the virtualenv by running: poetry shell"
 echo "Deactivate by running: deactivate"
 echo "======================="
 

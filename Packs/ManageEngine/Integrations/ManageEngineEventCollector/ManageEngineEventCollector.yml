@@ -1,0 +1,94 @@
+category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: ManageEngine
+  version: -1
+configuration:
+- name: server_url
+  display: Server URL
+  type: 0
+  required: true
+  defaultvalue: https://endpointcentral.manageengine.com
+  section: Connect
+- name: credentials
+  display: Client ID
+  type: 9
+  displaypassword: Client Secret
+  required: true
+  section: Connect
+- name: client_code
+  displaypassword: Code
+  display: Code
+  type: 9
+  hiddenusername: true
+  required: true
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+- name: max_audit_events
+  display: Max number of audit events per fetch
+  type: 0
+  required: false
+  defaultvalue: 25000
+  section: Collect
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+description: ManageEngine Endpoint Central is a Unified Endpoint Management solution that helps in managing thousands of servers, desktops, laptops and mobile devices from a single console..
+display: ManageEngine
+name: ManageEngine
+script:
+  commands:
+  - description: Tests connectivity of the server.
+    name: manage-engine-test
+    arguments: []
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events. Otherwise, it will only display them. Used for debugging purposes.
+      isArray: false
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - description: Maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      description: Date from which to get events, For example 2018-11-06T08:56:41.000Z.
+      name: start_date
+      required: false
+    - default: false
+      description: Date to which to get events , For example 2018-11-06T08:56:41.000Z.
+      name: end_date
+      required: false
+    deprecated: false
+    description: Gets events from ManageEngine.
+    execution: false
+    name: manage-engine-get-events
+  dockerimage: demisto/python3:3.12.12.5490952
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+- platform
+fromversion: 8.3.0
+tests:
+- No tests (auto formatted)

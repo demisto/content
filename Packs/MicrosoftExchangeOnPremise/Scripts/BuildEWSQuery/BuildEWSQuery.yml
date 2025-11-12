@@ -48,9 +48,12 @@ scripttarget: 0
 tests:
 - buildewsquery_test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.5490952
 supportedModules:
 - X1
 - X3
 - X5
 - ENT_PLUS
+- agentix
+- xsiam
+- edr

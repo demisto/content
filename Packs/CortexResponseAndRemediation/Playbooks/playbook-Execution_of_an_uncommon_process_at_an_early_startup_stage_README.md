@@ -30,8 +30,8 @@ The playbook proceeds with remediation actions. Otherwise, it presents the inves
 Remediation:
 
 - Terminate the malicious process.
-- Quarantine the malicious process (Requires analyst approval)
-- Add the malicious process hash to the block list (Requires analyst approval)
+- Quarantine the malicious process. (Requires analyst approval.)
+- Add the malicious process hash to the block list. (Requires analyst approval.)
 - Automatically close the alert.
 
 ## Dependencies
@@ -40,7 +40,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-Quarantine File
+This playbook does not use any sub-playbooks.
 
 ### Integrations
 
@@ -51,6 +51,8 @@ This playbook does not use any integrations.
 * CommandLineAnalysis
 * SearchIncidentsV2
 * SetMultipleValues
+* file-enrichment
+* quarantine-file
 
 ### Commands
 
@@ -59,7 +61,6 @@ This playbook does not use any integrations.
 * core-get-cloud-original-alerts
 * core-get-hash-analytics-prevalence
 * core-terminate-causality
-* file
 
 ## Playbook Inputs
 

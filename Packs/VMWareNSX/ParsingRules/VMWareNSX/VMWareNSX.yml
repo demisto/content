@@ -1,0 +1,6 @@
+id: VMWare_NSX_ParsingRule
+name: VMWare NSX Parsing Rule
+fromversion: 8.4.0 
+tags: []
+rules: ''
+samples: ''

@@ -1,5 +1,5 @@
 import re
-
+from unittest.mock import Mock
 import Qualysv2
 import pytest
 import requests
@@ -74,22 +74,6 @@ def client() -> Client:
 def util_load_json(path: str):
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
-
-
-def sleep_delay(sleep_time: int | float) -> bool:
-    """Mocks a slow function by introducing an artificial delay using the `sleep_time` argument.
-
-    Args:
-        sleep_time (int | float): The number of seconds to sleep.
-
-    Returns:
-       bool: True to indicate the function is finished.
-    """
-    if sleep_time:
-        time.sleep(sleep_time)  # sleep to simulate slow API response
-
-    is_finished = True
-    return is_finished
 
 
 def test_get_activity_logs_events_command(requests_mock: RequestsMocker, client: Client):
@@ -1136,7 +1120,9 @@ class TestClientClass:
 
         assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "GET"
-        assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list")
+        assert http_request_kwargs["url_suffix"] == urljoin(
+            API_SUFFIX, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"
+        )
         assert http_request_kwargs["params"] == {
             "truncation_limit": HOST_LIMIT,
             "vm_scan_date_after": since_datetime,
@@ -1921,32 +1907,74 @@ def test_send_assets_and_vulnerabilities_to_xsiam(
     assert not send_data_to_xsiam_vulns_kwargs["should_update_health_module"]
 
 
-# The unit test below will fail if run on Windows systems due to limited signal handling capabilities compared to Unix systems
-@pytest.mark.parametrize(
-    "sleep_time, expected_is_finished",
-    [
-        pytest.param(3, False, id="Slow execution"),
-        pytest.param(0, True, id="Fast execution"),
-    ],
-)
-def test_execution_timeout(sleep_time: int | float, expected_is_finished: bool):
+@pytest.fixture
+def mock_client():
+    client = Mock()
+    return client
+
+
+def test_get_qid_for_cve_single_qid(mock_client):
     """
     Given:
-        - An execution timeout value of 2 seconds.
+        - A single CVE
 
     When:
-        - When calling sleep_delay with a simulated "slow" and "fast" executions.
+        - When executing the get_qid_for_cve function
 
-    Assert:
-        - Case A (Slow): Ensure is_finished is False since sleep_delay timed out (sleep_time > execution_timeout).
-        - Case B (Fast): Ensure is_finished is True since sleep_delay finished in time (sleep_time < execution_timeout).
+    Then:
+        - Ensure the function returns CommandResults
+        - Ensure the outputs contain the right value
+        - Ensure the outputs_prefix
     """
-    from Qualysv2 import ExecutionTimeout
+    xml_response = b"""
+    <RESPONSE>
+        <VULN_LIST>
+            <VULN>
+                <QID>12345</QID>
+            </VULN>
+        </VULN_LIST>
+    </RESPONSE>
+    """
 
-    execution_timeout = 2  # Slow: Sleep one second more than timeout. Fast: Don't sleep.
+    mock_response = Mock()
+    mock_response.content = xml_response
+    mock_client.get_qid_for_cve.return_value = mock_response
 
-    is_finished = False
-    with ExecutionTimeout(seconds=execution_timeout):
-        is_finished = sleep_delay(sleep_time)
+    from Qualysv2 import get_qid_for_cve  # Replace 'your_module' with your filename (without .py)
 
-    assert is_finished == expected_is_finished
+    result = get_qid_for_cve(mock_client, "CVE-2024-0001")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == ["12345"]
+    assert result.outputs_prefix == "Qualys.QID"
+
+
+def test_get_qid_for_cve_multiple_qids(mock_client):
+    """
+    Given:
+        - A single CVE
+
+    When:
+        - When executing the get_qid_for_cve function
+
+    Then:
+        - Ensure the outputs contain the right values ( in this case there are 2 qids for the given CVE)
+    """
+    xml_response = b"""
+    <RESPONSE>
+        <VULN_LIST>
+            <VULN><QID>12345</QID></VULN>
+            <VULN><QID>67890</QID></VULN>
+        </VULN_LIST>
+    </RESPONSE>
+    """
+
+    mock_response = Mock()
+    mock_response.content = xml_response
+    mock_client.get_qid_for_cve.return_value = mock_response
+
+    from Qualysv2 import get_qid_for_cve
+
+    result = get_qid_for_cve(mock_client, "CVE-2024-9999")
+
+    assert result.outputs == ["12345", "67890"]

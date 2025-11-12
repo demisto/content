@@ -2,8 +2,8 @@ category: Utilities
 commonfields:
   id: Tavily
   version: -1
-sectionOrder:
-  - Connect
+sectionorder:
+- Connect
 configuration:
 - name: url
   display: Server URL
@@ -50,7 +50,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
 fromversion: 6.1.0
 tests:
 - No tests (auto formatted)

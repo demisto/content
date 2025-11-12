@@ -14,6 +14,7 @@ configuration:
   type: 4
   hidden: true
   required: false
+  section: Connect
 - displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
   name: credentials_auth_id
   hiddenusername: true
@@ -25,6 +26,7 @@ configuration:
   type: 4
   hidden: true
   required: false
+  section: Connect
 - displaypassword: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: credentials_tenant_id
   hiddenusername: true
@@ -36,6 +38,7 @@ configuration:
   type: 4
   hidden: true
   required: false
+  section: Connect
 - displaypassword: Key (received from the admin consent - see Detailed Instructions (?)
   name: credentials_enc_key
   hiddenusername: true
@@ -48,6 +51,7 @@ configuration:
   type: 4
   hidden: true
   required: false
+  section: Connect
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   displaypassword: Certificate Thumbprint
   name: credentials_certificate_thumbprint
@@ -66,6 +70,7 @@ configuration:
   type: 4
   hidden: true
   required: false
+  section: Connect
 - displaypassword: Default subscription ID
   name: credentials_default_sub_id
   hiddenusername: true
@@ -132,13 +137,16 @@ script:
     description: Lists alerts for the subscription according to the specified filters.
     name: azure-sc-list-alert
     outputs:
-    - contextPath: AzureSecurityCenter.Alert.AlertDisplayName
+    - contextPath: AzureSecurityCenter.Alert.DisplayName
       description: The display name of the alert.
       type: string
     - contextPath: AzureSecurityCenter.Alert.CompromisedEntity
       description: The entity on which the incident occurred.
       type: string
-    - contextPath: AzureSecurityCenter.Alert.DetectedTimeUtc
+    - contextPath: AzureSecurityCenter.Alert.Description
+      description: Description of the suspicious activity that was detected.
+      type: string
+    - contextPath: AzureSecurityCenter.Alert.DetectedTime
       description: The time the vendor detected the incident.
       type: date
     - contextPath: AzureSecurityCenter.Alert.ReportedSeverity
@@ -172,23 +180,11 @@ script:
     - contextPath: AzureSecurityCenter.Alert.DetectedTime
       description: The time the vendor detected the incident.
       type: date
-    - contextPath: AzureSecurityCenter.Alert.ReportedTime
-      description: The time the incident was reported to Microsoft.Security, in UTC.
-      type: date
     - contextPath: AzureSecurityCenter.Alert.ReportedSeverity
       description: The estimated severity of the alert.
       type: string
     - contextPath: AzureSecurityCenter.Alert.State
       description: The alert state (Active, Dismissed, etc.).
-      type: string
-    - contextPath: AzureSecurityCenter.Alert.ConfidenceScore
-      description: Level of confidence for the alert.
-      type: string
-    - contextPath: AzureSecurityCenter.Alert.ActionTaken
-      description: The action that was taken in a response to the alert (Active, Blocked etc.).
-      type: string
-    - contextPath: AzureSecurityCenter.Alert.CanBeInvestigated
-      description: Whether this alert can be investigated using Azure Security Center.
       type: string
     - contextPath: AzureSecurityCenter.Alert.RemediationSteps
       description: Recommended steps to remediate the incident.
@@ -196,20 +192,11 @@ script:
     - contextPath: AzureSecurityCenter.Alert.VendorName
       description: Name of the vendor that discovered the incident.
       type: string
-    - contextPath: AzureSecurityCenter.Alert.AssociatedResource
-      description: Azure resource ID of the associated resource.
-      type: string
     - contextPath: AzureSecurityCenter.Alert.AlertName
       description: Name of the alert type.
       type: string
-    - contextPath: AzureSecurityCenter.Alert.InstanceID
-      description: Instance ID of the alert.
-      type: string
     - contextPath: AzureSecurityCenter.Alert.ID
       description: The alert ID.
-      type: string
-    - contextPath: AzureSecurityCenter.Alert.SubscriptionID
-      description: Azure subscription ID of the resource that had the security alert or the subscription ID of the workspace that this resource reports to.
       type: string
     - contextPath: AzureSecurityCenter.Alert.Description
       description: Description of the incident and what it means.
@@ -466,7 +453,7 @@ script:
       type: Unknown
     - contextPath: Azure.ResourceGroupName.properties.provisioningState
       description: Resource group provisioning state.
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.5490413
   runonce: false
   script: '-'
   type: python
@@ -474,6 +461,6 @@ script:
 tests:
 - Azure SecurityCenter - Test
 fromversion: 5.0.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

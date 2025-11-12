@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Added support for aruba-auth-test command which is an alternative command for test-module, due to aruba's api limitations."
+}

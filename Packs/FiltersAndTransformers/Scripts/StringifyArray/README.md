@@ -1,6 +1,7 @@
 Return the string encoded with JSON from the whole array
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Return the string encoded with JSON from the whole array
 | Tags | entirelist, transformer, general |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,5 +18,6 @@ Return the string encoded with JSON from the whole array
 | value | The array to join if it has single element |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

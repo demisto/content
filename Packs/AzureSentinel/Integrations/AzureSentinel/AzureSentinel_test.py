@@ -9,10 +9,10 @@ from AzureSentinel import (
     DEFAULT_SOURCE,
     NEXT_LINK_DESCRIPTION,
     XSOAR_USER_AGENT,
+    Action,
     AzureSentinelClient,
     append_tags_threat_indicator_command,
     build_threat_indicator_data,
-    close_incident_in_remote,
     create_and_update_alert_rule_command,
     create_data_for_alert_rule,
     create_incident_command,
@@ -26,6 +26,7 @@ from AzureSentinel import (
     delete_watchlist_item_command,
     extract_classification_reason,
     fetch_incidents,
+    fetch_incidents_command,
     fetch_incidents_additional_info,
     get_mapping_fields_command,
     get_modified_remote_data_command,
@@ -1704,70 +1705,97 @@ def test_update_remote_system_command(mocker):
 
 
 @pytest.mark.parametrize(
-    "incident_status, close_incident_in_remote, delta, expected_update_call",
+    "incident_status, required_action, delta, expected_update_call",
     [
-        (IncidentStatus.DONE, True, {}, True),
-        (IncidentStatus.DONE, False, {}, False),  # delta is empty
-        (IncidentStatus.DONE, False, {"classification": "FalsePositive"}, False),  # delta have only closing fields
-        (IncidentStatus.DONE, False, {"title": "Title"}, True),  # delta have fields except closing fields
-        (IncidentStatus.ACTIVE, True, {}, False),  # delta is empty and close_incident_in_remote is False
-        (IncidentStatus.ACTIVE, False, {"title": "Title"}, True),
-        (IncidentStatus.PENDING, True, {}, False),
+        (IncidentStatus.DONE, Action.CLOSE, {}, True),
+        (IncidentStatus.DONE, Action.UNCHANGED, {}, False),  # delta is empty
+        (IncidentStatus.DONE, Action.UNCHANGED, {"classification": "FalsePositive"}, False),  # delta have only closing fields
+        (IncidentStatus.DONE, Action.UNCHANGED, {"title": "Title"}, True),  # delta have fields except closing fields
+        (IncidentStatus.ACTIVE, Action.UNCHANGED, {}, False),  # delta is empty and required action is Action.UNCHANGED
+        (IncidentStatus.ACTIVE, Action.UNCHANGED, {"title": "Title"}, True),
+        (IncidentStatus.PENDING, Action.CLOSE, {}, False),
     ],
 )
-def test_update_remote_incident(mocker, incident_status, close_incident_in_remote, delta, expected_update_call):
+def test_update_remote_incident(mocker, incident_status, required_action, delta, expected_update_call):
     """
     Given
         - incident status
     When
         - running update_remote_incident
     Then
-        - ensure the function call only when the incident status is DONE and close_incident_in_remote is True
+        - ensure the function call only when the incident status is DONE and should_close_incident_in_remote is True
           or when the incident status is ACTIVE
     """
-    mocker.patch("AzureSentinel.close_incident_in_remote", return_value=close_incident_in_remote)
+    mocker.patch("AzureSentinel.check_required_action_on_incident", return_value=required_action)
     mock_update_status = mocker.patch("AzureSentinel.update_incident_request")
     update_remote_incident(mock_client(), {}, delta, incident_status, "incident-1")
     assert mock_update_status.called == expected_update_call
 
 
 @pytest.mark.parametrize(
-    "delta, data, close_ticket_param, to_close",
+    "delta, data, close_ticket_param, incident_status, action",
     [
-        ({"classification": "FalsePositive"}, {}, True, True),
-        ({"classification": "FalsePositive"}, {}, False, False),
-        ({}, {}, True, False),
-        ({}, {}, False, False),
+        ({"classification": "FalsePositive"}, {}, True, IncidentStatus.DONE, Action.CLOSE),
+        ({"classification": "FalsePositive"}, {}, False, IncidentStatus.DONE, Action.UNCHANGED),
+        ({}, {}, True, IncidentStatus.DONE, Action.UNCHANGED),
+        ({}, {}, False, IncidentStatus.DONE, Action.UNCHANGED),
         # Closing after classification is already present in the data.
-        ({}, {"classification": "FalsePositive"}, True, True),
+        ({}, {"classification": "FalsePositive"}, True, IncidentStatus.DONE, Action.CLOSE),
         # Closing after reopened, before data update
-        ({}, {"classification": "FalsePositive", "status": "Closed"}, True, True),
+        ({}, {"classification": "FalsePositive", "status": "Closed"}, True, IncidentStatus.DONE, Action.CLOSE),
         # Closing after reopened, after data update
-        ({}, {"classification": "FalsePositive", "status": "Active"}, True, True),
+        ({}, {"classification": "FalsePositive", "status": "Active"}, True, IncidentStatus.DONE, Action.CLOSE),
+        ({"classification": "FalsePositive"}, {}, True, IncidentStatus.ACTIVE, Action.UNCHANGED),
+        ({"classification": ""}, {}, True, IncidentStatus.ACTIVE, Action.REOPEN),
+        ({"classification": ""}, {}, True, IncidentStatus.DONE, Action.UNCHANGED),
+        ({}, {}, False, IncidentStatus.ACTIVE, Action.UNCHANGED),
+        (
+            {"classification": "FalsePositive"},
+            {},
+            False,
+            IncidentStatus.DONE,
+            Action.UNCHANGED,
+        ),
+    ],
+    ids=[
+        "1#-close_incident_close_ticket_param_is_true",
+        "2#-close_incident_close_ticket_param_is_false",
+        "3#-close_incident_without_classification_close_ticket_param_is_true",
+        "4#-close_incident_without_classification_close_ticket_param_is_false",
+        "5#-close_incident_classification_already_in_data",
+        "6#-close_incident_after_reopen_before_data_update",
+        "7#-close_incident_after_reopen_after_data_update",
+        "8#-the_incident_is_open_classification_changed",
+        "9#-the_incident_is_reopened",
+        "10#-the_incident_is_close_classification_removed",
+        "11#-the_incident_is_open",
+        "12#-the_incident_is_close_classification_changed",
     ],
 )
-def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_close):
+def test_check_required_action_on_incident(mocker, delta, data, close_ticket_param, incident_status, action):
     """
     Given
-        - one of the close parameters
+        - delta, data, close_ticket_param, incident_status
     When
         - outgoing mirroring triggered by a change in the incident
     Then
-        - returns true if the incident was closed in XSOAR and the close_ticket parameter was set to true
+        - returns one of Action.CLOSE,Action.REOPEN,Action.UNCHANGED
     """
+    from AzureSentinel import check_required_action_on_incident
+
     mocker.patch.object(demisto, "params", return_value={"close_ticket": close_ticket_param})
-    assert close_incident_in_remote(delta, data) == to_close
+    assert check_required_action_on_incident(delta, data, incident_status) == action
 
 
 @pytest.mark.parametrize(
-    "data, delta, mocked_fetch_data, expected_response, close_ticket",
+    "data, delta, mocked_fetch_data, expected_response, required_action",
     [
         (  # Update description of active incident.
             {"title": "Title", "description": "old desc", "severity": 2, "status": "Active"},
             {"title": "Title", "description": "new desc"},
             {"title": "Title", "description": "old desc", "severity": "Medium", "status": "Active"},
             {"title": "Title", "description": "new desc", "severity": "Medium", "status": "Active"},
-            False,
+            Action.UNCHANGED,
         ),
         (  # Update runStatus (not mirror field) of active incident - shouldn't run the update,
             # and will return {}
@@ -1775,14 +1803,14 @@ def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_cl
             {"runStatus": "running"},
             {"title": "Title", "description": "old desc", "severity": "Medium", "status": "New"},
             {},
-            False,
+            Action.UNCHANGED,
         ),
         (  # Update runStatus (not mirror field) of Closed incident - should close the ticket,
             {"title": "Title", "description": "old desc", "severity": 1, "status": "New"},
             {"runStatus": "running", "classification": "Undetermined"},
             {"title": "Title", "severity": "Low", "status": "Active"},
             {"title": "Title", "severity": "Low", "status": "Closed", "classification": "Undetermined"},
-            True,
+            Action.CLOSE,
         ),
         (  # Update description and classification and close incident.
             {"title": "Title", "description": "old desc", "severity": 1, "status": "Active"},
@@ -1795,28 +1823,28 @@ def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_cl
                 "status": "Closed",
                 "classification": "Undetermined",
             },
-            True,
+            Action.CLOSE,
         ),
         (  # Update description and classification of active incident without closing. Result in description update only.
             {"title": "Title", "description": "old desc", "severity": 1, "status": "Active"},
             {"title": "Title", "description": "new desc", "classification": "Undetermined"},
             {"title": "Title", "description": "old desc", "severity": "Low", "status": "Active"},
             {"title": "Title", "description": "new desc", "severity": "Low", "status": "Active"},
-            False,
+            Action.UNCHANGED,
         ),
         (  # Update title and close incident with classification already in data. Result in closing with classification.
             {"title": "Title", "severity": 1, "status": "Active", "classification": "Undetermined"},
             {"title": "Title"},
             {"title": "Title", "severity": "Low", "status": "Active", "classification": "Undetermined"},
             {"title": "Title", "severity": "Low", "status": "Closed", "classification": "Undetermined"},
-            True,
+            Action.CLOSE,
         ),
         (  # Update labels of active incident when no labels exist.
             {"title": "Title", "description": "desc", "severity": 2, "status": "Active", "tags": []},
             {"title": "Title", "tags": ["Test"]},
             {"title": "Title", "description": "desc", "severity": "Medium", "status": "Active"},
             {"title": "Title", "severity": "Medium", "status": "Active", "labels": [{"labelName": "Test", "type": "User"}]},
-            False,
+            Action.UNCHANGED,
         ),
         (  # Update labels of active incident when a label already exist.
             {"title": "Title", "description": "desc", "severity": 2, "status": "Active", "tags": ["Test"]},
@@ -1834,11 +1862,11 @@ def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_cl
                 "status": "Active",
                 "labels": [{"labelName": "Test", "type": "User"}, {"labelName": "Test2", "type": "User"}],
             },
-            False,
+            Action.UNCHANGED,
         ),
     ],
 )
-def test_update_incident_request(mocker, data, delta, mocked_fetch_data, expected_response, close_ticket):
+def test_update_incident_request(mocker, data, delta, mocked_fetch_data, expected_response, required_action):
     """
     Given
         - data: The incident data before the update in xsoar.
@@ -1852,7 +1880,7 @@ def test_update_incident_request(mocker, data, delta, mocked_fetch_data, expecte
     client = mock_client()
     mocker.patch.object(client, "http_request", return_value=mocked_fetch_data)
 
-    update_incident_request(client, "id-incident-1", data, delta, close_ticket)
+    update_incident_request(client, "id-incident-1", data, delta, required_action)
     assert not expected_response or client.http_request.call_args[1]["data"].get("properties") == expected_response
 
 
@@ -2263,7 +2291,7 @@ def test_max_limit_argument_in_fetch_and_list_incident_commands(mocker):
     assert client.http_request.call_args_list[1][1] == {
         "params": {
             "$top": 20,
-            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z ",
+            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z",
             "$orderby": "properties/createdTimeUtc asc",
         }
     }
@@ -2295,7 +2323,7 @@ def test_default_limit_argument_in_fetch_and_list_incident_commands(mocker):
     assert client.http_request.call_args_list[1][1] == {
         "params": {
             "$top": 20,
-            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z ",
+            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z",
             "$orderby": "properties/createdTimeUtc asc",
         }
     }
@@ -2327,7 +2355,109 @@ def test_lower_then_default_limit_argument_in_fetch_and_list_incident_commands(m
     assert client.http_request.call_args_list[1][1] == {
         "params": {
             "$top": 20,
-            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z ",
+            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z",
+            "$orderby": "properties/createdTimeUtc asc",
+        }
+    }
+
+
+def test_statuses_to_fetch_parameter_not_used(mocker):
+    """
+    Given:
+        - No statuses_to_fetch parameter configured (empty list).
+
+    When:
+        - Execute the fetch-incidents command.
+
+    Then:
+        - Ensure the filter query does not contain any status check.
+    """
+    # prepare
+    last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
+    client = mock_client()
+    mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
+    mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    params = {}
+
+    # execute
+    fetch_incidents_command(client, params)
+
+    # validate
+    expected_filter = "properties/createdTimeUtc ge 2022-03-16T13:01:08Z"
+    assert client.http_request.call_args_list[0][1] == {
+        "params": {
+            "$top": 20,
+            "$filter": expected_filter,
+            "$orderby": "properties/createdTimeUtc asc",
+        }
+    }
+
+
+def test_statuses_to_fetch_parameter_single_status(mocker):
+    """
+    Given:
+        - A single status in statuses_to_fetch parameter.
+
+    When:
+        - Execute the fetch-incidents command.
+
+    Then:
+        - Ensure the filter query contains a status equality check.
+    """
+    # prepare
+    last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
+    client = mock_client()
+    mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
+    mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    params = {"statuses_to_fetch": ["New"]}
+
+    # execute
+    fetch_incidents_command(client, params)
+
+    # validate
+    expected_filter = "properties/createdTimeUtc ge 2022-03-16T13:01:08Z  and (properties/status eq 'New')"
+    assert client.http_request.call_args_list[0][1] == {
+        "params": {
+            "$top": 20,
+            "$filter": expected_filter,
+            "$orderby": "properties/createdTimeUtc asc",
+        }
+    }
+
+
+def test_statuses_to_fetch_parameter_multiple_statuses(mocker):
+    """
+    Given:
+        - Multiple statuses in statuses_to_fetch parameter.
+
+    When:
+        - Execute the fetch-incidents command.
+
+    Then:
+        - Ensure the filter query contains a status 'in' check for multiple values.
+    """
+    # prepare
+    last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
+    client = mock_client()
+    mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
+    mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    params = {"statuses_to_fetch": ["New", "Active", "Closed"]}
+
+    # execute
+    fetch_incidents_command(client, params)
+
+    # validate
+    expected_filter = (
+        "properties/createdTimeUtc ge 2022-03-16T13:01:08Z  and "
+        "(properties/status eq 'New' or properties/status eq 'Active' or properties/status eq 'Closed')"
+    )
+    assert client.http_request.call_args_list[0][1] == {
+        "params": {
+            "$top": 20,
+            "$filter": expected_filter,
             "$orderby": "properties/createdTimeUtc asc",
         }
     }

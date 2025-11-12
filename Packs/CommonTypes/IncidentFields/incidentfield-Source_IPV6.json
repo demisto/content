@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Qradar Generic"
+        "Qradar Generic",
+        "CrowdStrike Falcon Third Party Detection"
     ],
     "breachScript": "",
     "caseInsensitive": true,

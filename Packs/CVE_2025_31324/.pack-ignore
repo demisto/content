@@ -1,0 +1,8 @@
+[file:README.md]
+ignore=VA100
+
+[file:playbook-Cortex_XDR_-_CVE-2025-31324_-_SAP_NetWeaver_Visual_Composer.yml]
+ignore=VA100
+
+[file:playbook-Cortex_XDR_-_CVE-2025-31324_-_SAP_NetWeaver_Visual_Composer_README.md]
+ignore=VA100

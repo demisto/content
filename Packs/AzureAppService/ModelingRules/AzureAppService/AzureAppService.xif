@@ -27,7 +27,7 @@ alter
 
 [RULE: msft_azure_app_service_map_common_app_fields]
 alter
-        log_level = uppercase(Level)
+        log_level = if(to_string(Level) !~= "^\d+$", uppercase(to_string(Level)), null)
 | alter
         xdm.event.log_level = if(
             log_level in ("CRITICAL"), XDM_CONST.LOG_LEVEL_CRITICAL,
@@ -117,7 +117,7 @@ filter category = "FunctionAppLogs"
 | call msft_azure_app_service_map_common_event_fields
 | alter
         properties_json = to_json_string(properties),
-        log_level = uppercase(Level)
+        log_level = if(to_string(Level) !~= "^\d+$", uppercase(to_string(Level)), null)
 | alter
         xdm.event.log_level = if(
             log_level in ("CRITICAL"), XDM_CONST.LOG_LEVEL_CRITICAL,
@@ -164,7 +164,7 @@ config case_sensitive = true
         tmp_startTime = to_string(coalesce(properties -> startTime, StartTime)),
         tmp_endTime = to_string(coalesce(properties -> startTime, EndTime))
 | alter
-        log_level = uppercase(Level),
+        log_level = if(to_string(Level) !~= "^\d+$", uppercase(to_string(Level)), null),
         code = uppercase(replex(tmp_code, "([A-Z][a-z]+)([A-Z][a-z]+)", "\1_\2"))
 | alter
         xdm.event.log_level = if(

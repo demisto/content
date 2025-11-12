@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -133,13 +133,16 @@ configuration:
   - exposed_web_interfaces
   - hijackable_subdomains
   - website_vulnerabilities
+  - vulnerabilities
   - exposed_cloud_storage
   - exploitable_ports
   - mail_servers_in_blacklist
   - server_connected_to_botnet
   - email_security_issues
   - certificate_authority_issues
+  - user_defined_saved_query
   - other
+  - ssl_tls
   section: Collect
 - display: Fetch Limit
   name: max_fetch
@@ -253,13 +256,16 @@ script:
       - exposed_web_interfaces
       - hijackable_subdomains
       - website_vulnerabilities
+      - vulnerabilities
       - exposed_cloud_storage
       - exploitable_ports
       - mail_servers_in_blacklist
       - server_connected_to_botnet
       - email_security_issues
       - certificate_authority_issues
+      - user_defined_saved_query
       - other
+      - ssl_tls
     description: List alerts according to parameters.
     name: cyberint-alerts-fetch
     outputs:
@@ -581,7 +587,7 @@ script:
       name: lastUpdate
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.11.11.1940698
+  dockerimage: demisto/python3:3.12.11.4819260
   isfetch: true
   runonce: false
   script: '-'

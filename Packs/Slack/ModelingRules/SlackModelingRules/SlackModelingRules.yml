@@ -8,5 +8,7 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
+- xsiam
 tags: slack
 toversion: 6.9.9

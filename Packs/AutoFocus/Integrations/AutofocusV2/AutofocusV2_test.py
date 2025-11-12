@@ -669,11 +669,37 @@ def test_search_session(mocker, autofocusv2_client, range_num, res_count):
     mocker.patch.object(autofocusv2_client, "_http_request", return_value=response)
 
     ips = [f"{i}.{i}.{i}.{i}" for i in range(range_num)]
-    res = search_sessions(client=autofocusv2_client, ip=ips)
+    res = search_sessions(client=autofocusv2_client, ip=ips, use_batches=True)
 
     assert len(res) == res_count
     for r in res:
         assert r.get("AFCookie") == "auto-focus-cookie"
+
+
+@pytest.mark.parametrize("range_num", [98, 250])
+def test_search_session_no_batches(mocker, autofocusv2_client, range_num):
+    """
+    Given:
+        - Large amount of IPs to search sessions on.
+
+    When:
+        - Running the search_session with use_batches=False.
+
+    Then:
+        - Validate the search is done without batching and returns a single result.
+    """
+
+    from AutofocusV2 import search_sessions
+
+    status_code = 200
+    response = ResMocker({"af_cookie": "auto-focus-cookie"}, status_code)
+    mocker.patch.object(autofocusv2_client, "_http_request", return_value=response)
+
+    ips = [f"{i}.{i}.{i}.{i}" for i in range(range_num)]
+    res = search_sessions(client=autofocusv2_client, ip=ips, use_batches=False)
+
+    assert isinstance(res, dict)
+    assert res.get("AFCookie") == "auto-focus-cookie"
 
 
 @pytest.mark.parametrize("range_num,res_count", [(98, 1), (250, 3)])
@@ -696,11 +722,37 @@ def test_search_samples(mocker, autofocusv2_client, range_num, res_count):
     mocker.patch.object(autofocusv2_client, "_http_request", return_value=response)
 
     ips = [f"{i}.{i}.{i}.{i}" for i in range(range_num)]
-    res = search_samples(client=autofocusv2_client, ip=ips)
+    res = search_samples(client=autofocusv2_client, ip=ips, use_batches=True)
 
     assert len(res) == res_count
     for r in res:
         assert r.get("AFCookie") == "auto-focus-cookie"
+
+
+@pytest.mark.parametrize("range_num", [98, 250])
+def test_search_samples_no_batches(mocker, autofocusv2_client, range_num):
+    """
+    Given:
+        - Large amount of IPs to search samples on.
+
+    When:
+        - Running the search_samples with use_batches=False.
+
+    Then:
+        - Validate the search is done without batching and returns a single result.
+    """
+
+    from AutofocusV2 import search_samples
+
+    status_code = 200
+    response = ResMocker({"af_cookie": "auto-focus-cookie"}, status_code)
+    mocker.patch.object(autofocusv2_client, "_http_request", return_value=response)
+
+    ips = [f"{i}.{i}.{i}.{i}" for i in range(range_num)]
+    res = search_samples(client=autofocusv2_client, ip=ips, use_batches=False)
+
+    assert isinstance(res, dict)
+    assert res.get("AFCookie") == "auto-focus-cookie"
 
 
 def test_metrics(mocker: MockerFixture, autofocusv2_client):

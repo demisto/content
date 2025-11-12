@@ -8,3 +8,7 @@
 !msgraph-identity-ip-named-locations-create ips=12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63 display_name=test is_trusted=True
 !msgraph-identity-ip-named-locations-update ips=12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63 display_name=test is_trusted=True ip_id=098699fc-10ad-420e-91ec-c555555555
 !msgraph-identity-ip-named-locations-list limit=50
+!msgraph-identity-ca-policies-list limit=2 all_results=false
+!msgraph-identity-ca-policy-create policy_name="test" state=disabled client_app_types="all" include_users="All" include_applications="none" include_platforms="iOS" grant_control_enforcement="block" grant_control_operator="AND" sign_in_risk_levels="low" user_risk_levels="low"
+!msgraph-identity-ca-policy-update policy_id="58c3a52b-190f-4be3-a19c-a4d03f8ce684" state="disabled"
+!msgraph-identity-ca-policy-delete policy_id="fc271abb-e52c-4c40-aff9-5fd1e534a58d"

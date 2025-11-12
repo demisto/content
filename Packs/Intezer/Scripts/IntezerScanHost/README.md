@@ -1,8 +1,9 @@
-# Deprecated - D2 agent is deprecated. No available replacement.
+# Deprecated - D2 agent is deprecated. No available replacement
 
 Runs the Intezer Endpoint Analysis scanner.
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description**      |
@@ -12,6 +13,7 @@ Runs the Intezer Endpoint Analysis scanner.
 | os                | OS.                  |
 
 ## Outputs
+
 ---
 
 | **Argument Name**    | **Description**           |

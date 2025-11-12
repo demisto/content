@@ -1,8 +1,11 @@
 Note: Support for this pack moved to the partner on March, 22, 2022.
 
-ReliaQuest GreyMatter DRP minimizes digital risk by identifying unwanted exposure and protecting against external threats. The award-winning ReliaQuest GreyMatter DRP solution provides ongoing monitoring of a customer's unique assets and exposure across the open, deep, and dark web. This enables clients to detect data loss, brand impersonation, infrastructure risks, cyber threats, and much more.
+Working within ReliaQuest's GreyMatter Digital Risk Protection, the Managed Takedown service provides customers with end-to-end takedown management that quickly removes infringing content, domains, documents and mobile applications.
+
+Contact your ReliaQuest GreyMatter DRP representative to obtain API credentials.
 
 ## Overview
+
 - Leader in Digital Risk Protection
 - Combination of technology and analysts
 - SaaS-based portal
@@ -44,6 +47,10 @@ Intelligence Incidents
 Supplier/Vendor Monitoring
 Vulnerability/Exploit Monitoring
 
+**Managed Takedowns**
+Submit takedowns
+Attach evidence and monitor status
+
 ## What makes ReliaQuest GreyMatter DRP unique
 
 - Exposure monitoring  
@@ -59,4 +66,3 @@ Email: drpsupport@reliaquest.com
 Call us at US 1-888-889-4143, UK +44 (0)203 393 7001
 
 Visit www.reliaquest.com for more information
-

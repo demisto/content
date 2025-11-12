@@ -1,6 +1,7 @@
 Gets the string distance for the sender from our domain.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Gets the string distance for the sender from our domain.
 | Script Type | python |
 | Tags | server, phishing, Condition |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +20,7 @@ Gets the string distance for the sender from our domain.
 | distance | The distance that is considered close. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

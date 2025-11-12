@@ -1115,7 +1115,7 @@ def test_send_mail_sender_display_name(mocker, display_name):
     )
 
     args, _ = mock_b64encode.call_args
-    encoded_bytes = args[0]  # This is the bytes before encoding
+    encoded_bytes = args[0]  #  This is the bytes before encoding
     message_str = encoded_bytes.decode("utf-8")
     if display_name:
         expected_from_header = f"{display_name} <sender@example.com>"

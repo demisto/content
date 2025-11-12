@@ -1,6 +1,7 @@
 Exports the Context for the current Incident to a JSON file in the war room.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Exports the Context for the current Incident to a JSON file in the war room.
 | Tags | Utility |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,5 +18,6 @@ Exports the Context for the current Incident to a JSON file in the war room.
 | filename | Name of the file to create in the war room, defaults to context.json. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

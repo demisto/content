@@ -1,6 +1,7 @@
 Removes a key in key/value store backed by an XSOAR list.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Removes a key in key/value store backed by an XSOAR list.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,14 +20,16 @@ Removes a key in key/value store backed by an XSOAR list.
 | keyName | Key. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
-
 ## Script Example
+
 ```!RemoveKeyFromList listName="NewList" keyName="SomeKey"```
 
 ## Context Example
+
 ```json
 {}
 ```

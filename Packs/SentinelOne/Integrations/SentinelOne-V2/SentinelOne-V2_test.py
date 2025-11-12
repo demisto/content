@@ -2,13 +2,17 @@ import json
 import pytest
 import demistomock as demisto
 from importlib import import_module
+import os
+import sys
 
 sentinelone_v2 = import_module("SentinelOne-V2")
 main = sentinelone_v2.main
 
 
 def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
+    # Always resolve path relative to this test file's directory
+    base = os.path.dirname(__file__)
+    with open(os.path.join(base, path), encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -156,7 +160,8 @@ def test_download_fetched_file(mocker, requests_mock, capfd):
         File entry of the file downloaded
     """
     agent_id = 1
-    with open("test_data/download_fetched_file.zip", "rb") as f:
+    test_data_path = os.path.join(os.path.dirname(__file__), "test_data", "download_fetched_file.zip")
+    with open(test_data_path, "rb") as f:
         dffzip_contents = f.read()
 
     requests_mock.get(f"https://usea1.sentinelone.net/web/api/v2.1/agents/{agent_id}/uploads/1", content=dffzip_contents)
@@ -228,19 +233,93 @@ def test_get_blocklist(mocker, requests_mock):
     assert command_results.outputs == blocklist_results
 
 
-def test_remove_hash_from_blocklist(mocker, requests_mock):
+def test_remove_hash_from_blocklist_global(mocker, requests_mock):
     """
     When:
-        A hash is removed from the blocklist
+        A hash is removed from the blocklist globally (no scope)
     Return:
         Status that it has been removed from the blocklist
     """
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+    url = (
+        "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+        "?tenant=True&skip=0&limit=4&sortBy=updatedAt&sortOrder=asc&value__contains=" + sha1
+    )
+    raw_blockist_response = util_load_json("test_data/remove_hash_from_blocklist.json")
+    requests_mock.get(url, json=raw_blockist_response)
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
+    mocker.patch.object(demisto, "args", return_value={"sha1": sha1})
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert outputs["hash"] == sha1
+    assert outputs["status"] == "Removed 1 entries from blocklist"
+
+
+def test_remove_hash_from_blocklist_global_sha256(mocker, requests_mock):
+    """
+    When:
+        A SHA256 hash is removed from the blocklist globally (no scope)
+    Return:
+        Status that it has been removed from the blocklist
+    """
+    sha256 = "3a7bd3e2360a3d5bca2c7e6f3c4d7b1a2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8"
+    url = (
+        "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+        "?tenant=True&skip=0&limit=4&sortBy=updatedAt&sortOrder=asc&value__contains=" + sha256
+    )
+    raw_blockist_response = util_load_json("test_data/remove_hash_from_blocklist_sha256.json")
+    requests_mock.get(url, json=raw_blockist_response)
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
+    mocker.patch.object(demisto, "args", return_value={"sha256Value": sha256})
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert outputs["hash"] == sha256
+    assert outputs["status"] == "Removed 1 entries from blocklist"
+
+
+def test_remove_hash_from_blocklist_multiple_site_scope(mocker, requests_mock):
+    mocker.patch.object(sys, "exit")
+    """
+    When:
+        A hash is removed from the blocklist for multiple sites
+    Return:
+        Status that it has been removed from the blocklist
+    """
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
     raw_blockist_response = util_load_json("test_data/remove_hash_from_blocklist.json")
     requests_mock.get(
-        "https://usea1.sentinelone.net/web/api/v2.1/restrictions?tenant=True&skip=0&limit=4&sortBy=updatedAt&"
-        "sortOrder=asc&value__contains=f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2",
+        "https://usea1.sentinelone.net/web/api/v2.1/restrictions",
         json=raw_blockist_response,
+        request_headers={"Authorization": "ApiToken token"},
+        complete_qs=False,  # ignore exact query string match
     )
+
     requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
 
     mocker.patch.object(
@@ -250,38 +329,329 @@ def test_remove_hash_from_blocklist(mocker, requests_mock):
     )
     mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
     mocker.patch.object(
-        demisto, "args", return_value={"sha1": "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"}
+        demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "site_ids": "2134673222384,2144637475766"}
     )
 
-    mocker.patch.object(sentinelone_v2, "return_results")
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
 
     main()
 
-    call = sentinelone_v2.return_results.call_args_list
+    call = mock_return_results.call_args_list
     outputs = call[0].args[0].outputs
 
-    assert outputs["hash"] == "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+    assert outputs["hash"] == sha1
     assert outputs["status"] == "Removed 1 entries from blocklist"
 
 
-@pytest.mark.parametrize(
-    "block_site_ids, expected_status", [("site1,site2", "Added to scoped blocklist"), (None, "Added to global blocklist")]
-)
-def test_add_hash_to_blocklist(mocker, requests_mock, block_site_ids, expected_status):
+def test_remove_hash_from_blocklist_single_site_scope(mocker, requests_mock):
     """
-    Given:
-       - Case A: A hash is added to the blocklist with sites
-       - Case B: A hash is added to the blocklist without sites
-
     When:
-       - running the sentinelone-add-hash-to-blocklist command
-
-    Then:
-       - Case A: make sure the sites are added to the request and output is valid
-       - Case B: make sure there are no site IDs added to the request and output is valid
-
+        A hash is removed from the blocklist for a specific site
+    Return:
+        Status that it has been removed from the blocklist
     """
-    blocked_sha_requests_mock = requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+    url = (
+        "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+        "?tenant=False&siteIds=2134673222384&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains="
+        + sha1
+    )
+    raw_blockist_response = util_load_json("test_data/remove_hash_from_blocklist.json")
+    requests_mock.get(url, json=raw_blockist_response)
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
+    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "site_ids": "2134673222384"})
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert outputs["hash"] == sha1
+    assert outputs["status"] == "Removed 1 entries from blocklist"
+
+
+def test_remove_hash_from_blocklist_wrong_site_scope(mocker, requests_mock):
+    """
+    When:
+        An invalid site_id is provided, the response should indicate that the hash is not on the blocklist.
+    Return:
+        Status indicating the hash is not found on the blocklist.
+    """
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+
+    # Construct the URL with the invalid site ID
+    url = (
+        f"https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+        f"?tenant=False&siteIds=2134673222300&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains={sha1}"
+    )
+
+    # Simulate the hash not being on the blocklist (empty list)
+    raw_blocklist_response = {"data": []}  # Empty response indicates hash not found
+
+    # Mock the GET request to return the blocklist response indicating the hash is not on the blocklist
+    requests_mock.get(url, json=raw_blocklist_response)
+
+    # Mock the DELETE request (this should not be called as the hash is not found)
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
+
+    # Mocking the 'demisto' environment as in the reference test
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
+    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "site_ids": "2134673222300"})
+
+    # Patch the return_results function to capture the result of the command execution
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    # Run the main function which triggers the integration logic
+    main()
+
+    # Capture the call and assert the correct outputs
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    # Assertions for the test
+    assert outputs["hash"] == sha1
+    assert outputs["status"] == "Not on blocklist"  # Status should indicate hash is not on blocklist
+
+    # Ensure that the GET and DELETE requests were called
+    assert len(requests_mock.request_history) == 1  # Only one GET request, no DELETE since hash is not found
+    assert requests_mock.request_history[0].method == "GET"  # First request is GET
+
+    # Ensure the GET request was called with the correct URL (with the invalid site_id)
+    assert requests_mock.request_history[0].url == url
+
+
+def test_remove_hash_from_blocklist_invalid_site_id(mocker, requests_mock):
+    """
+    When:
+        An invalid site_id (e.g., site_id = 0) is provided, the response should indicate that the site_id is invalid.
+    Return:
+        Status indicating an invalid site_id error.
+    """
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+
+    # Construct the URL with an invalid site ID (0)
+    url = (
+        f"https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+        f"?tenant=False&siteIds=0&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains={sha1}"
+    )
+
+    # Mocking the error response from SentinelOne API for invalid siteId
+    error_response = {
+        "errors": [
+            {
+                "code": 4000010,
+                "detail": "siteIds: 0: Must be greater than or equal to 100000000000000000.",
+                "title": "Validation Error",
+            }
+        ]
+    }
+
+    # Mock the GET request to return the error response for invalid siteId
+    requests_mock.get(url, json=error_response, status_code=400)
+
+    # Mock the DELETE request (this should not be called due to the error)
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
+
+    # Mocking the 'demisto' environment as in the reference test
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
+    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "site_ids": "0"})
+
+    # Patch the return_results function to capture the result of the command execution
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    # Run the main function which triggers the integration logic
+    main()
+
+    # Capture the call and assert the correct outputs
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    # Assertions for the test
+    assert outputs["hash"] == sha1
+    assert outputs["status"] == "Error: Invalid siteId - siteIds: 0: Must be greater than or equal to 100000000000000000."
+
+    # Ensure that the GET request was called with the correct URL (with invalid site_id)
+    assert len(requests_mock.request_history) == 1  # Only one GET request due to the error
+    assert requests_mock.request_history[0].method == "GET"  # First request is GET
+
+    # Ensure the GET request was called with the correct URL (with the invalid site_id)
+    assert requests_mock.request_history[0].url == url
+
+
+def test_remove_hash_from_blocklist_multiple_group_scope(mocker, requests_mock):
+    """
+    When:
+        A hash is removed from the blocklist for multiple group
+    Return:
+        Status that it has been removed from the blocklist
+    """
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+    url = (
+        "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+        "?tenant=False&groupIds=3327473684756,3365722136475&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains="
+        + sha1
+    )
+    raw_blockist_response = util_load_json("test_data/remove_hash_from_blocklist.json")
+    requests_mock.get(url, json=raw_blockist_response)
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
+    mocker.patch.object(
+        demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "group_ids": "3327473684756,3365722136475"}
+    )
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert outputs["hash"] == sha1
+    assert outputs["status"] == "Removed 1 entries from blocklist"
+
+
+def test_remove_hash_from_blocklist_single_group_scope(mocker, requests_mock):
+    """
+    When:
+        A hash is removed from the blocklist for a specific group
+    Return:
+        Status that it has been removed from the blocklist
+    """
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+    url = (
+        "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+        "?tenant=False&groupIds=3327473684756&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains="
+        + sha1
+    )
+    raw_blockist_response = util_load_json("test_data/remove_hash_from_blocklist.json")
+    requests_mock.get(url, json=raw_blockist_response)
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
+    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "group_ids": "3327473684756"})
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert outputs["hash"] == sha1
+    assert outputs["status"] == "Removed 1 entries from blocklist"
+
+
+def test_remove_hash_from_blocklist_multiple_account_scope(mocker, requests_mock):
+    """
+    When:
+        A hash is removed from the blocklist for multiple account
+    Return:
+        Status that it has been removed from the blocklist
+    """
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+    url = (
+        "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+        "?tenant=False&accountIds=4437562837465,4467983212746&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains="
+        + sha1
+    )
+    raw_blockist_response = util_load_json("test_data/remove_hash_from_blocklist.json")
+    requests_mock.get(url, json=raw_blockist_response)
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
+    mocker.patch.object(
+        demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "account_ids": "4437562837465,4467983212746"}
+    )
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert outputs["hash"] == sha1
+    assert outputs["status"] == "Removed 1 entries from blocklist"
+
+
+def test_remove_hash_from_blocklist_single_account_scope(mocker, requests_mock):
+    """
+    When:
+        A hash is removed from the blocklist for a specific account
+    Return:
+        Status that it has been removed from the blocklist
+    """
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+    url = (
+        "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+        "?tenant=False&accountIds=4437562837465&skip=0&limit=20&osTypes=WINDOWS&sortBy=updatedAt&sortOrder=asc&value__contains="
+        + sha1
+    )
+    raw_blockist_response = util_load_json("test_data/remove_hash_from_blocklist.json")
+    requests_mock.get(url, json=raw_blockist_response)
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
+    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "account_ids": "4437562837465"})
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert outputs["hash"] == sha1
+    assert outputs["status"] == "Removed 1 entries from blocklist"
+
+
+def test_add_hash_to_blocklist_args_multiple_site_ids(mocker, requests_mock):
+    """
+    Test: args multiple site_ids
+    """
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+    url = "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+    requests_mock.post(url, json={"data": []})
 
     mocker.patch.object(
         demisto,
@@ -291,29 +661,367 @@ def test_add_hash_to_blocklist(mocker, requests_mock, block_site_ids, expected_s
             "url": "https://usea1.sentinelone.net",
             "api_version": "2.1",
             "fetch_threat_rank": "4",
-            "block_site_ids": block_site_ids,
         },
     )
     mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
-    mocker.patch.object(
-        demisto, "args", return_value={"sha1": "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"}
-    )
-
-    mocker.patch.object(sentinelone_v2, "return_results")
+    args = {"sha1": sha1, "os_type": "WINDOWS", "site_ids": "2134673222384,2144637475766"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
 
     main()
 
-    site_ids_body_request = blocked_sha_requests_mock.last_request.json().get("filter").get("siteIds")
-    if block_site_ids:
-        assert site_ids_body_request
-    else:
-        assert not site_ids_body_request
+    request_body = requests_mock.last_request.json()
+    request_filter = request_body.get("filter")
 
-    call = sentinelone_v2.return_results.call_args_list
-    outputs = call[0].args[0].outputs
+    assert sorted(request_filter.get("siteIds").split(",")) == sorted(["2134673222384", "2144637475766"])
 
-    assert outputs["hash"] == "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
-    assert outputs["status"] == expected_status
+    call = mock_return_results.call_args_list
+    assert call, "return_results not called"
+
+    result = call[0].args[0]
+    outputs = result.outputs
+
+    assert outputs["hash"] == sha1
+
+    actual_sites = sorted(outputs["status"].replace("Added to site: ", "").replace(" blocklist", "").split(","))
+    expected_sites = sorted(["2134673222384", "2144637475766"])
+    assert actual_sites == expected_sites
+
+    assert sorted(outputs["site_ids"].split(",")) == expected_sites
+
+
+def test_add_hash_to_blocklist_args_single_site_id(mocker, requests_mock):
+    """
+    Test: arg single site_id
+    """
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+    url = "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+    requests_mock.post(url, json={"data": []})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "token": "token",
+            "url": "https://usea1.sentinelone.net",
+            "api_version": "2.1",
+            "fetch_threat_rank": "4",
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
+    args = {"sha1": sha1, "os_type": "WINDOWS", "site_ids": "2134673222384"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    request_body = requests_mock.last_request.json()
+    request_filter = request_body.get("filter")
+    assert request_filter.get("siteIds") == "2134673222384"
+
+    call = mock_return_results.call_args_list
+    assert call, "return_results not called"
+
+    result = call[0].args[0]
+    outputs = result.outputs
+
+    assert outputs["hash"] == sha1
+    assert outputs["status"] == "Added to site: 2134673222384 blocklist"
+    assert outputs.get("site_ids") == "2134673222384"
+
+
+def test_add_hash_to_blocklist_invalid_site_id(mocker, requests_mock):
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+
+    error_response = {
+        "errors": [
+            {
+                "code": 4000010,
+                "detail": "siteIds: 0: Must be greater than or equal to 100000000000000000.",
+                "title": "Validation Error",
+            }
+        ]
+    }
+
+    # Mock the POST request to the SentinelOne API to return validation error
+    requests_mock.post(
+        "https://usea1.sentinelone.net/web/api/v2.1/restrictions",
+        json=error_response,
+        status_code=400,
+    )
+
+    # Patch demisto.args() to provide inputs
+    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "site_ids": "0"})
+
+    # Patch demisto.params() to provide integration params
+    mocker.patch.object(
+        demisto, "params", return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"}
+    )
+
+    # Patch demisto.command() to simulate command name
+    mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
+
+    # Patch return_results to capture the output
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    # Run main() which will call add_hash_to_blocklist internally
+    main()
+
+    # Check what was returned
+    call_args = mock_return_results.call_args[0][0]
+    outputs = call_args.outputs
+
+    assert outputs["hash"] == sha1
+    assert "Invalid siteId" in outputs["status"] or "Validation Error" in outputs["status"]
+
+    # You can also assert the requests_mock history to confirm one POST call with the invalid site id
+    assert len(requests_mock.request_history) == 1
+    assert requests_mock.request_history[0].method == "POST"
+
+
+def test_add_hash_to_blocklist_wrong_site_id(mocker, requests_mock):
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+
+    error_response = {
+        "errors": [
+            {
+                "code": 4000010,
+                "detail": "Cannot find blocklist or exclusion for the requested scope [2163822726089822800]",
+                "title": "Validation Error",
+            }
+        ]
+    }
+
+    # Mock the POST request to the SentinelOne API to return validation error
+    requests_mock.post(
+        "https://usea1.sentinelone.net/web/api/v2.1/restrictions",
+        json=error_response,
+        status_code=400,
+    )
+
+    # Patch demisto.args() to provide inputs
+    mocker.patch.object(demisto, "args", return_value={"sha1": sha1, "os_type": "WINDOWS", "site_ids": "2163822726089822800"})
+
+    # Patch demisto.params() to provide integration params
+    mocker.patch.object(
+        demisto, "params", return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"}
+    )
+
+    # Patch demisto.command() to simulate command name
+    mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
+
+    # Patch return_results to capture the output
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    # Run main() which will call add_hash_to_blocklist internally
+    main()
+
+    # Get what was returned by return_results()
+    call_args = mock_return_results.call_args[0][0]
+
+    outputs = call_args.outputs
+    readable = call_args.readable_output
+
+    assert outputs["hash"] == sha1
+    assert "Invalid siteId" in outputs["status"] or "Validation Error" in outputs["status"]
+    assert "Cannot find blocklist or exclusion for the requested scope" in readable
+
+    # Confirm one POST call with the invalid site id was made
+    assert len(requests_mock.request_history) == 1
+    assert requests_mock.request_history[0].method == "POST"
+
+
+def test_add_hash_to_blocklist_args_multiple_group_ids(mocker, requests_mock):
+    """
+    Test: args multiple group_ids
+    """
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+    url = "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+    requests_mock.post(url, json={"data": []})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "token": "token",
+            "url": "https://usea1.sentinelone.net",
+            "api_version": "2.1",
+            "fetch_threat_rank": "4",
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
+    args = {"sha1": sha1, "os_type": "WINDOWS", "group_ids": "3327473684756,3365722136475"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    request_body = requests_mock.last_request.json()
+    request_filter = request_body.get("filter")
+    assert request_filter.get("groupIds") == "3327473684756,3365722136475"
+
+    call = mock_return_results.call_args_list
+    assert call, "return_results not called"
+
+    result = call[0].args[0]
+    outputs = result.outputs
+
+    assert outputs["hash"] == sha1
+    assert outputs["status"] == "Added to group: 3327473684756,3365722136475 blocklist"
+    assert outputs.get("group_ids") == "3327473684756,3365722136475"
+
+
+def test_add_hash_to_blocklist_args_single_group_id(mocker, requests_mock):
+    """
+    Test: args single group_id
+    """
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+    url = "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+    requests_mock.post(url, json={"data": []})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "token": "token",
+            "url": "https://usea1.sentinelone.net",
+            "api_version": "2.1",
+            "fetch_threat_rank": "4",
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
+    args = {"sha1": sha1, "os_type": "WINDOWS", "group_ids": "3327473684756"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    request_body = requests_mock.last_request.json()
+    request_filter = request_body.get("filter")
+    assert request_filter.get("groupIds") == "3327473684756"
+
+    call = mock_return_results.call_args_list
+    assert call, "return_results not called"
+
+    result = call[0].args[0]
+    outputs = result.outputs
+
+    assert outputs["hash"] == sha1
+    assert outputs["status"] == "Added to group: 3327473684756 blocklist"
+    assert outputs.get("group_ids") == "3327473684756"
+
+
+def test_add_hash_to_blocklist_args_multiple_account_ids(mocker, requests_mock):
+    """
+    Test: args multiple account_ids
+    """
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+    url = "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+    requests_mock.post(url, json={"data": []})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "token": "token",
+            "url": "https://usea1.sentinelone.net",
+            "api_version": "2.1",
+            "fetch_threat_rank": "4",
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
+    args = {"sha1": sha1, "os_type": "WINDOWS", "account_ids": "4437562837465,4467983212746"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    request_body = requests_mock.last_request.json()
+    request_filter = request_body.get("filter")
+    assert request_filter.get("accountIds") == "4437562837465,4467983212746"
+
+    call = mock_return_results.call_args_list
+    assert call, "return_results not called"
+
+    result = call[0].args[0]
+    outputs = result.outputs
+
+    assert outputs["hash"] == sha1
+    assert outputs["status"] == "Added to account: 4437562837465,4467983212746 blocklist"
+    assert outputs.get("account_ids") == "4437562837465,4467983212746"
+
+
+def test_add_hash_to_blocklist_args_single_account_id(mocker, requests_mock):
+    """
+    Test: args single account_id
+    """
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+    url = "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+    requests_mock.post(url, json={"data": []})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "token": "token",
+            "url": "https://usea1.sentinelone.net",
+            "api_version": "2.1",
+            "fetch_threat_rank": "4",
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
+    args = {"sha1": sha1, "os_type": "WINDOWS", "account_ids": "4437562837465"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    request_body = requests_mock.last_request.json()
+    request_filter = request_body.get("filter")
+    assert request_filter.get("accountIds") == "4437562837465"
+
+    call = mock_return_results.call_args_list
+    assert call, "return_results not called"
+
+    result = call[0].args[0]
+    outputs = result.outputs
+
+    assert outputs["hash"] == sha1
+    assert outputs["status"] == "Added to account: 4437562837465 blocklist"
+    assert outputs.get("account_ids") == "4437562837465"
+
+
+def test_add_hash_to_blocklist_global_fallback(mocker, requests_mock):
+    """
+    Test: No args, global fallback
+    """
+    sha1 = "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2"
+    url = "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+    requests_mock.post(url, json={"data": []})
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "token": "token",
+            "url": "https://usea1.sentinelone.net",
+            "api_version": "2.1",
+            "fetch_threat_rank": "4",
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-add-hash-to-blocklist")
+    args = {"sha1": sha1, "os_type": "WINDOWS"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    request_body = requests_mock.last_request.json()
+    request_filter = request_body.get("filter")
+    assert request_filter.get("tenant") is True
+
+    call = mock_return_results.call_args_list
+    assert call, "return_results not called"
+
+    result = call[0].args[0]
+    outputs = result.outputs
+
+    assert outputs["hash"] == sha1
+    assert outputs["status"] == "Added to global blocklist"
 
 
 def test_remove_item_from_whitelist(mocker, requests_mock):
@@ -1085,6 +1793,93 @@ def test_get_dv_query_status(mocker, requests_mock):
     command_results = call[0].args[0]
     assert command_results.outputs.get("QueryID") == "1234567890"
     assert command_results.outputs.get("responseState") == "FINISHED"
+
+
+def test_get_agent_request(mocker, requests_mock):
+    """
+    Test get_agent_request returns agent details for a valid agent_id.
+    """
+    # Arrange
+    agent_id = "1234567890"
+    api_response = {
+        "data": [
+            {
+                "id": agent_id,
+                "computerName": "test-computer",
+                "networkInterfaces": [{"int_name": "eth0", "inet": "192.168.1.10", "physical": "00:11:22:33:44:55"}],
+            }
+        ]
+    }
+    # Patch the GET request to the agents endpoint
+    requests_mock.get(
+        f"https://usea1.sentinelone.net/web/api/v2.1/agents?ids={agent_id}",
+        json=api_response,
+    )
+
+    # Patch demisto params and command context
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"},
+    )
+    client = sentinelone_v2.Client(base_url="https://usea1.sentinelone.net/web/api/v2.1", verify=False, proxy=False, headers={})
+
+    # Act
+    result = client.get_agent_request(agent_id)
+
+    # Assert
+    assert isinstance(result, list)
+    assert result[0]["id"] == agent_id
+    assert result[0]["computerName"] == "test-computer"
+    assert result[0]["networkInterfaces"][0]["inet"] == "192.168.1.10"
+
+
+def test_get_agent_request_multiple_ids(mocker, requests_mock):
+    """
+    Test get_agent_request returns agent details for multiple agent_ids.
+    """
+    # Arrange
+    agent_ids = "1234567890,1475812345"
+    api_response = {
+        "data": [
+            {
+                "id": "1234567890",
+                "computerName": "test-computer-1",
+                "networkInterfaces": [{"int_name": "eth0", "inet": "192.168.1.10", "physical": "00:11:22:33:44:55"}],
+            },
+            {
+                "id": "1475812345",
+                "computerName": "test-computer-2",
+                "networkInterfaces": [{"int_name": "eth1", "inet": "10.0.0.5", "physical": "66:77:88:99:AA:BB"}],
+            },
+        ]
+    }
+    # Patch the GET request to the agents endpoint
+    requests_mock.get(
+        f"https://usea1.sentinelone.net/web/api/v2.1/agents?ids={agent_ids}",
+        json=api_response,
+    )
+
+    # Patch demisto params and command context
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"},
+    )
+    client = sentinelone_v2.Client(base_url="https://usea1.sentinelone.net/web/api/v2.1", verify=False, proxy=False, headers={})
+
+    # Act
+    result = client.get_agent_request(agent_ids)
+
+    # Assert
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert result[0]["id"] == "1234567890"
+    assert result[1]["id"] == "1475812345"
+    assert result[0]["computerName"] == "test-computer-1"
+    assert result[1]["computerName"] == "test-computer-2"
+    assert result[0]["networkInterfaces"][0]["inet"] == "192.168.1.10"
+    assert result[1]["networkInterfaces"][0]["inet"] == "10.0.0.5"
 
 
 def test_get_agent_mac(mocker, requests_mock):

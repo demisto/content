@@ -875,3 +875,8 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
+- xsiam
+- cloud_runtime_security
+- edr
+- cloud

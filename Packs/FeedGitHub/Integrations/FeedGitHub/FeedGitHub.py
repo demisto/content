@@ -93,47 +93,55 @@ class Client(BaseClient):
         return response["files"], base_sha
 
 
-def filter_out_files_by_status(commits_files: list, statuses=("added", "modified")) -> list:
+def filter_out_files_by_status(commits_files: list, statuses: tuple[str, ...] = ("added", "modified")) -> list[dict]:
     """
-    Parses files from a list of commit files based on their status.
+    Filters files from a list of commit files based on their GIT status.
 
     Args:
         commits_files (list): A list of dictionaries representing commit files.
+        statuses (tuple): A list of GIT statuses to filter files by.
 
     Returns:
-        list: A list of URLs for files that are added or modified.
+        list[dict]: A list of dictionaries containing information about files that match the GIT statuses.
     """
-    relevant_files: list[dict] = []
-    for file in commits_files:
-        if file.get("status") in statuses:
-            relevant_files.append(file.get("filename"))
-    return relevant_files
+    return [commit_file for commit_file in commits_files if commit_file["status"] in statuses]
 
 
-def get_content_files_from_repo(client: Client, relevant_files: list[str], params: dict):
+def get_content_files_from_repo(client: Client, relevant_files: list[dict], params: dict) -> list:
     """
     Retrieves content of relevant files based on specified extensions.
 
     Args:
         client (Client): An instance of the client used for HTTP requests.
-        relevant_files (list): A list of URLs for relevant files.
+        relevant_files (list): A list of dictionaries containing information about files.
 
     Returns:
         list: A list of file contents fetched via HTTP requests.
     """
     global RAW_RESPONSE
     extensions_to_fetch = argToList(params.get("extensions_to_fetch") or [])
-    relevant_files = [file for file in relevant_files if any(file.endswith(ext) for ext in extensions_to_fetch)]
-    raw_data_files = [
-        {file: base64.b64decode(client._http_request("GET", url_suffix=f"/contents/{file}")["content"]).decode("utf-8")}
-        for file in relevant_files
-    ]
-    demisto.debug(f"list of all files raw_data :{raw_data_files}")
-    RAW_RESPONSE = [list(file.values()) for file in raw_data_files]
+
+    skipped_file_paths: list[str] = []
+    raw_data_files: list[dict] = []
+
+    for relevant_file in relevant_files:
+        file_path = relevant_file["filename"]
+        if not file_path.endswith(tuple(extensions_to_fetch)):
+            skipped_file_paths.append(file_path)
+            continue
+        file_commit = relevant_file["sha"]
+        file_url = relevant_file["contents_url"]
+        demisto.debug(f"Getting contents of file: {file_path} in commit: {file_commit} using URL: {file_url}.")
+        file_contents = client._http_request(method="GET", full_url=file_url)["content"]
+        raw_data_files.append({file_path: base64.b64decode(file_contents).decode("utf-8")})
+
+    demisto.debug(f"Skipped {len(skipped_file_paths)} files: {skipped_file_paths}.")
+    demisto.debug(f"List of all files raw data: {raw_data_files}.")
+    RAW_RESPONSE = [list(raw_data_file.values()) for raw_data_file in raw_data_files]
     return raw_data_files
 
 
-def get_commits_files(client: Client, base_commit, head_commit, is_first_fetch: bool) -> tuple[list, str]:
+def get_commits_files(client: Client, base_commit, head_commit, is_first_fetch: bool) -> tuple[list[dict], str]:
     """
     Retrieves relevant files modified between commits and the current repository head.
 
@@ -142,7 +150,7 @@ def get_commits_files(client: Client, base_commit, head_commit, is_first_fetch: 
         last_commit_fetch (str): The SHA of the last fetched commit.
 
     Returns:
-        tuple: A tuple containing a list of relevant file URLs and the SHA of the current repository head.
+        tuple[list[dict], str]: A tuple containing a list of relevant file information and the SHA of the current repository head.
     """
     try:
         all_commits_files, current_repo_head_sha = client.get_files_between_commits(base_commit, head_commit, is_first_fetch)
@@ -166,12 +174,12 @@ def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
 
     text_content = list(content_item.values())[0]
     file_path = list(content_item.keys())[0]
-    parsed_rules = []
-    parser = plyara.Plyara()
-    raw_rules = parser.parse_string(text_content)
     current_time = datetime.now().isoformat()
-    for parsed_rule in raw_rules:
-        try:
+    parser = plyara.Plyara()
+    parsed_rules = []
+    try:
+        raw_rules = parser.parse_string(text_content)
+        for parsed_rule in raw_rules:
             metadata = {key: value for d in parsed_rule["metadata"] for key, value in d.items()}
             value_ = parsed_rule["rule_name"]
             type_ = "YARA Rule"
@@ -197,9 +205,8 @@ def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
                 "rawJSON": {"value": value_, "type": type_},
             }
             parsed_rules.append(indicator_obj)
-        except Exception as e:
-            demisto.error(f"Rull: {parsed_rule} cannot be processed. Error Message: {e}")
-            continue
+    except Exception as e:
+        demisto.error(f"File: {file_path!r} cannot be processed. Error Message: {e}")
     return parsed_rules
 
 
@@ -355,9 +362,9 @@ def identify_json_structure(json_data) -> Any:
     return None
 
 
-def filtering_stix_files(content_files: list) -> list:
+def filtering_stix_files(file_names: list, file_contents: list) -> list:
     """
-    Filters a list of content files to include only those in STIX format.
+    Filters a list of content files, returning only those in STIX format.
 
     Args:
         content_files (list): A list of JSON files or dictionaries representing STIX content.
@@ -366,13 +373,25 @@ def filtering_stix_files(content_files: list) -> list:
         list: A list of STIX files or dictionaries found in the input list.
     """
     stix_files = []
-    for file in content_files:
-        for tab in file:
-            file_type = identify_json_structure(tab)
-            if file_type in ("Envelope", "Bundle"):
-                stix_files.append(tab)
-            if isinstance(file_type, dict):
-                stix_files.append(file_type)
+    for file_name, file_content in zip(file_names, file_contents):
+        try:
+            json_data = json.loads(file_content)
+        except json.JSONDecodeError as e:
+            demisto.debug(f"Invalid JSON data in {file_name!r}. Error: {str(e)}.")
+            continue
+
+        file_type = identify_json_structure(json_data)
+        if file_type in ("Envelope", "Bundle"):
+            demisto.debug(f"Identified STIX {file_type} object in {file_name!r}.")
+            stix_files.append(json_data)
+
+        elif isinstance(file_type, dict):
+            demisto.debug(f"Constructed STIX object in {file_name!r}.")
+            stix_files.append(file_type)
+
+        else:
+            demisto.debug(f"Could not identify STIX objects in {file_name!r}.")
+
     return stix_files
 
 
@@ -387,14 +406,11 @@ def create_stix_generator(content_files: list[dict]):
         content_files (list): A list of JSON files.
 
     Returns:
-        Generator: A generator that yields each STIX file from the filtered list one at a time.
+        Generator: A generator that yields each STIX file from the filtered list, one at a time.
     """
-    content_files1 = [list(content_file.values())[0] for content_file in content_files]
-    return get_stix_files_generator(filtering_stix_files(content_files1))
-
-
-def get_stix_files_generator(json_files):
-    yield from json_files
+    file_names = [list(content_file.keys())[0] for content_file in content_files]
+    file_contents = [list(content_file.values())[0] for content_file in content_files]
+    yield from filtering_stix_files(file_names=file_names, file_contents=file_contents)
 
 
 def test_module(client: Client, params) -> str:
@@ -453,6 +469,8 @@ def fetch_indicators(
         iterator = iterator[:limit]
 
     for item in iterator:
+        if not item.get("fields"):
+            item["fields"] = {}
         if feed_tags:
             item["fields"]["tags"] = feed_tags
         if tlp_color:
@@ -485,7 +503,7 @@ def get_indicators(client: Client, params, base_commit_sha, head_commit, is_firs
     except Exception as err:
         demisto.error(str(err))
         raise ValueError(f"Could not parse returned data as indicator. \n\nError massage: {err}")
-    demisto.debug(f"fetching {len(indicators)} indicators")
+    demisto.debug(f"Fetched {len(indicators)} indicators with values: {[indicator.get('value') for indicator in indicators]}.")
     return indicators, last_commit_info
 
 

@@ -1,0 +1,17 @@
+[
+    {
+      "id": 77,
+      "hostname": "comp-asset-1",
+      "status": "ok",
+      "compliance_rules_failed_count": 1,
+      "compliance_rules_succeed_count": 9
+    },
+    {
+      "id": 78,
+      "hostname": "comp-asset-2",
+      "status": "warning",
+      "compliance_rules_failed_count": 3,
+      "compliance_rules_succeed_count": 7
+    }
+  ]
+  

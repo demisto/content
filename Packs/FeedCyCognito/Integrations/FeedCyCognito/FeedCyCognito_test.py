@@ -20,6 +20,7 @@ from CommonServerPython import arg_to_datetime
 DUMMY_TIME = "2022-03-21T07:06:41.000Z"
 ASSET_IP_ENDPOINT = "/assets/ip"
 CURRENT_TIME = time.time()
+BASE_URL = BASE_URL.format("")
 
 
 def util_load_json(path):
@@ -33,8 +34,7 @@ def mocked_client():
     """Create a mock client for testing."""
     from FeedCyCognito import CyCognitoFeedClient
 
-    headers = {"Authorization": "api_token"}
-    client = CyCognitoFeedClient(base_url=BASE_URL, headers=headers, verify=False, proxy=False)
+    client = CyCognitoFeedClient(params={"api_key": "dummy_key"}, verify=False, proxy=False)
     return client
 
 
@@ -183,7 +183,7 @@ def test_get_indicators_command_when_empty_response_returned(requests_mock, mock
     resp = get_indicators_command(mocked_client, {"asset_type": "ip"})
 
     assert resp.raw_response == []
-    assert resp.readable_output == "### Indicator Detail:\n #### Asset type: IP\n**No entries.**\n"
+    assert resp.readable_output == "### Indicator Detail: \n #### Asset type: IP\n**No entries.**\n"
 
 
 def test_test_module(requests_mock, mocked_client):
@@ -283,3 +283,49 @@ def test_fetch_indicators_command_when_empty_response_returned_without_last_run(
 
     assert next_run == {}
     assert actual_indicators == []
+
+
+def test_test_module_when_region_param_is_selected(requests_mock):
+    """
+    Test case scenario for successful execution of test_module when region param is selected.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `test_module` function
+    Then:
+       - Returns an ok message
+    """
+    from FeedCyCognito import test_module, CyCognitoFeedClient, BASE_URL
+
+    params = {"api_key": "dummy_key", "region": "US", "feed": "false"}
+    BASE_URL = BASE_URL.format("us-")
+
+    mock_client = CyCognitoFeedClient(params=params, verify=False, proxy=False)
+
+    requests_mock.post(f"{BASE_URL}/assets/ip", json=[], status_code=200)
+
+    assert test_module(mock_client, params) == "ok"
+
+
+def test_test_module_when_other_region_param_is_selected(requests_mock):
+    """
+    Test case scenario for successful execution of test_module when other_region param is selected.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `test_module` function
+    Then:
+       - Returns an ok message
+    """
+    from FeedCyCognito import test_module, CyCognitoFeedClient, BASE_URL
+
+    params = {"api_key": "dummy_key", "region": "Other", "other_region": "europe", "feed": "false"}
+    BASE_URL = BASE_URL.format("europe-")
+
+    mock_client = CyCognitoFeedClient(params=params, verify=False, proxy=False)
+
+    requests_mock.post(f"{BASE_URL}/assets/ip", json=[], status_code=200)
+
+    assert test_module(mock_client, params) == "ok"

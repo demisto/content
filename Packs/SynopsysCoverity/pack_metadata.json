@@ -1,0 +1,37 @@
+{
+    "name": "Synopsys Coverity",
+    "description": "Parsing and modeling rules for Synopsys Coverity logs",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM",
+        "IT Services",
+        "Cloud Services"
+    ],
+    "tags": [
+        "Security"
+    ],
+    "useCases": [
+        "Vulnerability Management"
+    ],
+    "keywords": [
+        "synopsys",
+        "coverity",
+        "synopsys coverity"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
+    ]
+}

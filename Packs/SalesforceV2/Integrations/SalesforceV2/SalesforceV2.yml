@@ -72,6 +72,7 @@ configuration:
   type: 15
   hidden:
   - marketplacev2
+  - platform
   required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in SalesForce.
   defaultvalue: comments
@@ -80,6 +81,7 @@ configuration:
   type: 0
   hidden:
   - marketplacev2
+  - platform
   required: false
 - additionalinfo: When selected, closing the Salesforce ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
@@ -88,6 +90,7 @@ configuration:
   type: 8
   hidden:
   - marketplacev2
+  - platform
   required: false
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in SalesForce.
   defaultvalue: 'false'
@@ -96,6 +99,7 @@ configuration:
   type: 8
   hidden:
   - marketplacev2
+  - platform
   required: false
 - defaultvalue: '1'
   display: Incidents Fetch Interval
@@ -1083,7 +1087,7 @@ script:
       name: caseNumber
     description: Retrieve a case file by file ID.
     name: salesforce-get-case-file-by-id
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   ismappable: true
   isremotesyncin: true

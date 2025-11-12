@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -233,7 +233,7 @@ script:
     - contextPath: USTA.ThreatStreamPhishingSites.created
       description: The creation date of the phishing site.
       type: Date
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   feed: true
   isfetch: false
   longRunning: false

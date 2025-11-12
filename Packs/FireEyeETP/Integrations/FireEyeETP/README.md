@@ -1,42 +1,58 @@
-# FireEye Email Threat Prevention (ETP)
+# Trellix Email Security - Cloud
 
 ## Overview
-Use the FireEye Email Threat Prevention (ETP) integration to import messages as incidents, search for messages with specific attributes, and retrieve alert data.
+
+Use the Trellix Email Security - Cloud integration to import messages as incidents, search for messages with specific attributes, and retrieve alert data.
 
 ## Use Cases
+
 * Search for messages using specific message attributes as indicators.
-* Import messages as Cortex XSOAR incidents, using the message status as indicator.
+* Import messages as Cortex incidents/issues, using the message status as indicator.
 
-## Prerequisites
-Make sure you obtain the following information.
-* Valid FireEye ETP account
-* Configure an API key on the ETP Web portal. Select the product as both *Email Threat Prevention* and *Identity Access Management*. Select all entitlements.
-* Upon Authentication errors, contact FireEye Technical Support to let them know the IP address of your Cortex XSOAR Server and the URL you are accessing , e.g. https://etp.us.fireeye.com. FireEye will add these details to their Firewall rules so that the bidirectional traffic can be allowed between Cortex XSOAR and FireEye ETP.
+## Authentication Prerequisites
 
-## Configure FireEye ETP in Cortex
+To ensure a successful connection, you must select the correct authentication method based on the **Server URL** (Instance URL) you are configuring.
 
-* *Name*: a textual name for the integration instance.
-* *Server URL*: ETP server URL. Use the endpoint in the region that hosts your ETP service:
-    * US instance: https://etp.us.fireeye.com
-    * EMEA instance: https://etp.eu.fireeye.com
-    * US GOV instance: https://etp.us.fireeyegov.com
-* *API key*: The API key configured in the ETP Web Portal.
-* *Messages status*: All status specified messages will be imported as incidents. Valid values are:
-    * accepted
-    * deleted
-    * delivered
-    * delivered (retroactive)
-    * dropped
-    * dropped oob
-    * dropped (oob retroactive)
-    * permanent failure
-    * processing
-    * quarantined
-    * rejected
-    * temporary failure
+### Dual Authentication Methods
+
+We support two different authentication methods depending on the endpoint domain:
+
+| Domain Used in Server URL | Authentication Method | Required Parameters |
+| :--- | :--- | :--- |
+| **Ends in `trellix.com`** | **OAuth 2.0** | **Client ID**, **Client Secret**, and **OAuth Scopes** |
+| **Ends in `fireeye.com`** | **API Key** | **API Key** (only) |
+
+### Authentication Setup (Choose One)
+
+**You must configure only one of the two authentication approaches below** based on your Server URL domain.
+
+* **1. API Key Method (For `fireeye.com` URLs):**
+  * **Configure an API key** on the ETP Web portal. Select the product as both *Email Threat Prevention* and *Identity Access Management*. Select all entitlements.
+
+* **2. OAuth 2.0 Method (For `trellix.com` URLs):**
+  * When creating the Client ID and Client Secret, ensure the corresponding user/role has **explicit permission to access the API**.
+  * **Note:** If API access permissions are not properly set for the user/role, the authentication attempt will fail with a **`400 Client Error: Bad Request`** even if the Client ID and Secret are correct.
+
+* Contact Trellix Email Security - Cloud Technical Support to let them know the IP address of your Cortex Server and the URL you are accessing, e.g. `https://etp.us.fireeye.com`. Trellix will add these details to their Firewall rules so that the bidirectional traffic can be allowed between Cortex and Trellix Email Security - Cloud.
+
+## Configure Trellix Email Security - Cloud in Cortex
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | Valid URLs (US, EMEA, USGOV): https://us.etp.trellix.com / https://etp.us.fireeye.com, https://eu.etp.trellix.com / https://etp.eu.fireeye.com, https://etp.us.fireeyegov.com | True |
+| Client ID | For the Trellix server URL (OAuth). |  |
+| Client Secret | For the Trellix server URL (OAuth).|  |
+| OAuth Scopes | For the Trellix server URL (OAuth).<br> Space-separated list of OAuth scopes. <br>**Note:** Only include scopes that your application's Client ID has already been authorized to use. The full list is: `etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw` | False || API Key | Use the Api key for the FireEye base URL. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Alerts statuses to import | All alerts with a status specified here will be imported as incidents. Valid values are:<br>• accepted<br>• deleted<br>• delivered<br>• delivered (retroactive)<br>• dropped<br>• dropped oob<br>• dropped (oob retroactive)<br>• permanent failure<br>• processing<br>• quarantined<br>• rejected<br>• temporary failure | False |
 
 ## Fetched Incidents Data
+
 To use Fetch incidents:
+
 1. Configure a new instance.
 2. Navigate to *instance settings*, and specify the *message status* (using the valid values).
 3. Select *Fetch incidents* option.
@@ -44,6 +60,7 @@ To use Fetch incidents:
 The integration will fetch alerts as incidents. It is possible to filter alerts using the specified message status.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. [Search for messages: fireeye-etp-search-messages](#search-for-messages)
@@ -54,6 +71,7 @@ You can execute these commands from the CLI, as part of an automation, or in a p
 * * *
 
 ### Search for messages
+
 Search for messages using specific message attributes as indicators.
 
 ##### Base Command
@@ -102,14 +120,17 @@ Search for messages using specific message attributes as indicators.
 |FireEyeETP.Message.verdicts.AT|Verdict for AT (pass/fail)|
 |FireEyeETP.Message.verdicts.PV|Verdict for PV (pass/fail)|
 |FireEyeETP.Message.id|Message ID|
- 
+
 ##### Command example 1
+
 `!fireeye-etp-search-messages to_accepted_date_time=2017-10- 24T10:00:00.000Z from_accepted_date_time=2017-10- 24T10:30:00.000Z`
 
 ##### Command example 2
+
 `!fireeye-etp-search-messages from_email=diana@corp.com,charles@corp.com`
 
 ##### Raw Output
+
 ```json
 {  
    "data": [  
@@ -166,17 +187,21 @@ Search for messages using specific message attributes as indicators.
 * * *
 
 ### Get metadata of a specified message
+
 Get the metadata of a specified message.
 
 #### Base Command
+
 `fireeye-etp-get-message`
 
 ##### Input
+
 |Parameter|Description|
 |---|----|
 |message_id|Message ID|
- 
+
 ##### Context Output
+
 |Path|Description|
 |---|---|
 |FireEyeETP.Message.acceptedDateTime|Date and time that the message was accepted|
@@ -197,20 +222,25 @@ Get the metadata of a specified message.
 |FireEyeETP.Message.verdicts.AT|Verdict for AT (pass/fail)|
 |FireEyeETP.Message.verdicts.PV|Verdict for PV (pass/fail)|
 |FireEyeETP.Message.id|Message ID|
- 
+
 ##### Command example
+
 `!fireeye-etp-get-message message_id= C88B18749AAAAB1B55fc0fa78`
 
 ##### Raw Output
+
 There is no raw output for this command.
 
 ### Get summary of all alerts
+
 Get summary-format information about the alerts. Alerts that are more than 90 days old are not available.
 
 ##### Base Command
+
 fireeye-etp-get-alerts
 
 ##### Input
+
 |Parameter|Description|More Information|
 |---|---|---|
 |legacy_id|Alert ID as shown in ETP Web Portal|
@@ -219,6 +249,7 @@ fireeye-etp-get-alerts
 |size|Number of alerts intended in response|Default is 20.<br />Valid range is 1-100.|
 
 ##### Context Output
+
 |Path|Description|
 |---|---|
 |FireEyeETP.Alerts.meta.read|Has the email been read?|
@@ -239,11 +270,13 @@ fireeye-etp-get-alerts
 |FireEyeETP.Alerts.email.attachment|File name or URL pointing to file|
 |FireEyeETP.Alerts.email.timestamp.accepted|Time the email was accepted|
 |FireEyeETP.Alerts.id|Alert ID|
- 
+
 ##### Command example
+
 `!fireeye-etp-get-alerts legacy_id=50038117`
 
 ##### Raw Output
+
 ```json
 {
   "data": [
@@ -293,18 +326,21 @@ fireeye-etp-get-alerts
 * * *
 
 ### Get details of specified alert
+
 Returns detailed information for any specified alert. Alerts that are more than 90 days old are not available.
 
 ##### Base Command
+
 `fireeye-etp-get-alert`
 
 ##### Input
+
 |Parameter|Description|
 |---|---|
 |alert_id|Alert ID|
- 
 
 ##### Context Output
+
 |Path|Description|
 |---|---|
 |FireEyeETP.Alerts.meta.read|Has the email been read?|
@@ -332,7 +368,7 @@ Returns detailed information for any specified alert. Alerts that are more than 
 |FireEyeETP.Alerts.email.source_ip|Email source IP address|
 |FireEyeETP.Alerts.email.smtp.rcpt_to|Recipient SMTP|
 |FireEyeETP.Alerts.email.smtp.mail_from|Sender SMTP|
-|FireEyeETP.Alerts.email.etp_message_id|FireEye ETP unique message ID|
+|FireEyeETP.Alerts.email.etp_message_id|Trellix Email Security - Cloud unique message ID|
 |FireEyeETP.Alerts.email.headers.cc|Email cc recipients|
 |FireEyeETP.Alerts.email.headers.to|Email recipients|
 |FireEyeETP.Alerts.email.headers.from|Email sender|
@@ -340,11 +376,13 @@ Returns detailed information for any specified alert. Alerts that are more than 
 |FireEyeETP.Alerts.email.attachment|File name or URL pointing to file|
 |FireEyeETP.Alerts.email.timestamp.accepted|Time that the email was accepted|
 |FireEyeETP.Alerts.id|The alert unique ID|  
- 
+
 ##### Command example
+
 `!fireeye-etp-get-alert alert_id= AWKMOs-2_r7_CWOc2okO`
 
 ##### Raw Output
+
 ```json
 {  
    "data": [  
@@ -441,12 +479,13 @@ Downloads a YARA file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_uuid | Universally unique identifier (UUID) of the policy. (Can be found on the URL of the ETP Policies). | Required | 
-| ruleset_uuid | Universally unique identifier (UUID) of the ruleset. | Required | 
+| policy_uuid | Universally unique identifier (UUID) of the policy. (Can be found on the URL of the ETP Policies). | Required |
+| ruleset_uuid | Universally unique identifier (UUID) of the ruleset. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### fireeye-etp-get-events-data
 
 ***
@@ -460,17 +499,17 @@ Returns all events of the alert by the alert ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | Message ID of alert. | Required | 
+| message_id | Message ID of alert. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeETP.Events | unknown | The events of the alert. | 
-| FireEyeETP.Events.Delivered_msg | unknown | Display if event is delivered successfully or not. | 
-| FireEyeETP.Events.Delivered_status | unknown | The status of the message. | 
-| FireEyeETP.Events.InternetMessageId | unknown | The internet message ID of the alert. | 
-| FireEyeETP.Events.Logs | unknown | The logs of the alert. | 
+| FireEyeETP.Events | unknown | The events of the alert. |
+| FireEyeETP.Events.Delivered_msg | unknown | Display if event is delivered successfully or not. |
+| FireEyeETP.Events.Delivered_status | unknown | The status of the message. |
+| FireEyeETP.Events.InternetMessageId | unknown | The internet message ID of the alert. |
+| FireEyeETP.Events.Logs | unknown | The logs of the alert. |
 
 ### fireeye-etp-list-yara-rulesets
 
@@ -485,13 +524,13 @@ Fetch the list of YARA rulesets and return a list with all the rules.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_uuid | Universally unique identifier (UUID) of the policy. (Can be found on the URL of the ETP Policies). | Required | 
+| policy_uuid | Universally unique identifier (UUID) of the policy. (Can be found on the URL of the ETP Policies). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeETP.Policy | unknown | The policy id. | 
+| FireEyeETP.Policy | unknown | The policy id. |
 
 ### fireeye-etp-upload-yara-file
 
@@ -506,13 +545,14 @@ Update or replace the YARA rule file in the existing ruleset.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_uuid | Universally unique identifier (UUID) of the policy. (Can be found on the URL of the ETP Policies). | Required | 
-| ruleset_uuid | Universally unique identifier (UUID) of the ruleset. | Required | 
-| entryID | Entry ID of yara file to upload. | Required | 
+| policy_uuid | Universally unique identifier (UUID) of the policy. (Can be found on the URL of the ETP Policies). | Required |
+| ruleset_uuid | Universally unique identifier (UUID) of the ruleset. | Required |
+| entryID | Entry ID of yara file to upload. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### fireeye-etp-download-alert-artifact
 
 ***
@@ -526,11 +566,12 @@ Downloads all case files of the alert specified by the alert ID, in a zip file. 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The alert ID. | Required | 
+| alert_id | The alert ID. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### fireeye-etp-quarantine-release
 
 ***
@@ -544,7 +585,7 @@ Releases the email file present in the quarantine for the given email. Cloud mes
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | The message ID. | Optional | 
+| message_id | The message ID. | Optional |
 
 #### Context Output
 

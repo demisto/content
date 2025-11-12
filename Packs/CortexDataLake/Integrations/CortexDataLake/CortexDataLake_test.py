@@ -2,8 +2,16 @@ import pytest
 import json
 import re
 from datetime import datetime, timedelta
+
+from pytest_mock import MockerFixture
 from CommonServerPython import parse_date_range, DemistoException
-from CortexDataLake import FIRST_FAILURE_TIME_CONST, LAST_FAILURE_TIME_CONST
+from CortexDataLake import (
+    FIRST_FAILURE_TIME_CONST,
+    LAST_FAILURE_TIME_CONST,
+    STANDARD_TOKEN_URL,
+    IS_FEDRAMP_CONST,
+    FEDRAMP_TOKEN_URL,
+)
 
 HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES = [
     (1582210145000000, False, "2020-02-20T14:49:05"),
@@ -213,6 +221,36 @@ def test_query_logs_command_transform_results_1():
     assert results_noxform == {"CDL.Logging": cdl_records}
 
 
+def test_query_logs_sls_command_transform_results_1():
+    """
+    Given:
+        - a list of SLS query results
+    When
+        - running query_logs_sls_command function
+    Then
+        - if transform_results is not specified, SLS query results are mapped into the SLS common context (test 1)
+        - if transform_results is set to false, SLS query results are returned unaltered (test 2)
+    """
+    from CortexDataLake import query_logs_sls_command
+
+    cdl_records = load_test_data("./test_data/test_query_logs_sls_command_transform_results_original.json")
+    cdl_records_xform = load_test_data("./test_data/test_query_logs_sls_command_transform_results_xformed.json")
+
+    class MockClient:
+        def query_loggings(self, query, page_number=None, page_size=None):
+            return cdl_records, []
+
+    # test 1, with no transform_results options, should transform to common context
+    _, results_xform, _ = query_logs_sls_command({"limit": "1", "query": "SELECT * FROM `firewall.traffic`"}, MockClient())
+    assert results_xform == {"SLS.Logging": cdl_records_xform}
+
+    # test 2, with transform_results options, should transform to common context
+    _, results_noxform, _ = query_logs_sls_command(
+        {"limit": "1", "query": "SELECT * FROM `firewall.traffic`", "transform_results": "false"}, MockClient()
+    )
+    assert results_noxform == {"SLS.Logging": cdl_records}
+
+
 def test_query_logs_command_transform_sysmtem_logs():
     """
     Given:
@@ -236,6 +274,29 @@ def test_query_logs_command_transform_sysmtem_logs():
     assert results_xform == {"CDL.Logging": cdl_records_xform}
 
 
+def test_query_logs_sls_command_transform_sysmtem_logs():
+    """
+    Given:
+        - a list of SLS query results from the log.system table.
+    When
+        - running query_logs_sls_command function
+    Then
+        - the SLS query results from the log.system table should be transformed to the system log context format.
+    """
+    from CortexDataLake import query_logs_sls_command
+
+    cdl_records = load_test_data("./test_data/test_query_logs_sls_command_transform_results_system_logs.json")
+    cdl_records_xform = load_test_data("./test_data/test_query_logs_sls_command_transform_results_system_logs_xformed.json")
+
+    class MockClient:
+        def query_loggings(self, query, page_number=None, page_size=None):
+            return cdl_records, []
+
+    _, results_xform, _ = query_logs_sls_command({"limit": "1", "query": "SELECT * FROM `log.system`"}, MockClient())
+
+    assert results_xform == {"SLS.Logging": cdl_records_xform}
+
+
 def test_query_gp_logs_command():
     """
     Given:
@@ -247,16 +308,39 @@ def test_query_gp_logs_command():
     """
     from CortexDataLake import query_gp_logs_command
 
-    cdl_records = load_test_data('./test_data/test_query_logs_command_transform_results_gp_logs.json')
-    cdl_records_xform = load_test_data('./test_data/test_query_logs_command_transform_results_gp_logs_xformed.json')
+    cdl_records = load_test_data("./test_data/test_query_logs_command_transform_results_gp_logs.json")
+    cdl_records_xform = load_test_data("./test_data/test_query_logs_command_transform_results_gp_logs_xformed.json")
 
-    class MockClient():
+    class MockClient:
         def query_loggings(self, query, page_number=None, page_size=None):
             return cdl_records, []
 
-    _, results_xform, _ = query_gp_logs_command({'limit': '1', 'start_time': '1970-01-01 00:00:00'}, MockClient())
+    _, results_xform, _ = query_gp_logs_command({"limit": "1", "start_time": "1970-01-01 00:00:00"}, MockClient())
 
-    assert results_xform == {'CDL.Logging.GlobalProtect': cdl_records_xform}
+    assert results_xform == {"CDL.Logging.GlobalProtect": cdl_records_xform}
+
+
+def test_query_gp_logs_sls_command():
+    """
+    Given:
+        - a list of SLS query results from the firewall.globalprotect table.
+    When
+        - running query_gp_logs_sls_command function
+    Then
+        - the SLS query results from the firewall.globalprotect table should be transformed to the GP log context format.
+    """
+    from CortexDataLake import query_gp_logs_sls_command
+
+    cdl_records = load_test_data("./test_data/test_query_logs_sls_command_transform_results_gp_logs.json")
+    cdl_records_xform = load_test_data("./test_data/test_query_logs_sls_command_transform_results_gp_logs_xformed.json")
+
+    class MockClient:
+        def query_loggings(self, query, page_number=None, page_size=None):
+            return cdl_records, []
+
+    _, results_xform, _ = query_gp_logs_sls_command({"limit": "1", "start_time": "1970-01-01 00:00:00"}, MockClient())
+
+    assert results_xform == {"SLS.Logging.GlobalProtect": cdl_records_xform}
 
 
 class TestPagination:
@@ -272,16 +356,19 @@ class TestPagination:
             assert page_number is not None
             return [], []
 
-    @pytest.mark.parametrize("command_function", [
-        "query_logs_command",
-        "get_critical_logs_command",
-        "get_social_applications_command",
-        "search_by_file_hash_command",
-        "query_threat_logs_command",
-        "query_url_logs_command",
-        "query_file_data_command",
-        "query_gp_logs_command"
-    ])
+    @pytest.mark.parametrize(
+        "command_function",
+        [
+            "query_logs_command",
+            "get_critical_logs_command",
+            "get_social_applications_command",
+            "search_by_file_hash_command",
+            "query_threat_logs_command",
+            "query_url_logs_command",
+            "query_file_data_command",
+            "query_gp_logs_command",
+        ],
+    )
     def test_command_pagination(self, command_function):
         """
         Given:
@@ -450,3 +537,123 @@ class TestBackoffStrategy:
             assert ans is not None
         else:
             assert ans is None
+
+
+@pytest.mark.parametrize(
+    "configured_reg_id_url, mock_is_fedramp_return_value, expected_result",
+    [
+        pytest.param(
+            "test_id_custom@https://custom.test.com/api",
+            False,
+            ("https://custom.test.com/api", "test_id_custom"),
+            id="FedRAMP tenant with URL in registration ID",
+        ),
+        pytest.param(
+            "test_id_fr",
+            True,
+            (FEDRAMP_TOKEN_URL, "test_id_fr"),
+            id="FedRAMP tenant without URL in registration ID",
+        ),
+        pytest.param(
+            "test_id_std@https://custom.test.com/api",
+            False,
+            ("https://custom.test.com/api", "test_id_std"),
+            id="Standard tenant with URL in registration ID",
+        ),
+        pytest.param(
+            "test_id_std_nohost",
+            False,
+            (STANDARD_TOKEN_URL, "test_id_std_nohost"),
+            id="Standard tenant without URL in registration ID",
+        ),
+    ],
+)
+def test_extract_client_args(
+    mocker: MockerFixture,
+    configured_reg_id_url: str,
+    mock_is_fedramp_return_value: bool,
+    expected_result: tuple,
+):
+    """
+    Given:
+        - Configured "Registration ID" param value.
+    When:
+        - Calling `extract_client_args`.
+    Then:
+        - Assert returned token retrieval URL and registration ID are as expected.
+    """
+    from CortexDataLake import extract_client_args
+
+    mocker.patch("CortexDataLake.is_fedramp_tenant", return_value=mock_is_fedramp_return_value)
+    result = extract_client_args(configured_reg_id_url)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "license_field_url, integration_context, expected_is_fedramp",
+    [
+        pytest.param(
+            "https://tenant1.paloaltonetworks.com",
+            {IS_FEDRAMP_CONST: False},
+            False,
+            id="Standard tenant with 'https' scheme and integration context",
+        ),
+        pytest.param(
+            "https://tenant1.paloaltonetworks.com",
+            {},
+            False,
+            id="Standard tenant with 'https' scheme and no integration context",
+        ),
+        pytest.param(
+            "tenant2.paloaltonetworks.com",
+            {},
+            False,
+            id="Standard tenant without 'https' scheme and no integration context",
+        ),
+        pytest.param(
+            "https://fr-tenant1.federal.paloaltonetworks.com",
+            {IS_FEDRAMP_CONST: True},
+            True,
+            id="FedRAMP tenant with 'https' scheme and integration context",
+        ),
+        pytest.param(
+            "https://fr-tenant1.federal.paloaltonetworks.com",
+            {},
+            True,
+            id="FedRAMP tenant with 'https' scheme and no integration context",
+        ),
+        pytest.param(
+            "fr-tenant2.federal.paloaltonetworks.com",
+            {},
+            True,
+            id="FedRAMP tenant without 'https' scheme and no integration context",
+        ),
+    ],
+)
+def test_is_fedramp_tenant(
+    mocker: MockerFixture,
+    integration_context,
+    license_field_url: str,
+    expected_is_fedramp: bool,
+):
+    """
+    Given:
+        - The integration context and the domain name from `demisto.getLicenseCustomField`.
+    When:
+        - Calling `is_fedramp_tenant`.
+    Then:
+        - Assert function calls are as expected and returned FedRAMP status is correct.
+    """
+    from CortexDataLake import demisto, is_fedramp_tenant
+
+    mock_get_integration_context = mocker.patch.object(demisto, "getIntegrationContext", return_value=integration_context)
+    mock_set_integration_context = mocker.patch.object(demisto, "setIntegrationContext")
+    mocker_get_license_custom_field = mocker.patch.object(demisto, "getLicenseCustomField", return_value=license_field_url)
+    is_cached = IS_FEDRAMP_CONST in integration_context
+
+    is_fedramp = is_fedramp_tenant()
+
+    assert mock_get_integration_context.call_count == 1
+    assert mocker_get_license_custom_field.call_count == 0 if is_cached else 1
+    assert mock_set_integration_context.call_count == 0 if is_cached else 1
+    assert is_fedramp == expected_is_fedramp

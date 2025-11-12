@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The CrowdStrike Falcon - Search Endpoints By Hash playbook may now return a list of IP addresses under endpoint.IPAddress rather than a single entry."
+}

@@ -1,7 +1,7 @@
 commonfields:
   id: Signal Sciences WAF
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Signal Sciences WAF
@@ -962,7 +962,7 @@ script:
     description: Retrieves a request by request ID.
   isfetch: true
   runonce: false
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.12.8.3296088
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

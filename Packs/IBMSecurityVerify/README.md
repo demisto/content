@@ -26,6 +26,6 @@ Identity and access management is a crucial part of maintaining security in mode
 - SLO
 - Management
 
-<~XSIAM>
+</~XSIAM>
 
 With this pack, you can enhance your security posture by leveraging automated event collection and incident response capabilities, all integrated with your IBM Security Verify environment.

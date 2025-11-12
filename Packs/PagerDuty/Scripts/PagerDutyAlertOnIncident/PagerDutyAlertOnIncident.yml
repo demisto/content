@@ -7,12 +7,12 @@ type: javascript
 tags:
 - pagerduty
 - communication
-comment: Send incident details to pagerduty (useful to include in playbooks)
+comment: Send incident details to pagerduty (useful to include in playbooks).
 enabled: true
 args:
 - name: author
   required: true
-  description: The email address of the user alerting about the incident
+  description: The email address of the user alerting about the incident.
 scripttarget: 0
 dependson:
   must:
@@ -28,3 +28,6 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
+- xsiam
+- edr

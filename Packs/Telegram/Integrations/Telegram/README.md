@@ -12,13 +12,14 @@ Sends a message
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userID | The recipient ID. | Required | 
-| username | The recipient username. | Required | 
-| message | The message to send. | Required | 
+| userID | The recipient ID. | Required |
+| username | The recipient username. | Required |
+| message | The message to send. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### telegram-list-users
 
 ***

@@ -1,6 +1,7 @@
 Displays HTML in the War Room.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Displays HTML in the War Room.
 | Script Type | python |
 | Tags |  |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,5 +20,6 @@ Displays HTML in the War Room.
 | header | Adds a header text to the output. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

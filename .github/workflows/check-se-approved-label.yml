@@ -1,0 +1,45 @@
+name: se-packs-approved label verification
+on:
+  pull_request:
+    types: [opened, synchronize, labeled, unlabeled]
+
+
+permissions:
+  contents: read
+
+jobs:
+  check_se_label_job:
+    runs-on: ubuntu-latest
+    if: github.repository == 'demisto/content'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"  # The Python version set here is the minimum supported by content, if you change it here, please change all the places containing this comment.
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v9
+      - name: Install python dependencies
+        run: |
+          poetry install --with github-actions
+      - name: set pythonpath
+        run: |
+          echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v46.0.1 # disable-secrets-detection
+        with:
+          files: |
+            Packs/**/ModelingRules/**
+          since_last_remote_commit: false
+      - name: Check if se-packs-approved label exists
+        id: check_label
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        run: |
+          echo "Checking label SE-packs-approved for: $PR_NUMBER"
+          cd .github/github_workflow_scripts
+          poetry run python check_if_se_packs_approved_label_exists.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN --changed_files $CHANGED_FILES

@@ -28,11 +28,11 @@ Extract web page content from a specified URL.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | The url to extract its content. | Required | 
+| url | The url to extract its content. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tavily.URL | string | The URL from which the content was extracted. | 
-| Tavily.Content | string | The full content extracted from the URL. | 
+| Tavily.URL | string | The URL from which the content was extracted. |
+| Tavily.Content | string | The full content extracted from the URL. |

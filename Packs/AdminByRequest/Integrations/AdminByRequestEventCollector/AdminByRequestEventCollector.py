@@ -4,6 +4,8 @@ Event Collector Source file for AdminByRequest API.
 
 from typing import Any
 
+import re
+
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
@@ -19,6 +21,7 @@ PRODUCT = "By_Request"
 MAX_FETCH_AUDIT_LIMIT = 50000
 MAX_FETCH_EVENT_LIMIT = 50000
 MAX_FETCH_REQUEST_LIMIT = 5000
+EVENTS_LIMIT = 100_000
 DATE_FORMAT_CALLS = "%Y-%m-%d"
 
 
@@ -79,12 +82,37 @@ class Client(BaseClient):
         self._api_key = api_key
         self._headers: dict[str, Any] = {"apiKey": self._api_key}
 
+    def approve_request(self, url_suffix: str, headers: dict) -> requests.Response:
+        """Approve a request."""
+        request_headers = self._headers.copy()
+        request_headers.update(headers)
+        return self._http_request("PUT", url_suffix=url_suffix, headers=request_headers, resp_type="response", ok_codes=(204,))
+
+    def deny_request(self, url_suffix: str, headers: dict) -> requests.Response:
+        """Deny a request."""
+        request_headers = self._headers.copy()
+        request_headers.update(headers)
+        return self._http_request("DELETE", url_suffix=url_suffix, headers=request_headers, resp_type="response", ok_codes=(204,))
+
     def get_events_request(self, url_suffix: str, params: dict) -> dict:
-        """Retrieve the detections from AdminByRequest  API."""
+        """Retrieve the detections from AdminByRequest API."""
         return self._http_request("GET", url_suffix=url_suffix, params=params, resp_type="json")
 
 
 """ HELPER FUNCTIONS """
+
+
+def validate_email_address(email: str) -> bool:
+    """
+    Validate an email address.
+
+    Args:
+        email (str): The email address to validate.
+
+    Returns:
+        bool: True if the email is valid, False otherwise.
+    """
+    return re.fullmatch(emailRegex, email) is not None
 
 
 def remove_first_run_params(params: dict[str, Any]) -> None:
@@ -242,8 +270,18 @@ def prepare_list_output(records: List[dict[str, Any]]) -> str:
         hr_output = {
             "ID": rec.get("id"),
             "Type": rec.get("type"),
+            "Settings Name": rec.get("settingsName"),
+            "Application Name": demisto.get(rec, "application.name"),
+            "Application Scan Result": demisto.get(rec, "application.scanResult"),
+            "User": rec.get("user", {}),
+            "Computer name": demisto.get(rec, "computer.name"),
             "Status": rec.get("status"),
             "Reason": rec.get("reason"),
+            "Approved By": rec.get("approvedBy"),
+            "Approved By Email": rec.get("approvedByEmail"),
+            "Denied Reason": rec.get("deniedReason"),
+            "Denied By": rec.get("deniedBy"),
+            "Denied By Email": rec.get("deniedByEmail"),
             "Request Time": rec.get("requestTime"),
             "Start Time": rec.get("startTime"),
             "Event Text": rec.get("eventText"),
@@ -257,7 +295,7 @@ def prepare_list_output(records: List[dict[str, Any]]) -> str:
 """ COMMAND FUNCTIONS """
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:  # pragma: no cover
     """
     Tests the connection to the service by calling each one of the api endpoints.
     Args:
@@ -341,7 +379,137 @@ def get_events(client: Client, args: dict) -> CommandResults:
     return command_results
 
 
-def main():
+def list_requests_command(client: Client, args: dict) -> CommandResults:
+    """
+    Lists requests from AdminByRequest.
+
+    Args:
+        client: AdminByRequest client to be used.
+        args: command arguments.
+
+    Returns:
+        CommandResults: Command results object that contains the results.
+    """
+    request_id = args.get("request_id")
+    status = args.get("status")
+    want_scan_details = argToBoolean(args.get("want_scan_details", False))
+    limit = arg_to_number(args.get("limit", 50))
+    all_results = argToBoolean(args.get("all_results", False))
+
+    params: dict[str, Any] = {}
+    if status:
+        params["status"] = status
+    if want_scan_details:
+        params["wantscandetails"] = 1
+
+    results: list[dict[str, Any]] = []
+    if request_id:
+        url_suffix = f"requests/{request_id}"
+        result = client.get_events_request(url_suffix, params)
+        if result:
+            results.append(result)
+    else:
+        url_suffix = "requests"
+        if all_results:
+            params["take"] = 1000
+            while len(results) < EVENTS_LIMIT:
+                response = client.get_events_request(url_suffix, params)
+                if not response:
+                    break
+                results.extend(response)
+                if len(response) < 1000:
+                    break
+                params["startid"] = response[-1]["id"] + 1
+        else:
+            params["take"] = limit
+            response = client.get_events_request(url_suffix, params)
+            if response:
+                results.extend(response)
+
+    human_readable = prepare_list_output(results)
+    command_results = CommandResults(
+        readable_output=human_readable,
+        outputs=results,
+        outputs_prefix="AdminByRequest.Request",
+    )
+    return command_results
+
+
+def approve_request_command(client: Client, args: dict) -> CommandResults:
+    """
+    Approves a request in AdminByRequest.
+    Use adminbyrequest-list-requests command to list all available requests.
+
+    Args:
+        client: AdminByRequest client to be used.
+        args: command arguments.
+
+    Returns:
+        CommandResults: Command results object that contains the results.
+    """
+    request_id = args.get("request_id")
+    if not request_id:
+        raise ValueError("request_id is required.")
+
+    approved_by = args.get("approved_by")
+
+    headers = {}
+    if approved_by:
+        if not validate_email_address(approved_by):
+            raise DemistoException("approved_by must be a valid email address.")
+        headers["approvedby"] = approved_by
+
+    url_suffix = f"requests/{request_id}"
+
+    response = client.approve_request(url_suffix, headers)
+
+    if response.status_code == 204:
+        readable_output = f"Request with {request_id} id was successfully approved."
+    else:
+        raise DemistoException(f"Failed to approve request {request_id}. Status code: {response.status_code}")
+    return CommandResults(readable_output=readable_output)
+
+
+def deny_request_command(client: Client, args: dict) -> CommandResults:
+    """
+    Denies a request in AdminByRequest.
+    Use adminbyrequest-list-requests command to list all available requests.
+
+    Args:
+        client: AdminByRequest client to be used.
+        args: command arguments.
+
+    Returns:
+        CommandResults: Command results object that contains the results.
+    """
+    request_id = args.get("request_id")
+    if not request_id:
+        raise ValueError("request_id is required.")
+
+    denied_by = args.get("denied_by")
+    if denied_by and not validate_email_address(denied_by):
+        raise ValueError("denied_by must be a valid email address.")
+
+    reason = args.get("reason")
+
+    headers = {}
+    if denied_by:
+        headers["deniedby"] = denied_by
+    if reason:
+        headers["reason"] = reason
+
+    url_suffix = f"requests/{request_id}"
+
+    response = client.deny_request(url_suffix, headers)
+
+    if response.status_code == 204:
+        readable_output = f"Request with {request_id} id was successfully denied."
+    else:
+        raise DemistoException(f"Failed to deny request {request_id}. Status code: {response.status_code}")
+    return CommandResults(readable_output=readable_output)
+
+
+def main():  # pragma: no cover
     """main function, parses params and runs command functions"""
     params = demisto.params()
     args = demisto.args()
@@ -377,6 +545,12 @@ def main():
                 demisto.debug(f"Sending {len(events)} events.")
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             return_results(command_results)
+        elif command == "adminbyrequest-list-requests":
+            return_results(list_requests_command(client, args))
+        elif command == "adminbyrequest-request-approve":
+            return_results(approve_request_command(client, args))
+        elif command == "adminbyrequest-request-deny":
+            return_results(deny_request_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 

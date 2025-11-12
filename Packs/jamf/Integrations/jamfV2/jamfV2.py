@@ -192,30 +192,27 @@ class Client(BaseClient):
 
     @staticmethod
     def _generic_error_handler(res):
+        err_msg = BeautifulSoup(res.text)
+        err_msg_body = err_msg.body.text if err_msg.body else err_msg.title
+
         if res.status_code == 400:
-            err_msg = BeautifulSoup(res.text).body.text
-            raise DemistoException(f"Bad request. Origin response from server: {err_msg}")
+            raise DemistoException(f"Bad request. Origin response from server: {err_msg_body}")
 
         if res.status_code == 401:
-            err_msg = BeautifulSoup(res.text).body.text
-            raise DemistoException(f"Unauthorized. Origin response from server: {err_msg}")
+            raise DemistoException(f"Unauthorized. Origin response from server: {err_msg_body}")
 
         if res.status_code == 403:
-            err_msg = BeautifulSoup(res.text).body.text
-            raise DemistoException(f"Invalid permissions. Origin response from server: {err_msg}")
+            raise DemistoException(f"Invalid permissions. Origin response from server: {err_msg_body}")
 
         if res.status_code == 404:
-            err_msg = BeautifulSoup(res.text).body.text
             raise DemistoException(
-                f"The server has not found anything matching the request URI. Origin response from server: {err_msg}"
+                f"The server has not found anything matching the request URI. Origin response from server: {err_msg_body}"
             )
         if res.status_code == 500:
-            err_msg = BeautifulSoup(res.text).body.text
-            raise DemistoException(f"Internal server error. Origin response from server: {err_msg}")
+            raise DemistoException(f"Internal server error. Origin response from server: {err_msg_body}")
 
         if res.status_code == 502:
-            err_msg = BeautifulSoup(res.text).title
-            raise DemistoException(f"Bad gateway. Origin response from server: {err_msg}")
+            raise DemistoException(f"Bad gateway. Origin response from server: {err_msg.title}")
 
     def computer_lock_request(self, computer_id: str, passcode: str, lock_message: str = None):
         """
@@ -244,7 +241,8 @@ class Client(BaseClient):
 
     @staticmethod
     def _computer_lock_erase_error_handler(res):
-        err_msg = str(BeautifulSoup(res.text).body.text)
+        err_msg = BeautifulSoup(res.text)
+        err_msg = str(err_msg.body.text) if err_msg.body else str(err_msg.title)
         if res.status_code == 400 and "Unable to match computer" in res.text:
             raise DemistoException(f"ID doesn't exist. Origin error from server: {err_msg}")
         if res.status_code == 400 and "is not managed" in res.text:
@@ -349,7 +347,8 @@ class Client(BaseClient):
 
     @staticmethod
     def _mobile_lost_erase_error_handler(res):
-        err_msg = str(BeautifulSoup(res.text).body.text)
+        err_msg = BeautifulSoup(res.text)
+        err_msg = str(err_msg.body.text) if err_msg.body else str(err_msg.title)
         if res.status_code == 400 and "Unable to match mobile device" in res.text:
             raise DemistoException(f"Unable to match mobile device. Origin error from server: {err_msg}")
         if res.status_code == 400 and "not support" in res.text:

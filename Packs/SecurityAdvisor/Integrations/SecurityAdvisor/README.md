@@ -4,7 +4,9 @@ For example, a user whose system is often targeted for malware can be coached wi
 Our training is quick & relevant not more than 5 minutes and has shown to reduce incidents from targeted user by 90% due to better security awareness and hygine.
 
 ## Use Cases
+
 ---
+
 1. A user is targeted with a phishing attack. Use coach-end-user end user command with this user's email address and "phishing" context to send them a training on Email Phishing.
 2. A malware is found on user's machine due to unsafe browsing habbits. Use coach-end-user end user command with this user's email address and "malware" context to send them a training on staying safe online.
 3. A user is targeted with ransomware attack. Use coach-end-user end user command with this user's email address and "ransomware" context to send them a training on staying safe online.
@@ -13,6 +15,7 @@ Our training is quick & relevant not more than 5 minutes and has shown to reduce
 You can add coach-end-user command (see commands below) to any section of your playbook to trigger these notifications.
 
 ## Prerequisites
+
 You need an API key for this integration.
 
 1. Log in to www.securityadvisor.io.
@@ -34,11 +37,15 @@ You need an API key for this integration.
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. coach-end-user
+
 ### 1. Coach an end user
+
 ---
 Sends a contextual message to a single user. This command takes a user email address as "user" input. This is where the training email is sent.
 The "context" input has four predefined settings:
+
 * _malware_: Coach user on malware
 * _phishing_: Coach user on phishing
 * _ransomware_: Coach user on ransomware
@@ -47,27 +54,29 @@ The "context" input has four predefined settings:
 ##### Base Command
 
 `coach-end-user`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| user | User email address. | Required | 
-| context | Coaching context. | Optional | 
-
+| user | User email address. | Required |
+| context | Coaching context. | Optional |
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| SecurityAdvisor.CoachUser.coaching_date | string | Time when coaching was sent or completed. | 
-| SecurityAdvisor.CoachUser.coaching_status | string | User coaching status for context. "Pending" means that coaching has been sent and is pending. "Done" means the user has completed the coaching. | 
-| SecurityAdvisor.CoachUser.coaching_score | string | User's coaching score (out of 100). | 
-| SecurityAdvisor.CoachUser.context | string | Coaching context. | 
+| SecurityAdvisor.CoachUser.coaching_date | string | Time when coaching was sent or completed. |
+| SecurityAdvisor.CoachUser.coaching_status | string | User coaching status for context. "Pending" means that coaching has been sent and is pending. "Done" means the user has completed the coaching. |
+| SecurityAdvisor.CoachUser.coaching_score | string | User's coaching score (out of 100). |
+| SecurityAdvisor.CoachUser.context | string | Coaching context. |
 
 ##### Command Example
+
 ```coach-end-user user="track@securityadvisor.io" context="phishing"```
 
 ##### Context Example
+
 ```
 {
     "SecurityAdvisor.CoachUser": {
@@ -80,7 +89,9 @@ The "context" input has four predefined settings:
     }
 }
 ```
-### SecurityAdvisorBot says...
+
+### SecurityAdvisorBot says
+
 |coaching_date|coaching_status|coaching_score|user|context|message|
 |---|---|---|---|---|---|
 |2019-10-04T21:04:19.480425|Pending||track@securityadvisor.io|phishing|Coaching Sent|

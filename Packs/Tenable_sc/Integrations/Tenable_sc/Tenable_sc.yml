@@ -1,5 +1,5 @@
 category: Vulnerability Management
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -61,6 +61,7 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
+  section: Collect
 description: With Tenable.sc (formerly SecurityCenter) you get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.
 display: Tenable.sc
 name: Tenable.sc
@@ -2486,7 +2487,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.11.4819260
   runonce: false
 tests:
 - tenable-sc-test

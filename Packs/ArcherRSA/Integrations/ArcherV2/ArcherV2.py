@@ -926,14 +926,14 @@ class Client(BaseClient):
         cache_key = f"{field_id}__{depth}"  # Value list depends on both field ID and depth
 
         # Get the value from cache using both field ID and depth (if exists)
-        if cached_field_value_list:= cache.get("fieldValueList", {}).get(cache_key):
+        if cached_field_value_list := cache.get("fieldValueList", {}).get(cache_key):
             demisto.debug(f"Getting field value list for field ID: {field_id} and depth: {depth} from integration context.")
             return cached_field_value_list
 
         # If the value does not exist in cache, get it from the API
         res = self.do_rest_request("GET", f"{API_ENDPOINT}/core/system/fielddefinition/{field_id}")
 
-        if errors:= get_errors_from_res(res):
+        if errors := get_errors_from_res(res):
             return_error(errors)
 
         if res.get("RequestedObject") and res.get("IsSuccessful"):

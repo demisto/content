@@ -1,0 +1,501 @@
+category: Network Security
+commonfields:
+  id: Asimily Insight
+  version: -1
+sectionorder:
+- Connect
+- Collect
+configuration:
+- additionalinfo: 'This will be in the following format: https://customer-portal.asimily.com.'
+  display: Asimily Portal URL
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- additionalinfo: The Asimily user account for API access.
+  display: API User Name
+  displaypassword: Password
+  name: asimilycred
+  required: true
+  section: Connect
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  section: Collect
+  type: 8
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+- additionalinfo: Fetch incidents only for devices with the device families selected
+  defaultvalue: Medical Devices
+  display: Device Family Filter for Fetch Operation
+  name: fetchonlydevicefamilies
+  section: Collect
+  options:
+  - Imaging Devices
+  - Medical Devices
+  - Servers
+  - Workstations
+  - Networking Devices
+  - IT Systems
+  - Mobile Devices
+  - Laboratory Devices
+  - IoT Devices
+  - OT Devices
+  - All
+  required: true
+  type: 16
+- additionalinfo: Fetch incidents only for devices with the tags selected
+  defaultvalue: All
+  display: Device Tags Filter for Fetch Operation
+  name: fetchonlydevicetags
+  section: Collect
+  options:
+  - All
+  required: true
+  type: 16
+- defaultvalue: "false"
+  display: Fetch Anomaly Alerts
+  name: iffetchanomalies
+  section: Collect
+  required: false
+  type: 8
+- defaultvalue: High Only
+  display: Fetch Anomaly Criticality
+  name: fetchanomalycriticality
+  section: Collect
+  options:
+  - High Only
+  - Medium and High
+  - All
+  required: true
+  type: 15
+- defaultvalue: "false"
+  display: Fetch Device CVEs
+  name: iffetchcves
+  section: Collect
+  required: false
+  type: 8
+- defaultvalue: High Only
+  display: Fetch CVE Score
+  name: fetchcvescore
+  section: Collect
+  options:
+  - High Only
+  - Medium and High
+  - All
+  required: true
+  type: 15
+- defaultvalue: "5"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  section: Collect
+  required: false
+  type: 19
+- name: max_fetch
+  display: Max Incidents
+  defaultvalue: 200
+  hidden: true
+  type: 0
+  section: Collect
+  additionalinfo: The maximum number of incidents to fetch each time.
+  required: false
+- name: first_fetch
+  display: First Fetch Time Interval
+  hidden: true
+  type: 0
+  section: Collect
+  advanced: true
+  additionalinfo: The time range to consider for the initial data fetch in the format <number> <unit>. Not used by Asimily Insight Integeration.
+  defaultvalue: 10 minutes
+  required: false
+- display: Incident type
+  name: incidentType
+  section: Collect
+  required: false
+  type: 13
+description: Integrate Asimily Insight to ingest security anomalies, CVEs, and leverage detailed asset data for streamlined incident investigation.
+display: Asimily Insight
+name: Asimily Insight
+defaultclassifier: Asimily_Insight - Classifier
+defaultmapperin: Asimily_Insight - Incoming Mapper
+script:
+  commands:
+  - arguments:
+    - description: The MAC Address of Asimily Asset.
+      name: mac_addr
+    - description: The IP Address of Asimily Asset.
+      name: ip_addr
+    - description: The Facility of Asimily Asset.
+      name: facility
+    - description: The device ID of Asimily asset.
+      name: asimily_device_id
+    - defaultValue: "100"
+      description: Maximum amount of items to fetch.
+      name: limit
+    description: Fetch Asimily Asset information.
+    name: asimily-get-asset-details
+    outputs:
+    - contextPath: AsimilyInsight.Asset.asimilydeviceid
+      description: Asimily Device ID.
+      type: number
+    - contextPath: AsimilyInsight.Asset.asimilydeviceipv4address
+      description: Asimily Device IP Address.
+      type: unknown
+    - contextPath: AsimilyInsight.Asset.asimilydevicemacaddress
+      description: Asimily Device MAC Address.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydeviceipv6address
+      description: Asimily Device IPV6 Address.
+      type: unknown
+    - contextPath: AsimilyInsight.Asset.asimilydevicemanufacturer
+      description: Asimily Device Manufacturer.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicemodel
+      description: Asimily Device Model.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydeviceos
+      description: Asimily Device OS.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydeviceosversion
+      description: Asimily Device OS Version.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicetype
+      description: Asimily Device Type.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicefamilies
+      description: Asimily Device Families.
+      type: unknown
+    - contextPath: AsimilyInsight.Asset.asimilydeviceserialnumber
+      description: Asimily Device Serial Number.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicedepartment
+      description: Asimily Device Department.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicefacility
+      description: Asimily Device Facility.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicehardwarearchitecture
+      description: Asimily Device Hardware Architecture.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicehostname
+      description: Asimily Device Host Name.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicelocation
+      description: Asimily Device Location.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydeviceregion
+      description: Asimily Device Region.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicesoftwareverison
+      description: Asimily Device Software Verison.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydeviceifstoreephi
+      description: Asimily Device If Store Ephi.
+      type: boolean
+    - contextPath: AsimilyInsight.Asset.asimilydeviceiftransmitephi
+      description: Asimily Device If Transmit Ephi.
+      type: boolean
+    - contextPath: AsimilyInsight.Asset.asimilydeviceriskscore
+      description: Asimily Device Risk Score.
+      type: number
+    - contextPath: AsimilyInsight.Asset.asimilydevicelikelihood
+      description: Asimily Device Likelihood.
+      type: number
+    - contextPath: AsimilyInsight.Asset.asimilydeviceimpact
+      description: Asimily Device Impact.
+      type: number
+    - contextPath: AsimilyInsight.Asset.asimilydeviceaverageutilizationpercent
+      description: Asimily Device Average Utilization Percent.
+      type: number
+    - contextPath: AsimilyInsight.Asset.asimilydeviceuptime
+      description: Asimily Device Up Time.
+      type: number
+    - contextPath: AsimilyInsight.Asset.asimilydeviceisconnected
+      description: Asimily Device Is Connected.
+      type: boolean
+    - contextPath: AsimilyInsight.Asset.asimilydeviceiscurrentlyinuse
+      description: Asimily Device Is Currently In Use.
+      type: boolean
+    - contextPath: AsimilyInsight.Asset.asimilydeviceisnetworkingdevice
+      description: 'Asimily Device Is Networking Device.'
+      type: boolean
+    - contextPath: AsimilyInsight.Asset.asimilydeviceiswireless
+      description: Asimily Device Is Wireless.
+      type: boolean
+    - contextPath: AsimilyInsight.Asset.asimilydeviceclass
+      description: Asimily Device Class.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicemanagedby
+      description: Asimily Device Managed By.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydeviceanomalypresent
+      description: Asimily Device Anomaly Present.
+      type: boolean
+    - contextPath: AsimilyInsight.Asset.asimilydevicemds2
+      description: Asimily Device MDS2.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicecmmsid
+      description: Asimily Device CMMS ID.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicelastdiscoveredtime
+      description: Asimily Device Last Discovered Time.
+      type: date
+    - contextPath: AsimilyInsight.Asset.asimilydevicetag
+      description: Asimily Device Tag.
+      type: unknown
+    - contextPath: AsimilyInsight.Asset.asimilydevicemasterfamily
+      description: Asimily Device Master Family.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydevicediscoverysource
+      description: Asimily Device Discovery Source.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydeviceapplications
+      description: Asimily Device Applications.
+      type: unknown
+    - contextPath: AsimilyInsight.Asset.asimilydeviceurl
+      description: Asimily Device URL.
+      type: string
+    - contextPath: AsimilyInsight.Asset.asimilydeviceifusingendpointsecurity
+      description: Asimily Device If Using Endpoint Security.
+      type: boolean
+  - arguments:
+    - description: The MAC Address of Asimily Asset.
+      name: mac_addr
+    - description: The IP Address of Asimily Asset.
+      name: ip_addr
+    - description: Query only Asimily Assets with these tags.
+      isArray: true
+      name: device_tag
+    - auto: PREDEFINED
+      description: Query only Asimily Assets with these device families.
+      isArray: true
+      name: device_family
+      predefined:
+      - All
+      - Imaging Devices
+      - Medical Devices
+      - Servers
+      - Workstations
+      - Networking Devices
+      - IT Systems
+      - Mobile Devices
+      - Laboratory Devices
+      - IoT Devices
+      - OT Devices
+    - auto: PREDEFINED
+      description: The Asimily assigned criticality level of anomalies.
+      name: criticality
+      predefined:
+      - All
+      - High Only
+      - Medium and High
+    - description: The device ID of Asimily asset.
+      name: asimily_device_id
+    - defaultValue: "1000"
+      description: Maximum amount of items to fetch.
+      name: limit
+    description: Fetch Asimily Anomalies.
+    name: asimily-get-asset-anomalies
+    outputs:
+    - contextPath: AsimilyInsight.Anomaly.asimilyanomalyname
+      description: Asimily Anomaly Name.
+      type: string
+    - contextPath: AsimilyInsight.Anomaly.asimilyanomalycriticality
+      description: Asimily Anomaly Criticality.
+      type: string
+    - contextPath: AsimilyInsight.Anomaly.asimilyanomalyearliesttriggertime
+      description: Asimily Anomaly Earliest Trigger Time.
+      type: date
+    - contextPath: AsimilyInsight.Anomaly.asimilyanomalylasttriggertime
+      description: Asimily Anomaly Last Trigger Time.
+      type: date
+    - contextPath: AsimilyInsight.Anomaly.asimilyanomalyalertid
+      description: Asimily Anomaly Alert ID.
+      type: string
+    - contextPath: AsimilyInsight.Anomaly.asimilyanomalyurls
+      description: Asimily Anomaly URLs.
+      type: unknown
+    - contextPath: AsimilyInsight.Anomaly.asimilyanomalyisfixed
+      description: Asimily Anomaly Is Fixed.
+      type: boolean
+    - contextPath: AsimilyInsight.Anomaly.asimilyanomalyfixby
+      description: Asimily Anomaly Fix By.
+      type: string
+    - contextPath: AsimilyInsight.Anomaly.asimilyanomalycriticalityscore
+      description: Asimily Anomaly Criticality Score.
+      type: number
+    - contextPath: AsimilyInsight.Anomaly.asimilyanomalymitretactic
+      description: Asimily Anomaly Mitre Tactic.
+      type: string
+    - contextPath: AsimilyInsight.Anomaly.asimilyanomalymitretechnique
+      description: Asimily Anomaly Mitre Technique.
+      type: string
+    - contextPath: AsimilyInsight.Anomaly.asimilyanomalycategory
+      description: Asimily Anomaly Category.
+      type: string
+    - contextPath: AsimilyInsight.Anomaly.asimilyanomalydescription
+      description: Asimily Anomaly Description.
+      type: string
+    - contextPath: AsimilyInsight.Anomaly.asimilyanomalycustomeranomalyid
+      description: Asimily Anomaly Customer Anomaly ID. Unique anomaly type identifier assigned by Asimily for a specific customer. This ID can be used in future operations such as invoking anomaly fix actions.
+      type: string
+    - contextPath: AsimilyInsight.Anomaly.asimilydeviceid
+      description: Asimily Device ID.
+      type: number
+    - contextPath: AsimilyInsight.Anomaly.asimilydevicemacaddress
+      description: Asimily Device MAC Address.
+      type: string
+    - contextPath: AsimilyInsight.Anomaly.asimilydeviceipv4address
+      description: Asimily Device IPV4 Address.
+      type: string
+    - contextPath: AsimilyInsight.Anomaly.asimilydevicehostname
+      description: Asimily Device Host Name.
+      type: string
+    - contextPath: AsimilyInsight.Anomaly.asimilydevicetype
+      description: Asimily Device Type.
+      type: string
+    - contextPath: AsimilyInsight.Anomaly.asimilydevicemodel
+      description: Asimily Device Model.
+      type: string
+    - contextPath: AsimilyInsight.Anomaly.asimilydeviceos
+      description: Asimily Device OS.
+      type: string
+    - contextPath: AsimilyInsight.Anomaly.asimilydevicemanufacturer
+      description: Asimily Device Manufacturer.
+      type: string
+    - contextPath: AsimilyInsight.Anomaly.asimilydevicefamilies
+      description: Asimily Device Families.
+      type: unknown
+  - arguments:
+    - description: The MAC Address of Asimily Asset.
+      name: mac_addr
+    - description: The IP Address of Asimily Asset.
+      name: ip_addr
+    - description: Query only Asimily Assets with these tags.
+      isArray: true
+      name: device_tag
+    - auto: PREDEFINED
+      description: Query only Asimily Assets with these device families.
+      isArray: true
+      name: device_family
+      predefined:
+      - All
+      - Imaging Devices
+      - Medical Devices
+      - Servers
+      - Workstations
+      - Networking Devices
+      - IT Systems
+      - Mobile Devices
+      - Laboratory Devices
+      - IoT Devices
+      - OT Devices
+    - auto: PREDEFINED
+      description: 'The Asimily assigned criticality level of CVEs based on CVE scores. Options include: Low(<3.5), Medium(<7.5), High(>=7.5).'
+      name: cve_score
+      predefined:
+      - All
+      - High Only
+      - Medium and High
+    - description: The device ID of Asimily asset.
+      name: asimily_device_id
+    - defaultValue: "1000"
+      description: 'Maximum amount of items to fetch. '
+      name: limit
+    description: Fetch Asimily CVEs.
+    name: asimily-get-asset-vulnerabilities
+    outputs:
+    - contextPath: AsimilyInsight.CVE.asimilycvename
+      description: Asimily CVE Name.
+      type: string
+    - contextPath: AsimilyInsight.CVE.asimilycvecwetype
+      description: Asimily CVE CWE Type.
+      type: string
+    - contextPath: AsimilyInsight.CVE.asimilycveentitytype
+      description: Asimily CVE Entity Type.
+      type: string
+    - contextPath: AsimilyInsight.CVE.asimilycveentityname
+      description: Asimily CVE Entity Name.
+      type: string
+    - contextPath: AsimilyInsight.CVE.asimilycvescore
+      description: Asimily CVE Score.
+      type: number
+    - contextPath: AsimilyInsight.CVE.asimilycvecvss3basescore
+      description: Asimily CVE CVSS 3 Base Score.
+      type: number
+    - contextPath: AsimilyInsight.CVE.asimilycvedescripttion
+      description: Asimily CVE Descripttion.
+      type: string
+    - contextPath: AsimilyInsight.CVE.asimilycveisfixed
+      description: Asimily CVE Is Fixed.
+      type: boolean
+    - contextPath: AsimilyInsight.CVE.asimilycvefixedby
+      description: Asimily CVE Fixed By.
+      type: string
+    - contextPath: AsimilyInsight.CVE.asimilycveoempatched
+      description: Asimily CVE OEM Patched.
+      type: boolean
+    - contextPath: AsimilyInsight.CVE.asimilycveismuted
+      description: Asimily CVE Is Muted.
+      type: boolean
+    - contextPath: AsimilyInsight.CVE.asimilycveexploitableinwild
+      description: Asimily CVE Exploitable In Wild.
+      type: boolean
+    - contextPath: AsimilyInsight.CVE.asimilycvepublisheddate
+      description: Asimily CVE Published Date.
+      type: date
+    - contextPath: AsimilyInsight.CVE.asimilycveopendate
+      description: Asimily CVE Open Date.
+      type: date
+    - contextPath: AsimilyInsight.CVE.asimilycvefixeddate
+      description: Asimily CVE Fixed Date.
+      type: date
+    - contextPath: AsimilyInsight.CVE.asimilydeviceid
+      description: Asimily Device ID.
+      type: number
+    - contextPath: AsimilyInsight.CVE.asimilydevicemacaddress
+      description: Asimily Device MAC Address.
+      type: string
+    - contextPath: AsimilyInsight.CVE.asimilydeviceipv4address
+      description: Asimily Device IPV4 Address.
+      type: string
+    - contextPath: AsimilyInsight.CVE.asimilydevicehostname
+      description: Asimily Device Host Name.
+      type: string
+    - contextPath: AsimilyInsight.CVE.asimilydevicetype
+      description: Asimily Device Type.
+      type: string
+    - contextPath: AsimilyInsight.CVE.asimilydevicemodel
+      description: Asimily Device Model.
+      type: string
+    - contextPath: AsimilyInsight.CVE.asimilydeviceos
+      description: Asimily Device OS.
+      type: string
+    - contextPath: AsimilyInsight.CVE.asimilydevicemanufacturer
+      description: Asimily Device Manufacturer.
+      type: string
+    - contextPath: AsimilyInsight.CVE.asimilydevicefamilies
+      description: Asimily Device Families.
+      type: unknown
+  dockerimage: demisto/python3:3.12.11.4508456
+  isfetch: true
+  ismappable: false
+  longRunning: false
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: '6.10.0'
+tests:
+- No tests (auto formatted)

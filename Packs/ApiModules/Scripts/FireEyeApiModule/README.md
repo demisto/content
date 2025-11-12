@@ -1,4 +1,5 @@
 The FireEye API handles the API Key generation from the user/password authentication.
+
 - Manages the API Key and caches it for 10 minutes, to avoid 401 errors for consecutive API Key generation.
 - Holds the client command calls to the WSAPIs v2.0.0.
 - Includes a few generally used static function converters.

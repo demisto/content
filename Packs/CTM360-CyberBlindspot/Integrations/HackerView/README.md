@@ -3,7 +3,6 @@ This integration was integrated and tested with version `1.0.0` of CTM360_Hacker
 
 ## Configure CTM360 HackerView in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from HackerView to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to HackerView\), or Incoming and Outgoing \(from/to Cortex XSOAR and HackerView\). | False |
@@ -33,16 +32,16 @@ Get the list of incidents from HV.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| dateFrom | Select "From" date to fetch incidents starting from it. | Optional | 
-| dateTo | Select "To" date to fetch incidents up to it. | Optional | 
-| maxHits | Set number of results to fetch. | Optional | 
-| order | Set the order of the results. | Optional | 
+| dateFrom | Select "From" date to fetch incidents starting from it. | Optional |
+| dateTo | Select "To" date to fetch incidents up to it. | Optional |
+| maxHits | Set number of results to fetch. | Optional |
+| order | Set the order of the results. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HackerView.IncidentList | unknown | List of all HV incidents. | 
+| HackerView.IncidentList | unknown | List of all HV incidents. |
 
 ### ctm360-hv-incident-status-change
 
@@ -57,9 +56,9 @@ Change status of a HV incident and optionally add a comment.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticketId | "ID" of the incident to change status. | Required | 
-| ticketStatus | New "Status" of incident. | Required | 
-| comment | "Comment" to accompany the status change (Optional). | Optional | 
+| ticketId | "ID" of the incident to change status. | Required |
+| ticketStatus | New "Status" of incident. | Required |
+| comment | "Comment" to accompany the status change (Optional). | Optional |
 
 #### Context Output
 
@@ -96,35 +95,35 @@ Fetch details of a single incident from the HackerView platform.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ticketId | "Ticket ID" of the incident to fetch. | Required | 
+| ticketId | "Ticket ID" of the incident to fetch. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HackerView.RemoteIncident.id | unknown | Symbolic Incident ID | 
-| HackerView.RemoteIncident.timestamp | unknown | DB timestamp | 
-| HackerView.RemoteIncident.confidence | unknown | Confidence of report | 
-| HackerView.RemoteIncident.cve_id | unknown | ID of associated CVE | 
-| HackerView.RemoteIncident.cwe | unknown | List of associated CWEs | 
-| HackerView.RemoteIncident.issue_category | unknown | Category of Incident | 
-| HackerView.RemoteIncident.issue_name | unknown | Name of Incident | 
-| HackerView.RemoteIncident.potential_attack_type | unknown | Potential attack to make use of incident | 
-| HackerView.RemoteIncident.potential_impact | unknown | Potential impact of incident | 
-| HackerView.RemoteIncident.status | unknown | Active status of Incident | 
-| HackerView.RemoteIncident.progress_status | unknown | Progress of incident response | 
-| HackerView.RemoteIncident.severity | unknown | Severity of incident | 
-| HackerView.RemoteIncident.resolved_ip | unknown | IP resolved on affected asset | 
-| HackerView.RemoteIncident.first_seen | unknown | Incident creation date | 
-| HackerView.RemoteIncident.last_seen | unknown | Last discovery date for incident | 
-| HackerView.RemoteIncident.last_updated | unknown | Last update date for incident | 
-| HackerView.RemoteIncident.environments | unknown | env | 
-| HackerView.RemoteIncident.ticket_id | unknown | Ticket ID | 
-| HackerView.RemoteIncident.technologies | unknown | Technologies on affected asset | 
-| HackerView.RemoteIncident.domain | unknown | domain of affected asset | 
-| HackerView.RemoteIncident.host | unknown | host of affected asset | 
-| HackerView.RemoteIncident.asset_type | unknown | affected asset type | 
-| HackerView.RemoteIncident.asset | unknown | affected asset | 
+| HackerView.RemoteIncident.id | unknown | Symbolic Incident ID |
+| HackerView.RemoteIncident.timestamp | unknown | DB timestamp |
+| HackerView.RemoteIncident.confidence | unknown | Confidence of report |
+| HackerView.RemoteIncident.cve_id | unknown | ID of associated CVE |
+| HackerView.RemoteIncident.cwe | unknown | List of associated CWEs |
+| HackerView.RemoteIncident.issue_category | unknown | Category of Incident |
+| HackerView.RemoteIncident.issue_name | unknown | Name of Incident |
+| HackerView.RemoteIncident.potential_attack_type | unknown | Potential attack to make use of incident |
+| HackerView.RemoteIncident.potential_impact | unknown | Potential impact of incident |
+| HackerView.RemoteIncident.status | unknown | Active status of Incident |
+| HackerView.RemoteIncident.progress_status | unknown | Progress of incident response |
+| HackerView.RemoteIncident.severity | unknown | Severity of incident |
+| HackerView.RemoteIncident.resolved_ip | unknown | IP resolved on affected asset |
+| HackerView.RemoteIncident.first_seen | unknown | Incident creation date |
+| HackerView.RemoteIncident.last_seen | unknown | Last discovery date for incident |
+| HackerView.RemoteIncident.last_updated | unknown | Last update date for incident |
+| HackerView.RemoteIncident.environments | unknown | env |
+| HackerView.RemoteIncident.ticket_id | unknown | Ticket ID |
+| HackerView.RemoteIncident.technologies | unknown | Technologies on affected asset |
+| HackerView.RemoteIncident.domain | unknown | domain of affected asset |
+| HackerView.RemoteIncident.host | unknown | host of affected asset |
+| HackerView.RemoteIncident.asset_type | unknown | affected asset type |
+| HackerView.RemoteIncident.asset | unknown | affected asset |
 
 ### get-remote-data
 
@@ -139,8 +138,8 @@ Gets remote data from a remote incident. This method does not update the current
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The incident ID. | Required | 
-| lastUpdate | Retrieves entries that were created after lastUpdate. | Required | 
+| id | The incident ID. | Required |
+| lastUpdate | Retrieves entries that were created after lastUpdate. | Required |
 
 #### Context Output
 
@@ -159,7 +158,7 @@ Gets the list of incidents that were modified since the last update time. Note t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lastUpdate | A date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time. | Required | 
+| lastUpdate | A date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time. | Required |
 
 #### Context Output
 
@@ -178,7 +177,7 @@ Updates the remote system with local changes.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| remoteId | Remote ID of incident to update in the remote system. | Required | 
+| remoteId | Remote ID of incident to update in the remote system. | Required |
 
 #### Context Output
 
@@ -198,7 +197,6 @@ To set up the mirroring:
     | Incoming | Any changes in CTM360 HackerView events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
     | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in CTM360 HackerView events (outgoing mirrored fields). |
     | Incoming And Outgoing | Changes in Cortex XSOAR incidents and CTM360 HackerView events will be reflected in both directions. |
-
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and CTM360 HackerView.

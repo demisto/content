@@ -120,6 +120,8 @@ script:
       required: true
     description: Dissociates a device from a user.
     name: duoadmin-dissociate-device-from-user
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: the id of the token to delete.
       name: token_id
@@ -324,6 +326,8 @@ script:
     outputs: []
     description: Modify the user account.
     name: duoadmin-modify-user
+    compliantpolicies:
+    - User Soft Remediation
   dockerimage: demisto/vendors-sdk:1.0.0.3242986
   script: ''
   type: python

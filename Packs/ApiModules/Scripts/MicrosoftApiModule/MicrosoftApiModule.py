@@ -37,7 +37,7 @@ AUTHORIZATION_CODE = "authorization_code"
 REFRESH_TOKEN = "refresh_token"  # guardrails-disable-line
 DEVICE_CODE = "urn:ietf:params:oauth:grant-type:device_code"
 REGEX_SEARCH_URL = r"(?P<url>https?://[^\s]+)"
-REGEX_SEARCH_ERROR_DESC = r"^.*?:\s(?P<desc>.*?\.)"
+REGEX_SEARCH_ERROR_DESC = r"^[^:]+:\s(?P<desc>.*?)(?:\s*Trace ID:| Correlation ID:| Timestamp:|$)"
 SESSION_STATE = "session_state"
 
 # Deprecated, prefer using AZURE_CLOUDS
@@ -842,7 +842,7 @@ class MicrosoftClient(BaseClient):
             kwargs["error_handler"] = self.handle_error_with_metrics
 
         response = super()._http_request(  # type: ignore[misc]
-            *args, resp_type="response", headers=default_headers, **kwargs
+            *args, resp_type="response", headers=default_headers, status_list_to_retry=[503], retries=3, **kwargs
         )
 
         if should_http_retry_on_rate_limit and MicrosoftClient.is_command_executed_from_integration():
@@ -1339,6 +1339,7 @@ class MicrosoftClient(BaseClient):
         if err_str:
             if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
                 err_str += (
+                    f"\nGot the following error codes from Microsoft: {error_codes}."
                     f"\nYou can run the ***{self.command_prefix}-auth-reset*** command to reset the authentication process."
                 )
             return err_str

@@ -134,6 +134,9 @@ class FireEyeClient(BaseClient):
 
     @logger
     def get_alerts_request(self, request_params: Dict[str, Any], timeout: int = 120) -> Dict[str, str]:
+        malware_type = request_params.get("malware_type")
+        if not malware_type or malware_type in ["riskware-infection", "riskware-callback", "riskware-object"]:
+            request_params["include_riskware"] = True
         return self.http_request(method="GET", url_suffix="alerts", params=request_params, resp_type="json", timeout=timeout)
 
     @logger

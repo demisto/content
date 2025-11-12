@@ -367,6 +367,42 @@ def validate_argument(value, name) -> str:
     return value
 
 
+def validate_reference_list_args(args):
+    """
+    Validates the input arguments dictionary to ensure the correct usage of 'lines' and 'entry_id'.
+
+    :type args: Dict
+    :param args: contains arguments of the command, either 'lines' or 'entry_id'
+    """
+    lines = ""
+    lines_present = "lines" in args
+    entry_id_present = "entry_id" in args
+
+    if lines_present and entry_id_present:
+        raise ValueError("Both 'lines' and 'entry_id' cannot be provided together.")
+    if not lines_present and not entry_id_present:
+        raise ValueError("Either 'lines' or 'entry_id' must be provided.")
+
+    if entry_id_present:
+        entry_id = validate_argument(args.get("entry_id"), "entry_id")
+        use_delimiter_for_file = argToBoolean(args.get("use_delimiter_for_file", False))
+        try:
+            file_data = demisto.getFilePath(entry_id)
+            file_path = file_data.get("path")
+        except Exception:
+            raise ValueError(f"The file with entry_id '{entry_id}' does not exist.")
+        if os.path.getsize(file_path) == 0:
+            raise ValueError(f"The file with entry_id '{entry_id}' is empty.")
+        with open(file_path) as file:
+            lines = file.read()
+            if not use_delimiter_for_file:
+                lines = argToList(lines, "\n")
+    else:
+        lines = validate_argument(args.get("lines"), "lines")
+    lines = argToList(lines, args.get("delimiter", ","))
+    return lines
+
+
 def validate_single_select(value, name, single_select_choices):
     """
     Validate the status has valid input.
@@ -5233,8 +5269,7 @@ def gcb_create_reference_list_command(client_obj, args):
     """
     name = validate_argument(args.get("name"), "name")
     description = validate_argument(args.get("description"), "description")
-    lines = validate_argument(args.get("lines"), "lines")
-    lines = argToList(lines, args.get("delimiter", ","))
+    lines = validate_reference_list_args(args)
     valid_lines = [line for line in lines if line]  # Remove the empty("") lines
     lines = validate_argument(valid_lines, "lines")  # Validation for empty lines list
     content_type = validate_single_select(
@@ -5307,9 +5342,10 @@ def gcb_update_reference_list_command(client_obj, args):
     :rtype: str, dict, dict
     """
     name = validate_argument(args.get("name"), "name")
-    lines = validate_argument(args.get("lines"), "lines")
-    lines = argToList(lines, args.get("delimiter", ","))
-    valid_lines = [line for line in lines if line]  # Remove the empty("") lines
+
+    lines = validate_reference_list_args(args)
+
+    valid_lines = [line for line in lines if line.strip()]  # Remove the empty("") lines
     lines = validate_argument(valid_lines, "lines")  # Validation for empty lines list
     description = args.get("description")
     content_type = args.get("content_type")
@@ -5322,6 +5358,103 @@ def gcb_update_reference_list_command(client_obj, args):
     content_type = validate_single_select(content_type.upper(), "content_type", VALID_CONTENT_TYPE)
     ec, json_data = gcb_update_reference_list(
         client_obj, name=name, lines=lines, description=description, content_type=content_type
+    )
+    hr = prepare_hr_for_gcb_create_get_update_reference_list(json_data, "Updated Reference List Details")
+    return hr, ec, json_data
+
+
+def gcb_reference_list_append_content(client_obj, args):
+    """
+    Append content to an existing reference list.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api.
+
+    :type args: Dict[str, str]
+    :param args: it contains arguments for gcb-reference-list-append-content command.
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    name = validate_argument(args.get("name"), "name")
+
+    lines = validate_reference_list_args(args)
+
+    valid_lines = [line for line in lines if line.strip()]  # Remove the empty("") lines
+    lines = validate_argument(valid_lines, "lines")  # Validation for empty lines list
+
+    request_url = f"{BACKSTORY_API_V2_URL}/lists/{name}"
+    json_data = validate_response(client_obj, request_url, method="GET")
+    old_lines = json_data.get("lines", [])
+    content_type = json_data.get("contentType", DEFAULT_CONTENT_TYPE)
+    description = json_data.get("description")
+    append_unique = argToBoolean(args.get("append_unique", False))
+
+    if append_unique:
+        new_lines = old_lines
+        duplicate_lines = []
+        for line in lines:
+            if line not in new_lines:
+                new_lines.append(line)
+            else:
+                duplicate_lines.append(line)
+        if duplicate_lines:
+            return_warning(
+                "The following lines were already present: {}".format(", ".join(duplicate_lines)),
+                exit=set(lines).issubset(set(duplicate_lines)),
+            )
+    else:
+        new_lines = old_lines + lines
+
+    ec, json_data = gcb_update_reference_list(
+        client_obj, name=name, lines=new_lines, description=description, content_type=content_type
+    )
+    hr = prepare_hr_for_gcb_create_get_update_reference_list(json_data, "Updated Reference List Details")
+    return hr, ec, json_data
+
+
+def gcb_reference_list_remove_content(client_obj, args):
+    """
+    Remove content from an existing reference list.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api.
+
+    :type args: Dict[str, str]
+    :param args: it contains arguments for gcb-remove-reference-list command.
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    name = validate_argument(args.get("name"), "name")
+
+    lines = validate_reference_list_args(args)
+
+    valid_lines = [line for line in lines if line.strip()]  # Remove the empty("") lines
+    lines = validate_argument(valid_lines, "lines")  # Validation for empty lines list
+
+    request_url = f"{BACKSTORY_API_V2_URL}/lists/{name}"
+    json_data = validate_response(client_obj, request_url, method="GET")
+    old_lines = json_data.get("lines", [])
+    content_type = json_data.get("contentType", DEFAULT_CONTENT_TYPE)
+    description = json_data.get("description")
+
+    redundant_lines = []
+    for line in lines:
+        if line in old_lines:
+            while line in old_lines:
+                old_lines.remove(line)
+        else:
+            redundant_lines.append(line)
+
+    if redundant_lines:
+        return_warning(
+            "The following lines were not present: {}".format(", ".join(redundant_lines)),
+            exit=(len(redundant_lines) == len(lines)),
+        )
+
+    ec, json_data = gcb_update_reference_list(
+        client_obj, name=name, lines=old_lines, description=description, content_type=content_type
     )
     hr = prepare_hr_for_gcb_create_get_update_reference_list(json_data, "Updated Reference List Details")
     return hr, ec, json_data
@@ -5965,6 +6098,8 @@ def main():
         "gcb-verify-value-in-reference-list": gcb_verify_value_in_reference_list_command,
         "gcb-verify-rule": gcb_verify_rule_command,
         "gcb-get-event": gcb_get_event_command,
+        "gcb-reference-list-append-content": gcb_reference_list_append_content,
+        "gcb-reference-list-remove-content": gcb_reference_list_remove_content,
     }
     # initialize configuration parameter
     proxy = demisto.params().get("proxy")

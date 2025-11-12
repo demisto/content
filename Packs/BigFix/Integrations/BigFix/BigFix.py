@@ -28,9 +28,9 @@ def get_sites():
 
     if res.status_code < 200 or res.status_code >= 300:
         return_error(
-            f"Failed to get sites.\nRequest URL: {fullurl}"  # type: ignore[str-bytes-safe]
-            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content}"
-        )  # type: ignore[str-bytes-safe]
+            f"Failed to get sites.\nRequest URL: {fullurl}"
+            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content.decode('utf-8', errors='replace')}"
+        )
 
     raw_sites = json.loads(xml2json(res.content))
 
@@ -117,8 +117,8 @@ def get_site(site_type, site_name):
 
     if res.status_code < 200 or res.status_code >= 300:
         return_error(
-            f"Failed to get site {site_name}.\nRequest URL: {fullurl}"  # type: ignore[str-bytes-safe]
-            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content}"
+            f"Failed to get site {site_name}.\nRequest URL: {fullurl}"
+            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content.decode('utf-8', errors='replace')}"
         )
 
     raw_site = json.loads(xml2json(res.content))
@@ -174,8 +174,8 @@ def get_endpoints(should_get_endpoint_details):
 
     if res.status_code < 200 or res.status_code >= 300:
         return_error(
-            f"Failed to get endpoints.\nRequest URL: {fullurl}"  # type: ignore[str-bytes-safe]
-            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content}"
+            f"Failed to get endpoints.\nRequest URL: {fullurl}"
+            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content.decode('utf-8', errors='replace')}"
         )
 
     raw_endpoints = json.loads(xml2json(res.content))
@@ -253,8 +253,8 @@ def get_endpoint_details(computer_id):
 
     if res.status_code < 200 or res.status_code >= 300:
         return_error(
-            f"Failed to get computer {computer_id}.\nRequest URL: {fullurl}"  # type: ignore[str-bytes-safe]
-            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content}"  # type: ignore[str-bytes-safe]
+            f"Failed to get computer {computer_id}.\nRequest URL: {fullurl}"
+            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content.decode('utf-8', errors='replace')}"
         )
 
     raw_endpoint = json.loads(xml2json(res.content))
@@ -444,9 +444,9 @@ def get_patch_details(site_type, site_name, patch_id):
 
     if res.status_code < 200 or res.status_code >= 300:
         return_error(
-            f"Failed to get patch/fixlet {patch_id}. Request URL: {fullurl}"  # type: ignore[str-bytes-safe]
-            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content}"
-        )  # type: ignore[str-bytes-safe]
+            f"Failed to get patch/fixlet {patch_id}. Request URL: {fullurl}"
+            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content.decode('utf-8', errors='replace')}"
+        )
 
     raw_patch = json.loads(xml2json(res.content))
     if not raw_patch or "BES" not in raw_patch:
@@ -535,12 +535,12 @@ def deploy_patch(site_name, computer_ids, fixlet_id, action_id):
     fullurl = BASE_URL + "/api/actions"
     res = requests.post(fullurl, auth=(USERNAME, PASSWORD), verify=VERIFY_CERTIFICATE, data=request_body)
 
-    LOG(f"deploy_patch - raw response: {res.content}")  # type: ignore[str-bytes-safe]
+    LOG(f"deploy_patch - raw response: {res.content.decode('utf-8', errors='replace')}")
     if res.status_code < 200 or res.status_code >= 300:
         return_error(
-            f"Failed to deploy patch {fixlet_id}.\nRequest URL: {fullurl}"  # type: ignore[str-bytes-safe]
-            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content}"
-        )  # type: ignore[str-bytes-safe]
+            f"Failed to deploy patch {fixlet_id}.\nRequest URL: {fullurl}"
+            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content.decode('utf-8', errors='replace')}"
+        )
 
     raw_action = json.loads(xml2json(res.content))
     if not raw_action or "BESAPI" not in raw_action:
@@ -589,9 +589,9 @@ def action_delete(action_id):
 
     if res.status_code < 200 or res.status_code >= 300:
         return_error(
-            f"Failed to delete action {action_id}.\nRequest URL: {fullurl}"  # type: ignore[str-bytes-safe]
-            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content}"
-        )  # type: ignore[str-bytes-safe]
+            f"Failed to delete action {action_id}.\nRequest URL: {fullurl}"
+            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content.decode('utf-8', errors='replace')}"
+        )
 
 
 def action_delete_command():
@@ -608,9 +608,9 @@ def get_action_status(action_id):
 
     if res.status_code < 200 or res.status_code >= 300:
         return_error(
-            f"Failed to get action {action_id} status.\nRequest URL: {fullurl}"  # type: ignore[str-bytes-safe]
-            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content}"
-        )  # type: ignore[str-bytes-safe]
+            f"Failed to get action {action_id} status.\nRequest URL: {fullurl}"
+            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content.decode('utf-8', errors='replace')}"
+        )
 
     raw_action = json.loads(xml2json(res.content))
     if not raw_action or "BESAPI" not in raw_action:
@@ -643,9 +643,9 @@ def action_stop(action_id):
 
     if res.status_code < 200 or res.status_code >= 300:
         return_error(
-            f"Failed to stop action {action_id}.\nRequest URL: {fullurl}"  # type: ignore[str-bytes-safe]
-            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content}"
-        )  # type: ignore[str-bytes-safe]
+            f"Failed to stop action {action_id}.\nRequest URL: {fullurl}"
+            f"\nStatusCode: {res.status_code}\nResponse Body: {res.content.decode('utf-8', errors='replace')}"
+        )
 
 
 def action_stop_command():
@@ -663,8 +663,8 @@ def query(relevance):
 
     if res.status_code < 200 or res.status_code >= 300:
         return_error(
-            f"Query failed.\nRequest URL: {fullurl}\nStatusCode: {res.status_code}"  # type: ignore[str-bytes-safe]
-            f"\nResponse Body: {res.content}"
+            f"Query failed.\nRequest URL: {fullurl}\nStatusCode: {res.status_code}"
+            f"\nResponse Body: {res.content.decode('utf-8', errors='replace')}"
         )
 
     raw_action = json.loads(xml2json(res.content))

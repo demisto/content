@@ -1,6 +1,6 @@
 sectionorder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 category: Network Security
 commonfields:
   id: CloudflareWAF
@@ -586,6 +586,8 @@ script:
     name: cloudflare-waf-ip-list-item-create
     outputs: []
     polling: true
+    compliantpolicies:
+    - IP Blockage
   - arguments:
     - description: The list ID.
       name: list_id
@@ -666,7 +668,7 @@ script:
     - contextPath: CloudflareWAF.IpListItem.list_id
       description: The list ID.
       type: String
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   subtype: python3

@@ -37,7 +37,7 @@ DEFAULT_URGENCY_SCORE_MEDIUM_THRESHOLD = 50
 DEFAULT_URGENCY_SCORE_HIGH_THRESHOLD = 80
 MAX_MIRRORING_LIMIT = 5000
 MAX_OUTGOING_NOTE_LIMIT = 8000
-PACK_VERSION = "1.0.11"  # temp replacement for the get_pack_version()
+PACK_VERSION = get_pack_version() or "1.0.0"
 UTM_PIVOT = f"?pivot=Vectra-XSOAR-{PACK_VERSION}"
 EMPTY_ASSIGNMENT = [
     {
@@ -153,7 +153,7 @@ class VectraClient(BaseClient):
         """
         # Set the headers for the request, including the User-Agent and Authorization.
         headers = {"User-Agent": USER_AGENT, "Authorization": f"Bearer {self._token}"}
-        demisto.debug(f"Making API request at {method} {url_suffix} with params:{params} and body:{data or json_data}")
+        demisto.debug(f"Making API request at {method} {url_suffix} with params: {params} and body: {data or json_data}")
         # Make the HTTP request using the _http_request method, passing the necessary parameters.
         res = self._http_request(
             method=method,
@@ -294,6 +294,7 @@ class VectraClient(BaseClient):
         tags: str = None,
         ordering: str = None,
         state: str = "active",
+        name: str = None,
     ) -> dict:
         """List entities.
 
@@ -308,6 +309,7 @@ class VectraClient(BaseClient):
             tags (str): Filter entities by tags (default: None).
             ordering (str): Specify the ordering of the entities (default: None).
             state (str): Filter entities by state (default: 'active').
+            name (str): Filter entities by name (default: None).
 
         Returns:
             Dict: Response from the API containing the list of entities.
@@ -322,6 +324,7 @@ class VectraClient(BaseClient):
             tags=tags,
             state=state,
             ordering=ordering,
+            name=name,
         )
         entities = self.http_request(method="GET", url_suffix=ENDPOINTS["ENTITY_ENDPOINT"], params=params, response_type="json")
         return entities
@@ -1933,6 +1936,42 @@ def get_group_unassign_and_assign_command_hr(group: dict, changed_members: List,
     return human_readable
 
 
+def add_refetch_id_to_integration_context(entity_id: str, entity_type: str):
+    """
+    Adds the entity ID and type to the integration context.
+
+    Args:
+        entity_id (str): The ID of the entity.
+        entity_type (str): The type of the entity.
+    """
+    if not entity_id or not entity_type:
+        raise ValueError("Both 'entity_id' and 'entity_type' arguments are required.")
+
+    if entity_type not in VALID_ENTITY_TYPE:
+        raise ValueError(ERRORS["INVALID_COMMAND_ARG_VALUE"].format("entity_type", ", ".join(VALID_ENTITY_TYPE)))
+
+    # Get current integration context
+    integration_context = get_integration_context()
+
+    # Initialize refetch_ids if it doesn't exist
+    if "refetch_ids" not in integration_context:
+        integration_context["refetch_ids"] = []
+
+    # Create the refetch entry
+    refetch_entry = f"{entity_id}-{entity_type}"
+
+    demisto.debug(f"Adding entity id to the integration context: {refetch_entry}")
+
+    # Add to refetch list if not already present
+    if refetch_entry not in integration_context["refetch_ids"]:
+        integration_context["refetch_ids"].append(refetch_entry)
+
+        # Update integration context
+        set_integration_context(integration_context)
+
+    demisto.debug(f"Updated entity ids list in the integration context: {integration_context['refetch_ids']}")
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -2022,7 +2061,7 @@ def fetch_incidents(client: VectraClient, params: dict[str, Any]) -> List:
         # Fetch the entities list from the server using the provided parameters
         response = client.list_entities_request(
             page=page,
-            page_size=max_fetch,    # type: ignore
+            page_size=max_fetch,  # type: ignore
             entity_type=entity_type,  # type: ignore
             is_prioritized=is_prioritized,
             last_modified_timestamp=from_timestamp,  # type: ignore
@@ -2045,6 +2084,25 @@ def fetch_incidents(client: VectraClient, params: dict[str, Any]) -> List:
 
     # Retrieve the already fetched IDs from the last run
     already_fetched = last_run.get("already_fetched", [])
+
+    # Get the refetch IDs from the integration context
+    integration_context = get_integration_context()
+    refetch_ids = integration_context.get("refetch_ids", [])
+
+    # Remove refetch IDs from already_fetched and create the removed_ids list
+    removed_ids = []
+    for refetch_id in refetch_ids:
+        if refetch_id in already_fetched:
+            removed_ids.append(refetch_id)
+            already_fetched.remove(refetch_id)
+
+    demisto.debug(f"Removed closed entity ids from last run checkpoint: {removed_ids}")
+
+    # Update integration context with empty refetch_ids
+    integration_context["refetch_ids"] = []
+
+    # Set the updated integration context
+    set_integration_context(integration_context)
 
     # Extract the IDs to check from the current response
     ids_to_check = [f"{item['id']}-{item['type']}" for item in response["results"]]
@@ -2192,6 +2250,7 @@ def vectra_entity_list_command(client: VectraClient, args: dict[str, Any]):
         prioritized = argToBoolean(prioritized)
     state = args.get("state", "")
     tags = args.get("tags", "")
+    name = args.get("name", "")
 
     # Call Vectra API to retrieve entities
     response = client.list_entities_request(
@@ -2204,6 +2263,7 @@ def vectra_entity_list_command(client: VectraClient, args: dict[str, Any]):
         is_prioritized=prioritized,
         state=state,
         tags=tags,
+        name=name,
     )
     count = response.get("count")
     if count == 0:
@@ -2481,8 +2541,12 @@ def vectra_entity_note_update_command(client: VectraClient, args: dict[str, Any]
     note_id = arg_to_number(args.get("note_id"), arg_name="note_id", required=True)
 
     # Call Vectra API to update entity note
-    notes = client.update_entity_note_request(entity_id=entity_id, entity_type=entity_type,
-                                              note=note, note_id=note_id)  # type: ignore
+    notes = client.update_entity_note_request(
+        entity_id=entity_id,  # type: ignore
+        entity_type=entity_type,  # type: ignore
+        note=note,  # type: ignore
+        note_id=note_id,  # type: ignore
+    )
     if notes:
         notes["note_id"] = notes["id"]
         notes.update({"entity_id": entity_id, "entity_type": entity_type})
@@ -2516,7 +2580,11 @@ def vectra_entity_note_remove_command(client: VectraClient, args: dict[str, Any]
     note_id = arg_to_number(args.get("note_id"), arg_name="note_id", required=True)
 
     # Call Vectra API to remove note
-    response = client.remove_entity_note_request(entity_id=entity_id, entity_type=entity_type, note_id=note_id)  # type: ignore
+    response = client.remove_entity_note_request(
+        entity_id=entity_id,  # type: ignore
+        entity_type=entity_type,  # type: ignore
+        note_id=note_id,  # type: ignore
+    )
     if response.status_code == 204:
         human_readable = "##### The note has been successfully removed from the entity."
     else:
@@ -2819,7 +2887,7 @@ def vectra_assignment_list_command(client: VectraClient, args: dict[str, Any]):
         resolved=resolved,
         assignees=assignees,
         resolution=resolution,
-        created_after=created_after,    # type: ignore
+        created_after=created_after,  # type: ignore
         page=page,  # type: ignore
         page_size=page_size,
     )  # type: ignore
@@ -3071,8 +3139,9 @@ def vectra_entity_detections_mark_fixed_command(client: VectraClient, args: dict
     detection_set = response.get("detection_set")
     detection_ids = [url.split("/")[-1] for url in detection_set] if detection_set else ""
 
+    hr_string = f"There are no detections to mark as fixed for this entity ID:{entity_id}."
     if not detection_ids:
-        return CommandResults(readable_output=f"There are no detections to mark as fixed for this entity ID:{entity_id}.")
+        return CommandResults(readable_output=hr_string)
 
     # Call Vectra API to mark detection as fixed
     res = client.mark_or_unmark_detection_fixed_request(detection_ids=detection_ids, mark="True")  # type: ignore
@@ -3200,7 +3269,8 @@ def vectra_group_unassign_command(client: VectraClient, args: dict[str, Any]):
         updated_members = ids
     if not removed_members:
         members_list = [re.escape(member) for member in members_list]
-        return CommandResults(readable_output=f"##### Member(s) {', '.join(members_list)} do not exist in the group.")
+        hr_string = f"##### Member(s) {', '.join(members_list)} do not exist in the group."
+        return CommandResults(readable_output=hr_string)
     # Call Vectra API to unassign members in group
     res = client.update_group_members_request(group_id=group_id, members=updated_members)
     updated_group = remove_empty_elements(res)
@@ -3308,8 +3378,10 @@ def get_modified_remote_data_command(client: VectraClient, args: dict) -> GetMod
         GetModifiedRemoteDataResponse: List of incidents IDs which are modified since the last update.
     """
     command_args = GetModifiedRemoteDataArgs(args)
-    command_last_run_date = dateparser.parse(command_args.last_update, settings={
-                                             "TIMEZONE": "UTC"}).strftime(DATE_FORMAT)  # type: ignore
+    command_last_run_date = dateparser.parse(
+        command_args.last_update,  # type: ignore
+        settings={"TIMEZONE": "UTC"},  # type: ignore
+    ).strftime(DATE_FORMAT)
     modified_entities_ids = []
 
     demisto.debug(f"Last update date of get-modified-remote-data command is {command_last_run_date}.")
@@ -3323,7 +3395,7 @@ def get_modified_remote_data_command(client: VectraClient, args: dict) -> GetMod
             # Extract the query parameters
             query_params = parse_qs(parsed_url.query)
             page = arg_to_number(query_params.get("page", [""])[0], arg_name="page")  # type: ignore
-            page_size = arg_to_number(query_params.get("page_size", [""])[0], arg_name="page_size")  # type: ignore [assignment]
+            page_size = arg_to_number(query_params.get("page_size", [""])[0], arg_name="page_size")  # type: ignore
             command_last_run_date = query_params.get("last_modified_timestamp_gte", [""])[0]
 
         try:
@@ -3370,7 +3442,7 @@ def get_modified_remote_data_command(client: VectraClient, args: dict) -> GetMod
     return GetModifiedRemoteDataResponse(modified_incident_ids=updated_incident_ids)
 
 
-def get_remote_data_command(client: VectraClient, args: dict) -> GetRemoteDataResponse:
+def get_remote_data_command(client: VectraClient, args: dict, params: dict) -> GetRemoteDataResponse:
     """
     Get remote data for a specific entity from the Vectra platform and prepare it for mirroring in XSOAR.
 
@@ -3379,6 +3451,7 @@ def get_remote_data_command(client: VectraClient, args: dict) -> GetRemoteDataRe
         args (Dict): A dictionary containing the arguments for retrieving remote data.
             - id (str): The ID of the entity to retrieve.
             - lastUpdate (str): The timestamp of the last update received for this entity.
+        params (Dict): A dictionary containing the parameters required for updating the remote system.
 
     Returns:
         GetRemoteDataResponse: An object containing the remote incident data and any new entries to return to XSOAR.
@@ -3407,7 +3480,6 @@ def get_remote_data_command(client: VectraClient, args: dict) -> GetRemoteDataRe
     detection_set = remote_incident_data.get("detection_set", [])
 
     entity_urgency_score = remote_incident_data.get("urgency_score")
-    params = demisto.params()
 
     # Calculate severity based on urgency score using the urgency_score_to_severity function.
     severity = urgency_score_to_severity(entity_urgency_score, params)  # type: ignore
@@ -3418,7 +3490,9 @@ def get_remote_data_command(client: VectraClient, args: dict) -> GetRemoteDataRe
     if len(detection_set) != 0:
         detections_ids = ",".join([url.split("/")[-1] for url in detection_set])
         detections_data = client.list_detections_request(
-            detection_type=params.get("detection_type"), detection_category=params.get("detection_category"), ids=detections_ids
+            detection_type=params.get("detection_type"),  # type: ignore
+            detection_category=params.get("detection_category"),  # type: ignore
+            ids=detections_ids,
         )
         detections = detections_data.get("results", [])
     else:
@@ -3449,7 +3523,7 @@ def get_remote_data_command(client: VectraClient, args: dict) -> GetRemoteDataRe
         demisto.debug(f"Nothing new in the Vectra entity {entity_id_type}.")
     else:
         demisto.debug(f"The Vectra entity {entity_id_type} is updated.")
-        if detections:
+        if detections and not argToBoolean(params.get("refetch_closed_incidents", False)):
             reopen_in_xsoar(new_entries_to_return, entity_id_type)
 
     notes = remote_incident_data.get("notes")
@@ -3486,13 +3560,14 @@ def get_remote_data_command(client: VectraClient, args: dict) -> GetRemoteDataRe
     return GetRemoteDataResponse(remote_incident_data, new_entries_to_return)
 
 
-def update_remote_system_command(client: VectraClient, args: dict) -> str:
+def update_remote_system_command(client: VectraClient, args: dict, params: dict) -> str:
     """
     Update a remote system based on changes in the XSOAR incident.
 
     Args:
         client (VectraClient): An instance of the VectraClient class.
         args (Dict): A dictionary containing the arguments required for updating the remote system.
+        params (Dict): A dictionary containing the parameters required for updating the remote system.
 
     Returns:
         str: The ID of the updated remote entity.
@@ -3507,7 +3582,7 @@ def update_remote_system_command(client: VectraClient, args: dict) -> str:
     xsoar_incident_id = parsed_args.data.get("id", "")
     demisto.debug(f"XSOAR Incident ID: {xsoar_incident_id}")
     new_entries = parsed_args.entries
-    xsoar_tags: List = parsed_args.delta.get("tags", [])
+    xsoar_tags: List = parsed_args.delta.get("tags") or []
     remote_entity_type = parsed_args.data.get("vectraxdrentitytype", "").lower()
 
     # For notes
@@ -3536,7 +3611,7 @@ def update_remote_system_command(client: VectraClient, args: dict) -> str:
 
     # For tags
     res = client.list_entity_tags_request(entity_id=mirror_entity_id, entity_type=remote_entity_type)
-    vectra_tags = res.get("tags")
+    vectra_tags = res.get("tags") or []
     if xsoar_tags:
         demisto.debug(f"Sending the tags: {xsoar_tags}")
         client.update_entity_tags_request(entity_id=mirror_entity_id, entity_type=remote_entity_type, tags=xsoar_tags)
@@ -3551,6 +3626,9 @@ def update_remote_system_command(client: VectraClient, args: dict) -> str:
         close_notes = parsed_args.data.get("closeNotes", "")
         close_reason = parsed_args.data.get("closeReason", "")
         close_user_id = parsed_args.data.get("closingUserId", "")
+
+        if argToBoolean(params.get("refetch_closed_incidents", False)):
+            add_refetch_id_to_integration_context(mirror_entity_id, remote_entity_type)
 
         if len(close_notes) > MAX_OUTGOING_NOTE_LIMIT:
             demisto.info(
@@ -3632,9 +3710,9 @@ def main():
         elif command == "get-modified-remote-data":
             result = get_modified_remote_data_command(client, args)  # type: ignore
         elif command == "get-remote-data":
-            result = get_remote_data_command(client, args)  # type: ignore
+            result = get_remote_data_command(client, args, params)  # type: ignore
         elif command == "update-remote-system":
-            result = update_remote_system_command(client, args)
+            result = update_remote_system_command(client, args, params)
         elif command in commands:
             # remove nulls from dictionary and trim space from args
             remove_nulls_from_dictionary(trim_spaces_from_args(args))

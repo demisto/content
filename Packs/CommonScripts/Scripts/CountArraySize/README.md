@@ -1,7 +1,7 @@
 Counts an array's size.
 
-
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,8 +9,8 @@ Counts an array's size.
 | Script Type | javascript |
 | Tags | Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +19,7 @@ Counts an array's size.
 | contextKey | The context key to place the result in. The default is ArraySize. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

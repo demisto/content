@@ -2,7 +2,6 @@
 
 Taegis XDR is a cloud-native security solution that combines the power of human intellect with security analytics to unify detection and response across cloud, network, and endpoint environments for improved security operations and outcomes.
 
-
 # What does this pack do?
 
 - View Taegis security event alerts

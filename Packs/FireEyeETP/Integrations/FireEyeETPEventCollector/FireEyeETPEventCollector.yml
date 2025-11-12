@@ -1,40 +1,53 @@
 category: Email
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
   id: FireEye ETP Event Collector
   version: -1
 configuration:
-- defaultvalue: https://etp.us.fireeye.com
-  display: Server URL (e.g., https://etp.us.fireeye.com)
+- defaultvalue: https://etp.us.fireeye.com.
+  display: Server URL (e.g., https://etp.us.fireeye.com or https://us.etp.trellix.com).
   name: url
   required: true
   type: 0
   section: Connect
+- display: Client ID (OAuth)
+  name: oauth_credentials
+  displaypassword: Client Secret (OAuth)
+  type: 9
+  section: Connect
+- display: OAuth Scopes (OAuth)
+  name: oauth_scopes
+  defaultvalue: etp.alrt.ro etp.trce.ro
+  type: 0
+  required: false
+  additionalinfo: "Space-separated list of OAuth scopes. Note: Only include scopes that your application's Client ID has already been authorized to use."
+  section: Connect
 - displaypassword: API Key
-  additionalinfo: The API Key allows you to integrate with the FireEye ETP.
+  additionalinfo: The API Key allows you to integrate with the Trellix Email Security - Cloud.
   name: credentials
-  required: true
+  required: false
   hiddenusername: true
   type: 9
+  section: Connect
 - defaultvalue: "1000"
   display: Maximum number of Alerts to fetch.
   name: alerts_max_fetch
   type: 0
-  additionalinfo: The maximum number of Alert events to fetch from FireEye ETP.
+  additionalinfo: The maximum number of Alert events to fetch from Trellix Email Security - Cloud.
   section: Collect
 - defaultvalue: "1000"
   display: Maximum number of Email Trace to fetch.
   name: email_trace_max_fetch
   type: 0
-  additionalinfo: The maximum number of Email Trace events to fetch from FireEye ETP.
+  additionalinfo: The maximum number of Email Trace events to fetch from Trellix Email Security - Cloud.
   section: Collect
 - defaultvalue: "1000"
   display: Maximum number of Activity Log fetch.
   name: activity_log_max_fetch
   type: 0
-  additionalinfo: The maximum number of Activity Log events to fetch from FireEye ETP.
+  additionalinfo: The maximum number of Activity Log events to fetch from Trellix Email Security - Cloud.
   section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
@@ -59,8 +72,8 @@ configuration:
   advanced: true
   defaultvalue: 'true'
   additionalinfo: Hide subject and attachments details from emails.
-description: Use this integration to fetch email security incidents from FireEye ETP as XSIAM events.
-display: FireEye ETP Event Collector
+description: Use this integration to fetch email security incidents from Trellix Email Security - Cloud as Cortex XSIAM events.
+display: Trellix Email Security - Cloud Event Collector
 name: FireEye ETP Event Collector
 script:
   commands:
@@ -79,9 +92,9 @@ script:
       - "true"
       - "false"
       required: true
-    description: Gets events from FireEye ETP. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
+    description: Gets events from Trellix Email Security - Cloud. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
     name: fireeye-etp-get-events
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.11.4508456
   isfetchevents: true
   script: ""
   subtype: python3

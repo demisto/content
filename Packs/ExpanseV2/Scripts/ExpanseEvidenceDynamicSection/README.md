@@ -1,6 +1,7 @@
 Dynamic Section script used in Expanse Issue layout to display the Latest Evidence structure.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,9 +11,11 @@ Dynamic Section script used in Expanse Issue layout to display the Latest Eviden
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

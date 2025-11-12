@@ -14,7 +14,9 @@ BUILD_VERSION = "1247804"
 # To use apiCall, the machine must have a version greater than 8.7.0-1247804,
 # and is_using_engine()=False.
 IS_CORE_AVAILABLE = (
-    is_xsiam() and is_demisto_version_ge(version=SERVER_VERSION, build_number=BUILD_VERSION) and not is_using_engine()
+    (is_xsiam() or is_platform())
+    and is_demisto_version_ge(version=SERVER_VERSION, build_number=BUILD_VERSION)
+    and not is_using_engine()
 )
 
 
@@ -141,6 +143,8 @@ class CoreClient(BaseClient):
         except Exception as e:
             if "reached max allowed amount of parallel running queries" in str(e).lower():
                 return "FAILURE"
+            if "autonomous playbook slot reservation not enabled or missing" in str(e).lower():
+                return "UNSUPPORTED"
             raise e
 
     def get_xql_query_results(self, data: dict) -> dict:
@@ -428,8 +432,12 @@ def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
 
 def add_playbook_metadata(data: dict, command: str):
     ctx_output: dict = demisto.callingContext or {}
-    entry_task: dict = ctx_output.get("context", {}).get("ParentEntry", {}).get("entryTask", {})
-    incidents: list = ctx_output.get("context", {}).get("Incidents", [])
+
+    context = ctx_output.get("context") or {}
+    parent_entry = context.get("ParentEntry") or {}
+    entry_task = parent_entry.get("entryTask") or {}
+
+    incidents: list = context.get("Incidents", [])
     playbook_id = incidents[0].get("playbookId", "") if incidents else ""
     playbook_name = entry_task.get("playbookName", "")
     task_name = entry_task.get("taskName", "")
@@ -465,13 +473,17 @@ def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
 
     if "limit" not in query:  # if user did not provide a limit in the query, we will use the default one.
         query = f"{query} \n| limit {DEFAULT_LIMIT!s}"
+
     data: Dict[str, Any] = {
         "request_data": {
             "query": query,
         }
     }
 
-    add_playbook_metadata(data, "start_xql_query")
+    try:
+        add_playbook_metadata(data, "start_xql_query")
+    except Exception as e:
+        demisto.error(f"Error adding playbook metadata: {str(e)}")
 
     time_frame = args.get("time_frame")
     if time_frame:
@@ -603,7 +615,7 @@ def format_results(list_to_format: list, remove_empty_fields: bool = True) -> li
     """
 
     def format_dict(item_to_format: Any) -> Any:
-        if not isinstance(item_to_format, (dict, list)):  # recursion stopping condition, formatting field
+        if not isinstance(item_to_format, dict | list):  # recursion stopping condition, formatting field
             return format_item(item_to_format)
 
         elif isinstance(item_to_format, list):
@@ -714,6 +726,8 @@ def start_xql_query_polling_command(client: CoreClient, args: dict) -> Union[Com
         )
         return command_results
 
+    if execution_id == "UNSUPPORTED":
+        return CommandResults(readable_output="Autonomous playbook slot reservation not enabled or missing")
     if not execution_id:
         raise DemistoException("Failed to start query\n")
     demisto.debug(f"Succeeded to start query with {execution_id=}.")

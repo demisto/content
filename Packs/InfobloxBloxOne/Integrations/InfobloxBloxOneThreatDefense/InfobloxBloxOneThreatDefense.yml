@@ -1,24 +1,359 @@
 category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: InfobloxBloxOneThreatDefense
   version: -1
 configuration:
-- displaypassword: Service API Key
+- section: Connect
+  display: ""
+  displaypassword: Service API Key
   name: credentials
   required: true
   hiddenusername: true
   type: 9
-  section: Connect
-- display: Trust any certificate (not secure)
+- section: Collect
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
+  required: false
+- section: Collect
+  defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of Enrichment.
+  display: Create relationships
+  name: create_relationships
+  type: 8
+  required: false
+- section: Collect
+  display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- section: Connect
+  display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- section: Collect
+  display: Ingestion Type
+  name: ingestion_type
+  options:
+  - SOC Insight
+  - DNS Security Event
+  type: 15
+  required: false
+  defaultvalue: SOC Insight
+  additionalinfo: Select the ingestion type to fetch as XSOAR incident. Default is SOC Insight.
+- section: Collect
+  advanced: true
+  display: SOC Insight Status
+  name: soc_insight_status
+  defaultvalue: Active
+  type: 15
+  required: false
+  options:
+  - Active
+  - Closed
+  additionalinfo: Retrieve the SOC Insights as specified status.
+- section: Collect
+  advanced: true
+  display: SOC Insight Threat Type
+  name: soc_insight_threat_type
+  type: 15
+  required: false
+  options:
+  - DGA
+  - Undefined
+  - Malicious
+  - Open Resolver
+  - Phishing
+  - DNS Tunneling
+  - MalwareDownload
+  - Sinkhole
+  - Zero Day DNS
+  - Notional Data Exfiltration
+  - MalwareC2DGA
+  - MalwareC2
+  - Restricted Country Communications
+  - Suspicious
+  - CompromisedHost
+  - CompromisedDomain
+  - Lookalike Threat
+  - Sanctioned Feed Disabled
+  - DNSTunnel
+  additionalinfo: Retrieve the SOC Insights as specified threat type.
+- section: Collect
+  advanced: true
+  display: SOC Insight Priority Level
+  name: soc_insight_priority_level
+  type: 15
+  required: false
+  options:
+  - INFO
+  - MEDIUM
+  - HIGH
+  - CRITICAL
+  additionalinfo: Retrieve the SOC Insights as specified priority level.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Feed Name
+  name: dns_events_feed_name
+  type: 16
+  required: false
+  additionalinfo: Retrieve the DNS Security Events as specified feed name or custom list name.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Network
+  name: dns_events_network
+  type: 16
+  required: false
+  additionalinfo: Retrieve the DNS Security Events as specified network name.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Policy Action
+  name: dns_events_policy_action
+  type: 16
+  required: false
+  options:
+  - Log
+  - Block
+  - Default
+  - Redirect
+  additionalinfo: Retrieve the DNS Security Events as specified policy action.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Policy Name
+  name: dns_events_policy_name
+  type: 16
+  required: false
+  additionalinfo: Retrieve the DNS Security Events as specified policy name.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Queried Name
+  name: dns_events_queried_name
+  type: 16
+  required: false
+  additionalinfo: Retrieve the DNS Security Events as specified queried name.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Threat Class
+  name: dns_events_threat_class
+  type: 16
+  required: false
+  options:
+  - DGA
+  - Undefined
+  - Malicious
+  - Open Resolver
+  - Phishing
+  - DNS Tunneling
+  - MalwareDownload
+  - Sinkhole
+  - Zero Day DNS
+  - Notional Data Exfiltration
+  - MalwareC2DGA
+  - MalwareC2
+  - Restricted Country Communications
+  - Suspicious
+  - CompromisedHost
+  - CompromisedDomain
+  - Lookalike Threat
+  - Sanctioned Feed Disabled
+  - DNSTunnel
+  additionalinfo: Retrieve the DNS Security Events as specified threat class.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Threat Family
+  name: dns_events_threat_family
+  type: 16
+  required: false
+  options:
+  - COBALTSTRIKE
+  - Generic
+  - X
+  - MYLOBOT
+  - ZLOADER
+  - QTYPEANY
+  - NXDOMAIN
+  - SERVFAIL
+  - OPENRESOLVER
+  - BROWSERMISCONFIGURATION
+  - FEEDIGNORED
+  - LowProfileC2Beacon
+  - mfa_smishing
+  - DGA
+  - LOOKALIKE
+  - EMERGENT
+  - FIRSTSEEN
+  - REACTIVATED TLD
+  - PHISHING
+  - SUSPICIOUS
+  - EMERGENTDOMAINS
+  - LOG4SHELL
+  - EmdiviC2
+  - ExploitKit
+  - MalwareC2
+  - MalwareDownload
+  - Node
+  - SittingDucks
+  - GenericThreat
+  - Source
+  - Safe
+  - RIG
+  - DoHService
+  - MalwareGeneric
+  - RDGA
+  - Spam
+  - TDS
+  - AgentTesla
+  - Azorult
+  - BackdoorRAT
+  - Bedep
+  - Beebone
+  - Brushaloader
+  - Cerber
+  - Coreflood
+  - Cridex
+  - CryptoLocker
+  - CTBLocker
+  - DarkComet
+  - Dorkbot
+  - Emotet
+  - Expiro
+  - Formbook
+  - Gandcrab
+  - Gozi
+  - Hancitor
+  - IcedID
+  - InfostealerShiz
+  - Locky
+  - Lokibot
+  - Lookalike
+  - Necurs
+  - Palevo
+  - PonyLoader
+  - Pykspa
+  - Qakbot
+  - Ramnit
+  - Ransomware
+  - Shifu
+  - SmokeLoader
+  - SpyEye
+  - Spyware
+  - Symmi
+  - Tempedreve
+  - TeslaCrypt
+  - Upatre
+  - Ursnif
+  - Virut
+  - Zusy
+  - Bamital
+  - Banjori
+  - Chinad
+  - Dircrypt
+  - Fobber
+  - GameoverZeus
+  - Geodo
+  - Hesperbot
+  - Murofet
+  - Nymaim
+  - Padcrypt
+  - Proslikefan
+  - Qadars
+  - Ramdo
+  - Ranbyus
+  - Simda
+  - Sisron
+  - Sphinx
+  - Suppobox
+  - TinyBanker
+  - UrlZone
+  - Vawtrak
+  - Malvertising
+  - Nemucod
+  - Typosquat
+  - Phish
+  - Smishing
+  - Advertising
+  - DanglingRecord
+  - LookalikeDomains
+  - NewlyObservedDomains
+  - ParkedDomain
+  - DNST
+  - TorExitNode
+  - TorNode
+  - FinancialFraud
+  - Lottery
+  - Nameserver
+  - SinkholedHost
+  - Behavior
+  - EmergentDomain
+  - Registration
+  - WebAppAttack
+  - REHOME
+  additionalinfo: Retrieve the DNS Security Events as specified threat family.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Threat Indicator
+  name: dns_events_threat_indicator
+  type: 16
+  required: false
+  additionalinfo: Retrieve the DNS Security Events as specified threat indicator.
+- section: Collect
+  advanced: true
+  display: DNS Security Event Threat Level
+  name: dns_events_threat_level
+  type: 16
+  required: false
+  options:
+  - LOW
+  - MEDIUM
+  - HIGH
+  defaultvalue: "HIGH"
+  additionalinfo: Retrieve the DNS Security Events as specified threat level.
+- section: Collect
+  display: Max Fetch
+  name: max_fetch
+  defaultvalue: "50"
+  type: 0
+  required: false
+  additionalinfo: The maximum number of SOC Insights or DNS Security Events to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200.
+- section: Collect
+  additionalinfo: "The date or relative timestamp from which to begin fetching incidents. Note: This parameter is only applicable for DNS Security Events.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2025, 01 May 2025 04:45:33, 2025-05-17T14:05:44Z."
+  defaultvalue: 24 hours
+  display: First fetch timestamp
+  name: first_fetch
+  type: 0
+  required: false
+- section: Collect
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "60"
+  type: 19
+  required: false
+- section: Connect
+  display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
-- display: Use system proxy settings
+- section: Connect
+  display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-description: BloxOne Threat Defense is a hybrid cybersecurity solution that leverages DNS as the first line of defense to detect and block cyber threats.
-display: 'Infoblox BloxOne Threat Defense'
+description: Infoblox Threat Defense with DDI integration leverages DNS as the first line of defense to detect and block cyber threats, while also using threat intelligence to manage SOC Insight incident response and enrich indicators.
+display: 'Infoblox Threat Defense with DDI'
 name: InfobloxBloxOneThreatDefense
 script:
   commands:
@@ -100,11 +435,1743 @@ script:
     - contextPath: BloxOneTD.LookalikeDomain.target_domain
       description: The domain that was targeted by the lookalike domain.
       type: String
+  - arguments:
+    - description: |-
+        Specify the IP addresses to block. Supports comma-separated values.
+      name: ip
+      isArray: true
+      default: true
+      required: true
+    - description: Specify the name of the custom list to add the given IP addresses to.
+      name: custom_list_name
+      defaultValue: Default Block
+      required: false
+    - auto: PREDEFINED
+      description: Specify the type of the custom list to add the given IP addresses to.
+      name: custom_list_type
+      predefined:
+        - default_block
+        - custom_list
+        - threat_insight
+        - dga
+        - dnsm
+        - zero_day_dns
+        - threat_insight_nde
+      defaultValue: default_block
+      required: false
+    description: The given IP addresses will be added to the provided block list.
+    name: infobloxcloud-block-ip
+    outputs:
+    - contextPath: InfobloxCloud.CustomList.id
+      description: The ID of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.name
+      description: The name of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.type
+      description: The type of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.items
+      description: The items in the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.items_described
+      description: The items described in the custom list.
+      type: Array
+    - contextPath: InfobloxCloud.CustomList.item_count
+      description: The number of items in the custom list.
+      type: Number
+    - contextPath: InfobloxCloud.CustomList.confidence_level
+      description: The confidence level of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.created_time
+      description: The time the custom list was created.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.last_updated_time
+      description: The time the custom list was last updated.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.description
+      description: The description of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.policies
+      description: The policies of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.tags
+      description: The tags of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.type
+      description: The type of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.threat_level
+      description: The threat level of the custom list.
+      type: String
+  - arguments:
+    - description: |-
+        Specify the IP addresses to unblock. Supports comma-separated values.
+      name: ip
+      isArray: true
+      default: true
+      required: true
+    - description: Specify the name of the custom list to add the given IP addresses to.
+      name: custom_list_name
+      defaultValue: Default Allow
+      required: false
+    - auto: PREDEFINED
+      description: Specify the type of the custom list to add the given IP addresses to.
+      name: custom_list_type
+      predefined:
+        - default_allow
+        - custom_list
+        - threat_insight
+        - threat_insight_nde
+      defaultValue: default_allow
+      required: false
+    description: The given IP addresses will be added to the provided allow list.
+    name: infobloxcloud-unblock-ip
+    outputs:
+    - contextPath: InfobloxCloud.CustomList.id
+      description: The ID of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.name
+      description: The name of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.type
+      description: The type of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.items
+      description: The items in the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.items_described
+      description: The items described in the custom list.
+      type: Array
+    - contextPath: InfobloxCloud.CustomList.item_count
+      description: The number of items in the custom list.
+      type: Number
+    - contextPath: InfobloxCloud.CustomList.confidence_level
+      description: The confidence level of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.created_time
+      description: The time the custom list was created.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.last_updated_time
+      description: The time the custom list was last updated.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.description
+      description: The description of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.policies
+      description: The policies of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.tags
+      description: The tags of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.type
+      description: The type of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.threat_level
+      description: The threat level of the custom list.
+      type: String
+  - arguments:
+    - description: |-
+        Specify the Domains to block. Supports comma-separated values.
+      name: domain
+      required: true
+      isArray: true
+      default: true
+    - description: Specify the name of the custom list to add the given domains to.
+      name: custom_list_name
+      defaultValue: Default Block
+      required: false
+    - auto: PREDEFINED
+      description: Specify the type of the custom list to add the given domains to.
+      name: custom_list_type
+      predefined:
+        - default_block
+        - custom_list
+        - threat_insight
+        - dga
+        - dnsm
+        - zero_day_dns
+        - threat_insight_nde
+      defaultValue: default_block
+      required: false
+    description: The given domains will be added to the provided block list.
+    name: infobloxcloud-block-domain
+    outputs:
+    - contextPath: InfobloxCloud.CustomList.id
+      description: The ID of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.name
+      description: The name of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.type
+      description: The type of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.items
+      description: The items in the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.items_described
+      description: The items described in the custom list.
+      type: Array
+    - contextPath: InfobloxCloud.CustomList.item_count
+      description: The number of items in the custom list.
+      type: Number
+    - contextPath: InfobloxCloud.CustomList.confidence_level
+      description: The confidence level of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.created_time
+      description: The time the custom list was created.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.last_updated_time
+      description: The time the custom list was last updated.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.description
+      description: The description of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.policies
+      description: The policies of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.tags
+      description: The tags of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.type
+      description: The type of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.threat_level
+      description: The threat level of the custom list.
+      type: String
+  - arguments:
+    - description: |-
+        Specify the Domains to unblock. Supports comma-separated values.
+      name: domain
+      required: true
+      isArray: true
+      default: true
+    - description: Specify the name of the custom list to add the given domains to.
+      name: custom_list_name
+      defaultValue: Default Allow
+      required: false
+    - auto: PREDEFINED
+      description: Specify the type of the custom list to add the given domains to.
+      name: custom_list_type
+      predefined:
+        - default_allow
+        - custom_list
+        - threat_insight
+        - threat_insight_nde
+      defaultValue: default_allow
+      required: false
+    description: The given domains will be added to the provided allow list.
+    name: infobloxcloud-unblock-domain
+    outputs:
+    - contextPath: InfobloxCloud.CustomList.id
+      description: The ID of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.name
+      description: The name of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.type
+      description: The type of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.items
+      description: The items in the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.items_described
+      description: The items described in the custom list.
+      type: Array
+    - contextPath: InfobloxCloud.CustomList.item_count
+      description: The number of items in the custom list.
+      type: Number
+    - contextPath: InfobloxCloud.CustomList.confidence_level
+      description: The confidence level of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.created_time
+      description: The time the custom list was created.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.last_updated_time
+      description: The time the custom list was last updated.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.description
+      description: The description of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.policies
+      description: The policies of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.tags
+      description: The tags of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.type
+      description: The type of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.threat_level
+      description: The threat level of the custom list.
+      type: String
+  - arguments:
+    - description: |-
+        Specify the indicators to remove from the custom list. Format accepted is: "0.0.0.0, example.com".
+      name: indicators
+      default: true
+      required: true
+      isArray: true
+    - description: Specify the name of the custom list to remove the given indicators from.
+      name: custom_list_name
+      required: true
+    - auto: PREDEFINED
+      description: Specify the type of the custom list to remove the given indicators from.
+      name: custom_list_type
+      predefined:
+        - default_allow
+        - default_block
+        - custom_list
+        - threat_insight
+        - dga
+        - dnsm
+        - zero_day_dns
+        - threat_insight_nde
+      required: true
+    description: The given indicators will be removed from the provided custom list.
+    name: infobloxcloud-customlist-indicator-remove
+    outputs:
+    - contextPath: InfobloxCloud.CustomList.id
+      description: The ID of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.name
+      description: The name of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.type
+      description: The type of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.items
+      description: The items in the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.items_described
+      description: The items described in the custom list.
+      type: Array
+    - contextPath: InfobloxCloud.CustomList.item_count
+      description: The number of items in the custom list.
+      type: Number
+    - contextPath: InfobloxCloud.CustomList.confidence_level
+      description: The confidence level of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.created_time
+      description: The time the custom list was created.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.last_updated_time
+      description: The time the custom list was last updated.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.description
+      description: The description of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.policies
+      description: The policies of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.tags
+      description: The tags of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.type
+      description: The type of the custom list.
+      type: String
+    - contextPath: InfobloxCloud.CustomList.threat_level
+      description: The threat level of the custom list.
+      type: String
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      isArray: true
+      default: true
+      description: IP(s) for which to retrieve reputation and threat intelligence. Supports comma-separated values.
+    outputs:
+    - contextPath: InfobloxCloud.IP.ip
+      description: The requested IP address.
+      type: String
+    # Standard IP context outputs (following XSOAR standards)
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: String
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: String
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: String
+    - contextPath: IP.ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      type: String
+    - contextPath: IP.Hostname
+      description: The hostname that is mapped to this IP address.
+      type: String
+    - contextPath: IP.Geo.Location
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country in which the IP address is located.
+      type: String
+    - contextPath: IP.Geo.Description
+      description: Additional information about the location.
+      type: String
+    - contextPath: IP.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: Number
+    - contextPath: IP.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: Number
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    - contextPath: IP.Tags
+      description: (List) Tags of the IP address.
+      type: Unknown
+    - contextPath: IP.FeedRelatedIndicators.value
+      description: Indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.FeedRelatedIndicators.type
+      description: The type of the indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.FeedRelatedIndicators.description
+      description: The description of the indicators that are associated with the IP address.
+      type: String
+    - contextPath: IP.MalwareFamily
+      description: The malware family associated with the IP address.
+      type: String
+    - contextPath: IP.Organization.Name
+      description: The organization of the IP address.
+      type: String
+    - contextPath: IP.Organization.Type
+      description: The organization type of the IP address.
+      type: String
+    - contextPath: IP.ASOwner
+      description: The autonomous system owner of the IP address.
+      type: String
+    - contextPath: IP.Region
+      description: The region in which the IP address is located.
+      type: String
+    - contextPath: IP.Port
+      description: Ports that are associated with the IP address.
+      type: String
+    - contextPath: IP.Internal
+      description: Whether the IP address is internal or external.
+      type: Boolean
+    - contextPath: IP.UpdatedDate
+      description: The date that the IP address was last updated.
+      type: Date
+    - contextPath: IP.Registrar.Abuse.Name
+      description: The name of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Address
+      description: The address of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Country
+      description: The country of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Network
+      description: The network of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Phone
+      description: The phone number of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Registrar.Abuse.Email
+      description: The email address of the contact for reporting abuse.
+      type: String
+    - contextPath: IP.Campaign
+      description: The campaign associated with the IP address.
+      type: String
+    - contextPath: IP.TrafficLightProtocol
+      description: The Traffic Light Protocol (TLP) color that is suitable for the IP address.
+      type: String
+    - contextPath: IP.CommunityNotes.note
+      description: Notes on the IP address that were given by the community.
+      type: String
+    - contextPath: IP.CommunityNotes.timestamp
+      description: The time in which the note was published.
+      type: Date
+    - contextPath: IP.Publications.source
+      description: The source in which the article was published.
+      type: String
+    - contextPath: IP.Publications.title
+      description: The name of the article.
+      type: String
+    - contextPath: IP.Publications.link
+      description: A link to the original article.
+      type: String
+    - contextPath: IP.Publications.timestamp
+      description: The time in which the article was published.
+      type: Date
+    - contextPath: IP.ThreatTypes.threatcategory
+      description: The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc.
+      type: String
+    - contextPath: IP.ThreatTypes.threatcategoryconfidence
+      description: The confidence level provided by the vendor for the threat type category For example, a confidence of 90 for the threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware.
+      type: String
+    # Standard DBotScore context outputs (mandatory for reputation commands)
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    # InfobloxCloud.IP.Threat context outputs (threat intelligence data)
+    - contextPath: InfobloxCloud.IP.Threat.id
+      description: The unique identifier for the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.type
+      description: The type of threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.ip
+      description: The IP address identified as a threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.profile
+      description: The threat profile or classification source.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.property
+      description: The specific property or category of the threat.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.class
+      description: The classification of the threat.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.threat_level
+      description: The numeric threat level score.
+      type: Number
+    - contextPath: InfobloxCloud.IP.Threat.threat_label
+      description: The textual threat level label.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.expiration
+      description: The timestamp when the threat indicator will expire.
+      type: Date
+    - contextPath: InfobloxCloud.IP.Threat.detected
+      description: The timestamp when the threat activity was first detected.
+      type: Date
+    - contextPath: InfobloxCloud.IP.Threat.received
+      description: The timestamp when the threat indicator was received by the system.
+      type: Date
+    - contextPath: InfobloxCloud.IP.Threat.imported
+      description: The timestamp when the threat indicator was imported into the system.
+      type: Date
+    - contextPath: InfobloxCloud.IP.Threat.up
+      description: The boolean status flag indicating whether the threat indicator is currently active.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.batch_id
+      description: The batch ID of the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.confidence
+      description: The numeric confidence score representing the reliability of the threat indicator.
+      type: Number
+    - contextPath: InfobloxCloud.IP.Threat.extended.notes
+      description: The additional notes or information about the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.threat_score
+      description: The numeric score representing the calculated threat severity.
+      type: Number
+    - contextPath: InfobloxCloud.IP.Threat.threat_score_rating
+      description: The textual rating of the threat score.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.threat_score_vector
+      description: The vector string representing threat scoring details.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.risk_score
+      description: The numeric risk score assigned to the threat indicator.
+      type: Number
+    - contextPath: InfobloxCloud.IP.Threat.risk_score_rating
+      description: The textual rating of the risk score.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.risk_score_vector
+      description: The vector string representing risk scoring details.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.confidence_score
+      description: The numeric confidence score for the threat assessment.
+      type: Number
+    - contextPath: InfobloxCloud.IP.Threat.confidence_score_rating
+      description: The textual rating of the confidence score.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.confidence_score_vector
+      description: The vector string representing confidence scoring details.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.extended.cyberint_guid
+      description: The unique identifier for the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.extended.attack_chain
+      description: The attack chain associated with the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.extended.extended
+      description: The additional information or metadata associated with the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.extended.protocol
+      description: The protocol associated with the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.extended.references
+      description: The references associated with the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.extended.threat_actor
+      description: The threat actor associated with the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.extended.threat_actor_vector
+      description: The vector string representing threat actor details.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.extended.risk_score
+      description: The numeric risk score assigned to the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.extended.threat_score
+      description: The numeric threat score assigned to the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.extended.sample_sha256
+      description: The SHA-256 hash of the sample associated with the threat.
+      type: String
+    - contextPath: InfobloxCloud.IP.Threat.extended.original_profile
+      description: The original profile or classification source of the threat.
+      type: String
+    # InfobloxCloud.IP.Address context outputs (IPAM address data)
+    - contextPath: InfobloxCloud.IP.Address.address
+      description: The IP address assigned to the resource.
+      type: String
+    - contextPath: InfobloxCloud.IP.Address.comment
+      description: A user-provided comment or annotation for the address record.
+      type: String
+    - contextPath: InfobloxCloud.IP.Address.compartment_id
+      description: The compartment ID of the IP address.
+      type: String
+    - contextPath: InfobloxCloud.IP.Address.created_at
+      description: The timestamp when the IP address was created.
+      type: Date
+    - contextPath: InfobloxCloud.IP.Address.dhcp_info
+      description: The DHCP information associated with the IP address.
+      type: Unknown
+    - contextPath: InfobloxCloud.IP.Address.disable_dhcp
+      description: A boolean flag indicating whether DHCP is disabled for the IP address.
+      type: Boolean
+    - contextPath: InfobloxCloud.IP.Address.discovery_attrs
+      description: The discovery attributes associated with the IP address.
+      type: Unknown
+    - contextPath: InfobloxCloud.IP.Address.discovery_metadata
+      description: The discovery metadata associated with the IP address.
+      type: Unknown
+    - contextPath: InfobloxCloud.IP.Address.external_keys
+      description: External keys associated with the IP address.
+      type: Unknown
+    - contextPath: InfobloxCloud.IP.Address.host
+      description: The host name of the IP address.
+      type: Unknown
+    - contextPath: InfobloxCloud.IP.Address.hwaddr
+      description: The hardware address of the IP address.
+      type: String
+    - contextPath: InfobloxCloud.IP.Address.id
+      description: The unique identifier of the IP address.
+      type: String
+    - contextPath: InfobloxCloud.IP.Address.interface
+      description: The interface of the IP address.
+      type: String
+    - contextPath: InfobloxCloud.IP.Address.names
+      description: The names associated with the IP address.
+      type: Unknown
+    - contextPath: InfobloxCloud.IP.Address.parent
+      description: The parent of the IP address.
+      type: String
+    - contextPath: InfobloxCloud.IP.Address.protocol
+      description: The protocol of the IP address.
+      type: String
+    - contextPath: InfobloxCloud.IP.Address.range
+      description: The range of the IP address.
+      type: String
+    - contextPath: InfobloxCloud.IP.Address.space
+      description: The space of the IP address.
+      type: String
+    - contextPath: InfobloxCloud.IP.Address.state
+      description: The state of the IP address.
+      type: String
+    - contextPath: InfobloxCloud.IP.Address.tags
+      description: The tags associated with the IP address.
+      type: Unknown
+    - contextPath: InfobloxCloud.IP.Address.updated_at
+      description: The timestamp when the IP address was last updated.
+      type: Date
+    - contextPath: InfobloxCloud.IP.Address.usage
+      description: The usage of the IP address.
+      type: String
+    - contextPath: InfobloxCloud.IP.Address.names.name
+      description: The name of the IP address.
+      type: String
+    - contextPath: InfobloxCloud.IP.Address.names.type
+      description: The type of the IP address.
+      type: Unknown
+    description: Gets the comprehensive IP reputation and threat intelligence from Infoblox Threat Defense, including threat indicators, IPAM address information, and standard IP reputation data.
+  - arguments:
+    - name: domain
+      required: true
+      isArray: true
+      default: true
+      description: Domain(s) or Hosts(s) for which to retrieve reputation and threat intelligence. Supports comma-separated values.
+    name: domain
+    description: Gets the comprehensive domain/host reputation and threat intelligence from Infoblox Threat Defense, including threat indicators, IPAM address information and standard domain reputation data.
+    outputs:
+    - contextPath: InfobloxCloud.Domain.domain
+      description: The requested domain.
+      type: String
+    # Standard Domain context outputs (following XSOAR standards)
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: Domain.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: Domain.DNS
+      description: A list of IP objects resolved by DNS.
+      type: String
+    - contextPath: Domain.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: Number
+    - contextPath: Domain.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: Number
+    - contextPath: Domain.CreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: Domain.UpdatedDate
+      description: The date that the domain was last updated.
+      type: String
+    - contextPath: Domain.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.DomainStatus
+      description: The status of the domain.
+      type: Datte
+    - contextPath: Domain.NameServers
+      description: (List<String>) Name servers of the domain.  
+      type: Unknown
+    - contextPath: Domain.Organization
+      description: The organization of the domain.
+      type: String
+    - contextPath: Domain.Subdomains
+      description: (List<String>) Subdomains of the domain.
+      type: Unknown
+    - contextPath: Domain.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Phone
+      description: The phone number for receiving abuse reports.
+      type: String
+    - contextPath: Domain.Tags
+      description: (List) Tags of the domain.
+      type: Unknown
+    - contextPath: Domain.FeedRelatedIndicators.value
+      description: Indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.FeedRelatedIndicators.type
+      description: The type of the indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.FeedRelatedIndicators.description
+      description: The description of the indicators that are associated with the domain.
+      type: String
+    - contextPath: Domain.MalwareFamily
+      description: The malware family associated with the domain.
+      type: String
+    - contextPath: Domain.WHOIS.DomainStatus
+      description: The status of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.NameServers
+      description: (List<String>) Name servers of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date that the domain was last updated.
+      type: Date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Phone
+      description: The phone number of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: The name of the registrar.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.AbuseEmail
+      description: The email address of the contact for reporting abuse.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.AbusePhone
+      description: The phone number of contact for reporting abuse.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS/History
+      description: List of Whois objects.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor reporting the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description explaining why the domain was reported as malicious.
+      type: String
+    - contextPath: Domain.DomainIDNName
+      description: The internationalized domain name (IDN) of the domain.
+      type: String
+    - contextPath: Domain.Port
+      description: Ports that are associated with the domain.
+      type: String
+    - contextPath: Domain.Internal
+      description: Whether or not the domain is internal or external.
+      type: Bool
+    - contextPath: Domain.Category
+      description: The category associated with the indicator.
+      type: String
+    - contextPath: Domain.Campaign
+      description: The campaign associated with the domain.
+      type: String
+    - contextPath: Domain.TrafficLightProtocol
+      description: The Traffic Light Protocol (TLP) color that is suitable for the domain.
+      type: String
+    - contextPath: Domain.ThreatTypes.threatcategory
+      description: The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc.
+      type: String
+    - contextPath: Domain.ThreatTypes.threatcategoryconfidence
+      description: Threat Category Confidence is the confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware.
+      type: String
+    - contextPath: Domain.Geo.Location
+      description: 'The geolocation where the domain address is located, in the format: latitude:longitude.'
+      type: String
+    - contextPath: Domain.Geo.Country
+      description: The country in which the domain address is located.
+      type: String
+    - contextPath: Domain.Geo.Description
+      description: Additional information about the location.
+      type: String
+    - contextPath: Domain.Tech.Country
+      description: The country of the domain technical contact.
+      type: String
+    - contextPath: Domain.Tech.Name
+      description: The name of the domain technical contact.
+      type: String
+    - contextPath: Domain.Tech.Organization
+      description: The organization of the domain technical contact.
+      type: String
+    - contextPath: Domain.Tech.Email
+      description: The email address of the domain technical contact.
+      type: String
+    - contextPath: Domain.CommunityNotes.note
+      description: Notes on the domain that were given by the community.
+      type: String
+    - contextPath: Domain.CommunityNotes.timestamp
+      description: The time in which the note was published.
+      type: Date
+    - contextPath: Domain.Publications.source
+      description: The source in which the article was published.
+      type: String
+    - contextPath: Domain.Publications.title
+      description: The name of the article.
+      type: String
+    - contextPath: Domain.Publications.link
+      description: A link to the original article.
+      type: String
+    - contextPath: Domain.Publications.timestamp
+      description: The time in which the article was published.
+      type: Date
+    - contextPath: Domain.Billing
+      description: The billing address of the domain.
+      type: String
+    # Standard DBotScore context outputs (mandatory for reputation commands)
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    # InfobloxCloud.Domain.Threat context outputs (threat intelligence data)
+    - contextPath: InfobloxCloud.Domain.Threat.id
+      description: The unique identifier for the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.type
+      description: The type of threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.domain
+      description: The domain identified as a threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.profile
+      description: The threat profile or classification source.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.property
+      description: The specific property or category of the threat.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.class
+      description: The classification of the threat.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.threat_level
+      description: The numeric threat level score.
+      type: Number
+    - contextPath: InfobloxCloud.Domain.Threat.threat_label
+      description: The textual threat level label.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.expiration
+      description: The timestamp when the threat indicator will expire.
+      type: Date
+    - contextPath: InfobloxCloud.Domain.Threat.detected
+      description: The timestamp when the threat activity was first detected.
+      type: Date
+    - contextPath: InfobloxCloud.Domain.Threat.received
+      description: The timestamp when the threat indicator was received by the system.
+      type: Date
+    - contextPath: InfobloxCloud.Domain.Threat.imported
+      description: The timestamp when the threat indicator was imported into the system.
+      type: Date
+    - contextPath: InfobloxCloud.Domain.Threat.up
+      description: The boolean status flag indicating whether the threat indicator is currently active.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.batch_id
+      description: The batch ID of the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.confidence
+      description: The numeric confidence score representing the reliability of the threat indicator.
+      type: Number
+    - contextPath: InfobloxCloud.Domain.Threat.extended.notes
+      description: The additional notes or information about the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.threat_score
+      description: The numeric score representing the calculated threat severity.
+      type: Number
+    - contextPath: InfobloxCloud.Domain.Threat.threat_score_rating
+      description: The textual rating of the threat score.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.threat_score_vector
+      description: The vector string representing threat scoring details.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.risk_score
+      description: The numeric risk score assigned to the threat indicator.
+      type: Number
+    - contextPath: InfobloxCloud.Domain.Threat.risk_score_rating
+      description: The textual rating of the risk score.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.risk_score_vector
+      description: The vector string representing risk scoring details.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.confidence_score
+      description: The numeric confidence score for the threat assessment.
+      type: Number
+    - contextPath: InfobloxCloud.Domain.Threat.confidence_score_rating
+      description: The textual rating of the confidence score.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.confidence_score_vector
+      description: The vector string representing confidence scoring details.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.extended.cyberint_guid
+      description: The unique identifier for the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.extended.attack_chain
+      description: The attack chain associated with the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.extended.extended
+      description: The additional information or metadata associated with the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.extended.protocol
+      description: The protocol associated with the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.extended.references
+      description: The references associated with the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.extended.threat_actor
+      description: The threat actor associated with the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.extended.threat_actor_vector
+      description: The vector string representing threat actor details.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.extended.risk_score
+      description: The numeric risk score assigned to the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.extended.threat_score
+      description: The numeric threat score assigned to the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.extended.sample_sha256
+      description: The SHA-256 hash of the sample associated with the threat.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.extended.original_profile
+      description: The original profile or classification source of the threat.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.dga
+      description: The domain name generated by a DGA (Domain Generation Algorithm).
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.host
+      description: The host name of the domain.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Threat.tld
+      description: The top-level domain (TLD) of the threat.
+      type: String
+    # InfobloxCloud.Domain.Address context outputs (IPAM address data)
+    - contextPath: InfobloxCloud.Domain.Address.addresses.address
+      description: The address of the IP address.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Address.addresses.ref
+      description: The reference of the IP address.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Address.addresses.space
+      description: The space of the IP address.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Address.auto_generate_records
+      description: A boolean flag indicating whether auto generate records is enabled for the IP address.
+      type: Boolean
+    - contextPath: InfobloxCloud.Domain.Address.comment
+      description: The description for the IPAM host.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Address.created_at
+      description: Time when the object has been created.
+      type: Date
+    - contextPath: InfobloxCloud.Domain.Address.host_names
+      description: The name records to be generated for the host.
+      type: Unknown
+    - contextPath: InfobloxCloud.Domain.Address.id
+      description: The resource identifier.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Address.name
+      description: The name of the IPAM host.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Address.host_names.alias
+      description: A boolean flag indicating whether the name record is an alias.
+      type: Boolean
+    - contextPath: InfobloxCloud.Domain.Address.host_names.name
+      description: The name of the host.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Address.host_names.primary_name
+      description: A boolean flag indicating whether the name record is the primary name.
+      type: Boolean
+    - contextPath: InfobloxCloud.Domain.Address.host_names.zone
+      description: The zone of the host.
+      type: String
+    - contextPath: InfobloxCloud.Domain.Address.tags
+      description: The tags associated with the IP address.
+      type: Unknown
+    - contextPath: InfobloxCloud.Domain.Address.addresses
+      description: The IP address assigned to the resource.
+      type: Unknown
+  - arguments:
+    - name: url
+      required: true
+      isArray: true
+      default: true
+      description: URL(s) for which to retrieve reputation and threat intelligence. Supports comma-separated values.
+    outputs:
+    - contextPath: InfobloxCloud.URL.url
+      description: The requested URL.
+      type: String
+    ## Standard URL context outputs (following XSOAR standards)
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: URL.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: URL.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: URL.DetectionEngines
+      description: The total number of engines that checked the indicator.
+      type: String
+    - contextPath: URL.PositiveDetections
+      description: The number of engines that positively detected the indicator as malicious.
+      type: String
+    - contextPath: URL.Category
+      description: The category associated with the indicator.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor reporting the URL as malicious.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: A description of the malicious URL.
+      type: String
+    - contextPath: URL.Tags
+      description: (List) Tags of the URL.
+      type: Unknown
+    - contextPath: URL.FeedRelatedIndicators.value
+      description: Indicators that are associated with the URL.
+      type: String
+    - contextPath: URL.FeedRelatedIndicators.type
+      description: The type of the indicators that are associated with the URL.
+      type: String
+    - contextPath: URL.FeedRelatedIndicators.description
+      description: The description of the indicators that are associated with the URL.
+      type: String
+    - contextPath: URL.MalwareFamily
+      description: The malware family associated with the URL.
+      type: String
+    - contextPath: URL.Port
+      description: Ports that are associated with the URL.
+      type: String
+    - contextPath: URL.Internal
+      description: Whether or not the URL is internal or external.
+      type: Bool
+    - contextPath: URL.Campaign
+      description: The campaign associated with the URL.
+      type: String
+    - contextPath: URL.TrafficLightProtocol
+      description: The Traffic Light Protocol (TLP) color that is suitable for the URL.
+      type: String
+    - contextPath: URL.ThreatTypes.threatcategory
+      description: The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc.
+      type: String
+    - contextPath: URL.ThreatTypes.threatcategoryconfidence
+      description: Threat Category Confidence is the confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware.
+      type: String
+    - contextPath: URL.ASN
+      description: "The autonomous system name for the URL, for example: 'AS8948'."
+      type: String
+    - contextPath: URL.ASOwner
+      description: The autonomous system owner of the URL.
+      type: String
+    - contextPath: URL.GeoCountry
+      description: The country in which the URL is located.
+      type: String
+    - contextPath: URL.Organization
+      description: The organization of the URL.
+      type: String
+    - contextPath: URL.CommunityNotes.note
+      description: Notes on the URL that were given by the community.
+      type: String
+    - contextPath: URL.CommunityNotes.timestamp
+      description: The time in which the note was published.
+      type: Date
+    - contextPath: URL.Publications.source
+      description: The source in which the article was published.
+      type: String
+    - contextPath: URL.Publications.title
+      description: The name of the article.
+      type: String
+    - contextPath: URL.Publications.link
+      description: A link to the original article.
+      type: String
+    - contextPath: URL.Publications.timestamp
+      description: The time in which the article was published.
+      type: Date
+    # Standard DBotScore context outputs (mandatory for reputation commands)
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    # InfobloxCloud.URL.Threat context outputs (threat intelligence data)
+    - contextPath: InfobloxCloud.URL.Threat.id
+      description: The unique identifier for the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.type
+      description: The type of threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.url
+      description: The URL identified as a threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.profile
+      description: The threat profile or classification source.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.property
+      description: The specific property or category of the threat.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.class
+      description: The classification of the threat.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.threat_level
+      description: The numeric threat level score.
+      type: Number
+    - contextPath: InfobloxCloud.URL.Threat.threat_label
+      description: The textual threat level label.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.expiration
+      description: The timestamp when the threat indicator will expire.
+      type: Date
+    - contextPath: InfobloxCloud.URL.Threat.detected
+      description: The timestamp when the threat activity was first detected.
+      type: Date
+    - contextPath: InfobloxCloud.URL.Threat.received
+      description: The timestamp when the threat indicator was received by the system.
+      type: Date
+    - contextPath: InfobloxCloud.URL.Threat.imported
+      description: The timestamp when the threat indicator was imported into the system.
+      type: Date
+    - contextPath: InfobloxCloud.URL.Threat.up
+      description: The boolean status flag indicating whether the threat indicator is currently active.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.batch_id
+      description: The batch ID of the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.confidence
+      description: The numeric confidence score representing the reliability of the threat indicator.
+      type: Number
+    - contextPath: InfobloxCloud.URL.Threat.extended.notes
+      description: The additional notes or information about the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.threat_score
+      description: The numeric score representing the calculated threat severity.
+      type: Number
+    - contextPath: InfobloxCloud.URL.Threat.threat_score_rating
+      description: The textual rating of the threat score.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.threat_score_vector
+      description: The vector string representing threat scoring details.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.risk_score
+      description: The numeric risk score assigned to the threat indicator.
+      type: Number
+    - contextPath: InfobloxCloud.URL.Threat.risk_score_rating
+      description: The textual rating of the risk score.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.risk_score_vector
+      description: The vector string representing risk scoring details.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.confidence_score
+      description: The numeric confidence score for the threat assessment.
+      type: Number
+    - contextPath: InfobloxCloud.URL.Threat.confidence_score_rating
+      description: The textual rating of the confidence score.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.confidence_score_vector
+      description: The vector string representing confidence scoring details.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.extended.cyberint_guid
+      description: The unique identifier for the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.extended.attack_chain
+      description: The attack chain associated with the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.extended.extended
+      description: The additional information or metadata associated with the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.extended.protocol
+      description: The protocol associated with the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.extended.references
+      description: The references associated with the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.extended.threat_actor
+      description: The threat actor associated with the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.extended.threat_actor_vector
+      description: The vector string representing threat actor details.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.extended.risk_score
+      description: The numeric risk score assigned to the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.extended.threat_score
+      description: The numeric threat score assigned to the threat indicator.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.extended.sample_sha256
+      description: The SHA-256 hash of the sample associated with the threat.
+      type: String
+    - contextPath: InfobloxCloud.URL.Threat.extended.original_profile
+      description: The original profile or classification source of the threat.
+      type: String
+    name: url
+    description: Gets the comprehensive URL reputation and threat intelligence from Infoblox Threat Defense, including threat indicators, and standard URL reputation data.
+  - name: infobloxcloud-mac-enrich
+    arguments:
+      - name: mac
+        required: true
+        description: Specify the MAC Address to enrich.
+    outputs:
+      - contextPath: InfobloxCloud.DHCPLease.address
+        description: The IP address assigned in the DHCP lease.
+        type: String
+      - contextPath: InfobloxCloud.DHCPLease.client_id
+        description: The identifier of the DHCP client.
+        type: String
+      - contextPath: InfobloxCloud.DHCPLease.ends
+        description: The timestamp indicating when the DHCP lease ends.
+        type: String
+      - contextPath: InfobloxCloud.DHCPLease.fingerprint
+        description: The DHCP client fingerprint, indicating device type or OS.
+        type: String
+      - contextPath: InfobloxCloud.DHCPLease.fingerprint_processed
+        description: The processed fingerprint result, if available.
+        type: String
+      - contextPath: InfobloxCloud.DHCPLease.ha_group
+        description: The high-availability group associated with the lease, if any.
+        type: Unknown
+      - contextPath: InfobloxCloud.DHCPLease.hardware
+        description: The hardware (MAC) address of the DHCP client.
+        type: String
+      - contextPath: InfobloxCloud.DHCPLease.host
+        description: The reference or identifier for the host associated with this lease.
+        type: String
+      - contextPath: InfobloxCloud.DHCPLease.hostname
+        description: The hostname provided by the DHCP client.
+        type: String
+      - contextPath: InfobloxCloud.DHCPLease.iaid
+        description: The Identity Association Identifier (IAID) for the DHCP lease.
+        type: Number
+      - contextPath: InfobloxCloud.DHCPLease.last_updated
+        description: The timestamp when the lease was last updated.
+        type: String
+      - contextPath: InfobloxCloud.DHCPLease.options
+        description: The encoded DHCP options provided with the lease.
+        type: String
+      - contextPath: InfobloxCloud.DHCPLease.preferred_lifetime
+        description: The preferred lifetime of the lease.
+        type: String
+      - contextPath: InfobloxCloud.DHCPLease.protocol
+        description: The protocol used for the lease.
+        type: String
+      - contextPath: InfobloxCloud.DHCPLease.space
+        description: The identifier for the IP space to which this lease belongs.
+        type: String
+      - contextPath: InfobloxCloud.DHCPLease.starts
+        description: The timestamp indicating when the DHCP lease started.
+        type: String
+      - contextPath: InfobloxCloud.DHCPLease.state
+        description: The current state of the lease.
+        type: String
+      - contextPath: InfobloxCloud.DHCPLease.type
+        description: The type of DHCP lease.
+        type: String
+    description: Enrich a MAC address with DHCP lease information.
+  - arguments:
+    - auto: PREDEFINED
+      description: Specify the status of SOC Insights to fetch.
+      name: status
+      predefined:
+        - Active
+        - Closed
+      required: false
+    - auto: PREDEFINED
+      description: Specify the threat type of SOC Insights to fetch.
+      name: threat_type
+      predefined:
+        - DGA
+        - Undefined
+        - Malicious
+        - Open Resolver
+        - Phishing
+        - DNS Tunneling
+        - MalwareDownload
+        - Sinkhole
+        - Zero Day DNS
+        - Notional Data Exfiltration
+        - MalwareC2DGA
+        - MalwareC2
+        - Restricted Country Communications
+        - Suspicious
+        - CompromisedHost
+        - CompromisedDomain
+        - Lookalike Threat
+        - Sanctioned Feed Disabled
+        - DNSTunnel
+      required: false
+    - auto: PREDEFINED
+      description: Specify the priority level of SOC Insights to fetch.
+      name: priority
+      predefined:
+        - INFO
+        - MEDIUM
+        - HIGH
+        - CRITICAL
+      required: false
+    description: List SOC Insights from Infoblox Cloud.
+    name: infobloxcloud-soc-insight-list
+    outputs:
+    - contextPath: InfobloxCloud.SOCInsight.insightId
+      description: The ID of the SOC Insight.
+      type: String
+    - contextPath: InfobloxCloud.SOCInsight.priorityText
+      description: The priority level of the SOC Insight.
+      type: String
+    - contextPath: InfobloxCloud.SOCInsight.tClass
+      description: The threat class of the SOC Insight.
+      type: String
+    - contextPath: InfobloxCloud.SOCInsight.tFamily
+      description: The threat family of the SOC Insight.
+      type: String
+    - contextPath: InfobloxCloud.SOCInsight.startedAt
+      description: The start time of the SOC Insight.
+      type: String
+    - contextPath: InfobloxCloud.SOCInsight.status
+      description: The status of the SOC Insight.
+      type: String
+    - contextPath: InfobloxCloud.SOCInsight.persistentDate
+      description: Timestamp when the threat was first observed as persistent.
+      type: String
+    - contextPath: InfobloxCloud.SOCInsight.spreadingDate
+      description: Timestamp when the threat was first observed as spreading.
+      type: String
+    - contextPath: InfobloxCloud.SOCInsight.dateChanged
+      description: Timestamp when the SOC Insight was last updated.
+      type: String
+    - contextPath: InfobloxCloud.SOCInsight.changer
+      description: The user or process that last changed the SOC Insight status or data.
+      type: String
+    - contextPath: InfobloxCloud.SOCInsight.feedSource
+      description: The source feed or provider of the SOC Insight.
+      type: String
+    - contextPath: InfobloxCloud.SOCInsight.threatType
+      description: The threat type of the SOC Insight.
+      type: String
+    - contextPath: InfobloxCloud.SOCInsight.numEvents
+      description: The number of events associated with the SOC Insight.
+      type: String
+    - contextPath: InfobloxCloud.SOCInsight.eventsNotBlockedCount
+      description: The number of events not blocked by the SOC Insight.
+      type: String
+    - contextPath: InfobloxCloud.SOCInsight.mostRecentAt
+      description: The most recent time the SOC Insight was updated.
+      type: String
+  - arguments:
+    - name: soc_insight_id
+      required: true
+      description: Specify the SOC Insight ID to fetch events for.
+    - name: limit
+      required: false
+      description: Specify the maximum number of events to fetch.
+      defaultValue: 50
+    - name: start_time
+      required: false
+      description: "Specify the start time for the events.\n\nFormat: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.\n\nExample: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun."
+    - name: end_time
+      required: false
+      description: "Specify the end time for the events.\n\nFormat: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.\n\nExample: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun."
+    - auto: PREDEFINED
+      name: threat_level
+      required: false
+      predefined:
+        - High
+        - Medium
+        - Low
+        - Info
+      description: Specify the threat level of the events.
+    - auto: PREDEFINED
+      name: confidence_level
+      required: false
+      predefined:
+        - High
+        - Medium
+        - Low
+        - Info
+      description: Specify the confidence level of the events.
+    - name: query
+      required: false
+      description: Specify the query to search for events.
+    - auto: PREDEFINED
+      name: query_type
+      required: false
+      predefined:
+        - A
+        - AAAA
+        - ANY
+        - TXT
+        - RRSIG
+        - CNAME
+        - MX
+        - NS
+        - PTR
+        - SOA
+        - SRV
+      description: Specify the query type to search for events.
+    - name: source
+      required: false
+      description: Specify the source of the events.
+    - name: device_ip
+      required: false
+      description: Specify the device IP of the events.
+    - name: indicator
+      required: false
+      description: Specify the indicator of the events.
+    description: List events for a specific SOC Insight.
+    name: infobloxcloud-soc-insight-event-list
+    outputs:
+    - contextPath: InfobloxCloud.Event.confidenceLevel
+      description: The confidence level of the threat detection.
+      type: String
+    - contextPath: InfobloxCloud.Event.deviceCountry
+      description: The country where the device is located.
+      type: String
+    - contextPath: InfobloxCloud.Event.deviceName
+      description: The name or identifier of the device.
+      type: String
+    - contextPath: InfobloxCloud.Event.deviceRegion
+      description: The region where the device is located.
+      type: String
+    - contextPath: InfobloxCloud.Event.dnsView
+      description: The DNS view used for the query.
+      type: String
+    - contextPath: InfobloxCloud.Event.feed
+      description: The feed that identified the threat.
+      type: String
+    - contextPath: InfobloxCloud.Event.source
+      description: The source of the threat detection.
+      type: String
+    - contextPath: InfobloxCloud.Event.action
+      description: The action taken on the detected threat.
+      type: String
+    - contextPath: InfobloxCloud.Event.policy
+      description: The policy applied to the detection.
+      type: String
+    - contextPath: InfobloxCloud.Event.deviceIp
+      description: The IP address of the device.
+      type: String
+    - contextPath: InfobloxCloud.Event.query
+      description: The DNS query that triggered the detection.
+      type: String
+    - contextPath: InfobloxCloud.Event.queryType
+      description: The type of DNS query.
+      type: String
+    - contextPath: InfobloxCloud.Event.response
+      description: The DNS response for the query.
+      type: String
+    - contextPath: InfobloxCloud.Event.class
+      description: The classification of the threat.
+      type: String
+    - contextPath: InfobloxCloud.Event.threatFamily
+      description: The family of the threat.
+      type: String
+    - contextPath: InfobloxCloud.Event.threatIndicator
+      description: The indicator of the threat.
+      type: String
+    - contextPath: InfobloxCloud.Event.detected
+      description: The timestamp when the event was detected.
+      type: String
+    - contextPath: InfobloxCloud.Event.property
+      description: The property of the event.
+      type: String
+    - contextPath: InfobloxCloud.Event.user
+      description: The user associated with the detection.
+      type: String
+    - contextPath: InfobloxCloud.Event.threatLevel
+      description: The severity level of the event.
+      type: String
+  - arguments:
+    - name: soc_insight_id
+      required: true
+      description: Specify the SOC Insight ID to fetch indicators for.
+      default: true
+    - name: limit
+      required: false
+      description: Specify the maximum number of indicators to fetch.
+      defaultValue: 50
+    - name: start_time
+      required: false
+      description: "Specify the start time for the indicators.\n\nFormat: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.\n\nExample: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun."
+    - name: end_time
+      required: false
+      description: "Specify the end time for the indicators.\n\nFormat: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.\n\nExample: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun."
+    - auto: PREDEFINED
+      name: confidence
+      required: false
+      predefined:
+        - '1'
+        - '2'
+        - '3'
+      description: Specify the confidence of the indicators.
+    - name: indicator
+      required: false
+      description: Specify the indicator of the indicators.
+    - auto: PREDEFINED
+      name: action
+      required: false
+      predefined:
+        - Blocked
+        - Not Blocked
+      description: Specify the action of the indicators.
+    - name: actor
+      required: false
+      description: Specify the actor of the indicators.
+    description: List indicators for a specific SOC Insight.
+    name: infobloxcloud-soc-insight-indicator-list
+    outputs:
+    - contextPath: InfobloxCloud.Indicator.action
+      description: The action taken for the indicator.
+      type: String
+    - contextPath: InfobloxCloud.Indicator.confidence
+      description: The confidence level of the indicator.
+      type: String
+    - contextPath: InfobloxCloud.Indicator.count
+      description: The number of occurrences of the indicator.
+      type: Number
+    - contextPath: InfobloxCloud.Indicator.feedName
+      description: The feed name that identified the indicator.
+      type: String
+    - contextPath: InfobloxCloud.Indicator.threatLevelMax
+      description: The maximum threat level associated with the indicator.
+      type: String
+    - contextPath: InfobloxCloud.Indicator.indicator
+      description: The value of the indicator.
+      type: String
+    - contextPath: InfobloxCloud.Indicator.timeMax
+      description: The latest time the indicator was observed.
+      type: Date
+    - contextPath: InfobloxCloud.Indicator.timeMin
+      description: The earliest time the indicator was observed.
+      type: Date
+  - arguments:
+    - name: soc_insight_id
+      required: true
+      description: Specify the SOC Insight ID to fetch assets for.
+      default: true
+    - name: limit
+      required: false
+      description: Specify the maximum number of assets to fetch.
+      defaultValue: 50
+    - name: start_time
+      required: false
+      description: "Specify the start time for the assets.\n\nFormat: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.\n\nExample: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun."
+    - name: end_time
+      required: false
+      description: "Specify the end time for the assets.\n\nFormat: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.\n\nExample: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun."
+    - name: qip
+      required: false
+      description: Specify the IP address of the assets.
+    - name: cmac
+      required: false
+      description: Specify the MAC address of the assets.
+    - name: os_version
+      required: false
+      description: Specify the OS version of the assets.
+    - name: user
+      required: false
+      description: Specify the user of the assets.
+    description: List assets for a specific SOC Insight.
+    name: infobloxcloud-soc-insight-asset-list
+    outputs:
+    - contextPath: InfobloxCloud.Asset.count
+      description: The number of occurrences associated with the asset.
+      type: Number
+    - contextPath: InfobloxCloud.Asset.qip
+      description: The IP address of the asset.
+      type: String
+    - contextPath: InfobloxCloud.Asset.location
+      description: The geographical location of the asset.
+      type: String
+    - contextPath: InfobloxCloud.Asset.threatLevelMax
+      description: The maximum threat level associated with the asset.
+      type: String
+    - contextPath: InfobloxCloud.Asset.threatIndicatorDistinctCount
+      description: The number of distinct threat indicators associated with the asset.
+      type: String
+    - contextPath: InfobloxCloud.Asset.timeMax
+      description: The latest time the asset was observed.
+      type: Date
+    - contextPath: InfobloxCloud.Asset.timeMin
+      description: The earliest time the asset was observed.
+      type: Date
+    - contextPath: InfobloxCloud.Asset.mostRecentAction
+      description: The most recent action taken for the asset.
+      type: String
+  - arguments:
+    - name: soc_insight_id
+      required: true
+      description: Specify the SOC Insight ID to fetch comments for.
+      default: true
+    - name: start_time
+      required: false
+      description: "Specify the start time for the comments.\n\nFormat: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.\n\nExample: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun."
+    - name: end_time
+      required: false
+      description: "Specify the end time for the comments.\n\nFormat: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.\n\nExample: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun."
+    - name: limit
+      required: false
+      description: Specify the maximum number of comments to fetch.
+      defaultValue: 50
+    description: List comments for a specific SOC Insight.
+    name: infobloxcloud-soc-insight-comment-list
+    outputs:
+    - contextPath: InfobloxCloud.Comment.commentsChanger
+      description: The user who created or changed the comment.
+      type: String
+    - contextPath: InfobloxCloud.Comment.dateChanged
+      description: The timestamp when the comment was created or modified.
+      type: Date
+    - contextPath: InfobloxCloud.Comment.status
+      description: The status associated with the comment.
+      type: String
+    - contextPath: InfobloxCloud.Comment.newComment
+      description: The comment text.
+      type: String
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.11.4819260
+  isfetch: true
 fromversion: 6.5.0
+defaultmapperin: "Infoblox Cloud - Incoming Mapper"
+defaultclassifier: "Infoblox Cloud - Classifier"
 tests:
 - No tests (auto formatted)

@@ -257,6 +257,8 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
     fetched_events = last_run.get(FileEventLastRun.FETCHED_IDS, {})
     pre_fetch_look_back = datetime.now(tz=timezone.utc) - FILE_EVENTS_LOOK_BACK
     file_events = client.get_file_events(file_event_time, limit=max_fetch_file_events + len(fetched_events))
+    if len(file_events) >= max_fetch_file_events:
+        new_last_run["nextTrigger"] = "0"
     dedup_file_events = dedup_fetched_events(
         file_events, last_run_fetched_event_ids=fetched_events, keys_list_to_id=["event", "id"]
     )
@@ -293,7 +295,9 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
         else (datetime.now() - timedelta(minutes=1))
     )
     last_fetched_audit_log_ids = set(last_run.get(AuditLogLastRun.FETCHED_IDS, []))
-    audit_logs = client.get_audit_logs(audit_log_time, limit=max_fetch_audit_events)  # type: ignore[arg-type]
+    audit_logs = client.get_audit_logs(audit_log_time, limit=max_fetch_audit_events + len(last_fetched_audit_log_ids))  # type: ignore[arg-type]
+    if len(audit_logs) >= max_fetch_audit_events:
+        new_last_run["nextTrigger"] = "0"
     audit_logs = dedup_fetched_events(audit_logs, last_run_fetched_event_ids=last_fetched_audit_log_ids, keys_list_to_id=["id"])
 
     if audit_logs:

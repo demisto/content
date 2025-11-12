@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -55,7 +55,7 @@ script:
       name: limit
     description: Gets events from Recorded Future.
     name: recorded-future-get-events
-  dockerimage: demisto/python3:3.11.10.111039
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetchevents: true
   script: '-'
   subtype: python3

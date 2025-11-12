@@ -3,7 +3,6 @@ This integration was integrated and tested with version 6.2 of DarktraceEmail.
 
 ## Configure DarktraceEmail in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL (e.g. <https://example.net>) |  | True |
@@ -39,19 +38,19 @@ Fetch details about a specific Email.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | Darktrace UUID of the Email. | Required | 
+| uuid | Darktrace UUID of the Email. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Darktrace.Email.uuid | string | UUID of email. | 
-| Darktrace.Email.direction | string | Direction of email. | 
-| Darktrace.Email.dtime | string | Timestamp of email. | 
-| Darktrace.Email.header_from_email | string | Email address of sender. | 
-| Darktrace.Email.header_subject | string | Subject of email. | 
-| Darktrace.Email.model_score | number | Anomaly score of email. | 
-| Darktrace.Email.receipt_status | string | Receipt status of email. | 
+| Darktrace.Email.uuid | string | UUID of email. |
+| Darktrace.Email.direction | string | Direction of email. |
+| Darktrace.Email.dtime | string | Timestamp of email. |
+| Darktrace.Email.header_from_email | string | Email address of sender. |
+| Darktrace.Email.header_subject | string | Subject of email. |
+| Darktrace.Email.model_score | number | Anomaly score of email. |
+| Darktrace.Email.receipt_status | string | Receipt status of email. |
 
 ### darktrace-email-hold-email
 
@@ -66,18 +65,18 @@ Apply "hold" action to a specified Email.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | Unique ID of Email. | Required | 
+| uuid | Unique ID of Email. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Darktrace.Action.resp | string | Status of the hold action. | 
+| Darktrace.Action.resp | string | Status of the hold action. |
 
 ### darktrace-email-release-email
 
 ***
-Apply "release" action to a specified Email. 
+Apply "release" action to a specified Email.
 
 #### Base Command
 
@@ -87,11 +86,11 @@ Apply "release" action to a specified Email.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | Unique ID of Email. | Required | 
-| recipient | Recipient of Email. Not required but speeds up the command. | Optional | 
+| uuid | Unique ID of Email. | Required |
+| recipient | Recipient of Email. Not required but speeds up the command. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Darktrace.Action.resp | string | Status of the release action. | 
+| Darktrace.Action.resp | string | Status of the release action. |

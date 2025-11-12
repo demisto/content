@@ -1,6 +1,6 @@
 Collects metrics for a time window and the top 20 incident types in that period. Creates a small CSV with four tables 1) All Incidents 2) Closed Incidents 3) Open Duration 4) SLA timer durations.  The time window is expected to be a complete month specified by the "firstday" and "lastday" arguments. If partial months are used, the  open durations and SLA metrics is the average of the last set of incidents found, while incident counts are incremented.
 
-The "slatimers" argument is a CSV list of  custom SLA timer fields to include in the metrics. 
+The "slatimers" argument is a CSV list of  custom SLA timer fields to include in the metrics.
 
        Example:  slatimers="customsla1,customsla2,customsla3"
 

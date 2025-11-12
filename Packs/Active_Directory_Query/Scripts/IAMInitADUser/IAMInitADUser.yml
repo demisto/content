@@ -80,7 +80,7 @@ tags:
 - active directory
 - Utility
 type: python
-dockerimage: demisto/py3-tools:1.0.0.114656
+dockerimage: demisto/py3-tools:1.0.0.4027705
 runas: DBotWeakRole
 tests:
 - Active Directory Test
@@ -95,3 +95,6 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
+- xsiam
+- edr

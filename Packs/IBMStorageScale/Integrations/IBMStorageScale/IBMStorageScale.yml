@@ -1,0 +1,134 @@
+category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: IBM Storage Scale
+  version: -1
+name: IBM Storage Scale
+display: IBM Storage Scale Beta
+description: |
+  Collects Command Line Interface (CLI) audit log records from IBM Storage Scale.
+detaileddescription: ''
+configuration:
+- name: server_url
+  display: Server URL
+  additionalinfo: The base URL of the IBM Storage Scale API server (e.g., https://192.168.1.100:443).
+  type: 0
+  required: true
+  section: Connect
+- name: credentials
+  display: Username
+  additionalinfo: Username and password for API access. The user should have the ProtocolAdmin role.
+  type: 9
+  required: true
+  section: Connect
+- name: isFetch
+  display: Fetch events
+  type: 8
+  required: false
+  section: Collect
+- name: max_fetch
+  display: Maximum number of events per fetch
+  additionalinfo: The maximum number of events to pull in a single fetch-events cycle.
+  defaultvalue: '10000'
+  type: 0
+  required: false
+  section: Collect
+- name: server_timezone
+  display: Server Timezone
+  additionalinfo: "Timezone of the IBM Storage Scale server. Accepts IANA names (e.g., 'UTC', 'America/New_York') or fixed offsets (e.g., '+03:00', '-0500', 'UTC-7'). Used to build time filters with the correct local time."
+  defaultvalue: UTC
+  type: 0
+  required: false
+  section: Collect
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  required: false
+  section: Connect
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  required: false
+  section: Connect
+fromversion: 6.8.0
+marketplaces:
+- marketplacev2
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/fastapi:0.116.1.4266494
+  isfetchevents: true
+  commands:
+  - name: ibm-storage-scale-get-events
+    description: Gets audit log events for interactive investigation. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
+    arguments:
+    - name: limit
+      default: true
+      defaultValue: 10
+      description: The maximum number of events to return.
+      required: false
+    - name: should_push_events
+      default: false
+      description: Indicates whether or not to push the collected events into XSIAM.
+      required: false
+    outputs:
+    - contextPath: IBMStorageScale.AuditLog.oid
+      description: The unique identifier for the audit record.
+      type: Number
+    - contextPath: IBMStorageScale.AuditLog.entryTime
+      description: The timestamp when the command was logged.
+      type: String
+    - contextPath: IBMStorageScale.AuditLog.user
+      description: The user who executed the command.
+      type: String
+    - contextPath: IBMStorageScale.AuditLog.command
+      description: The command that was executed.
+      type: String
+    - contextPath: IBMStorageScale.AuditLog.node
+      description: The node where the command was executed.
+      type: String
+    - contextPath: IBMStorageScale.AuditLog.returnCode
+      description: The return code of the command.
+      type: Number
+    - contextPath: IBMStorageScale.AuditLog.originator
+      description: The origin of the command (e.g., GUI, CLI).
+      type: String
+  - name: ibm-storage-scale-debug-connection
+    description: Provides comprehensive debugging information for troubleshooting the IBM Storage Scale integration. Please use this command only when instructed by support.
+    outputs:
+    - contextPath: IBMStorageScale.Debug.connection_status
+      description: Status of the connection to IBM Storage Scale API (success/failed).
+      type: String
+    - contextPath: IBMStorageScale.Debug.server_url
+      description: The configured server URL.
+      type: String
+    - contextPath: IBMStorageScale.Debug.api_endpoint
+      description: The API endpoint being used.
+      type: String
+    - contextPath: IBMStorageScale.Debug.current_time
+      description: Current timestamp when debug info was collected.
+      type: String
+    - contextPath: IBMStorageScale.Debug.last_run_info
+      description: Information from the last run object including fetch times and stored hashes.
+      type: Unknown
+    - contextPath: IBMStorageScale.Debug.time_filter_info
+      description: Time filtering information including constructed query parameters.
+      type: Unknown
+    - contextPath: IBMStorageScale.Debug.deduplication_info
+      description: Event deduplication statistics and configuration.
+      type: Unknown
+    - contextPath: IBMStorageScale.Debug.configuration
+      description: Integration configuration details (without sensitive data).
+      type: Unknown
+    - contextPath: IBMStorageScale.Debug.sample_api_response
+      description: Sample API response data for validation.
+      type: Unknown
+    - contextPath: IBMStorageScale.Debug.error_details
+      description: Error details if connection failed.
+      type: String
+beta: true
+tests:
+- No tests (auto formatted)

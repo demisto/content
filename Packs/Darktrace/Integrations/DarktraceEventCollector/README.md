@@ -5,7 +5,6 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure Darktrace Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL (e.g. <https://example.cloud.darktrace.com>) | REST API Endpoint of Darktrace server. | True |
@@ -15,7 +14,6 @@ This is the default integration for this content pack when configured by the Dat
 | Private API Token | Private token obtained by creating an API token pair on the /config configuration page. | True |
 | Max events per fetch | Maximum number of Darktrace model breaches to fetch at a time. | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Time to start fetching the first incidents. Limited to 1 Year.| False |
-
 
 ## Commands
 
@@ -35,10 +33,10 @@ Gets events from Darktrace Event Collector.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of events to return. Default is 10. | Optional | 
-| start_time | The start time by which to filter events. Date format will be the same as in the first_fetch parameter. | Optional | 
-| end_time | The end time by which to filter events. | Optional | 
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required | 
+| limit | The number of events to return. Default is 10. | Optional |
+| start_time | The start time by which to filter events. Date format will be the same as in the first_fetch parameter. | Optional |
+| end_time | The end time by which to filter events. | Optional |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required |
 
 #### Context Output
 

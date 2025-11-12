@@ -29,11 +29,11 @@ def parse_dict(d: dict[str, dict | list], depth: int):
     # "branches", resulting in their relation to the header to become unclear to the reader.
 
     for k in d:
-        if not isinstance(d[k], (dict, list)):
+        if not isinstance(d[k], dict | list):
             markdown += build_value_chain(k, d.get(k), depth + 1)
 
     for k in d:
-        if isinstance(d[k], (dict, list)):
+        if isinstance(d[k], dict | list):
             markdown += add_header(k, depth + 1)
             markdown += dict2md(d[k], depth + 1)
     return markdown
@@ -43,7 +43,7 @@ def parse_list(rawlist: list[str | dict | list | float], depth: int):
     markdown = ""
     default_header_value = "list"
     for value in rawlist:
-        if not isinstance(value, (dict, list)):
+        if not isinstance(value, dict | list):
             index = rawlist.index(value)
             item_depth = depth + 1  # since a header was added previously items should be idented one
             markdown += build_value_chain(index, value, item_depth)
@@ -116,7 +116,7 @@ def title_case(st: str):
 def generate_ansible_inventory(args: dict[str, Any], int_params: dict[str, Any], host_type: str = "local"):
     host_types = ["ssh", "winrm", "nxos", "ios", "local"]
     if host_type not in host_types:
-        raise ValueError("Invalid host type. Expected one of: %s" % host_types)
+        raise ValueError(f"Invalid host type. Expected one of: {host_types}")
 
     sshkey = ""
 
@@ -182,6 +182,15 @@ def generate_ansible_inventory(args: dict[str, Any], int_params: dict[str, Any],
                         new_host["ansible_become_user"] = int_params.get("become_user")
                     if int_params.get("become_password"):
                         new_host["ansible_become_pass"] = int_params.get("become_password")
+                    # If privilege escalation is enabled and no explicit become password is provided,
+                    # fall back to using the SSH password as documented in the integration helper text.
+                    # This only applies when password-based SSH authentication is used (ansible_password is set).
+                    if (
+                        new_host.get("ansible_become")
+                        and not int_params.get("become_password")
+                        and new_host.get("ansible_password")
+                    ):
+                        new_host["ansible_become_pass"] = new_host.get("ansible_password")
 
                 # ios specific
                 if host_type == "ios":
@@ -291,7 +300,7 @@ def generic_ansible(
         if arg_key == "ansible-module-host":
             arg_key = "host"
 
-        module_args += '%s="%s" ' % (arg_key, arg_value)
+        module_args += f'{arg_key}="{arg_value}" '
 
         # If this isn't host based, then all the integration params will be used as command args
     if host_type == "local":
@@ -299,13 +308,13 @@ def generic_ansible(
             # if given creds param and a cred mapping - use the naming mapping to correct the arg names
             if arg_key == "creds" and creds_mapping:
                 if arg_value.get("identifier") and "identifier" in creds_mapping:
-                    module_args += '%s="%s" ' % (creds_mapping.get("identifier"), arg_value.get("identifier"))
+                    module_args += f"{creds_mapping.get('identifier')}=\"{arg_value.get('identifier')}\" "
 
                 if arg_value.get("password") and "password" in creds_mapping:
-                    module_args += '%s="%s" ' % (creds_mapping.get("password"), arg_value.get("password"))
+                    module_args += f"{creds_mapping.get('password')}=\"{arg_value.get('password')}\" "
 
             else:
-                module_args += '%s="%s" ' % (arg_key, arg_value)
+                module_args += f'{arg_key}="{arg_value}" '
 
     r = ansible_runner.run(
         inventory=inventory,
@@ -351,10 +360,10 @@ def generic_ansible(
                 result = rec_ansible_key_strip(result)
 
                 if host != "localhost":
-                    readable_output += "# %s - %s\n" % (host, status)
+                    readable_output += f"# {host} - {status}\n"
                 else:
                     # This is integration is not host based
-                    readable_output += "# %s\n" % status
+                    readable_output += f"# {status}\n"
 
                 readable_output += dict2md(result)
 
@@ -369,10 +378,10 @@ def generic_ansible(
                 results.append(result)
             msg = ""
             if each_host_event["event"] == "runner_on_unreachable":
-                msg = "Host %s unreachable\nError Details: %s" % (host, result.get("msg"))
+                msg = f"Host {host} unreachable\nError Details: {result.get('msg')}"
 
             if each_host_event["event"] == "runner_on_failed":
-                msg = "Host %s failed running command\nError Details: %s" % (host, result.get("msg"))
+                msg = f"Host {host} failed running command\nError Details: {result.get('msg')}"
 
             if each_host_event["event"] in ["runner_on_failed", "runner_on_unreachable"]:
                 return_error(msg)

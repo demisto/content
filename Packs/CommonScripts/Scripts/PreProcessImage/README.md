@@ -37,7 +37,6 @@ Each action can also resize the image when given the width and height.
 
 ## Script Examples
 
-
 ### Example command
 
 ```!PreProcessImage action=sharpened file_entry_id=<file_entry_id_example> image_resize_height=1700```

@@ -1,5 +1,5 @@
 fromversion: 6.8.0
-id: fireeye_etp_ModelingRule
-name: FireEye ETP Modeling Rule
+id: Trellix_Email_Security_Cloud_ModelingRule
+name: Trellix Email Security Cloud Modeling Rule
 rules: ''
 schema: ''

@@ -73,7 +73,7 @@ def test_check_email_parts(mocker, email_part: str, args: dict):
 @pytest.mark.parametrize(
     "args",
     [
-        {"reset_conversation_history": True, "message": "Hi There!", "max_tokens": "100", "temperature": "0", "top_p": "1"},
+        {"reset_conversation_history": True, "message": "Hi There!", "max_tokens": "100", "temperature": "0.1", "top_p": "0.1"},
         {
             "reset_conversation_history": True,
             "message": "Hi There!",

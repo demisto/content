@@ -198,6 +198,8 @@ script:
     - contextPath: VisionOne.Endpoint_Connection.taskStatus
       description: 'The task status of isolate endpoint.'
       type: string
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: '"hostname", "macaddr" or "ip" of the endpoint to restore.'
       name: endpoint
@@ -724,7 +726,7 @@ script:
       type: string
     description: Updates the status of a workbench alert.
     name: trendmicro-visionone-update-status
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   isFetchSamples: true
   isfetch: true
   script: ''

@@ -59,8 +59,12 @@
                 "CybleEventsV2 URL": {
                     "simple": "url"
                 },
+                "CybleEventsV2 Status": {
+                    "simple": "cybleeventsv2status"
+                },
+
                 "dbotMirrorDirection": {
-                    "simple": ".='Out'"
+                    "simple": "\"Both\""
                 },
                 "dbotMirrorId": {
                     "simple": "event_id"

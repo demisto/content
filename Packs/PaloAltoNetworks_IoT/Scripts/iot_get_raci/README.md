@@ -103,6 +103,7 @@ Here is the template of the JSON:
 
 ---
 This script is used in the following playbooks and scripts.
+
 - PANW IoT Incident Handling with ServiceNow
 
 ## Inputs

@@ -15,7 +15,7 @@ EMAIL_HTML_NO_ALT = """
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"><style type="text/css" style="display:none">
 
-<!–
+<!-
 
 p
 
@@ -23,7 +23,7 @@ p
 
     margin-bottom:0}
 
-–>
+->
 
 </style></head>
 <body dir="ltr"><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
@@ -58,7 +58,7 @@ EXPECTED_RESULT_NO_ALT = """
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"><style type="text/css" style="display:none">
 
-<!–
+<!-
 
 p
 
@@ -66,7 +66,7 @@ p
 
     margin-bottom:0}
 
-–>
+->
 
 </style></head>
 <body dir="ltr"><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
@@ -117,7 +117,6 @@ def test_create_email_html_saas(mocker):
     Then
     - The images' src attribute would be replaced as expected with a prefix of xsoar.
     """
-    import CommonServerPython
 
     from DisplayEmailHtml import create_email_html
 

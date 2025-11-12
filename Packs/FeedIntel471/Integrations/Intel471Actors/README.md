@@ -1,8 +1,8 @@
 "Intel 471's Actors feed is an actor-centric intelligence feature.
 It combines both a field-based intelligence collection and a headquartered-based intelligence analysis component.
 This feed allows getting data out of closed sources (typically referred to as the deep and dark web) where threat actors collaborate, communicate, and plan cyber attacks."
-## Configure Intel471 Actors Feed in Cortex
 
+## Configure Intel471 Actors Feed in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -22,32 +22,35 @@ This feed allows getting data out of closed sources (typically referred to as th
 | insecure | Trust any certificate \(not secure\) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### intel471-actors-get-indicators
+
 ***
 Gets the feed indicators.
-
 
 #### Base Command
 
 `intel471-actors-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. Default is 50. | Optional | 
-
+| limit | The maximum number of results to return. Default is 50. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!intel471-actors-get-indicators limit=10```
 
-
 >### Indicators
+>
 >|value|type|rawJSON|
 >|---|---|---|
 >| h.m.15 | STIX Threat Actor | lastUpdated: 1611219975088<br/>handles: h.m.15<br/>links: {"forums": [{"name": "unknowncheats", "actorHandle": "h.m.15", "uid": "4671aeaf49c792689533b00664a5c3ef"}], "forumTotalCount": 1, "instantMessageChannelTotalCount": 0, "forumPrivateMessageTotalCount": 0, "reportTotalCount": 0, "instantMessageTotalCount": 0, "instantMessageServerTotalCount": 0, "forumPostTotalCount": 1}<br/>activeFrom: 1078774740000<br/>activeUntil: 1078774740000<br/>uid: 7d1da0f4f0b26f3fb777fdd662c5cc68 |

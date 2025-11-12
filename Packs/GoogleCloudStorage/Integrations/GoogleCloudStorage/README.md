@@ -992,7 +992,6 @@
 <h5>Human Readable Output</h5>
 <p>File was successfully copied to bucket "another-bucket" as /some/path/my_file.txt</p>
 
-
 <h3>17. Use public access prevention</h3>
 <hr>
 <p>Blocks public access to a specified Google Cloud Storage bucket by enabling public access prevention, ensuring only authorized users can access the bucket.</h3>
@@ -1027,3 +1026,22 @@
 <pre>gcs-block-public-access-bucket source_bucket_name="my-bucket" public_access_prevention="enforced"</pre>
 <h5>Human Readable Output</h5>
 <p>Public access prevention is set to enforced for my-bucket.</p>
+### gcs-delete-file
+
+***
+Deletes a file (object) from a bucket.
+
+#### Base Command
+
+`gcs-delete-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_name | Name of the file to delete. | Required |
+| bucket_name | Name of the bucket that stores the file to delete. | Optional |
+
+#### Context Output
+
+There is no context output for this command.

@@ -13,3 +13,6 @@ ignore=GR103
 
 [file:NetskopeAPIv2.yml]
 ignore=IN136
+
+[file:NetskopeEventCollector_v2.yml]
+ignore=BA108,BA109

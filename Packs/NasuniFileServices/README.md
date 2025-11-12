@@ -37,13 +37,15 @@ To create or configure the Broker VM, use the information described [here](https
 
 You can configure the specific vendor and product for this instance.
 
-1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**. 
+1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**.
 2. Go to the apps tab and add the **Syslog** app. If it already exists, click the **Syslog** app and then click **Configure**.
 3. Click **Add New**.
-4. When configuring the Syslog Collector, set the following values **(not relevant for CEF and LEEF formats)**:
+
+4. When configuring the Syslog Collector, set the following values **(not relevant for CEF and LEEF formats)**
     -----------------------------------------------------------------------------------------------------------------------------------------------------------
+
     | Parameter: :            | Value :                                                                                                                       |
-    |-------------------------|-------------------------------------------------------------------------------------------------------------------------------|                 
+    |-------------------------|-------------------------------------------------------------------------------------------------------------------------------|
     | `Protocol`              | Select **UDP**                                                                                                                |
     | `Port`                  | Enter the port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from NMC                           |
     | `Vendor`                | Enter `nasuni`                                                                                                                |

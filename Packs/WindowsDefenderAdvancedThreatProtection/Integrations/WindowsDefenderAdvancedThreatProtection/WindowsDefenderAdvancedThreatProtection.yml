@@ -53,14 +53,14 @@ script:
   commands:
   - arguments:
     - default: true
-      description: Machine ID to be used for isolation. e.g. 0a3250e0693a109f1affc9217be9459028aa8426
+      description: Machine ID to be used for isolation. e.g. 0a3250e0693a109f1affc9217be9459028aa8426.
       name: machine_id
       required: true
     - description: Comment to associate with the action.
       name: comment
       required: true
     - auto: PREDEFINED
-      description: Full isolation or selective isolation (Restrict only limited set of applications from accessing the network)
+      description: Full isolation or selective isolation (Restrict only limited set of applications from accessing the network).
       name: isolation_type
       predefined:
       - Full
@@ -71,124 +71,128 @@ script:
     name: microsoft-atp-isolate-machine
     outputs:
     - contextPath: MicrosoftATP.Machine.Isolation.Requestor
-      description: Machine isolation requestor
+      description: Machine isolation requestor.
       type: string
     - contextPath: MicrosoftATP.Machine.Isolation.RequestorComment
-      description: Machine isolation requestor comment
+      description: Machine isolation requestor comment.
       type: string
     - contextPath: MicrosoftATP.Machine.ID
-      description: Machine ID
+      description: Machine ID.
       type: string
     - contextPath: MicrosoftATP.Machine.Isolation.Isolated
-      description: True if machine is isolated, else false
+      description: True if machine is isolated, else false.
       type: boolean
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
-    - description: Machine ID to be used to stop the isolation. e.g. 0a3250e0693a109f1affc9217be9459028aa8426
+    - description: Machine ID to be used to stop the isolation. e.g. 0a3250e0693a109f1affc9217be9459028aa8426.
       name: machine_id
       required: true
     - description: Comment to associate with the action.
       name: comment
       required: true
     deprecated: true
-    description: Undo an isolation of a machine
+    description: Undo an isolation of a machine.
     name: microsoft-atp-unisolate-machine
     outputs:
     - contextPath: MicrosoftATP.Machine.Isolation.Requestor
-      description: Machine un-isolation requestor
+      description: Machine un-isolation requestor.
       type: string
     - contextPath: MicrosoftATP.Machine.Isolation.RequestorComment
-      description: Machine un-isolation requestor comment
+      description: Machine un-isolation requestor comment.
       type: string
     - contextPath: MicrosoftATP.Machine.ID
-      description: Machine ID
+      description: Machine ID.
       type: Unknown
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
-    - description: Computer DNS name
+    - description: Computer DNS name.
       name: hostname
-    - description: Machine last external IP address
+    - description: Machine last external IP address.
       name: ip
     - auto: PREDEFINED
-      description: Machine risk score
+      description: Machine risk score.
       name: risk_score
       predefined:
       - Low
       - Medium
       - High
     - auto: PREDEFINED
-      description: Machine health status
+      description: Machine health status.
       name: health_status
       predefined:
       - Active
       - Inactive
     deprecated: true
-    description: Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
+    description: Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days.
     name: microsoft-atp-get-machines
     outputs:
     - contextPath: MicrosoftATP.Machine.ID
-      description: Machine ID
+      description: Machine ID.
       type: string
     - contextPath: MicrosoftATP.Machine.ComputerDNSName
-      description: Machine DNS name
+      description: Machine DNS name.
       type: string
     - contextPath: MicrosoftATP.Machine.AgentVersion
-      description: Machine agent version
+      description: Machine agent version.
       type: string
     - contextPath: MicrosoftATP.Machine.FirstSeen
-      description: Machine first seen date
+      description: Machine first seen date.
       type: date
     - contextPath: MicrosoftATP.Machine.LastSeen
-      description: Machine last seen date
+      description: Machine last seen date.
       type: string
     - contextPath: MicrosoftATP.Machine.HelathStatus
-      description: Machine health status
+      description: Machine health status.
       type: string
     - contextPath: MicrosoftATP.Machine.IsAADJoined
-      description: True if machine is AAD joined, else false
+      description: True if machine is AAD joined, else false.
       type: boolean
     - contextPath: MicrosoftATP.Machine.LastExternalIPAddress
-      description: Machine last external IP address
+      description: Machine last external IP address.
       type: string
     - contextPath: MicrosoftATP.Machine.LastIPAddress
-      description: Machine last IP address
+      description: Machine last IP address.
       type: string
     - contextPath: MicrosoftATP.Machine.Tags
-      description: Machine tags
+      description: Machine tags.
       type: string
     - contextPath: MicrosoftATP.Machine.OSBuild
-      description: Machine OS build
+      description: Machine OS build.
       type: number
     - contextPath: MicrosoftATP.Machine.OSPlatform
-      description: Machine OS platform
+      description: Machine OS platform.
       type: string
     - contextPath: MicrosoftATP.Machine.RBACGroupID
-      description: Machine RBAC group ID
+      description: Machine RBAC group ID.
       type: string
     - contextPath: MicrosoftATP.Machine.RiskScore
-      description: Machine risk score
+      description: Machine risk score.
       type: string
     - contextPath: MicrosoftATP.Machine.RBACGroupName
-      description: Machine RBAC group name
+      description: Machine RBAC group name.
       type: string
     - contextPath: MicrosoftATP.Machine.AADDeviceID
-      description: Machine AAD device ID
+      description: Machine AAD device ID.
       type: string
     - contextPath: MicrosoftATP.Machine.OSVersion
-      description: Machine OS version
+      description: Machine OS version.
       type: string
     - contextPath: Endpoint.Hostname
-      description: Machine DNS name
+      description: Machine DNS name.
       type: string
     - contextPath: Endpoint.IPAddress
-      description: Machine last IP address
+      description: Machine last IP address.
       type: string
     - contextPath: Endpoint.OS
-      description: Machine OS platform
+      description: Machine OS platform.
       type: string
     - contextPath: Endpoint.OSVersion
-      description: Machine OS version
+      description: Machine OS version.
       type: string
   - arguments:
-    - description: File hash to get machines related to
+    - description: File hash to get machines related to.
       name: file
       required: true
     deprecated: true
@@ -196,74 +200,74 @@ script:
     name: microsoft-atp-get-file-related-machines
     outputs:
     - contextPath: MicrosoftATP.Machine.ID
-      description: Machine ID
+      description: Machine ID.
       type: string
     - contextPath: MicrosoftATP.Machine.ComputerDNSName
-      description: Machine DNS name
+      description: Machine DNS name.
       type: string
     - contextPath: MicrosoftATP.Machine.AgentVersion
-      description: Machine agent version
+      description: Machine agent version.
       type: string
     - contextPath: MicrosoftATP.Machine.FirstSeen
-      description: Machine first seen date
+      description: Machine first seen date.
       type: date
     - contextPath: MicrosoftATP.Machine.LastSeen
-      description: Machine last seen date
+      description: Machine last seen date.
       type: string
     - contextPath: MicrosoftATP.Machine.HelathStatus
-      description: Machine health status
+      description: Machine health status.
       type: string
     - contextPath: MicrosoftATP.Machine.IsAADJoined
-      description: True if machine is AAD joined, else false
+      description: True if machine is AAD joined, else false.
       type: boolean
     - contextPath: MicrosoftATP.Machine.LastExternalIPAddress
-      description: Machine last external IP address
+      description: Machine last external IP address.
       type: string
     - contextPath: MicrosoftATP.Machine.LastIPAddress
-      description: Machine last IP address
+      description: Machine last IP address.
       type: string
     - contextPath: MicrosoftATP.Machine.Tags
-      description: Machine tags
+      description: Machine tags.
       type: string
     - contextPath: MicrosoftATP.Machine.OSBuild
-      description: Machine OS build
+      description: Machine OS build.
       type: number
     - contextPath: MicrosoftATP.Machine.OSPlatform
-      description: Machine OS platform
+      description: Machine OS platform.
       type: string
     - contextPath: MicrosoftATP.Machine.RBACGroupID
-      description: Machine RBAC group ID
+      description: Machine RBAC group ID.
       type: string
     - contextPath: MicrosoftATP.Machine.RiskScore
-      description: Machine risk score
+      description: Machine risk score.
       type: string
     - contextPath: MicrosoftATP.Machine.RBACGroupName
-      description: Machine RBAC group name
+      description: Machine RBAC group name.
       type: string
     - contextPath: MicrosoftATP.Machine.AADDeviceID
-      description: Machine AAD device ID
+      description: Machine AAD device ID.
       type: string
     - contextPath: MicrosoftATP.Machine.OSVersion
-      description: Machine OS version
+      description: Machine OS version.
       type: string
     - contextPath: Endpoint.Hostname
-      description: Machine DNS name
+      description: Machine DNS name.
       type: string
     - contextPath: Endpoint.IPAddress
-      description: Machine last IP address
+      description: Machine last IP address.
       type: string
     - contextPath: Endpoint.OS
-      description: Machine OS platform
+      description: Machine OS platform.
       type: string
     - contextPath: Endpoint.OSVersion
-      description: Machine OS version
+      description: Machine OS version.
       type: string
     - contextPath: MicrosoftATP.Machine.RelatedFile
-      description: Machine related file hash
+      description: Machine related file hash.
       type: string
   - arguments:
     - default: true
-      description: Machine id to be used for getting the machine details, e.g. 0a3250e0693a109f1affc9217be9459028aa8426
+      description: Machine id to be used for getting the machine details, e.g. 0a3250e0693a109f1affc9217be9459028aa8426.
       name: machine_id
       required: true
     deprecated: true
@@ -271,88 +275,88 @@ script:
     name: microsoft-atp-get-machine-details
     outputs:
     - contextPath: MicrosoftATP.Machine.ID
-      description: Machine ID
+      description: Machine ID.
       type: string
     - contextPath: MicrosoftATP.Machine.ComputerDNSName
-      description: Machine DNS name
+      description: Machine DNS name.
       type: string
     - contextPath: MicrosoftATP.Machine.AgentVersion
-      description: Machine agent version
+      description: Machine agent version.
       type: string
     - contextPath: MicrosoftATP.Machine.FirstSeen
-      description: Machine first seen date
+      description: Machine first seen date.
       type: date
     - contextPath: MicrosoftATP.Machine.LastSeen
-      description: Machine last seen date
+      description: Machine last seen date.
       type: string
     - contextPath: MicrosoftATP.Machine.HelathStatus
-      description: Machine health status
+      description: Machine health status.
       type: string
     - contextPath: MicrosoftATP.Machine.IsAADJoined
-      description: True if machine is AAD joined, else false
+      description: True if machine is AAD joined, else false.
       type: boolean
     - contextPath: MicrosoftATP.Machine.LastExternalIPAddress
-      description: Machine last external IP address
+      description: Machine last external IP address.
       type: string
     - contextPath: MicrosoftATP.Machine.LastIPAddress
-      description: Machine last IP address
+      description: Machine last IP address.
       type: string
     - contextPath: MicrosoftATP.Machine.Tags
-      description: Machine tags
+      description: Machine tags.
       type: string
     - contextPath: MicrosoftATP.Machine.OSBuild
-      description: Machine OS build
+      description: Machine OS build.
       type: number
     - contextPath: MicrosoftATP.Machine.OSPlatform
-      description: Machine OS platform
+      description: Machine OS platform.
       type: string
     - contextPath: MicrosoftATP.Machine.RBACGroupID
-      description: Machine RBAC group ID
+      description: Machine RBAC group ID.
       type: string
     - contextPath: MicrosoftATP.Machine.RiskScore
-      description: Machine risk score
+      description: Machine risk score.
       type: string
     - contextPath: MicrosoftATP.Machine.RBACGroupName
-      description: Machine RBAC group name
+      description: Machine RBAC group name.
       type: string
     - contextPath: MicrosoftATP.Machine.AADDeviceID
-      description: Machine AAD device ID
+      description: Machine AAD device ID.
       type: string
     - contextPath: MicrosoftATP.Machine.OSVersion
-      description: Machine OS version
+      description: Machine OS version.
       type: string
     - contextPath: Endpoint.Hostname
-      description: Machine DNS name
+      description: Machine DNS name.
       type: string
     - contextPath: Endpoint.IPAddress
-      description: Machine last IP address
+      description: Machine last IP address.
       type: string
     - contextPath: Endpoint.OS
-      description: Machine OS platform
+      description: Machine OS platform.
       type: string
     - contextPath: Endpoint.OSVersion
-      description: Machine OS version
+      description: Machine OS version.
       type: string
   - arguments:
-    - description: Machine ID to run the scan on
+    - description: Machine ID to run the scan on.
       name: machine_id
       required: true
-    - description: Comment to associate with the action
+    - description: Comment to associate with the action.
       name: comment
       required: true
     - auto: PREDEFINED
-      description: Defines the type of the scan
+      description: Defines the type of the scan.
       name: scan_type
       predefined:
       - Quick
       - Full
       required: true
     deprecated: true
-    description: Initiate Windows Defender Antivirus scan on a machine
+    description: Initiate Windows Defender Antivirus scan on a machine.
     name: microsoft-atp-run-antivirus-scan
   - arguments:
     - auto: PREDEFINED
-      description: Alert severity
+      description: Alert severity.
       name: severity
       predefined:
       - High
@@ -360,7 +364,7 @@ script:
       - Low
       - Informational
     - auto: PREDEFINED
-      description: Alert status
+      description: Alert status.
       name: status
       predefined:
       - New
@@ -371,66 +375,66 @@ script:
     name: microsoft-atp-list-alerts
     outputs:
     - contextPath: MicrosoftATP.Alert.DetectionSource
-      description: Alert detection source
+      description: Alert detection source.
       type: string
     - contextPath: MicrosoftATP.Alert.MachineID
-      description: Alert machine ID
+      description: Alert machine ID.
       type: string
     - contextPath: MicrosoftATP.Alert.Classification
-      description: Alert classification
+      description: Alert classification.
       type: string
     - contextPath: MicrosoftATP.Alert.AlertCreationTime
-      description: Alert creation time
+      description: Alert creation time.
       type: date
     - contextPath: MicrosoftATP.Alert.RecommendedAction
-      description: Alert recommended action
+      description: Alert recommended action.
       type: string
     - contextPath: MicrosoftATP.Alert.LastEventTime
-      description: Alert last event time
+      description: Alert last event time.
       type: date
     - contextPath: MicrosoftATP.Alert.Status
-      description: Alert status
+      description: Alert status.
       type: string
     - contextPath: MicrosoftATP.Alert.FirstEventTime
-      description: Alert first event time
+      description: Alert first event time.
       type: string
     - contextPath: MicrosoftATP.Alert.Title
-      description: Alert title
+      description: Alert title.
       type: string
     - contextPath: MicrosoftATP.Alert.ID
-      description: Alert ID
+      description: Alert ID.
       type: string
     - contextPath: MicrosoftATP.Alert.Description
-      description: Alert description
+      description: Alert description.
       type: string
     - contextPath: MicrosoftATP.Alert.Severity
-      description: Alert severity
+      description: Alert severity.
       type: string
     - contextPath: MicrosoftATP.Alert.Category
-      description: Alert category
+      description: Alert category.
       type: string
   - arguments:
-    - description: Alert ID to update
+    - description: Alert ID to update.
       name: alert_id
       required: true
     - auto: PREDEFINED
-      description: Alert status to update
+      description: Alert status to update.
       name: status
       predefined:
       - New
       - InProgress
       - Resolved
-    - description: Owner of the alert
+    - description: Owner of the alert.
       name: assigned_to
     - auto: PREDEFINED
-      description: Specifies the specification of the alert
+      description: Specifies the specification of the alert.
       name: classification
       predefined:
       - Unknown
       - FalsePositive
       - TruePositive
     - auto: PREDEFINED
-      description: Specifies the determination of the alert
+      description: Specifies the determination of the alert.
       name: determination
       predefined:
       - NotAvailable
@@ -441,20 +445,20 @@ script:
       - UnwantedSoftware
       - Other
     deprecated: true
-    description: Update the properties of an alert entity
+    description: Update the properties of an alert entity.
     name: microsoft-atp-update-alert
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
-      description: Alert ID
+      description: Alert ID.
       type: string
     - contextPath: MicrosoftATP.Alert.Status
-      description: Alert status
+      description: Alert status.
       type: string
     - contextPath: MicrosoftATP.Alert.Classification
-      description: Alert classification
+      description: Alert classification.
       type: string
     - contextPath: MicrosoftATP.Alert.Determination
-      description: Alert determination
+      description: Alert determination.
       type: string
   - arguments:
     - default: true
@@ -462,7 +466,7 @@ script:
       name: query
       required: true
     deprecated: true
-    description: 'Allows you to run programmatic queries like in Windows Defender ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can only run a query on data from the last 30 days, The results will include a maximum of 10,000 rows, The number of executions is limited (up to 15 calls per minute, 15 minutes of running time every hour and 4 hours of running time a day)'
+    description: 'Allows you to run programmatic queries like in Windows Defender ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can only run a query on data from the last 30 days, The results will include a maximum of 10,000 rows, The number of executions is limited (up to 15 calls per minute, 15 minutes of running time every hour and 4 hours of running time a day).'
     name: microsoft-atp-advanced-hunting
     outputs:
     - contextPath: MicrosoftATP.Hunt.Result
@@ -536,34 +540,34 @@ script:
     name: microsoft-atp-create-alert
     outputs:
     - contextPath: MicrosoftATP.Alert.MachineID
-      description: Alert machine ID
+      description: Alert machine ID.
       type: string
     - contextPath: MicrosoftATP.Alert.RecommendedAction
-      description: Alert recommended action
+      description: Alert recommended action.
       type: string
     - contextPath: MicrosoftATP.Alert.Title
-      description: Alert title
+      description: Alert title.
       type: string
     - contextPath: MicrosoftATP.Alert.Description
-      description: Alert description
+      description: Alert description.
       type: string
     - contextPath: MicrosoftATP.Alert.Severity
-      description: Alert severity
+      description: Alert severity.
       type: string
     - contextPath: MicrosoftATP.Alert.Category
-      description: Alert category
+      description: Alert category.
       type: string
     - contextPath: MicrosoftATP.Alert.ReportID
-      description: Alert report ID
+      description: Alert report ID.
       type: string
     - contextPath: MicrosoftATP.Alert.EventTime
-      description: Event time of the alert, as created by the user
+      description: Event time of the alert, as created by the user.
       type: date
     - contextPath: MicrosoftATP.Alert.ID
       description: ID of the created alert.
       type: string
     - contextPath: MicrosoftATP.Alert.Status
-      description: Status of the alert
+      description: Status of the alert.
       type: string
   - arguments:
     - description: ID of the alert.
@@ -600,7 +604,7 @@ script:
     - contextPath: MicrosoftATP.User.NetworkUser
       description: Flag for network user only - set to true if related user is only network user.
       type: boolean
-  dockerimage: demisto/crypto:1.0.0.11287
+  dockerimage: demisto/crypto:1.0.0.3539024
   isfetch: true
   script: '-'
   type: python
@@ -610,3 +614,10 @@ tests:
 - No Tests - Deprected (Test - Windows Defender Advanced Threat Protection is in NonCircleTests directory)
 
 fromversion: 5.0.0
+supportedModules:
+- X5
+- ENT_PLUS
+- X3
+- X1
+- xsiam
+- agentix

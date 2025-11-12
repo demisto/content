@@ -11,18 +11,18 @@ SECRETS_INSTANCE_URL_SUFFIX = "/instance/execute/GenericWebhook_Secrets"
 
 
 def arguments_handler():
-    """ Validates and parses script arguments.
+    """Validates and parses script arguments.
 
-     Returns:
-        Namespace: Parsed arguments object.
+    Returns:
+       Namespace: Parsed arguments object.
 
-     """
-    parser = argparse.ArgumentParser(description='Run secrets detection.')
-    parser.add_argument('-p', '--pr_number', help='The PR number to check if it includes secrets.')
-    parser.add_argument('-b', '--branch_name', help='The branch name.')
-    parser.add_argument('-u', '--username', help='The instance username.')
-    parser.add_argument('-s', '--password', help='The instance password.')
-    parser.add_argument('-gs', '--gold_server_url', help='The content gold instance url.')
+    """
+    parser = argparse.ArgumentParser(description="Run secrets detection.")
+    parser.add_argument("-p", "--pr_number", help="The PR number to check if it includes secrets.")
+    parser.add_argument("-b", "--branch_name", help="The branch name.")
+    parser.add_argument("-u", "--username", help="The instance username.")
+    parser.add_argument("-s", "--password", help="The instance password.")
+    parser.add_argument("-gs", "--gold_server_url", help="The content gold instance url.")
     return parser.parse_args()
 
 
@@ -43,14 +43,15 @@ def trigger_generic_webhook(options):
 
     if res.status_code != 200:
         raise ConnectionError(
-            f"Secrets detection playbook was failed. Post request to Content Gold has status code of {res.status_code}")
+            f"Secrets detection playbook was failed. Post request to Content Gold has status code of {res.status_code}"
+        )
 
     res_json = res.json()
     if res_json and isinstance(res_json, list):
         res_json_response_data = res.json()[0]
         if res_json_response_data:
             investigation_id = res_json_response_data.get("id")
-            print(investigation_id)
+            print(investigation_id)  # noqa: T201
             return
 
     raise Exception("Secrets detection playbook has failed")

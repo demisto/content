@@ -1,7 +1,31 @@
 BeforeAll {
     . $PSScriptRoot\demistomock.ps1
     . $PSScriptRoot\SecurityAndComplianceV2.ps1
-}
+    
+        class MockClient {
+            [psobject] NewSearch($name, $param2, $kql, $description, $bool1, $locations, $p1, $p2, $p3, $errAction) {
+                return @{ Name = $name; Status = "NotStarted"}
+            }
+    
+            [void] StartSearch($name) {
+                $script:SearchStarted = $true
+            }
+    
+            [psobject] GetSearch($name) {
+                return @{ Name = $name; Status = "Completed"; Items = 2 }
+            }
+    
+            [psobject] GetSearchAction($name, $errAction) {
+                return $null
+            }
+    
+            [psobject] NewSearchAction($a, $b, $c, $d, $e, $f, $g, $h, $i, $j) {
+                return @{ Status = "Starting" }
+            }
+        }
+        $mockClient = [MockClient]::new()
+    }    
+
 
 Describe 'StringRegexParse' {
     Context "SuccesResults" {
@@ -162,4 +186,81 @@ Describe 'StringRegexParse' {
             }
         }
     }
+}
+
+Describe 'GetShortHash' {
+    Context "Hashing basics" {
+        It "Returns a hash of the requested length" {
+            $input = "hello world"
+            $length = 12
+            $hash = GetShortHash $input $length
+
+            $hash.Length | Should -Be $length
+        }
+        It "Returns the same hash for the same input" {
+            $input = "repeatable"
+            $hash1 = GetShortHash $input
+            $hash2 = GetShortHash $input
+
+            $hash1 | Should -Be $hash2
+        }
+        It "Returns different hashes for different input" {
+            $input1 = "input one"
+            $input2 = "input two"
+            $hash1 = GetShortHash $input1
+            $hash2 = GetShortHash $input2
+
+            $hash1 | Should -Not -Be $hash2
+        }
+    }
+}
+
+Describe 'MakeSearchName' {
+    Context "Override name is provided" {
+        It "Returns the override name directly" {
+            $result = MakeSearchName "<abc@domain.com>" @("Mailbox1") "CustomName"
+            $result | Should -Be "CustomName"
+        }
+    }
+
+    Context "ExchangeLocation is 'All'" {
+        It "Strips angle brackets and returns only base name" {
+            $result = MakeSearchName "<abc@domain.com>" @("All","Mailbox1")
+            $result | Should -Be "abc@domain.com"
+        }
+    }
+
+    Context "ExchangeLocation is a specific mailbox or list" {
+        It "Returns different hashes for different locations" {
+            $name1 = MakeSearchName "<abc@domain.com>" @("Mailbox1")
+            $name2 = MakeSearchName "<abc@domain.com>" @("Mailbox2")
+
+            $name1 | Should -Not -Be $name2
+        }
+        It "Returns same hash for same location input order" {
+            $name1 = MakeSearchName "<abc@domain.com>" @("Mailbox1", "Mailbox2")
+            $name2 = MakeSearchName "<abc@domain.com>" @("Mailbox1", "Mailbox2")
+
+            $name1 | Should -Be $name2
+        }
+    }
+}
+
+Describe 'SearchAndDeleteEmailCommand' {
+    Context "Initial run - search creation" {
+        It "Creates and starts a new search" {
+            $kwargs = @{
+                polling_first_run = $true
+                force = $false
+                internet_message_id = "<abc@domain.com>"
+                exchange_location = @("All")
+            }
+
+            $result = SearchAndDeleteEmailCommand -client $mockClient -kwargs $kwargs
+
+            $result[2].Name | Should -Match "abc@domain.com"
+            $result[3].search_name | Should -Be $result[2].Name
+        }
+    }
+
 }

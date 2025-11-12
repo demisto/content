@@ -1,57 +1,86 @@
 {
     "Domain(val.Name && val.Name == obj.Name)": [
         {
-            "Name": "dummy.com",
+            "Name": "dummy_domain.com",
             "Malicious": {
                 "Vendor": "Ignite",
                 "Description": "Found in malicious indicators dataset"
             },
             "Relationships": [
                 {
-                    "Relationship": "indicator-of",
-                    "EntityA": "dummy.com",
+                    "Relationship": "related-to",
+                    "EntityA": "dummy_domain.com",
                     "EntityAType": "Domain",
-                    "EntityB": "T1001",
-                    "EntityBType": "Attack Pattern"
+                    "EntityB": "dummy_value",
+                    "EntityBType": "File"
                 }
             ]
         }
     ],
     "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
         {
-            "Indicator": "dummy.com",
+            "Indicator": "dummy_domain.com",
             "Type": "domain",
             "Vendor": "Ignite",
             "Score": 3,
             "Reliability": "B - Usually reliable"
         }
     ],
-    "Ignite.Domain.Event(val.Fpid && val.Fpid == obj.Fpid)": [
-        {
-            "Domain": "dummy.com",
-            "Category": "Network activity",
-            "Fpid": "0000000000000000000001",
-            "Href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/0000000000000000000001",
-            "Timestamp": "1627526875",
-            "Type": "domain",
-            "Uuid": "00000000-0000-0000-0000-000000000001",
-            "EventDetails": {
-                "Tags": [
-                    "actor:APT",
-                    "actor:Lazarus",
-                    "event:observation",
-                    "source:osint"
+    "Ignite.Domain(val.id && val.id == obj.id)": {
+        "apt_description": "N/A",
+        "created_at": "2025-01-01T01:00:00.000000",
+        "entity_type": "indicator",
+        "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id",
+        "id": "dummy_id",
+        "last_seen_at": "2025-01-02T01:00:00.000000",
+        "latest_sighting": {
+            "related_iocs": [
+                {
+                    "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id_2",
+                    "id": "dummy_id_2",
+                    "type": "file",
+                    "value": "dummy_value"
+                }
+            ],
+            "sighted_at": "2025-01-01T01:00:00.000000",
+            "source": "flashpoint_extraction",
+            "tags": [
+                "extracted_config:true",
+                "malware:xworm",
+                "source:flashpoint_extraction"
+            ]
+        },
+        "malware_description": "<p>This is dummy description.</p>",
+        "modified_at": "2025-01-02T01:00:00.000000",
+        "platform_urls": {
+            "ignite": "https://mock_dummy.com/cti/malware/iocs/dummy_id"
+        },
+        "score": {
+            "last_scored_at": "2025-01-02T01:00:00.000000",
+            "value": "malicious"
+        },
+        "sightings": [
+            {
+                "related_iocs": [
+                    {
+                        "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id_3",
+                        "id": "dummy_id_3",
+                        "type": "file",
+                        "value": "dummy_value"
+                    }
                 ],
-                "attack_ids": [
-                    "T1001"
-                ],
-                "event_uuid": "00000000-0000-0000-0000-000000000001",
-                "fpid": "0000000000000000000001",
-                "href": "https://api.flashpoint.io/technical-intelligence/v1/event/0000000000000000000001",
-                "info": "Observation: APT Lazarus Reported IOCs [2021-07-28 21:10:34]",
-                "timestamp": "1627527286"
-            },
-            "Comment": ""
-        }
-    ]
+                "sighted_at": "2025-01-02T01:00:00.000000",
+                "source": "flashpoint_extraction",
+                "tags": [
+                    "extracted_config:true",
+                    "malware:xworm",
+                    "source:flashpoint_extraction"
+                ]
+            }
+        ],
+        "sort_date": "2025-01-01T01:00:00.000000",
+        "total_sightings": 1,
+        "type": "domain",
+        "value": "dummy_domain.com"
+    }
 }

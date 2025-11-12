@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -745,7 +745,7 @@ script:
       description: The comment's creation time.
       type: Date
   - deprecated: true
-    description: Deprecated. Use the Azure Active Directory Users integration instead.
+    description: Deprecated. Use the Entra ID Users integration instead.
     name: msg-get-users
     outputs:
     - contextPath: MsGraph.User.Email
@@ -766,7 +766,7 @@ script:
       name: user_id
       required: true
     deprecated: true
-    description: Deprecated. Use the Azure Active Directory Users integration instead.
+    description: Deprecated. Use the Entra ID Users integration instead.
     name: msg-get-user
     outputs:
     - contextPath: MsGraph.User.Email
@@ -2256,7 +2256,7 @@ script:
     - contextPath: MsGraph.Incident.systemTags
       description: The system tags associated with the incident.
       type: String collection
-  dockerimage: demisto/crypto:1.0.0.3174650
+  dockerimage: demisto/crypto:1.0.0.4834757
   isfetch: true
   runonce: false
   script: '-'

@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -162,7 +162,7 @@ script:
       description: Count of entries.
       type: number
     description: Retrieves indicators from Threat Vault.
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   feed: true
   runonce: false
   subtype: python3

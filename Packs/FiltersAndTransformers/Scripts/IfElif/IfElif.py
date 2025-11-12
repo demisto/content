@@ -80,7 +80,7 @@ class ConditionParser:
             self.comparison_operators = {k: to_deep_search(v) for k, v in self.comparison_operators.items()}
 
     def load_conditions(self, conditions):
-        conditions = re.sub("#{([\s\S]+?)}", r" from_context('\1')", conditions)
+        conditions = re.sub(r"#{([\s\S]+?)}", r" from_context('\1')", conditions)
         try:
             self.conditions = self.evaluate(conditions)
         except SyntaxError as e:

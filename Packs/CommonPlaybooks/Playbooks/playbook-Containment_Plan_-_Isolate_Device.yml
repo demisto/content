@@ -215,9 +215,6 @@ tasks:
       value:
         complex:
           root: Core.Endpoint
-          accessor: endpoint_id
-          transformers:
-          - operator: uniq
           filters:
           - - operator: isNotEqualString
               left:
@@ -228,7 +225,7 @@ tasks:
                 value:
                   simple: DISCONNECTED
               ignorecase: true
-          - - operator: isEqualString
+          - - operator: containsGeneral
               left:
                 value:
                   simple: Core.Endpoint.is_isolated
@@ -237,7 +234,7 @@ tasks:
                 value:
                   simple: AGENT_UNISOLATED
               ignorecase: true
-          - - operator: isEqualString
+          - - operator: containsGeneral
               left:
                 value:
                   simple: Core.Endpoint.endpoint_type
@@ -246,6 +243,9 @@ tasks:
                 value:
                   simple: WORKSTATION
               ignorecase: true
+          accessor: endpoint_id
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -501,7 +501,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               complex:
