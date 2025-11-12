@@ -138,7 +138,7 @@
                 }
             ],
             "pageInfo": {
-                "endCursor": "Y3Vyc29yOmFjdGl2aXR5U2VyaWVzOkxhc3RVcGRhdGVkOjpMYXN0VXBkYXRlZDo6MjAyMS0xMC0yMlQxNTo1Njo0NS43MzJaOjoyMDIxLTEwLTIyVDE1OjU2OjQ1LjczMlo6Ojc3MTg0NjM=",
+                "endCursor": "dummy-end-cursor-1",
                 "hasNextPage": true
             }
         }

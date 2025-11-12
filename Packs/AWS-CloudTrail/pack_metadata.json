@@ -2,7 +2,7 @@
     "name": "AWS - CloudTrail",
     "description": "Amazon Web Services CloudTrail.",
     "support": "xsoar",
-    "currentVersion": "1.1.8",
+    "currentVersion": "1.1.11",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -31,6 +31,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

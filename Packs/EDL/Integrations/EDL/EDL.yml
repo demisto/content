@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -440,7 +440,7 @@ script:
       - 'False'
       - 'True'
     description: Updates values stored in the List (only available On-Demand).
-  dockerimage: demisto/flask-nginx:1.0.0.4147323
+  dockerimage: demisto/flask-nginx:1.0.0.4929432
   longRunning: true
   longRunningPort: true
   script: '-'

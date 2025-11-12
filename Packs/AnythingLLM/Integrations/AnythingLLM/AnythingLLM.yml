@@ -1,13 +1,13 @@
 commonfields:
   id: AnythingLLM
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: AnythingLLM
 display: AnythingLLM
 category: Utilities
-description: "Retrieval Augmented Generation (RAG) with LLM and Vector DB that can be local for full data privacy or cloud-based for greater functionality.\n\nAPIs are documented at:  <Anything LLM URL> /api/docs \n\nProduct documentation:   https://docs.useanything.com/"
-sectionOrder:
-- Connect
-- Collect
+description: "Retrieval Augmented Generation (RAG) with LLM and Vector DB that can be local for full data privacy or cloud-based for greater functionality. Prompts and responses can be scanned for security issues using Prisma Airs.\n\nAPIs are documented at:  <Anything LLM URL> /api/docs \n\nProduct documentation:   https://docs.useanything.com/"
 configuration:
 - section: Connect
   display: AnythingLLM URL (e.g., http://<url to local AnythingLLM>:3001) or https://<Anything LLM cloud url>
@@ -28,6 +28,63 @@ configuration:
   name: cf_auth
   required: false
   type: 9
+- additionalinfo: Leave blank if AIRS is not being used
+  defaultvalue: https://service.api.aisecurity.paloaltonetworks.com
+  display: AIRS API URL
+  name: airs_url
+  required: false
+  section: Connect
+  type: 0
+- additionalinfo: Leave blank if AIRS is not being used
+  section: Connect
+  displaypassword: AIRS API Key
+  hiddenusername: true
+  name: airs_apikey
+  required: false
+  type: 9
+  display: ''
+- additionalinfo: Have AIRS scan all LLM prompts and throw exeception if BLOCK is returned
+  defaultvalue: 'false'
+  display: Sync Scan LLM Prompts with AIRS
+  name: airs_scan_prompt
+  required: false
+  section: Collect
+  type: 8
+- additionalinfo: Have AIRS scan all LLM responses and throw exeception if BLOCK is returned
+  defaultvalue: 'false'
+  display: Sync Scan LLM Response with AIRS
+  name: airs_scan_response
+  required: false
+  section: Collect
+  type: 8
+- additionalinfo: The profile must be created in the AIRS console
+  defaultvalue: anythingllm
+  display: AIRS Profile Name for Scan Requests
+  name: airs_profile
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: Provide an application name to identify XSOAR scan requests in AIRS
+  defaultvalue: anythingllm
+  display: AIRS Application Name for Scan Requests
+  name: airs_app
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: Provide a user name to include in XSOAR scan requests in AIRS
+  defaultvalue: XSOAR
+  display: AIR User for Scan Requests
+  name: airs_user
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: Provide the LLM model being used for scan requests in AIRS
+  defaultvalue: llama3_2
+  display: Anything LLM Model in use
+  name: airs_model
+  required: false
+  section: Collect
+  type: 0
 script:
   script: ''
   type: python
@@ -264,7 +321,31 @@ script:
       name: thread
     description: Get the conversation for a workspace thread.
     name: anyllm-workspace-thread-chats
-  dockerimage: demisto/python3:3.12.8.3296088
+  - arguments:
+    - description: AIRS profile name to use in scanning.
+      name: profile_name
+      required: true
+    - description: AIRS application name - metadata.
+      name: app_name
+    - description: AIRS application user name - metadata.
+      name: app_user
+    - description: LLM model in use - metadata.
+      name: ai_model
+    - description: User IP - metadata.
+      name: user_ip
+    - description: LLM prompt to scan.
+      name: prompt
+    - description: LLM response to scan.
+      name: response
+    - description: LLM prompt with code to scan.
+      name: code_prompt
+    - description: LLM response with code to scan.
+      name: code_response
+    - description: LLM context for grounding.
+      name: context
+    description: Perform an AI security scan of a request with AIRS.
+    name: anyllm-scan-request
+  dockerimage: demisto/python3:3.12.11.4819260
   runonce: false
   subtype: python3
 fromversion: 6.10.0

@@ -1,0 +1,30 @@
+{
+    "URL(val.Data && val.Data == obj.Data)": {
+        "Data": "https://test.com",
+        "Description": "Scam advertised. Lures victims to put their money into fake investments.",
+        "DetectionEngines": 1,
+        "Tags": [
+            "cyberint_guid: simple_cyberint_guid",
+            "notes: Scam advertised. Lures victims to put their money into fake investments.",
+            "protocol: https",
+            "references: https://test.com"
+        ],
+        "MalwareFamily": "Scam",
+        "ThreatTypes": [
+            {
+                "threatcategory": "URL",
+                "threatcategoryconfidence": "100"
+            }
+        ],
+        "Malicious": {
+            "Vendor": "InfobloxThreatDefense",
+            "Description": "Scam advertised. Lures victims to put their money into fake investments."
+        }
+    },
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        "Indicator": "https://test.com",
+        "Type": "url",
+        "Vendor": "InfobloxThreatDefense",
+        "Score": 3
+    }
+}
