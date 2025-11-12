@@ -351,7 +351,7 @@ def main() -> None:
     demisto.debug(f"Command received: {command}")
 
     credentials = params.get("credentials", {})
-    api_key = credentials.get("identifier")
+    api_key = credentials.get("password")
     base_url = urljoin(params.get("url"), "/org/api-ua/v1/event-logs/")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
