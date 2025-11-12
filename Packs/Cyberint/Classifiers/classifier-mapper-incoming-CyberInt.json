@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "abcd-5678",
+    "id": "CyberInt Incoming (mapper)",
     "mapping": {
         "Cyberint Incident": {
             "dontMapEventToLabels": false,
@@ -562,7 +562,7 @@
             }
         }
     },
-    "name": "abcd-5678",
+    "name": "CyberInt Incoming (mapper)",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"

@@ -44,17 +44,19 @@ class Client(BaseClient):
     API Client to communicate with Cyberint API endpoints.
     """
 
-    def __init__(self, base_url: str, access_token: str, verify_ssl: bool, proxy: bool):
+    def __init__(self, base_url: str, region: str, access_token: str, verify_ssl: bool, proxy: bool):
         """
         Client for Cyberint RESTful API.
 
         Args:
             base_url (str): URL to access when getting alerts.
+            region (str): Region for the API.
             access_token (str): Access token for authentication.
             verify_ssl (bool): specifies whether to verify the SSL certificate or not.
             proxy (bool): specifies if to use XSOAR proxy settings.
         """
         params = demisto.params()
+        self._region = (region or "us").lower()
         self._cookies = {"access_token": access_token}
         self._headers = {
             "X-Integration-Type": "XSOAR",
@@ -116,7 +118,9 @@ class Client(BaseClient):
             },
         }
         body = remove_empty_elements(body)
-        response = self._http_request(method="POST", json_data=body, cookies=self._cookies, url_suffix="api/v1/alerts")
+        response = self._http_request(
+            method="POST", json_data=body, cookies=self._cookies, url_suffix=f"{self._region}/api/v1/alerts"
+        )
         return response
 
     def update_alerts(
@@ -147,7 +151,9 @@ class Client(BaseClient):
             },
         }
         body = remove_empty_elements(body)
-        response = self._http_request(method="PUT", json_data=body, cookies=self._cookies, url_suffix="api/v1/alerts/status")
+        response = self._http_request(
+            method="PUT", json_data=body, cookies=self._cookies, url_suffix=f"{self._region}/api/v1/alerts/status"
+        )
         return response
 
     def get_csv_file(self, alert_id: str, attachment_id: str, delimiter: bytes = b"\r\n") -> Iterable[str]:
@@ -162,7 +168,7 @@ class Client(BaseClient):
         Returns:
             row (generator(str)): Generator containing each line of the CSV.
         """
-        url_suffix = f"api/v1/alerts/{alert_id}/attachments/{attachment_id}"
+        url_suffix = f"{self._region}/api/v1/alerts/{alert_id}/attachments/{attachment_id}"
         with closing(
             self._http_request(method="GET", url_suffix=url_suffix, cookies=self._cookies, resp_type="all", stream=True)
         ) as r:
@@ -181,7 +187,7 @@ class Client(BaseClient):
             Response: API response from Cyberint.
         """
 
-        url_suffix = f"api/v1/alerts/{alert_ref_id}/attachments/{attachment_id}"
+        url_suffix = f"{self._region}/api/v1/alerts/{alert_ref_id}/attachments/{attachment_id}"
         return self._http_request(method="GET", cookies=self._cookies, url_suffix=url_suffix, resp_type="response")
 
     def get_alert(
@@ -198,7 +204,7 @@ class Client(BaseClient):
             Response: API response from Cyberint.
         """
 
-        url_suffix = f"api/v1/alerts/{alert_ref_id}"
+        url_suffix = f"{self._region}/api/v1/alerts/{alert_ref_id}"
         return self._http_request(method="GET", cookies=self._cookies, url_suffix=url_suffix)
 
     def get_analysis_report(self, alert_ref_id: str) -> Response:
@@ -212,7 +218,7 @@ class Client(BaseClient):
             Response: API response from Cyberint.
 
         """
-        url_suffix = f"api/v1/alerts/{alert_ref_id}/analysis_report"
+        url_suffix = f"{self._region}/api/v1/alerts/{alert_ref_id}/analysis_report"
         return self._http_request(method="GET", cookies=self._cookies, url_suffix=url_suffix, resp_type="response")
 
 
