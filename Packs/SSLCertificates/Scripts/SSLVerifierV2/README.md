@@ -1,6 +1,7 @@
 Use this automation to check for validity of your SSL certificate and get the time until expiration.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Use this automation to check for validity of your SSL certificate and get the ti
 | Tags | Utilities |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +19,7 @@ Use this automation to check for validity of your SSL certificate and get the ti
 | Port | Port to check |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

@@ -1,0 +1,152 @@
+category: Data Enrichment & Threat Intelligence
+sectionorder:
+ - Connect
+ - Collect
+commonfields:
+  id: Augur Security
+  version: -1
+configuration:
+- defaultvalue: "true"
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+  section: Collect
+- additionalinfo: Paste the access token string provided by Augur here.
+  display: API Key
+  name: api_key
+  required: true
+  type: 4
+  section: Connect
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
+  defaultvalue: Bad
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+  section: Collect
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+  section: Collect
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+  section: Collect
+- defaultvalue: indicatorType
+  display: ""
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  required: false
+  type: 17
+  section: Collect
+- defaultvalue: "20160"
+  display: ""
+  name: feedExpirationInterval
+  required: false
+  type: 1
+  section: Collect
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
+  defaultvalue: "true"
+  display: Incremental Feed
+  hidden: true
+  name: feedIncremental
+  required: false
+  type: 8
+  section: Collect
+- defaultvalue: "240"
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+  section: Collect
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+  section: Collect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+  section: Collect
+description: Receive Augur's preemptive intelligence to provide actionable intel for the firewall, TIP and SIEM solutions.
+display: Augur Security
+name: Augur Security
+script:
+  commands:
+  - arguments:
+    - defaultValue: "100000"
+      description: The maximum number of indicators to return. Default is 100k.
+      name: limit
+    - defaultValue: "0"
+      description: The index of the first indicator to fetch.
+      name: offset
+    description: Get indicators from Augur.
+    name: augur-get-daily-indicators
+  - arguments:
+    - default: true
+      required: true
+      name: hash
+      description: The sha256 hash value of a file.
+    description: Enrich a file hash (sha256) data from the Augur's API.
+    name: augur-get-file-hash-context
+  - arguments:
+    - default: true
+      required: true
+      name: host 
+      description: The host name to look up data for.
+    description: Enrich a host name's threat data from the Augur's API.
+    name: augur-get-host-context
+  - arguments:
+    - default: true
+      required: true
+      name: ip
+      description: The ipv4 address to look up data for.
+    description: Enrich a IP's threat data from the Augur's API.
+    name: augur-get-ip-context
+  dockerimage: demisto/python3:3.12.8.3720084
+  feed: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

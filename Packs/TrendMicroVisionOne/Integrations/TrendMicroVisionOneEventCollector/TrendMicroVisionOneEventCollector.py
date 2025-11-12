@@ -23,6 +23,9 @@ VENDOR = "trend_micro"
 ONE_YEAR = 365
 
 
+FETCH_EVENTS_TIMEOUT = 180  # 3 minutes
+
+
 class LastRunLogsStartTimeFields(Enum):
     OBSERVED_ATTACK_TECHNIQUES = "oat_detection_start_time"
     WORKBENCH = "workbench_start_time"
@@ -49,6 +52,40 @@ class LogTypes(Enum):
     WORKBENCH = "workbench"
     SEARCH_DETECTIONS = "search_detection"
     AUDIT = "audit"
+
+    @classmethod
+    def values(cls) -> list[str]:
+        """
+        Gets the values of all enum members.
+
+        Returns:
+            list[str]: The values of the enum class members.
+        """
+        return [member.value for member in cls]
+
+    @classmethod
+    def get_value_from_display_name(cls, display_name: str) -> str:
+        """
+        Gets the value of the enum member based on the display name.
+
+        Args:
+            display_name (str): The readable name of the log type as appears in the configuration params.
+
+        Returns:
+            str: The lower snake case value of the relevant enum member.
+
+        Raises:
+            DemistoException: If no enum member is found for the given display name.
+
+        Example:
+            >>> LogTypes.from_display_name("Search Detections")
+            "search_detection"
+        """
+        member_name = display_name.upper().replace(" ", "_")
+        try:
+            return cls[member_name].value
+        except KeyError:
+            raise DemistoException(f"Invalid log type: {display_name!r}. Valid values: {', '.join(cls.values())}.")
 
 
 class UrlSuffixes(Enum):
@@ -126,7 +163,7 @@ class Client(BaseClient):
         headers: dict | None = None,
         limit: int = DEFAULT_MAX_LIMIT,
         next_link: str | None = None,
-    ) -> tuple[List[dict], str | None]:
+    ) -> tuple[List[dict], str | None, bool]:
         """
         Implements a generic method with pagination to retrieve logs from trend micro vision one.
 
@@ -139,12 +176,23 @@ class Client(BaseClient):
             next_link (str): the next link to continue pagination
 
         Returns:
-            List[Dict]: a list of the requested logs.
+            tuple[List[dict], str | None, bool]: List of logs, next pagination link, boolean to indicate if new query.
         """
         logs: List[dict] = []
 
+        is_new_query: bool = False
         if next_link:
-            response = self.http_request(method=method, headers=headers, next_link=next_link)
+            try:
+                demisto.debug(f"Sending pagination request using {next_link=}")
+                response = self.http_request(method=method, headers=headers, next_link=next_link)
+            except DemistoException as e:
+                if "request token expired" in str(e).casefold():
+                    demisto.debug(f"Generating a new query after getting error: {str(e)}")
+                    response = self.http_request(url_suffix=url_suffix, method=method, params=params, headers=headers)
+                    is_new_query = True
+                else:
+                    raise
+
         else:
             response = self.http_request(url_suffix=url_suffix, method=method, params=params, headers=headers)
 
@@ -175,7 +223,7 @@ class Client(BaseClient):
             if log_time := log.get(created_time_field):
                 log["_time"] = log_time
 
-        return logs, new_next_link
+        return logs, new_next_link, is_new_query
 
     def get_workbench_logs(
         self,
@@ -208,7 +256,7 @@ class Client(BaseClient):
         if end_datetime:
             params["endDateTime"] = end_datetime
 
-        workbench_logs, _ = self.get_logs(url_suffix=UrlSuffixes.WORKBENCH.value, params=params, limit=limit)
+        workbench_logs, *_ = self.get_logs(url_suffix=UrlSuffixes.WORKBENCH.value, params=params, limit=limit)
 
         return workbench_logs
 
@@ -219,7 +267,7 @@ class Client(BaseClient):
         top: int = 1000,
         limit: int = DEFAULT_MAX_LIMIT,
         next_link: str | None = None,
-    ) -> tuple[List[dict], str | None]:
+    ) -> tuple[List[dict], str | None, bool]:
         """
         Get the observed attack techniques logs.
 
@@ -240,9 +288,9 @@ class Client(BaseClient):
             next_link (str): the next link for the api request (used mainly for pagination).
 
         Returns:
-            List[Dict]: The observe attack techniques that were found.
+            tuple[List[dict], str | None, bool]: List of logs, next pagination link, boolean to indicate if new query.
         """
-        # will retrieve all the events that are more or equal to detected_start_datetime, does not support miliseconds
+        # will retrieve all the events that are more or equal to detected_start_datetime, does not support milliseconds
         # returns in descending order by default and cannot be changed
         # will retrieve all the events that are less than detected_end_datetime and not less equal
         # The data retrieval time range cannot be greater than 365 days.
@@ -260,7 +308,7 @@ class Client(BaseClient):
         top: int = DEFAULT_MAX_LIMIT,
         limit: int = DEFAULT_MAX_LIMIT,
         next_link: str | None = None,
-    ) -> tuple[List[dict], str | None]:
+    ) -> tuple[List[dict], str | None, bool]:
         """
         Get the search detection logs.
 
@@ -276,7 +324,7 @@ class Client(BaseClient):
             next_link (str): the next link for the api request (used mainly for pagination).
 
         Returns:
-            List[Dict]: The search detection logs that were found.
+            tuple[List[dict], str | None, bool]: List of logs, next pagination link, boolean to indicate if new query.
         """
         # will retrieve all the events that are more or equal to detected_start_datetime, does not support miliseconds
         # will retrieve all the events that are less or equal to end_datetime
@@ -330,7 +378,7 @@ class Client(BaseClient):
         if end_datetime:
             params["endDateTime"] = end_datetime
 
-        audit_logs, _ = self.get_logs(
+        audit_logs, *_ = self.get_logs(
             url_suffix=UrlSuffixes.AUDIT.value,
             params=params,
             limit=limit,
@@ -360,6 +408,7 @@ def get_datetime_range(
     Returns:
         Tuple[str, str]: start time and end time
     """
+    demisto.info(f"Getting start and end time using {last_run_time=} and {first_fetch=} for {log_type_time_field_name=}")
     now = get_current_time()
 
     if last_run_time:
@@ -394,7 +443,7 @@ def get_datetime_range(
         last_run_time_datetime.strftime(date_format),  # type: ignore[union-attr]
         end_time_datetime.strftime(date_format),  # type: ignore[union-attr]
     )
-    demisto.info(f"{start_time=} and {end_time=} for {log_type_time_field_name=}")
+    demisto.info(f"Got {start_time=} and {end_time=} for {log_type_time_field_name=}")
     return start_time, end_time
 
 
@@ -655,12 +704,26 @@ def get_observed_attack_techniques_logs(
     dedup_log_ids = last_run.get(observed_attack_technique_dedup) or []
     pagination_log_ids = last_run.get(observed_attack_technique_pagination) or []
 
-    if last_run_next_link:
-        observed_attack_techniques_logs, new_next_link = client.get_observed_attack_techniques_logs(
-            next_link=last_run_next_link, limit=limit
-        )
+    start_time, end_time = get_datetime_range(
+        last_run_time=last_run_start_time,
+        first_fetch=first_fetch,
+        log_type_time_field_name=observed_attack_technique_start_run_time,
+        date_format=date_format,
+    )
 
-        observed_attack_techniques_logs, subsequent_pagination_log_ids, _ = get_dedup_logs(
+    observed_attack_techniques_logs, new_next_link, is_new_query = client.get_observed_attack_techniques_logs(
+        detected_start_datetime=start_time,
+        detected_end_datetime=end_time,
+        next_link=last_run_next_link,
+        limit=limit,
+    )
+    demisto.debug(
+        f"Got {len(observed_attack_techniques_logs)} {observed_attack_technique_log_type} logs before deduplication. "
+        f"{is_new_query=}, {new_next_link=}"
+    )
+    if last_run_next_link and not is_new_query:
+        demisto.debug(f"Running deduplication in pagination mode on {observed_attack_technique_log_type} logs")
+        observed_attack_techniques_logs, subsequent_pagination_log_ids, latest_log_time = get_dedup_logs(
             logs=observed_attack_techniques_logs,
             last_run=last_run,
             log_cache_last_run_name_field_name=observed_attack_technique_pagination,
@@ -674,17 +737,7 @@ def get_observed_attack_techniques_logs(
             pagination_log_ids.extend(subsequent_pagination_log_ids)
 
     else:
-        start_time, end_time = get_datetime_range(
-            last_run_time=last_run_start_time,
-            first_fetch=first_fetch,
-            log_type_time_field_name=observed_attack_technique_start_run_time,
-            date_format=date_format,
-        )
-
-        observed_attack_techniques_logs, new_next_link = client.get_observed_attack_techniques_logs(
-            detected_start_datetime=start_time, detected_end_datetime=end_time, limit=limit
-        )
-
+        demisto.debug(f"Running deduplication in new query mode on {observed_attack_technique_log_type} logs")
         observed_attack_techniques_logs, dedup_log_ids, latest_log_time = get_dedup_logs(
             logs=observed_attack_techniques_logs,
             last_run=last_run,
@@ -693,9 +746,10 @@ def get_observed_attack_techniques_logs(
             date_format=date_format,
         )
 
-        last_run_start_time = latest_log_time or (
-            dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
-        ).strftime(DATE_FORMAT)  # type: ignore
+    # Last run start time needs to be updated all the time to allow for new queries if pagination token is expired
+    last_run_start_time = latest_log_time or (
+        dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
+    ).strftime(DATE_FORMAT)  # type: ignore
 
     fetched_observed_attack_technique_logs_ids = [
         (_log.get("uuid"), _log.get("_time")) for _log in observed_attack_techniques_logs if _log.get("uuid")
@@ -802,10 +856,26 @@ def get_search_detection_logs(
     dedup_log_ids = last_run.get(search_detection_dedup) or []
     pagination_log_ids = last_run.get(search_detection_pagination) or []
 
-    if last_run_next_link:
-        search_detection_logs, new_next_link = client.get_search_detection_logs(next_link=last_run_next_link, limit=limit)
+    start_time, _ = get_datetime_range(
+        last_run_time=last_run_start_time,
+        first_fetch=first_fetch,
+        log_type_time_field_name=LastRunLogsStartTimeFields.SEARCH_DETECTIONS.value,
+        date_format=date_format,
+    )
 
-        search_detection_logs, subsequent_pagination_log_ids, _ = get_dedup_logs(
+    search_detection_logs, new_next_link, is_new_query = client.get_search_detection_logs(
+        start_datetime=start_time,
+        top=limit,
+        next_link=last_run_next_link,
+        limit=limit,
+    )
+    demisto.debug(
+        f"Got {len(search_detection_logs)} {search_detections_log_type} logs before deduplication. "
+        f"{is_new_query=}, {new_next_link=}"
+    )
+    if last_run_next_link and not is_new_query:
+        demisto.debug(f"Running deduplication in pagination mode on {search_detections_log_type} logs")
+        search_detection_logs, subsequent_pagination_log_ids, latest_log_time = get_dedup_logs(
             logs=search_detection_logs,
             last_run=last_run,
             log_cache_last_run_name_field_name=search_detection_pagination,
@@ -816,15 +886,9 @@ def get_search_detection_logs(
         # save in cache logs for subsequent pagination(s) in case they have the latest log time
         if subsequent_pagination_log_ids:
             pagination_log_ids.extend(subsequent_pagination_log_ids)
-    else:
-        start_time, _ = get_datetime_range(
-            last_run_time=last_run_start_time,
-            first_fetch=first_fetch,
-            log_type_time_field_name=LastRunLogsStartTimeFields.SEARCH_DETECTIONS.value,
-            date_format=date_format,
-        )
-        search_detection_logs, new_next_link = client.get_search_detection_logs(start_datetime=start_time, top=limit, limit=limit)
 
+    else:
+        demisto.debug(f"Running deduplication in new query mode on {search_detections_log_type} logs")
         search_detection_logs, dedup_log_ids, latest_log_time = get_dedup_logs(
             logs=search_detection_logs,
             last_run=last_run,
@@ -833,9 +897,10 @@ def get_search_detection_logs(
             date_format=date_format,
         )
 
-        last_run_start_time = latest_log_time or (
-            dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
-        ).strftime(DATE_FORMAT)  # type: ignore
+    # Last run start time needs to be updated all the time to allow for new queries if pagination token is expired
+    last_run_start_time = latest_log_time or (
+        dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
+    ).strftime(DATE_FORMAT)  # type: ignore
 
     fetched_search_detection_logs_ids = [
         (_log.get("uuid"), _log.get("_time")) for _log in search_detection_logs if _log.get("uuid")
@@ -939,72 +1004,106 @@ def get_audit_logs(
 """ COMMAND FUNCTIONS """
 
 
-def fetch_events(client: Client, first_fetch: str, limit: int = DEFAULT_MAX_LIMIT) -> tuple[List[dict], dict]:
+def fetch_events(
+    client: Client,
+    first_fetch: str,
+    limit: int = DEFAULT_MAX_LIMIT,
+    log_types: list[str] = LogTypes.values(),
+) -> tuple[List[dict], dict]:
     """
     Get all the logs.
 
     Args:
-        client (Client): the client object
-        first_fetch (str): the first fetch time
-        limit (int): the maximum number of logs to fetch from each type
+        client (Client): The client object.
+        first_fetch (str): The first fetch time.
+        limit (int): The maximum number of logs to fetch from each type.
+        log_types (list[str]): The list of supported log types to fetch.
 
     Returns:
         Tuple[List[Dict], Dict]: events & updated last run for all the log types.
     """
     last_run = demisto.getLastRun()
-    demisto.info(f"last run in the start of the fetch: {last_run}")
+    demisto.info(f"Last run in the start of the fetch: {last_run}")
 
-    demisto.info(f"starting to fetch {LogTypes.WORKBENCH} logs")
-    workbench_logs, updated_workbench_last_run = get_workbench_logs(
-        client=client, first_fetch=first_fetch, last_run=last_run, limit=limit
-    )
-    demisto.info(f"Fetched amount of workbench logs: {len(workbench_logs)}")
+    fetch_limit = last_run.pop("max_fetch", limit)
+    is_finished = False
 
-    demisto.info(f"starting to fetch {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs")
-    observed_attack_techniques_logs, updated_observed_attack_technique_last_run = get_observed_attack_techniques_logs(
-        client=client, first_fetch=first_fetch, last_run=last_run, limit=limit
-    )
-    demisto.info(f"Fetched amount of observed attack techniques logs: {len(observed_attack_techniques_logs)}")
+    with ExecutionTimeout(seconds=FETCH_EVENTS_TIMEOUT):
+        demisto.debug(f"Starting to fetch up to {fetch_limit} events per type: {', '.join(log_types)}")
+        get_logs_kwargs = {"client": client, "first_fetch": first_fetch, "last_run": last_run, "limit": fetch_limit}
 
-    demisto.info(f"starting to fetch {LogTypes.SEARCH_DETECTIONS} logs")
-    search_detection_logs, updated_search_detection_last_run = get_search_detection_logs(
-        client=client,
-        first_fetch=first_fetch,
-        last_run=last_run,
-        limit=limit,
-    )
-    demisto.info(f"Fetched amount of search detection logs: {len(search_detection_logs)}")
+        workbench_logs: list[dict] = []
+        updated_workbench_last_run: dict = {}
+        if LogTypes.WORKBENCH.value in log_types:
+            demisto.info(f"Starting to fetch {LogTypes.WORKBENCH} logs")
+            workbench_logs, updated_workbench_last_run = get_workbench_logs(
+                **get_logs_kwargs,
+            )
+            demisto.info(f"Fetched amount of {LogTypes.WORKBENCH} logs: {len(workbench_logs)}")
 
-    demisto.info(f"starting to fetch {LogTypes.AUDIT} logs")
-    audit_logs, updated_audit_last_run = get_audit_logs(client=client, first_fetch=first_fetch, last_run=last_run, limit=limit)
-    demisto.info(f"Fetched amount of audit logs: {len(audit_logs)}")
+        observed_attack_techniques_logs: list[dict] = []
+        updated_observed_attack_technique_last_run: dict = {}
+        if LogTypes.OBSERVED_ATTACK_TECHNIQUES.value in log_types:
+            demisto.info(f"Starting to fetch {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs")
+            observed_attack_techniques_logs, updated_observed_attack_technique_last_run = get_observed_attack_techniques_logs(
+                **get_logs_kwargs,
+            )
+            demisto.info(f"Fetched amount of {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs: {len(observed_attack_techniques_logs)}")
 
-    events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
+        search_detection_logs: list[dict] = []
+        updated_search_detection_last_run: dict = {}
+        if LogTypes.SEARCH_DETECTIONS.value in log_types:
+            demisto.info(f"Starting to fetch {LogTypes.SEARCH_DETECTIONS} logs")
+            search_detection_logs, updated_search_detection_last_run = get_search_detection_logs(
+                **get_logs_kwargs,
+            )
+            demisto.info(f"Fetched amount of {LogTypes.SEARCH_DETECTIONS} logs: {len(search_detection_logs)}")
 
-    for logs_last_run in [
-        updated_workbench_last_run,
-        updated_observed_attack_technique_last_run,
-        updated_search_detection_last_run,
-        updated_audit_last_run,
-    ]:
-        last_run.update(logs_last_run)
+        audit_logs: list[dict] = []
+        updated_audit_last_run: dict = {}
+        if LogTypes.AUDIT.value in log_types:
+            demisto.info(f"Starting to fetch {LogTypes.AUDIT} logs")
+            audit_logs, updated_audit_last_run = get_audit_logs(
+                **get_logs_kwargs,
+            )
+            demisto.info(f"Fetched amount of {LogTypes.AUDIT} logs: {len(audit_logs)}")
 
-    demisto.info(f"last run after fetching all logs: {last_run}")
+        is_finished = True  # Indicates code block inside `ExecutionTimeout` context manager finished executing in time
+
+    if is_finished:
+        demisto.debug(f"Completed fetching up to {fetch_limit} events. Updating last run")
+        events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
+
+        for logs_last_run in [
+            updated_workbench_last_run,
+            updated_observed_attack_technique_last_run,
+            updated_search_detection_last_run,
+            updated_audit_last_run,
+        ]:
+            last_run.update(logs_last_run)
+
+    else:
+        demisto.debug(f"Timed out fetching up to {fetch_limit} events. Halving limit in last run")
+        events = []  # No events sent to XSIAM
+        last_run.update({"max_fetch": max(fetch_limit // 2, 1), "nextTrigger": "30"})  # Reduce size of API calls in next fetch
+
+    demisto.info(f"Last run after fetching all logs: {last_run}")
     return events, last_run
 
 
-def test_module(client: Client, first_fetch: str) -> str:
+def test_module(client: Client, first_fetch: str, log_types: list[str]) -> str:
     """
     Tests that the collector is able to retrieve all logs without any error.
 
     Args:
-        client (Client): the client object
-        first_fetch (str): the first fetch time
+        client (Client): The client object
+        first_fetch (str): The first fetch time.
+        log_types (list[str]): The list of supported log types to fetch.
 
     Returns:
         str: 'ok' in case of success, exception in case of an error.
     """
-    fetch_events(client=client, first_fetch=first_fetch, limit=1)
+    fetch_events(client=client, first_fetch=first_fetch, limit=1, log_types=log_types)
     return "ok"
 
 
@@ -1041,7 +1140,7 @@ def get_events_command(client: Client, args: dict) -> CommandResults:
         ]
 
     def parse_observed_attack_techniques_logs() -> List[dict]:
-        observed_attack_techniques_logs, _ = client.get_observed_attack_techniques_logs(
+        observed_attack_techniques_logs, *_ = client.get_observed_attack_techniques_logs(
             detected_start_datetime=from_time,  # type: ignore[arg-type]
             detected_end_datetime=to_time,  # type: ignore[arg-type]
             top=limit,
@@ -1057,7 +1156,7 @@ def get_events_command(client: Client, args: dict) -> CommandResults:
         ]
 
     def parse_search_detection_logs() -> List[dict]:
-        search_detection_logs, _ = client.get_search_detection_logs(
+        search_detection_logs, *_ = client.get_search_detection_logs(
             start_datetime=from_time,  # type: ignore[arg-type]
             end_datetime=to_time,
             top=limit,
@@ -1111,6 +1210,7 @@ def main() -> None:
     proxy = params.get("proxy", False)
     first_fetch = params.get("first_fetch") or "3 days"
     limit = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_LIMIT
+    log_types = argToList(params.get("log_types"), transform=LogTypes.get_value_from_display_name) or LogTypes.values()
 
     command = demisto.command()
 
@@ -1123,10 +1223,10 @@ def main() -> None:
             verify=verify_certificate,
         )
 
-        if demisto.command() == "test-module":
-            return_results(test_module(client=client, first_fetch=first_fetch))
+        if command == "test-module":
+            return_results(test_module(client=client, first_fetch=first_fetch, log_types=log_types))
         elif command == "fetch-events":
-            events, updated_last_run = fetch_events(client=client, first_fetch=first_fetch, limit=limit)
+            events, updated_last_run = fetch_events(client=client, first_fetch=first_fetch, limit=limit, log_types=log_types)
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(updated_last_run)
         elif command == "trend-micro-vision-one-get-events":

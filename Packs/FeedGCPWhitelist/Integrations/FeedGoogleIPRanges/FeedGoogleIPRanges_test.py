@@ -1,7 +1,8 @@
 import demistomock as demisto
+from pytest_mock import MockerFixture
 
 
-def test_fetch_indicators_main(mocker):
+def test_fetch_indicators_main(mocker: MockerFixture):
     """
     Given
     - indicators response from google ip feed
@@ -33,6 +34,7 @@ def test_fetch_indicators_main(mocker):
             "tlp_color": None,
         },
     )
+    mocker.patch("FeedGoogleIPRanges.is_demisto_version_ge", return_value=True)
     mocker.patch.object(demisto, "command", return_value="fetch-indicators")
     create_indicators_mocker = mocker.patch.object(demisto, "createIndicators")
 
@@ -41,7 +43,7 @@ def test_fetch_indicators_main(mocker):
         "build_iterator",
         side_effect=[
             ([{"ipv4Prefix": "1.1.1.1"}, {"ipv4Prefix": "1.2.3.4"}, {"ipv6Prefix": "1111:1111::/28"}], True),
-            ([], True),
+            ([{"ipv4Prefix": "1.1.1.1"}, {"ipv4Prefix": "1.2.3.4"}, {"ipv6Prefix": "1111:1111::/28"}], True),
         ],
     )
 
@@ -50,4 +52,5 @@ def test_fetch_indicators_main(mocker):
     assert create_indicators_mocker.call_args.args[0] == [
         {"type": "CIDR", "fields": {"tags": []}, "value": "1.1.1.1", "rawJSON": {"ipv4Prefix": "1.1.1.1"}},
         {"type": "CIDR", "fields": {"tags": []}, "value": "1.2.3.4", "rawJSON": {"ipv4Prefix": "1.2.3.4"}},
+        {"type": "IPv6CIDR", "fields": {"tags": []}, "value": "1111:1111::/28", "rawJSON": {"ipv6Prefix": "1111:1111::/28"}},
     ]

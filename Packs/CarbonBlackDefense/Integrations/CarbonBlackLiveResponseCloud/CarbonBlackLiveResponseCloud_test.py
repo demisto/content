@@ -129,9 +129,9 @@ HAPPY_PATH_ARGS = [
 ]
 
 WRONG_ARGS = [
-    ("set_registry_value", set_reg_value_command, {"overwrite": "f"}),
-    ("create_process", create_process_command, {"wait_for_completion": "f"}),
-    ("create_process", create_process_command, {"wait_for_output": "f"}),
+    ("set_registry_value", set_reg_value_command, {"overwrite": "wrong_val"}),
+    ("create_process", create_process_command, {"wait_for_completion": "wrong_val"}),
+    ("create_process", create_process_command, {"wait_for_output": "wrong_val"}),
     ("create_process", create_process_command, {"wait_timeout": "wrong_val"}),
     ("get_file", get_file_command, {"timeout": "wrong_val"}),
     ("delete_registry_key", delete_reg_key_command, {"force": "wrong_val"}),

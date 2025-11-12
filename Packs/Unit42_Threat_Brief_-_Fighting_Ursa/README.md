@@ -1,6 +1,6 @@
 ## Fighting Ursa Luring Targets With Car for Sale
 
-A Russian threat actor we track as Fighting Ursa advertised a car for sale as a lure to distribute HeadLace backdoor malware. The campaign likely targeted diplomats and began as early as March 2024. Fighting Ursa (aka APT28, Fancy Bear and Sofacy) has been associated with Russian military intelligence and classified as an advanced persistent threat (APT). 
+A Russian threat actor we track as Fighting Ursa advertised a car for sale as a lure to distribute HeadLace backdoor malware. The campaign likely targeted diplomats and began as early as March 2024. Fighting Ursa (aka APT28, Fancy Bear and Sofacy) has been associated with Russian military intelligence and classified as an advanced persistent threat (APT).
 
 Diplomatic-car-for-sale phishing lure themes have been used by Russian threat actors for years. These lures tend to resonate with diplomats and get targets to click on the malicious content.
 
@@ -8,7 +8,7 @@ Unit 42 has previously observed other threat groups using this tactic. For examp
 
 The details of the March 2024 campaign, which we attribute to Fighting Ursa with a medium to high level of confidence, indicate the group targeted diplomats and relied on public and free services to host various stages of the attack. This article examines the infection chain from the attack.
 
-### This pack will provide you with a first response kit which includes:
+### This pack will provide you with a first response kit which includes
 
 * **Collect, Extract and Enrich Indicators**
 * **Indicator Based Threat Hunting**

@@ -1,6 +1,7 @@
 Converts "https:%2F%2Fexample.com" into "https://example.com".
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Converts "https:%2F%2Fexample.com" into "https://example.com".
 | Script Type | python |
 | Tags | transformer |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +18,7 @@ Converts "https:%2F%2Fexample.com" into "https://example.com".
 | value | The URL to input.  |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

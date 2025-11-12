@@ -3,7 +3,6 @@ This integration was integrated and tested with version 6.0.0 of Darktrace
 
 ## Configure Darktrace in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Server URL \(e.g. https://example.net\) | True |
@@ -15,7 +14,6 @@ This integration was integrated and tested with version 6.0.0 of Darktrace
 | min_score | Minimum Score | True |
 | max_alerts | Maximum Model Breaches per Fetch | False |
 | first_fetch | First fetch time | False |
-
 
 ## Commands
 
@@ -30,17 +28,15 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| did | Darktrace Device ID | Required | 
-| max_results | Maximum number of results to return | Required | 
-
+| did | Darktrace Device ID | Required |
+| max_results | Maximum number of results to return | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Darktrace.SimilarDevices.deviceId | Number | Darktrace Device ID of the device with the similar devices. | 
-| Darktrace.SimilarDevices.devices | Unknown | List of similar devices and their available information | 
-
+| Darktrace.SimilarDevices.deviceId | Number | Darktrace Device ID of the device with the similar devices. |
+| Darktrace.SimilarDevices.devices | Unknown | List of similar devices and their available information |
 
 #### Command Example
 
@@ -101,19 +97,17 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 #### Human Readable Output
 
->### List of similar devices to device:1:
+>### List of similar devices to device:1
 
 >|did|firstSeen|hostname|ip|ips|lastSeen|macaddress|score|sid|typelabel|typename|vendor|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 823 | 2020-08-07T00:06:40.000Z | ip-172-31-32-146 | 172.31.32.146 | {'ip': '172.31.32.146', 'timems': 1600063200000, 'time': '2020-09-14 06:00:00', 'sid': 114} | 2020-09-14T06:23:38.000Z | 0a:df:4b:52:64:7a | 99 | 114 | Server | server |  |
 >| 3 | 2020-06-09T19:19:32.000Z |  | 172.31.16.1 | {'ip': '172.31.16.1', 'timems': 1599847200000, 'time': '2020-09-11 18:00:00', 'sid': 1} | 2020-09-11T18:58:00.000Z |  | 100 | 1 | Server | server |  |
 
-
 ### darktrace-get-external-endpoint-details
 
 ***
 Returns details collected by Darktrace about external IP addresses or hostnames.
-
 
 #### Base Command
 
@@ -123,19 +117,17 @@ Returns details collected by Darktrace about external IP addresses or hostnames.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_type | Type of endpoint: IP or hostname | Required | 
-| endpoint_value | IP or hostname to look up | Required | 
-| devices | Boolean: Include devices that have recently connected to the endpoint | Optional | 
-| additional_info | Boolean: Return additional info about the devices | Optional | 
-| score | Boolean: Return rarity data for this endpoint | Optional | 
-
+| endpoint_type | Type of endpoint: IP or hostname | Required |
+| endpoint_value | IP or hostname to look up | Required |
+| devices | Boolean: Include devices that have recently connected to the endpoint | Optional |
+| additional_info | Boolean: Return additional info about the devices | Optional |
+| score | Boolean: Return rarity data for this endpoint | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Darktrace.ExternalEndpointDetails | Unknown | Returned information about the external endpoint | 
-
+| Darktrace.ExternalEndpointDetails | Unknown | Returned information about the external endpoint |
 
 #### Command Example
 
@@ -167,12 +159,10 @@ Returns details collected by Darktrace about external IP addresses or hostnames.
 >|---|---|---|---|---|---|---|
 >|  | 0 | 2020-08-07T04:47:23.000Z | cats.com |  |  | 0 |
 
-
 ### darktrace-get-device-connection-info
 
 ***
 Returns the graphable data used in the "Connections Data" view for a specific device that can be accessed from the Threat Visualizer omnisearch in Darktrace. Data returned covers a 4 week period. Parameters are further documented at <https://customerportal.darktrace.com/product-guides/main/api-deviceinfo-request>. It is recommended to run the command to check the relevant fields in context.
-
 
 #### Base Command
 
@@ -182,21 +172,19 @@ Returns the graphable data used in the "Connections Data" view for a specific de
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| did | Darktrace Device ID | Required | 
-| data_type | Specify whether to return data for either connections (co), data size out (sizeout) or data size in (sizein). | Required | 
-| external_domain | Restrict external data to a particular domain name. | Optional | 
-| destination_did | Darktrace Device DID of destination device to restrict data to. | Optional | 
-| show_all_graph_data | Return an entry for all time intervals in the graph data, including zero counts. (Not recommended) | Optional | 
-| num_similar_devices | Return data for the primary device and this number of similar devices. | Optional | 
-| full_device_details | Return the full device detail objects for all devices referenced by data in an API response. Use of this parameter will alter the JSON structure of the API response for certain calls. | Optional | 
-
+| did | Darktrace Device ID | Required |
+| data_type | Specify whether to return data for either connections (co), data size out (sizeout) or data size in (sizein). | Required |
+| external_domain | Restrict external data to a particular domain name. | Optional |
+| destination_did | Darktrace Device DID of destination device to restrict data to. | Optional |
+| show_all_graph_data | Return an entry for all time intervals in the graph data, including zero counts. (Not recommended) | Optional |
+| num_similar_devices | Return data for the primary device and this number of similar devices. | Optional |
+| full_device_details | Return the full device detail objects for all devices referenced by data in an API response. Use of this parameter will alter the JSON structure of the API response for certain calls. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Darktrace.DeviceConnectionInfo | Unknown | Graphable data used in the "Connections Data" view for a specific device that can be accessed from the Threat Visualizer omnisearch in Darktrace. Data returned covers a 4 week period. Parameters are further documented at <https://customerportal.darktrace.com/product-guides/main/api-deviceinfo-request>. It is recommended to run the command to check the relevant fields in context. | 
-
+| Darktrace.DeviceConnectionInfo | Unknown | Graphable data used in the "Connections Data" view for a specific device that can be accessed from the Threat Visualizer omnisearch in Darktrace. Data returned covers a 4 week period. Parameters are further documented at <https://customerportal.darktrace.com/product-guides/main/api-deviceinfo-request>. It is recommended to run the command to check the relevant fields in context. |
 
 #### Command Example
 

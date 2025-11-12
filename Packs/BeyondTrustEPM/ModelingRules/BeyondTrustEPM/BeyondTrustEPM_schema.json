@@ -1,0 +1,124 @@
+{
+    "beyondtrust_epm_raw": {
+      "EPMWinMac": {
+        "type": "string",
+        "is_array": false
+      },
+      "ReceivedAt": {
+        "type": "string",
+        "is_array": false
+      },
+      "action": {
+        "type": "string",
+        "is_array": false
+      },
+      "agent": {
+        "type": "string",
+        "is_array": false
+      },
+      "code": {
+        "type": "string",
+        "is_array": false
+      },
+      "host": {
+        "type": "string",
+        "is_array": false
+      },
+      "hostName": {
+        "type": "string",
+        "is_array": false
+      },
+      "id": {
+        "type": "string",
+        "is_array": false
+      },
+      "name": {
+        "type": "string",
+        "is_array": false
+      },
+      "related": {
+        "type": "string",
+        "is_array": false
+      },
+      "tags": {
+        "type": "string",
+        "is_array": false
+      },
+      "process": {
+        "type": "string",
+        "is_array": false
+      },
+      "DomainIdentifier": {
+        "type": "string",
+        "is_array": false
+      },
+      "LocalIdentifier": {
+        "type": "string",
+        "is_array": false
+      },
+      "domain": {
+        "type": "string",
+        "is_array": false
+      },
+      "end": {
+        "type": "string",
+        "is_array": false
+      },
+      "group": {
+        "type": "string",
+        "is_array": false
+      },
+      "start": {
+        "type": "string",
+        "is_array": false
+      },
+      "file": {
+        "type": "string",
+        "is_array": false
+      },
+      "DomainNetBIOSName": {
+        "type": "string",
+        "is_array": false
+      },
+      "category": {
+        "type": "string",
+        "is_array": false
+      },
+      "kind": {
+        "type": "string",
+        "is_array": false
+      },
+      "outcome": {
+        "type": "string",
+        "is_array": false
+      },
+      "reason": {
+        "type": "string",
+        "is_array": false
+      },
+      "type": {
+        "type": "string",
+        "is_array": false
+      },
+      "client": {
+        "type": "string",
+        "is_array": false
+      },
+      "email": {
+        "type": "string",
+        "is_array": false
+      },
+      "dll": {
+        "type": "string",
+        "is_array": false
+      },
+      "labels": {
+        "type": "string",
+        "is_array": false
+      },
+      "url": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

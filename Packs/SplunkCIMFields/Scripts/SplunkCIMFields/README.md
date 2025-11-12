@@ -1,6 +1,7 @@
 Convert Splunk CIM Fields Dynamic Into Fields Value
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Convert Splunk CIM Fields Dynamic Into Fields Value
 | Tags | transformer, string |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +19,6 @@ Convert Splunk CIM Fields Dynamic Into Fields Value
 | inc | Incident field values from incident. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

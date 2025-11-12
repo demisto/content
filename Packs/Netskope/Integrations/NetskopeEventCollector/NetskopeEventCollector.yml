@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -72,10 +72,10 @@ script:
       required: true
     - description: The maximum number of alerts to return (maximum value - 10000).
       name: limit
-      defaultValue: 10000
+      defaultValue: 10
     description: Returns events extracted from SaaS traffic and or logs.
     name: netskope-get-events
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.11.4508456
   runonce: false
   script: '-'
   subtype: python3

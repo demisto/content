@@ -1,5 +1,7 @@
 Converts an array in to a table display. Usually, from the context.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -7,8 +9,8 @@ Converts an array in to a table display. Usually, from the context.
 | Script Type | javascript |
 | Tags | Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,5 +20,6 @@ Converts an array in to a table display. Usually, from the context.
 | columns | The comma-separated list of columns to display. This accepts nested columns using dot notation. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

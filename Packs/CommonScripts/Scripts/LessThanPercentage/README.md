@@ -5,6 +5,7 @@ Returns more: if firstPercentage >= secondPercentage.
 Returns an exception if one of the inputs is not a float.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,8 +13,8 @@ Returns an exception if one of the inputs is not a float.
 | Script Type | javascript |
 | Tags | Utility, Condition |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +23,7 @@ Returns an exception if one of the inputs is not a float.
 | secondPercentage | The second percentage. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

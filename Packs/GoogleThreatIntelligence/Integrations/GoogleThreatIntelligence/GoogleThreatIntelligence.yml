@@ -5,7 +5,7 @@ name: GoogleThreatIntelligence
 display: Google Threat Intelligence
 fromversion: 6.10.0
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 description: Analyzes suspicious hashes, URLs, domains, and IP addresses.
@@ -2575,6 +2575,6 @@ script:
     - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.targeted_industries
       description: Targeted industries of the curated threat actors.
       type: list
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3720084
 tests:
 - GoogleThreatIntelligence-test

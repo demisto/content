@@ -1,5 +1,7 @@
 Performs a JMESPath search on an input JSON format, when using a transformer.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +11,7 @@ Performs a JMESPath search on an input JSON format, when using a transformer.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +20,6 @@ Performs a JMESPath search on an input JSON format, when using a transformer.
 | value | Original input value |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

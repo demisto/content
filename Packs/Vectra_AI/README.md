@@ -19,7 +19,7 @@ This pack is designed to quickly integrate with Vectra Detect platform to detect
 - List, Create and Remove tags for account, host and detection.
 - List, Assign and Unassign members in group.
 - Mark and Unmark detection as fixed.
-- Mark all detections as fixed for account and host. 
+- Mark all detections as fixed for account and host.
 - Get detection's PCAP file.
 - Cleanup all incidents in XSOAR by closing duplicate incidents from Vectra Detect.
 
@@ -34,7 +34,9 @@ To get up and running with this pack, you must have a valid API token on your Ve
 Be sure that the user has a role with sufficient permissions to do all the actions.
 
 <~XSIAM>
+
 ## Collect Events from Vendor
+
 ### REST API
 
 The integration uses the 2.2 API version of `detections` and `audits` endpoints to collect events.

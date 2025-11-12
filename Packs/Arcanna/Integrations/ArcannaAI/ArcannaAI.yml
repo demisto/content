@@ -21,8 +21,9 @@ configuration:
   required: false
   additionalinfo: Api Key for Arcanna API
   hidden:
-    - xsoar
-    - marketplacev2
+  - xsoar
+  - marketplacev2
+  - platform
 - display: SSL Certificate verification
   name: ssl_verification
   type: 8
@@ -33,8 +34,9 @@ configuration:
   name: insecure
   type: 8
   hidden:
-    - xsoar
-    - marketplacev2
+  - xsoar
+  - marketplacev2
+  - platform
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -45,15 +47,17 @@ configuration:
   type: 12
   required: false
   hidden:
-    - xsoar
-    - marketplacev2
+  - xsoar
+  - marketplacev2
+  - platform
 - display: Alert closing reason
   name: closing_reason_field
   type: 0
   required: false
   hidden:
-    - xsoar
-    - marketplacev2
+  - xsoar
+  - marketplacev2
+  - platform
   defaultvalue: closeReason
   additionalinfo: ( Deprecated )This field use to signal to Arcanna the status for closing an alert or marking feedback for Arcanna
 - display: Default Arcanna Job Id
@@ -275,7 +279,7 @@ script:
     - contextPath: Arcanna.Event.feedback_status
       description: An Arcanna feedback status response.
       type: String
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   subtype: python3

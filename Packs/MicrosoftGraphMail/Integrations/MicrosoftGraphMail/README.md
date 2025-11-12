@@ -113,7 +113,7 @@ Returns the properties of an email.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required |
-| message_id | The unique ID of the mail. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required |
+| message_id | The unique Exchange ID of the mail. This is not the same as the 'MessageID' key in the form '&lt;message-id&gt;'. | Required |
 | folder_id | The folder ID. | Optional |
 | odata | An OData query. See the README for OData usage examples. | Optional |
 | get_body | Whether to return the message body. Possible values are: true, false. | Optional |
@@ -163,7 +163,7 @@ Deletes an email.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required |
-| message_id | The unique ID of the mail. This could be extracted from - msgraph-mail-list-emails command results. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required |
+| message_id | The unique Exchange ID of the mail. This could be extracted from - msgraph-mail-list-emails command results. This is not the same as the 'MessageID' key in the form '&lt;message-id&gt;'. | Required |
 | folder_id | A comma-separated list of folder IDs. For example, mailFolders,childFolders,childFolders. | Optional |
 | ran_once_flag | Flag for rate limit retry. | Optional |
 
@@ -185,7 +185,7 @@ Lists all of the attachments of given email
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required |
-| message_id | The unique ID of the mail. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required |
+| message_id | The unique Exchange ID of the mail. This is not the same as the 'MessageID' key in the form '&lt;message-id&gt;'. | Required |
 | folder_id |  A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). | Optional |
 | ran_once_flag | Flag for rate limit retry. | Optional |
 
@@ -213,7 +213,7 @@ Gets an attachment from the email.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required |
-| message_id | The unique ID of the mail. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required |
+| message_id | The unique Exchange ID of the mail. This is not the same as the 'MessageID' key in the form '&lt;message-id&gt;'. | Required |
 | folder_id | A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). | Optional |
 | attachment_id | The ID of the attachment. In case it is not supplied, the command will return all the attachments. | Optional |
 | ran_once_flag | flag for rate limit retry. | Optional |
@@ -382,7 +382,7 @@ Moves a message to a different folder.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | The unique ID of the mail. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required |
+| message_id | The unique Exchange ID of the mail. This is not the same as the 'MessageID' key in the form '&lt;message-id&gt;'. | Required |
 | destination_folder_id | The ID of the destination folder. | Required |
 | user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required |
 | ran_once_flag | Flag for rate limit retry. | Optional |
@@ -409,7 +409,7 @@ Retrieves an email message by message ID and uploads the content as an EML file.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required |
-| message_id | The unique ID of the mail. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required |
+| message_id | The unique Exchange ID of the mail. This is not the same as the 'MessageID' key in the form '&lt;message-id&gt;'. | Required |
 | ran_once_flag | Flag for rate limit retry. | Optional |
 
 #### Context Output
@@ -627,7 +627,7 @@ Update the status of an email to read / unread.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | User ID or principal ID (usually an email address. E.g., user@example.com). | Required |
-| message_ids | Unique ID of the emails to update. You cannot use the 'MessageID' key in the form '&lt;message-id&gt;'. Can be a list of comma-separated values. | Required |
+| message_ids | The unique Exchange IDs of the mails to update. This is not the same as the 'MessageID' key in the form '&lt;message-id&gt;'. Can be a list of comma-separated values. | Required |
 | folder_id | The folder ID. | Optional |
 | status | Status to set the email to. Possible values are: Read, Unread. | Required |
 
@@ -715,7 +715,7 @@ Get details of a specific email rule by ID for a user's mailbox using Microsoft 
 ### msgraph-mail-delete-rule
 
 ***
-Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
+Deletes a specific email rule by ID from a user's mailbox using the Microsoft Graph API.
 
 #### Base Command
 

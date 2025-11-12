@@ -81,7 +81,7 @@ For more information, refer to the following [article](https://xsoar.pan.dev/doc
     | China       | Azure cloud for the Chinese Government                              |
     | Custom      | Custom endpoint configuration to the Azure cloud. See note below.   |
 
-   - Note: In most cases, setting Azure cloud is preferred to setting Azure AD endpoint. Only use it in cases where a custom URL is required for accessing a national cloud.
+- Note: In most cases, setting Azure cloud is preferred to setting Azure AD endpoint. Only use it in cases where a custom URL is required for accessing a national cloud.
 
 4. Click **Test** to validate the URLs, token, and connection.
 

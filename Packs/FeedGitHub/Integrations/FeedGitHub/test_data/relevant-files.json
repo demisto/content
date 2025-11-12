@@ -1,1 +1,32 @@
-["space_invaders-main/aaa.json", "space_invaders-main/iocs-test.txt", "space_invaders-main/stix-test.json"]
+[
+    {
+        "sha": "aaaaabbbbccccdddddeeeeffff",
+        "filename": "dummy-repo-main/aaa.json",
+        "status": "added",
+        "additions": 1,
+        "deletions": 0,
+        "changes": 1,
+        "contents_url": "https://api.github.com/repos/random-dev/dummy-repo/contents/dummy-repo-main%2Faaa.json?ref=aaaaabbbbccccdddddeeeeffff",
+        "patch": "@@ ..."
+    },
+    {
+        "sha": "aaaaabbbbccccdddddeeeeffff",
+        "filename": "dummy-repo-main/iocs-test.txt",
+        "status": "added",
+        "additions": 2,
+        "deletions": 0,
+        "changes": 2,
+        "contents_url": "https://api.github.com/repos/random-dev/dummy-repo/contents/dummy-repo-main%2Fiocs-test.txt?ref=aaaaabbbbccccdddddeeeeffff",
+        "patch": "@@ ..."
+    },
+    {
+        "sha": "aaaaabbbbccccdddddeeeeffff",
+        "filename": "dummy-repo-main/stix-test.json",
+        "status": "added",
+        "additions": 3,
+        "deletions": 0,
+        "changes": 3,
+        "contents_url": "https://api.github.com/repos/random-dev/dummy-repo/contents/dummy-repo-main%2Fstix-test.json?ref=aaaaabbbbccccdddddeeeeffff",
+        "patch": "@@ ..."
+    }
+]

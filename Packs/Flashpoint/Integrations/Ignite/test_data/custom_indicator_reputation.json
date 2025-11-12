@@ -1,0 +1,84 @@
+{
+    "id": "dummy_id",
+    "type": "extracted_config",
+    "value": "dummy_value",
+    "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id",
+    "entity_type": "indicator",
+    "score": {
+        "value": "malicious",
+        "last_scored_at": "2025-01-02T01:00:00.000001"
+    },
+    "modified_at": "2025-01-02T01:00:00.000001",
+    "created_at": "2025-01-01T01:00:00.000000",
+    "last_seen_at": "2025-01-02T01:00:00.000001",
+    "sort_date": "2025-01-02T01:00:00.000001",
+    "platform_urls": {
+        "ignite": "https://mock_dummy.com/cti/malware/iocs/dummy_id"
+    },
+    "apt_description": "N/A",
+    "external_references": [],
+    "malware_description": "dummy description.",
+    "mitre_attack_ids": [
+        {
+            "id": "dummy_mitre_attack_id",
+            "name": "dummy_mitre_name",
+            "tactics": [
+                "Discovery"
+            ]
+        }
+    ],
+    "sightings": [
+        {
+            "source": "flashpoint_extraction",
+            "sighted_at": "2025-01-02T01:00:00.000001",
+            "tags": [
+                "dummy_tag_1",
+                "dummy_tag_2",
+                "dummy_tag_3"
+            ],
+            "related_iocs": [
+                {
+                    "id": "dummy_domain_id",
+                    "type": "domain",
+                    "value": "dummy_domain.com",
+                    "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_domain_id"
+                },
+                {
+                    "id": "dummy_id",
+                    "type": "extracted_config",
+                    "value": "dummy_value",
+                    "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id"
+                }
+            ]
+        },
+        {
+            "source": "flashpoint_extraction",
+            "sighted_at": "2025-01-02T01:00:00.000001",
+            "tags": [
+                "dummy_tag_1",
+                "dummy_tag_2",
+                "dummy_tag_3"
+            ],
+            "related_iocs": [
+                {
+                    "id": "dummy_url_id",
+                    "type": "url",
+                    "value": "https://dummy_url.com",
+                    "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_url_id"
+                },
+                {
+                    "id": "dummy_id",
+                    "type": "extracted_config",
+                    "value": "dummy_value",
+                    "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id"
+                }
+            ]
+        }
+    ],
+    "historical_tags": [
+        "dummy_tag_1",
+        "dummy_tag_2",
+        "dummy_tag_3"
+    ],
+    "reports": []
+}

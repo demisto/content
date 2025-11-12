@@ -1,47 +1,56 @@
 [
     {
         "CustomFields": {
+            "brand": "RiskAssess Demo",
             "class": "URL",
             "cbs_coa": "Takedown",
             "subject": "https://example.com/abcdefg1",
             "timestamp": 1703047911349,
             "cbs_type": "Exposed Email Address",
+            "cbs_module": "incidents",
             "cbs_updated_date": "2023-12-20T04:51:51+00:00"
         },
         "externalstatus": "Member Feedback",
+        "externallink": "https://platform.ctm360.com/cbs/threat_manager/incidents/COMX123456123456",
         "name": "New Exposed Email Address with severity High found",
         "occurred": "2023-12-20T04:51:51+00:00",
-        "rawJson": "{\"externalstatus\": \"Member Feedback\", \"name\": \"New Exposed Email Address with severity High found\", \"occurred\": \"2023-12-20T04:51:51+00:00\", \"type\": \"Exposed Email Address\",\"severity\": 3, \"CustomFields\": {\"cbs_subject\": \"https://example.com/abcdefg1\",\"cbs_class\": \"URL\", \"cbs_type\": \"Exposed Email Address\",\"cbs_coa\": \"Takedown\", \"cbs_timestamp\": 1703047911349, \"cbs_updated_date\": \"2023-12-20T04:51:51+00:00\"}}",
+        "rawJson": "{\"externalstatus\": \"Member Feedback\", \"name\": \"New Exposed Email Address with severity High found\", \"occurred\": \"2023-12-20T04:51:51+00:00\", \"type\": \"Exposed Email Address\",\"severity\": 3, \"externallink\":\"https://platform.ctm360.com/cbs/threat_manager/incidents/COMX123456123456\",  \"CustomFields\": {\"cbs_subject\": \"https://example.com/abcdefg1\",\"cbs_class\": \"URL\", \"cbs_type\": \"Exposed Email Address\", \"cbs_module\": \"incidents\", \"cbs_coa\": \"Takedown\", \"cbs_timestamp\": 1703047911349, \"cbs_updated_date\": \"2023-12-20T04:51:51+00:00\"}}",
         "severity": 3
     },
     {
         "CustomFields": {
+            "brand": "RiskAssess Demo",
             "class": "Link",
             "cbs_coa": "Member Side Action",
             "subject": "23 customer credentials compromised (1ab2c3de)",
             "timestamp": 1703047830650,
             "cbs_type": "Leaked Credential",
+            "cbs_module": "incidents",
             "cbs_updated_date": "2023-12-20T04:50:30+00:00"
         },
         "externalstatus": "Member Feedback",
+        "externallink": "https://platform.ctm360.com/cbs/threat_manager/incidents/COMX123456654321",
         "name": "New leaked_credential with severity High found",
         "occurred": "2023-12-20T04:50:30+00:00",
-        "rawJson": "{\"externalstatus\": \"Member Feedback\", \"name\": \"New leaked_credential with severity High found\", \"occurred\": \"2023-12-20T04:50:30+00:00\", \"type\": \"Leaked Credential\", \"severity\": 3, \"CustomFields\": {\"cbs_subject\": \"23 customer credentials compromised (1ab2c3de)\", \"cbs_class\": \"Link\", \"cbs_type\": \"Leaked Credential\", \"cbs_coa\": \"Member Side Action\", \"cbs_timestamp\": 1703047830650, \"cbs_updated_date\": \"2023-12-20T04:50:30+00:00\"}}",
+        "rawJson": "{\"externalstatus\": \"Member Feedback\", \"name\": \"New leaked_credential with severity High found\", \"occurred\": \"2023-12-20T04:50:30+00:00\", \"type\": \"Leaked Credential\", \"severity\": 3, \"externallink\":\"https://platform.ctm360.com/cbs/threat_manager/incidents/COMX123456654321\",  \"CustomFields\": {\"cbs_subject\": \"23 customer credentials compromised (1ab2c3de)\", \"cbs_class\": \"Link\", \"cbs_type\": \"Leaked Credential\",  \"cbs_module\": \"incidents\", \"cbs_coa\": \"Member Side Action\", \"cbs_timestamp\": 1703047830650, \"cbs_updated_date\": \"2023-12-20T04:50:30+00:00\"}}",
         "severity": 3
     },
     {
         "CustomFields": {
+            "brand": "RiskAssess Demo",
             "class": "URL",
             "cbs_coa": "Takedown",
             "subject": "https://example.com/abcdefg2",
             "timestamp": 1703042231364,
             "cbs_type": "Exposed Email Address",
+            "cbs_module": "incidents",
             "cbs_updated_date": "2023-12-20T03:17:10+00:00"
         },
         "externalstatus": "Member Feedback",
+        "externallink": "https://platform.ctm360.com/cbs/threat_manager/incidents/COMX987654",
         "name": "New Exposed Email Address with severity High found",
         "occurred": "2023-12-20T03:17:10+00:00",
-        "rawJson": "{\"externalstatus\": \"Member Feedback\", \"name\": \"New Exposed Email Address with severity High found\", \"occurred\": \"2023-12-20T03:17:10+00:00\", \"type\": \"Exposed Email Address\", \"severity\": 3, \"CustomFields\": {\"cbs_subject\": \"https://example.com/abcdefg2\", \"cbs_class\": \"URL\", \"cbs_type\": \"Exposed Email Address\", \"cbs_coa\": \"Takedown\", \"cbs_timestamp\": 1703042231364, \"cbs_updated_date\": \"2023-12-20T03:17:10+00:00\"}}",
+        "rawJson": "{\"externalstatus\": \"Member Feedback\", \"name\": \"New Exposed Email Address with severity High found\", \"occurred\": \"2023-12-20T03:17:10+00:00\", \"type\": \"Exposed Email Address\", \"severity\": 3, \"externallink\":\"https://platform.ctm360.com/cbs/threat_manager/incidents/COMX987654\", \"CustomFields\": {\"cbs_subject\": \"https://example.com/abcdefg2\", \"cbs_class\": \"URL\", \"cbs_type\": \"Exposed Email Address\",  \"cbs_module\": \"incidents\", \"cbs_coa\": \"Takedown\", \"cbs_timestamp\": 1703042231364, \"cbs_updated_date\": \"2023-12-20T03:17:10+00:00\"}}",
         "severity": 3
     }
 ]

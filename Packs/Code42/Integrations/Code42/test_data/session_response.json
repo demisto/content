@@ -1,5 +1,5 @@
 {
-  "sessionId": "sessionid-abc-123",
+  "sessionId": "sessionid-abc-1",
   "tenantId": "sometenantid",
   "actorId": "someactorid",
   "beginTime": 1726082760680,
@@ -44,7 +44,6 @@
   "exfiltrationSummary": "document file(s) shared via link from corporate Box",
   "contextSummary": "",
   "contentInspectionResults": {
-    "status": "UNPROCESSED",
-    "eventResults": []
+    "detectedOnAlerts": ["PII"]
   }
 }

@@ -1,6 +1,7 @@
 Pre-process text data for the machine learning text classifier.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,14 +11,17 @@ Pre-process text data for the machine learning text classifier.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * DBot Create Phishing Classifier V2
 * DBot Create Phishing Classifier V2 From File
 * Get Mails By Folder Pathes
 * Get Mails By Folder Paths
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -37,6 +41,7 @@ This script is used in the following playbooks and scripts.
 | tokenizationMethod | Tokenization method for text. Only required when the language argument is set to "Other". Can be "tokenizer", "byWords", or "byLetters". Default is "tokenizer". |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

@@ -5,7 +5,7 @@ This pack includes Cortex XSIAM content.
 
 ### XDRC (XDR Collector)
 
-To create or configure the Winlogbeat collector, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Add-an-XDR-Collector-Profile-for-Windows).
+To create or configure the Winlogbeat collector, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Add-an-XDR-Collector-Profile-for-Windows).
 
 You can configure the vendor and product by replacing [vendor]\_[product]\_raw with *microsoft_sysmon_raw*.
 

@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -11,12 +11,20 @@ configuration:
   defaultvalue: 'true'
   type: 8
   required: false
+  section: Collect
 - defaultvalue: https://threatfox-api.abuse.ch/
   display: Server URL
   name: url
   required: true
   type: 0
   section: Connect
+- displaypassword: Auth Key
+  hiddenusername: true
+  name: credentials
+  type: 9
+  section: Connect
+  required: false
+  additionalinfo: Starting June 30th 2025 this parameter is mandatory.
 - display: Indicator Reputation
   name: feedReputation
   defaultvalue: Bad
@@ -125,6 +133,7 @@ configuration:
 - name: feedTags
   display: Tags
   type: 0
+  section: Collect
   additionalinfo: Supports CSV values.
 description: ThreatFox is a free platform from abuse.ch with the goal of sharing indicators of compromise (IOCs) associated with malware. Use the ThreatFox Feed integration to fetch indicators from the feed.
 display: ThreatFox Feed
@@ -158,7 +167,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

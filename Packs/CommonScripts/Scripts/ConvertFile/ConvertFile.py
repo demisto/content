@@ -16,8 +16,11 @@ def find_zombie_processes():
     Returns:
         ([process ids], raw ps output) -- return a tuple of zombie process ids and raw ps output
     """
-    ps_out = subprocess.check_output(["ps", "-e", "-o", "pid,ppid,state,cmd"],  # pragma: no cover
-                                     stderr=subprocess.STDOUT, universal_newlines=True)  # pragma: no cover
+    ps_out = subprocess.check_output(
+        ["ps", "-e", "-o", "pid,ppid,state,cmd"],  # pragma: no cover
+        stderr=subprocess.STDOUT,
+        universal_newlines=True,
+    )  # pragma: no cover
     lines = ps_out.splitlines()
     pid = str(os.getpid())
     zombies = []
@@ -66,8 +69,9 @@ def convert_file(file_path: str, out_format: str, all_files: bool, outdir: str, 
                 demisto.debug(f"No zombie processes found for ps output: {ps_out}")
         except Exception as ex:
             error = f"Failed checking for zombie processes: {ex}. Trace: {traceback.format_exc()}"
-            return_results(CommandResults(outputs_prefix='ConvertedFile',
-                                          outputs={'EntryID': entry_id, 'Convertable': 'no', "ERROR": error}))
+            return_results(
+                CommandResults(outputs_prefix="ConvertedFile", outputs={"EntryID": entry_id, "Convertable": "no", "ERROR": error})
+            )
 
 
 def make_sha(file_path):
@@ -86,9 +90,12 @@ def main():
     try:
         result = demisto.getFilePath(entry_id)  # pragma: no cover
         if not result:
-            return_results(CommandResults(outputs_prefix='ConvertedFile',
-                                          outputs={'EntryID': entry_id, 'Convertable': 'no',
-                                                   "ERROR": f"Couldn't find entry id: {entry_id}"}))
+            return_results(
+                CommandResults(
+                    outputs_prefix="ConvertedFile",
+                    outputs={"EntryID": entry_id, "Convertable": "no", "ERROR": f"Couldn't find entry id: {entry_id}"},
+                )
+            )
         demisto.debug(f"going to convert: {result}")
         file_path = result["path"]
         file_path_name_only = os.path.splitext(os.path.basename(file_path))[0]
@@ -98,9 +105,16 @@ def main():
         with tempfile.TemporaryDirectory() as outdir:
             files = convert_file(file_path, out_format, all_files, outdir, entry_id)
             if not files:
-                return_results(CommandResults(outputs_prefix='ConvertedFile',
-                                          outputs={'EntryID': entry_id, 'Convertable': 'no',
-                                                   "ERROR": f"No file result returned for convert format: {out_format}"}))
+                return_results(
+                    CommandResults(
+                        outputs_prefix="ConvertedFile",
+                        outputs={
+                            "EntryID": entry_id,
+                            "Convertable": "no",
+                            "ERROR": f"No file result returned for convert format: {out_format}",
+                        },
+                    )
+                )
                 return
             for f in files:
                 try:
@@ -110,24 +124,35 @@ def main():
                     if file_name:
                         name = name.replace(file_path_name_only, file_name)
                     demisto.results(
-                        {"Contents": "",
-                         "ContentsFormat": formats["text"],
-                         "Type": entryTypes["file"],
-                         "File": name, "FileID": temp}
+                        {
+                            "Contents": "",
+                            "ContentsFormat": formats["text"],
+                            "Type": entryTypes["file"],
+                            "File": name,
+                            "FileID": temp,
+                        }
                     )
                     sha256 = make_sha(f)
-                    return_results(CommandResults(outputs_prefix='ConvertedFile',
-                                                  outputs={'Name': name, 'FileSHA256': sha256, 'Convertable': 'yes'}))
+                    return_results(
+                        CommandResults(
+                            outputs_prefix="ConvertedFile", outputs={"Name": name, "FileSHA256": sha256, "Convertable": "yes"}
+                        )
+                    )
                 except Exception as e:
-                    return_results(CommandResults(outputs_prefix='ConvertedFile',
-                                                  outputs={'Name': name, 'EntryID': entry_id,
-                                                           'Convertable': 'no', "ERROR": str(e)}))
+                    return_results(
+                        CommandResults(
+                            outputs_prefix="ConvertedFile",
+                            outputs={"Name": name, "EntryID": entry_id, "Convertable": "no", "ERROR": str(e)},
+                        )
+                    )
     except subprocess.CalledProcessError as e:
-        return_results(CommandResults(outputs_prefix='ConvertedFile',
-                                      outputs={'EntryID': entry_id, 'Convertable': 'no', "ERROR": str(e)}))
+        return_results(
+            CommandResults(outputs_prefix="ConvertedFile", outputs={"EntryID": entry_id, "Convertable": "no", "ERROR": str(e)})
+        )
     except Exception as e:
-        return_results(CommandResults(outputs_prefix='ConvertedFile',
-                                      outputs={'EntryID': entry_id, 'Convertable': 'no', "ERROR": str(e)}))
+        return_results(
+            CommandResults(outputs_prefix="ConvertedFile", outputs={"EntryID": entry_id, "Convertable": "no", "ERROR": str(e)})
+        )
 
 
 # python2 uses __builtin__ python3 uses builtins

@@ -1,10 +1,12 @@
 ## Overview
+
 ---
 
 The Expanse App for Cortex XSOAR leverages the Expander API to retrieve network exposures and create incidents in Cortex XSOAR.  This application also allows for IP, Domain, Certificate, and Behavior enrichment, retrieving assets and exposures information drawn from Expanse’s unparalleled view of the Internet.
 This integration was integrated and tested with Expanse Events API v1, Assets API v2, and Behavior API v1.
 
 ## Configure Expanse on Cortex XSOAR
+
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -20,8 +22,11 @@ This integration was integrated and tested with Expanse Events API v1, Assets AP
     * __How many days to pull past events on first run__
     * __Minimum severity of Expanse Exposure to create an incident for__
 4. Click __Test__ to validate the URLs, token, and connection.
+
 ## Fetched Incidents Data
+
 ---
+
 ```
 {
     'eventType': 'ON_PREM_EXPOSURE_APPEARANCE',
@@ -88,8 +93,11 @@ This integration was integrated and tested with Expanse Events API v1, Assets AP
     'id': 'b4a1e2e6-165a-31a5-9e6a-af286adc3dcd'
 }
 ```
+
 ## Fetched Behavior Incident Data
+
 ---
+
 ```
 {
     "id": "c9704240-5021-321e-a82b-32865e07d541",
@@ -130,9 +138,11 @@ This integration was integrated and tested with Expanse Events API v1, Assets AP
 ```
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. ip
 2. domain
 3. expanse-get-certificate
@@ -141,56 +151,61 @@ After you successfully execute a command, a DBot message appears in the War Room
 6. expanse-get-domains-for-certificate
 
 ### 1. ip
+
 ---
 ip command
+
 ##### Required Permissions
-**none**
+
+__none__
+
 ##### Base Command
 
 `ip`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| ip | ip address | Required | 
-
+| ip | ip address | Required |
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| IP.Address | String | Internet Protocol Address | 
-| IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude | 
-| IP.Geo.Country | String | The country in which the IP address is located. | 
-| IP.Geo.Description | String | Additional information about the location | 
-| Expanse.IP.Address | String | Internet Protocol Address | 
-| Expanse.IP.Version | String | Internet Protocol Address Version | 
-| Expanse.IP.BusinessUnits | String | Expanse Business Units this IP belongs to | 
-| Expanse.IP.IPRange.StartAdress | String | First IP address in IP Network this IP address belongs to | 
-| Expanse.IP.IPRange.EndAddress | String | Last IP address in IP Network this IP address belongs to | 
-| Expanse.IP.IPRange.RangeSize | Number | Number of IP addresses in IP Network this IP address belongs to | 
-| Expanse.IP.IPRange.ResponsiveIPCount | Number | Number of responsive IP addresses in IP Network this IP address belongs to | 
-| Expanse.IP.IPRange.RangeIntroduced | Date | Date the IP network this IP address belongs to was introduced to Expanse | 
-| Expanse.IP.IPRange.AttributionReasons | String | The reason why this IP belongs to the IP Range | 
-| Expanse.IP.Geo.Latitude | String | Geo coordinates: Latitude of IP address | 
-| Expanse.IP.Geo.Longitude | String | Geo coordinates: Longitude of IP address | 
-| Expanse.IP.Geo.City | String | Geo coordinates city for this IP address | 
-| Expanse.IP.Geo.RegionCode | String | Geo coordinates Region Code for this IP address | 
-| Expanse.IP.Geo.CountryCode | String | Geo coordinates Country Code for this IP address | 
-| Expanse.IP.Annotations.Tags | String | Customer defined Tags from Expanse related to this IP Range | 
-| Expanse.IP.Annotations.AdditionalNotes | String | Customer defined Notes from Expanse related to this IP Range | 
-| Expanse.IP.Annotations.PointsOfContact | String | Customer defined Points of Contact from Expanse related to this IP Range | 
-| Expanse.IP.SeverityCounts.CRITICAL | Number | Count of CRITICAL Events for this IP address | 
-| Expanse.IP.SeverityCounts.ROUTINE | Number | Count of ROUTINE Events for this IP address | 
-| Expanse.IP.SeverityCounts.WARNING | Number | Count of WARNING Events for this IP address | 
-| Expanse.IP.Geo.Description | String | Additional information about the location | 
-| Expanse.IP.Geo.Country | String | The country in which the IP address is located. | 
-
+| IP.Address | String | Internet Protocol Address |
+| IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude |
+| IP.Geo.Country | String | The country in which the IP address is located. |
+| IP.Geo.Description | String | Additional information about the location |
+| Expanse.IP.Address | String | Internet Protocol Address |
+| Expanse.IP.Version | String | Internet Protocol Address Version |
+| Expanse.IP.BusinessUnits | String | Expanse Business Units this IP belongs to |
+| Expanse.IP.IPRange.StartAdress | String | First IP address in IP Network this IP address belongs to |
+| Expanse.IP.IPRange.EndAddress | String | Last IP address in IP Network this IP address belongs to |
+| Expanse.IP.IPRange.RangeSize | Number | Number of IP addresses in IP Network this IP address belongs to |
+| Expanse.IP.IPRange.ResponsiveIPCount | Number | Number of responsive IP addresses in IP Network this IP address belongs to |
+| Expanse.IP.IPRange.RangeIntroduced | Date | Date the IP network this IP address belongs to was introduced to Expanse |
+| Expanse.IP.IPRange.AttributionReasons | String | The reason why this IP belongs to the IP Range |
+| Expanse.IP.Geo.Latitude | String | Geo coordinates: Latitude of IP address |
+| Expanse.IP.Geo.Longitude | String | Geo coordinates: Longitude of IP address |
+| Expanse.IP.Geo.City | String | Geo coordinates city for this IP address |
+| Expanse.IP.Geo.RegionCode | String | Geo coordinates Region Code for this IP address |
+| Expanse.IP.Geo.CountryCode | String | Geo coordinates Country Code for this IP address |
+| Expanse.IP.Annotations.Tags | String | Customer defined Tags from Expanse related to this IP Range |
+| Expanse.IP.Annotations.AdditionalNotes | String | Customer defined Notes from Expanse related to this IP Range |
+| Expanse.IP.Annotations.PointsOfContact | String | Customer defined Points of Contact from Expanse related to this IP Range |
+| Expanse.IP.SeverityCounts.CRITICAL | Number | Count of CRITICAL Events for this IP address |
+| Expanse.IP.SeverityCounts.ROUTINE | Number | Count of ROUTINE Events for this IP address |
+| Expanse.IP.SeverityCounts.WARNING | Number | Count of WARNING Events for this IP address |
+| Expanse.IP.Geo.Description | String | Additional information about the location |
+| Expanse.IP.Geo.Country | String | The country in which the IP address is located. |
 
 ##### Command Example
+
 ```!ip ip=74.142.119.130```
 
 ##### Context Example
+
 ```
 {
     "IP": {
@@ -247,108 +262,114 @@ ip command
 ```
 
 ##### Human Readable Output
+
 ### IP information for: 74.142.119.130
+
 |Address|Annotations|BusinessUnits|Geo|IPRange|SeverityCounts|Version|
 |---|---|---|---|---|---|---|
 | 74.142.119.130 | AdditionalNotes: null<br />PointsOfContact: null<br />Tags: null| Acme Latex Supply | Description: AKRON<br />Latitude: 41.0433<br />Longitude: -81.5239<br />City: AKRON<br />RegionCode: OH<br />CountryCode: US<br />Location: 41.0433:-81.5239 | StartAddress: 74.142.119.128<br />EndAddress: 74.142.119.135<br />RangeSize: 8<br />ResponsiveIPCount: 2<br />RangeIntroduced: 2019-08-02<br />AttributionReasons: This parent range is attributed via IP network registration records for 74.142.119.128–74.142.119.135 | CRITICAL: 1<br />ROUTINE: 4<br />WARNING: 2 | 4 |
 
-
 ### 2. domain
+
 ---
 domain command
+
 ##### Required Permissions
-**none**
+
+__none__
+
 ##### Base Command
 
 `domain`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| domain | domain to search | Required | 
-
+| domain | domain to search | Required |
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Domain.Name | String | The domain name, for example: "google.com | 
-| Domain.DNS | String | A list of IP objects resolved by DNS | 
-| Domain.CreationDate | Date | The date that the domain was created | 
-| Domain.DomainStatus | String | The status of the domain | 
-| Domain.ExpirationDate | Date | The expiration date of the domain | 
-| Domain.NameServers | String | Name servers of the domain | 
-| Domain.Organization | String | The organization of the domain | 
-| Domain.Admin.Country | String | The country of the domain administrator | 
-| Domain.Admin.Email | String | The email of the domain administrator | 
-| Domain.Admin.Name | String | The name of the domain administrator | 
-| Domain.Admin.Phone | String | The phone of the domain administrator | 
-| Domain.Registrant.Country | String | The country of the registrant | 
-| Domain.Registrant.Email | String | The email of the registrant | 
-| Domain.Registrant.Name | String | The name of the registrant | 
-| Domain.Registrant.Phone | String | The phone of the registrant | 
-| Domain.WHOIS.DomainStatus | String | The status of the domain | 
-| Domain.WHOIS.NameServers | String | A list of name servers, for example: "ns1.bla.com, ns2.bla.com" | 
-| Domain.WHOIS.CreationDate | Date | The date that the domain was created | 
-| Domain.WHOIS.UpdatedDate | Date | The date that the domain was last updated | 
-| Domain.WHOIS.ExpirationDate | Date | The date that the domain expires | 
-| Domain.WHOIS.Registrant.Email | String | The email address of the registrant | 
-| Domain.WHOIS.Registrant.Name | String | The name of the registrant | 
-| Domain.WHOIS.Registrant.Phone | String | The phone of the registrant | 
-| Domain.WHOIS.Registrar.Name | String | The name of the registrar, for example: "GoDaddy" | 
-| Domain.WHOIS.Registrar.AbuseEmail | String | The email address of the contact for reporting abuse | 
-| Domain.WHOIS.Registrar.AbusePhone | Unknown | The phone number of contact for reporting abuse | 
-| Domain.WHOIS.Admin.Name | String | The name of the domain administrator | 
-| Domain.WHOIS.Admin.Email | String | The email address of the domain administrator | 
-| Domain.WHOIS.Admin.Phone | Unknown | The phone number of the domain administrator | 
-| Expanse.Domain.Name | String | The domain name, for example: "google.com | 
-| Expanse.Domain.DateAdded | Date | Date the domain was added to Expanse | 
-| Expanse.Domain.FirstObserved | Date | Date Expanse first observed the domain | 
-| Expanse.Domain.LastObserved | Date | Date Expanse last observed the domain | 
-| Expanse.Domain.HasLinkedCloudResources | Boolean | Does this domain have linked cloud resources ? | 
-| Expanse.Domain.SourceDomain | String | Top level domain | 
-| Expanse.Domain.Tenant | String | Customer defined Tenant from Expanse | 
-| Expanse.Domain.BusinessUnits | String | Customer defined Business Units from Expanse | 
-| Expanse.Domain.DNSSEC | String | DNSSEC info | 
-| Expanse.Domain.RecentIPs | String | Any recent IP addresses Expanse has seen for this domain | 
-| Expanse.Domain.CloudResources | String | Any Cloud Resources Expanse has seen for this domain | 
-| Expanse.Domain.LastSubdomainMetadata | String | Any recent subdomain metadata Expanse has seen for this domain | 
-| Expanse.Domain.ServiceStatus | String | Service Status Expanse sees for this domain | 
-| Expanse.Domain.LastSampledIP | String | Last seen IP address for this domain | 
-| Expanse.Domain.DNS | String | A list of IP objects resolved by DNS | 
-| Expanse.Domain.CreationDate | Date | The date that the domain was created | 
-| Expanse.Domain.DomainStatus | String | The status of the domain | 
-| Expanse.Domain.ExpirationDate | Date | The expiration date of the domain | 
-| Expanse.Domain.NameServers | String | Name servers of the domain | 
-| Expanse.Domain.Organization | String | The organization of the domain | 
-| Expanse.Domain.Admin.Country | String | The country of the domain administrator | 
-| Expanse.Domain.Admin.Email | String | The email address of the domain administrator | 
-| Expanse.Domain.Admin.Name | String | The name of the domain administrator | 
-| Expanse.Domain.Admin.Phone | String | The phone number of the domain administrator | 
-| Expanse.Domain.Registrant.Country | String | The country of the registrant | 
-| Expanse.Domain.Registrant.Email | String | The email address of the registrant | 
-| Expanse.Domain.Registrant.Name | String | The name of the registrant | 
-| Expanse.Domain.Registrant.Phone | String | The phone number for receiving abuse reports | 
-| Expanse.Domain.WHOIS.DomainStatus | String | The status of the domain | 
-| Expanse.Domain.WHOIS.NameServers | String | A list of name servers, for example: "ns1.bla.com, ns2.bla.com" | 
-| Expanse.Domain.WHOIS.CreationDate | Date | The date that the domain was created | 
-| Expanse.Domain.WHOIS.UpdatedDate | String | The date that the domain was last updated | 
-| Expanse.Domain.WHOIS.ExpirationDate | String | The date that the domain expires | 
-| Expanse.Domain.WHOIS.Registrant.Email | String | The email address of the registrant | 
-| Expanse.Domain.WHOIS.Registrant.Name | String | The name of the registrant | 
-| Expanse.Domain.WHOIS.Registrant.Phone | String | The phone number of the registrant | 
-| Expanse.Domain.WHOIS.Registrar.Name | String | The name of the registrar, for example: "GoDaddy" | 
-| Expanse.Domain.WHOIS.Registrar.AbuseEmail | String | The email address of the contact for reporting abuse | 
-| Expanse.Domain.WHOIS.Registrar.AbusePhone | String | The phone number of contact for reporting abuse | 
-| Expanse.Domain.WHOIS.Admin.Name | String | The name of the domain administrator | 
-| Expanse.Domain.WHOIS.Admin.Email | String | The email address of the domain administrator | 
-| Expanse.Domain.WHOIS.Admin.Phone | String | The phone number of the domain administrator | 
-
+| Domain.Name | String | The domain name, for example: "google.com |
+| Domain.DNS | String | A list of IP objects resolved by DNS |
+| Domain.CreationDate | Date | The date that the domain was created |
+| Domain.DomainStatus | String | The status of the domain |
+| Domain.ExpirationDate | Date | The expiration date of the domain |
+| Domain.NameServers | String | Name servers of the domain |
+| Domain.Organization | String | The organization of the domain |
+| Domain.Admin.Country | String | The country of the domain administrator |
+| Domain.Admin.Email | String | The email of the domain administrator |
+| Domain.Admin.Name | String | The name of the domain administrator |
+| Domain.Admin.Phone | String | The phone of the domain administrator |
+| Domain.Registrant.Country | String | The country of the registrant |
+| Domain.Registrant.Email | String | The email of the registrant |
+| Domain.Registrant.Name | String | The name of the registrant |
+| Domain.Registrant.Phone | String | The phone of the registrant |
+| Domain.WHOIS.DomainStatus | String | The status of the domain |
+| Domain.WHOIS.NameServers | String | A list of name servers, for example: "ns1.bla.com, ns2.bla.com" |
+| Domain.WHOIS.CreationDate | Date | The date that the domain was created |
+| Domain.WHOIS.UpdatedDate | Date | The date that the domain was last updated |
+| Domain.WHOIS.ExpirationDate | Date | The date that the domain expires |
+| Domain.WHOIS.Registrant.Email | String | The email address of the registrant |
+| Domain.WHOIS.Registrant.Name | String | The name of the registrant |
+| Domain.WHOIS.Registrant.Phone | String | The phone of the registrant |
+| Domain.WHOIS.Registrar.Name | String | The name of the registrar, for example: "GoDaddy" |
+| Domain.WHOIS.Registrar.AbuseEmail | String | The email address of the contact for reporting abuse |
+| Domain.WHOIS.Registrar.AbusePhone | Unknown | The phone number of contact for reporting abuse |
+| Domain.WHOIS.Admin.Name | String | The name of the domain administrator |
+| Domain.WHOIS.Admin.Email | String | The email address of the domain administrator |
+| Domain.WHOIS.Admin.Phone | Unknown | The phone number of the domain administrator |
+| Expanse.Domain.Name | String | The domain name, for example: "google.com |
+| Expanse.Domain.DateAdded | Date | Date the domain was added to Expanse |
+| Expanse.Domain.FirstObserved | Date | Date Expanse first observed the domain |
+| Expanse.Domain.LastObserved | Date | Date Expanse last observed the domain |
+| Expanse.Domain.HasLinkedCloudResources | Boolean | Does this domain have linked cloud resources ? |
+| Expanse.Domain.SourceDomain | String | Top level domain |
+| Expanse.Domain.Tenant | String | Customer defined Tenant from Expanse |
+| Expanse.Domain.BusinessUnits | String | Customer defined Business Units from Expanse |
+| Expanse.Domain.DNSSEC | String | DNSSEC info |
+| Expanse.Domain.RecentIPs | String | Any recent IP addresses Expanse has seen for this domain |
+| Expanse.Domain.CloudResources | String | Any Cloud Resources Expanse has seen for this domain |
+| Expanse.Domain.LastSubdomainMetadata | String | Any recent subdomain metadata Expanse has seen for this domain |
+| Expanse.Domain.ServiceStatus | String | Service Status Expanse sees for this domain |
+| Expanse.Domain.LastSampledIP | String | Last seen IP address for this domain |
+| Expanse.Domain.DNS | String | A list of IP objects resolved by DNS |
+| Expanse.Domain.CreationDate | Date | The date that the domain was created |
+| Expanse.Domain.DomainStatus | String | The status of the domain |
+| Expanse.Domain.ExpirationDate | Date | The expiration date of the domain |
+| Expanse.Domain.NameServers | String | Name servers of the domain |
+| Expanse.Domain.Organization | String | The organization of the domain |
+| Expanse.Domain.Admin.Country | String | The country of the domain administrator |
+| Expanse.Domain.Admin.Email | String | The email address of the domain administrator |
+| Expanse.Domain.Admin.Name | String | The name of the domain administrator |
+| Expanse.Domain.Admin.Phone | String | The phone number of the domain administrator |
+| Expanse.Domain.Registrant.Country | String | The country of the registrant |
+| Expanse.Domain.Registrant.Email | String | The email address of the registrant |
+| Expanse.Domain.Registrant.Name | String | The name of the registrant |
+| Expanse.Domain.Registrant.Phone | String | The phone number for receiving abuse reports |
+| Expanse.Domain.WHOIS.DomainStatus | String | The status of the domain |
+| Expanse.Domain.WHOIS.NameServers | String | A list of name servers, for example: "ns1.bla.com, ns2.bla.com" |
+| Expanse.Domain.WHOIS.CreationDate | Date | The date that the domain was created |
+| Expanse.Domain.WHOIS.UpdatedDate | String | The date that the domain was last updated |
+| Expanse.Domain.WHOIS.ExpirationDate | String | The date that the domain expires |
+| Expanse.Domain.WHOIS.Registrant.Email | String | The email address of the registrant |
+| Expanse.Domain.WHOIS.Registrant.Name | String | The name of the registrant |
+| Expanse.Domain.WHOIS.Registrant.Phone | String | The phone number of the registrant |
+| Expanse.Domain.WHOIS.Registrar.Name | String | The name of the registrar, for example: "GoDaddy" |
+| Expanse.Domain.WHOIS.Registrar.AbuseEmail | String | The email address of the contact for reporting abuse |
+| Expanse.Domain.WHOIS.Registrar.AbusePhone | String | The phone number of contact for reporting abuse |
+| Expanse.Domain.WHOIS.Admin.Name | String | The name of the domain administrator |
+| Expanse.Domain.WHOIS.Admin.Email | String | The email address of the domain administrator |
+| Expanse.Domain.WHOIS.Admin.Phone | String | The phone number of the domain administrator |
 
 ##### Command Example
+
 ```!domain domain=atlas.enron.com```
 
 ##### Context Example
+
 ```
 {
     "Domain": {
@@ -486,29 +507,35 @@ domain command
 ```
 
 ##### Human Readable Output
+
 ### Domain information for: atlas.enron.com
+
 |Admin|BusinessUnits|CloudResources|CreationDate|DNS|DNSSEC|DateAdded|DomainStatus|ExpirationDate|FirstObserved|HasLinkedCloudResources|LastObserved|LastSampledIP|LastSubdomainMetadata|Name|NameServers|Organization|RecentIPs|Registrant|ServiceStatus|SourceDomain|Tenant|WHOIS|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Country: UNITED STATES<br />Email: ENRON.COM@domainsbyproxy.com<br />Name: Registration Private<br />Phone: 14806242599 | VanDelay Industries |  | 1995-10-10T04:00:00Z |  |  | 2020-01-04T04:57:48.580Z | HAS_DNS_RESOLUTION | 2019-10-10T04:00:00Z | 2020-01-02T09:30:00.374Z | false | 2020-01-02T09:30:00.374Z | 192.64.147.150 |  | atlas.enron.com | NS73.DOMAINCONTROL.COM,<br />NS74.DOMAINCONTROL.COM | Domains By Proxy, LLC |  | Country: UNITED STATES<br />Email: ENRON.COM@domainsbyproxy.com<br />Name: Registration Private<br />Phone: 14806242599 | NO_ACTIVE_SERVICE,<br />NO_ACTIVE_CLOUD_SERVICE,<br />NO_ACTIVE_ON_PREM_SERVICE | enron.com | VanDelay Industries | DomainStatus: clientDeleteProhibited clientRenewProhibited clientTransferProhibited clientUpdateProhibited<br />NameServers: NS73.DOMAINCONTROL.COM,<br />NS74.DOMAINCONTROL.COM<br />CreationDate: 1995-10-10T04:00:00Z<br />UpdatedDate: 2015-07-29T16:20:56Z<br />ExpirationDate: 2019-10-10T04:00:00Z<br />Registrant: {"Email": "ENRON.COM@domainsbyproxy.com", "Name": "Registration Private", "Phone": "14806242599"}<br />Registrar: {"Name": "GoDaddy.com, LLC", "AbuseEmail": null, "AbusePhone": null}<br />Admin: {"Name": "Registration Private", "Email": "ENRON.COM@domainsbyproxy.com", "Phone": "14806242599"} |
 
 ### 3. expanse-get-certificate
+
 ---
 expanse-get-certificate command
+
 ##### Required Permissions
-**none**
+
+__none__
+
 ##### Base Command
 
 `expanse-get-certificate`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| common_name | domain to search | Required | 
-
+| common_name | domain to search | Required |
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Expanse.Certificate.SearchTerm | string | The common name searched for |
 | Expanse.Certificate.CommonName | string | The certificate common name |
@@ -541,13 +568,15 @@ expanse-get-certificate command
 | Expanse.Certificate.Subject.Country | string | Certificate Subject country |
 | Expanse.Certificate.Subject.Org | string | Certificate Subject Org |
 | Expanse.Certificate.Subject.Unit | string | Certificate Subject Unit |
-| Expanse.Certificate.Subject.AltNames | string | Certificate Subject alternative names | 
+| Expanse.Certificate.Subject.AltNames | string | Certificate Subject alternative names |
 | Expanse.Certificate.Subject.Raw | string | Certificate Subject raw details |
 
 ##### Command Example
+
 ```!expanse-get-certificate common_name=atlas.enron.com```
 
 ##### Context Example
+
 ```
 {
     "Expanse.Certificate": {
@@ -593,31 +622,36 @@ expanse-get-certificate command
 ```
 
 ##### Human Readable Output
+
 ### Certificate information for: atlas.enron.com
+
 |BusinessUnits|CertificateAdvertisementStatus|CloudResources|CommonName|DateAdded|FirstObserved|Issuer|LastObserved|MD5Hash|NotValidAfter|NotValidBefore|PemSha1|PemSha256|Properties|Provider|PublicKeyAlgorithm|PublicKeyBits|RecentIPs|SearchTerm|ServiceStatus|Subject|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | VanDelay Industries | NO_CERTIFICATE_ADVERTISEMENT |  | atlas.enron.com | 2019-11-21T09:14:27.308679Z |  | Name: Let's Encrypt Authority X3<br />Email: null<br />Country: US<br />Org: Let's Encrypt<br />Unit: null<br />AltNames: <br />Raw: C=US,O=Let's Encrypt,CN=Let's Encrypt Authority X3 |  | VEwAbJfmIFAVcZ_x4lm42g== | 2019-03-31T00:27:46Z | 2018-12-31T00:27:46Z | 3LAYlmV3xtn4ONJ3C9JN_ogz0u8= | kyERnydF-dzOuCCpG4jDnkGr4fI2a--lBZQz2hyhb30= | EXPIRED | None | RSA | 2048 |  | atlas.enron.com | NO_ACTIVE_SERVICE,NO_ACTIVE_ON_PREM_SERVICE,NO_ACTIVE_CLOUD_SERVICE | Name: atlas.enron.com<br />Email: ENRON.COM@domainsbyproxy.com<br />Country: US<br />Org: null<br />Unit: null<br />AltNames: atlas.enron.com<br />Raw: CN=atlas.enron.com |
 
-
 ### 4. expanse-get-behavior
+
 ---
 expanse-get-behavior command
+
 ##### Required Permissions
-**none**
+
+__none__
+
 ##### Base Command
 
 `expanse-get-behavior`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | ip | ip to search| Required |
 | start_time | ISO-8601 UTC timestamp denoting the earliest behavior data to fetch| Required |
 
-
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Expanse.Behavior.SearchTerm | string | IP used to search |
 | Expanse.Behavior.InternalAddress| string | IP internal to Organization |
@@ -638,12 +672,14 @@ expanse-get-behavior command
 | Expanse.Behavior.Flows.Timestamp | date | Timestamp of flow |
 | Expanse.Behavior.Flows.Protocol | string | Protocol of flow (UDP, TCP) |
 | Expanse.Behavior.Flows.Direction | string | Direction of flow |
-| Expanse.Behavior.Flows.RiskRule | string | Risk rule violated by flow | 
+| Expanse.Behavior.Flows.RiskRule | string | Risk rule violated by flow |
 
 ##### Command Example
+
 ```!expanse-get-behavior ip=74.142.119.130 start_time=7```
 
 ##### Context Example
+
 ```
 {
     "BusinessUnit": "VanDelay Industries",
@@ -685,30 +721,35 @@ expanse-get-behavior command
 ```
 
 ##### Human Readable Output
+
 ### Expanse Behavior information for: 74.142.119.130
+
 |BusinessUnit|ExternalAddresses|FlowSummaries|InternalAddress|InternalCountryCode|InternalDomains|InternalExposureTypes|InternalIPRanges|SearchTerm|
 |---|---|---|---|---|---|---|---|---|
 | VanDelay Industries | 66.110.49.36,66.110.49.72 | 74.142.119.130:57475 (US) -> 66.110.49.72:443 (CA) TCP violates Outbound Flows from Servers at 2020-04-05T21:18:56.889Z<br />74.142.119.130:61694 (US) -> 66.110.49.36:443 (CA) TCP violates Outbound Flows from Servers at 2020-04-05T21:03:50.867Z | 74.142.119.130 | US |  | HttpServer |  | 74.142.119.130 |
 
-
 ### 4. expanse-get-exposures
+
 ---
 expanse-get-exposures command
+
 ##### Required Permissions
-**none**
+
+__none__
+
 ##### Base Command
 
 `expanse-get-exposures`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | ip | ip to search| Required |
 
-
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Expanse.Exposures.SearchTerm | string | IP used to search |
 | Expanse.Exposures.TotalExposureCount | number | The total count of exposures for the IP |
@@ -729,11 +770,12 @@ expanse-get-exposures command
 | Expanse.Exposures.Exposures.Status | unknown | Status details of the Exposure |
 | Expanse.Exposures.Exposures.Provider | unknown | Provider details of the Exposure |
 
-
 ##### Command Example
+
 ```!expanse-get-exposures ip=33.2.243.123```
 
 ##### Context Example
+
 ```
 {
     "CriticalExposureCount": 0,
@@ -848,29 +890,35 @@ expanse-get-exposures command
 ```
 
 ##### Human Readable Output
+
 ### Expanse Exposure information for: 33.2.243.123
+
 |CriticalExposureCount|ExposureSummaries|RoutineExposureCount|SearchTerm|TotalExposureCount|UnknownExposureCount|WarningExposureCount|
 |---|---|---|---|---|---|---|
 | 0 | NTP_SERVER exposure on 33.2.243.123:UDP123 | 1 | 33.2.243.123 | 1 | 0 | 0 |
 
-
 ### 4. expanse-get-domains-for-certificate
+
 ---
 expanse-get-domains-for-certificate command
+
 ##### Required Permissions
-**none**
+
+__none__
+
 ##### Base Command
 
 `expanse-get-domains-for-certificate`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
 | common_name | The certificate common name | Required |
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Expanse.IPDomains.SearchTerm | string | The common name that was searched |
 | Expanse.IPDomains.TotalDomainCount | number | The number of domains found matching the specified certificate |
@@ -878,6 +926,7 @@ expanse-get-domains-for-certificate command
 | Expanse.IPDomains.DomainList | number | An array of domain objects. This is truncated at 50 |
 
 ##### Command Example
+
 ```!expanse-get-domains-for-certificate common_name="*.us.expanse.co"```
 
 ##### Context Example
@@ -944,12 +993,14 @@ expanse-get-domains-for-certificate command
 <!-- disable-secrets-detection-start -->
 
 ##### Human Readable Output
+
 ### Expanse Domains matching Certificate Common Name: *.us.expanse.co
+
 | FlatDomainList | SearchTerm | TotalDomainCount |
 |---|---|---|
 | california.us.expanse.co, dc.us.expanse.co | *.us.expanse.co | 2 |
 
-
 ## Contact Details
+
 ---
 For Product Support, please contact your Technical Account Manager or email help@expanseinc.com

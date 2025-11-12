@@ -6,6 +6,7 @@ import copy
 import json
 from collections.abc import Callable
 from datetime import datetime
+from unittest.mock import patch
 
 import demistomock as demisto
 import pytest
@@ -31,9 +32,11 @@ from QRadar_v3 import (
     MIRRORED_OFFENSES_FETCHED_CTX_KEY,
     MIRRORED_OFFENSES_FINISHED_CTX_KEY,
     MIRRORED_OFFENSES_QUERIED_CTX_KEY,
+    SAMPLE_INCIDENTS_KEY,
     OFFENSE_OLD_NEW_NAMES_MAP,
     REFERENCE_SETS_RAW_FORMATTED,
     USECS_ENTRIES,
+    SAMPLE_SIZE,
     Client,
     EntryFormat,
     EntryType,
@@ -967,7 +970,8 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
     Then:
      - Ensure dict containing the enrichment is as expected.
     """
-    mocker.patch.object(client, mock_func_name, return_value=mock_response)
+    mock_func = mocker.patch.object(client, mock_func_name, return_value=mock_response)
+    mock_func.__name__ = mock_func.__name  # magic mock objects have different attributes from actual functions
     res = enrich_func(**args)
     assert res == expected
 
@@ -1354,6 +1358,7 @@ def test_get_modified_with_events(mocker):
         LAST_MIRROR_KEY: 3444,
         MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
         LAST_MIRROR_CLOSED_KEY: 3444,
+        SAMPLE_INCIDENTS_KEY: [],
     }
     set_integration_context(context_data)
     status = {"123": {"status": "COMPLETED"}, "456": {"status": "WAIT"}, "555": {"status": "PENDING"}}
@@ -1461,7 +1466,6 @@ def test_qradar_remote_network_cidr_delete_command(mocker):
     assert result.readable_output == expected_command_result
 
 
-@pytest.mark.parametrize("mirror_options", [MIRROR_OFFENSE_AND_EVENTS, ""])
 @pytest.mark.parametrize(
     "test_case_data",
     [
@@ -1491,7 +1495,7 @@ def test_qradar_remote_network_cidr_delete_command(mocker):
         (ctx_test_data["ctx_compatible"]["mirror_offense_and_events_no_loop_offenses"]),
     ],
 )
-def test_integration_context_during_run(mirror_options, test_case_data, mocker):
+def test_integration_context_during_run(test_case_data, mocker):
     """
     Given:
     - Cortex XSOAR parameters.
@@ -1528,15 +1532,22 @@ def test_integration_context_during_run(mirror_options, test_case_data, mocker):
         4) In both loop runs no offenses were fetched.
     """
     mirror_direction = test_case_data["mirror_direction"]
+    mirror_options = test_case_data["mirror_options"]
 
     init_context = test_case_data["init_context"].copy()
-    init_context |= {
-        MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
-        MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
-        MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
-        LAST_FETCH_KEY: init_context.get(LAST_FETCH_KEY, 0),
-        "samples": init_context.get("samples", []),
-    }
+    if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+        init_context |= {
+            MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+            MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+            MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
+            LAST_FETCH_KEY: init_context.get(LAST_FETCH_KEY, 0),
+            SAMPLE_INCIDENTS_KEY: init_context.get(SAMPLE_INCIDENTS_KEY, []),
+        }
+    else:
+        init_context |= {
+            LAST_FETCH_KEY: init_context.get(LAST_FETCH_KEY, 0),
+            SAMPLE_INCIDENTS_KEY: init_context.get(SAMPLE_INCIDENTS_KEY, []),
+        }
 
     set_integration_context(init_context)
     if is_offenses_first_loop := test_case_data["offenses_first_loop"]:
@@ -1575,13 +1586,18 @@ def test_integration_context_during_run(mirror_options, test_case_data, mocker):
         assets_limit=100,
         long_running_container_id="12345",
     )
-    expected_ctx_first_loop |= {
-        MIRRORED_OFFENSES_QUERIED_CTX_KEY: {"15": QueryStatus.WAIT.value} if mirror_options and is_offenses_first_loop else {},
-        MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
-        MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
-        LAST_FETCH_KEY: expected_ctx_first_loop.get(LAST_FETCH_KEY, 0),
-        "samples": expected_ctx_first_loop.get("samples", []),
-    }
+    if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+        expected_ctx_first_loop.update(
+            {
+                MIRRORED_OFFENSES_QUERIED_CTX_KEY: {"15": QueryStatus.WAIT.value} if is_offenses_first_loop else {},
+                MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
+            }
+        )
+        if LAST_FETCH_KEY not in expected_ctx_first_loop:
+            expected_ctx_first_loop[LAST_FETCH_KEY] = 0
+        if SAMPLE_INCIDENTS_KEY not in expected_ctx_first_loop:
+            expected_ctx_first_loop[SAMPLE_INCIDENTS_KEY] = []
 
     current_context = get_integration_context()
 
@@ -1599,9 +1615,19 @@ def test_integration_context_during_run(mirror_options, test_case_data, mocker):
         enrich_mock = mocker.patch.object(QRadar_v3, "enrich_offense_with_events")
         enrich_mock.side_effect = second_loop_offenses_with_events
         expected_ctx_second_loop = ctx_test_data["context_data_second_loop_default"].copy()
+        # The samples from the first loop are preserved and second loop samples are appended and sliced by SAMPLE_SIZE
+        if is_offenses_first_loop:
+            expected_ctx_second_loop[SAMPLE_INCIDENTS_KEY] = (
+                expected_ctx_first_loop.get(SAMPLE_INCIDENTS_KEY, []) + expected_ctx_second_loop.get(SAMPLE_INCIDENTS_KEY, [])
+            )[:SAMPLE_SIZE]
     else:
         mocker.patch.object(client, "offenses_list", return_value=[])
-        expected_ctx_second_loop = expected_ctx_first_loop
+        expected_ctx_second_loop = expected_ctx_first_loop.copy()
+        # When no new offenses in second loop, the existing samples are appended and sliced by SAMPLE_SIZE
+        if expected_ctx_first_loop.get(SAMPLE_INCIDENTS_KEY):
+            expected_ctx_second_loop[SAMPLE_INCIDENTS_KEY] = (
+                expected_ctx_first_loop.get(SAMPLE_INCIDENTS_KEY, []) + expected_ctx_first_loop.get(SAMPLE_INCIDENTS_KEY, [])
+            )[:SAMPLE_SIZE]
     perform_long_running_loop(
         client=client,
         offenses_per_fetch=2,
@@ -1622,15 +1648,21 @@ def test_integration_context_during_run(mirror_options, test_case_data, mocker):
     for k, v in second_loop_ctx_not_default_values.items():
         expected_ctx_second_loop[k] = v
 
-    expected_ctx_second_loop |= {
-        MIRRORED_OFFENSES_QUERIED_CTX_KEY: {"15": QueryStatus.WAIT.value} if mirror_options and is_offenses_first_loop else {},
-        MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
-        MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
-        LAST_FETCH_KEY: expected_ctx_second_loop.get(LAST_FETCH_KEY, 0),
-        "samples": expected_ctx_second_loop.get("samples", []),
-    }
+    if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+        expected_ctx_second_loop.update(
+            {
+                MIRRORED_OFFENSES_QUERIED_CTX_KEY: {"15": QueryStatus.WAIT.value} if is_offenses_first_loop else {},
+                MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
+            }
+        )
+        if LAST_FETCH_KEY not in expected_ctx_second_loop:
+            expected_ctx_second_loop[LAST_FETCH_KEY] = 0
+        if SAMPLE_INCIDENTS_KEY not in expected_ctx_second_loop:
+            expected_ctx_second_loop[SAMPLE_INCIDENTS_KEY] = []
 
     current_context = get_integration_context()
+
     assert current_context == expected_ctx_second_loop
     set_integration_context({})
 
@@ -1650,13 +1682,13 @@ def test_convert_ctx():
         MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
         LAST_FETCH_KEY: 15,
         LAST_MIRROR_KEY: 0,
-        "samples": [],
+        SAMPLE_INCIDENTS_KEY: [],
     }
     assert new_context == expected
 
 
 def test_convert_ctx_to_new_structure():
-    context = {LAST_FETCH_KEY: "15", LAST_MIRROR_KEY: "0", "samples": "[]"}
+    context = {LAST_FETCH_KEY: "15", LAST_MIRROR_KEY: "0", SAMPLE_INCIDENTS_KEY: "[]"}
     set_integration_context(context)
     validate_integration_context()
     assert get_integration_context() == {
@@ -1665,7 +1697,7 @@ def test_convert_ctx_to_new_structure():
         MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
         LAST_FETCH_KEY: 15,
         LAST_MIRROR_KEY: 0,
-        "samples": [],
+        SAMPLE_INCIDENTS_KEY: [],
     }
 
 
@@ -2044,6 +2076,12 @@ def test_dict_converter():
     Then:
         - Verify that the outputted dictionary contains the expected values.
     """
+    input_dict = {"age": "0"}
+    expected_output = {"age": 0}
+    converted_dict = convert_dict_to_actual_values(input_dict)
+    assert not isinstance(converted_dict["age"], bool)
+    assert converted_dict == expected_output
+
     input_dict = {"enabled": "true", "year": "2024", "name": "Moshe"}
     expected_output = {"enabled": True, "year": 2024, "name": "Moshe"}
     assert convert_dict_to_actual_values(input_dict) == expected_output
@@ -2117,7 +2155,7 @@ def test_recovery_lastrun(mocker):
     assert context_data[LAST_FETCH_KEY] == 4
 
     # now the last run and the integration context are the same, make sure that update context is not called
-    update_context_mock = mocker.patch.object(QRadar_v3, "safely_update_context_data")
+    update_context_mock = mocker.patch.object(QRadar_v3, "safely_update_context_data_partial")
     set_integration_context(
         {LAST_FETCH_KEY: 2, MIRRORED_OFFENSES_QUERIED_CTX_KEY: {0: 0}, MIRRORED_OFFENSES_FINISHED_CTX_KEY: {0: 0}}
     )
@@ -2224,3 +2262,235 @@ def test_add_iso_entries_to_dict_placeholder_edge_case():
     dicts = [{"start_time": 9223372036854775807, "last_persisted_time": 1741790340000}]
     results = add_iso_entries_to_dict(dicts)
     assert results == [{"start_time": 9223372036854775807, "last_persisted_time": "2025-03-12T14:39:00+00:00"}]
+
+
+MAX_SAMPLE_SIZE_MB = 1
+MAX_SAMPLE_SIZE_BYTES = MAX_SAMPLE_SIZE_MB * 1024 * 1024
+
+
+@pytest.fixture(autouse=True)
+def patch_constants(monkeypatch):
+    monkeypatch.setattr("QRadar_v3.MAX_SAMPLE_SIZE_BYTES", MAX_SAMPLE_SIZE_BYTES)
+    monkeypatch.setattr("QRadar_v3.MAX_SAMPLE_SIZE_MB", MAX_SAMPLE_SIZE_MB)
+
+
+class NonSerializable:
+    def __str__(self):
+        return "NonSerializable"
+
+
+@pytest.mark.parametrize(
+    "incident,expected_min_size",
+    [
+        ({"name": "Test Incident", "details": "A" * 1024}, 1024),
+        ({"id": 123, "active": True}, 10),
+    ],
+)
+def test_calculate_object_size_success_json_serialization(incident, expected_min_size):
+    """
+    Given a JSON-serializable incident dictionary
+    When calculate_object_size is called
+    Then it should return a byte length >= expected_min_size and not raise any exception
+    """
+    size = QRadar_v3.calculate_object_size(incident)
+    assert isinstance(size, int)
+    assert size >= expected_min_size
+
+
+def test_calculate_object_size_fallback_to_str(monkeypatch):
+    """
+    Given an incident dictionary that includes a non-serializable object
+    When calculate_object_size is called
+    Then it should fallback to str() and log a debug message
+    """
+    from QRadar_v3 import calculate_object_size
+
+    incident = {"data": NonSerializable()}
+
+    def json_dumps_fail(*args, **kwargs):
+        raise TypeError("Object of type NonSerializable is not JSON serializable")
+
+    monkeypatch.setattr("QRadar_v3.json.dumps", json_dumps_fail)
+
+    with patch("QRadar_v3.demisto.debug") as mock_debug:
+        size = calculate_object_size(incident)
+        assert isinstance(size, int)
+        assert size > 0
+
+        debug_calls = [call.args[0] for call in mock_debug.call_args_list]
+        assert any("Could not serialize object to JSON" in msg for msg in debug_calls)
+
+
+def test_calculate_object_size_encoding_fallback(monkeypatch):
+    """
+    Given an incident with characters that cause UTF-8 encoding failure
+    When calculate_object_size is called
+    Then it should fallback to 'replace' encoding and log a debug message
+    """
+    from QRadar_v3 import calculate_object_size
+
+    broken_string = "Test\x80Incident"
+    incident = {"details": broken_string}
+
+    class MockStr(str):
+        def encode(self, encoding="utf-8", errors=None):
+            if errors is None:
+                raise UnicodeEncodeError("utf-8", self, 0, 1, "invalid start byte")
+            return super().encode(encoding, errors)
+
+    with patch("QRadar_v3.json.dumps", return_value=MockStr(broken_string)), patch("QRadar_v3.demisto.debug") as mock_debug:
+        size = calculate_object_size(incident)
+        assert isinstance(size, int)
+
+        debug_calls = [call.args[0] for call in mock_debug.call_args_list]
+        assert any("Could not encode string to UTF-8" in msg for msg in debug_calls)
+
+
+def test_is_incident_size_acceptable_true():
+    """
+    Given an incident smaller than the MAX_SAMPLE_SIZE_BYTES limit
+    When is_incident_size_acceptable is called
+    Then it should return True
+    """
+    small_incident = {"data": "A" * 512}
+    assert QRadar_v3.is_incident_size_acceptable(small_incident) is True
+
+
+def test_is_incident_size_acceptable_false():
+    """
+    Given an incident larger than the MAX_SAMPLE_SIZE_BYTES limit
+    When is_incident_size_acceptable is called
+    Then it should return False and a debug message should be logged
+    """
+    large_incident = {"data": "A" * (MAX_SAMPLE_SIZE_BYTES + 1)}
+    with patch("QRadar_v3.demisto.debug") as mock_debug:
+        result = QRadar_v3.is_incident_size_acceptable(large_incident)
+        assert result is False
+        assert any("exceeds maximum sample size" in call.args[0] for call in mock_debug.call_args_list)
+
+
+@pytest.mark.parametrize(
+    "current_samples, new_samples, expected_samples",
+    [
+        pytest.param(
+            ["sample1", "sample2"],
+            ["sample3", "sample4"],
+            ["sample1", "sample2"],
+            id="Two new samples with two existing samples",
+        ),
+        pytest.param(
+            [],
+            ["sample3", "sample4", "sample5"],
+            ["sample3", "sample4"],
+            id="No new samples with existing samples list",
+        ),
+        pytest.param(
+            '["sample1"]',
+            ["sample2", "sample3", "sample4"],
+            ["sample2", "sample3"],
+            id="Handling legacy string format",
+        ),
+        pytest.param(
+            ["sample1"],
+            ["sample2"],
+            ["sample1", "sample2"],
+            id="One new sample with one existing sample",
+        ),
+        pytest.param(
+            [],
+            [],
+            [],
+            id="No samples",
+        ),
+    ],
+)
+def test_merge_samples(current_samples: list, new_samples: list, expected_samples: list):
+    """
+    Given samples in the existing integration contex and new samples in the changes to be merged
+    When calling merge_samples
+    Then ensure merged samples do not exceed `SAMPLE_SIZE`
+    """
+    from QRadar_v3 import merge_samples
+
+    initial_ctx = copy.deepcopy({SAMPLE_INCIDENTS_KEY: current_samples})
+    changes = copy.deepcopy({SAMPLE_INCIDENTS_KEY: new_samples})
+
+    merge_samples(initial_ctx, changes)
+
+    assert initial_ctx == {SAMPLE_INCIDENTS_KEY: expected_samples}
+
+
+@pytest.mark.parametrize(
+    "current_ctx, changes, override_keys, expected_ctx",
+    [
+        pytest.param(
+            {"a": 1, "b": 2, "c": 3},
+            {"b": 99, "d": 4},
+            ["a", "b", "c"],
+            {"a": 1, "c": 3},
+            id="Key 'b' in current_ctx and changes removed",
+        ),
+        pytest.param(
+            {"a": 1, "b": 2, "c": 3},
+            {"d": 4, "e": 5},
+            ["a", "b", "c"],
+            {"a": 1, "b": 2, "c": 3},
+            id="No common keys in current_ctx and changes",
+        ),
+        pytest.param(
+            {"a": 1, "b": 2},
+            {"a": 99},
+            [],
+            {"a": 1, "b": 2},
+            id="No override keys",
+        ),
+        pytest.param(
+            {"k1": 1, "k2": 2, "k3": 3},
+            {"k2": "val", "k3": "another_val"},
+            ["k1", "k2", "k3"],
+            {"k1": 1},
+            id="Keys 'k1' and 'k3' in current_ctx and changes removed",
+        ),
+    ],
+)
+def test_remove_context_keys(current_ctx, changes, override_keys, expected_ctx):
+    """
+    Given current_ctx and changes to be merged
+    When calling remove_context_keys with override_keys
+    Then ensure common keys in the override_keys list are removed from current_ctx
+    """
+    from QRadar_v3 import remove_context_keys
+
+    initial_ctx = copy.deepcopy(current_ctx)
+
+    remove_context_keys(initial_ctx, changes, override_keys)
+
+    assert initial_ctx == expected_ctx
+
+
+def test_get_rules_names(mocker):
+    """
+    Given a list of fetched offences
+    When calling get_rules_names
+    Then ensure HTTP request is re-attempted after one failure and the mapping of {rule_id: rule_name} is as expected
+    """
+    from QRadar_v3 import get_rules_names
+
+    mock_api_response = [
+        {"id": 101, "name": "Suspicious Activity"},
+        {"id": 102, "name": "Unauthorized Login"},
+        {"id": 103, "name": "Malware Detected"},
+    ]
+    mock_client_rules_list = mocker.patch.object(client, "rules_list", side_effect=[Exception("API Timeout"), mock_api_response])
+    mock_client_rules_list.__name__ = "mock_rules_list"  # magic mock objects have different attributes from actual functions
+
+    offenses = [{"id": 1, "rules": [{"id": 101}, {"id": 102}]}, {"id": 2, "rules": [{"id": 102}, {"id": 103}]}]
+    rule_id_rule_name_mapping = get_rules_names(client, offenses)
+
+    # Assert `client.rules_list` method was called exactly twice (first time failed due to 'API Timeout' exception)
+    assert mock_client_rules_list.call_count == 2
+    assert rule_id_rule_name_mapping == {
+        101: "Suspicious Activity",
+        102: "Unauthorized Login",
+        103: "Malware Detected",
+    }

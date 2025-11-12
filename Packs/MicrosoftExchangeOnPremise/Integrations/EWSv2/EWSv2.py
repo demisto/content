@@ -701,8 +701,10 @@ def cast_mime_item_to_message(item):
     mime_content = item.mime_content
     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
     if isinstance(mime_content, bytes):
+        demisto.debug("Returning message as bytes")
         return email.message_from_bytes(mime_content, policy=email_policy)  # type: ignore[arg-type]
     else:
+        demisto.debug("Returning message as string")
         return email.message_from_string(mime_content, policy=email_policy)  # type: ignore[arg-type]
 
 
@@ -828,10 +830,7 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
                                         except ValueError as err:
                                             if "There may be at most" not in str(err):
                                                 raise err
-                            try:
-                                formatted_message = attached_email.as_string()
-                            except UnicodeEncodeError:
-                                formatted_message = attached_email.as_bytes()
+                            formatted_message = get_formatted_message(attached_email)
                             file_result = fileResult(
                                 get_attachment_name(
                                     attachment_name=attachment.name,
@@ -941,6 +940,19 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
             raise e
 
     return incident
+
+
+def get_formatted_message(attached_email) -> str | bytes:
+    try:
+        demisto.debug("Formatting attached mail as string")
+        return attached_email.as_string()
+    except Exception as e:
+        demisto.info(f"Could not parse attached mail as string, trying as bytes.\n{e}")
+        try:
+            return attached_email.as_bytes()
+        except Exception as e:
+            demisto.error(f"Could not parse attached mail as bytes, {e}")
+            raise Exception(f"Could not format message, {e}")
 
 
 def fetch_emails_as_incidents(
@@ -1143,7 +1155,7 @@ def fetch_attachments_for_message(
                             attachment_subject=attachment.item.subject,
                         )
                         + ".eml",
-                        attached_email.as_string(),
+                        get_formatted_message(attached_email),
                     )
                 )
 
@@ -1432,7 +1444,7 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma:
                         if "There may be at most" not in str(err):
                             raise err
         eml_name = item.subject if item.subject else "demisto_untitled_eml"
-        file_result = fileResult(eml_name + ".eml", email_content.as_string())
+        file_result = fileResult(eml_name + ".eml", get_formatted_message(email_content))
         file_result = file_result if file_result else "Failed uploading eml file to war room"
 
         return file_result

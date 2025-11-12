@@ -1,9 +1,11 @@
+import itertools
+from typing import Any
+
+import urllib3
+from dateutil import parser
+
 import demistomock as demisto
 from CommonServerPython import *
-import urllib3
-from typing import Any
-import itertools
-from dateutil import parser
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -11,6 +13,7 @@ urllib3.disable_warnings()
 EVENT_TYPE_ALERTS = "alerts"
 EVENT_TYPE_ACTIVITIES = "activity"
 EVENT_TYPE_DEVICES = "devices"
+MAX_PAGINATION_DURATION_SECONDS = 180
 
 
 class EVENT_TYPE:
@@ -39,27 +42,28 @@ DEVICES_DEFAULT_MAX_FETCH = 10000
 EVENT_TYPES = {
     "Alerts": EVENT_TYPE(
         unique_id_key="alertId",
-        aql_query=f"in:{EVENT_TYPE_ALERTS}",
+        aql_query=f"in:{EVENT_TYPE_ALERTS}",  # noqa: E231
         type=EVENT_TYPE_ALERTS,
         order_by="time",
         dataset_name=EVENT_TYPE_ALERTS,
     ),
     "Activities": EVENT_TYPE(
         unique_id_key="activityUUID",
-        aql_query=f"in:{EVENT_TYPE_ACTIVITIES}",
+        aql_query=f"in:{EVENT_TYPE_ACTIVITIES}",  # noqa: E231
         type=EVENT_TYPE_ACTIVITIES,
         order_by="time",
         dataset_name="activities",
     ),
     "Devices": EVENT_TYPE(
         unique_id_key="id",
-        aql_query=f"in:{EVENT_TYPE_DEVICES}",
+        aql_query=f"in:{EVENT_TYPE_DEVICES}",  # noqa: E231
         type=EVENT_TYPE_DEVICES,
         order_by="lastSeen",
         dataset_name=EVENT_TYPE_DEVICES,
     ),
 }
 DEVICES_LAST_FETCH = "devices_last_fetch_time"
+API_TIMEOUT = BaseClient.REQUESTS_TIMEOUT * 3
 
 """ CLIENT CLASS """
 
@@ -71,7 +75,9 @@ class Client(BaseClient):
         self._api_key = api_key
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         if not access_token or not self.is_valid_access_token(access_token):
+            demisto.debug("Invalid access token was used, attempting to get new access token.")
             access_token = self.get_access_token()
+            demisto.debug("New access token was successfully generated.")
         self.update_access_token(access_token)
 
     def update_access_token(self, access_token=None):
@@ -83,14 +89,19 @@ class Client(BaseClient):
 
     def perform_fetch(self, params):
         try:
-            raw_response = self._http_request(url_suffix="/search/", method="GET", params=params, headers=self._headers)
+            raw_response = self._http_request(
+                url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
+            )
         except Exception as e:
             if "Invalid access token" in str(e):
-                demisto.debug("debug-log: Invalid access token")
+                demisto.debug("Expired or invalid access token, attempting to update access token.")
                 self.update_access_token()
-                raw_response = self._http_request(url_suffix="/search/", method="GET", params=params, headers=self._headers)
+                demisto.debug("Access token successfully updated.")
+                raw_response = self._http_request(
+                    url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
+                )
             else:
-                demisto.debug(f"debug-log: Error occurred while fetching events: {e}")
+                demisto.debug(f"Error occurred while fetching events: {e}")
                 raise e
         return raw_response
 
@@ -104,7 +115,7 @@ class Client(BaseClient):
         Returns:
             list[dict]: List of events objects represented as dictionaries.
         """
-        params: dict[str, Any] = {"aql": aql_query, "includeTotal": "true", "orderBy": order_by}
+        params: dict[str, Any] = {"aql": aql_query, "includeTotal": "false", "orderBy": order_by}
         raw_response = self.perform_fetch(params)
         return raw_response.get("data", {}).get("results", [])
 
@@ -116,6 +127,7 @@ class Client(BaseClient):
         order_by: str = "time",
         from_param: None | int = None,
         before: Optional[datetime] = None,
+        event_type: str = "",
     ):
         """Fetches events using AQL query.
 
@@ -129,11 +141,11 @@ class Client(BaseClient):
         Returns:
             (list[dict], int): A tuple with the List of events objects represented as dictionaries and the next event pointer.
         """
-        aql_query = f"{aql_query} after:{after.strftime(DATE_FORMAT)}"
+        aql_query = f"{aql_query} after:{after.strftime(DATE_FORMAT)}"  # noqa: E231
         if before:
-            aql_query = f"{aql_query} before:{before.strftime(DATE_FORMAT)}"
-            demisto.info(f"info-log: Fetching events until {before}.")
-        params: dict[str, Any] = {"aql": aql_query, "includeTotal": "true", "length": max_fetch, "orderBy": order_by}
+            aql_query = f"{aql_query} before:{before.strftime(DATE_FORMAT)}"  # noqa: E231
+            demisto.info(f"Fetching events until {before}.")
+        params: dict[str, Any] = {"aql": aql_query, "includeTotal": "false", "length": max_fetch, "orderBy": order_by}
         if from_param:
             params["from"] = from_param
         raw_response = self.perform_fetch(params)
@@ -142,6 +154,7 @@ class Client(BaseClient):
         # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list.
         # The response's 'next' attribute carries the index to start the next request in the
         # pagination (using the 'from' request parameter), or null if there are no more pages left.
+        start_time = datetime.now()
         try:
             while next and (len(results) < max_fetch):
                 if len(results) < max_fetch:
@@ -151,9 +164,19 @@ class Client(BaseClient):
                 next = raw_response.get("data", {}).get("next") or 0
                 current_results = raw_response.get("data", {}).get("results", [])
                 results.extend(current_results)
-                demisto.info(f"info-log: fetched {len(current_results)} results, total is {len(results)}, and {next=}.")
+                demisto.info(f"fetched {len(current_results)} results, total is {len(results)}, and {next=}.")
+
+                total_seconds = (datetime.now() - start_time).total_seconds()
+                demisto.debug(f"total {total_seconds} seconds so far")
+                if next and total_seconds >= MAX_PAGINATION_DURATION_SECONDS:
+                    demisto.debug(
+                        f"Reached pagination time limit of {MAX_PAGINATION_DURATION_SECONDS}s for {event_type}, "
+                        f"breaking early with {next=} to avoid timeout. Pagination will resume in the next fetch cycle."
+                    )
+                    break
+
         except Exception as e:
-            demisto.info(f"info-log: caught an exception during pagination:\n{str(e)}")
+            demisto.info(f"caught an exception during pagination:\n{str(e)}")  # noqa: E231
 
         return results, next
 
@@ -168,7 +191,7 @@ class Client(BaseClient):
         """
         try:
             headers = {"Authorization": f"{access_token}", "Accept": "application/json"}
-            params = {"aql": 'in:alerts timeFrame:"1 seconds"', "includeTotal": "true", "length": 1, "orderBy": "time"}
+            params = {"aql": 'in:alerts timeFrame:"1 seconds"', "includeTotal": "false", "length": 1, "orderBy": "time"}
             self._http_request(url_suffix="/search/", method="GET", params=params, headers=headers)
         except Exception:
             return False
@@ -246,7 +269,7 @@ def calculate_fetch_start_time(
     # case 1
     if last_fetch_time:
         if isinstance(last_fetch_time, str):
-            demisto.info(f"info-log: calculating_fetch_time for {last_fetch_time=}")
+            demisto.info(f"calculating_fetch_time for {last_fetch_time=}")
             last_fetch_datetime = arg_to_datetime(last_fetch_time)
         else:
             last_fetch_datetime = last_fetch_time
@@ -259,7 +282,7 @@ def calculate_fetch_start_time(
     if after_time:
         after_time = after_time.replace(tzinfo=None)
     if not after_time or after_time >= before_time:
-        demisto.info("info-log: last run time is later than before time, overwriting after time.")
+        demisto.info("last run time is later than before time, overwriting after time.")
         after_time = before_time - timedelta(minutes=1)
     return after_time, before_time
 
@@ -318,7 +341,7 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
     """
     # case 1
     if not events:
-        demisto.debug("debug-log: Dedup case 1 - Empty event list (no new events received from API response).")
+        demisto.debug("Dedup case 1 - Empty event list (no new events received from API response).")
         return [], events_last_fetch_ids
 
     new_events: list[dict] = [event for event in events if event.get(unique_id_key) not in events_last_fetch_ids]
@@ -332,7 +355,7 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
         and latest_event_datetime
         and are_two_datetime_equal_by_second(latest_event_datetime, earliest_event_datetime)
     ):
-        demisto.debug("debug-log: Dedup case 2 - All events from the current fetch cycle have the same timestamp.")
+        demisto.debug("Dedup case 2 - All events from the current fetch cycle have the same timestamp.")
         new_ids = [event.get(unique_id_key, "") for event in new_events]
         events_last_fetch_ids.extend(new_ids)
         return new_events, events_last_fetch_ids
@@ -341,7 +364,7 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
     else:
         # Note that the following timestamps comparison are made between strings and assume
         # the following timestamp format from the response: "YYYY-MM-DDTHH:MM:SS.fffff+Z"
-        demisto.debug("debug-log: Dedup case 3 - Most recent event has later timestamp then other events in the response.")
+        demisto.debug("Dedup case 3 - Most recent event has later timestamp then other events in the response.")
 
         latest_event_timestamp = events[-1].get(event_order_by, "")[:19]
         # itertools.takewhile is used to iterate over the list of events (from latest time to earliest)
@@ -380,11 +403,11 @@ def fetch_by_event_type(
     last_fetch_time_field = f"{event_type.type}_last_fetch_time"
     last_fetch_next_field = f"{event_type.type}_last_fetch_next_field"
 
-    demisto.debug(f"debug-log: handling event-type: {event_type.type}")
+    demisto.debug(f"handling event-type: {event_type.type}")
     if last_fetch_time := last_run.get(last_fetch_time_field):
-        demisto.debug(f"debug-log: last run of type: {event_type.type} time is: {last_fetch_time}")
+        demisto.debug(f"last run of type: {event_type.type} time is: {last_fetch_time}")
     last_fetch_next = last_run.get(last_fetch_next_field, 0)
-    demisto.debug(f"debug-log: last run of type: {event_type.type} next is: {last_fetch_next}")
+    demisto.debug(f"last run of type: {event_type.type} next is: {last_fetch_next}")
     event_type_fetch_start_time, before_time = calculate_fetch_start_time(last_fetch_time, fetch_start_time, fetch_delay)
     response, next = client.fetch_by_aql_query(
         aql_query=event_type.aql_query,
@@ -393,16 +416,17 @@ def fetch_by_event_type(
         order_by=event_type.order_by,
         from_param=last_fetch_next,
         before=before_time,
+        event_type=event_type.type,
     )
     new_events: list[dict] = []
-    demisto.debug(f"debug-log: fetched {len(response)} {event_type.type} from API")
+    demisto.debug(f"fetched {len(response)} {event_type.type} from API")
     if response:
         new_events, next_run[last_fetch_ids] = dedup_events(
             response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by
         )
         events.setdefault(event_type.dataset_name, []).extend(new_events)
-        demisto.debug(f"debug-log: overall {len(new_events)} {event_type.dataset_name} (after dedup)")
-        demisto.debug(f"debug-log: last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}")
+        demisto.debug(f"overall {len(new_events)} {event_type.dataset_name} (after dedup)")
+        demisto.debug(f"last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}")
 
     if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
         event_type_fetch_start_time = new_events[-1].get(event_type.order_by) if new_events else last_fetch_time
@@ -411,7 +435,7 @@ def fetch_by_event_type(
     if isinstance(event_type_fetch_start_time, datetime):
         event_type_fetch_start_time = event_type_fetch_start_time.strftime(DATE_FORMAT)
     next_run[last_fetch_time_field] = event_type_fetch_start_time
-    demisto.debug(f"debug-log: updated next_run for event type {event_type.type} with {next=} and {event_type_fetch_start_time=}")
+    demisto.debug(f"updated next_run for event type {event_type.type} with {next=} and {event_type_fetch_start_time=}")
 
 
 def fetch_events_for_specific_alert_ids(client: Client, alert, aql_alert_id):
@@ -426,14 +450,14 @@ def fetch_events_for_specific_alert_ids(client: Client, alert, aql_alert_id):
         None: Alert dict is updated in-place with activitiesData and devicesData.
 
     """
-    demisto.debug(f"debug-log: Fetching Activities and Devices for specific alert IDs: {aql_alert_id}")
+    demisto.debug(f"Fetching Activities and Devices for specific alert IDs: {aql_alert_id}")
     activities_aql_query = f'{EVENT_TYPES["Activities"].aql_query}  {aql_alert_id}'
     devices_aql_query = f'{EVENT_TYPES["Devices"].aql_query}  {aql_alert_id}'
     activities_response = client.fetch_by_ids_in_aql_query(
         aql_query=activities_aql_query, order_by=EVENT_TYPES["Activities"].order_by
     )
     devices_response = client.fetch_by_ids_in_aql_query(aql_query=devices_aql_query, order_by=EVENT_TYPES["Devices"].order_by)
-    demisto.debug(f"debug-log: fetch by alert ids\
+    demisto.debug(f"fetch by alert ids\
 fetched {len(activities_response)} Activities and {len(devices_response)} Devices")
     alert["activitiesData"] = activities_response if activities_response else {}
     alert["devicesData"] = devices_response if devices_response else {}
@@ -466,7 +490,7 @@ def fetch_events(
     events: dict[str, list[dict]] = {}
     next_run: dict[str, list | str] = {}
     if "Devices" in event_types_to_fetch and not should_run_device_fetch(last_run, device_fetch_interval, datetime.now()):
-        demisto.debug("debug-log: skipping Devices fetch as it is not yet reached the device interval.")
+        demisto.debug("skipping Devices fetch as it is not yet reached the device interval.")
         event_types_to_fetch.remove("Devices")
 
     if "Alerts" in event_types_to_fetch:
@@ -477,7 +501,7 @@ def fetch_events(
         if events and events.get(EVENT_TYPE_ALERTS):
             for alert in events[EVENT_TYPE_ALERTS]:
                 alert_id = alert.get("alertId")
-                aql_with_alerts_id = f"alert:(alertId:({alert_id}))"
+                aql_with_alerts_id = f"alert:(alertId:({alert_id}))"  # noqa: E231
                 fetch_events_for_specific_alert_ids(client, alert, aql_with_alerts_id)
         event_types_to_fetch.remove("Alerts")
     for event_type in event_types_to_fetch:
@@ -495,7 +519,7 @@ def fetch_events(
 
     next_run["access_token"] = client._access_token
 
-    demisto.debug(f"debug-log: events: {events}")
+    demisto.debug(f"events: {events}")
     return events, next_run
 
 
@@ -542,18 +566,18 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]], next_run: dic
     if events:
         for event_type, events_list in events.items():
             if not events_list:
-                demisto.debug(f"debug-log: No events of type: {event_type} fetched from API.")
+                demisto.debug(f"No events of type: {event_type} fetched from API.")
             else:
                 add_time_to_events(events_list, event_type)
-                demisto.debug(f"debug-log: {len(events_list)} events of type: {event_type} are about to be sent to XSIAM.")
+                demisto.debug(f"{len(events_list)} events of type: {event_type} are about to be sent to XSIAM.")
             product = f"{PRODUCT}_{event_type}" if event_type != EVENT_TYPE_ALERTS else PRODUCT
             send_events_to_xsiam(events_list, vendor=VENDOR, product=product)
-            demisto.debug(f"debug-log: {len(events)} events were sent to XSIAM.")
+            demisto.debug(f"{len(events)} events were sent to XSIAM.")
     else:
-        demisto.debug("debug-log: No new events fetched. Sending 0 to XSIAM.")
+        demisto.debug("No new events fetched. Sending 0 to XSIAM.")
         send_events_to_xsiam(events=[], vendor=VENDOR, product=PRODUCT)
 
-    demisto.debug(f"debug-log: setting {next_run=}")
+    demisto.debug(f"setting {next_run=}")
     demisto.setLastRun(next_run)
 
 
@@ -646,7 +670,7 @@ def main():  # pragma: no cover
 
             if not last_run:  # initial fetch - update last fetch time values to current time
                 set_last_run_for_last_minute(last_run)
-                demisto.debug("debug-log: Initial fetch - updating last fetch time value to current time for each event type.")
+                demisto.debug("Initial fetch - updating last fetch time value to current time for each event type.")
 
             if command == "armis-get-events":
                 event_type_name = args.get("event_type")
@@ -671,20 +695,21 @@ def main():  # pragma: no cover
                 fetch_delay=fetch_delay,
             )
             for key, value in events.items():
-                demisto.debug(f"debug-log: {len(value)} events of type: {key} fetched from armis api")
+                demisto.debug(f"{len(value)} events of type: {key} fetched from armis api")
 
             if should_push_events:
                 handle_fetched_events(events, next_run)
 
             if should_return_results:
-                return_results(events_to_command_results(
-                    events=events, event_type=event_type.dataset_name))  # pylint: disable=E0606
+                return_results(
+                    events_to_command_results(events=events, event_type=event_type.dataset_name)  # pylint: disable=E0606
+                )
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")  # noqa: E231
 
 
 """ ENTRY POINT """

@@ -1,6 +1,7 @@
 Verifies that an email address is valid and only returns the address if it is valid.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Verifies that an email address is valid and only returns the address if it is va
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +19,6 @@ Verifies that an email address is valid and only returns the address if it is va
 | input | The Emails to process. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

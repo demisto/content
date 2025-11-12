@@ -1,0 +1,31 @@
+[MODEL: dataset = "atlassian_confluence_raw"]
+alter
+    ext_changed_values_name = arraystring(arraymap(to_string(changedvalues) -> [], "@element" -> name),", "),
+    ext_changed_values_old_value = arraystring(arraymap(to_string(changedvalues) -> [], "@element" -> oldValue),", "),
+    ext_changed_values_new_value = arraystring(arraymap(to_string(changedvalues) -> [], "@element" -> newValue),", "),
+    ext_associated_objects_name = arraystring(arraymap(associatedobjects -> [],"@element" -> name),", "),
+    ext_associated_objects_type = arraystring(arraymap(associatedobjects -> [],"@element" -> objectType),", "),
+    ext_affected_object_name = affectedobject -> name,
+    ext_affected_object_type = affectedobject -> objectType
+| alter
+    to_xdm_event_description = to_json_string(object_create("Changed_Values_Name",ext_changed_values_name, "Changed_Values_Old_Value", ext_changed_values_old_value ,"Changed_Values_New_Value",ext_changed_values_new_value,"Description",description,"Affected_Object_Name",ext_affected_object_name,"Affected_Object_Type",ext_affected_object_type,"Sys_Admin",sysadmin,"Super_Admin",superadmin)),
+    parsed_fields_for_merge = object_create("Changed_Values_Old_Value",parsed_fields_changed_values_old ,"Changed_Values_New_Value",parsed_fields_changed_values_new),
+    check_type_user_name = if(ext_affected_object_type = "User",ext_affected_object_name,ext_associated_objects_type = "User",ext_associated_objects_name,null),
+    check_type_group = if(ext_affected_object_type = "Group", ext_affected_object_name,ext_associated_objects_type = "Group",ext_associated_objects_name,null)
+| alter
+    to_xdm_event_description = object_merge(to_xdm_event_description ,parsed_fields_for_merge),
+    check_for_empty_string_resource_before_value = if(ext_changed_values_old_value ~= "^[\,\s]+$",null,ext_changed_values_old_value),
+    check_for_empty_string_resource_value = if(ext_changed_values_new_value ~= "^[\,\s]+$",null,ext_changed_values_new_value)
+| alter 
+    xdm.source.user.username = author -> displayName,
+    xdm.source.user.identifier = author -> accountId,
+    xdm.event.operation = summary,
+    xdm.event.type = category,
+    xdm.event.description = to_xdm_event_description,
+    xdm.target.resource.value = check_for_empty_string_resource_value,
+    xdm.target.resource_before.value = check_for_empty_string_resource_before_value,
+    xdm.source.ipv4 = remoteaddress,
+    xdm.target.resource.name = coalesce(ext_associated_objects_name,ext_affected_object_name) ,
+    xdm.target.resource.type = coalesce(ext_associated_objects_type,ext_affected_object_type),
+    xdm.target.user.username = check_type_user_name,
+    xdm.target.user.groups = arraycreate(check_type_group);

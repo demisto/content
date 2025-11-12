@@ -1,5 +1,5 @@
 category: Deception & Breach Simulation
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -495,7 +495,7 @@ script:
       required: true
     description: Retrieve forensics artifacts from Illusive's forensics.
     name: illusive-get-forensics-artifacts
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: '-'

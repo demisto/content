@@ -7,7 +7,7 @@ type: javascript
 tags:
 - pagerduty
 - communication
-comment: By default assigns the first on-call user to an investigation (all incidents in the investigation will be owned by the on call user)
+comment: By default assigns the first on-call user to an investigation (all incidents in the investigation will be owned by the on call user).
 enabled: true
 args:
 - name: escalation_policy_ids
@@ -27,3 +27,6 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
+- xsiam
+- edr

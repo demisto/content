@@ -84,6 +84,7 @@ Base Command
 | ranges            | IP range        | Yes          |
 
 **Note**: The following run parameters are predefined:
+
 * Kind = IP
 * Level = Full Discovery
 * Type = Snapshot
@@ -112,6 +113,7 @@ Base Command
 | run_id            | An ID of the scan | Yes          |
 
 **Note**: The following run parameters are predefined:
+
 * Kind = IP
 * Level = Full Discovery
 * Type = Snapshot
@@ -144,6 +146,7 @@ Base Command
 | run_id            | An ID of the scan | Yes          |
 
 **Note**: The following run parameters are predefined:
+
 * Kind = IP
 * Level = Full Discovery
 * Type = Snapshot

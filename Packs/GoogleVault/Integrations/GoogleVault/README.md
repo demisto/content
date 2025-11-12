@@ -1256,6 +1256,10 @@
 <td style="width: 273px;">GoogleVault.Matter.Export.Results.To</td>
 <td style="width: 19px;">string</td>
 <td style="width: 448px;">The address the email was sent to</td>
+<tr>
+<td style="width: 273px;">GoogleVault.Matter.Export.Results.Account</td>
+<td style="width: 19px;">string</td>
+<td style="width: 448px;">The account</td>
 </tr>
 </tbody>
 </table>

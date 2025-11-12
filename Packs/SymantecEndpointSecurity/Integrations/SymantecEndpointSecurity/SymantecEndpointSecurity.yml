@@ -1,7 +1,7 @@
 commonfields:
   id: Symantec Endpoint Security
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Symantec Endpoint Security
@@ -63,7 +63,7 @@ script:
       - 'false'
   script: ""
   type: python
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   longRunning: true
   subtype: python3
 marketplaces:

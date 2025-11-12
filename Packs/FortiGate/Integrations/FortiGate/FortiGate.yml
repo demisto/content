@@ -2,30 +2,38 @@ category: Network Security
 commonfields:
   id: FortiGate
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
   required: true
   type: 0
+  section: Connect
 - display: Account username
   name: credentials
   required: false
   type: 9
+  section: Connect
 - display: API Key
   name: api_key
   required: false
   type: 9
   hiddenusername: true
   displaypassword: API Key
+  section: Connect
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
   defaultvalue: 'false'
+  section: Connect
 description: 'FortiGate provides flawless convergence that can scale to any location: remote office, branch, campus, data center, and cloud. FortiGate always delivered on the concept of hybrid mesh firewalls with FortiManager for unified management and consistent security across complex hybrid environments. The Fortinet FortiOS operating system provides deep visibility and security across a variety of form factors.'
 display: FortiGate
 name: FortiGate
@@ -2239,6 +2247,8 @@ script:
     - name: expiry
       description: Time until the ban expires in seconds. `0` for indefinite ban.
       defaultValue: '0'
+    compliantpolicies:
+    - IP Blockage
   - name: fortigate-unban-ip
     description: Unban IPs. Banned IPs are IP addresses that have been quarantined for a variety of reasons, such as administrative decisions or due to security alerts from services like intrusion prevention systems (IPS), antivirus (AV), and denial-of-service (DoS) mitigations.
     arguments:
@@ -2249,7 +2259,7 @@ script:
       description: Comma-separated list of IPs to unban. Both IPv4 and IPv6 addresses are supported. IPs can be retrieved with the command `fortigate-list-banned-ips`.
       required: true
       isArray: true
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   subtype: python3

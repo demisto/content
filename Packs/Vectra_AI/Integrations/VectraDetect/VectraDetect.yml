@@ -1,7 +1,9 @@
 commonfields:
   id: Vectra_Detect
   version: -1
-
+sectionorder:
+- Connect
+- Collect
 name: Vectra_Detect
 display: Vectra Detect
 description: This integration allows to create incidents based on Vectra Accounts/Hosts/Detections objects.
@@ -17,6 +19,7 @@ configuration:
   additionalinfo: Enter the FQDN or IP to reach the Vectra Detect API. (e.g. "my-vectra-box.local" or "192.168.1.1")
   required: true
   defaultvalue: ''
+  section: Connect
 - display: API Token
   name: credentials
   type: 9    # Authentication text - allows switching to credentials
@@ -24,30 +27,36 @@ configuration:
   required: true
   hiddenusername: true
   displaypassword: API Token
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure    # Do not change
   type: 8    # Boolean checkbox
   additionalinfo: When checked, no SSL certificates check will be done when interacting with the Vectra Detect API. It's insecure. (Default - unchecked)
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: use_proxy    # Do not change
   type: 8    # Boolean checkbox
   additionalinfo: Use the system proxy settings to reach with the Vectra Detect API.
   required: false
+  section: Connect
 - display: Fetch incidents
   name: isFetch    # Do not change
   type: 8    # Boolean checkbox
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType    # Do not change
   type: 13    # special use - automatically added - Incident type single select dropdown
   required: false
+  section: Collect
 - display: First fetch timestamp
   name: first_fetch    # Do not change
   type: 0    # Short Text
   additionalinfo: "The date or relative timestamp from which to begin fetching entities.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2024, 01 Aug 2024 04:45:33, 2024-07-17T14:05:44Z. (default - 7 days)"
   defaultvalue: 7 days
   required: false
+  section: Collect
 - additionalinfo: The mirroring direction in which to mirror the account and host. You can mirror "Incoming" (from Vectra to Cortex XSOAR), "Outgoing" (from Cortex XSOAR to Vectra), or in both directions.
   display: Mirroring Direction
   hidden: false
@@ -58,6 +67,7 @@ configuration:
   - Incoming And Outgoing
   required: false
   type: 15
+  section: Collect
 - additionalinfo: The tag value should be used to mirror the account and host note by adding the same tag in the notes.
   defaultvalue: note
   display: Mirror tag for notes
@@ -65,6 +75,7 @@ configuration:
   name: note_tag
   required: false
   type: 0
+  section: Collect
 - display: Entity types to fetch
   name: fetch_entity_types
   type: 16    # Multiple select dropdown
@@ -75,10 +86,12 @@ configuration:
   - Detections
   defaultvalue: Accounts,Hosts
   required: false
+  section: Collect
 - additionalinfo: "Only Accounts or Hosts that contain any of the tags specified will be fetched.\n\nNote: For the partial match of the tag, use '*' at the start and end of word (Only a single word is allowed). Ex. *MDR*."
   display: Tags
   name: tags
   type: 16
+  section: Collect
 - additionalinfo: "Filter the detections belonging to a specified category displayed as part of layout.\n\nNote: This filter applies on the 'Vectra Account' and 'Vectra Host' incident type."
   display: Detection Category
   name: detection_category
@@ -90,45 +103,52 @@ configuration:
   - Exfiltration
   - Info
   type: 15
+  section: Collect
 - additionalinfo: "Filter the detections belonging to a specified type displayed as part of layout.\n\nNote: This filter applies on the 'Vectra Account' and 'Vectra Host' incident type."
   display: Detection Type
   name: detection_type
   type: 0
+  section: Collect
 - display: Hosts fetch query
   name: hosts_fetch_query
   type: 0    # Short text
   additionalinfo: Only "active" Hosts matching this fetch query will be fetched. Will be used only if "Hosts" is selected in the "Entity types to fetch". (default - host.threat:>=50)
   defaultvalue: host.threat:>=50
   required: false
+  section: Collect
 - display: Accounts fetch query
   name: accounts_fetch_query
   type: 0    # Short text
   additionalinfo: Only "active" Accounts matching this fetch query will be fetched. Will be used only if "Accounts" is selected in the "Entity types to fetch". (default - account.threat:>=50)
   defaultvalue: account.threat:>=50
   required: false
+  section: Collect
 - display: Detections fetch query
   name: detections_fetch_query
   type: 0    # Short text
   additionalinfo: Only "active" Detections matching this fetch query will be fetched. Will be used only if "Detections" is selected in the "Entity types to fetch". (default - detection.threat:>=50 AND detection.certainty:>=50)
   defaultvalue: detection.threat:>=50 AND detection.certainty:>=50
   required: false
+  section: Collect
 - display: Max created incidents per fetch
   name: max_fetch
   type: 0    # Short Text
   additionalinfo: The maximum number of new incidents to create per fetch. This value would be split between selected "Entity types to fetch". If the value is greater than 200, it will be considered as 200. The maximum is 200. (Default - 50)
   defaultvalue: 50
   required: false
+  section: Collect
 - defaultvalue: 60
   display: 'Advanced: Minutes to look back when fetching'
   additionalinfo: "Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created."
   name: look_back
   type: 0
   required: false
+  section: Collect
 script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   commands:
     # Search Accounts / Hosts / Detections / Users / Outcomes (Assignment outcomes) / Assignments

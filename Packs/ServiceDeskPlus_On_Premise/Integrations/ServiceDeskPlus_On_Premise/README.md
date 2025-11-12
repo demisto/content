@@ -2,7 +2,6 @@ IT Service Management
 
 ## Configure ServiceDeskPlus (On-Premise) in Cortex
 
-
 ## Instance Creation Flow
 
 To create an instance for Service Desk Plus, an On-Premises Server URL and a Technician Key are required.
@@ -14,8 +13,8 @@ Follow the next steps to create an instance:
 3. Click the **Test** button to validate the instance.
 
 **NOTES**
-- For more details about generating a technician key please refer to the [help documentation](https://help.servicedeskplus.com/api/rest-api.html$key)
 
+- For more details about generating a technician key please refer to the [help documentation](https://help.servicedeskplus.com/api/rest-api.html$key)
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -31,16 +30,19 @@ Follow the next steps to create an instance:
 | fetch_filter | Use this field to filter the incidents that are being fetched according to any of the request properties.  Please see additional information for exact filter format. Overrides the status filter, if given. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### service-desk-plus-requests-list
+
 ***
 View the details of requests. If no parameters are given the details of all requests will be shown.
-
 
 #### Base Command
 
 `service-desk-plus-requests-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,7 +52,6 @@ View the details of requests. If no parameters are given the details of all requ
 | page_size | Use this to mention the number of requests that needs to be returned.<br/>e.g: 15. By default, will return only the first 10 requests. | Optional |
 | search_fields | The column name and value to be searched for in the format of a json object. e.g {“subject”:“Change like this”,“priority.name”:“High”} | Optional |
 | filter_by | The name of the filter that should be used. e.g {“name”:“My_Open”} | Optional |
-
 
 #### Context Output
 
@@ -70,11 +71,12 @@ View the details of requests. If no parameters are given the details of all requ
 | ServiceDeskPlus.Request.CancellationRequested | Boolean | Indicates whether a cancellation was requested |
 | ServiceDeskPlus.Request.HasNotes | Boolean | Indicates whether the command has notes or not |
 
-
 #### Command Example
+
 ```!service-desk-plus-requests-list start_index=32 page_size=2```
 
 #### Context Example
+
 ```
 {
     "ServiceDeskPlus": {
@@ -139,31 +141,33 @@ View the details of requests. If no parameters are given the details of all requ
 #### Human Readable Output
 
 >### Requests
+>
 >|CreatedTime|Id|Requester|Status|Subject|
 >|---|---|---|---|---|
 >| 2020-06-30T15:27:33.000Z | 123640000000279007 | First Last | Open | Update Existing Request |
 >| 2020-07-01T08:03:12.000Z | 123640000000281015 | First Last | Open | Create New Request |
 
-
 ### service-desk-plus-request-delete
+
 ***
 Deletes the request with the specified ID. To delete multiple IDs, pass a comma-separated list (string) of the IDs of the requests.
 
 #### Base Command
 
 `service-desk-plus-request-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | request_id | The id of the request that should be deleted | Required |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!service-desk-plus-request-delete request_id=123640000000279019```
 
 #### Human Readable Output
@@ -171,13 +175,14 @@ There is no context output for this command.
 >### Successfully deleted request(s) 123640000000279019
 
 ### service-desk-plus-request-create
+
 ***
 Create new requests
-
 
 #### Base Command
 
 `service-desk-plus-request-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -227,11 +232,12 @@ Create new requests
 | ServiceDeskPlus.Request.CancellationRequested | Boolean | Indicates whether a cancellation was requested |
 | ServiceDeskPlus.Request.HasNotes | Boolean | Indicates whether the command has notes or not |
 
-
 #### Command Example
+
 ```!service-desk-plus-request-create subject="Create New Request" requester="{'name':'First Last'}"```
 
 #### Context Example
+
 ```
 {
     "ServiceDeskPlus": {
@@ -298,19 +304,20 @@ Create new requests
 #### Human Readable Output
 
 >### Service Desk Plus request was successfully created
+>
 >|CreatedTime|Id|Requester|Status|Subject|
 >|---|---|---|---|---|
 >| 2020-07-01T08:17:06.000Z | 123640000000276021 | First Last | Open | Create New Request |
 
-
 ### service-desk-plus-request-update
+
 ***
 Update the request with the given request id.
-
 
 #### Base Command
 
 `service-desk-plus-request-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -341,7 +348,6 @@ Update the request with the given request id.
 | update_reason | The reason for updating this request | Optional |
 | status_change_comments | Comments added while changing the request's status | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -360,11 +366,12 @@ Update the request with the given request id.
 | ServiceDeskPlus.Request.CancellationRequested | Boolean | Indicates whether a cancellation was requested |
 | ServiceDeskPlus.Request.HasNotes | Boolean | Indicates whether the command has notes or not |
 
-
 #### Command Example
+
 ```!service-desk-plus-request-update request_id=123640000000284007 subject="Update Existing Request"```
 
 #### Context Example
+
 ```
 {
     "ServiceDeskPlus": {
@@ -441,19 +448,20 @@ Update the request with the given request id.
 #### Human Readable Output
 
 >### Service Desk Plus request was successfully updated
+>
 >|CreatedTime|Id|Requester|Status|Subject|
 >|---|---|---|---|---|
 >| 2020-07-01T07:41:14.000Z | 123640000000284007 | First Last | Open | Update Existing Request |
 
-
 ### service-desk-plus-request-assign
+
 ***
 Assigns the request with the given request id to a technician/group
-
 
 #### Base Command
 
 `service-desk-plus-request-assign`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -462,15 +470,16 @@ Assigns the request with the given request id to a technician/group
 | technician | The name of the technician that should be assigned to the request | Optional |
 | group | The name of the group that should be assigned to the request | Optional |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!service-desk-plus-request-assign request_id=123640000000284007 group="Network"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -480,28 +489,30 @@ There is no context output for this command.
 >### Service Desk Plus request 123640000000284007 was successfully assigned
 
 ### service-desk-plus-request-pickup
+
 ***
 Allows the technician to pickup the request with the given request id on his name.
-
 
 #### Base Command
 
 `service-desk-plus-request-pickup`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | request_id | The id of the request that should be picked up | Required |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!service-desk-plus-request-pickup request_id=123640000000279001```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -511,19 +522,19 @@ There is no context output for this command.
 >### Service Desk Plus request 123640000000279001 was successfully picked up
 
 ### service-desk-plus-linked-request-list
+
 ***
 Gets a list with all the linked requests under a request
-
 
 #### Base Command
 
 `service-desk-plus-linked-request-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | request_id | The request for which the linked requests are requested | Required |
-
 
 #### Context Output
 
@@ -532,11 +543,12 @@ Gets a list with all the linked requests under a request
 | ServiceDeskPlus.Request.LinkRequests.Comments | Unknown | The comment that was added to the linked request |
 | ServiceDeskPlus.Request.LinkRequests.LinkedRequest | Unknown | The linked request information |
 
-
 #### Command Example
+
 ```!service-desk-plus-linked-request-list request_id=123640000000284007```
 
 #### Context Example
+
 ```
 {
     "ServiceDeskPlus": {
@@ -563,19 +575,20 @@ Gets a list with all the linked requests under a request
 #### Human Readable Output
 
 >### Linked requests to request 123640000000284007
+>
 >|LinkedRequest|
 >|---|
 >| subject: Request for List<br/>id: 123640000000288001<br/>udf_fields: {"udf_char1": null, "udf_char2": "def test", "udf_char3": null}<br/>display_id: 179 |
 
-
 ### service-desk-plus-request-resolution-add
+
 ***
 Adds a resolution to the given request
-
 
 #### Base Command
 
 `service-desk-plus-request-resolution-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -584,15 +597,16 @@ Adds a resolution to the given request
 | resolution_content | The content of the resolution that should be added to the request | Optional |
 | add_to_linked_requests | A boolean value indicating whether the same resolution should be added to all linked request of the request | Optional |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!service-desk-plus-request-resolution-add request_id=123640000000284007 resolution_content="Resolution Content"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -602,19 +616,19 @@ There is no context output for this command.
 >### Resolution was successfully added to 123640000000284007
 
 ### service-desk-plus-request-resolutions-list
+
 ***
 Gets the resolution to the given request
-
 
 #### Base Command
 
 `service-desk-plus-request-resolutions-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | request_id | The id of the request for which the resolution is desired | Required |
-
 
 #### Context Output
 
@@ -625,11 +639,12 @@ Gets the resolution to the given request
 | ServiceDeskPlus.Request.Resolution.SubmittedOn | Unknown | The date the resolution was submitted |
 | ServiceDeskPlus.Request.Resolution.ResolutionAttachments | Unknown | The attachments that were added to the resolution |
 
-
 #### Command Example
+
 ```!service-desk-plus-request-resolutions-list request_id=123640000000284007```
 
 #### Context Example
+
 ```
 {
     "ServiceDeskPlus": {
@@ -658,18 +673,20 @@ Gets the resolution to the given request
 #### Human Readable Output
 
 >### Resolution of request 123640000000284007
+>
 >|Content|SubmittedBy|SubmittedOn|
 >|---|---|---|
 >| Resolution Content | First Last | 2020-07-01T08:12:31.000Z |
 
 ### service-desk-plus-link-request-modify
+
 ***
 Link or Unlink multiple commands
-
 
 #### Base Command
 
 `service-desk-plus-link-request-modify`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -679,15 +696,16 @@ Link or Unlink multiple commands
 | linked_requests_id | The IDs of the requests that should be linked to the given request. Multiple IDs can be passed, separated by a comma | Required |
 | comment | The comment that should be added when linking requests (optional). | Optional |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!service-desk-plus-link-request-modify action=Link request_id=123640000000284007 linked_requests_id=123640000000288001```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -697,13 +715,14 @@ There is no context output for this command.
 >## Request successfully linked
 
 ### service-desk-plus-request-close
+
 ***
 Closes the specified request.
-
 
 #### Base Command
 
 `service-desk-plus-request-close`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -714,15 +733,16 @@ Closes the specified request.
 | requester_ack_resolution | Boolean. | Optional |
 | request_id | The id of the request that should be closed | Required |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!service-desk-plus-request-close request_id=123640000000288001```
 
 #### Context Example
+
 ```
 {}
 ```

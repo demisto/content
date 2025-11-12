@@ -90,8 +90,9 @@ def test_fetch_events(mocker, connection):
     event_connection = EventConnection(event_type="message", url="wss://testing", headers={})
     mocker.patch.object(ProofpointEmailSecurityEventCollector, "is_interval_passed", side_effect=is_interval_passed)
     debug_logs = mocker.patch.object(demisto, "debug")
-    events = fetch_events(connection=event_connection, fetch_interval=fetch_interval, integration_context={},
-                              should_skip_sleeping=[])
+    events = fetch_events(
+        connection=event_connection, fetch_interval=fetch_interval, integration_context={}, should_skip_sleeping=[]
+    )
 
     assert len(events) == 2
     assert events[0]["message"] == "Test message 1"
@@ -105,8 +106,9 @@ def test_fetch_events(mocker, connection):
     # Now we want to freeze the time, so we will get the next interval
     with freeze_time(CURRENT_TIME):
         debug_logs = mocker.patch.object(demisto, "debug")
-        events = fetch_events(connection=event_connection, fetch_interval=fetch_interval, integration_context={},
-                              should_skip_sleeping=[])
+        events = fetch_events(
+            connection=event_connection, fetch_interval=fetch_interval, integration_context={}, should_skip_sleeping=[]
+        )
     assert len(events) == 1
     assert events[0]["message"] == "Test message 3"
     assert events[0]["_time"] == "2023-08-12T13:24:11.147573+00:00"
@@ -189,7 +191,7 @@ def test_handle_failures_of_send_events(mocker, capfd):
                 EventConnection("maillog", url="wss://test", headers={}),
             ],
             60,
-            []
+            [],
         )
     context = demisto.getIntegrationContext()
     assert context["message"] == EVENTS[:2]
@@ -203,7 +205,7 @@ def test_handle_failures_of_send_events(mocker, capfd):
                 EventConnection("maillog", url="wss://test", headers={}),
             ],
             60,
-            []
+            [],
         )
     context = demisto.getIntegrationContext()
     # check the context is cleared
@@ -229,13 +231,12 @@ def test_heartbeat(mocker, connection):
     idle_timeout = 3
 
     @contextmanager
-    def mock_websocket_connections(host, cluster_id, api_key, since_time=None, to_time=None,
-                                   fetch_interval=60, event_types=["audit"]):
+    def mock_websocket_connections(
+        host, cluster_id, api_key, since_time=None, to_time=None, fetch_interval=60, event_types=["audit"]
+    ):
         with ExitStack():
             yield [
-                EventConnection(
-                    "audit", url="wss://test", headers={}, fetch_interval=fetch_interval, idle_timeout=idle_timeout
-                )
+                EventConnection("audit", url="wss://test", headers={}, fetch_interval=fetch_interval, idle_timeout=idle_timeout)
             ]
 
     def mock_perform_long_running_loop(connections, interval, should_skip_sleeping):
@@ -270,21 +271,20 @@ def test_recovering_execution(mocker, connection):
     idle_timeout = 3
 
     execution_count = 0
-    
+
     def count_iterations(msg):
         nonlocal execution_count
         execution_count += 1
         if execution_count > 1:
             raise StopIteration("Interrupted execution")
-        
+
     @contextmanager
-    def mock_websocket_connections(host, cluster_id, api_key, since_time=None, to_time=None,
-                                   fetch_interval=60, event_types=["audit"]):
+    def mock_websocket_connections(
+        host, cluster_id, api_key, since_time=None, to_time=None, fetch_interval=60, event_types=["audit"]
+    ):
         with ExitStack():
             yield [
-                EventConnection(
-                    "audit", url="wss://test", headers={}, fetch_interval=fetch_interval, idle_timeout=idle_timeout
-                )
+                EventConnection("audit", url="wss://test", headers={}, fetch_interval=fetch_interval, idle_timeout=idle_timeout)
             ]
 
     def mock_perform_long_running_loop(connections, interval, should_skip_sleeping):

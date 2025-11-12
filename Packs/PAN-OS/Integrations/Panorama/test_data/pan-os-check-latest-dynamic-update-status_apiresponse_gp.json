@@ -1,0 +1,27 @@
+{
+    "response": {
+        "@status": "success",
+        "result": {
+            "content-updates": {
+                "@last-updated-at": "2025/06/11 13:40:52 PDT",
+                "entry": {
+                    "version": "98-260",
+                    "app-version": "98-260",
+                    "filename": "panup-all-gp-98-260",
+                    "size": "0",
+                    "size-kb": "77",
+                    "released-on": "2023/05/22 15:41:22 PDT",
+                    "release-notes": "https://fake-release-note-link",
+                    "downloaded": "yes",
+                    "current": "yes",
+                    "previous": "no",
+                    "installing": "no",
+                    "features": "GlobalProtectClientlessVPN",
+                    "update-type": "Full",
+                    "feature-desc": "Unknown",
+                    "sha256": "fake-sha256-hash"
+                }
+            }
+        }
+    }
+}

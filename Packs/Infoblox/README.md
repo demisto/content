@@ -1,3 +1,5 @@
+Note: Support for this Pack will was moved to Partner starting October 15, 2025. In case of any issues arise, please contact the Partner directly at <support@infoblox.com> or <https://support.infoblox.com/>.
+
 # Infoblox NIOS
 
 <~XSIAM>
@@ -71,7 +73,7 @@ In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
 
-You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Set-up-and-configure-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
 

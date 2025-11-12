@@ -98,7 +98,7 @@ RELATIONSHIP_TYPE = {
 }
 
 
-"""
+r"""
             __,__
    .--.  .-"     "-.  .--.
   / .. \/  .-. .-.  \/ .. \
@@ -111,7 +111,7 @@ RELATIONSHIP_TYPE = {
         '._ '-=-' _.'
            '~---~'
 !!!Opppppssssss!!!
-Someone messed with the integarion  maybe its related to something?
+Someone messed with the integration maybe its related to something?
 
 # Flag: <Which animal is in the picture?>
 """

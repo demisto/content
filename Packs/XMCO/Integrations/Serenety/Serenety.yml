@@ -1,6 +1,6 @@
 fromversion: 6.10.0
 category: Vulnerability Management
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -59,7 +59,7 @@ script:
   commands:
   - name: fetch-incidents
     description: Fetch Serenety alert from XMCO LePortail.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   feed: false
   isfetch: true
   longRunning: false

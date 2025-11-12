@@ -6,13 +6,11 @@ from typing import Any
 import csv
 import io
 import requests
-import signal
+from xml.etree import ElementTree
 
 from urllib3 import disable_warnings
 
-
 disable_warnings()  # pylint: disable=no-member
-
 
 """ CONSTANTS """
 
@@ -36,7 +34,6 @@ ASSET_SIZE_LIMIT = 10**6  # 1MB
 TEST_FROM_DATE = "one day"
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
 QIDS_BATCH_SIZE = 500
-
 
 ASSETS_DATE_FORMAT = "%Y-%m-%d"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
@@ -797,7 +794,9 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
     },
     "qualys-host-list-detection": {
         # show detection score `QDS` and score contributing factors `QDS_FACTORS`
-        "api_route": API_SUFFIX + "asset/host/vm/detection/?action=list&show_qds=1&show_qds_factors=1",
+        "api_route": API_SUFFIX
+        + "asset/host/vm/detection/?action=list&show_qds=1&show_qds_factors=1&\
+            host_metadata=all&show_cloud_tags=1",
         "call_method": "GET",
         "resp_type": "text",
     },
@@ -1603,54 +1602,6 @@ args_values: dict[str, Any] = {}
 # Dictionary for arguments used internally by this integration
 inner_args_values: dict[str, Any] = {}
 
-""" TIMEOUT HANDLING """
-
-
-class SignalTimeoutError(Exception):
-    """Custom exception raised when the execution timeout is reached."""
-
-
-class ExecutionTimeout:
-    """Context manager to limit the execution time of a code block.
-
-    Example:
-        >>> with ExecutionTimeout(5):
-        ...     time.sleep(10)
-    """
-
-    def __init__(self, seconds: int | float):
-        """Initializes the ExecutionTimeout context manager.
-
-        Args:
-            seconds: The maximum execution time in seconds.
-        """
-        self.seconds = int(seconds)
-
-    def _timeout_handler(self, signum, frame):
-        """Signal handler that raises a `SignalTimeoutError`."""
-        raise SignalTimeoutError
-
-    def __enter__(self) -> None:
-        """Enters the context manager by setting up the signal handler for SIGALRM and starts the timer."""
-        demisto.debug(f"Running with execution timeout: {self.seconds}")
-        signal.signal(signal.SIGALRM, self._timeout_handler)  # Set handler for SIGALRM
-        signal.alarm(self.seconds)  # start countdown for SIGALRM to be raised
-
-    def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
-        """Exits the context manager by cancelling the SIGALARM and suppressing the `SignalTimeoutError`.
-
-        Args:
-            exc_type: The type of the exception that occurred, if any.
-            exc_val: The instance of the exception that occurred, if any.
-            exc_tb: A traceback object showing where the exception occurred, if any.
-
-        Returns:
-            True if the `SignalTimeoutError` was raised and suppressed, False otherwise.
-        """
-        demisto.debug("Resetting timed signal")
-        signal.alarm(0)  # Cancel SIGALRM if it's scheduled
-        return exc_type is SignalTimeoutError  # Suppress SignalTimeoutError
-
 
 """ CLIENT CLASS """
 
@@ -1734,10 +1685,7 @@ class Client(BaseClient):
         return response.text
 
     def get_host_list_detection(
-        self,
-        since_datetime: str,
-        next_page: str | None = None,
-        limit: int = HOST_LIMIT,
+        self, since_datetime: str, next_page: str | None = None, limit: int = HOST_LIMIT, qid: Optional[str] = None
     ) -> tuple[str, bool]:
         """
         Make a http request to Qualys API to get assets
@@ -1745,6 +1693,7 @@ class Client(BaseClient):
             since_datetime (str): Filter hosts by vulnerability scan end date. Specify in the `YYYY-MM-DD[THH:MM:SSZ]` format.
             next_page (str | None): For pagination; show hosts starting from a minimum host ID value.
             limit (int): Maximum number of host records returned; should be <= 1000000. Specify 0 for no truncation limit.
+            qid: The Qualys ID (QID).
         Returns:
             response from Qualys API
         Raises:
@@ -1759,6 +1708,10 @@ class Client(BaseClient):
             "show_qds": 1,  # Show host detection score `QDS` and score contributing factors `QDS_FACTORS`
             "show_qds_factors": 1,
         }
+
+        if qid:
+            params["qids"] = qid
+
         if next_page:
             params["id_min"] = next_page
 
@@ -1771,7 +1724,7 @@ class Client(BaseClient):
         try:
             response = self._http_request(
                 method="GET",
-                url_suffix=urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list"),
+                url_suffix=urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"),
                 resp_type="text",
                 params=params,
                 timeout=timeout,
@@ -1807,6 +1760,25 @@ class Client(BaseClient):
             url_suffix=urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list"),
             resp_type="text",
             params=params,
+            timeout=60,
+            error_handler=self.error_handler,
+        )
+
+        return response
+
+    def get_qid_for_cve(self, cve: str) -> requests.Response:
+        """
+        This method retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
+        """
+        self._headers.update({"Content-Type": "application/json"})
+
+        params: dict[str, Any] = {"cve": cve}
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list"),
+            params=params,
+            resp_type="xml",
             timeout=60,
             error_handler=self.error_handler,
         )
@@ -3059,7 +3031,9 @@ def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) 
     return activity_logs_events, next_run_dict
 
 
-def get_host_list_detections_events(client, since_datetime, next_page="", limit=HOST_LIMIT, is_test=False) -> tuple:
+def get_host_list_detections_events(
+    client, since_datetime, next_page="", limit=HOST_LIMIT, is_test=False, qid: Optional[str] = None
+) -> tuple:
     """Get host list detections from qualys
     Args:
         client: Qualys client
@@ -3067,6 +3041,7 @@ def get_host_list_detections_events(client, since_datetime, next_page="", limit=
         since_datetime: The start fetch date.
         limit: The limit of the host list detections
         is_test: Indicates whether it's test-module run or regular run.
+        qid: The Qualys ID (QID).
     Returns:
         Host list detections assets
     """
@@ -3074,7 +3049,7 @@ def get_host_list_detections_events(client, since_datetime, next_page="", limit=
     assets: list = []
 
     demisto.debug("Starting to get client host list detections.")
-    host_list_detections, set_new_limit = client.get_host_list_detection(since_datetime, next_page, limit)
+    host_list_detections, set_new_limit = client.get_host_list_detection(since_datetime, next_page, limit, qid)
     demisto.debug(f"Finished getting client host list detections. Set new limit: {set_new_limit}")
 
     if not set_new_limit:
@@ -3207,6 +3182,29 @@ def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], detection_qi
     new_last_run = DEFAULT_LAST_ASSETS_RUN
 
     return vulnerabilities, new_last_run
+
+
+def get_qid_for_cve(client: Client, cve: str) -> CommandResults:
+    """
+    This function retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
+    """
+
+    demisto.debug(f"Start getting qids for the given {cve=}")
+
+    response = client.get_qid_for_cve(cve=cve)
+    # Parse XML response
+    root = ElementTree.fromstring(response.content)
+
+    # Extract QID(s)
+    qids = []
+    for vuln in root.findall(".//VULN"):
+        qid_elem = vuln.find("QID")
+        if qid_elem is not None:
+            qids.append(qid_elem.text)
+
+    return CommandResults(
+        readable_output=f"The QID: {qids=} from Qualys for the given {cve=}", outputs=qids, outputs_prefix="Qualys.QID"
+    )
 
 
 def fetch_events(
@@ -3462,9 +3460,11 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
     set_new_limit = True
     with ExecutionTimeout(FETCH_ASSETS_COMMAND_TIME_OUT):
         # Exits code block below if it takes longer to execute than the specified timeout
-        assets, new_last_run, _, snapshot_id, set_new_limit = fetch_assets(client, last_run)
+        assets, new_last_run, _, snapshot_id, _ = fetch_assets(client, last_run)
         detection_qids: list = list({asset.get("DETECTION", {}).get("QID") for asset in assets})
         vulnerabilities, _ = fetch_vulnerabilities(client, last_run, detection_qids) if detection_qids else ([], {})
+        demisto.debug("Finished fetch for assets and vulnerabilities.")
+        set_new_limit = False
 
     # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
     if set_new_limit:
@@ -3782,11 +3782,25 @@ def main():  # pragma: no cover
 
         elif command == "qualys-get-assets":
             should_push_events = argToBoolean(args.get("should_push_assets", False))
+            qid = args.get("qid")
             since_datetime = arg_to_datetime("1 hour").strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
-            assets, _, _ = get_host_list_detections_events(client=client, since_datetime=since_datetime, limit=1)
+            assets, _, _ = get_host_list_detections_events(client=client, since_datetime=since_datetime, limit=1, qid=qid)
             if should_push_events:
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product="host_detections", data_type="assets")
-            return_results(assets)
+
+            readable_output = tableToMarkdown(name="Assets from Qualys:", t=assets)
+
+            return_results(
+                CommandResults(
+                    readable_output=readable_output,
+                    outputs=assets,
+                    outputs_prefix="Qualys.Assets",
+                    outputs_key_field="ID",
+                )
+            )
+
+        elif command == "qualys-get-quid-by-cve":
+            return_results(get_qid_for_cve(client=client, cve=args["cve"]))
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()

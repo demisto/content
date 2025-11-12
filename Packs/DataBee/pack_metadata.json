@@ -4,7 +4,7 @@
     "support": "partner",
     "url": "https://www.comcasttechnologysolutions.com",
     "email": "info@qmasters.co",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.5",
     "author": "QMasters",
     "created": "2024-04-03T00:00:00Z",
     "categories": [
@@ -22,6 +22,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

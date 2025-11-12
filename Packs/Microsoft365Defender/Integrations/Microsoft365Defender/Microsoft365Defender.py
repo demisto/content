@@ -804,9 +804,10 @@ def get_modified_incidents_close_or_repopen_entries(modified_incidents: List[dic
     entries = []
     if close_incident:
         for incident in modified_incidents:
-            if incident.get("status") == "Resolved":
+            if incident.get("status") in ("Resolved", "Redirected"):
                 demisto.debug(
-                    f"Microsoft Defender 365 - incident {incident.get(MICROSOFT_INCIDENT_ID_KEY)} is resolved in Microsoft, "
+                    f"Microsoft Defender 365 - incident {incident.get(MICROSOFT_INCIDENT_ID_KEY)} is "
+                    f"{(incident.get('status') or '').lower()} in Microsoft, "
                     f"adding close entry to XSOAR."
                 )
                 entry = {
@@ -1129,7 +1130,7 @@ def main() -> None:
 
     tenant_id = params.get("creds_tenant_id", {}).get("password", "") or params.get("tenant_id") or params.get("_tenant_id")
     client_credentials = params.get("client_credentials", False)
-    enc_key = params.get("enc_key") or (params.get("credentials") or {}).get("password")
+    enc_key = (params.get("credentials") or {}).get("password") or params.get("enc_key")
     certificate_thumbprint = params.get("creds_certificate", {}).get("identifier", "") or params.get("certificate_thumbprint", "")
 
     private_key = replace_spaces_in_credential(params.get("creds_certificate", {}).get("password", "")) or params.get(
@@ -1152,7 +1153,7 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
 
-    demisto.debug(f"{params=}, \n {args=}, \n{mirroring_fields}")
+    demisto.debug(f"{args=}, \n{mirroring_fields}")
 
     try:
         if not managed_identities_client_id and not app_id:

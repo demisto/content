@@ -19,6 +19,7 @@ tasks:
       '#none#':
       - "15"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -29,6 +30,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 7421a2fc-d22a-41f9-8876-e7735d25ea6b
@@ -53,29 +58,25 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
       Ids:
-        complex:
-          root: VMRay.Submission
-          accessor: SubmissionID
+        simple: ${VMRay.Submission.SubmissionID}
       Interval:
-        complex:
-          root: inputs.interval
+        simple: ${inputs.interval}
       PollingCommandArgName:
         simple: submission_id
       PollingCommandName:
         simple: vmray-get-submission
       Timeout:
-        complex:
-          root: inputs.timeout
+        simple: ${inputs.timeout}
       dt:
         simple: VMRay.Submission(val.IsFinished == false).SubmissionID
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -86,6 +87,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 087ea815-c0b4-4604-8b43-099927639fa9
@@ -112,6 +117,7 @@ tasks:
             value:
               simple: inputs.File
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -122,6 +128,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 46c971ef-9691-4b18-888b-a8fccf7b8c7c
@@ -139,31 +149,12 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      archive_password:
-        complex:
-          root: inputs.archive_password
-      document_password:
-        complex:
-          root: inputs.document_password
       entry_id:
-        complex:
-          root: inputs.File
-          accessor: EntryID
+        simple: ${inputs.File.EntryID}
       file_id:
         simple: ${File.EntryID}
-      max_jobs:
-        complex:
-          root: inputs.max_jobs
-      sample_type:
-        complex:
-          root: inputs.sample_type
-      shareable:
-        complex:
-          root: inputs.shareable
-      tags:
-        complex:
-          root: inputs.tags
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -174,6 +165,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: b5eb756b-903d-4f8e-8b09-f8bcad28627c
@@ -187,16 +182,21 @@ tasks:
       iscommand: false
       brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 1990
+          "x": 130,
+          "y": 2760
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 2a0709fc-42f1-4ac8-80ef-aa53b3b65576
@@ -221,6 +221,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -231,6 +232,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: ca3caa5c-0828-41e1-8b12-77771fdaf140
@@ -255,6 +260,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -265,6 +271,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 1735cc5d-e223-47ea-8905-51616bed94f1
@@ -282,7 +292,6 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      limit: {}
       sample_id:
         complex:
           root: VMRay
@@ -290,6 +299,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -300,15 +310,19 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: d9177a3a-b705-45af-8b42-7ee487c17eda
     type: condition
     task:
       id: d9177a3a-b705-45af-8b42-7ee487c17eda
-      description: check term
       version: -1
-      name: Is analysis suspicious or malicious?
+      name: Is sample suspicious or malicious?
+      description: check term
       type: condition
       iscommand: false
       brand: ""
@@ -325,34 +339,19 @@ tasks:
           left:
             value:
               complex:
-                root: VMRay
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: VMRay.Sample.Verdict
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Malicious
-                accessor: Analysis.Verdict
+                root: VMRay.Sample
+                accessor: Verdict
             iscontext: true
+          right:
+            value: {}
         - operator: isExists
           left:
             value:
               complex:
-                root: VMRay
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: VMRay.Sample.Verdict
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Suspicious
-                accessor: Analysis.Verdict
+                root: VMRay.Sample
+                accessor: Verdict
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -363,6 +362,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: c935d709-7974-4075-85a5-13e24aa25cdd
@@ -386,8 +389,15 @@ tasks:
           accessor: Analysis.SampleID
           transformers:
           - operator: uniq
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${VMRay.Sample.SampleID}
     reputationcalc: 2
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -398,12 +408,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: ba1da627-1586-48db-8717-1c98e46a6178
+    taskid: 1ed93841-acec-451d-8c9b-ef42d1f75548
     type: regular
     task:
-      id: ba1da627-1586-48db-8717-1c98e46a6178
+      id: 1ed93841-acec-451d-8c9b-ef42d1f75548
       version: -1
       name: Get Threat Indicators
       description: Retrieves threat indicators (VTI).
@@ -413,15 +427,23 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "16"
     scriptarguments:
       sample_id:
         complex:
           root: VMRay
           accessor: Analysis.SampleID
           transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${VMRay.Sample.SampleID}
+                iscontext: true
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -432,6 +454,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: e01bcec4-aae2-4845-823c-82ef27b884d7
@@ -440,7 +466,8 @@ tasks:
       id: e01bcec4-aae2-4845-823c-82ef27b884d7
       version: -1
       name: Is there an active VMRay instance?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -453,9 +480,8 @@ tasks:
     scriptarguments:
       brandname:
         simple: vmray
-    results:
-    - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -466,6 +492,123 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 9ad67e3a-c815-4e79-842c-ea509d293e1e
+    type: condition
+    task:
+      id: 9ad67e3a-c815-4e79-842c-ea509d293e1e
+      version: -1
+      name: Is there a child submission?
+      description: Returns "yes" if a child submission is available
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: VMRay.Sample.ChildSampleIDs
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 542.5,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 33703a1b-05f4-40fa-8131-2393fda81444
+    type: regular
+    task:
+      id: 33703a1b-05f4-40fa-8131-2393fda81444
+      version: -1
+      name: Get Child IOCs
+      description: Retrieves Indicators of Compromise for a specified sample.
+      script: '|||vmray-get-iocs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      sample_id:
+        simple: ${VMRay.Sample.ChildSampleIDs}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 2170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: b66f9103-83bf-4795-8fec-f050c3f88f0d
+    type: regular
+    task:
+      id: b66f9103-83bf-4795-8fec-f050c3f88f0d
+      version: -1
+      name: Get Child VTIs
+      description: Retrieves Threat Indicators (VTI).
+      script: '|||vmray-get-threat-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      sample_id:
+        simple: ${VMRay.Sample.ChildSampleIDs}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -473,8 +616,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2005,
-        "width": 872.5,
+        "height": 2775,
+        "width": 1110,
         "x": 50,
         "y": 50
       }
@@ -486,40 +629,19 @@ inputs:
     simple: ${File}
   required: false
   description: The file to detonate.
+  playbookInputQuery: null
 - key: interval
   value:
     simple: "1"
   required: false
   description: The frequency in which to poll for results (minutes).
+  playbookInputQuery: null
 - key: timeout
   value:
     simple: "10"
   required: false
   description: The amount of time to wait before giving up waiting for results (minutes).
-- key: document_password
-  value: {}
-  required: false
-  description: The password if the file is a password-protected document.
-- key: archive_password
-  value: {}
-  required: false
-  description: The password if the file is a password-protected archive.
-- key: sample_type
-  value: {}
-  required: false
-  description: The sample type.
-- key: shareable
-  value: {}
-  required: false
-  description: Whether to make the file shareable.
-- key: max_jobs
-  value: {}
-  required: false
-  description: The  maximum jobs to create in VMRay.
-- key: tags
-  value: {}
-  required: false
-  description: The tags of the file (comma-separated).
+  playbookInputQuery: null
 outputs:
 - contextPath: VMRay.Job.JobID
   description: The ID of a new job.
@@ -567,7 +689,8 @@ outputs:
   description: Description of the Verdict Reason.
   type: String
 - contextPath: VMRay.Submission.Severity
-  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
+  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted,
+    Unknown). Deprecated.
   type: string
 - contextPath: VMRay.Submission.SSDeep
   description: The SSDeep hash of the sample in submission.
@@ -597,7 +720,8 @@ outputs:
   description: Description of the Verdict Reason.
   type: String
 - contextPath: VMRay.Sample.Severity
-  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
+  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted,
+    Unknown). Deprecated.
   type: string
 - contextPath: VMRay.Sample.Type
   description: The file type.

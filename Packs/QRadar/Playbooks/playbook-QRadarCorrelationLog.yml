@@ -2,8 +2,7 @@ id: QRadarCorrelationLog
 version: -1
 name: QRadarCorrelationLog
 deprecated: true
-description: Deprecated. Use the "QRadar - Get Offense Logs"\
-  \ playbook instead. This playbook retrieves the correlation logs of multiple QIDs.
+description: Deprecated. Use the "QRadar - Get Offense Logs"\ \ playbook instead. This playbook retrieves the correlation logs of multiple QIDs.
 starttaskid: '0'
 tasks:
   '0':
@@ -36,8 +35,7 @@ tasks:
       id: ba750359-b6e4-49cb-89c2-e9fc67fa5a00
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: This playbook runs a QRadar query and return its results to the context.
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
@@ -50,15 +48,7 @@ tasks:
       interval:
         simple: '1'
       query_expression:
-        simple: "\t\tselect qid QID,\n\t\tsourceip as \"SourceIP\",\n\t\tdestinationip\
-          \ as \"DestinationIP\",\n\t\teventcount as \"EventCount\",\n\t\tsourceport\
-          \ as \"SourcePort\",\n\t\tusername as \"Username\",\n\t\tstarttime as \"\
-          StartTime\",\n\t\tdestinationport as \"DestinationPort\",\n\t\tmagnitude\
-          \ as \"Magnitude\",\n\t\tidentityip as \"IdentityIP\",\n\t\tCATEGORYNAME(category)\
-          \ as \"Category\",\n\t\tPROTOCOLNAME(protocolid) as \"ProtocolName\",\n\t\
-          \tLOGSOURCENAME(logsourceid)${inputs.additionalQueryFields}\n\t\tfrom events\
-          \ where (RULENAME(${inputs.QID}) ILIKE '%') AND \"CRE Name\" IS NULL AND\
-          \ INOFFENSE(${inputs.OffenseID})\nLIMIT ${inputs.MaxLogsCount}\n START '${inputs.OffenseStartTime}'"
+        simple: "\t\tselect qid QID,\n\t\tsourceip as \"SourceIP\",\n\t\tdestinationip as \"DestinationIP\",\n\t\teventcount as \"EventCount\",\n\t\tsourceport as \"SourcePort\",\n\t\tusername as \"Username\",\n\t\tstarttime as \"StartTime\",\n\t\tdestinationport as \"DestinationPort\",\n\t\tmagnitude as \"Magnitude\",\n\t\tidentityip as \"IdentityIP\",\n\t\tCATEGORYNAME(category) as \"Category\",\n\t\tPROTOCOLNAME(protocolid) as \"ProtocolName\",\n\t\tLOGSOURCENAME(logsourceid)${inputs.additionalQueryFields}\n\t\tfrom events where (RULENAME(${inputs.QID}) ILIKE '%') AND \"CRE Name\" IS NULL AND INOFFENSE(${inputs.OffenseID})\nLIMIT ${inputs.MaxLogsCount}\n START '${inputs.OffenseStartTime}'"
       range: {}
       timeout:
         simple: '600'
@@ -167,8 +157,7 @@ tasks:
       id: ff2dabeb-8f58-42f5-8f6f-b3deffdb18c9
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: This playbook runs a QRadar query and return its results to the context.
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
@@ -181,16 +170,7 @@ tasks:
       interval:
         simple: '1'
       query_expression:
-        simple: "\t\tselect qid QID,\n\t\tsourceip as \"SourceIP\",\n\t\tdestinationip\
-          \ as \"DestinationIP\",\n\t\teventcount as \"EventCount\",\n\t\tsourceport\
-          \ as \"SourcePort\",\n\t\tusername as \"Username\",\n\t\tstarttime as \"\
-          StartTime\",\n\t\tdestinationport as \"DestinationPort\",\n\t\tmagnitude\
-          \ as \"Magnitude\",\n\t\tidentityip as \"IdentityIP\",\n\t\tCATEGORYNAME(category)\
-          \ as \"Category\",\n\t\tPROTOCOLNAME(protocolid) as \"ProtocolName\",\n\t\
-          \tLOGSOURCENAME(logsourceid)${inputs.additionalQueryFields}\n\t\tfrom events\
-          \ where (RULENAME(${inputs.QID}) ILIKE '%') AND \"CRE Name\" <> NULL AND\
-          \ INOFFENSE(${inputs.OffenseID}) \nLIMIT ${inputs.MaxLogsCount}\n START\
-          \ '${inputs.OffenseStartTime}'"
+        simple: "\t\tselect qid QID,\n\t\tsourceip as \"SourceIP\",\n\t\tdestinationip as \"DestinationIP\",\n\t\teventcount as \"EventCount\",\n\t\tsourceport as \"SourcePort\",\n\t\tusername as \"Username\",\n\t\tstarttime as \"StartTime\",\n\t\tdestinationport as \"DestinationPort\",\n\t\tmagnitude as \"Magnitude\",\n\t\tidentityip as \"IdentityIP\",\n\t\tCATEGORYNAME(category) as \"Category\",\n\t\tPROTOCOLNAME(protocolid) as \"ProtocolName\",\n\t\tLOGSOURCENAME(logsourceid)${inputs.additionalQueryFields}\n\t\tfrom events where (RULENAME(${inputs.QID}) ILIKE '%') AND \"CRE Name\" <> NULL AND INOFFENSE(${inputs.OffenseID}) \nLIMIT ${inputs.MaxLogsCount}\n START '${inputs.OffenseStartTime}'"
       range: {}
       timeout:
         simple: '600'
@@ -214,9 +194,7 @@ tasks:
       id: 8f647022-1139-47e9-87dd-95e9f904ea13
       version: -1
       name: Change context
-      description: 'Enables changing context in two ways. The first is to capitalize
-        the first letter of each key in following level of the context key entered.
-        The second is to change context keys to new values. '
+      description: 'Enables changing context in two ways. The first is to capitalize the first letter of each key in following level of the context key entered. The second is to change context keys to new values. '
       scriptName: ChangeContext
       type: regular
       iscommand: false
@@ -234,8 +212,7 @@ tasks:
       output_key:
         simple: QRadar.Log
       replace_dict:
-        simple: '{"sourceip": "SourceIP", "qid":"QID", "destinationip": "DestinationIP",
-          "category": "CategoryID", "starttime": "StartTime"}'
+        simple: '{"sourceip": "SourceIP", "qid":"QID", "destinationip": "DestinationIP", "category": "CategoryID", "starttime": "StartTime"}'
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 545\n  }\n}"
     note: false
@@ -243,9 +220,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 735,\n      \"width\": 810,\n      \"x\": 50,\n      \"y\": 50\n\
-  \    }\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 735,\n      \"width\": 810,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
 inputs:
 - key: QID
   value: {}
@@ -271,8 +246,7 @@ inputs:
   value:
     simple: OnlyCRE
   required: false
-  description: "If value \"OnlyCRE\" get only events made by CRE.\nValues can be \"\
-    OnlyCRE\", \"OnlyNotCRE\", \"All\"."
+  description: "If value \"OnlyCRE\" get only events made by CRE.\nValues can be \"OnlyCRE\", \"OnlyNotCRE\", \"All\"."
   playbookInputQuery:
 - key: MaxLogsCount
   value:
@@ -292,3 +266,5 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
+- xsiam

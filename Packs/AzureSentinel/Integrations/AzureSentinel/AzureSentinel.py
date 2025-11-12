@@ -9,8 +9,9 @@ import urllib3
 import requests
 import dateparser
 import uuid
-
+from enum import Enum
 from MicrosoftApiModule import *  # noqa: E402
+from typing import Literal
 
 # Disable insecure warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -165,6 +166,12 @@ CLASSIFICATION_REASON = {
     "TruePositive": "SuspiciousActivity",
     "BenignPositive": "SuspiciousButExpected",
 }
+
+
+class Action(Enum):
+    CLOSE = 1
+    REOPEN = 2
+    UNCHANGED = 3
 
 
 class AzureSentinelClient:
@@ -581,6 +588,18 @@ def severity_filter(min_severity):
     return severity_filter
 
 
+def status_filter(statuses):
+    """
+    Create a Status Filter string when statuses is not empty.
+    """
+    status_filter = ""
+    if statuses:
+        conditions = [f"properties/status eq '{s}'" for s in statuses]
+        status_filter = f"and ({ ' or '.join(conditions) })"
+
+    return status_filter
+
+
 def generic_list_incident_items(
     client,
     incident_id,
@@ -784,15 +803,23 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def close_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any]) -> bool:
+def check_required_action_on_incident(
+    delta: Dict[str, Any], data: Dict[str, Any], incident_status: IncidentStatus
+) -> Literal[Action.CLOSE, Action.UNCHANGED, Action.REOPEN]:
     """
-    Closing in the remote system should happen only when both:
-        1. The user asked for it
-        2. A closing reason was provided (either in the delta or before in the data).
+    Checking if we need to close the incident or re-open in the remote system.
+        1. should close the incident - will return Action.CLOSE
+        2. should open the incident - will return Action.REOPEN
+        3. no action needed - will return Action.UNCHANGED
     """
     closing_field = "classification"
-    closing_reason = delta.get(closing_field, data.get(closing_field, ""))
-    return demisto.params().get("close_ticket") and bool(closing_reason)
+    if incident_status == IncidentStatus.DONE:
+        closing_reason = bool(delta.get(closing_field, data.get(closing_field, "")))
+        return Action.CLOSE if demisto.params().get("close_ticket", False) and closing_reason else Action.UNCHANGED
+    elif incident_status == IncidentStatus.ACTIVE:
+        return Action.REOPEN if delta.get(closing_field) == "" else Action.UNCHANGED
+    else:
+        return Action.UNCHANGED
 
 
 def extract_classification_reason(delta: Dict[str, str], data: Dict[str, str]):
@@ -818,7 +845,7 @@ def update_incident_request(
     incident_id: str,
     data: Dict[str, Any],
     delta: Dict[str, Any],
-    close_ticket: bool = False,
+    required_action: Literal[Action.CLOSE, Action.UNCHANGED, Action.REOPEN] = Action.UNCHANGED,
 ) -> Dict[str, Any]:
     """
     Args:
@@ -826,9 +853,7 @@ def update_incident_request(
         incident_id (str): the incident ID
         data (Dict[str, Any]): all the data of the incident
         delta (Dict[str, Any]): the delta of the changes in the incident's data
-        close_ticket (bool, optional): whether to close the ticket or not (defined by the close_incident_in_remote).
-                                       Defaults to False.
-
+        required_action Literal[Action.CLOSE, Action.UNCHANGED,Action.REOPEN]: Describe the action preformed on the incident.
     Returns:
         Dict[str, Any]: the response of the update incident request
     """
@@ -840,8 +865,8 @@ def update_incident_request(
 
     severity = data.get("severity", "")
     status = data.get("status", "Active")
-    if status == "Closed" and delta.get("closingUserId") == "":
-        # closingUserId='' it's mean the XSOAR incident was reopen
+    if required_action == Action.REOPEN:
+        # classification='' it's mean the XSOAR incident was reopen
         # need to update the remote incident status to Active
         demisto.debug(f"Reopen remote incident {incident_id}, set status to Active")
         status = "Active"
@@ -858,9 +883,10 @@ def update_incident_request(
 
     properties["labels"] += [{"labelName": label, "type": "User"} for label in delta.get("tags", [])]
 
-    if close_ticket:
+    if required_action == Action.CLOSE:
+        status = "Closed"
         properties |= {
-            "status": "Closed",
+            "status": status,
             "classification": delta.get("classification") or data.get("classification"),
             "classificationComment": delta.get("classificationComment") or data.get("classificationComment"),
             "classificationReason": extract_classification_reason(delta, data),
@@ -886,16 +912,17 @@ def update_remote_incident(
     # (or closingUserId was changed meaning the incident wa reopened) or need to close the remote ticket
     relevant_keys_delta = OUTGOING_MIRRORED_FIELDS.keys() | {"closingUserId"}
     relevant_keys_delta &= delta.keys()
-    # those fields are close incident fields and handled separately in close_incident_in_remote
+    # those fields are close incident fields and handled separately in check_required_action_on_incident
     relevant_keys_delta -= {"classification", "classificationComment"}
-
     if incident_status in (IncidentStatus.DONE, IncidentStatus.ACTIVE):
-        if incident_status == IncidentStatus.DONE and close_incident_in_remote(delta, data):
-            demisto.debug(f"XSOAR incident closed, closing incident with remote ID {incident_id} in remote system.")
-            return str(update_incident_request(client, incident_id, data, delta, close_ticket=True))
-        if relevant_keys_delta:
-            demisto.debug(f"Updating incident with remote ID {incident_id} in remote system.")
-            return str(update_incident_request(client, incident_id, data, delta))
+        demisto.debug(f"{incident_status=}")
+        required_action = check_required_action_on_incident(delta, data, incident_status)
+
+        if relevant_keys_delta or required_action != Action.UNCHANGED:
+            demisto.debug(
+                f"Updating incident with remote ID {incident_id} in " f"remote system {required_action=}, {relevant_keys_delta=}."
+            )
+            return str(update_incident_request(client, incident_id, data, delta, required_action))
         else:
             demisto.debug(f"No relevant changes detected for the incident with remote ID {incident_id}, not updating.")
 
@@ -1453,6 +1480,7 @@ def fetch_incidents(
     last_run: dict,
     first_fetch_time: str,
     min_severity: str,
+    statuses_to_fetch: list = [],
 ) -> tuple:
     """Fetching incidents.
     Args:
@@ -1460,6 +1488,7 @@ def fetch_incidents(
         client: An AzureSentinelClient client.
         last_run: An dictionary of the last run.
         min_severity: A minimum severity of incidents to fetch.
+        statuses_to_fetch: A list of statuses to fetch.
 
     Returns:
         (tuple): 1. The LastRun object updated with the last run details.
@@ -1487,7 +1516,10 @@ def fetch_incidents(
 
         latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
         command_args = {
-            "filter": f"properties/createdTimeUtc ge {latest_created_time_str} {severity_filter(min_severity)}",
+            "filter": (
+                f"properties/createdTimeUtc ge {latest_created_time_str} {severity_filter(min_severity)}"
+                f" {status_filter(statuses_to_fetch)}".strip()
+            ),
             "orderby": "properties/createdTimeUtc asc",
             "limit": limit,
         }
@@ -1499,7 +1531,10 @@ def fetch_incidents(
         if latest_created_time is None:
             raise DemistoException(f"{last_fetch_time=} couldn't be parsed")
         command_args = {
-            "filter": f"properties/incidentNumber gt {last_incident_number} {severity_filter(min_severity)}",
+            "filter": (
+                f"properties/incidentNumber gt {last_incident_number} {severity_filter(min_severity)}"
+                f" {status_filter(statuses_to_fetch)}".strip()
+            ),
             "orderby": "properties/incidentNumber asc",
             "limit": limit,
         }
@@ -1521,6 +1556,7 @@ def fetch_incidents_command(client, params):
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = params.get("fetch_time", "3 days").strip()
     min_severity = params.get("min_severity", "Informational")
+    statuses_to_fetch = argToList(params.get("statuses_to_fetch", []))
     # Set and define the fetch incidents command to run after activated via integration settings.
     last_run = demisto.getLastRun()
     demisto.debug(f"Current last run is {last_run}")
@@ -1529,6 +1565,7 @@ def fetch_incidents_command(client, params):
         last_run=last_run,
         first_fetch_time=first_fetch_time,
         min_severity=min_severity,
+        statuses_to_fetch=statuses_to_fetch,
     )
     demisto.debug(f"New last run is {last_run}")
     demisto.setLastRun(next_run)

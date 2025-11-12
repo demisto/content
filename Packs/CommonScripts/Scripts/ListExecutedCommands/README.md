@@ -1,6 +1,7 @@
 Lists  executed commands in War Room.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Lists  executed commands in War Room.
 | Script Type | javascript |
 | Tags | Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +18,6 @@ Lists  executed commands in War Room.
 | source | The source of commands to list. Can be, "user", "playbook" or both. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

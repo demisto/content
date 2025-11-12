@@ -25,9 +25,9 @@ This script uses the following commands and scripts.
 | --- | --- |
 | message | Question \(message\) to send to the specified team member or channel. |
 | persistent | Indicates whether to use one-time entitlement or persistent entitlement. |
-| option1 | First reply option. |
-| option2 | Second reply option. |
-| additional_options | A CSV list of additional options \(in case more than 2 options are required\). |
+| option1 | First reply option. Options cannot contain whitespaces. |
+| option2 | Second reply option. Options cannot contain whitespaces. |
+| additional_options | A CSV list of additional options \(in case more than 2 options are required\). Options cannot contain whitespaces. |
 | team_member | Team member to which to send the question. |
 | task_id | Task ID of the playbook task to close with the reply. If not provided, no playbook task will be closed. |
 | channel | Channel to which to send the question. |
@@ -53,7 +53,10 @@ If a team member responds "yes" the playbook continues running the "yes" branch.
 
 If a task ID is included in the script, and the task condition is met, the playbook closes as soon as a response is received.
 
+![MicrosoftTeamsAsk](../../doc_files/66044107-7de39f00-e529-11e9-8099-049502b4d62f.png)
+
 To use `MicrosoftTeamsAsk` via playbook:
+
 1. Add the `MicrosoftTeamsAsk` script to a playbook as a task.
 2. In the `message` argument, specify the message to be sent.
 3. Configure the response options by filling out the `option1` and `option2` arguments (default values are 'Yes' and 'No').
@@ -65,9 +68,9 @@ At some point at the playbook, after running `MicrosoftTeamsAsk`, add a manual c
 The condition names must match the response options you passed in to `MicrosoftTeamsAsk`.
 In order to tie the conditional task back to `MicrosoftTeamsAsk`, add the same tag from the fifth step to the conditional task (under the "Details" tab of the task). The conditional task will be marked as completed when a user responds to the `MicrosoftTeamsAsk` form.
 
-
 ## Notes
 
 ---
 
 * `MicrosoftTeamsAsk` will not work when run in the playbook debugger. This is because the debugger does not generate entitlements, since they must be tied to an investigation. Entitlements are needed to track the response.
+* Whitespaces are not supported in custom options and will not work. (i.e. setting a button to `I Agree`)

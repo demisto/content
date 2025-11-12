@@ -1118,7 +1118,6 @@ def main() -> None:
     command = demisto.command()
 
     demisto.debug(f"args {args}")
-    demisto.debug(f"params {params}")
 
     demisto.debug(f"Command being called is {command}")
     try:

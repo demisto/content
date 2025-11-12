@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -18,23 +18,6 @@ configuration:
   type: 9
   required: true
   section: Connect
-- display: The maximum number of events per fetch
-  name: max_fetch
-  defaultvalue: "5000"
-  advanced: true
-  type: 0
-  required: true
-  section: Collect
-  hidden:
-  - xsoar
-- defaultvalue: 30 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: first_fetch
-  required: false
-  type: 0
-  section: Collect
-  hidden:
-  - xsoar
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -47,22 +30,87 @@ configuration:
   required: false
   section: Connect
   advanced: true
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+  defaultvalue: 'false'
+  hidden:
+  - xsoar
+- display: Event Types To Fetch
+  name: event_types_to_fetch
+  section: Collect
+  type: 16
+  advanced: true
+  required: false
+  defaultvalue: Reports
+  options:
+  - Reports
+  - Credential watchlist
+  - Domain watchlist
+  hidden:
+  - xsoar
+- display: The maximum number of reports per fetch
+  name: max_fetch
+  defaultvalue: "5000"
+  advanced: true
+  type: 0
+  required: true
+  section: Collect
+  hidden:
+  - xsoar
+- display: The maximum number of Credential watchlist events per fetch
+  name: max_fetch_creds
+  defaultvalue: "50"
+  advanced: true
+  type: 0
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
+- display: The maximum number of Domain watchlist events  per fetch
+  name: max_fetch_domain
+  defaultvalue: "500"
+  advanced: true
+  type: 0
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
 description: 'CybelAngel collects reports from the CybelAngel platform, which specializes in external attack surface protection and management.'
 display: CybelAngel
 name: CybelAngel Event Collector
 script:
   commands:
   - arguments:
-    - description: 'Get reports from a specific start date formatted with ISO 8601.'
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - description: 'Get events from a specific start date formatted with ISO 8601. Example: "2025-01-01T00:00:00.000.".'
       name: start_date
-      required: true
-    - description: 'Get reports until a specific end date formatted with ISO 8601.'
+      required: false
+    - description: 'Get events until a specific end date formatted with ISO 8601. Example: "2025-01-01T00:00:00.000Z".'
       name: end_date
-      required: true
-    - description: 'The maximum number of reports to return.'
+      required: false
+    - description: 'The maximum number of events to return.'
       name: limit
-      required: true
+      required: false
       defaultValue: 50
+    - auto: PREDEFINED
+      description: 'Which events to fetch.'
+      name: events_type_to_fetch
+      predefined:
+      - 'Reports'
+      - 'Credential watchlist'
+      - 'Domain watchlist'
+      defaultValue: 'Reports'
     description: 'Send events from CybelAngel to XSIAM. Used mainly for debugging.'
     name: cybelangel-get-events
     outputs: []
@@ -70,11 +118,9 @@ script:
     description: 'Retrieve reports from CybelAngel.'
     arguments:
     - name: start_date
-      description: 'Get reports from a specific start date formatted with ISO 8601.'
-      defaultValue: '3 Days ago'
+      description: 'Get reports from a specific start date formatted with ISO 8601, Example: "2025-01-14T10:22:45".'
       required: false
-    - description: 'Get reports until a specific end date formatted with ISO 8601.'
-      defaultValue: 'Now'
+    - description: 'Get reports until a specific end date formatted with ISO 8601, Example: "2025-01-14T10:22:45.'
       name: end_date
       required: false
     outputs:
@@ -88,7 +134,7 @@ script:
       required: true
     - name: pdf
       description: 'If true, retrieves the report as a PDF file.'
-      defaultValue: False
+      defaultValue: false
       required: false
       auto: PREDEFINED
       predefined:
@@ -108,7 +154,7 @@ script:
       required: true
     - name: csv
       description: 'If true, retrieves the mirror report in CSV format.'
-      defaultValue: False
+      defaultValue: false
       required: false
       auto: PREDEFINED
       predefined:
@@ -198,13 +244,13 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetchevents: true
 fromversion: 8.0.0
 marketplaces:
-  - xsoar
-  - marketplacev2
-  - platform
+- xsoar
+- marketplacev2
+- platform
 tests:
 - CybelAngel Test Playbook
 supportlevelheader: xsoar

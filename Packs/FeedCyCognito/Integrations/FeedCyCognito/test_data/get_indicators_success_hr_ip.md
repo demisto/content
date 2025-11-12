@@ -1,4 +1,4 @@
-### Indicator Detail:
+### Indicator Detail: 
  #### Asset type: IP
 |Asset ID|Security Grade|Status|Organizations|First Seen|Last Seen|Locations|Hosting Type|
 |---|---|---|---|---|---|---|---|

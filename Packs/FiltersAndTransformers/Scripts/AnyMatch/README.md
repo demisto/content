@@ -5,8 +5,6 @@ A JSON is always treated as a string.
 
 Since the comparison treats all inputs as strings, integers and strings are considered equal during the evaluation.
 
-
-
 ## Script Data
 
 ---
@@ -26,12 +24,10 @@ Since the comparison treats all inputs as strings, integers and strings are cons
 | left              | Value to check if it has a substring that is equal to an element in the right side. Can be a single value or a comma-separated list.                   |
 | right             | Value to check if it is equal to an element or to a substring of an element from the left. Can be a single value or a comma-separated list. |
 
-
 ## Outputs
 
 ---
 There are no outputs for this script.
-
 
 ### Table of examples
 

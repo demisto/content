@@ -1,0 +1,24 @@
+{
+    "value": [
+        {
+            "@odata.type": "#microsoft.graph.security.articleIndicator",
+            "id": "indicator_no_artifact",
+            "source": "microsoft"
+        },
+        {
+            "@odata.type": "#microsoft.graph.security.articleIndicator",
+            "id": "indicator_empty_artifact",
+            "source": "microsoft",
+            "artifact": {}
+        },
+        {
+            "@odata.type": "#microsoft.graph.security.articleIndicator",
+            "id": "indicator_with_artifact",
+            "source": "microsoft",
+            "artifact": {
+                "@odata.type": "#microsoft.graph.security.hostname",
+                "id": "artifact123"
+            }
+        }
+    ]
+}

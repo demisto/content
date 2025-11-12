@@ -1,3 +1,20 @@
+## Deprecation Notice
+
+---
+
+The "Chronicle" integration currently relies on the Backstory API, which is being deprecated in favor of the more modern and supported Google SecOps v1alpha API.
+
+We have built a new "Google SecOps" (v1alpha API) integration for Cortex XSOAR, and it will be part of the existing pack.
+
+What this means for you:
+
+- The current "Chronicle" (Backstory API) integration will remain functional but will no longer actively maintained or supported.
+- The new "Google SecOps" (v1alpha API) integration will offer similar functionality and command structure, with additional backend improvements.
+
+We recommend migrating to the new "Google SecOps" integration to ensure continued support, compatibility, and access to the latest updates.
+
+If you have any questions or need assistance, please reach out via [XSOAR Support Contact](https://go.chronicle.security/contact).
+
 ## Overview
 
 ---
@@ -212,6 +229,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 31. gcb-verify-value-in-reference-list
 32. gcb-verify-rule
 33. gcb-get-event
+34. gcb-reference-list-append-content
+35. gcb-reference-list-remove-content
 
 ### 1. gcb-list-iocs
 
@@ -2742,9 +2761,11 @@ Create a new reference list.
 | --- | --- | --- |
 | name | Provide a unique name of the list to create a reference list. | Required |
 | description | Description of the list. | Required |
-| lines | Enter the content to be added into the reference list.<br/>Format accepted is: "Line 1, Line 2, Line 3". | Required |
+| lines | Enter the content to be added into the reference list.<br/>Format accepted is: "Line 1, Line 2, Line 3". | Optional |
+| entry_id | Provide a unique file id consisting of lines to add.<br/><br/>Note: Please provide either one of "lines" or "entry_id". | Optional |
 | delimiter | Delimiter by which the content of the list is separated.<br/>Eg:  " , " , " : ", " ; ". Default is ,. | Optional |
 | content_type | Select the content type for reference list. Possible values are: PLAIN_TEXT, CIDR, REGEX. Default is PLAIN_TEXT. | Optional |
+| use_delimiter_for_file | Flag to control how the file content is split. If set to True, it uses the provided delimiter; otherwise it splits by new lines (\n). Possible values are: True, False. Default is False. | Optional |
 
 #### Context Output
 
@@ -2802,10 +2823,12 @@ Updates an existing reference list.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Provide a unique name of the list to update. | Required |
-| lines | Enter the content to be updated into the reference list.<br/>Format accepted is: "Line 1, Line 2, Line 3".<br/><br/>Note: Use gcb-get-reference-list to retrieve the content and description of the list. | Required |
+| lines | Enter the content to be updated into the reference list.<br/>Format accepted is: "Line 1, Line 2, Line 3".<br/><br/>Note: Use gcb-get-reference-list to retrieve the content and description of the list. | Optional |
+| entry_id | Provide a unique file id consisting of lines to update.<br/><br/>Note: Please provide either one of "lines" or "entry_id". | Optional |
 | description | Description to be updated of the list. | Optional |
 | delimiter | Delimiter by which the content of the list is separated.<br/>Eg:  " , " , " : ", " ; ". Default is ,. | Optional |
 | content_type | Select the content type for reference list. Possible values are: PLAIN_TEXT, CIDR, REGEX. | Optional |
+| use_delimiter_for_file | Flag to control how the file content is split. If set to True, it uses the provided delimiter; otherwise it splits by new lines (\n). Possible values are: True, False. Default is False. | Optional |
 
 #### Context Output
 
@@ -4372,7 +4395,7 @@ Return the detections for the specified curated rule identifier.
 
 ***
 Lists the events for the specified UDM Search query.
-Note: The underlying API has the rate limit of 120 queries per hour.
+Note: The underlying API has the rate limit of 360 queries per hour.
 
 #### Base Command
 
@@ -5670,3 +5693,125 @@ Get the specific event with the given ID from Chronicle. <br/><br/>Note: This co
 >|Ip Protocol|Session Id|
 >|---|---|
 >| TCP | dummy |
+
+### 34. gcb-reference-list-append-content
+
+***
+Appends lines into an existing reference list.
+
+#### Base Command
+
+`gcb-reference-list-append-content`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Provide a unique name of the list to append content. | Required |
+| lines | Enter the content to be appended into the reference list.<br/>Format accepted is: "Line 1, Line 2, Line 3".<br/><br/>Note: Use "gcb-get-reference-list" to retrieve the content of the list. | Optional |
+| entry_id | Provide a unique file id consisting of lines to append.<br/><br/>Note: Please provide either one of "lines" or "entry_id". | Optional |
+| delimiter | Delimiter by which the content of the list is separated.<br/>Eg:  " , " , " : ", " ; ". Default is ,. | Optional |
+| use_delimiter_for_file | Flag to control how the file content is split. If set to True, it uses the provided delimiter; otherwise it splits by new lines (\n). Possible values are: True, False. Default is False. | Optional |
+| append_unique | A flag to determine whether to apply deduplication logic over new lines. Possible values are: True, False. Default is False. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.ReferenceList.name | String | The unique name of the list. |
+| GoogleChronicleBackstory.ReferenceList.description | String | The description of the list. |
+| GoogleChronicleBackstory.ReferenceList.lines | String | The list of line items. |
+| GoogleChronicleBackstory.ReferenceList.createTime | Date | The time when the list was created. |
+| GoogleChronicleBackstory.ReferenceList.contentType | String | The content type of the reference list. |
+
+#### Command Example
+
+```!gcb-reference-list-append-content name="XSOAR_GoogleChronicle_Backstory_README_List" lines="Line3"```
+
+#### Context Example
+
+```json
+{
+    "GoogleChronicleBackstory": {
+        "ReferenceList": {
+            "createTime": "2025-06-16T07:11:11.380991Z",
+            "description": "list created for readme",
+            "contentType": "PLAIN_TEXT",
+            "lines": [
+                "Line1",
+                "Line2",
+                "Line3"
+            ],
+            "name": "XSOAR_GoogleChronicle_Backstory_README_List"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Updated Reference List Details
+
+>|Name|Content Type|Description|Creation Time|Content|
+>|---|---|---|---|---|
+>| XSOAR_GoogleChronicle_Backstory_README_List | PLAIN_TEXT | list created for readme | 2025-06-16T07:11:11.380991Z | Line1,<br/>Line2,<br/>Line3 |
+
+### 35. gcb-reference-list-remove-content
+
+***
+Removes lines from an existing reference list.
+
+#### Base Command
+
+`gcb-reference-list-remove-content`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Provide a unique name of the list to remove content. | Required |
+| lines | Enter the content to be removed from the reference list.<br/>Format accepted is: "Line 1, Line 2, Line 3".<br/><br/>Note: Use "gcb-get-reference-list" to retrieve the content of the list. | Optional |
+| entry_id | Provide a unique file id consisting of lines to remove.<br/><br/>Note: Please provide either one of "lines" or "entry_id". | Optional |
+| delimiter | Delimiter by which the content of the list is separated.<br/>Eg:  " , " , " : ", " ; ". Default is ,. | Optional |
+| use_delimiter_for_file | Flag to control how the file content is split. If set to True, it uses the provided delimiter; otherwise it splits by new lines (\n). Possible values are: True, False. Default is False. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleChronicleBackstory.ReferenceList.name | String | The unique name of the list. |
+| GoogleChronicleBackstory.ReferenceList.description | String | The description of the list. |
+| GoogleChronicleBackstory.ReferenceList.lines | String | The list of line items. |
+| GoogleChronicleBackstory.ReferenceList.createTime | Date | The time when the list was created. |
+| GoogleChronicleBackstory.ReferenceList.contentType | String | The content type of the reference list. |
+
+#### Command Example
+
+```!gcb-reference-list-remove-content name="XSOAR_GoogleChronicle_Backstory_README_List" lines="Line3"```
+
+#### Context Example
+
+```json
+{
+    "GoogleChronicleBackstory": {
+        "ReferenceList": {
+            "createTime": "2025-06-16T07:11:11.380991Z",
+            "description": "list created for readme",
+            "contentType": "PLAIN_TEXT",
+            "lines": [
+                "Line1",
+                "Line2",
+            ],
+            "name": "XSOAR_GoogleChronicle_Backstory_README_List"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Updated Reference List Details
+
+>|Name|Content Type|Description|Creation Time|Content|
+>|---|---|---|---|---|
+>| XSOAR_GoogleChronicle_Backstory_README_List | PLAIN_TEXT | list created for readme | 2025-06-16T07:11:11.380991Z | Line1,<br/>Line2 |

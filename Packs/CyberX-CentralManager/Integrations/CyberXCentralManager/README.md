@@ -12,8 +12,8 @@ Updating the alert
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cyberx_uuid | The unique ID. | Required | 
-| action | The action to perform on the alert. Possible values are: handle, handleAndLearn. | Required | 
+| cyberx_uuid | The unique ID. | Required |
+| action | The action to perform on the alert. Possible values are: handle, handleAndLearn. | Required |
 
 #### Context Output
 

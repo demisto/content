@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -187,7 +187,7 @@ script:
     - contextPath: CVE.Description
       description: The description of the CVE.
       type: String
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.11.4508456
   feed: true
   runonce: false
   script: ''

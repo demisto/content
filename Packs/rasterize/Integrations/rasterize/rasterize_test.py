@@ -34,6 +34,8 @@ def util_load_json(path):
 class MockPychromeEventHandler:
     is_mailto = False
     is_private_network_url = False
+    document_url = ""
+    path = ""
 
 
 class MockTab:
@@ -396,7 +398,7 @@ def test_chrome_manager_case_chrome_instances_file_is_empty(mocker):
     browser, chrome_port = chrome_manager()
 
     assert generate_new_chrome_instance_mocker.call_count == 1
-    assert generate_new_chrome_instance_mocker.called_with(instance_id, chrome_options)
+    generate_new_chrome_instance_mocker.assert_called_with(instance_id, chrome_options)
     assert terminate_chrome_mocker.call_count == 0
     assert browser == "browser_object"
     assert chrome_port == "chrome_port"
@@ -428,7 +430,7 @@ def test_chrome_manager_case_chromes_options_exist_and_instance_id_not_linked(mo
     browser, chrome_port = chrome_manager()
 
     assert generate_new_chrome_instance_mocker.call_count == 1
-    assert generate_new_chrome_instance_mocker.called_with(instance_id, chrome_options)
+    generate_new_chrome_instance_mocker.assert_called_with(instance_id, chrome_options)
     assert terminate_chrome_mocker.call_count == 0
     assert browser == "browser_object"
     assert chrome_port == "chrome_port"
@@ -461,7 +463,7 @@ def test_chrome_manager_case_new_chrome_options_and_instance_id(mocker):
     browser, chrome_port = chrome_manager()
 
     assert generate_new_chrome_instance_mocker.call_count == 1
-    assert generate_new_chrome_instance_mocker.called_with(instance_id, chrome_options)
+    generate_new_chrome_instance_mocker.assert_called_with(instance_id, chrome_options)
     assert terminate_chrome_mocker.call_count == 0
     assert browser == "browser_object"
     assert chrome_port == "chrome_port"
@@ -498,7 +500,7 @@ def test_chrome_manager_case_instance_id_exist_but_new_chrome_options(mocker):
 
     assert terminate_chrome_mocker.call_count == 1
     assert generate_new_chrome_instance_mocker.call_count == 1
-    assert generate_new_chrome_instance_mocker.called_with(instance_id, chrome_options)
+    generate_new_chrome_instance_mocker.assert_called_with(instance_id, chrome_options)
     assert browser == "browser_object"
     assert chrome_port == "chrome_port"
 
@@ -892,7 +894,7 @@ def test_remove_leading_zeros_from_ip_addresses(test_input: str, expected: str):
     assert remove_leading_zeros_from_ip_addresses(test_input) == expected
 
 
-def test_handle_request_paused(mocker):
+def test_handle_request_paused(mocker: MockerFixture):
     """
     Given:
         - cloudflare.com as BLOCKED_URLS parameter.
@@ -909,6 +911,7 @@ def test_handle_request_paused(mocker):
     mock_fetch.disable = MagicMock()
     mock_fail_request = mocker.patch.object(mock_fetch, "failRequest", new_callable=MagicMock)
     mock_tab.Fetch = mock_fetch
+    mock_tab.id = "mock_tab_id"
     tab_event_handler = PychromeEventHandler(None, mock_tab, None, "", 0)
 
     tab_event_handler.handle_request_paused(**kwargs)

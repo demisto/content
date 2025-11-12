@@ -142,7 +142,7 @@ def listen_for_reports(params):
                 private_key_path = private_key_file.name
                 private_key_file.write(private_key)
                 private_key_file.close()
-                listener.socket = ssl.wrap_socket(
+                listener.socket = ssl.wrap_socket(  # type: ignore[attr-defined]
                     listener.socket,
                     keyfile=private_key_path,
                     certfile=certificate_path,
@@ -201,9 +201,11 @@ def test_module(params: dict):
         private_key_file.close()
 
         s = socket.socket()
-        ssl.wrap_socket(
+        # pylint: disable=no-member
+        ssl.wrap_socket(  # type: ignore[attr-defined]
             s, keyfile=private_key_path, certfile=certificate_path, server_side=True, ssl_version=ssl.PROTOCOL_TLSv1_2
         )
+        # pylint: enable=no-member
         return "ok"
 
     except ssl.SSLError as e:

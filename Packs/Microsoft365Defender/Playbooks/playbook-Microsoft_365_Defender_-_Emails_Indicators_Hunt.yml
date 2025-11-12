@@ -314,7 +314,7 @@ tasks:
                   simple: Microsoft365Defender.Hunt.results.Url
                 iscontext: true
           transformers:
-            - operator: uniq
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -617,7 +617,7 @@ tasks:
                   simple: Microsoft365Defender.RetrievedEmails.NetworkMessageId
                 iscontext: true
           transformers:
-            - operator: uniq
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -811,3 +811,5 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
+- xsiam

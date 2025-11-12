@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -108,6 +108,7 @@ configuration:
   name: remote_api
   required: false
   type: 8
+  section: Collect
 defaultclassifier: 'null'
 description: Use Anomali ThreatStream to query and submit threats.
 display: Anomali ThreatStream v3
@@ -2693,12 +2694,13 @@ script:
       name: submission_value
       required: true
     - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Whether the premium sandbox should be used for detonation.
+      defaultValue: 'true'
+      description: Deprecated, must be set to 'true'.
       name: premium_sandbox
       predefined:
       - 'false'
       - 'true'
+      deprecated: true
     - description: A comma-separated list of additional details for the indicator. This information is displayed in the Tag column of the ThreatStream UI.
       name: detail
     - default: true
@@ -6431,11 +6433,12 @@ script:
       isArray: true
     description: Remove tags from the indicators.
     name: threatstream-remove-indicator-tag
-  - name: threatstream-clone-imported-indicator
-    arguments:
+  - arguments:
     - name: indicator_id
       required: true
       description: ID of the indicator to clone.
+    name: threatstream-clone-imported-indicator
+    description: Clones already imported indicators (observables), used with the edit classification to move to a trusted circle.
     outputs:
     - contextPath: ThreatStream.Clone.ID
       description: Indicator ID.
@@ -6446,17 +6449,16 @@ script:
     - contextPath: ThreatStream.Clone.Job_ID
       description: Job ID for the clone request.
       type: string
-    description: Clones already imported indicators (observables), used with the edit classification to move to a trusted circle.
-  - name: threatstream-edit-classification
-    arguments:
+  - arguments:
     - name: import_id
       required: true
       description: Import Session ID of the import session from the clone-imported-indicator command.
     - name: data
       required: true
       description: JSON data of edits to be made {"is_public":false,"circles":[12866]}.
+    name: threatstream-edit-classification
     description: Edit the values for observable that have been cloned.
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.4592568
   runonce: false
   script: '-'
   subtype: python3

@@ -1,5 +1,5 @@
 category: Email
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -259,7 +259,7 @@ script:
       - minimal
       - raw
     - auto: PREDEFINED
-      defaultValue: False
+      defaultValue: false
       description: Whether to include the attachment entries in the result or not.
       name: include-attachments
       predefined:
@@ -1735,7 +1735,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.116623
+  dockerimage: demisto/google-api-py3:1.0.0.4418335
   isfetch: true
   runonce: false
   script: '-'

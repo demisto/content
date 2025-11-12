@@ -1,6 +1,7 @@
 The feed allows customers to pull indicators of compromise from cyber incidents (IP addresses, URLs, domains, CVE, and file hashes).
 
 ## Cyjax API token
+
 1. Log in to [Cyjax threat intelligence portal](https://cymon.co).
 2. On the top navigation bar, hover the cursor over your user icon and go to **Developer settings**.
 3. Open the personal access token tab.
@@ -8,11 +9,13 @@ The feed allows customers to pull indicators of compromise from cyber incidents 
 5. Record the API token, as it will not be accessible after the window is closed.
 
 ## Feed installation
+
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for **Cyjax Feed**.
 3. Click **Add instance** to create and configure a new integration instance.
 
 ## Configuration
+
 1. Enter feed name eg. `Cyjax Feed`
 2. API URL `https://api.cyberportal.co`
 3. Enter Cyjax API token
@@ -29,10 +32,12 @@ The feed allows customers to pull indicators of compromise from cyber incidents 
 14. Click done to save.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### !cyjax-get-indicators
+
 ***
 Get indicators from Cyjax API
 
@@ -48,6 +53,7 @@ Get indicators from Cyjax API
 example: `!cyjax-get-indicators since=2020-10-23T00:00:00 type=IPv4`
 
 ### !cyjax-cyjax-indicator-sighting
+
 ***
 Get Cyjax sighting of a indicator
 
@@ -58,6 +64,7 @@ Get Cyjax sighting of a indicator
 example: `!cyjax-indicator-sighting value=176.117.5.126`
 
 ### !cyjax-unset-indicators-last-fetch-date
+
 ***
-Unset the indicators feed last fetch date. Should only be used if user needs to use `re-fetch` button 
+Unset the indicators feed last fetch date. Should only be used if user needs to use `re-fetch` button
 and wants to fetch old indicators from Cyjax. Next feed will use date set in first_fetch (default is last 3 days)

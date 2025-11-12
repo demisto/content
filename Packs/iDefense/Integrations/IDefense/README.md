@@ -107,17 +107,17 @@
     "IP": [
         {
             "Malicious": {
-                "Vendor": "iDefense", 
+                "Vendor": "iDefense",
                 "Description": "last seen as MALWARE_C2"
-            }, 
+            },
             "Address": "256.256.256.256"
         }
-    ], 
+    ],
     "DBotScore": [
         {
-            "Vendor": "iDefense", 
-            "Indicator": "256.256.256.256", 
-            "Score": 2, 
+            "Vendor": "iDefense",
+            "Indicator": "256.256.256.256",
+            "Score": 2,
             "Type": "ip"
         }
     ]
@@ -225,17 +225,17 @@
     "Domain": [
         {
             "Malicious": {
-                "Vendor": "iDefense", 
+                "Vendor": "iDefense",
                 "Description": "last seen as MALWARE_DOWNLOAD"
-            }, 
+            },
             "Name": "example.com"
         }
-    ], 
+    ],
     "DBotScore": [
         {
-            "Vendor": "iDefense", 
-            "Indicator": "example.com", 
-            "Score": 2, 
+            "Vendor": "iDefense",
+            "Indicator": "example.com",
+            "Score": 2,
             "Type": "domain"
         }
     ]
@@ -343,17 +343,17 @@
     "URL": [
         {
             "Malicious": {
-                "Vendor": "iDefense", 
+                "Vendor": "iDefense",
                 "Description": "last seen as MALWARE_C2"
-            }, 
+            },
             "Data": "http://example.com"
         }
-    ], 
+    ],
     "DBotScore": [
         {
-            "Vendor": "iDefense", 
-            "Indicator": "http://example.com", 
-            "Score": 2, 
+            "Vendor": "iDefense",
+            "Indicator": "http://example.com",
+            "Score": 2,
             "Type": "url"
         }
     ]
@@ -490,15 +490,15 @@
     "URL": [
         {
             "Malicious": {
-                "Vendor": "iDefense", 
+                "Vendor": "iDefense",
                 "Description": "last seen as MALWARE_DOWNLOAD"
-            }, 
+            },
             "Data": "http://example.com/malicious_file.exe"
-        }, 
+        },
         {
-            "Vendor": "iDefense", 
-            "Indicator": "http://example.com/suspicious_file.exe", 
-            "Score": 2, 
+            "Vendor": "iDefense",
+            "Indicator": "http://example.com/suspicious_file.exe",
+            "Score": 2,
             "Type": "url"
         }
     ]
@@ -644,17 +644,17 @@
     "Domain": [
         {
             "Malicious": {
-                "Vendor": "iDefense", 
+                "Vendor": "iDefense",
                 "Description": "last seen as MALWARE_C2"
-            }, 
+            },
             "Name": "example.com"
         }
-    ], 
+    ],
     "DBotScore": [
         {
-            "Vendor": "iDefense", 
-            "Indicator": "example.com", 
-            "Score": 2, 
+            "Vendor": "iDefense",
+            "Indicator": "example.com",
+            "Score": 2,
             "Type": "domain"
         }
     ]

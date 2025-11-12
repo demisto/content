@@ -12,12 +12,11 @@ For more details about the authentication used in this integration, see [Microso
 
 - After authorizing the Self-Deployed Application, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription.
 - In order to assign a role to the application after consent was given:
-  - Go to the Azure Portal UI. 
-  - Go to **Subscriptions**, and then **Access Control (IAM)**. 
-  - Click "Add role assignment". 
+  - Go to the Azure Portal UI.
+  - Go to **Subscriptions**, and then **Access Control (IAM)**.
+  - Click "Add role assignment".
   - Create a new role or select a role that includes permissions for the queries you plan to run.
   - Select the Azure Resource Graph application. By default, Azure Applications aren't displayed in the available options. To find your application, search for the name and select it.
-
 
 ### Client Credentials Flow
 
@@ -25,7 +24,7 @@ For more details about the authentication used in this integration, see [Microso
 Follow these steps for [client-credentials configuration:](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#client-credentials-flow).
 
 1. In the instance configuration, select the **Use a self-deployed Azure application - Client Credentials Authorization Flow** checkbox.
-2. Enter your Client ID in the **ID (Client ID)** parameter. 
+2. Enter your Client ID in the **ID (Client ID)** parameter.
 3. Enter your Client Secret in the **Key (Client Secret)** parameter.
 4. Enter your Tenant ID in the **Token (Tenant ID)** parameter.
 5. Click **Test** to validate the URLs, token, and connection.
@@ -33,7 +32,6 @@ Follow these steps for [client-credentials configuration:](https://xsoar.pan.dev
 To use The Azure Resource Graph, you must have appropriate rights in Azure role-based access control (Azure RBAC) with at least read access to the resources you want to query. No results are returned if you don't have at least read permissions to the Azure object or object group.
 
 ## Configure Azure Resource Graph in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -63,13 +61,13 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of operations to return (Default is 50). | Optional | 
+| limit | The maximum number of operations to return (Default is 50). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-|  AzureResourceGraph.Operations | String | A list of available Azure Resource Graph operations permissions and descriptions.| 
+|  AzureResourceGraph.Operations | String | A list of available Azure Resource Graph operations permissions and descriptions.|
 
 #### Command Example
 
@@ -109,7 +107,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 | provider: Microsoft Resource Graph<br>resource: Operation<br>operation: Get Operations<br>description: Gets the list of supported operations | Microsoft.ResourceGraph/operations/read |
 | provider: Microsoft Resource Graph<br>resource: Resources<br>operation: Query resources<br>description: Submits a query on resources within specified subscriptions, management groups or tenant scope | Microsoft.ResourceGraph/resources/read |
 
-
 ### azure-rg-query
 
 ---
@@ -122,13 +119,13 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query to execute. | Required | 
+| query | The query to execute. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureResourceGraph.Query | String | Data returned from query. | 
+| AzureResourceGraph.Query | String | Data returned from query. |
 
 #### Command Example
 

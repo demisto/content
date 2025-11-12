@@ -1,7 +1,8 @@
 Cuts a string by delimiter and returns specific fields.
 
-Examples:
+Examples
 =================
+
 input: "A-B-C-D-E"
 delimiter: "-"
 fields: "1,5"
@@ -9,6 +10,7 @@ fields: "1,5"
 return: "A-E"
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -16,8 +18,8 @@ return: "A-E"
 | Script Type | python |
 | Tags | transformer, string |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -27,5 +29,6 @@ return: "A-E"
 | fields | The comma-separated field numbers. For example, "1,5,7". |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

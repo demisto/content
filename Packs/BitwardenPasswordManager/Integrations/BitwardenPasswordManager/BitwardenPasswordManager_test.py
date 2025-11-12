@@ -62,6 +62,69 @@ def test_login_with_valid_token(mock_client_with_valid_token):
 
 
 @freeze_time("2024-04-25 00:00:00")
+@pytest.mark.parametrize(
+    "base_url, full_url",
+    [
+        (MOCK_BASEURL, "https://identity.bitwarden.com/connect/token"),
+        ("https://mock.api.eu", "https://identity.bitwarden.eu/connect/token"),
+    ],
+)
+def test_create_new_token(mocker, base_url: str, full_url: str):
+    """
+    Given: A client and authentication data
+    When: create_new_token is called with valid credentials
+    Then: A new token is created, stored in context, and returned
+    """
+    from BitwardenPasswordManager import Client
+
+    # Mock the HTTP response for token creation
+    mock_response = util_load_json("test_data/mock_response_login_token_creation.json")
+    mock_http_request = mocker.patch.object(Client, "_http_request", return_value=mock_response)
+    mock_set_context = mocker.patch("BitwardenPasswordManager.set_integration_context")
+    mock_get_current_time = mocker.patch("BitwardenPasswordManager.get_current_time")
+
+    # Set a fixed time for consistent testing
+    from datetime import datetime
+
+    fixed_time = datetime(2024, 4, 25, 0, 0, 0)
+    mock_get_current_time.return_value = fixed_time
+
+    # Create client instance without calling login (to test create_new_token directly)
+    client = Client.__new__(Client)
+    client._base_url = base_url
+    client._verify = False
+    client._proxy = False
+
+    # Test data for token creation
+    json_data = {
+        "client_id": MOCK_CLIENT_ID,
+        "client_secret": MOCK_CLIENT_SECRET,
+        "grant_type": "client_credentials",
+        "scope": "api.organization",
+    }
+
+    # Call the method under test
+    result_token = client.create_new_token(json_data)
+
+    # Verify the HTTP request was made with correct parameters
+    mock_http_request.assert_called_once_with(
+        method="POST",
+        full_url=full_url,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        data=json_data,
+    )
+
+    # Verify the token was returned correctly
+    assert result_token == "access_token"
+
+    # Verify the context was set with the token and expiration
+    mock_set_context.assert_called_once()
+    context_call_args = mock_set_context.call_args[1]["context"]
+    assert context_call_args["token"] == "access_token"
+    assert "expires" in context_call_args
+
+
+@freeze_time("2024-04-25 00:00:00")
 def test_get_events_with_limit(mock_client_with_valid_token, mocker):
     """
     Given: A mock BitwardenPasswordManager client.

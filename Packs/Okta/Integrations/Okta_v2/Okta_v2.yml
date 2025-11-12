@@ -1,5 +1,5 @@
 category: Authentication & Identity Management
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -93,6 +93,8 @@ script:
       required: true
     description: Deactivates a single user.
     name: okta-deactivate-user
+    compliantpolicies:
+    - User Hard Remediation
   - arguments:
     - default: true
       description: Username to activate.
@@ -100,6 +102,8 @@ script:
       required: true
     description: Activates a single user.
     name: okta-activate-user
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - default: true
       description: Username to suspend.
@@ -107,6 +111,8 @@ script:
       required: true
     description: Suspends a single user. This operation can only be performed on users with an ACTIVE status. After the porcess is completed, the user's status is SUSPENDED.
     name: okta-suspend-user
+    compliantpolicies:
+    - User Hard Remediation
   - arguments:
     - default: true
       description: Username to change the status to ACTIVE.
@@ -247,6 +253,8 @@ script:
     - contextPath: Account.VerifyPushResult
       description: Okta user push factor result.
       type: String
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - default: true
       description: Term by which to search. Can be a first name, last name, or email address. The argument `term` or `advanced_search` is required.
@@ -300,6 +308,8 @@ script:
       name: username
     - description: User ID of the user for which to get information.
       name: userId
+    - description: Email of the user for which to get information.
+      name: userEmail
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to return extended user information. Can be "true" or "false". The default is "false".
@@ -1266,6 +1276,8 @@ script:
     description: Deletes the specified user.
     execution: true
     name: okta-delete-user
+    compliantpolicies:
+    - User Hard Remediation
   - arguments:
     - description: Okta User ID.
       name: userId
@@ -1275,6 +1287,8 @@ script:
       For more information and examples:
       https://developer.okta.com/docs/reference/api/users/#user-sessions
     name: okta-clear-user-sessions
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: The maximum number of results to return.
       name: limit
@@ -1511,10 +1525,12 @@ script:
     - contextPath: Account.Username
       description: Okta account usernames returned by the search.
       type: String
+    compliantpolicies:
+    - User Soft Remediation
   - description: Reset OAuth authentication data (authentication process will start from the beginning, and a new token will be generated).
     name: okta-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.2005673
+  dockerimage: demisto/crypto:1.0.0.4578119
   runonce: false
   script: ""
   subtype: python3
