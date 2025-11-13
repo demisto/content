@@ -778,7 +778,7 @@ def results_to_incidents_datetime(response, last_fetch):
                     incidents.append(inc)
                 else:
                     demisto.debug(
-                        f"skipping hit ID: {hit.get('_id')} since {hit_timestamp=} is holder than the {current_fetch=}"
+                        f"Skipping hit ID: {hit.get('_id')} since {hit_timestamp=} is earlier than the {current_fetch=}"
                     )
 
     return incidents, last_fetch.isoformat()  # type:ignore[union-attr]
