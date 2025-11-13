@@ -67,6 +67,25 @@ class AsyncClient:
         # Always ensure HTTP client session is closed
         await self._session.close()
 
+    @staticmethod
+    async def _handle_response_error(response: aiohttp.ClientResponse):
+        """
+        Handles error responses and provides a more informative error message.
+
+        Args:
+            response (aiohttp.ClientResponse): The client response object.
+
+        Raises:
+            DemistoException: If a `ClientResponseError` is raised due to a failed request.
+        """
+        try:
+            response.raise_for_status()
+        except aiohttp.ClientResponseError as e:
+            url = e.request_info.url
+            response_json = await response.json()
+            error_message = response_json.get("message") or response_json.get("error")
+            raise DemistoException(f"Request to {url} failed with HTTP {e.status} status: {error_message}.")
+
     async def _generate_new_access_token(self) -> dict[str, Any]:
         """
         Generates a new OAuth2 access token using client credentials flow.
@@ -94,10 +113,10 @@ class AsyncClient:
         async with self._session.post(
             url=token_url,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
-            data={"grant_type": "client_credentials"},
+            params={"grant_type": "client_credentials"},
             auth=aiohttp.BasicAuth(self._client_id, self._client_secret),
         ) as response:
-            response.raise_for_status()
+            await self._handle_response_error(response)
             response_json = await response.json()
             error_message = response_json.get(TOKEN_ERROR_KEY)  # Optional error message if request fails
             access_token = response_json.get(ACCESS_TOKEN_KEY)
@@ -125,22 +144,24 @@ class AsyncClient:
             >>> async_client.get_authorization_header()
             "Bearer MyToken1245"
         """
+        demisto.debug(f"Constructing Authorization header using {force_generate_new_token=}.")
         integration_context = get_integration_context()
         access_token = integration_context.get(ACCESS_TOKEN_KEY)
         token_type = integration_context.get(TOKEN_TYPE_KEY, DEFAULT_TOKEN_TYPE)
         token_valid_until = arg_to_datetime(integration_context.get(TOKEN_VALID_UNTIL_KEY))
-        is_valid_token = token_valid_until and token_valid_until < datetime.now(tz=UTC)
+        is_valid_token = token_valid_until and token_valid_until > datetime.now(tz=UTC)
+        demisto.debug(f"Found in integration context {token_valid_until=}, {is_valid_token=}.")
 
         if access_token and is_valid_token and not force_generate_new_token:
-            demisto.debug("Using valid access token in context to construct Authorization header.")
+            demisto.debug("Using valid access token in integration context to construct Authorization header.")
         else:
             demisto.debug("Generating new access token.")
             token_response = await self._generate_new_access_token()
             access_token = token_response.get(ACCESS_TOKEN_KEY)
             token_type = token_response.get(TOKEN_TYPE_KEY, DEFAULT_TOKEN_TYPE)
             token_ttl = token_response.get(TOKEN_TTL_KEY, DEFAULT_TOKEN_TTL) - 300  # subtract 5 minutes as a safety margin
-            token_response[TOKEN_VALID_UNTIL_KEY] = datetime.now(tz=UTC) + timedelta(seconds=token_ttl)
-            demisto.debug("Saving token in integration context.")
+            token_response[TOKEN_VALID_UNTIL_KEY] = (datetime.now(tz=UTC) + timedelta(seconds=token_ttl)).isoformat()
+            demisto.debug("Saving new access token in integration context.")
             set_integration_context(token_response)
 
         demisto.debug(f"Constructed Authorization header using {token_type=}.")
@@ -169,7 +190,7 @@ class AsyncClient:
             dict[str, Any]: The audit events raw API response.
         """
         async with self._session.post(url=url, params=params, headers=headers, json=body) as response:
-            response.raise_for_status()
+            await self._handle_response_error(response)
             return await response.json()
 
     async def get_realtime_audits(
@@ -421,7 +442,7 @@ async def fetch_events_command(
     # Process results and handle any exceptions
     next_run = {}
     all_events = []
-    failed_services = []
+    per_service_errors = {}
 
     for service_name, result in zip(service_names, results):
         service_last_run = last_run.get(service_name, {})
@@ -430,7 +451,7 @@ async def fetch_events_command(
             # Log the error but continue processing events from other services
             service_traceback = "".join(traceback.format_exception(type(result), result, result.__traceback__))
             demisto.error(f"[{service_name}] Failed to fetch events. Traceback: {service_traceback}.")
-            failed_services.append(service_name)
+            per_service_errors[service_name] = str(result)
 
         elif isinstance(result, list):
             # Successfully fetched events from service
@@ -463,8 +484,9 @@ async def fetch_events_command(
             demisto.debug(f"[{service_name}] Unexpected result type: {type(result)}.")
 
     # If all services failed, raise an exception
-    if len(failed_services) == len(service_names):
-        raise DemistoException(f"Fetching events failed from all services: {service_names}.")
+    if len(per_service_errors) == len(service_names):
+        error_summary = "\n".join(f"{service_name}: {error}" for service_name, error in per_service_errors.items())
+        raise DemistoException(f"Fetching events failed from all services:\n{error_summary}.")
 
     return next_run, all_events
 
@@ -472,7 +494,7 @@ async def fetch_events_command(
 """ MAIN FUNCTION """
 
 
-async def main() -> None:
+async def main() -> None:  # pragma: no cover
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
     command: str = demisto.command()
@@ -513,7 +535,10 @@ async def main() -> None:
             elif command == "fetch-events":
                 last_run = demisto.getLastRun()
                 next_run, events = await fetch_events_command(
-                    async_client, last_run=last_run, max_fetch=max_fetch, service_names=service_names
+                    async_client,
+                    last_run=last_run,
+                    max_fetch=max_fetch,
+                    service_names=service_names,
                 )
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 demisto.setLastRun(next_run)

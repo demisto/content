@@ -86,12 +86,15 @@ script:
       - Routing
       - Integrations
       - AnalyticsReporting
+      required: true
     - name: limit
       description: Maximum number of audit events to return.
     - name: from_date
       description: The start date from which to get events. Must be within the last 14 days.
+      defaultValue: "1 hour ago"
     - name: to_date
       description: The end date till which to get events. Must be within the last 14 days.
+      defaultValue: "now"
   dockerimage: demisto/auth-utils:1.0.0.4578605
   isfetchevents: true
   runonce: false

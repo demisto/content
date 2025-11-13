@@ -1,4 +1,5 @@
 import json
+from datetime import UTC
 import pytest
 from pytest_mock import MockerFixture
 from aiohttp import ClientResponseError, RequestInfo
@@ -6,13 +7,17 @@ from unittest.mock import AsyncMock
 from freezegun import freeze_time
 from CommonServerPython import *
 from GenesysCloud import (
+    ACCESS_TOKEN_KEY,
+    TOKEN_TYPE_KEY,
+    TOKEN_TTL_KEY,
+    TOKEN_VALID_UNTIL_KEY,
+    DATE_FORMAT,
+    DEFAULT_SERVER_URL,
     AsyncClient,
     deduplicate_and_format_events,
     get_audit_events_for_service,
     get_events_command,
     fetch_events_command,
-    DATE_FORMAT,
-    DEFAULT_SERVER_URL,
 )
 
 SERVER_URL = DEFAULT_SERVER_URL
@@ -81,7 +86,7 @@ async def test_async_client_generate_new_access_token(async_client: AsyncClient,
     assert token_response == mock_token_response
     assert _client._session.post.call_args.kwargs["url"] == "https://login.mypurecloud.com/oauth/token"
     assert _client._session.post.call_args.kwargs["headers"]["Content-Type"] == "application/x-www-form-urlencoded"
-    assert _client._session.post.call_args.kwargs["data"]["grant_type"] == "client_credentials"
+    assert _client._session.post.call_args.kwargs["params"]["grant_type"] == "client_credentials"
 
 
 @pytest.mark.asyncio
@@ -103,6 +108,115 @@ async def test_async_client_generate_new_access_token_error(async_client: AsyncC
         mocker.patch.object(_client._session, "post", return_value=mock_response)
         with pytest.raises(DemistoException, match=f"Failed to obtain access token using {token_url=}. {error_message=}."):
             await _client._generate_new_access_token()
+
+
+@pytest.mark.parametrize(
+    "integration_context, force_generate, expected_generate_call_count, expected_set_context_call_count",
+    [
+        pytest.param(
+            {
+                ACCESS_TOKEN_KEY: "existing_token",
+                TOKEN_TYPE_KEY: "bearer",
+                TOKEN_VALID_UNTIL_KEY: "2025-01-02T12:00:00+00:00",  # Valid until noon (current time is 10:00)
+            },
+            False,
+            0,  # Should not generate new token
+            0,  # Should not set context
+            id="Valid token in integration context",
+        ),
+        pytest.param(
+            {
+                ACCESS_TOKEN_KEY: "expired_token",
+                TOKEN_TYPE_KEY: "bearer",
+                TOKEN_VALID_UNTIL_KEY: "2025-01-02T09:00:00+00:00",  # Expired (current time is 10:00)
+            },
+            False,
+            1,  # Should generate new token
+            1,  # Should set new token in context
+            id="Expired token in integration context",
+        ),
+        pytest.param(
+            {},  # Empty context
+            False,
+            1,  # Should generate new token
+            1,  # Should set new token in context
+            id="No token in integration context",
+        ),
+        pytest.param(
+            {
+                ACCESS_TOKEN_KEY: "existing_token",
+                TOKEN_TYPE_KEY: "bearer",
+                TOKEN_VALID_UNTIL_KEY: "2025-01-02T12:00:00+00:00",  # Valid token
+            },
+            True,  # Force generate
+            1,  # Should generate new token even though existing is valid
+            1,  # Should set new token in context
+            id="Force generate new token",
+        ),
+    ],
+)
+@freeze_time("2025-01-02T10:00:00Z")
+@pytest.mark.asyncio
+async def test_async_client_get_authorization_header(
+    async_client: AsyncClient,
+    mocker: MockerFixture,
+    integration_context: dict,
+    force_generate: bool,
+    expected_generate_call_count: int,
+    expected_set_context_call_count: int,
+):
+    """
+    Given:
+     - An AsyncClient instance and various integration context states.
+    When:
+     - Calling get_authorization_header with different scenarios.
+    Then:
+     - Ensure the correct behavior for token retrieval/generation.
+     - Ensure get_integration_context and set_integration_context are called appropriately.
+    """
+    # Mock integration context functions
+    mock_get_context = mocker.patch("GenesysCloud.get_integration_context", return_value=integration_context)
+    mock_set_context = mocker.patch("GenesysCloud.set_integration_context")
+
+    # Mock token generation response
+    mock_token_response = {
+        ACCESS_TOKEN_KEY: "new_generated_token",
+        TOKEN_TYPE_KEY: "bearer",
+        TOKEN_TTL_KEY: 86400,
+    }
+
+    async with async_client as _client:
+        mock_generate = mocker.patch.object(
+            _client,
+            "_generate_new_access_token",
+            return_value=mock_token_response,
+        )
+
+        # Call the method
+        auth_header = await _client.get_authorization_header(force_generate_new_token=force_generate)
+
+        # Assertions
+        assert mock_get_context.call_count == 1
+        assert mock_generate.call_count == expected_generate_call_count
+        assert mock_set_context.call_count == expected_set_context_call_count
+
+        # Verify the authorization header format
+        if expected_generate_call_count > 0:
+            # New token was generated
+            assert auth_header == "Bearer new_generated_token"
+            # Verify set_integration_context was called with correct data
+            if expected_set_context_call_count > 0:
+                set_context_call_args = mock_set_context.call_args[0][0]
+                assert set_context_call_args[ACCESS_TOKEN_KEY] == "new_generated_token"
+                assert set_context_call_args[TOKEN_TYPE_KEY] == "bearer"
+                assert TOKEN_VALID_UNTIL_KEY in set_context_call_args
+                # Verify token validity is set correctly (86400 - 300 = 86100 seconds from now)
+                expected_valid_until = datetime(2025, 1, 3, 9, 55, 0, tzinfo=UTC)  # 10:00 + 86100 seconds
+                actual_valid_until = arg_to_datetime(set_context_call_args[TOKEN_VALID_UNTIL_KEY])
+                assert actual_valid_until == expected_valid_until
+        else:
+            # Existing token was used
+            assert auth_header == "Bearer existing_token"
 
 
 @pytest.mark.asyncio
@@ -135,7 +249,7 @@ async def test_async_client_get_realtime_audits(async_client: AsyncClient, mocke
     mock_get_auth_header = mocker.patch.object(async_client, "get_authorization_header", return_value="Bearer test_token")
 
     async with async_client as _client:
-        mocker.patch.object(_client._session, "post", return_value=mock_response)
+        mock_post_request = mocker.patch.object(_client._session, "post", return_value=mock_response)
         response_json = await _client.get_realtime_audits(
             from_date=from_date,
             to_date=to_date,
@@ -146,9 +260,9 @@ async def test_async_client_get_realtime_audits(async_client: AsyncClient, mocke
 
     assert response_json == mock_response_json
     assert mock_get_auth_header.call_count == 1
-    assert _client._session.post.call_args.kwargs["url"] == f"{SERVER_URL}/api/v2/audits/query/realtime"
-    assert _client._session.post.call_args.kwargs["json"]["serviceName"] == service_name
-    assert _client._session.post.call_args.kwargs["json"]["pageNumber"] == page_number
+    assert mock_post_request.call_args.kwargs["url"] == f"{SERVER_URL}/api/v2/audits/query/realtime"
+    assert mock_post_request.call_args.kwargs["json"]["serviceName"] == service_name
+    assert mock_post_request.call_args.kwargs["json"]["pageNumber"] == page_number
 
 
 @pytest.mark.asyncio
@@ -284,7 +398,7 @@ async def test_get_audit_events_for_service_pagination(async_client: AsyncClient
 
     async with async_client as _client:
         # Mock get_realtime_audits to return the actual JSON responses
-        mocker.patch.object(_client, "get_realtime_audits", side_effect=mock_response_jsons)
+        mock_get_realtime_audits = mocker.patch.object(_client, "get_realtime_audits", side_effect=mock_response_jsons)
         events = await get_audit_events_for_service(
             client=_client,
             from_date=from_date,
@@ -294,7 +408,7 @@ async def test_get_audit_events_for_service_pagination(async_client: AsyncClient
         )
 
     assert len(events) == limit
-    assert _client.get_realtime_audits.call_count == 2  # Two pages fetched concurrently
+    assert mock_get_realtime_audits.call_count == 2  # Two pages fetched concurrently
 
 
 @pytest.mark.asyncio
