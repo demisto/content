@@ -2166,6 +2166,7 @@ COMMANDS = {
     "GitHub-trigger-workflow": github_trigger_workflow_command,
     "GitHub-cancel-workflow": github_cancel_workflow_command,
     "GitHub-list-workflows": github_list_workflows_command,
+    "Github-delete-file": github_delete_file_command,
 }
 
 

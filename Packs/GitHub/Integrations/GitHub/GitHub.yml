@@ -3681,7 +3681,7 @@ script:
     - defaultValue: Deleted file via Cortex XSOAR
       description: The commit message for the file deletion.
       name: commit_message
-    description: Used to delete a file on GitHub.
+    description: Delete a file on a Github branch.
     name: GitHub-delete-file
     outputs:
     - contextPath: GitHub.File.path
@@ -3692,6 +3692,7 @@ script:
       type: string
     - contextPath: GitHub.File.deleted
       description: True if the file was deleted.
+      type: boolean
   dockerimage: demisto/auth-utils:1.0.0.5633969
   isfetch: true
   runonce: false

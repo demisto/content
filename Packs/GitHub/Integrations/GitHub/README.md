@@ -3085,7 +3085,7 @@ Returns a list of GitHub workflows on a given repository.
 ### GitHub-delete-file
 
 ***
-Used to delete a file on GitHub.
+Delete a file on a Github branch.
 
 #### Base Command
 
@@ -3105,5 +3105,5 @@ Used to delete a file on GitHub.
 | --- | --- | --- |
 | GitHub.File.path | string | The path of the deleted file. | 
 | GitHub.File.sha | string | The SHA of the commit that deleted the file. | 
-| GitHub.File.deleted | unknown | True if the file was deleted. | 
+| GitHub.File.deleted | boolean | True if the file was deleted. | 
 
