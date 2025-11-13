@@ -2040,17 +2040,21 @@ class TestFetch:
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.get(
             f"{SERVER_URL}/alerts/queries/alerts/v2",
-            json={"resources": [
-                {"composite_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
-            ]},
+            json={
+                "resources": [
+                    {"composite_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
+                ]
+            },
         )
 
         # POST returns alert details with created_timestamp
         requests_mock.post(
             f"{SERVER_URL}/alerts/entities/alerts/v2",
-            json={"resources": [
-                {"composite_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
-            ]},
+            json={
+                "resources": [
+                    {"composite_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
+                ]
+            },
         )
 
         fetch_items()
@@ -2159,16 +2163,20 @@ class TestFetch:
 
         requests_mock.get(
             f"{SERVER_URL}/alerts/queries/alerts/v2",
-            json={"resources": [
-                {"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
-            ]},
+            json={
+                "resources": [
+                    {"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
+                ]
+            },
         )
 
         requests_mock.post(
             f"{SERVER_URL}/alerts/entities/alerts/v2",
-            json={"resources": [
-                {"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
-            ]},
+            json={
+                "resources": [
+                    {"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
+                ]
+            },
         )
         last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
         set_last_run_per_type(
@@ -2257,43 +2265,80 @@ class TestFetch:
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
 
         # --- Mocks for alerts/queries/alerts/v2 (GET - ID Lists)
-        requests_mock.get(f"{SERVER_URL}/alerts/queries/alerts/v2",
-                          [
-                              {'json': {"resources": ["ldt:1", "ldt:2"], "meta": {"pagination": {"total": 2}}}},  # 1. Detections
-                              {'json': {"resources": ["a:ind:1", "a:ind:2"]}},  # 2. Incidents
-                              {'json': {"resources": ["idp:1", "idp:2"]}}  # 3. IDP Detection
-                          ])
+        requests_mock.get(
+            f"{SERVER_URL}/alerts/queries/alerts/v2",
+            [
+                {"json": {"resources": ["ldt:1", "ldt:2"], "meta": {"pagination": {"total": 2}}}},  # 1. Detections
+                {"json": {"resources": ["a:ind:1", "a:ind:2"]}},  # 2. Incidents
+                {"json": {"resources": ["idp:1", "idp:2"]}},  # 3. IDP Detection
+            ],
+        )
 
         # --- Mocks for alerts/entities/alerts/v2 (POST - Entity Details)
-        requests_mock.post(f"{SERVER_URL}/alerts/entities/alerts/v2", [
-            # 1. Detections/Endpoint Detection: FIX 1: Add composite_id for name creation
-            {'json': {
-                "resources": [
-                    {"incident_id": "ldt:1", "composite_id": "ldt:1", "start": "2020-09-04T09:16:11Z",
-                     "created_timestamp": "2020-09-04T09:16:11.000Z"},
-                    {"incident_id": "ldt:2", "composite_id": "ldt:2", "start": "2020-09-04T09:16:11Z",
-                     "created_timestamp": "2020-09-04T09:16:11.000Z"},
-                ]
-            }},
-            # 2. Incidents/Endpoint Incident: FIX 2: Explicitly mark as incident and ensure required IDs exist
-            {'json': {
-                "resources": [
-                    {"incident_id": "a:ind:1", "composite_id": "a:ind:1", "start_time": "2020-09-04T09:16:11.000Z",
-                     "created_timestamp": "2020-09-04T09:16:11.000Z", "incident_type": "incident"},
-                    {"incident_id": "a:ind:2", "composite_id": "a:ind:2", "start_time": "2020-09-04T09:16:11.000Z",
-                     "created_timestamp": "2020-09-04T09:16:11.000Z", "incident_type": "incident"},
-                ]
-            }},
-            # 3. IDP Detection: Needs composite_id and created_timestamp
-            {'json': {
-                "resources": [
-                    {"composite_id": "idp:1", "start_time": "2020-09-04T09:16:11.000Z",
-                     "created_timestamp": "2020-09-04T09:16:11.000Z", "incident_type": "idp_detection"},
-                    {"composite_id": "idp:2", "start_time": "2020-09-04T09:16:11.000Z",
-                     "created_timestamp": "2020-09-04T09:16:11.000Z", "incident_type": "idp_detection"},
-                ]
-            }}
-        ])
+        requests_mock.post(
+            f"{SERVER_URL}/alerts/entities/alerts/v2",
+            [
+                # 1. Detections/Endpoint Detection: FIX 1: Add composite_id for name creation
+                {
+                    "json": {
+                        "resources": [
+                            {
+                                "incident_id": "ldt:1",
+                                "composite_id": "ldt:1",
+                                "start": "2020-09-04T09:16:11Z",
+                                "created_timestamp": "2020-09-04T09:16:11.000Z",
+                            },
+                            {
+                                "incident_id": "ldt:2",
+                                "composite_id": "ldt:2",
+                                "start": "2020-09-04T09:16:11Z",
+                                "created_timestamp": "2020-09-04T09:16:11.000Z",
+                            },
+                        ]
+                    }
+                },
+                # 2. Incidents/Endpoint Incident: FIX 2: Explicitly mark as incident and ensure required IDs exist
+                {
+                    "json": {
+                        "resources": [
+                            {
+                                "incident_id": "a:ind:1",
+                                "composite_id": "a:ind:1",
+                                "start_time": "2020-09-04T09:16:11.000Z",
+                                "created_timestamp": "2020-09-04T09:16:11.000Z",
+                                "incident_type": "incident",
+                            },
+                            {
+                                "incident_id": "a:ind:2",
+                                "composite_id": "a:ind:2",
+                                "start_time": "2020-09-04T09:16:11.000Z",
+                                "created_timestamp": "2020-09-04T09:16:11.000Z",
+                                "incident_type": "incident",
+                            },
+                        ]
+                    }
+                },
+                # 3. IDP Detection: Needs composite_id and created_timestamp
+                {
+                    "json": {
+                        "resources": [
+                            {
+                                "composite_id": "idp:1",
+                                "start_time": "2020-09-04T09:16:11.000Z",
+                                "created_timestamp": "2020-09-04T09:16:11.000Z",
+                                "incident_type": "idp_detection",
+                            },
+                            {
+                                "composite_id": "idp:2",
+                                "start_time": "2020-09-04T09:16:11.000Z",
+                                "created_timestamp": "2020-09-04T09:16:11.000Z",
+                                "incident_type": "idp_detection",
+                            },
+                        ]
+                    }
+                },
+            ],
+        )
 
         mocker.patch.object(
             demisto,
@@ -2376,16 +2421,20 @@ class TestIncidentFetch:
 
         requests_mock.get(
             f"{SERVER_URL}/alerts/queries/alerts/v2",
-            json={"resources": [
-                {"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
-            ]},
+            json={
+                "resources": [
+                    {"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
+                ]
+            },
         )
 
         requests_mock.post(
             f"{SERVER_URL}/alerts/entities/alerts/v2",
-            json={"resources": [
-                {"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
-            ]},
+            json={
+                "resources": [
+                    {"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
+                ]
+            },
         )
 
         fetch_items()
@@ -2428,12 +2477,14 @@ class TestIncidentFetch:
         requests_mock.post(
             f"{SERVER_URL}/alerts/entities/alerts/v2",
             json={
-                "resources": [{
-                    "incident_id": "ldt:1",
-                    "start": "2020-09-04T09:16:11Z",
-                    "created_timestamp": "2020-09-04T09:16:11Z",
-                    "max_severity_displayname": "Low"
-                }],
+                "resources": [
+                    {
+                        "incident_id": "ldt:1",
+                        "start": "2020-09-04T09:16:11Z",
+                        "created_timestamp": "2020-09-04T09:16:11Z",
+                        "max_severity_displayname": "Low",
+                    }
+                ],
             },
         )
 
@@ -2486,16 +2537,20 @@ class TestIncidentFetch:
 
         requests_mock.get(
             f"{SERVER_URL}/alerts/queries/alerts/v2",
-            json={"resources": [
-                {"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
-            ]},
+            json={
+                "resources": [
+                    {"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
+                ]
+            },
         )
 
         requests_mock.post(
             f"{SERVER_URL}/alerts/entities/alerts/v2",
-            json={"resources": [
-                {"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
-            ]},
+            json={
+                "resources": [
+                    {"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
+                ]
+            },
         )
 
         last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
@@ -4314,7 +4369,7 @@ def test_get_remote_detection_data(mocker):
     mocker.patch("CrowdStrikeFalcon.get_detections_entities", return_value={"resources": [detection_entity.copy()]})
     mirrored_data, updated_object = get_remote_detection_data(input_data.remote_detection_id)
     detection_entity["severity"] = 0  # severity won't change in this case because we are using
-        # the new field "severity_name" and not the "max_severity_displayname" as was in legacy
+    # the new field "severity_name" and not the "max_severity_displayname" as was in legacy
     assert mirrored_data == detection_entity
     assert updated_object == {  # since we removed legacy support, the mapping for the args doesn't exist
         "status": "new",
@@ -7653,7 +7708,6 @@ def test_resolve_incident_username_not_legacy(mocker):
 
     resolve_incident_command(ids=["123"], user_name="username")
     assert http_request_mocker.call_args_list[0][1]["json"] == expected_action_parameters
-
 
 
 @pytest.mark.parametrize(
