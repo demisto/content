@@ -5959,7 +5959,7 @@ script:
       - me-central-1
       - sa-east-1
     - name: certificate_arn
-      description: 'The ARN of the ACM certificate to update. This must be of the form: ”arn:aws:acm:{region}:{account}:certificate/{certificate_id}”.'
+      description: 'The ARN of the ACM certificate to update. The value must match the format arn:aws:acm:{region}:{account}:certificate/{certificate_id} or, more generally, match the following regular expression: arn:[\w+=/,.@-]+:acm:[\w+=/,.@-]*:[0-9]+:[\w+=,.@-]+(/[\w+=,.@-]+)*'
       required: true
     - name: transparency_logging_preference
       description: Whether the certificate is recorded in public CT logs.
