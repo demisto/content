@@ -3733,9 +3733,17 @@ class ACM:
     def update_certificate_options_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Updates Certificate Transparency (CT) logging preference for an ACM certificate.
+        Args:
+            client: The AWS ACM boto3 client used to perform the update request.
+            args (dict): A dictionary containing the certificate ARN and the desired
+                transparency logging preference ("ENABLED" or "DISABLED").
+
+        Returns:
+            CommandResults: An object containing a human-readable summary of the change,
+                the raw AWS API response, and related metadata.
         """
-        arn = args.get("certificate_arn", "")
-        pref = args.get("transparency_logging_preference", "")
+        arn = args.get("certificate_arn")
+        pref = args.get("transparency_logging_preference")
         kwargs = {"CertificateArn": arn, "Options": {"CertificateTransparencyLoggingPreference": pref}}
         remove_nulls_from_dictionary(kwargs)
         print_debug_logs(client, f"UpdateCertificateOptions params: {kwargs}")
