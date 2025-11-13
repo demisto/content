@@ -447,6 +447,23 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     )
 
 
+
+def asset_groups_to_context(data):
+    """
+    Filters asset groups to include only specified fields.
+    """
+    data = [
+        {(k.replace("XDM__ASSET_GROUP__", "") if k.startswith("XDM__ASSET_GROUP__") else k).lower(): v for k, v in item.items()}
+        for item in data
+    ]
+    
+    allowed_fields = ['created_by_pretty', 'modified_by_pretty', 'name', 'membership_predicate', 'filter', 'type', 'description']
+    
+    return [
+        {key: item.get(key) for key in allowed_fields}
+        for item in data
+    ]
+
 def search_asset_groups_command(client: Client, args: dict) -> List[CommandResults]:
     """
     Retrieves asset groups from the Cortex platform based on provided filters.
@@ -483,11 +500,8 @@ def search_asset_groups_command(client: Client, args: dict) -> List[CommandResul
     response = client.get_webapp_data(request_data)
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
-
-    data = [
-        {(k.replace("XDM__ASSET_GROUP__", "") if k.startswith("XDM__ASSET_GROUP__") else k).lower(): v for k, v in item.items()}
-        for item in data
-    ]
+    
+    data = asset_groups_to_context(data)
 
     command_results = []
     command_results.append(
@@ -500,7 +514,7 @@ def search_asset_groups_command(client: Client, args: dict) -> List[CommandResul
         )
     )
 
-    filter_count = reply.get("FILTER_COUNT", "0")
+    filter_count = int(reply.get("FILTER_COUNT", "0"))
     returned_count = min(int(filter_count), limit)
     command_results.append(
         CommandResults(
