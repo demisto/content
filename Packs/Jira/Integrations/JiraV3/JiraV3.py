@@ -3858,7 +3858,7 @@ def create_fetch_incidents_query(
         str: The query to use to fetch the appropriate incidents.
     """
     issue_field_in_fetch_query_error_message = "The issue field to fetch by cannot be in the fetch query"
-    tokens = re.findall(r'\w+', fetch_query)
+    tokens = re.findall(r"\w+", fetch_query)
     if issue_field_to_fetch_from in tokens:
         raise DemistoException(issue_field_in_fetch_query_error_message)
     error_message = f"Could not create the proper fetch query for the issue field {issue_field_to_fetch_from}"
