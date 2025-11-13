@@ -1,4 +1,4 @@
-Note: Support for this Pack will be moved to Partner starting October 15, 2025.
+Note: Support for this Pack will was moved to Partner starting October 15, 2025. In case of any issues arise, please contact the Partner directly at <support@infoblox.com> or <https://support.infoblox.com/>.
 
 # Infoblox NIOS
 

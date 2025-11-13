@@ -4235,6 +4235,20 @@ def test_build_pagination_kwargs_no_pagination_arguments():
     assert "NextToken" not in result
 
 
+def test_build_pagination_kwargs_with_limit_less_than_minimum():
+    """
+    Given: A limit argument less than the minimum allowed value.
+    When: build_pagination_kwargs is called with limit less than minimum.
+    Then: It should raise ValueError indicating limit must be greater than minimum.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": "2"}
+
+    with pytest.raises(ValueError, match="Limit must be greater than 5"):
+        build_pagination_kwargs(args, minimum_limit=5)
+
+
 def test_aws_error_handler_handle_client_error_missing_error_code(mocker):
     """
     Given: A ClientError with missing error code in response.
@@ -4246,7 +4260,10 @@ def test_aws_error_handler_handle_client_error_missing_error_code(mocker):
 
     mocker.patch("AWS.demisto.debug")
 
-    error_response = {"Error": {"Message": "Some error message"}, "ResponseMetadata": {"HTTPStatusCode": 400}}
+    error_response = {
+        "Error": {"Message": "Some error message"},
+        "ResponseMetadata": {"HTTPStatusCode": 400},
+    }
     client_error = ClientError(error_response, "test-operation")
 
     with pytest.raises(SystemExit):
@@ -4401,7 +4418,7 @@ def test_modify_event_subscription_command_failure(mocker):
     """
     Given: A mocked boto3 RDS client and valid bucket subscription and event categories arguments.
     When: modify_event_subscription_command is called.
-    Then: It should return CommandResults with error entry type and error message.
+    Then: Client is called with the subscription name and event categories and CommandResults contains error message.
     """
     from AWS import RDS
 
@@ -4475,6 +4492,663 @@ def test_modify_subnet_attribute_command_failure(mocker):
 
     with pytest.raises(DemistoException, match="Modification could not be performed."):
         EC2.modify_subnet_attribute_command(mock_client, args)
+
+
+def test_invoke_command_with_minimal_parameters(mocker):
+    """
+    Given: Minimal required parameters (function_name only)
+    When: invoke_command is called
+    Then: Should invoke function with basic parameters and return CommandResults
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_payload_stream = mocker.Mock()
+    mock_payload_stream.read.return_value = b'{"result": "success"}'
+
+    mock_response = {"StatusCode": 200, "Payload": mock_payload_stream, "ExecutedVersion": "$LATEST"}
+    mock_client.invoke.return_value = mock_response
+
+    args = {"function_name": "test-function", "region": "us-east-1"}
+
+    # Act
+    result = Lambda.invoke_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.Lambda.InvokedFunction"
+    assert result.outputs_key_field == ["FunctionName", "Region"]
+    mock_client.invoke.assert_called_once()
+
+
+def test_invoke_command_with_all_parameters(mocker):
+    """
+    Given: All possible parameters including payload, invocation_type, log_type, etc.
+    When: invoke_command is called
+    Then: Should pass all parameters correctly and return complete response data
+    """
+    from AWS import Lambda
+    import base64
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_payload_stream = mocker.Mock()
+    mock_payload_stream.read.return_value = b'{"output": "test_result"}'
+
+    log_result_b64 = base64.b64encode(b"Log output from function").decode("utf-8")
+
+    mock_response = {
+        "StatusCode": 200,
+        "Payload": mock_payload_stream,
+        "ExecutedVersion": "1",
+        "LogResult": log_result_b64,
+        "FunctionError": "Unhandled",
+    }
+    mock_client.invoke.return_value = mock_response
+
+    test_payload = {"input": "test_data", "value": 123}
+    args = {
+        "function_name": "production-function",
+        "invocation_type": "RequestResponse",
+        "log_type": "Tail",
+        "client_context": "test-context",
+        "payload": test_payload,
+        "qualifier": "PROD",
+        "region": "us-west-2",
+    }
+
+    # Act
+    result = Lambda.invoke_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    assert "LogResult" in result.outputs
+    assert "Payload" in result.outputs
+    assert "ExecutedVersion" in result.outputs
+    assert "FunctionError" in result.outputs
+    assert result.outputs["LogResult"] == "Log output from function"
+    assert result.outputs["Payload"] == '{"output": "test_result"}'
+
+    # Verify the invoke call parameters
+    call_args = mock_client.invoke.call_args[1]
+    assert call_args["FunctionName"] == "production-function"
+    assert call_args["InvocationType"] == "RequestResponse"
+    assert call_args["LogType"] == "Tail"
+    assert call_args["ClientContext"] == "test-context"
+    assert call_args["Qualifier"] == "PROD"
+    assert json.loads(call_args["Payload"]) == test_payload
+
+
+def test_invoke_command_with_string_json_payload(mocker):
+    """
+    Given: Payload as JSON string starting with '{' or '['
+    When: invoke_command is called
+    Then: Should pass the string payload directly without re-encoding
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_payload_stream = mocker.Mock()
+    mock_payload_stream.read.return_value = b'{"status": "ok"}'
+
+    mock_response = {"StatusCode": 200, "Payload": mock_payload_stream}
+    mock_client.invoke.return_value = mock_response
+
+    json_string_payload = '{"test": "data", "number": 42}'
+    args = {"function_name": "test-function", "payload": json_string_payload, "region": "us-east-1"}
+
+    # Act
+    result = Lambda.invoke_command(mock_client, args)
+
+    # Assert
+    call_args = mock_client.invoke.call_args[1]
+    assert call_args["Payload"] == json_string_payload
+    assert isinstance(result, CommandResults)
+
+
+def test_invoke_command_with_array_json_string_payload(mocker):
+    """
+    Given: Payload as JSON array string starting with '['
+    When: invoke_command is called
+    Then: Should pass the string payload directly without re-encoding
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_payload_stream = mocker.Mock()
+    mock_payload_stream.read.return_value = b"[1, 2, 3]"
+
+    mock_response = {"StatusCode": 200, "Payload": mock_payload_stream}
+    mock_client.invoke.return_value = mock_response
+
+    array_string_payload = '[{"id": 1}, {"id": 2}]'
+    args = {"function_name": "test-function", "payload": array_string_payload, "region": "us-east-1"}
+
+    # Act
+    result = Lambda.invoke_command(mock_client, args)
+
+    # Assert
+    call_args = mock_client.invoke.call_args[1]
+    assert call_args["Payload"] == array_string_payload
+    assert isinstance(result, CommandResults)
+
+
+def test_invoke_command_with_non_json_string_payload(mocker):
+    """
+    Given: Payload as non-JSON string (doesn't start with '{' or '[')
+    When: invoke_command is called
+    Then: Should JSON encode the string payload
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_payload_stream = mocker.Mock()
+    mock_payload_stream.read.return_value = b'"simple_string"'
+
+    mock_response = {"StatusCode": 200, "Payload": mock_payload_stream}
+    mock_client.invoke.return_value = mock_response
+
+    simple_string_payload = "simple_string"
+    args = {"function_name": "test-function", "payload": simple_string_payload, "region": "us-east-1"}
+
+    # Act
+    result = Lambda.invoke_command(mock_client, args)
+
+    # Assert
+    call_args = mock_client.invoke.call_args[1]
+    assert call_args["Payload"] == json.dumps(simple_string_payload)
+    assert isinstance(result, CommandResults)
+
+
+def test_invoke_command_with_dict_payload(mocker):
+    """
+    Given: Payload as Python dictionary
+    When: invoke_command is called
+    Then: Should JSON encode the dictionary payload
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_payload_stream = mocker.Mock()
+    mock_payload_stream.read.return_value = b'{"processed": true}'
+
+    mock_response = {"StatusCode": 200, "Payload": mock_payload_stream}
+    mock_client.invoke.return_value = mock_response
+
+    dict_payload = {"key": "value", "nested": {"inner": "data"}}
+    args = {"function_name": "test-function", "payload": dict_payload, "region": "us-east-1"}
+
+    # Act
+    result = Lambda.invoke_command(mock_client, args)
+
+    # Assert
+    call_args = mock_client.invoke.call_args[1]
+    assert call_args["Payload"] == json.dumps(dict_payload)
+    assert isinstance(result, CommandResults)
+
+
+def test_invoke_command_with_list_payload(mocker):
+    """
+    Given: Payload as Python list
+    When: invoke_command is called
+    Then: Should JSON encode the list payload
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_payload_stream = mocker.Mock()
+    mock_payload_stream.read.return_value = b"[1, 2, 3]"
+
+    mock_response = {"StatusCode": 200, "Payload": mock_payload_stream}
+    mock_client.invoke.return_value = mock_response
+
+    list_payload = [1, 2, {"key": "value"}]
+    args = {"function_name": "test-function", "payload": list_payload, "region": "us-east-1"}
+
+    # Act
+    result = Lambda.invoke_command(mock_client, args)
+
+    # Assert
+    call_args = mock_client.invoke.call_args[1]
+    assert call_args["Payload"] == json.dumps(list_payload)
+    assert isinstance(result, CommandResults)
+
+
+def test_invoke_command_with_base64_log_result(mocker):
+    """
+    Given: Response contains base64 encoded log result
+    When: invoke_command is called
+    Then: Should decode the log result and include it in outputs
+    """
+    from AWS import Lambda
+    import base64
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_payload_stream = mocker.Mock()
+    mock_payload_stream.read.return_value = b'{"result": "success"}'
+
+    log_message = "START RequestId: RequestId\nEND RequestId: RequestId\nREPORT RequestId: RequestId"
+    log_result_b64 = base64.b64encode(log_message.encode("utf-8")).decode("utf-8")
+
+    mock_response = {"StatusCode": 200, "Payload": mock_payload_stream, "LogResult": log_result_b64}
+    mock_client.invoke.return_value = mock_response
+
+    args = {"function_name": "test-function", "log_type": "Tail", "region": "us-east-1"}
+
+    # Act
+    result = Lambda.invoke_command(mock_client, args)
+
+    # Assert
+    assert "LogResult" in result.outputs
+    assert result.outputs["LogResult"] == log_message
+
+
+def test_update_function_url_configuration_with_minimal_parameters(mocker):
+    """
+    Given: Minimal required parameters (function_name only)
+    When: update_function_url_configuration_command is called
+    Then: Should call update_function_url_config with basic parameters and return success message
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_response = {
+        "FunctionUrl": "FunctionUrl",
+        "FunctionArn": "FunctionArn",
+        "AuthType": "AWS_IAM",
+        "CreationTime": "2023-01-01T12:00:00.000Z",
+    }
+    mock_client.update_function_url_config.return_value = mock_response
+
+    args = {"function_name": "test-function"}
+
+    # Act
+    result = Lambda.update_function_url_configuration_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    assert "Updated Lambda Function URL Configuration" in result.readable_output
+    assert "FunctionArn" in result.readable_output
+    assert result.raw_response == mock_response
+    mock_client.update_function_url_config.assert_called_once()
+
+
+def test_update_function_url_configuration_with_all_parameters(mocker):
+    """
+    Given: All possible parameters including function_name, qualifier, auth_type, and all CORS settings
+    When: update_function_url_configuration_command is called
+    Then: Should pass all parameters correctly to the API call
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_response = {
+        "FunctionUrl": "FunctionUrl",
+        "FunctionArn": "FunctionArn",
+        "AuthType": "NONE",
+        "Cors": {
+            "AllowCredentials": True,
+            "AllowHeaders": ["Content-Type", "Authorization"],
+            "AllowMethods": ["GET", "POST"],
+            "AllowOrigins": ["https://example.com"],
+            "ExposeHeaders": ["x-custom-header"],
+            "MaxAge": 86400,
+        },
+        "CreationTime": "2023-01-01T12:00:00.000Z",
+    }
+    mock_client.update_function_url_config.return_value = mock_response
+
+    args = {
+        "function_name": "prod-function",
+        "qualifier": "LIVE",
+        "auth_type": "NONE",
+        "cors_allow_credentials": "true",
+        "cors_allow_headers": "Content-Type,Authorization",
+        "cors_allow_methods": "GET,POST",
+        "cors_allow_origins": "https://example.com",
+        "cors_expose_headers": "x-custom-header",
+        "cors_max_age": "86400",
+        "invoke_mode": "BUFFERED_STREAM",
+    }
+
+    # Act
+    Lambda.update_function_url_configuration_command(mock_client, args)
+
+    # Assert
+    call_args = mock_client.update_function_url_config.call_args[1]
+    assert call_args["FunctionName"] == "prod-function"
+    assert call_args["Qualifier"] == "LIVE"
+    assert call_args["AuthType"] == "NONE"
+    assert call_args["InvokeMode"] == "BUFFERED_STREAM"
+
+    cors_config = call_args["Cors"]
+    assert cors_config["AllowCredentials"] is True
+    assert cors_config["AllowHeaders"] == ["Content-Type", "Authorization"]
+    assert cors_config["AllowMethods"] == ["GET", "POST"]
+    assert cors_config["AllowOrigins"] == ["https://example.com"]
+    assert cors_config["ExposeHeaders"] == ["x-custom-header"]
+    assert cors_config["MaxAge"] == 86400
+
+
+def test_get_function_configuration_with_minimal_parameters(mocker):
+    """
+    Given: Only function_name parameter provided
+    When: get_function_configuration_command is called
+    Then: Should call get_function_configuration with function name only and return formatted results
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_response = {
+        "FunctionName": "test-function",
+        "FunctionArn": "FunctionArn",
+        "Runtime": "python3.9",
+        "CodeSha256": "CodeSha256",
+        "State": "Active",
+        "Description": "Test function",
+        "RevisionId": "RevisionId",
+        "LastModified": "2023-01-01T12:00:00.000Z",
+        "ResponseMetadata": {"RequestId": "test-request-id", "HTTPStatusCode": 200},
+    }
+    mock_client.get_function_configuration.return_value = mock_response
+
+    args = {"function_name": "test-function"}
+
+    # Act
+    result = Lambda.get_function_configuration_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.Lambda.FunctionConfig"
+    assert "ResponseMetadata" not in result.outputs
+    assert result.outputs["FunctionName"] == "test-function"
+    assert result.outputs["Runtime"] == "python3.9"
+    assert "test-function" in result.readable_output
+
+
+def test_get_function_configuration_with_all_parameters(mocker):
+    """
+    Given: Function name and qualifier parameters provided
+    When: get_function_configuration_command is called
+    Then: Should include qualifier in API call and return complete configuration
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_response = {
+        "FunctionName": "test-function",
+        "FunctionArn": "FunctionArn",
+        "Runtime": "Runtime",
+        "Role": "Role",
+        "Handler": "Handler",
+        "CodeSize": 1024,
+        "Description": "Description",
+        "Timeout": 30,
+        "MemorySize": 256,
+        "LastModified": "2023-01-15T14:30:00.000Z",
+        "CodeSha256": "CodeSha256",
+        "Version": "LIVE",
+        "Environment": {"Variables": {"ENV": "production", "DEBUG": "false"}},
+        "DeadLetterConfig": {"TargetArn": "TargetArn"},
+        "KMSKeyArn": "KMSKeyArn",
+        "TracingConfig": {"Mode": "Active"},
+        "RevisionId": "RevisionId",
+        "State": "Active",
+        "StateReason": "The function is ready",
+        "StateReasonCode": "Idle",
+        "PackageType": "Zip",
+        "Architectures": ["x86_64"],
+        "EphemeralStorage": {"Size": 512},
+        "SnapStart": {"ApplyOn": "None", "OptimizationStatus": "Off"},
+        "ResponseMetadata": {"RequestId": "RequestId", "HTTPStatusCode": 200},
+    }
+    mock_client.get_function_configuration.return_value = mock_response
+
+    args = {"function_name": "test-function", "qualifier": "LIVE"}
+
+    # Act
+    result = Lambda.get_function_configuration_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.Lambda.FunctionConfig"
+    mock_client.get_function_configuration.assert_called_once_with(FunctionName="test-function", Qualifier="LIVE")
+    assert result.outputs["FunctionName"] == "test-function"
+    assert result.outputs["Version"] == "LIVE"
+    assert result.outputs["Runtime"] == "Runtime"
+    assert result.outputs["Environment"]["Variables"]["ENV"] == "production"
+    assert "ResponseMetadata" not in result.outputs
+
+
+def test_get_function_url_configuration_with_minimal_parameters(mocker):
+    """
+    Given: Only function_name parameter provided
+    When: get_function_url_configuration_command is called
+    Then: Should call get_function_url_config with function name only and return formatted results
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_response = {
+        "FunctionUrl": "FunctionUrl",
+        "FunctionArn": "FunctionArn",
+        "AuthType": "AWS_IAM",
+        "CreationTime": "2023-01-01T12:00:00.000Z",
+        "LastModifiedTime": "2023-01-15T14:30:00.000Z",
+        "InvokeMode": "BUFFERED_STREAM",
+        "ResponseMetadata": {"RequestId": "test-request-id", "HTTPStatusCode": 200},
+    }
+    mock_client.get_function_url_config.return_value = mock_response
+
+    args = {"function_name": "test-function"}
+
+    # Act
+    result = Lambda.get_function_url_configuration_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.Lambda.FunctionURLConfig"
+    assert result.outputs_key_field == "FunctionArn"
+    assert "test-function" in result.readable_output
+    assert "ResponseMetadata" not in result.outputs
+    assert result.outputs["FunctionUrl"] == "FunctionUrl"
+    assert result.outputs["AuthType"] == "AWS_IAM"
+    assert result.raw_response == result.outputs
+    mock_client.get_function_url_config.assert_called_once_with(FunctionName="test-function")
+
+
+def test_get_function_url_configuration_with_all_parameters(mocker):
+    """
+    Given: Function name and qualifier parameters provided
+    When: get_function_url_configuration_command is called
+    Then: Should include qualifier in API call and return complete URL configuration
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_response = {
+        "FunctionUrl": "FunctionUrl",
+        "FunctionArn": "FunctionArn",
+        "AuthType": "NONE",
+        "CreationTime": "2023-01-01T12:00:00.000Z",
+        "LastModifiedTime": "2023-01-15T14:30:00.000Z",
+        "InvokeMode": "RESPONSE_STREAM",
+        "Cors": {
+            "AllowCredentials": False,
+            "AllowHeaders": ["Authorization", "Content-Type", "X-API-Key"],
+            "AllowMethods": ["GET", "POST", "PUT", "DELETE"],
+            "AllowOrigins": ["https://example.com"],
+            "ExposeHeaders": ["X-Request-ID", "X-Custom-Header"],
+            "MaxAge": 3600,
+        },
+        "ResponseMetadata": {"RequestId": "prod-request-id", "HTTPStatusCode": 200},
+    }
+    mock_client.get_function_url_config.return_value = mock_response
+
+    args = {"function_name": "prod-function", "qualifier": "LIVE"}
+
+    # Act
+    result = Lambda.get_function_url_configuration_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.Lambda.FunctionURLConfig"
+    mock_client.get_function_url_config.assert_called_once_with(FunctionName="prod-function", Qualifier="LIVE")
+    assert result.outputs["FunctionUrl"] == "FunctionUrl"
+    assert result.outputs["AuthType"] == "NONE"
+    assert result.outputs["InvokeMode"] == "RESPONSE_STREAM"
+    assert "Cors" in result.outputs
+    assert "ResponseMetadata" not in result.outputs
+    assert "prod-function" in result.readable_output
+
+
+def test_get_policy_with_minimal_parameters(mocker):
+    """
+    Given: Only function_name parameter provided
+    When: get_policy_command is called
+    Then: Should call get_policy with function name only and return formatted results
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_policy_response = {
+        "Policy": json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Id": "default",
+                "Statement": [
+                    {
+                        "Sid": "Sid1",
+                        "Effect": "Allow",
+                        "Principal": {"Service": "Service1"},
+                        "Action": "Action",
+                        "Resource": "Resource",
+                    }
+                ],
+            }
+        ),
+        "RevisionId": "RevisionId",
+        "ResponseMetadata": {"HTTPStatusCode": 200, "RequestId": "test-request-id"},
+    }
+
+    mock_client.get_policy.return_value = mock_policy_response
+
+    args = {"function_name": "test-function", "region": "us-east-1"}
+
+    # Act
+    result = Lambda.get_policy_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.Lambda.Policy"
+    assert result.outputs_key_field == ["Region", "FunctionName", "AccountId"]
+    mock_client.get_policy.assert_called_once_with(FunctionName="test-function")
+
+
+def test_get_policy_with_all_parameters(mocker):
+    """
+    Given: Function name and qualifier parameters provided
+    When: get_policy_command is called
+    Then: Should include qualifier in API call and return complete policy configuration
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_policy_response = {
+        "Policy": json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Id": "production-policy",
+                "Statement": [
+                    {
+                        "Sid": "Sid1",
+                        "Effect": "Allow",
+                        "Principal": {"Service": "Service1"},
+                        "Action": "lambda:InvokeFunction",
+                        "Resource": "Resource",
+                    },
+                    {
+                        "Sid": "Sid2",
+                        "Effect": "Allow",
+                        "Principal": {"Service": "Service2"},
+                        "Action": "lambda:InvokeFunction",
+                        "Resource": "Resource",
+                    },
+                ],
+            }
+        ),
+        "RevisionId": "RevisionId",
+        "ResponseMetadata": {"HTTPStatusCode": 200, "RequestId": "prod-request-id"},
+    }
+    mock_config_response = {
+        "FunctionArn": "FunctionArn",
+    }
+
+    mock_client.get_policy.return_value = mock_policy_response
+    mock_client.get_function_configuration.return_value = mock_config_response
+
+    args = {"function_name": "function_name", "qualifier": "LIVE", "region": "us-east-1"}
+
+    # Act
+    result = Lambda.get_policy_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.Lambda.Policy"
+    mock_client.get_policy.assert_called_once_with(FunctionName="function_name", Qualifier="LIVE")
+
+
+def test_get_policy_command_result_outputs_prefix(mocker):
+    """
+    Given: Any valid function policy request
+    When: get_policy_command is called
+    Then: Should return CommandResults with correct outputs_prefix set to AWS.Lambda.Policy
+    """
+    from AWS import Lambda
+
+    # Arrange
+    mock_client = mocker.Mock()
+    mock_policy_response = {
+        "Policy": json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {"Sid": "Sid", "Effect": "Allow", "Principal": {"Service": "Service"}, "Action": "lambda:InvokeFunction"}
+                ],
+            }
+        ),
+        "RevisionId": "RevisionId",
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+    }
+    mock_config_response = {"FunctionArn": "FunctionArn"}
+
+    mock_client.get_policy.return_value = mock_policy_response
+    mock_client.get_function_configuration.return_value = mock_config_response
+
+    args = {"function_name": "prefix-test-function", "region": "us-east-1"}
+
+    # Act
+    result = Lambda.get_policy_command(mock_client, args)
+
+    # Assert
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.Lambda.Policy"
+    assert result.outputs_key_field == ["Region", "FunctionName", "AccountId"]
 
 
 def test_cost_explorer_billing_cost_usage_list_command_success(mocker):
@@ -4721,3 +5395,745 @@ def test_budgets_billing_budget_notification_list_command_with_pagination_and_pa
 
     assert isinstance(result, CommandResults)
     assert result.raw_response == mock_response
+
+
+def test_ec2_describe_subnets_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client with valid subnet response.
+    When: describe_subnets_command is called successfully.
+    Then: Client is called with no arguments and CommandResults contains subnet information and outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_subnets.return_value = {
+        "Subnets": [
+            {
+                "AvailabilityZone": "us-east-1a",
+                "AvailableIpAddressCount": 251,
+                "CidrBlock": "0.0.0.0/24",
+                "DefaultForAz": False,
+                "State": "available",
+                "SubnetId": "subnet-12345678",
+                "VpcId": "vpc-87654321",
+                "Tags": [{"Key": "Name", "Value": "test-subnet"}, {"Key": "Environment", "Value": "dev"}],
+            }
+        ]
+    }
+
+    args = {"account_id": "123456789", "region": "us-east-1"}
+
+    result = EC2.describe_subnets_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Subnets"
+    assert result.outputs_key_field == "SubnetId"
+    assert "AWS EC2 Subnets" in result.readable_output
+    mock_client.describe_subnets.assert_called_once_with()
+
+
+def test_ec2_describe_subnets_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and subnet IDs/filters arguments.
+    When: describe_subnets_command is called with filters and subnet IDs.
+    Then: Client is called with the correct parameters and CommandResults contains subnet information and outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_subnets.return_value = {
+        "Subnets": [
+            {
+                "AvailabilityZone": "us-east-1a",
+                "AvailableIpAddressCount": 251,
+                "CidrBlock": "0.0.0.0/24",
+                "DefaultForAz": False,
+                "State": "available",
+                "SubnetId": "subnet-12345678",
+                "VpcId": "vpc-87654321",
+            }
+        ]
+    }
+
+    args = {
+        "account_id": "123456789",
+        "region": "us-east-1",
+        "subnet_ids": "subnet-12345678,subnet-87654321",
+        "filters": "name=state,values=available",
+    }
+
+    EC2.describe_subnets_command(mock_client, args)
+
+    call_args = mock_client.describe_subnets.call_args[1]
+    assert "SubnetIds" in call_args
+    assert "Filters" in call_args
+    assert call_args["SubnetIds"] == ["subnet-12345678", "subnet-87654321"]
+
+
+def test_ec2_describe_subnets_command_no_results(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning no subnets.
+    When: describe_subnets_command is called with no matching subnets.
+    Then: Client is called with no arguments and CommandResults contains no subnets message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_subnets.return_value = {"Subnets": []}
+
+    args = {"account_id": "123456789", "region": "us-east-1", "limit": "10"}
+
+    result = EC2.describe_subnets_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No subnets were found."
+
+
+def test_ec2_describe_vpcs_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client with valid VPC response.
+    When: describe_vpcs_command is called successfully.
+    Then: Client is called with no arguments and CommandResults contains VPC information and outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_vpcs.return_value = {
+        "Vpcs": [
+            {
+                "CidrBlock": "10.0.0.0/16",
+                "DhcpOptionsId": "dopt-12345678",
+                "State": "available",
+                "VpcId": "vpc-12345678",
+                "OwnerId": "123456789012",
+                "InstanceTenancy": "default",
+                "IsDefault": False,
+                "Tags": [{"Key": "Name", "Value": "test-vpc"}, {"Key": "Environment", "Value": "prod"}],
+            }
+        ]
+    }
+
+    args = {"account_id": "123456789", "region": "us-east-1", "limit": "5"}
+
+    result = EC2.describe_vpcs_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Vpcs"
+    assert result.outputs_key_field == "VpcId"
+    assert "AWS EC2 Vpcs" in result.readable_output
+    mock_client.describe_vpcs.assert_called_once_with()
+
+
+def test_ec2_describe_vpcs_command_with_filters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and VPC IDs/filters arguments.
+    When: describe_vpcs_command is called with filters and VPC IDs.
+    Then: Client is called with the correct parameters and CommandResults contains VPC information and outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_vpcs.return_value = {
+        "Vpcs": [
+            {
+                "CidrBlock": "0.0.0.0/16",
+                "DhcpOptionsId": "dopt-12345678",
+                "State": "available",
+                "VpcId": "vpc-12345678",
+                "OwnerId": "123456789012",
+                "InstanceTenancy": "default",
+                "IsDefault": False,
+            }
+        ]
+    }
+
+    args = {
+        "account_id": "123456789",
+        "region": "us-east-1",
+        "vpc_ids": "vpc-12345678,vpc-87654321",
+        "filters": "name=state,values=available",
+        "next_token": "next_token",
+    }
+
+    EC2.describe_vpcs_command(mock_client, args)
+
+    call_args = mock_client.describe_vpcs.call_args[1]
+    assert "VpcIds" in call_args
+    assert "Filters" in call_args
+    assert call_args["VpcIds"] == ["vpc-12345678", "vpc-87654321"]
+
+
+def test_ec2_describe_vpcs_command_no_results(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning no VPCs.
+    When: describe_vpcs_command is called with no matching VPCs.
+    Then: Client is called with no arguments and CommandResults contains no VPCs message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_vpcs.return_value = {"Vpcs": []}
+
+    args = {"account_id": "123456789", "region": "us-east-1", "limit": "10"}
+
+    result = EC2.describe_vpcs_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No VPCs were found."
+
+
+def test_ec2_describe_ipam_resource_discoveries_success_with_pagination(mocker):
+    """
+    Given: No explicit IPAM resource discovery IDs and valid filters/next token.
+    When: describe_ipam_resource_discoveries_command is called.
+    Then: Client is called with Filters and pagination kwargs, and CommandResults contains outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_ipam_resource_discoveries.return_value = {
+        "IpamResourceDiscoveries": [{"IpamResourceDiscoveryId": "ipam-res-disc-1", "OwnerId": "123456789012"}]
+    }
+
+    args = {
+        "filters": "name=owner-id,values=123456789012",
+        "next_token": "ABC123",
+    }
+
+    result = EC2.describe_ipam_resource_discoveries_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.IpamResourceDiscoveries"
+    assert result.outputs_key_field == "IpamResourceDiscoveryId"
+    assert result.outputs
+    assert isinstance(result.outputs, list)
+
+    # Verify client call kwargs include Filters and pagination
+    kwargs = mock_client.describe_ipam_resource_discoveries.call_args.kwargs
+    assert "Filters" in kwargs
+    assert kwargs["Filters"][0]["Name"] == "owner-id"
+    assert "MaxResults" in kwargs  # pagination should be applied when no IDs are provided
+    assert kwargs["NextToken"] == "ABC123"
+
+
+def test_ec2_describe_ipam_resource_discoveries_empty(mocker):
+    """
+    Given: EC2 returns no IPAM resource discoveries.
+    When: describe_ipam_resource_discoveries_command is executed.
+    Then: A readable message indicating no results is returned.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_ipam_resource_discoveries.return_value = {"IpamResourceDiscoveries": []}
+
+    args = {"filters": "name=owner-id,values=000000000000"}
+
+    result = EC2.describe_ipam_resource_discoveries_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No Ipam Resource Discoveries were found."
+
+
+def test_ec2_describe_ipam_resource_discoveries_with_ids_no_pagination(mocker):
+    """
+    Given: Explicit IPAM resource discovery IDs are provided.
+    When: describe_ipam_resource_discoveries_command is called.
+    Then: Pagination kwargs (MaxResults/NextToken) are NOT included in the client call and IDs are passed as list.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_ipam_resource_discoveries.return_value = {
+        "IpamResourceDiscoveries": [{"IpamResourceDiscoveryId": "ipam-res-disc-3", "OwnerId": "999999999999"}]
+    }
+
+    args = {
+        "ipam_resource_discovery_ids": "ipam-res-disc-3",
+        # Even if next_token is passed, when IDs are provided pagination shouldn't be added by the command implementation
+        "next_token": "SHOULD_NOT_BE_USED",
+    }
+
+    result = EC2.describe_ipam_resource_discoveries_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.IpamResourceDiscoveries"
+
+    kwargs = mock_client.describe_ipam_resource_discoveries.call_args.kwargs
+    assert "IpamResourceDiscoveryIds" in kwargs
+    assert kwargs["IpamResourceDiscoveryIds"] == ["ipam-res-disc-3"]
+    assert "MaxResults" not in kwargs
+    assert "NextToken" not in kwargs
+
+
+def test_ec2_describe_ipam_resource_discovery_associations_success(mocker):
+    """
+    Given: No explicit association IDs and valid filters.
+    When: describe_ipam_resource_discovery_associations_command is called.
+    Then: Client is called with pagination and outputs are returned.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_ipam_resource_discovery_associations.return_value = {
+        "IpamResourceDiscoveryAssociations": [
+            {
+                "IpamResourceDiscoveryId": "ipam-res-disc-1",
+                "IpamResourceDiscoveryAssociationId": "assoc-1",
+                "OwnerId": "123456789012",
+            }
+        ]
+    }
+
+    args = {
+        "filters": "name=owner-id,values=123456789012",
+    }
+
+    result = EC2.describe_ipam_resource_discovery_associations_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.IpamResourceDiscoveryAssociations"
+    assert result.outputs_key_field == "IpamResourceDiscoveryId"
+    assert result.outputs
+    assert isinstance(result.outputs, list)
+
+    kwargs = mock_client.describe_ipam_resource_discovery_associations.call_args.kwargs
+    assert "Filters" in kwargs
+    assert "MaxResults" in kwargs  # pagination should be applied when no IDs are provided
+
+
+def test_ec2_describe_ipam_resource_discovery_associations_with_ids_no_pagination(mocker):
+    """
+    Given: Explicit IPAM resource discovery association IDs are provided.
+    When: describe_ipam_resource_discovery_associations_command is called.
+    Then: Pagination kwargs (MaxResults/NextToken) are NOT included in the client call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_ipam_resource_discovery_associations.return_value = {
+        "IpamResourceDiscoveryAssociations": [
+            {
+                "IpamResourceDiscoveryId": "ipam-res-disc-2",
+                "IpamResourceDiscoveryAssociationId": "assoc-2",
+                "OwnerId": "210987654321",
+            }
+        ]
+    }
+
+    args = {
+        "ipam_resource_discovery_association_ids": "assoc-2",
+        # Even if next_token is passed, when IDs are provided pagination shouldn't be added by the command implementation
+        "next_token": "SHOULD_NOT_BE_USED",
+    }
+
+    result = EC2.describe_ipam_resource_discovery_associations_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.IpamResourceDiscoveryAssociations"
+
+    kwargs = mock_client.describe_ipam_resource_discovery_associations.call_args.kwargs
+    assert "IpamResourceDiscoveryAssociationIds" in kwargs
+    assert kwargs["IpamResourceDiscoveryAssociationIds"] == ["assoc-2"]
+    assert "MaxResults" not in kwargs
+    assert "NextToken" not in kwargs
+
+
+def test_kms_enable_key_rotation_success_with_period(mocker):
+    """
+    Given: A mocked KMS client that returns HTTP 200 and a valid rotation period.
+    When: enable_key_rotation_command is called.
+    Then: It returns CommandResults with a success message and calls boto with correct kwargs.
+    """
+    from AWS import KMS, CommandResults
+
+    mock_client = mocker.Mock()
+    mock_client.enable_key_rotation.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"key_id": "1234abcd-12ab-34cd-56ef-1234567890ab", "rotation_period_in_days": "120"}
+
+    result = KMS.enable_key_rotation_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Enabled automatic rotation for KMS key '1234abcd-12ab-34cd-56ef-1234567890ab'" in result.readable_output
+    assert "(rotation period: 120 days)" in result.readable_output
+
+    mock_client.enable_key_rotation.assert_called_once_with(
+        KeyId="1234abcd-12ab-34cd-56ef-1234567890ab", RotationPeriodInDays=120
+    )
+
+
+def test_kms_enable_key_rotation_non_ok_calls_handler(mocker):
+    """
+    Given: Boto returns a non-OK status code.
+    When: enable_key_rotation_command is called.
+    Then: AWSErrorHandler.handle_response_error is invoked with the raw response.
+    """
+    from AWS import KMS, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    resp = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.enable_key_rotation.return_value = resp
+
+    handle_resp = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+    mocker.patch("AWS.remove_nulls_from_dictionary", side_effect=lambda d: d)
+    mocker.patch("AWS.print_debug_logs")
+
+    args = {"key_id": "my-key", "rotation_period_in_days": 120}
+
+    # The command doesn't raise here; handler internally exits (in your pattern) or logs. We just assert it was called.
+    KMS.enable_key_rotation_command(mock_client, args)
+
+    handle_resp.assert_called_once_with(resp)
+
+
+def test_elb_modify_lb_attributes_success_all_blocks(mocker):
+    """
+    Given: Valid args for all sub-blocks + desync_mitigation_mode.
+    When: modify_load_balancer_attributes_command is called and boto returns HTTP 200.
+    Then: It returns CommandResults with proper outputs and calls boto with correct kwargs.
+    """
+    from AWS import ELB, CommandResults
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "LoadBalancerAttributes": {
+            "CrossZoneLoadBalancing": {"Enabled": True},
+            "AccessLog": {
+                "Enabled": True,
+                "S3BucketName": "my-bucket",
+                "EmitInterval": 5,
+                "S3BucketPrefix": "elb/",
+            },
+            "ConnectionDraining": {"Enabled": True, "Timeout": 120},
+            "ConnectionSettings": {"IdleTimeout": 60},
+            "AdditionalAttributes": [{"Key": "elb.http.desyncmitigationmode", "Value": "defensive"}],
+        },
+    }
+    mock_client.modify_load_balancer_attributes.return_value = mock_response
+
+    mocker.patch("AWS.remove_nulls_from_dictionary", side_effect=lambda d: d)
+    mocker.patch("AWS.print_debug_logs")
+    mocker.patch("AWS.tableToMarkdown", return_value="|Updated Attributes|")
+    mocker.patch("AWS.pascalToSpace", side_effect=lambda s: s)
+
+    args = {
+        "load_balancer_name": "my-classic-elb",
+        "cross_zone_load_balancing_enabled": "true",
+        "access_log_enabled": "true",
+        "access_log_s3_bucket_name": "my-bucket",
+        "access_log_interval": "5",
+        "access_log_s3_bucket_prefix": "elb/",
+        "connection_draining_enabled": "yes",
+        "connection_draining_timeout": "120",
+        "connection_settings_idle_timeout": "60",
+        "desync_mitigation_mode": "defensive",
+    }
+
+    result = ELB.modify_load_balancer_attributes_command(mock_client, args)
+
+    # --- Assertions ---
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.ELB.LoadBalancer"
+    assert result.outputs_key_field == "LoadBalancerName"
+    assert result.outputs["LoadBalancerName"] == "my-classic-elb"
+
+    # Human-readable header matches your function
+    assert "Updated attributes for Classic ELB my-classic-elb" in result.readable_output
+
+    # Ensure boto3 client was called correctly
+    mock_client.modify_load_balancer_attributes.assert_called_with(
+        LoadBalancerName="my-classic-elb",
+        LoadBalancerAttributes={
+            "CrossZoneLoadBalancing": {"Enabled": True},
+            "AccessLog": {
+                "Enabled": True,
+                "S3BucketName": "my-bucket",
+                "S3BucketPrefix": "elb/",
+                "EmitInterval": 5,
+            },
+            "ConnectionDraining": {"Enabled": True, "Timeout": 120},
+            "ConnectionSettings": {"IdleTimeout": 60},
+            "AdditionalAttributes": [{"Key": "elb.http.desyncmitigationmode", "Value": "defensive"}],
+        },
+    )
+
+
+def test_elb_modify_lb_attributes_non_ok_calls_handler(mocker):
+    """
+    Given: Boto returns non-OK status.
+    When: modify_load_balancer_attributes_command is called.
+    Then: AWSErrorHandler.handle_response_error is invoked with the raw response.
+    """
+    from AWS import ELB, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    resp = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.modify_load_balancer_attributes.return_value = resp
+
+    handle_resp = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+    mocker.patch("AWS.remove_nulls_from_dictionary", side_effect=lambda d: d)
+    mocker.patch("AWS.print_debug_logs")
+
+    args = {"load_balancer_name": "elb-1", "cross_zone_load_balancing_enabled": "false"}
+
+    ELB.modify_load_balancer_attributes_command(mock_client, args)
+
+    handle_resp.assert_called_once_with(resp)
+
+
+def test_elb_modify_lb_attributes_client_error_is_handled(mocker):
+    """
+    Given: client.modify_load_balancer_attributes raises ClientError.
+    When: modify_load_balancer_attributes_command is called.
+    Then: AWSErrorHandler.handle_client_error is invoked.
+    """
+    from AWS import ELB, AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    err = ClientError(
+        {"Error": {"Code": "AccessDenied", "Message": "nope"}, "ResponseMetadata": {"HTTPStatusCode": 403}},
+        "ModifyLoadBalancerAttributes",
+    )
+    mock_client.modify_load_balancer_attributes.side_effect = err
+
+    handle_client = mocker.patch.object(AWSErrorHandler, "handle_client_error")
+    mocker.patch("AWS.remove_nulls_from_dictionary", side_effect=lambda d: d)
+    mocker.patch("AWS.print_debug_logs")
+
+    args = {"load_balancer_name": "elb-1", "connection_settings_idle_timeout": "30"}
+
+    ELB.modify_load_balancer_attributes_command(mock_client, args)
+
+    handle_client.assert_called_once_with(err)
+
+
+def test_get_bucket_website_command_success(mocker):
+    """
+    Given: A mocked boto3 S3 client and a valid bucket name.
+    When: get_bucket_website_command is called.
+    Then: It should return `CommandResults` with a readable output containing the Bucket Website Configuration.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_website.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"bucket": "mock_bucket_name"}
+    result = S3.get_bucket_website_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Bucket Website Configuration" in result.readable_output
+
+
+def test_get_bucket_website_command_failure(mocker):
+    """
+    Given: A mocked boto3 S3 client that returns an HTTP error response.
+    When: get_bucket_website_command is called.
+    Then: It should raise `DemistoException` indicating the failure to retrieve the bucket website configuration.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_website.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    args = {"bucket": "mock_bucket_name"}
+    S3.get_bucket_website_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_get_bucket_acl_command_success(mocker):
+    """
+    Given: A mocked boto3 S3 client and a valid bucket name.
+    When: get_bucket_acl_command is called.
+    Then: It should return `CommandResults` with a readable output containing the Bucket Acl information.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_acl.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"bucket": "mock_bucket_name"}
+    result = S3.get_bucket_acl_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Bucket Acl" in result.readable_output
+
+
+def test_get_bucket_acl_command_failure(mocker):
+    """
+    Given: A mocked boto3 S3 client that returns an HTTP error response.
+    When: get_bucket_acl_command is called.
+    Then: It should raise `DemistoException` indicating the failure to retrieve the bucket ACL.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_acl.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    args = {"bucket": "mock_bucket_name"}
+    S3.get_bucket_acl_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_create_network_acl_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and a valid VPC ID.
+    When: create_network_acl_command is called.
+    Then: It should return `CommandResults` with a readable output containing the details of the newly created Network ACL.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_network_acl.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "NetworkAcl": {"vpc_id": "mock_vpc_id", "Entries": []},
+    }
+    args = {"vpc_id": "mock_vpc_id"}
+    result = EC2.create_network_acl_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "The AWS EC2 Instance ACL" in result.readable_output
+
+
+def test_create_network_acl_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client that returns an HTTP error response.
+    When: create_network_acl_command is called with a VPC ID.
+    Then: It should raise `DemistoException` indicating the failure to create the Network ACL.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_network_acl.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    args = {"vpc_id": "mock_vpc_id"}
+    with pytest.raises(SystemExit):
+        EC2.create_network_acl_command(mock_client, args)
+
+
+def test_create_tags_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid resource IDs and tags.
+    When: create_tags_command is called to apply tags to specified resources.
+    Then: It should return `CommandResults` with a success message confirming that the resources were tagged successfully.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_tags.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"resources": "mock_resources", "tags": "key=mock_key,value=mock_value"}
+    result = EC2.create_tags_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "The resources where tagged successfully" in result.readable_output
+
+
+def test_create_tags_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client that returns an HTTP error response.
+    When: create_tags_command is called with resource IDs and tags.
+    Then: It should raise `DemistoException` indicating the failure to create the tags on the resources.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_tags.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    args = {"resources": "mock_resources", "tags": "key=mock_key,value=mock_value"}
+    EC2.create_tags_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_get_latest_ami_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client configured to simulate multi-page results from describe_images, where the latest
+     AMI is on the second page.
+    When: get_latest_ami_command is called with specific owner and region filters.
+    Then: It should handle pagination, correctly identify the AMI with the most recent CreationDate, and return `CommandResults`
+     containing the latest AMI's ID and details.
+    """
+    from AWS import EC2
+
+    first_response = {
+        "Images": [
+            {"CreationDate": "2024-01-01T10:00:00.000Z", "ImageId": "ami-old-1", "Tags": []},
+            {"CreationDate": "2023-12-31T10:00:00.000Z", "ImageId": "ami-old-2", "Tags": []},
+        ],
+        "nextToken": "next-page-token",
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+    }
+
+    second_response = {
+        "Images": [
+            {
+                "CreationDate": "2024-01-02T10:00:00.000Z",
+                "ImageId": "ami-latest",
+                "Name": "mock_name",
+                "State": "mock_state",
+                "Public": False,
+                "Tags": [{"Key": "mock_key", "Value": "mock_value"}],
+            }
+        ],
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+    }
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.side_effect = [first_response, second_response]
+    mock_client.get_latest_ami_command.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"owners": "self", "region": "us-east-1"}
+
+    result = EC2.get_latest_ami_command(mock_client, args)
+    assert mock_client.describe_images.call_count == 2
+    mock_client.describe_images.call_args_list[0].assert_called_with(Owner=["self"])
+    mock_client.describe_images.call_args_list[1].assert_called_with(Owner=["self"], NextToken="next-page-token")
+    expected_image_id = "ami-latest"
+
+    assert result.outputs["ImageId"] == expected_image_id
+    assert result.outputs["CreationDate"] == "2024-01-02T10:00:00.000Z"
+    assert expected_image_id in result.readable_output
+    assert isinstance(result, CommandResults)
+
+
+def test_get_latest_ami_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client that returns an HTTP error response from the describe_images call.
+    When: get_latest_ami_command is called.
+    Then: It should catch the failure response and raise a `DemistoException` indicating the AWS API call failure.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    with pytest.raises(SystemExit):
+        EC2.get_latest_ami_command(mock_client, {})
+
+
+def test_get_ipam_discovered_public_addresses_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and a valid IPAM Resource Discovery ID.
+    When: get_ipam_discovered_public_addresses_command is called.
+    Then: It should return `CommandResults` with a readable output containing the discovered public IP addresses.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.get_ipam_discovered_public_addresses.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "IpamDiscoveredPublicAddresses": {"mock_key": "mock_value"},
+    }
+    args = {"ipam_resource_discovery_id": "mock_id"}
+    result = EC2.get_ipam_discovered_public_addresses_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Ipam Discovered Public Addresses" in result.readable_output
+
+
+def test_get_ipam_discovered_public_addresses_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client that is configured to raise a ClientError (e.g., due to an invalid ID).
+    When: get_ipam_discovered_public_addresses_command is called.
+    Then: It should catch the AWS `ClientError` and raise a descriptive `DemistoException` indicating the failure of the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.get_ipam_discovered_public_addresses.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}
+    }
+    with pytest.raises(SystemExit):
+        EC2.get_ipam_discovered_public_addresses_command(mock_client, {})

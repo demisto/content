@@ -1,0 +1,22 @@
+{
+    "data": {
+        "version": "1.0.0",
+        "hostname": "test-host",
+        "tasks": {
+            "reported": 5,
+            "running": 2,
+            "completed": 10,
+            "pending": 3
+        },
+        "server": {
+            "storage": {
+                "used_by": "user1"
+            }
+        },
+        "machines": {
+            "available": 2,
+            "total": 3
+        },
+        "tools": ["tool1", "tool2"]
+    }
+}

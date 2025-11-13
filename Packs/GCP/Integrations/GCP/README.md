@@ -804,3 +804,547 @@ Returns the specified Instance resource. To get a list of available instances, m
 | GCP.Compute.Instances.deletionProtection | boolean | Whether the resource should be protected against deletion. |
 | GCP.Compute.Instances.hostname | string | Hostname. |
 | GCP.Compute.Instances.kind | string | Type of the resource. Always compute\#instance for instances. |
+
+### gcp-storage-bucket-list
+
+***
+Retrieves the list of buckets in the project associated with the client.
+
+#### Base Command
+
+`gcp-storage-bucket-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| limit | Maximum number of buckets to return. | Optional |
+| prefix | Filter results to buckets whose names begin with this prefix. | Optional |
+| page_token | Token for pagination. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.Bucket.id | String | The unique identifier for the bucket. |
+| GCP.Storage.Bucket.name | String | The name of the bucket. |
+| GCP.Storage.Bucket.kind | String | The type of resource \(for example, storage\#bucket\). |
+| GCP.Storage.Bucket.location | String | The location of the bucket. |
+| GCP.Storage.Bucket.locationType | String | The type of location \(for example, multi-region\). |
+| GCP.Storage.Bucket.projectNumber | String | The GCP project number associated with the bucket. |
+| GCP.Storage.Bucket.storageClass | String | The storage class of the bucket. |
+| GCP.Storage.Bucket.rpo | String | The recovery point objective setting of the bucket. |
+| GCP.Storage.Bucket.etag | String | The HTTP entity tag of the bucket. |
+| GCP.Storage.Bucket.generation | String | The generation number of the bucket. |
+| GCP.Storage.Bucket.metageneration | String | The metageneration number of the bucket. |
+| GCP.Storage.Bucket.timeCreated | Date | The time the bucket was created. |
+| GCP.Storage.Bucket.timeUpdated | Date | The time the bucket was last updated. |
+| GCP.Storage.Bucket.selfLink | String | The link to the bucket resource on the GCP API. |
+
+#### Example
+
+``` !gcp-storage-bucket-list project_id="my-project" limit="10" prefix="logs-" ```
+
+### gcp-storage-bucket-get
+
+***
+Retrieves information about a specific bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket to retrieve. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.Bucket.id | String | The unique identifier for the bucket. |
+| GCP.Storage.Bucket.name | String | The name of the bucket. |
+| GCP.Storage.Bucket.kind | String | The type of resource \(for example, storage\#bucket\). |
+| GCP.Storage.Bucket.location | String | The location of the bucket. |
+| GCP.Storage.Bucket.locationType | String | The type of location \(for example, multi-region\). |
+| GCP.Storage.Bucket.projectNumber | String | The GCP project number associated with the bucket. |
+| GCP.Storage.Bucket.storageClass | String | The storage class of the bucket. |
+| GCP.Storage.Bucket.rpo | String | The recovery point objective setting of the bucket. |
+| GCP.Storage.Bucket.etag | String | The HTTP entity tag of the bucket. |
+| GCP.Storage.Bucket.generation | String | The generation number of the bucket. |
+| GCP.Storage.Bucket.metageneration | String | The metageneration number of the bucket. |
+| GCP.Storage.Bucket.timeCreated | Date | The time the bucket was created. |
+| GCP.Storage.Bucket.timeUpdated | Date | The time the bucket was last updated. |
+| GCP.Storage.Bucket.selfLink | String | The link to the bucket resource on the GCP API. |
+
+### gcp-storage-bucket-objects-list
+
+***
+Retrieves the list of objects in a bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-objects-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket to list objects from. | Required |
+| prefix | Filter results to objects whose names begin with this prefix. | Optional |
+| delimiter | Delimiter to use for grouping objects. For example delimiter="/" Returns results in a directory-like mode, with / being a common value for the delimiter. | Optional |
+| limit | Maximum number of objects to return. | Optional |
+| page_token | Token for pagination. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketObject.id | String | The unique identifier for the object. |
+| GCP.Storage.BucketObject.name | String | The name of the object. |
+| GCP.Storage.BucketObject.kind | String | The type of resource \(for example, storage\#object\). |
+| GCP.Storage.BucketObject.bucket | String | The name of the bucket containing the object. |
+| GCP.Storage.BucketObject.contentType | String | The MIME type of the object. |
+| GCP.Storage.BucketObject.size | Number | The size of the object in bytes. |
+| GCP.Storage.BucketObject.crc32c | String | The CRC32C checksum of the object. |
+| GCP.Storage.BucketObject.md5Hash | String | The MD5 hash of the object. |
+| GCP.Storage.BucketObject.etag | String | The HTTP entity tag of the object. |
+| GCP.Storage.BucketObject.generation | String | The generation number of the object. |
+| GCP.Storage.BucketObject.metageneration | String | The metageneration number of the object. |
+| GCP.Storage.BucketObject.storageClass | String | The storage class of the object. |
+| GCP.Storage.BucketObject.mediaLink | String | The link for downloading the object content. |
+| GCP.Storage.BucketObject.selfLink | String | The link to the object resource in the GCP API. |
+| GCP.Storage.BucketObject.timeCreated | Date | The time when the object was created. |
+| GCP.Storage.BucketObject.timeFinalized | Date | The time when the object was finalized. |
+| GCP.Storage.BucketObject.timeStorageClassUpdated | Date | The time when the object's storage class was last updated. |
+| GCP.Storage.BucketObject.updated | Date | The time when the object was last modified. |
+
+#### Example
+
+``` !gcp-storage-bucket-objects-list project_id="my-project" bucket_name="my-bucket" prefix="reports/" delimiter="/" limit="50" ```
+
+### gcp-storage-bucket-policy-list
+
+***
+Retrieves the IAM policy for a bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-policy-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket to retrieve IAM policy from. | Required |
+| requested_policy_version | The IAM policy version to be returned. If the optionsRequestedPolicyVersion is for an older version that doesn't support part of the requested IAM policy, the request fails. Required to be 3 or greater for buckets with IAM Conditions. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketPolicy.version | Number | IAM policy version. |
+| GCP.Storage.BucketPolicy.etag | String | ETag of the IAM policy. |
+| GCP.Storage.BucketPolicy.bindings | List | List of role bindings for the bucket. |
+| GCP.Storage.BucketPolicy.resourceId | String | Resource ID of the updated IAM policy. e.g. projects/_/buckets/BUCKET_NAME. |
+
+#### Example
+
+``` !gcp-storage-bucket-policy-list project_id="my-project" bucket_name="my-bucket" requested_policy_version="3" ```
+
+### gcp-storage-bucket-policy-set
+
+***
+Sets the IAM policy for a bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-policy-set`
+
+#### Usage
+
+- **add=false**: Replaces the entire bucket IAM policy with the JSON provided in `policy`.
+- **add=true**: Reads the current bucket policy (getIamPolicy), merges the provided `bindings` per role (deduplicates members), and updates the bucket policy (setIamPolicy) while preserving other top-level fields.
+
+> Warning: Use this command with extreme caution. Running it without explicitly merging (i.e., with `add=false`) will overwrite the bucket's existing IAM policy with the provided `policy`. If you intend to keep current bindings and add new ones, use `add=true`.
+
+#### Policy structure
+
+- **bindings**: Array of binding objects. Each binding:
+  - **role**: String. For example, `roles/storage.objectViewer`, `roles/storage.admin`.
+  - **members**: Array of strings. Allowed formats:
+    - `user:<email>` (e.g., `user:alice@example.com`)
+    - `group:<email>`
+    - `serviceAccount:<email>`
+    - `domain:<domain>` (e.g., `domain:example.com`)
+    - `allUsers` | `allAuthenticatedUsers`
+- **version**: Number. Required to be `3` or greater if any binding includes `condition`.
+- **etag**: String. Recommended for replace flow (`add=false`) to avoid overwriting concurrent updates.
+- Optional fields like `kind`, `resourceId` may appear in responses but are not required in requests.
+
+Notes:
+
+- For `add=true` (merge), only a valid `bindings` array is required; other top-level fields are taken from the existing policy.
+- For `add=false` (replace), the provided object becomes the entire policy on the bucket.
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket to set IAM policy on. | Required |
+| policy | JSON string representing the IAM policy to set. | Required |
+| add | When true, merges the provided policy bindings into the current bucket policy (per role, deduplicating members) by first calling getIamPolicy and then setIamPolicy with the merged result. When false, replaces the entire policy with the provided JSON via setIamPolicy.<br/>. Possible values are: true, false. Default is false.  | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketPolicy.version | Number | IAM policy version after update. |
+| GCP.Storage.BucketPolicy.etag | String | ETag of the updated IAM policy. |
+| GCP.Storage.BucketPolicy.bindings | List | List of role bindings for the bucket. |
+
+#### Examples
+
+- Replace entire policy (`add=false`):
+
+``` !gcp-storage-bucket-policy-set project_id="my-project" bucket_name="my-bucket-name" add="false" policy=`{"kind": "storage#policy", "resourceId": "projects/_/buckets/my-bucket-name", "version": 1, "etag": "CAY=", "bindings":[{"role":"roles/storage.objectViewer","members":["allUsers"]}]}` ```
+
+- Merge bindings into existing policy (`add=true`):
+
+``` !gcp-storage-bucket-policy-set project_id="my-project" bucket_name="my-bucket-name" add="true" policy=`{"bindings":[{"role":"roles/storage.objectViewer","members":["user:alice@example.com"]}]}` ```
+
+### gcp-storage-bucket-object-policy-list
+
+***
+Retrieves the IAM policy for a specific object in a bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-object-policy-list`
+
+> Note: If Uniform Bucket-Level Access (UBLA) is enabled on the bucket, object-level ACLs are not available. In that case, this command returns the bucket-level IAM policy under `GCP.Storage.BucketObjectPolicy`.
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket containing the object. | Required |
+| object_name | Name of the object to retrieve IAM policy from. | Required |
+| generation | Generation of the object. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketObjectPolicy.bucketName | String | Name of the bucket containing the object. |
+| GCP.Storage.BucketObjectPolicy.objectName | String | Name of the object. |
+| GCP.Storage.BucketObjectPolicy.bindings | List | List of role bindings for the object. |
+
+#### Example
+
+``` !gcp-storage-bucket-object-policy-list project_id="my-project" bucket_name="my-bucket" object_name="path/to/object.txt" ```
+
+### gcp-storage-bucket-object-policy-set
+
+***
+Sets the IAM policy for a specific object in a bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-object-policy-set`
+
+> Note: If UBLA is enabled on the bucket, the command does not modify object ACLs and instead returns guidance to manage permissions via the bucket IAM policy.
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket containing the object. | Required |
+| object_name | Name of the object to set IAM policy on. | Required |
+| policy | JSON string representing the IAM policy to set. | Required |
+| generation | Generation of the object. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketObjectPolicy.version | Number | IAM policy version after update. |
+| GCP.Storage.BucketObjectPolicy.etag | String | ETag of the updated IAM policy. |
+| GCP.Storage.BucketObjectPolicy.bindings | Unknown | List of role bindings for the object. |
+
+### gcp-compute-firewall-insert
+
+***
+Creates a new firewall rule in the specified project.
+
+#### Base Command
+
+`gcp-compute-firewall-insert`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| resource_name | Name of the firewall rule to create. | Required |
+| description | An optional description for the firewall rule. | Optional |
+| network | URL of the network, e.g., global/networks/default. | Optional |
+| priority | Priority 0-65535. Default 1000. | Optional |
+| direction | Direction of traffic to which this firewall applies. Default INGRESS. Possible values are: INGRESS, EGRESS. Default is INGRESS. | Optional |
+| allowed | ALLOW rules in tuples, e.g., ipprotocol=tcp,ports=443;ipprotocol=tcp,ports=80. | Optional |
+| denied | DENY rules in tuples, e.g., ipprotocol=tcp,ports=22,443. | Optional |
+| source_ranges | Comma-separated CIDRs for INGRESS. | Optional |
+| destination_ranges | Comma-separated CIDRs for EGRESS. | Optional |
+| source_tags | Comma-separated instance tags to match as source. | Optional |
+| target_tags | Comma-separated tags to apply this rule to. | Optional |
+| source_service_accounts | Comma-separated service accounts for source. | Optional |
+| target_service_accounts | Comma-separated service accounts to target. | Optional |
+| log_config_enable | Enable firewall logging. Possible values are: true, false. | Optional |
+| disabled | Whether this firewall rule is disabled. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | Unique identifier for the operation resource, defined by the server. |
+| GCP.Compute.Operations.name | String | Name of the operation resource. |
+| GCP.Compute.Operations.kind | String | Type of the resource, for example compute\#operation. |
+| GCP.Compute.Operations.operationType | String | Type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | Current status of the operation. |
+| GCP.Compute.Operations.progress | Number | Progress of the operation as a percentage between 0 and 100. |
+| GCP.Compute.Operations.targetId | String | Unique target ID of the resource affected by the operation. |
+| GCP.Compute.Operations.targetLink | String | URL of the target resource modified by the operation. |
+| GCP.Compute.Operations.selfLink | String | Server-defined URL for the operation resource. |
+| GCP.Compute.Operations.insertTime | Date | The time when the operation resource was created. |
+| GCP.Compute.Operations.startTime | Date | The time when the operation started running. |
+| GCP.Compute.Operations.user | String | The user account that performed the operation. |
+
+### gcp-compute-firewall-list
+
+***
+Lists firewall rules in the specified project.
+
+#### Base Command
+
+`gcp-compute-firewall-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
+| page_token | Token for pagination. | Optional |
+| filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/firewalls/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Firewall.id | String | Unique identifier for the firewall rule. |
+| GCP.Compute.Firewall.name | String | Name of the firewall rule. |
+| GCP.Compute.Firewall.kind | String | Type of the resource \(for example, compute\#firewall\). |
+| GCP.Compute.Firewall.description | String | Description of the firewall rule. |
+| GCP.Compute.Firewall.direction | String | Direction of traffic for the rule \(INGRESS or EGRESS\). |
+| GCP.Compute.Firewall.disabled | Boolean | Indicates whether the firewall rule is disabled. |
+| GCP.Compute.Firewall.priority | Number | Priority value of the firewall rule. |
+| GCP.Compute.Firewall.network | String | The network URL this firewall rule applies to. |
+| GCP.Compute.Firewall.selfLink | String | Server-defined URL for the resource. |
+| GCP.Compute.Firewall.creationTimestamp | Date | The creation timestamp of the firewall rule. |
+| GCP.Compute.Firewall.logConfig.enable | Boolean | Indicates whether logging is enabled for the firewall rule. |
+| GCP.Compute.Firewall.sourceRanges | Unknown | List of source IP ranges that the rule applies to. |
+| GCP.Compute.Firewall.targetTags | Unknown | List of target instance tags to which the rule applies. |
+| GCP.Compute.FirewallNextToken | String | Next page token for pagination. |
+
+### gcp-compute-firewall-get
+
+***
+Retrieves a specific firewall rule by name.
+
+#### Base Command
+
+`gcp-compute-firewall-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| resource_name | Firewall rule name. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Firewall.name | string | Firewall rule name. |
+| GCP.Compute.Firewall.network | string | Network URL for the firewall rule. |
+| GCP.Compute.Firewall.direction | string | Direction of traffic \(INGRESS/EGRESS\). |
+| GCP.Compute.Firewall.priority | number | Priority of the rule. |
+| GCP.Compute.Firewall.allowed | Unknown | Allowed tuples. |
+| GCP.Compute.Firewall.denied | Unknown | Denied tuples. |
+| GCP.Compute.Firewall.targetTags | Unknown | Target instance tags. |
+
+### gcp-compute-snapshots-list
+
+***
+Lists snapshots in the specified project.
+
+#### Base Command
+
+`gcp-compute-snapshots-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
+| page_token | Token for pagination. | Optional |
+| filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/snapshots/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Snapshot.id | String | Unique identifier for the snapshot resource. |
+| GCP.Compute.Snapshot.name | String | Name of the snapshot resource. |
+| GCP.Compute.Snapshot.kind | String | Type of the resource, for example compute\#snapshot. |
+| GCP.Compute.Snapshot.status | String | Current status of the snapshot, such as READY or FAILED. |
+| GCP.Compute.Snapshot.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
+| GCP.Compute.Snapshot.architecture | String | CPU architecture of the source disk, for example X86_64. |
+| GCP.Compute.Snapshot.creationTimestamp | Date | The time when the snapshot was created. |
+| GCP.Compute.Snapshot.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
+| GCP.Compute.Snapshot.diskSizeGb | Number | Size of the snapshot in gigabytes. |
+| GCP.Compute.Snapshot.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
+| GCP.Compute.Snapshot.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
+| GCP.Compute.Snapshot.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
+| GCP.Compute.Snapshot.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
+| GCP.Compute.Snapshot.licenses | Unknown | List of license URLs associated with the snapshot. |
+| GCP.Compute.Snapshot.selfLink | String | Server-defined URL for the snapshot resource. |
+| GCP.Compute.Snapshot.sourceDisk | String | URL of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshot.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshot.storageBytes | Number | Total storage size of the snapshot in bytes. |
+| GCP.Compute.Snapshot.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
+| GCP.Compute.Snapshot.storageLocations | Unknown | List of storage locations for the snapshot. |
+| GCP.Compute.SnapshotNextToken | String | Next page token for pagination. |
+
+### gcp-compute-snapshot-get
+
+***
+Retrieves details for a specific snapshot.
+
+#### Base Command
+
+`gcp-compute-snapshot-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| resource_name | Snapshot name. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Snapshot.id | String | Unique identifier for the snapshot resource. |
+| GCP.Compute.Snapshot.name | String | Name of the snapshot resource. |
+| GCP.Compute.Snapshot.kind | String | Type of the resource, for example compute\#snapshot. |
+| GCP.Compute.Snapshot.status | String | Current status of the snapshot, such as READY or FAILED. |
+| GCP.Compute.Snapshot.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
+| GCP.Compute.Snapshot.architecture | String | CPU architecture of the source disk, for example X86_64. |
+| GCP.Compute.Snapshot.creationTimestamp | Date | The time when the snapshot was created. |
+| GCP.Compute.Snapshot.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
+| GCP.Compute.Snapshot.diskSizeGb | Number | Size of the snapshot in gigabytes. |
+| GCP.Compute.Snapshot.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
+| GCP.Compute.Snapshot.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
+| GCP.Compute.Snapshot.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
+| GCP.Compute.Snapshot.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
+| GCP.Compute.Snapshot.licenses | Unknown | List of license URLs associated with the snapshot. |
+| GCP.Compute.Snapshot.selfLink | String | Server-defined URL for the snapshot resource. |
+| GCP.Compute.Snapshot.sourceDisk | String | URL of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshot.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshot.storageBytes | Number | Total storage size of the snapshot in bytes. |
+| GCP.Compute.Snapshot.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
+| GCP.Compute.Snapshot.storageLocations | Unknown | List of storage locations for the snapshot. |
+
+### gcp-compute-instances-aggregated-list-by-ip
+
+***
+Aggregated list of instances across all zones; can be filtered by internal or external IP.
+
+#### Base Command
+
+`gcp-compute-instances-aggregated-list-by-ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| ip_address | The IP address to search for. | Required |
+| match_external | If true, match against external NAT IPs; otherwise internal NIC IPs. Possible values are: true, false. | Optional |
+| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
+| page_token | Token for pagination. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Instance.name | string | Instance name. |
+| GCP.Compute.Instance.id | string | Instance ID. |
+| GCP.Compute.Instance.zone | string | Instance zone URL. |
+| GCP.Compute.Instance.status | string | Instance status. |
+| GCP.Compute.Instance.networkInterfaces | Unknown | Network interfaces of the instance. |
+
+### gcp-compute-network-tag-set
+
+***
+Adds a network tag to a VM instance (merges with existing tags).
+
+#### Base Command
+
+`gcp-compute-network-tag-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| zone | Zone of the VM (e.g., us-central1-a). | Required |
+| resource_name | Instance name. | Required |
+| tag | Tag to add. | Required |
+| tags_fingerprint | Fingerprint of the previous set of tags for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change tags. To retrieve the fingerprint use the command gcp-compute-instance-get. | Required |
+| add_tag | If true, adds the tag to the existing tags; otherwise, overrides them. The default is true. Possible values are: true, false. Default is true. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | Operation ID. |
+| GCP.Compute.Operations.name | string | Operation name. |
+| GCP.Compute.Operations.status | string | Current operation status \(e.g., RUNNING, DONE\). |
+| GCP.Compute.Operations.operationType | string | Type of operation being performed. |
+| GCP.Compute.Operations.progress | number | Operation progress percentage \(0-100\). |
+| GCP.Compute.Operations.user | string | User or service account that initiated the operation. |
+| GCP.Compute.Operations.targetLink | string | Full URL of the target resource for this operation. |
+| GCP.Compute.Operations.targetId | string | Target resource ID. |
+| GCP.Compute.Operations.zone | string | Zone where the operation is performed. |
+| GCP.Compute.Operations.insertTime | string | Time when the operation was inserted. |
+| GCP.Compute.Operations.startTime | string | Time when the operation started. |
+| GCP.Compute.Operations.selfLink | string | URL for this operation resource. |
+| GCP.Compute.Operations.kind | string | Type of the resource \(e.g., compute\#operation\). |

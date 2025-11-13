@@ -135,6 +135,427 @@ def test_compute_firewall_patch_edge_cases(mocker):
     assert result.outputs_prefix == "GCP.Compute.Operations"
 
 
+def test_compute_firewall_insert_basic(mocker):
+    """
+    Given: Minimal args for creating a firewall rule
+    When: compute_firewall_insert is called
+    Then: The request body contains the name and optional fields are omitted
+    """
+    from GCP import compute_firewall_insert
+
+    args = {"project_id": "p1", "resource_name": "fw-1"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_firewalls = mocker.Mock()
+    mock_compute.firewalls.return_value = mock_firewalls
+    mock_firewalls.insert.return_value.execute.return_value = {"id": "op-1", "status": "PENDING"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+
+    res = compute_firewall_insert(mock_creds, args)
+
+    called_body = mock_firewalls.insert.call_args[1]["body"]
+    assert called_body == {"name": "fw-1"}
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_compute_firewall_insert_full_body(mocker):
+    """
+    Given: All supported args for creating a firewall rule
+    When: compute_firewall_insert is called
+    Then: The request body reflects all conversions and parsing
+    """
+    from GCP import compute_firewall_insert
+
+    args = {
+        "project_id": "p1",
+        "resource_name": "fw-1",
+        "description": "desc",
+        "network": "net-1",
+        "priority": "123",
+        "source_ranges": "1.1.1.1/32,2.2.2.0/24",
+        "destination_ranges": "10.0.0.0/8",
+        "source_tags": "tag-a",
+        "target_tags": "tag-b,tag-c",
+        "source_service_accounts": "sa:one",
+        "target_service_accounts": "sa:two",
+        "allowed": "ipprotocol=tcp,ports=80,443",
+        "denied": "ipprotocol=udp,ports=53",
+        "direction": "INGRESS",
+        "log_config_enable": "true",
+        "disabled": "false",
+    }
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_firewalls = mocker.Mock()
+    mock_compute.firewalls.return_value = mock_firewalls
+    mock_firewalls.insert.return_value.execute.return_value = {"id": "op-1", "status": "PENDING"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+
+    compute_firewall_insert(mock_creds, args)
+
+    body = mock_firewalls.insert.call_args[1]["body"]
+    assert body["name"] == "fw-1"
+    assert body["priority"] == 123
+    assert body["sourceRanges"] == ["1.1.1.1/32", "2.2.2.0/24"]
+    assert body["destinationRanges"] == ["10.0.0.0/8"]
+    assert body["sourceTags"] == ["tag-a"]
+    assert body["targetTags"] == ["tag-b", "tag-c"]
+    assert body["logConfig"]["enable"] is True
+    assert body["disabled"] is False
+    assert body["allowed"] == [{"IPProtocol": "tcp", "ports": ["80", "443"]}]
+    assert body["denied"] == [{"IPProtocol": "udp", "ports": ["53"]}]
+
+
+def test_compute_firewall_list_with_pagination_and_filter(mocker):
+    """
+    Given: Pagination and filter arguments
+    When: compute_firewall_list is called
+    Then: next token is returned in outputs and metadata is set
+    """
+    from GCP import compute_firewall_list
+
+    args = {"project_id": "p1", "limit": "2", "page_token": "t0", "filter": "name eq fw-*"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_firewalls = mocker.Mock()
+    mock_compute.firewalls.return_value = mock_firewalls
+    mock_firewalls.list.return_value.execute.return_value = {
+        "items": [{"name": "fw-1", "id": "1"}],
+        "nextPageToken": "t1",
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+
+    res = compute_firewall_list(mock_creds, args)
+
+    called_kwargs = mock_firewalls.list.call_args[1]
+    assert called_kwargs["project"] == "p1"
+    assert called_kwargs["maxResults"] == 2
+    assert called_kwargs["pageToken"] == "t0"
+    assert called_kwargs["filter"] == "name eq fw-*"
+
+    assert res.outputs["GCP.Compute(true)"]["FirewallNextToken"] == "t1"
+
+
+def test_compute_firewall_get_found_and_not_found(mocker):
+    """
+    Given: A firewall name
+    When: compute_firewall_get is called
+    Then: Returns details if found and a readable message if 404 not found
+    """
+    from GCP import compute_firewall_get
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_firewalls = mocker.Mock()
+    mock_compute.firewalls.return_value = mock_firewalls
+
+    # Found case
+    mock_firewalls.get.return_value.execute.return_value = {"name": "fw-1", "id": "1"}
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+    res = compute_firewall_get(mock_creds, {"project_id": "p1", "resource_name": "fw-1"})
+    assert res.outputs_prefix == "GCP.Compute.Firewall"
+
+    # Not found case
+    resp = mocker.MagicMock()
+    resp.status = 404
+    error = HttpError(resp, b'{"error": {"message": "The resource fw-2 was not found"}}')
+    mock_firewalls.get.return_value.execute.side_effect = error
+    res2 = compute_firewall_get(mock_creds, {"project_id": "p1", "resource_name": "fw-2"})
+    assert "not found" in res2.readable_output
+
+
+def test_compute_snapshots_list_with_pagination(mocker):
+    """
+    Given: Pagination args
+    When: compute_snapshots_list is called
+    Then: next token is returned in outputs
+    """
+    from GCP import compute_snapshots_list
+
+    args = {"project_id": "p1", "limit": "5", "page_token": "a", "filter": "status = READY"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    mock_snapshots.list.return_value.execute.return_value = {
+        "items": [{"name": "snap-1", "id": "10"}],
+        "nextPageToken": "b",
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+
+    res = compute_snapshots_list(mock_creds, args)
+    assert res.outputs["GCP.Compute(true)"]["SnapshotNextToken"] == "b"
+
+
+def test_compute_snapshot_get_found_and_not_found(mocker):
+    """
+    Given: A snapshot name
+    When: compute_snapshot_get is called
+    Then: Returns details if found and a readable message if 404 not found
+    """
+    from GCP import compute_snapshot_get
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+
+    # Found
+    mock_snapshots.get.return_value.execute.return_value = {"name": "snap-1", "id": "1"}
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+    res = compute_snapshot_get(mock_creds, {"project_id": "p1", "resource_name": "snap-1"})
+    assert res.outputs_prefix == "GCP.Compute.Snapshot"
+
+    # Not found
+    resp = mocker.MagicMock()
+    resp.status = 404
+    error = HttpError(resp, b'{"error": {"message": "The resource snap-2 was not found"}}')
+    mock_snapshots.get.return_value.execute.side_effect = error
+    res2 = compute_snapshot_get(mock_creds, {"project_id": "p1", "resource_name": "snap-2"})
+    assert "not found" in res2.readable_output
+
+
+def test_compute_instances_aggregated_list_by_ip_internal(mocker):
+    """
+    Given: An internal IP to match
+    When: compute_instances_aggregated_list_by_ip is called without match_external
+    Then: Only instances with matching networkIP are returned
+    """
+    from GCP import compute_instances_aggregated_list_by_ip
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+
+    response = {
+        "items": {
+            "zones/us": {
+                "instances": [
+                    {
+                        "name": "i-1",
+                        "id": "1",
+                        "status": "RUNNING",
+                        "zone": "us",
+                        "networkInterfaces": [{"networkIP": "10.0.0.5"}],
+                    },
+                    {
+                        "name": "i-2",
+                        "id": "2",
+                        "status": "RUNNING",
+                        "zone": "us",
+                        "networkInterfaces": [{"networkIP": "10.0.0.6"}],
+                    },
+                ]
+            }
+        }
+    }
+    mock_instances.aggregatedList.return_value.execute.return_value = response
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+
+    res = compute_instances_aggregated_list_by_ip(mock_creds, {"project_id": "p1", "ip_address": "10.0.0.6", "limit": "10"})
+
+    # Expect only i-2
+    assert len(res.outputs) == 1
+    assert res.outputs[0]["name"] == "i-2"
+
+
+def test_compute_instances_aggregated_list_by_ip_external(mocker):
+    """
+    Given: An external IP to match
+    When: compute_instances_aggregated_list_by_ip is called with match_external=true
+    Then: Only instances with matching accessConfigs.natIP are returned
+    """
+    from GCP import compute_instances_aggregated_list_by_ip
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+
+    response = {
+        "items": {
+            "zones/us": {
+                "instances": [
+                    {
+                        "name": "i-1",
+                        "id": "1",
+                        "status": "RUNNING",
+                        "zone": "us",
+                        "networkInterfaces": [{"networkIP": "10.0.0.5", "accessConfigs": [{"natIP": "34.1.1.1"}]}],
+                    },
+                    {
+                        "name": "i-2",
+                        "id": "2",
+                        "status": "RUNNING",
+                        "zone": "us",
+                        "networkInterfaces": [{"networkIP": "10.0.0.6", "accessConfigs": [{"natIP": "34.1.1.2"}]}],
+                    },
+                ]
+            }
+        }
+    }
+    mock_instances.aggregatedList.return_value.execute.return_value = response
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+
+    res = compute_instances_aggregated_list_by_ip(
+        mock_creds, {"project_id": "p1", "ip_address": "34.1.1.2", "match_external": "true", "limit": "10"}
+    )
+
+    # Expect only i-2
+    assert len(res.outputs) == 1
+    assert res.outputs[0]["name"] == "i-2"
+
+
+def test__collect_instance_ips_basic():
+    """
+    Given: An instance with multiple NICs and access configs
+    When: _collect_instance_ips is called
+    Then: It returns lists of internal and external IPs
+    """
+    from GCP import _collect_instance_ips
+
+    instance = {
+        "networkInterfaces": [
+            {"networkIP": "10.0.0.5", "accessConfigs": [{"natIP": "34.1.1.1"}]},
+            {"networkIP": "10.0.0.6", "accessConfigs": [{"natIP": "34.1.1.2"}]},
+        ]
+    }
+
+    internal, external = _collect_instance_ips(instance)
+    assert internal == ["10.0.0.5", "10.0.0.6"]
+    assert external == ["34.1.1.1", "34.1.1.2"]
+
+
+def test__match_instance_by_ip_internal_external_none():
+    """
+    Given: An instance with both internal and external IPs
+    When: _match_instance_by_ip is called in both modes
+    Then: It reports correct match flag and matchType
+    """
+    from GCP import _match_instance_by_ip
+
+    instance = {"networkInterfaces": [{"networkIP": "10.0.0.5", "accessConfigs": [{"natIP": "34.1.1.1"}]}]}
+
+    # Internal mode
+    matched, t = _match_instance_by_ip(instance, "10.0.0.5", match_external=False)
+    assert matched is True
+    assert t == "internal"
+
+    matched, t = _match_instance_by_ip(instance, "34.1.1.1", match_external=False)
+    assert matched is False
+    assert t == "none"
+
+    # External mode
+    matched, t = _match_instance_by_ip(instance, "34.1.1.1", match_external=True)
+    assert matched is True
+    assert t == "external"
+
+    matched, t = _match_instance_by_ip(instance, "1.2.3.4", match_external=True)
+    assert matched is False
+    assert t == "none"
+
+
+def test_compute_instances_aggregated_list_by_ip_hr_headers(mocker):
+    """
+    Given: A match is found
+    When: compute_instances_aggregated_list_by_ip runs
+    Then: HR headers include matchType and matchedIP
+    """
+    from GCP import compute_instances_aggregated_list_by_ip
+
+    mock_creds = mocker.Mock()
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+
+    response = {
+        "items": {
+            "zones/us": {
+                "instances": [
+                    {
+                        "name": "i-1",
+                        "id": "1",
+                        "status": "RUNNING",
+                        "zone": "us",
+                        "networkInterfaces": [{"networkIP": "10.0.0.5", "accessConfigs": [{"natIP": "34.1.1.1"}]}],
+                    }
+                ]
+            }
+        }
+    }
+    mock_instances.aggregatedList.return_value.execute.return_value = response
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    ttmd = mocker.patch("GCP.tableToMarkdown", return_value="md")
+
+    compute_instances_aggregated_list_by_ip(mock_creds, {"project_id": "p1", "ip_address": "10.0.0.5", "limit": "10"})
+
+    # Inspect headers
+    _, kwargs = ttmd.call_args
+    headers = kwargs.get("headers")
+    assert "matchType" in headers
+    assert "matchedIP" in headers
+
+
+def test_compute_network_tag_set_add_and_error(mocker):
+    """
+    Given: A VM with existing tags and a new tag to add
+    When: compute_network_tag_set is called
+    Then: It merges tags and calls setTags with fingerprint. Also, on HttpError it returns readable failure
+    """
+    from GCP import compute_network_tag_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+
+    # Instance has tags
+    mock_instances.get.return_value.execute.return_value = {"tags": {"fingerprint": "fp", "items": ["old"]}}
+    # Successful setTags
+    mock_instances.setTags.return_value.execute.return_value = {"id": "op"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    # Success path
+    res = compute_network_tag_set(
+        mock_creds,
+        {
+            "project_id": "p1",
+            "zone": "us-central1-a",
+            "resource_name": "i-1",
+            "tag": "new",
+            "tags_fingerprint": "fp",
+            "add_tag": "true",
+        },
+    )
+    # Body should include both tags merged
+    called_body = mock_instances.setTags.call_args[1]["body"]
+    assert called_body == {"items": ["new", "old"], "fingerprint": "fp"}
+    assert "Added 'new' tag" in res.readable_output
+
+
 def test_storage_bucket_policy_delete_multiple_entities(mocker):
     """
     Given: A bucket with IAM policy containing multiple entities to be removed
@@ -503,6 +924,77 @@ def test_storage_bucket_metadata_update_enable_both_settings(mocker):
     assert result.outputs_prefix == "GCP.StorageBucket.Metadata"
     assert result.outputs == mock_response
     assert result.outputs_key_field == "name"
+
+
+def test_storage_bucket_policy_set_merge_add_true(mocker):
+    """
+    Given: A bucket with an existing IAM policy and a new set of bindings to add
+    When: storage_bucket_policy_set is called with add=true
+    Then: The resulting policy sent to setIamPolicy is a merge (union) of members per role
+    """
+    from GCP import storage_bucket_policy_set
+
+    bucket_name = "test-bucket"
+    current_policy = {
+        "version": 3,
+        "etag": "BwWKmjvelug=",
+        "bindings": [
+            {"role": "roles/storage.objectViewer", "members": ["user:viewer1@example.com"]},
+            {"role": "roles/storage.admin", "members": ["user:admin1@example.com"]},
+        ],
+    }
+    new_bindings = {
+        "bindings": [
+            {"role": "roles/storage.objectViewer", "members": ["allUsers"]},
+            {"role": "roles/storage.admin", "members": ["user:admin2@example.com"]},
+        ]
+    }
+    args = {
+        "bucket_name": bucket_name,
+        "policy": json.dumps(new_bindings),
+        "add": "true",
+    }
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.getIamPolicy.return_value.execute.return_value = current_policy
+
+    expected_merged_bindings = [
+        {
+            "role": "roles/storage.objectViewer",
+            "members": sorted(["user:viewer1@example.com", "allUsers"]),
+        },
+        {
+            "role": "roles/storage.admin",
+            "members": sorted(["user:admin1@example.com", "user:admin2@example.com"]),
+        },
+    ]
+
+    mock_response = {"version": 3, "bindings": expected_merged_bindings}
+    mock_buckets.setIamPolicy.return_value.execute.return_value = mock_response
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mock_storage)
+
+    result = storage_bucket_policy_set(mock_creds, args)
+
+    mock_buckets.getIamPolicy.assert_called_once_with(bucket=bucket_name)
+    assert mock_buckets.setIamPolicy.call_count == 1
+
+    _, set_kwargs = mock_buckets.setIamPolicy.call_args
+    assert set_kwargs["bucket"] == bucket_name
+    body_sent = set_kwargs["body"]
+
+    assert body_sent.get("version") == 3
+    assert body_sent.get("etag") == current_policy["etag"]
+
+    sent_bindings = {b["role"]: set(b.get("members", [])) for b in body_sent.get("bindings", [])}
+    expected_bindings = {b["role"]: set(b.get("members", [])) for b in expected_merged_bindings}
+    assert sent_bindings == expected_bindings
+
+    # Outputs should reflect mock response
+    assert result.outputs == mock_response
 
 
 def test_compute_instance_service_account_set(mocker):
@@ -2469,6 +2961,393 @@ def test_gcp_compute_instance_label_set_command_add_labels_true(mocker):
     assert result.outputs == mock_operation_response
 
 
+def test_validate_bucket_policy_for_set_add_mode_valid():
+    """
+    Given: A minimal valid policy for add=true (merge mode)
+    When: _validate_bucket_policy_for_set is called
+    Then: No exception is raised
+    """
+    from GCP import _validate_bucket_policy_for_set
+
+    policy = {"bindings": [{"role": "roles/storage.objectViewer", "members": ["user:alice@example.com"]}]}
+
+    # Should not raise
+    _validate_bucket_policy_for_set(policy, add_mode=True)
+
+
+def test_validate_bucket_policy_for_set_add_mode_missing_role():
+    """
+    Given: A binding without role in add=true mode
+    When: _validate_bucket_policy_for_set is called
+    Then: DemistoException is raised mentioning 'role'
+    """
+    from GCP import _validate_bucket_policy_for_set, DemistoException
+
+    policy = {"bindings": [{"members": ["allUsers"]}]}
+    with pytest.raises(DemistoException) as e:
+        _validate_bucket_policy_for_set(policy, add_mode=True)
+    assert "role" in str(e.value)
+
+
+def test_validate_bucket_policy_for_set_add_mode_members_not_list():
+    """
+    Given: A binding with members not as list in add=true mode
+    When: _validate_bucket_policy_for_set is called
+    Then: DemistoException is raised mentioning 'members'
+    """
+    from GCP import _validate_bucket_policy_for_set, DemistoException
+
+    policy = {"bindings": [{"role": "roles/storage.objectViewer", "members": "allUsers"}]}
+    with pytest.raises(DemistoException) as e:
+        _validate_bucket_policy_for_set(policy, add_mode=True)
+    assert "members" in str(e.value)
+
+
+def test_validate_bucket_policy_for_set_condition_requires_version():
+    """
+    Given: A binding with condition but policy.version < 3
+    When: _validate_bucket_policy_for_set is called
+    Then: DemistoException is raised about version requirement
+    """
+    from GCP import _validate_bucket_policy_for_set, DemistoException
+
+    policy = {
+        "version": 1,
+        "bindings": [
+            {
+                "role": "roles/storage.objectViewer",
+                "members": ["group:security@example.com"],
+                "condition": {"title": "t", "expression": "true"},
+            }
+        ],
+    }
+
+    with pytest.raises(DemistoException) as e:
+        _validate_bucket_policy_for_set(policy, add_mode=False)
+    assert "version" in str(e.value)
+
+
+def test_validate_bucket_policy_for_set_replace_mode_invalid_bindings_type():
+    """
+    Given: Replace mode policy with invalid bindings type (dict instead of list)
+    When: _validate_bucket_policy_for_set is called with add_mode=False
+    Then: DemistoException is raised
+    """
+    from GCP import _validate_bucket_policy_for_set, DemistoException
+
+    policy = {"bindings": {"role": "roles/storage.objectViewer", "members": ["allUsers"]}}
+    with pytest.raises(DemistoException):
+        _validate_bucket_policy_for_set(policy, add_mode=False)
+
+
+def test_format_gcp_datetime():
+    """
+    Given: An RFC3339 timestamp string with Z suffix
+    When: _format_gcp_datetime is called
+    Then: It returns a formatted timestamp in '%Y-%m-%d %H:%M:%S'
+    """
+    from GCP import _format_gcp_datetime
+
+    assert _format_gcp_datetime(None) is None
+    assert _format_gcp_datetime("2023-01-01T12:34:56Z") == "2023-01-01 12:34:56"
+
+
+def test_is_ubla_enabled_true_false_and_exception(mocker):
+    """
+    Given: Bucket metadata responses for UBLA enabled/disabled and an exception case
+    When: _is_ubla_enabled is called
+    Then: It returns True/False accordingly and False on exception
+    """
+    from GCP import _is_ubla_enabled
+
+    # Mock storage client chain
+    storage_client = mocker.MagicMock()
+    buckets = storage_client.buckets.return_value
+
+    # Enabled case
+    buckets.get.return_value.execute.return_value = {"iamConfiguration": {"uniformBucketLevelAccess": {"enabled": True}}}
+    assert _is_ubla_enabled(storage_client, "b1") is True
+
+    # Disabled case
+    buckets.get.return_value.execute.return_value = {"iamConfiguration": {"uniformBucketLevelAccess": {"enabled": False}}}
+    assert _is_ubla_enabled(storage_client, "b1") is False
+
+    # Exception case
+    buckets.get.return_value.execute.side_effect = Exception("boom")
+    assert _is_ubla_enabled(storage_client, "b1") is False
+
+
+def test_is_ubla_error_variants():
+    """
+    Given: Error objects with 400 status and UBLA phrase in content (str/bytes) and non-matching cases
+    When: _is_ubla_error is called
+    Then: It returns True only for 400 with UBLA phrase
+    """
+    from GCP import _is_ubla_error
+    from googleapiclient.errors import HttpError
+
+    class Err(HttpError):
+        def __init__(self, status, content):
+            self.resp = type("R", (), {"status": status})()
+            self.content = content
+
+    assert _is_ubla_error(Err(400, "Uniform Bucket-Level Access must be enabled")) is True
+    assert _is_ubla_error(Err(400, b"...uniform bucket-level access is required...")) is True
+    assert _is_ubla_error(Err(403, "uniform bucket-level access")) is False
+    assert _is_ubla_error(Err(400, "other error")) is False
+
+
+def test_storage_bucket_list_basic(mocker):
+    """
+    Given: Project with two buckets returned
+    When: storage_bucket_list is called
+    Then: API called with request params and outputs are normalized
+    """
+    from GCP import storage_bucket_list
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.list.return_value.execute.return_value = {
+        "items": [
+            {
+                "name": "b1",
+                "timeCreated": "2024-01-01T00:00:00Z",
+                "updated": "2024-01-02T00:00:00Z",
+                "owner": {"entityId": "123"},
+                "location": "US",
+                "storageClass": "STANDARD",
+            }
+        ]
+    }
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"project_id": "p1", "limit": "10", "prefix": "p", "page_token": "t"}
+
+    result = storage_bucket_list(creds, args)
+
+    mock_buckets.list.assert_called_with(project="p1", maxResults=10, prefix="p", pageToken="t")
+    assert result.outputs_prefix == "GCP.Storage.Bucket"
+    assert result.outputs[0]["name"] == "b1"
+
+
+def test_storage_bucket_get_basic(mocker):
+    """
+    Given: A bucket exists
+    When: storage_bucket_get is called
+    Then: It fetches via buckets().get and returns normalized fields
+    """
+    from GCP import storage_bucket_get
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.get.return_value.execute.return_value = {
+        "name": "b1",
+        "timeCreated": "2024-01-01T00:00:00Z",
+        "updated": "2024-01-02T00:00:00Z",
+        "owner": {"entityId": "123"},
+        "location": "US",
+        "storageClass": "STANDARD",
+    }
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_get(creds, {"bucket_name": "b1"})
+
+    mock_buckets.get.assert_called_with(bucket="b1")
+    assert result.outputs_prefix == "GCP.Storage.Bucket"
+    assert result.outputs["name"] == "b1"
+
+
+def test_storage_bucket_objects_list_basic(mocker):
+    """
+    Given: A bucket with two objects
+    When: storage_bucket_objects_list is called
+    Then: objects().list is called with args and outputs normalized
+    """
+    from GCP import storage_bucket_objects_list
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.list.return_value.execute.return_value = {
+        "items": [
+            {
+                "name": "o1",
+                "bucket": "b1",
+                "contentType": "text/plain",
+                "size": "1",
+                "timeCreated": "2024-01-01T00:00:00Z",
+                "updated": "2024-01-02T00:00:00Z",
+                "md5Hash": "md5",
+                "crc32c": "crc",
+            }
+        ]
+    }
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"bucket_name": "b1", "prefix": "p/", "delimiter": "/", "limit": "5", "page_token": "tok"}
+    result = storage_bucket_objects_list(creds, args)
+
+    mock_objects.list.assert_called_with(bucket="b1", prefix="p/", delimiter="/", maxResults=5, pageToken="tok")
+    assert result.outputs_prefix == "GCP.Storage.BucketObject"
+    assert result.outputs[0]["name"] == "o1"
+
+
+def test_storage_bucket_policy_list_with_version(mocker):
+    """
+    Given: A bucket policy exists
+    When: storage_bucket_policy_list is called with requested_policy_version
+    Then: It calls getIamPolicy with optionsRequestedPolicyVersion and returns policy
+    """
+    from GCP import storage_bucket_policy_list
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.getIamPolicy.return_value.execute.return_value = {"version": 3, "etag": "abc", "bindings": []}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"bucket_name": "b1", "requested_policy_version": "3"}
+    result = storage_bucket_policy_list(creds, args)
+
+    mock_buckets.getIamPolicy.assert_called_with(bucket="b1", optionsRequestedPolicyVersion=3)
+    assert result.outputs_prefix == "GCP.Storage.BucketPolicy"
+    assert result.outputs["version"] == 3
+
+
+def test_storage_bucket_policy_set_basic(mocker):
+    """
+    Given: A policy document to apply
+    When: storage_bucket_policy_set is called
+    Then: It calls setIamPolicy with body and returns response
+    """
+    from GCP import storage_bucket_policy_set
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.setIamPolicy.return_value.execute.return_value = {"version": 3, "etag": "etag1"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    policy = {"bindings": [{"role": "roles/storage.objectViewer", "members": ["allUsers"]}]}
+    args = {"bucket_name": "b1", "policy": json.dumps(policy), "add": "false"}
+    result = storage_bucket_policy_set(creds, args)
+
+    mock_buckets.setIamPolicy.assert_called_with(bucket="b1", body=policy)
+    assert result.outputs_prefix == "GCP.Storage.BucketPolicy"
+    assert result.outputs["etag"] == "etag1"
+
+
+def test_storage_bucket_object_policy_list_normal_and_ubla(mocker):
+    """
+    Given: UBLA disabled and enabled scenarios
+    When: storage_bucket_object_policy_list is called
+    Then: It lists object ACLs when UBLA disabled, and returns bucket policy when enabled
+    """
+    from GCP import storage_bucket_object_policy_list
+
+    # Case 1: UBLA disabled
+    mock_storage = mocker.Mock()
+    mock_oac = mocker.Mock()
+    mock_storage.objectAccessControls.return_value = mock_oac
+    mock_oac.list.return_value.execute.return_value = {"items": [{"entity": "allUsers", "role": "READER"}]}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=False)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_object_policy_list(creds, {"bucket_name": "b1", "object_name": "o1"})
+    mock_oac.list.assert_called_with(bucket="b1", object="o1")
+    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+    assert result.outputs[0]["entity"] == "allUsers"
+
+    # Case 2: UBLA enabled -> delegates to bucket policy list
+    mocker.patch("GCP._is_ubla_enabled", return_value=True)
+    # Patch bucket policy list to observe delegation
+    mocker.patch("GCP.storage_bucket_policy_list", return_value=MagicMock(outputs_prefix="GCP.Storage.BucketObjectPolicy"))
+    result2 = storage_bucket_object_policy_list(creds, {"bucket_name": "b1", "object_name": "o1"})
+    assert result2.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+
+
+def test_storage_bucket_object_policy_set_update_then_insert(mocker):
+    """
+    Given: An ACL entry to apply
+    When: storage_bucket_object_policy_set is called
+    Then: It tries update first; if update raises, it falls back to insert
+    """
+    from GCP import storage_bucket_object_policy_set
+
+    mock_storage = mocker.Mock()
+    mock_oac = mocker.Mock()
+    mock_storage.objectAccessControls.return_value = mock_oac
+
+    # Patch fails, insert succeeds
+    mock_oac.patch.return_value.execute.side_effect = Exception("not found")
+    mock_oac.insert.return_value.execute.return_value = {"entity": "allUsers", "role": "READER"}
+
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=False)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"bucket_name": "b1", "object_name": "o1", "policy": json.dumps({"entity": "allUsers", "role": "READER"})}
+    result = storage_bucket_object_policy_set(creds, args)
+
+    mock_oac.patch.assert_called()
+    mock_oac.insert.assert_called()
+    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+    assert result.outputs[0]["entity"] == "allUsers"
+
+
+def test_storage_bucket_object_policy_set_update_success(mocker):
+    """
+    Given: An ACL entry for which update succeeds
+    When: storage_bucket_object_policy_set is called
+    Then: It returns the update response and does not call insert
+    """
+    from GCP import storage_bucket_object_policy_set
+
+    mock_storage = mocker.Mock()
+    mock_oac = mocker.Mock()
+    mock_storage.objectAccessControls.return_value = mock_oac
+    mock_oac.patch.return_value.execute.return_value = {"entity": "user:a@example.com", "role": "WRITER"}
+
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=False)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"bucket_name": "b1", "object_name": "o1", "policy": json.dumps({"entity": "user:a@example.com", "role": "WRITER"})}
+    result = storage_bucket_object_policy_set(creds, args)
+
+    mock_oac.patch.assert_called()
+    mock_oac.insert.assert_not_called()
+    assert result.outputs[0]["role"] == "WRITER"
+
+
+def test_storage_bucket_object_policy_set_ubla_short_circuit(mocker):
+    """
+    Given: UBLA is enabled on bucket
+    When: storage_bucket_object_policy_set is called
+    Then: It short-circuits with guidance and does not call ObjectAccessControls
+    """
+    from GCP import storage_bucket_object_policy_set
+
+    mock_storage = mocker.Mock()
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=True)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"bucket_name": "b1", "object_name": "o1", "policy": json.dumps({"entity": "allUsers", "role": "READER"})}
+    result = storage_bucket_object_policy_set(creds, args)
+
+    # Should be a guidance readable output and no outputs list
+    assert "Uniform Bucket-Level Access (UBLA) is enabled" in result.readable_output
+
+
 def test_gcp_compute_instance_label_set_command_add_labels_no_existing(mocker):
     """
     Given: Valid arguments with add_labels=true but instance has no existing labels
@@ -2569,3 +3448,45 @@ def test_gcp_compute_instance_label_set_command_add_labels_false(mocker):
     )
 
     assert result.outputs == mock_operation_response
+
+
+def test_validate_limit_valid_input():
+    """
+    Given: A valid limit value (between 1 and 500 inclusive)
+    When: validate_limit is called
+    Then: No exception is raised
+    """
+    from GCP import validate_limit
+
+    # Test with minimum valid limit
+    validate_limit(1)
+    # Test with maximum valid limit
+    validate_limit(500)
+    # Test with a value in between
+    validate_limit(250)
+
+
+def test_validate_limit_invalid_input_too_low():
+    """
+    Given: An invalid limit value (less than 1)
+    When: validate_limit is called
+    Then: DemistoException is raised with an appropriate message
+    """
+    from GCP import validate_limit, DemistoException
+
+    with pytest.raises(DemistoException) as e:
+        validate_limit(0)
+    assert "The acceptable values of the argument limit are 1 to 500, inclusive. Currently the value is 0" in str(e.value)
+
+
+def test_validate_limit_invalid_input_too_high():
+    """
+    Given: An invalid limit value (greater than 500)
+    When: validate_limit is called
+    Then: DemistoException is raised with an appropriate message
+    """
+    from GCP import validate_limit, DemistoException
+
+    with pytest.raises(DemistoException) as e:
+        validate_limit(501)
+    assert "The acceptable values of the argument limit are 1 to 500, inclusive. Currently the value is 501" in str(e.value)
