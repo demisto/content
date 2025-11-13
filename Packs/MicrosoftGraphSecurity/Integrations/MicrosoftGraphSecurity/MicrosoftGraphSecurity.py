@@ -302,58 +302,6 @@ class MsGraphClient:
         url = f"security/cases/ediscoveryCases/{case_id}/searches/{search_id}/lastEstimateStatisticsOperation"
         return self.ms_client.http_request(method="GET", url_suffix=url)
 
-    def start_export_ediscovery_search_report(
-        self,
-        case_id: str,
-        search_id: str,
-        export_criteria: str,
-        additional_options: list[str],
-        display_name: str = None,
-        description: str = None,
-        export_location: str = None,
-        cloud_attachment_version: str = None,
-        document_version: str = None,
-    ) -> str:
-        """
-        Initiates an eDiscovery search export report and returns the Location URL for polling.
-        Args:
-            case_id (str): The unique ID of the eDiscovery case.
-            search_id (str): The unique ID of the eDiscovery search within the case.
-            export_criteria (str): Required. What to export, e.g., "searchHits" or "partiallyIndexed".
-            additional_options (list[str]): Required. Extra options for export, e.g., ["cloudAttachments"].
-            display_name (str, optional): Name of the export report.
-            description (str, optional): Description of the export operation.
-            export_location (str, optional): Scope for partially indexed items.
-            cloud_attachment_version (str, optional): Versioning for cloud attachments.
-            document_version (str, optional): Versioning for documents.
-
-        Returns:
-            str: The Location URL to poll the export operation status.
-
-        """
-        body = {"exportCriteria": export_criteria, "additionalOptions": additional_options}
-
-        if display_name:
-            body["displayName"] = display_name
-        if description:
-            body["description"] = description
-        if export_location:
-            body["exportLocation"] = export_location
-        if cloud_attachment_version:
-            body["cloudAttachmentVersion"] = cloud_attachment_version
-        if document_version:
-            body["documentVersion"] = document_version
-        url = f"security/cases/ediscoveryCases/{case_id}/searches/{search_id}/exportReport"
-        response: Response = self.ms_client.http_request(
-            method="POST", url_suffix=url, json_data=body, resp_type="response", ok_codes=[202]
-        )
-
-        location_url = response.headers.get("Location")
-        if not location_url:
-            raise DemistoException("Missing Location header in exportReport response.")
-
-        return location_url
-
     def create_mail_assessment_request(self, recipient_email, expected_assessment, category, user_id, message_id):
         body = {
             "@odata.type": "#microsoft.graph.mailAssessmentRequest",
@@ -1672,100 +1620,6 @@ def get_last_estimate_statistics_operation_command(client: MsGraphClient, args):
     )
 
 
-def start_export_ediscovery_report_command(client, args):
-    """
-    Starts an eDiscovery export report and returns the operation URL for polling.
-
-    Args:
-        client: The client instance.
-        args (dict): Command arguments containing:
-            - case_id (str): eDiscovery case ID (required)
-            - search_id (str): eDiscovery search ID (required)
-            - export_criteria (str): Items to include in the export (required)
-            - additional_options (list): Additional export options (required)
-            - display_name (str, optional)
-            - description (str, optional)
-            - export_location (str, optional)
-            - cloud_attachment_version (str, optional)
-            - document_version (str, optional)
-
-    Returns:
-        CommandResults: Contains human-readable output and operation URL in context.
-    """
-    case_id = args.get("case_id")
-    search_id = args.get("search_id")
-    export_criteria = args.get("export_criteria")
-    additional_options = args.get("additional_options")
-
-    # Call the client method to start export
-    operation_url = client.start_export_ediscovery_search_report(
-        case_id=case_id,
-        search_id=search_id,
-        export_criteria=export_criteria,
-        additional_options=additional_options,
-        display_name=args.get("display_name"),
-        description=args.get("description"),
-        export_location=args.get("export_location"),
-        cloud_attachment_version=args.get("cloud_attachment_version"),
-        document_version=args.get("document_version"),
-    )
-
-    readable_output = f"Export report started for case {case_id}, search {search_id}.\nOperation URL: {operation_url}"
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs={"CaseID": case_id, "SearchID": search_id, "OperationURL": operation_url},
-        outputs_prefix="MsGraph.eDiscovery.ExportReport",
-    )
-
-
-def get_ediscovery_report_command(client, args):
-    """
-    Checks the status of an existing eDiscovery export report and downloads it if ready.
-
-    Args:
-        client: The client instance.
-        args (dict): Command arguments containing:
-            - operation_url (str): The Location URL returned by a previous export command.
-
-    Returns:
-        CommandResults or fileResult:
-            - fileResult if the report is ready.
-            - CommandResults with status message if not ready.
-    """
-    operation_url = args.get("operation_url")
-
-    # Poll the operation
-    result = client.ms_client.http_request(method="GET", full_url=operation_url)
-    status = result.get("status", "unknown")
-    file_metadata = result.get("exportFileMetadata")
-
-    if file_metadata:
-        # Handle first file only; can extend to multiple files if needed
-        file_info = file_metadata[0]
-        download_url = file_info.get("downloadUrl")
-        file_name = file_info.get("fileName")
-
-        if download_url and file_name:
-            file_data = client.ms_client.http_request(
-                method="GET", full_url=download_url, resp_type="content"
-            )
-            return fileResult(filename=file_name, data=file_data)
-
-    # Report is not ready yet
-    readable_output = f"Export report status: {status}. The report is not ready yet. Please run again later."
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs={
-            "OperationURL": operation_url,
-            "Status": status,
-        },
-        outputs_prefix="MsGraph.eDiscovery.ExportReport",
-        raw_response=result,
-    )
-
-
 def create_ediscovery_search_command(client: MsGraphClient, args):
     resp = client.create_ediscovery_search(
         args.get("case_id"),
@@ -2326,7 +2180,6 @@ def main():
         "msg-purge-ediscovery-data": purge_ediscovery_data_command,
         "msg-run-estimate-statistics": run_estimate_statistics_command,
         "msg-get-last-estimate-statistics-operation": get_last_estimate_statistics_operation_command,
-        "msg-start-ediscovery-report": start_export_ediscovery_report_command,
         "msg-advanced-hunting": advanced_hunting_command,
         "msg-list-security-incident": get_list_security_incident_command,
         "msg-update-security-incident": update_incident_command,
@@ -2380,8 +2233,6 @@ def main():
             return_results(create_url_assessment_request_command(args, client))
         elif command == "msg-list-threat-assessment-requests":
             return_results(list_threat_assessment_requests_command(client, args))
-        elif command == "msg-get-ediscovery-report":
-            return_results(get_ediscovery_report_command(client, args))
         elif command == "ms-graph-security-auth-reset":
             return_results(reset_auth())
         elif demisto.command() == "msg-generate-login-url":

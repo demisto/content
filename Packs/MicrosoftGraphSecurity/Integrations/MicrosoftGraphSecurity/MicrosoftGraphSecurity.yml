@@ -1602,7 +1602,7 @@ script:
       isArray: false
       name: search_id
       required: true
-    - description: "Bitwise options that specify the statistics to generate. The possible values are: includeRefiners, includeQueryStats, includeUnindexedStats, advancedIndexing, locationsWithoutHits, unknownFutureValue. The advancedIndexing and locationsWithoutHits values are only considered if includeUnindexedStats is set."
+    - description: "Bitwise options that specify the statistics to generate. The possible values are: includeRefiners, includeQueryStats, includeUnindexedStats, advancedIndexing, locationsWithoutHits. The advancedIndexing and locationsWithoutHits values are only considered if includeUnindexedStats is set."
       isArray: false
       name: statistics_options
       required: false
@@ -1613,7 +1613,6 @@ script:
         - 'includeUnindexedStats'
         - 'advancedIndexing'
         - 'locationsWithoutHits'
-        - 'unknownFutureValue'
     description: Starts an eDiscovery estimate statistics operation in Microsoft Purview. The operation calculates the size and number of items matching the search query.
     execution: false
     name: msg-run-estimate-statistics
@@ -1694,97 +1693,6 @@ script:
     description:  Retrieves the most recent eDiscovery estimate statistics operation for a given search in Microsoft Purview. Use this command after running 'msg-run-estimate-statistics' to check the results.
     execution: false
     name: msg-get-last-estimate-statistics-operation
-  - arguments:
-      - description: The unique ID of the eDiscovery case.
-        isArray: false
-        name: case_id
-        required: true
-      - description: The unique ID of the eDiscovery search.
-        isArray: false
-        name: search_id
-        required: true
-      - description: Items to include in the export (e.g., "searchHits", "partiallyIndexed").
-        isArray: false
-        name: export_criteria
-        required: true
-        auto: PREDEFINED
-        predefined:
-          - searchHits
-          - partiallyIndexed
-      - description: Comma-separated list of additional options (e.g., "cloudAttachments,allDocumentVersions"). The advancedIndexing value is only available if exportCriteria includes partiallyIndexed.
-        isArray: false
-        name: additional_options
-        required: true
-        auto: PREDEFINED
-        predefined:
-          - none
-          - teamsAndYammerConversations
-          - cloudAttachments
-          - allDocumentVersions
-          - subfolderContents
-          - listAttachments
-          - htmlTranscripts
-          - advancedIndexing
-          - allItemsInFolder
-      - description: Optional display name for the export report.
-        isArray: false
-        name: display_name
-        required: false
-      - description: Optional description for the export report.
-        isArray: false
-        name: description
-        required: false
-      - description: Optional export location for partially indexed items. The nonresponsiveLocations value is only available if exportCriteria includes partiallyIndexed.
-        isArray: false
-        name: export_location
-        required: false
-        auto: PREDEFINED
-        predefined:
-          - responsiveLocations
-          - nonresponsiveLocations
-      - description: Optional cloud attachment version.
-        isArray: false
-        name: cloud_attachment_version
-        required: false
-        auto: PREDEFINED
-        defaultValue: latest
-        predefined:
-          - latest
-          - recent10
-          - recent100
-          - all
-      - description: Optional document version.
-        isArray: false
-        name: document_version
-        required: false
-    outputs:
-      - contextPath: MsGraph.eDiscovery.ExportReport.CaseID
-        description: The eDiscovery case ID.
-        type: String
-      - contextPath: MsGraph.eDiscovery.ExportReport.SearchID
-        description: The eDiscovery search ID.
-        type: String
-      - contextPath: MsGraph.eDiscovery.ExportReport.OperationURL
-        description: The operation URL to poll export status.
-        type: String
-    description: Starts an eDiscovery export report for a given case and search in Microsoft Purview and returns the operation URL for polling. Use the operation URL with 'msg-get-ediscovery-report' to check the status or download the report once ready.
-    execution: false
-    name: msg-start-ediscovery-report
-  - arguments:
-      - name: operation_url
-        description: The Location URL returned by a previous eDiscovery export command.
-        required: true
-        isArray: false
-    outputs:
-      - contextPath: MsGraph.eDiscovery.ExportReport.OperationURL
-        description: The operation URL used to check the export status.
-        type: String
-      - contextPath: MsGraph.eDiscovery.ExportReport.Status
-        description: The current status of the export operation (e.g., notStarted, running, succeeded, failed).
-        type: String
-    description: Checks the status of an existing eDiscovery export report and downloads it if ready. Use this command repeatedly until the report is completed.
-    execution: false
-    name: msg-get-ediscovery-report
   - arguments:
     - description: The ID of the eDiscovery case.
       isArray: false
