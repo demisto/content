@@ -2033,7 +2033,7 @@ class TestFetch:
 
         last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
         set_last_run_per_type(
-            last_run_object, index=LastRunIndex.DETECTIONS, data={"time": "2020-09-04T09:16:10.000000Z", "offset": 2}
+            last_run_object, index=LastRunIndex.DETECTIONS, data={"time": "2020-09-04T09:16:11.000000Z", "offset": 2}
         )
 
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
@@ -2041,7 +2041,7 @@ class TestFetch:
         requests_mock.get(
             f"{SERVER_URL}/alerts/queries/alerts/v2",
             json={"resources": [
-                {"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
+                {"composite_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
             ]},
         )
 
@@ -2049,7 +2049,7 @@ class TestFetch:
         requests_mock.post(
             f"{SERVER_URL}/alerts/entities/alerts/v2",
             json={"resources": [
-                {"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
+                {"composite_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "created_timestamp": "2020-09-04T09:16:11Z"}
             ]},
         )
 
@@ -2057,7 +2057,7 @@ class TestFetch:
         assert demisto.setLastRun.mock_calls[0][1][0][LastRunIndex.DETECTIONS] == {
             "time": "2020-09-04T09:16:11.000000Z",
             "limit": 2,
-            "offset": 0,
+            "offset": 3,
             "found_incident_ids": {"Detection ID: ldt:1": 1599210970},
         }
 
