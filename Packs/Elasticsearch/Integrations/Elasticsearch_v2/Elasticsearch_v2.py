@@ -87,7 +87,7 @@ def get_value_by_dot_notation(dictionary, key):
     Returns:
         The value corresponding to the key if found, otherwise None.
     """
-    value = dictionary
+    value = dictionary  # _source
     demisto.debug("Trying to get value by dot notation")
     for k in key.split("."):
         if isinstance(value, dict):
@@ -750,7 +750,7 @@ def results_to_incidents_datetime(response, last_fetch):
     for hit in response.get("hits", {}).get("hits"):
         source = hit.get("_source")
         if source is not None:
-            time_field_value = get_value_by_dot_notation(source, str(TIME_FIELD))
+            time_field_value = get_value_by_dot_notation(source, str(TIME_FIELD)) # "2025-10-09T01:55:42.021+0200"
             if time_field_value is not None:
                 hit_date = parse(str(time_field_value))
                 hit_timestamp = int(hit_date.timestamp() * 1000)
@@ -776,6 +776,10 @@ def results_to_incidents_datetime(response, last_fetch):
                         inc["labels"] = incident_label_maker(hit.get("_source"))
 
                     incidents.append(inc)
+                else:
+                    demisto.debug(
+                        f"skipping hit ID: {hit.get('_id')} since {hit_timestamp=} is holder than the {current_fetch=}"
+                    )
 
     return incidents, last_fetch.isoformat()  # type:ignore[union-attr]
 
