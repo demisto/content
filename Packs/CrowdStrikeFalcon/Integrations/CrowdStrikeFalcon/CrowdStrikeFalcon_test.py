@@ -2087,7 +2087,7 @@ class TestFetch:
 
         # mock the total number of detections to be 4, so offset will be set
         requests_mock.get(
-            f"{SERVER_URL}/detects/queries/detects/v1",
+            f"{SERVER_URL}/alerts/queries/alerts/v2",
             json={"resources": ["ldt:1", "ldt:2"], "meta": {"pagination": {"total": 4}}},
         )
 
@@ -2099,7 +2099,7 @@ class TestFetch:
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(
-            f"{SERVER_URL}/detects/entities/summaries/GET/v1",
+            f"{SERVER_URL}/alerts/entities/alerts/v2",
             json={
                 "resources": [
                     {
@@ -2122,7 +2122,7 @@ class TestFetch:
         assert demisto.setLastRun.mock_calls[0][1][0][LastRunIndex.DETECTIONS] == expected_last_run
 
         requests_mock.get(
-            f"{SERVER_URL}/detects/queries/detects/v1",
+            f"{SERVER_URL}/alerts/queries/alerts/v2",
             json={"resources": ["ldt:3", "ldt:4"], "meta": {"pagination": {"total": 4}}},
         )
 
@@ -2132,7 +2132,7 @@ class TestFetch:
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
 
         requests_mock.post(
-            f"{SERVER_URL}/detects/entities/summaries/GET/v1",
+            f"{SERVER_URL}/alerts/entities/alerts/v2",
             json={
                 "resources": [
                     {
@@ -2267,11 +2267,11 @@ class TestFetch:
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
 
         requests_mock.get(
-            f"{SERVER_URL}/incidents/queries/incidents/v1",
+            f"{SERVER_URL}/alerts/queries/alerts/v2",
             json={"resources": ["ldt:1", "ldt:2"], "meta": {"pagination": {"total": 2}}},
         )
         requests_mock.post(
-            f"{SERVER_URL}/incidents/entities/incidents/GET/v1",
+            f"{SERVER_URL}/alerts/entities/alerts/v2",
             json={
                 "resources": [
                     {"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z"},
@@ -2279,9 +2279,9 @@ class TestFetch:
                 ]
             },
         )
-        requests_mock.get(f"{SERVER_URL}/alerts/queries/alerts/v1", json={"resources": ["a:ind:1", "a:ind:2"]})
+        requests_mock.get(f"{SERVER_URL}/alerts/queries/alerts/v2", json={"resources": ["a:ind:1", "a:ind:2"]})
         requests_mock.post(
-            f"{SERVER_URL}/alerts/entities/alerts/v1",
+            f"{SERVER_URL}/alerts/entities/alerts/v2",
             json={
                 "resources": [
                     {
@@ -2429,7 +2429,7 @@ class TestIncidentFetch:
 
         # mock the total number of detections to be 4, so offset will be set
         requests_mock.get(
-            f"{SERVER_URL}/incidents/queries/incidents/v1",
+            f"{SERVER_URL}/alerts/queries/alerts/v2",
             json={"resources": ["ldt:1", "ldt:2"], "pagination": {"meta": {"total": 4}}},
         )
         last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
@@ -2437,14 +2437,19 @@ class TestIncidentFetch:
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(
-            f"{SERVER_URL}/incidents/entities/incidents/GET/v1",
+            f"{SERVER_URL}/alerts/entities/alerts/v2",
             json={
-                "resources": [{"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "max_severity_displayname": "Low"}],
+                "resources": [{
+                    "incident_id": "ldt:1",
+                    "start": "2020-09-04T09:16:11Z",
+                    "created_timestamp": "2020-09-04T09:16:11Z",
+                    "max_severity_displayname": "Low"
+                }],
             },
         )
 
         fetch_items()
-        # the offset should be increased to 2, and the time should be stay the same
+        # the offset should be increased to 2, and the time should stay the same
         expected_last_run = {
             "time": "2020-09-04T09:16:10Z",
             "limit": 2,
@@ -2464,7 +2469,7 @@ class TestIncidentFetch:
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
 
         requests_mock.post(
-            f"{SERVER_URL}/incidents/entities/incidents/GET/v1",
+            f"{SERVER_URL}/alerts/entities/alerts/v2",
             json={
                 "resources": [{"incident_id": "ldt:2", "start": "2020-09-04T09:16:13Z", "max_severity_displayname": "Low"}],
             },
@@ -4258,7 +4263,6 @@ def test_find_incident_type():
     from CrowdStrikeFalcon import IncidentType, find_incident_type
 
     assert find_incident_type(input_data.remote_incident_id) == IncidentType.INCIDENT
-    assert find_incident_type(input_data.remote_incident_id) == IncidentType.LEGACY_ENDPOINT_DETECTION
     assert find_incident_type(input_data.remote_ngsiem_detection_id) == IncidentType.NGSIEM
     assert find_incident_type(input_data.remote_third_party_detection_id) == IncidentType.THIRD_PARTY
     assert find_incident_type("") is None
@@ -4317,7 +4321,6 @@ def test_get_remote_detection_data(mocker):
         "device.hostname": "FALCON-CROWDSTR",
         "incident_type": "detection",
         "detection_id": "ldt:15dbb9d8f06b89fe9f61eb46e829d986:528715079668",
-        "behaviors.display_name": "SampleTemplateDetection",
     }
 
 

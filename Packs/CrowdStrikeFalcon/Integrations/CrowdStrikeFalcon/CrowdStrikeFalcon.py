@@ -2600,11 +2600,11 @@ def get_remote_detection_data(remote_incident_id: str):
     mirrored_data_list = get_detections_entities([remote_incident_id]).get("resources", [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
     # severity key name is different in the raptor version
-    severity = mirrored_data.get("severity_name")
+    severity = mirrored_data.get("max_severity_displayname")
     mirrored_data["severity"] = severity_string_to_int(severity)
     demisto.debug(f"In get_remote_detection_data {remote_incident_id=} {mirrored_data=}")
 
-    incoming_args = CS_FALCON_DETECTION_INCOMING_ARGS
+    incoming_args = CS_FALCON_INCIDENT_INCOMING_ARGS
     updated_object: dict[str, Any] = {"incident_type": "detection"}
     set_updated_object(updated_object, mirrored_data, incoming_args)
     demisto.debug(f"After set_updated_object {updated_object=}")
