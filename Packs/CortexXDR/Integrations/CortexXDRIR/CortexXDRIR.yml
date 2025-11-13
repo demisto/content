@@ -3729,6 +3729,9 @@ script:
     name: xdr-list-risky-hosts
     description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
     outputs:
+    - contextPath: PaloAltoNetworksXDR.RiskyHost.subtype
+      description: the subtype of the risky host.
+      type: String
     - contextPath: PaloAltoNetworksXDR.RiskyHost.type
       description: Form of identification element.
       type: String
