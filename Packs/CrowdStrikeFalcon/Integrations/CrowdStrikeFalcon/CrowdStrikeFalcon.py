@@ -2180,19 +2180,6 @@ def behavior_to_entry_context(behavior):
     return raw_entry
 
 
-def get_username_uuid(username: str):
-    """
-    Obtain CrowdStrike user’s UUId by email.
-    :param username: Username to get UUID of.
-    :return: The user UUID
-    """
-    response = http_request("GET", "/user-management/queries/users/v1", params={"uid": username})
-    resources: list = response.get("resources", [])
-    if not resources:
-        raise ValueError(f"User {username} was not found")
-    return resources[0]
-
-
 def resolve_detection(ids, status, assigned_to_uuid, username, show_in_ui, comment, tag):
     """
     Sends a resolve detection request
@@ -2631,11 +2618,11 @@ def get_remote_detection_data(remote_incident_id: str):
     mirrored_data_list = get_detections_entities([remote_incident_id]).get("resources", [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
     # severity key name is different in the raptor version
-    severity = mirrored_data.get("max_severity_displayname")
+    severity = mirrored_data.get("severity_name")
     mirrored_data["severity"] = severity_string_to_int(severity)
     demisto.debug(f"In get_remote_detection_data {remote_incident_id=} {mirrored_data=}")
 
-    incoming_args = LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS
+    incoming_args = CS_FALCON_DETECTION_INCOMING_ARGS
     updated_object: dict[str, Any] = {"incident_type": "detection"}
     set_updated_object(updated_object, mirrored_data, incoming_args)
     demisto.debug(f"After set_updated_object {updated_object=}")
@@ -2863,11 +2850,7 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
                 result = update_remote_incident(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f"Incident updated successfully. Result: {result}")
-            elif incident_type == IncidentType.LEGACY_ENDPOINT_DETECTION:
-                demisto.debug(
-                    f"Skipping legacy endpoint detection {remote_incident_id} – legacy mirroring is no longer supported."
-                )
-            elif incident_type == IncidentType.ON_DEMAND:
+            elif incident_type in (IncidentType.ON_DEMAND, IncidentType.LEGACY_ENDPOINT_DETECTION):
                 result = update_remote_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f"Detection updated successfully. Result: {result}")

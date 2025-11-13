@@ -431,16 +431,9 @@ get_remote_detection = (
     None,
     "in_progress",
     {
-        "behaviors.objective": "Falcon Detection Method",
-        "behaviors.scenario": "suspicious_activity",
-        "behaviors.tactic": "Malware",
-        "behaviors.technique": "Malicious File",
         "device.hostname": "FALCON-CROWDSTR",
         "incident_type": "detection",
-        "severity": 2,
         "status": "in_progress",
-        "detection_id": remote_detection_id,
-        "behaviors.display_name": "SampleTemplateDetection",
     },
     [],
 )
@@ -450,16 +443,9 @@ get_remote_detection_update = (
     None,
     "reopened",
     {
-        "behaviors.objective": "Falcon Detection Method",
-        "behaviors.scenario": "suspicious_activity",
-        "behaviors.tactic": "Malware",
-        "behaviors.technique": "Malicious File",
         "device.hostname": "FALCON-CROWDSTR",
         "incident_type": "detection",
-        "severity": 2,
         "status": "reopened",
-        "detection_id": remote_detection_id,
-        "behaviors.display_name": "SampleTemplateDetection",
     },
     [{"Contents": {"dbotIncidentReopen": True}, "ContentsFormat": "json", "Type": EntryType.NOTE}],
 )
@@ -469,16 +455,9 @@ get_remote_detection_close = (
     None,
     "closed",
     {
-        "behaviors.objective": "Falcon Detection Method",
-        "behaviors.scenario": "suspicious_activity",
-        "behaviors.tactic": "Malware",
-        "behaviors.technique": "Malicious File",
         "device.hostname": "FALCON-CROWDSTR",
         "incident_type": "detection",
-        "severity": 2,
         "status": "closed",
-        "detection_id": remote_detection_id,
-        "behaviors.display_name": "SampleTemplateDetection",
     },
     [
         {
@@ -494,16 +473,10 @@ get_remote_detection_no_close = (
     None,
     "closed",
     {
-        "behaviors.objective": "Falcon Detection Method",
-        "behaviors.scenario": "suspicious_activity",
-        "behaviors.tactic": "Malware",
-        "behaviors.technique": "Malicious File",
+
         "device.hostname": "FALCON-CROWDSTR",
         "incident_type": "detection",
-        "severity": 2,
         "status": "closed",
-        "detection_id": remote_detection_id,
-        "behaviors.display_name": "SampleTemplateDetection",
     },
     [],
 )
