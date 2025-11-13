@@ -1,0 +1,838 @@
+category: Authentication & Identity Management
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: MicrosoftGraphIdentityandAccessV2
+  version: -1
+configuration:
+- section: Connect
+  defaultvalue: 597c0375-766f-4e6d-ad2a-f48117044ac5
+  display: Application ID (Client ID for Client credentials mode)
+  name: app_id
+  type: 0
+  required: false
+- section: Connect
+  display: Tenant ID (required for Client Credentials mode)
+  name: tenant_id
+  type: 0
+  required: false
+- section: Connect
+  displaypassword: Client Secret (required for Client Credentials mode)
+  name: credentials
+  type: 9
+  additionalinfo: Client Secret. Required for Client Credentials mode)
+  hiddenusername: true
+  required: false
+- section: Connect
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: creds_certificate
+  type: 9
+  displaypassword: Private Key
+  advanced: true
+  required: false
+- section: Connect
+  additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  type: 8
+  required: false
+- section: Connect
+  additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  hiddenusername: true
+  type: 9
+  required: false
+- section: Connect
+  defaultvalue: https://login.microsoftonline.com
+  display: Azure AD endpoint
+  name: azure_ad_endpoint
+  options:
+  - https://login.microsoftonline.com
+  - https://login.microsoftonline.us
+  - https://login.microsoftonline.de
+  - https://login.chinacloudapi.cn
+  type: 15
+  additionalinfo: Azure AD endpoint associated with a national cloud.
+  advanced: true
+  required: false
+- section: Connect
+  display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- section: Connect
+  additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
+  display: Use Client Credentials Authorization Flow
+  name: client_credentials
+  type: 8
+  required: false
+- section: Connect
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  advanced: true
+  required: false
+- section: Connect
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  advanced: true
+  required: false
+- section: Collect
+  name: isFetch
+  display: Fetch incidents
+  type: 8
+  required: false
+- section: Collect
+  name: first_fetch
+  display: First Fetch Time Interval
+  defaultvalue: 1 days
+  type: 0
+  additionalinfo: The time range to consider for the initial data fetch in the format <number> <unit>. For example, 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours, etc.
+  required: false
+- section: Collect
+  defaultvalue: '50'
+  display: Max Fetch Incidents Returned
+  additionalinfo: The maximum number of incidents per request from Entra ID. Default is 50.
+  name: max_fetch
+  type: 0
+  required: false
+- section: Collect
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+- section: Collect
+  display: Alerts to Fetch
+  name: alerts_to_fetch
+  defaultvalue: Risk Detections
+  type: 15
+  required: false
+  advanced: true
+  options:
+  - Risky Users
+  - Risk Detections
+  additionalinfo: Select what type of Identity alert from MSGraph you want to ingest.
+- section: Collect
+  display: Fetch query
+  name: fetch_filter_expression
+  type: 0
+  advanced: true
+  required: false
+description: Use the Entra ID Identity And Access integration to manage roles and members (formerly Azure Active Directory Identity And Access).
+display: Entra ID Identity And Access v2
+name: MicrosoftGraphIdentityandAccessV2
+script:
+  commands:
+  - description: Run this command to start the authorization process and follow the instructions in the command results.
+    name: msgraph-identity-auth-start
+  - description: "Run this command to complete the authorization process.\nShould be used after running the msgraph-identity-auth-start command."
+    name: msgraph-identity-auth-complete
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    name: msgraph-identity-auth-reset
+  - description: Tests connectivity to Microsoft.
+    name: msgraph-identity-auth-test
+  - description: Lists the roles in the directory.
+    name: msgraph-identity-directory-roles-list
+    arguments:
+    - name: limit
+      description: Maximum number of results to fetch.
+      defaultValue: 10
+    outputs:
+    - contextPath: MSGraphIdentity.Role.deletedDateTime
+      description: The time when a role was deleted. Displays only if a role was deleted.
+      type: Date
+    - contextPath: MSGraphIdentity.Role.description
+      description: The description of the directory role.
+      type: String
+    - contextPath: MSGraphIdentity.Role.displayName
+      description: The display name of the directory role.
+      type: String
+    - contextPath: MSGraphIdentity.Role.id
+      description: The unique identifier of the directory role.
+      type: String
+    - contextPath: MSGraphIdentity.Role.roleTemplateId
+      description: The ID of the directory role template on which the role is based.
+      type: String
+  - description: Activates a role by its template ID.
+    name: msgraph-identity-directory-role-activate
+    arguments:
+    - name: role_template_id
+      description: ID of the role template to activate. Can be retrieved using the msgraph-identity-directory-roles-list command.
+      required: true
+    outputs:
+    - contextPath: MSGraphIdentity.Role.deletedDateTime
+      description: The time when the role was deleted. Displays only if the role was deleted.
+      type: Date
+    - contextPath: MSGraphIdentity.Role.description
+      description: The description of the directory role.
+      type: String
+    - contextPath: MSGraphIdentity.Role.displayName
+      description: The display name of the directory role.
+      type: String
+    - contextPath: MSGraphIdentity.Role.id
+      description: The unique identifier of the directory role.
+      type: String
+    - contextPath: MSGraphIdentity.Role.roleTemplateId
+      description: The ID of the directory role template on which this role is based.
+      type: String
+  - description: Gets all members in a role ID.
+    name: msgraph-identity-directory-role-members-list
+    arguments:
+    - name: role_id
+      description: The ID of the application for which to get its role members list. Can be retrieved using the msgraph-identity-directory-roles-list command.
+      required: true
+    - name: limit
+      description: The maximum number of members to fetch.
+      defaultValue: 10
+    outputs:
+    - contextPath: MSGraphIdentity.RoleMember.user_id
+      description: The unique identifier of the user in the role.
+      type: String
+    - contextPath: MSGraphIdentity.RoleMember.role_id
+      description: The unique identifier of the role specified in the input.
+      type: String
+  - description: Adds a user to a role.
+    name: msgraph-identity-directory-role-member-add
+    arguments:
+    - name: role_id
+      description: The ID of the role to add the user to. Can be retrieved using the msgraph-identity-directory-roles-list command.
+      required: true
+    - name: user_id
+      description: The ID of the user to add to the role. Can be retrieved using the msgraph-identity-directory-role-members-list command.
+      required: true
+  - description: Removes a user from a role.
+    name: msgraph-identity-directory-role-member-remove
+    arguments:
+    - name: role_id
+      description: ID of the role from which to remove the user. Can be retrieved using the msgraph-identity-directory-roles-list command.
+      required: true
+    - name: user_id
+      description: ID of the user to remove from the role. Can be retrieved using the msgraph-identity-directory-role-members-list command.
+      required: true
+  - description: Retrieve an ip named location by id.
+    name: msgraph-identity-ip-named-locations-get
+    arguments:
+    - name: ip_id
+      description: The id of the named ip location to get from the api.
+      required: true
+    outputs:
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_created
+      description: The time when an ip named location was created.
+      type: Date
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_modified
+      description: The time when an ip named location was updated.
+      type: Date
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.display_name
+      description: The display name of the ip named location.
+      type: String
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.id
+      description: The unique identifier of the ip named location.
+      type: String
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.is_trusted
+      description: Abollean that taled if the ip named location is a trusted source.
+      type: String
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_ranges
+      description: List of ip ranges for the ip named location.
+      type: Array
+  - description: Retrieve all ip named locations.
+    name: msgraph-identity-ip-named-locations-list
+    arguments:
+    - name: limit
+      description: The limit for results we get from the api.
+    - name: page
+      description: The page to get the data from.
+    - name: odata_query
+      description: An odata query to send to the api.
+    outputs:
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_named_locations
+      description: List of ip named locations.
+      type: Array
+  - description: Delete an ip named location by id.
+    name: msgraph-identity-ip-named-locations-delete
+    arguments:
+    - name: ip_id
+      description: The id of the named ip location to get from the api.
+      required: true
+  - description: Create an ip named location.
+    name: msgraph-identity-ip-named-locations-create
+    arguments:
+    - name: ips
+      description: A list of IP addresses to add to the named location, should be a string with the addresses separated by the delimiter ','.
+    - name: is_trusted
+      description: Boolean that indicates if the ip can be trusted.
+    - name: display_name
+      description: The disply name for the named ip location.
+    outputs:
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_created
+      description: The time when an ip named location was created.
+      type: Date
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_modified
+      description: The time when an ip named location was updated.
+      type: Date
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.display_name
+      description: The display name of the ip named location.
+      type: String
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.id
+      description: The unique identifier of the ip named location.
+      type: String
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.is_trusted
+      description: Abollean that taled if the ip named location is a trusted source.
+      type: String
+    - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_ranges
+      description: List of ip ranges for the ip named location.
+      type: Array
+  - description: update an ip named location by id.
+    name: msgraph-identity-ip-named-locations-update
+    arguments:
+    - name: ip_id
+      description: The id of the named ip location to get from the api.
+      required: true
+    - name: ips
+      description: A list of ip addresses to ad to the named location, it should be a string with the addresses separated by the delimiter ','.
+    - name: is_trusted
+      description: Boolean that indicates if the ip can be trusted.
+    - name: display_name
+      description: The disply name for the named ip location.
+  - description: Retrieve all the detected risks.
+    name: msgraph-identity-protection-risks-list
+    arguments:
+    - name: limit
+      description: The limit for results we get from the api.
+    - name: odata_query
+      description: An odata query to send to the api.
+    outputs:
+    - contextPath: MSGraph.identityProtection.risks.additionalInfo
+      description: dentityProtection.risks.additionalInfo
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.userPrincipalName
+      description: Risky user principal name.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.userDisplayName
+      description: Risky user display name.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.userId
+      description: Unique ID of the user.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.lastUpdatedDateTime
+      description: Date and time that the risk detection was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.detectedDateTime
+      description: Date and time that the risk was detected. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.activityDateTime
+      description: Date and time that the risky activity occurred. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.location.state
+      description: State of the sign-in.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.location.geoCoordinates.longitude
+      description: Longitude of the sign-in.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.location.geoCoordinates.latitude
+      description: Latitude of the sign-in.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.location.countryOrRegion
+      description: Country or region of the sign-in.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.location.city
+      description: City of the sign-in.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.ipAddress
+      description: Provides the IP address of the client from where the risk occurred.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.tokenIssuerType
+      description: Indicates the type of token issuer for the detected sign-in risk. The possible values are AzureAD, ADFederationServices, and unknownFutureValue.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.activity
+      description: Indicates the activity type the detected risk is linked to. The possible values are signin, user, and unknownFutureValue.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.detectionTimingType
+      description: Timing of the detected risk (real-time/offline). The possible values are notDefined, realtime, nearRealtime, offline, and unknownFutureValue.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.source
+      description: Source of the risk detection. For example, activeDirectory.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.riskDetail
+      description: Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.riskstate
+      description: State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.riskLevel
+      description: Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.riskType
+      description: Deprecated. Use riskEventType instead. List of risk event types.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.riskEventType
+      description: The type of risk event detected. The possible values are unlikelyTravel, anonymizedIPAddress, maliciousIPAddress, unfamiliarFeatures, malwareInfectedIPAddress, suspiciousIPAddress, leakedCredentials, investigationsThreatIntelligence, generic,adminConfirmedUserCompromised, mcasImpossibleTravel, mcasSuspiciousInboxManipulationRules, investigationsThreatIntelligenceSigninLinked, maliciousIPAddressValidCredentialsBlockedIP, and unknownFutureValue.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.correlationId
+      description: Correlation ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.requestId
+      description: The ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in.
+      type: string
+    - contextPath: MSGraph.identityProtection.risks.id
+      description: Unique ID of the risk detection.
+      type: string
+  - description: Retrieve the risky users in active directory.
+    name: msgraph-identity-protection-risky-user-list
+    arguments:
+    - name: limit
+      description: The limit for results we get from the api.
+    - name: odata_query
+      description: An odata query to send to the api.
+    outputs:
+    - contextPath: MSGraph.identityProtection.risky-users.userPrincipalName
+      description: Risky user principal name.
+      type: string
+    - contextPath: MSGraph.identityProtection.risky-users.userDisplayName
+      description: Risky user display name.
+      type: string
+    - contextPath: MSGraph.identityProtection.risky-users.riskDetail
+      description: Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue.
+      type: string
+    - contextPath: MSGraph.identityProtection.risky-users.riskstate
+      description: State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue.
+      type: string
+    - contextPath: MSGraph.identityProtection.risky-users.riskLevel
+      description: Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue.
+      type: string
+    - contextPath: MSGraph.identityProtection.risky-users.riskLastUpdatedDateTime
+      description: The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
+      type: DateTime
+    - contextPath: MSGraph.identityProtection.risky-users.isProcessing
+      description: Indicates whether a user's risky state is being processed by the backend.
+      type: Boolean
+    - contextPath: MSGraph.identityProtection.risky-users.isDeleted
+      description: Indicates whether a user is delted.
+      type: Boolean
+    - contextPath: MSGraph.identityProtection.risky-users.id
+      description: Unique ID of the risky user.
+      type: string
+  - description: Retrieve the risky users history in active directory.
+    name: msgraph-identity-protection-risky-user-history-list
+    arguments:
+    - name: limit
+      description: The limit for results we get from the api.
+    - name: odata_query
+      description: An odata query to send to the api.
+    - name: user_id
+      description: The id of the user to get the history for.
+      required: true
+    outputs:
+    - contextPath: MSGraph.identityProtection.RiskyUserHistory.userPrincipalName
+      description: Risky user principal name.
+      type: string
+    - contextPath: MSGraph.identityProtection.RiskyUserHistory.userDisplayName
+      description: Risky user display name.
+      type: string
+    - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskDetail
+      description: Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue.
+      type: string
+    - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskstate
+      description: State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue.
+      type: string
+    - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskLevel
+      description: Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue.
+      type: string
+    - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskLastUpdatedDateTime
+      description: The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
+      type: DateTime
+    - contextPath: MSGraph.identityProtection.RiskyUserHistory.isProcessing
+      description: Indicates whether a user's risky state is being processed by the backend.
+      type: Boolean
+    - contextPath: MSGraph.identityProtection.RiskyUserHistory.isDeleted
+      description: Indicates whether the user is deleted.
+      type: Boolean
+    - contextPath: MSGraph.identityProtection.RiskyUserHistory.id
+      description: Unique ID of the risky user.
+      type: string
+  - description: Delete an ip named location by id.
+    name: msgraph-identity-protection-risky-user-confirm-compromised
+    arguments:
+    - name: user_ids
+      description: The ids of the users to compromise seperated be commas.
+      required: true
+    compliantpolicies:
+    - User Hard Remediation
+  - description: Delete an ip named location by id.
+    name: msgraph-identity-protection-risky-user-dismiss
+    arguments:
+    - name: user_ids
+      description: The ids of the users to dismiss seperated be commas.
+      required: true
+    compliantpolicies:
+    - User Soft Remediation
+  - description: Retrieve one or all Conditional Access policies from Microsoft Graph API.
+    name: msgraph-identity-ca-policies-list
+    arguments:
+    - name: policy_id
+      description: The ID of the Conditional Access policy to retrieve. If not provided, all policies will be returned.
+    - name: filter
+      description: The OData filter query to retrieve specific Conditional Access policies.
+    - name: limit
+      description: The maximum number of Conditional Access policies to return. Applicable only when all_results is set to false.
+    - name: all_results
+      description: Whether to retrieve all results without applying the 'limit'. Default value is true.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.id
+      description: The unique ID of the Conditional Access policy.
+      type: string
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.displayName
+      description: The display name of the Conditional Access policy.
+      type: string
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.createdDateTime
+      description: The date and time the policy was created.
+      type: date
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.modifiedDateTime
+      description: The date and time the policy was last modified.
+      type: date
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.state
+      description: The state of the policy (enabled/disabled).
+      type: string
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.signInRiskLevels
+      description: List of sign-in risk levels this policy applies to.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.clientAppTypes
+      description: Client application types this policy targets.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeApplications
+      description: List of applications included in the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.excludeApplications
+      description: List of applications excluded from the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeUserActions
+      description: User actions included in the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeUsers
+      description: User IDs included in the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeUsers
+      description: User IDs excluded from the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeGroups
+      description: Group IDs included in the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeGroups
+      description: Group IDs excluded from the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeRoles
+      description: Role IDs included in the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeRoles
+      description: Role IDs excluded from the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.includePlatforms
+      description: Platforms included in the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.excludePlatforms
+      description: Platforms excluded from the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.includeLocations
+      description: Location IDs included in the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.excludeLocations
+      description: Location IDs excluded from the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.grantControls.operator
+      description: Logical operator used in the grant controls (e.g., AND, OR).
+      type: string
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.grantControls.builtInControls
+      description: List of built-in access controls (e.g., MFA, compliant device).
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.grantControls.customAuthenticationFactors
+      description: Custom authentication factors used in the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.grantControls.termsOfUse
+      description: List of Terms of Use policy IDs applied.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.cloudAppSecurityType
+      description: The type of cloud app security control.
+      type: string
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.isEnabled
+      description: Whether cloud app security is enabled.
+      type: boolean
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.value
+      description: Sign-in frequency value.
+      type: number
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.type
+      description: Unit of the sign-in frequency (e.g., hours, days).
+      type: string
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.isEnabled
+      description: Whether sign-in frequency control is enabled.
+      type: boolean
+  - description: Delete specific Conditional Access policy by ID.
+    name: msgraph-identity-ca-policy-delete
+    arguments:
+    - name: policy_id
+      description: The ID of the Conditional Access policy to delete.
+      required: true
+  - description: Creates a Conditional Access policy.
+    name: msgraph-identity-ca-policy-create
+    arguments:
+    - name: policy
+      description: "JSON object containing the policy details. Ensure a valid policy object is passed. \n"
+    - name: policy_name
+      description: The name of the Conditional Access policy to be created. Required if policy argument not present.
+    - name: state
+      description: "The state of the policy.\nRequired if policy argument not present.\n"
+      auto: PREDEFINED
+      predefined:
+      - enabled
+      - disabled
+    - name: sign_in_risk_levels
+      description: "List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `none`.\nRequired if policy argument not present.\n"
+      isArray: true
+    - name: user_risk_levels
+      description: "List of user risk levels for the policy. Options: `low`, `medium`, `high`.\nRequired if policy argument not present.\n"
+      isArray: true
+    - name: client_app_types
+      description: "List of types of client apps to be included in the policy. Options: `all`, `browser`, `mobileAppsAndDesktopClients`, `exchangeActiveSync`, `easSupported`, `other`.\nRequired if policy argument not present.\n"
+      isArray: true
+    - name: include_applications
+      description: "List of application IDs to be included in the policy. If no applications are defined, `includeApplications: 'none'` will be used.\n"
+      isArray: true
+    - name: exclude_applications
+      description: "List of application IDs to be excluded from the policy.\n"
+      isArray: true
+    - name: include_user_actions
+      description: "List of user actions to be included in the policy.\n"
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - vrn:user:registersecurityinfo
+      - urn:user:registerdevice
+    - name: include_users
+      description: "List of user IDs to be included in the policy. Options: None, All, GuestsOrExternalUsers.\n"
+      isArray: true
+    - name: exclude_users
+      description: "List of user IDs to be excluded from the policy.\n"
+      isArray: true
+    - name: include_groups
+      description: "List of group IDs to be included in the policy.\n"
+      isArray: true
+    - name: exclude_groups
+      description: "List of group IDs to be excluded from the policy.\n"
+      isArray: true
+    - name: include_roles
+      description: "List of role IDs to be included in the policy.\n"
+      isArray: true
+    - name: exclude_roles
+      description: "List of role IDs to be excluded from the policy.\n"
+      isArray: true
+    - name: include_platforms
+      description: "List of platforms to be included in the policy. Options: `Android`, `iOS`, `Windows`, `windowsPhone`, `macOS`, `Linux`, `all`.\n"
+      isArray: true
+    - name: exclude_platforms
+      description: "List of platforms to be excluded from the policy.\n"
+      isArray: true
+    - name: include_locations
+      description: "List of location IDs to be included in the policy. Options: `All`, `AllTrusted`, or a list of specific location IDs.\n"
+      isArray: true
+    - name: exclude_locations
+      description: "List of location IDs to be excluded from the policy.\n"
+      isArray: true
+    - name: grant_control_operator
+      description: "The operator for grant control.\nDefault value is 'AND'."
+      defaultValue: AND
+      auto: PREDEFINED
+      predefined:
+      - AND
+      - OR
+    - name: grant_control_enforcement
+      description: "List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.\nDefault value is 'mfa'\nSpecial considerations when using `passwordChange`: \n- `passwordChange` must be accompanied by `mfa` using an `AND` operator.\n- `passwordChange` must be used with `userRiskLevels`.\n- The policy should target all applications and not exclude any.\n"
+      isArray: true
+      defaultValue: mfa
+    outputs:
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.id
+      description: The unique ID of the Conditional Access policy.
+      type: string
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.displayName
+      description: The display name of the Conditional Access policy.
+      type: string
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.createdDateTime
+      description: The date and time the policy was created.
+      type: date
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.modifiedDateTime
+      description: The date and time the policy was last modified.
+      type: date
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.state
+      description: The state of the policy (enabled/disabled).
+      type: string
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.signInRiskLevels
+      description: List of sign-in risk levels this policy applies to.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.clientAppTypes
+      description: Client application types this policy targets.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeApplications
+      description: List of applications included in the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.excludeApplications
+      description: List of applications excluded from the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeUserActions
+      description: User actions included in the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeUsers
+      description: User IDs included in the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeUsers
+      description: User IDs excluded from the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeGroups
+      description: Group IDs included in the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeGroups
+      description: Group IDs excluded from the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeRoles
+      description: Role IDs included in the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeRoles
+      description: Role IDs excluded from the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.includePlatforms
+      description: Platforms included in the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.excludePlatforms
+      description: Platforms excluded from the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.includeLocations
+      description: Location IDs included in the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.excludeLocations
+      description: Location IDs excluded from the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.grantControls.operator
+      description: Logical operator used in the grant controls (e.g., AND, OR).
+      type: string
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.grantControls.builtInControls
+      description: List of built-in access controls (e.g., MFA, compliant device).
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.grantControls.customAuthenticationFactors
+      description: Custom authentication factors used in the policy.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.grantControls.termsOfUse
+      description: List of Terms of Use policy IDs applied.
+      type: list
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.cloudAppSecurityType
+      description: The type of cloud app security control.
+      type: string
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.isEnabled
+      description: Whether cloud app security is enabled.
+      type: boolean
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.value
+      description: Sign-in frequency value.
+      type: number
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.type
+      description: Unit of the sign-in frequency (e.g., hours, days).
+      type: string
+    - contextPath: MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.isEnabled
+      description: Whether sign-in frequency control is enabled.
+      type: boolean
+  - description: Updates a Conditional Access policy. By default, the command attempts to **append** values to existing list-based fields (e.g., `include_users`, `include_groups`, etc.). If a field does not support appending (i.e., it's not a list), the command **overrides** the existing value with the new one.
+    name: msgraph-identity-ca-policy-update
+    arguments:
+    - name: policy_id
+      description: The ID of the Conditional Access policy to update.
+      required: true
+    - name: policy
+      description: "JSON object containing the policy details. Ensure a valid policy object is passed. If no `policy` argument is provided,\nother required arguments like `policy_name`, `state`, etc. must be included.\n"
+    - name: policy_name
+      description: The name of the Conditional Access policy to be created.
+    - name: state
+      description: "The state of the policy.\n"
+      auto: PREDEFINED
+      predefined:
+      - enabled
+      - disabled
+    - name: sign_in_risk_levels
+      description: "List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `none`.\n"
+      isArray: true
+    - name: user_risk_levels
+      description: "List of user risk levels for the policy. Options: `low`, `medium`, `high`.\n"
+      isArray: true
+    - name: client_app_types
+      description: "Types of client apps to be included in the policy. Options: `all`, `browser`, `mobileAppsAndDesktopClients`, `exchangeActiveSync`, `easSupported`, `other`.\n"
+      isArray: true
+    - name: include_applications
+      description: "List of application IDs to be included in the policy. If no applications are defined, `includeApplications: 'none'` will be used.\n"
+      isArray: true
+    - name: exclude_applications
+      description: "List of application IDs to be excluded from the policy.\n"
+      isArray: true
+    - name: include_user_actions
+      description: "List of user actions to be included in the policy. Options: `vrn:user:registersecurityinfo`, `urn:user:registerdevice`.\n"
+      auto: PREDEFINED
+      predefined:
+      - vrn:user:registersecurityinfo
+      - urn:user:registerdevice
+      isArray: true
+    - name: include_users
+      description: "List of user IDs to be included in the policy. Options: None, All, GuestsOrExternalUsers.\n"
+      isArray: true
+    - name: exclude_users
+      description: "List of user IDs to be excluded from the policy.\n"
+      isArray: true
+    - name: include_groups
+      description: "List of group IDs to be included in the policy.\n"
+      isArray: true
+    - name: exclude_groups
+      description: "List of group IDs to be excluded from the policy.\n"
+      isArray: true
+    - name: include_roles
+      description: "List of role IDs to be included in the policy.\n"
+      isArray: true
+    - name: exclude_roles
+      description: "List of role IDs to be excluded from the policy.\n"
+      isArray: true
+    - name: include_platforms
+      description: "List of platforms to be included in the policy. Options: `Android`, `iOS`, `Windows`, `windowsPhone`, `macOS`, `Linux`, `all`.\n"
+      isArray: true
+    - name: exclude_platforms
+      description: "List of platforms to be excluded from the policy.\n"
+      isArray: true
+    - name: include_locations
+      description: "List of location IDs to be included in the policy. Options: `All`, `AllTrusted`, or a list of specific location IDs.\n"
+      isArray: true
+    - name: exclude_locations
+      description: "List of location IDs to be excluded from the policy.\n"
+      isArray: true
+    - name: grant_control_operator
+      description: "The operator for grant control.\n"
+      auto: PREDEFINED
+      predefined:
+      - AND
+      - OR
+    - name: grant_control_enforcement
+      description: "List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.\nSpecial considerations when using `passwordChange`: \n- `passwordChange` must be accompanied by `mfa` using an `AND` operator.\n- `passwordChange` must be used with `userRiskLevels`.\n- The policy should target all applications and not exclude any.\n"
+      isArray: true
+    - name: update_action
+      description: "Defines how to update fields in the policy.\n- `override` (default): Replaces existing values.\n- `append`: Adds new values to existing ones without removing them.\n"
+      auto: PREDEFINED
+      predefined:
+      - override
+      - append
+  isfetch: true
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/crypto:1.0.0.4834757
+fromversion: 5.0.0
+defaultmapperin: Microsoft Graph Identity and Access Incoming Mapper
+defaultclassifier: Microsoft Graph Identity and Access Classifier
+tests:
+- Identity & Access test playbook
