@@ -1371,9 +1371,6 @@ script:
       - contextPath: Core.TriggerPR.status
         description: Overall process status.
         type: String
-      - contextPath: Core.TriggerPR.remediationId
-        description: Unique identifier to track the remediation process.
-        type: String
       - contextPath: Core.TriggerPR.triggeredPrs.issueId
         description: The issue identifier.
         type: String
