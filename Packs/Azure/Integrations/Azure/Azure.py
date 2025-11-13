@@ -796,7 +796,7 @@ class AzureClient:
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-            f"/providers/Microsoft.DBforPostgreSQL/flexibleServers/{server_name}/configurations/{configuration_name}"
+            f"/providers/Microsoft.DBforPostgreSQL/servers/{server_name}/configurations/{configuration_name}"
         )
         params = {"api-version": POSTGRES_API_VERSION}
         data = {"properties": {"source": source, "value": value}}
