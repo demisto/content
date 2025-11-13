@@ -29,7 +29,7 @@ def mock_demisto(monkeypatch):
 @pytest.fixture
 def client(monkeypatch):
     """Create a fake Decyfir client returning mock Access Log events."""
-    c = Client(base_url="https://test.test", verify=False, proxy=False, api_key="abc123")
+    c = Client(base_url="https://test.com", verify=False, proxy=False, api_key="abc123")
     monkeypatch.setattr(
         c,
         "_http_request",
@@ -246,7 +246,7 @@ def test_access_logs_fetch_with_same_second_overlap(monkeypatch):
         "event_type": "AUTH",
     }
 
-    client = Client("https://fake.fake", verify=False, proxy=False, api_key="abc")
+    client = Client("https://test.com", verify=False, proxy=False, api_key="abc")
 
     # First _http_request returns event1
     monkeypatch.setattr(client, "_http_request", lambda **_: [first_event])
