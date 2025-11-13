@@ -5,15 +5,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1df4bce4-3a9d-4d81-812d-659ad25077ff
+    taskid: 3b3ffe8d-1fb2-46a5-8add-add99b8bb693
     type: start
     task:
-      id: 1df4bce4-3a9d-4d81-812d-659ad25077ff
+      id: 3b3ffe8d-1fb2-46a5-8add-add99b8bb693
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -21,18 +21,24 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 715,
           "y": 50
         }
       }
     note: false
     timertriggers: []
+    continueonerrortype: ""
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 668dbda2-9499-4c24-8cb5-273bbd7ddce8
+    taskid: 8fd1239b-aa15-493c-b455-cdc6fc5e1a87
     type: regular
     task:
-      id: 668dbda2-9499-4c24-8cb5-273bbd7ddce8
+      id: 8fd1239b-aa15-493c-b455-cdc6fc5e1a87
       version: -1
       name: createList
       description: commands.local.cmd.list.create
@@ -45,25 +51,31 @@ tasks:
       - "2"
     scriptarguments:
       listData:
-        simple: '{incident.name}'
+        simple: '$${test_value}'
       listName:
         simple: test_list
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 480,
+          "y": 1070
         }
       }
     note: false
     timertriggers: []
+    continueonerrortype: ""
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: db3edd95-9e7b-43fe-8cf4-31498809a1cb
+    taskid: 031ad8d6-a5d3-4cda-9bfa-d6198a202354
     type: regular
     task:
-      id: db3edd95-9e7b-43fe-8cf4-31498809a1cb
+      id: 031ad8d6-a5d3-4cda-9bfa-d6198a202354
       version: -1
       name: create email html body
       scriptName: CreateEmailHtmlBody
@@ -78,23 +90,28 @@ tasks:
         simple: foo
       listTemplate:
         simple: test_list
-      object: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 480,
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
+    continueonerrortype: ""
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: a1b3b697-ed0d-41fb-88f6-573a04370afd
+    taskid: dcc6c85d-0640-4b54-b7a0-936ebb44225c
     type: condition
     task:
-      id: a1b3b697-ed0d-41fb-88f6-573a04370afd
+      id: dcc6c85d-0640-4b54-b7a0-936ebb44225c
       version: -1
       name: Test the script
       type: condition
@@ -107,26 +124,58 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isEqualString
           left:
             value:
               simple: foo
             iscontext: true
+          right:
+            value:
+              simple: incident.name
+            iscontext: true
+    - label: condition-2
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: foo
+            iscontext: true
+          right:
+            value:
+              simple: alert.custom_status
+            iscontext: true
+    - label: condition-3
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: foo
+            iscontext: true
+          right:
+            value:
+              simple: issue.custom_status
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 480,
+          "y": 1420
         }
       }
     note: false
     timertriggers: []
+    continueonerrortype: ""
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 0dc931ac-67db-4548-8401-fa998a1aa9fa
+    taskid: a76a48da-03d3-48f5-8260-1cce286fad75
     type: regular
     task:
-      id: 0dc931ac-67db-4548-8401-fa998a1aa9fa
+      id: a76a48da-03d3-48f5-8260-1cce286fad75
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -136,53 +185,456 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "9"
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": 715,
+          "y": 210
         }
       }
     note: false
     timertriggers: []
+    continueonerrortype: ""
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: fd8cbecb-015a-4d60-8ca4-3769a2e1addc
+    taskid: 2e9f6f8f-1c1b-44f9-85d4-f14e5c1594c5
     type: title
     task:
-      id: fd8cbecb-015a-4d60-8ca4-3769a2e1addc
+      id: 2e9f6f8f-1c1b-44f9-85d4-f14e5c1594c5
       version: -1
       name: Done
-      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    continueonerrortype: ""
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c50870df-2d6f-4e00-a9a7-4652bb6d3901
+    type: regular
+    task:
+      id: c50870df-2d6f-4e00-a9a7-4652bb6d3901
+      version: -1
+      name: Set the list data in the context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: test_value
+      value:
+        simple: '{incident.name}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 49b13ec2-6b9e-47d9-b7b9-369f414bf969
+    type: regular
+    task:
+      id: 49b13ec2-6b9e-47d9-b7b9-369f414bf969
+      version: -1
+      name: Get Cortex Version
+      description: Get version and URL of current XSOAR server.
+      scriptName: GetServerInfo
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+      - "12"
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 16a762e8-a0b1-4f62-8c8a-122e5f60ca43
+    type: condition
+    task:
+      id: 16a762e8-a0b1-4f62-8c8a-122e5f60ca43
+      version: -1
+      name: Is xsoar
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ServerInfo.version.platform
+            iscontext: true
+          right:
+            value:
+              simple: xsoar
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 20e3c11b-855f-445b-9583-b1f6a072e1bc
+    type: title
+    task:
+      id: 20e3c11b-855f-445b-9583-b1f6a072e1bc
+      version: -1
+      name: XSOAR
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: e2a5a13f-05ef-493b-bfec-137a80529870
+    type: condition
+    task:
+      id: e2a5a13f-05ef-493b-bfec-137a80529870
+      version: -1
+      name: Is XSIAM
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ServerInfo.version.platform
+            iscontext: true
+          right:
+            value:
+              simple: x2
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: ffa0bf8d-1476-420e-8c3b-ff5258bb4fc3
+    type: title
+    task:
+      id: ffa0bf8d-1476-420e-8c3b-ff5258bb4fc3
+      version: -1
+      name: XSIAM
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 9aad674d-6bdb-42da-84be-64d8c9cac91c
+    type: condition
+    task:
+      id: 9aad674d-6bdb-42da-84be-64d8c9cac91c
+      version: -1
+      name: Is PLATFORM
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ServerInfo.version.platform
+            iscontext: true
+          right:
+            value:
+              simple: unified_platform
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: ad052b21-0fa1-4a85-a5a6-6d15f3dc2f5c
+    type: title
+    task:
+      id: ad052b21-0fa1-4a85-a5a6-6d15f3dc2f5c
+      version: -1
+      name: PLATFORM
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 41245174-6ed4-4e2f-8ff8-7450191e831a
+    type: regular
+    task:
+      id: 41245174-6ed4-4e2f-8ff8-7450191e831a
+      version: -1
+      name: Set the list data in the context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: test_value
+      value:
+        simple: '{alert.custom_status}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 30213014-616b-4ba5-ab5c-5f8e28684d1a
+    type: regular
+    task:
+      id: 30213014-616b-4ba5-ab5c-5f8e28684d1a
+      version: -1
+      name: Set the list data in the context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: test_value
+      value:
+        simple: '{issue.custom_status}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 41af353a-d2c9-41d1-97c3-c3c8b8b41887
+    type: title
+    task:
+      id: 41af353a-d2c9-41d1-97c3-c3c8b8b41887
+      version: -1
+      name: Done
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       type: title
       iscommand: false
       brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 910
+          "x": 1580,
+          "y": 735
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 925,
-        "width": 380,
+        "height": 1605,
+        "width": 1910,
         "x": 50,
         "y": 50
       }
@@ -191,3 +643,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''
