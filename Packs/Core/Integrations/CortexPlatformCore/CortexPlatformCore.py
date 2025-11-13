@@ -370,15 +370,12 @@ class Client(CoreClient):
         )
 
         return reply
-    
+
     def appsec_remediate_issue(self, request_body):
         return self._http_request(
             method="POST",
             data=request_body,
-            headers={
-                **self._headers,
-                'content-type': "application/json"
-            },
+            headers={**self._headers, "content-type": "application/json"},
             url_suffix="/trigger_fix_pull_request",
         )
 
@@ -752,22 +749,36 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
     return group_ids
 
 
-def appsec_remediate_issue_command(client, args):
+def appsec_remediate_issue_command(client: Client, args: dict) -> CommandResults:
+    """
+    Create automated pull requests to fix multiple security issues in a single bulk operation.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - issueIds (str): List of issue IDs to fix.
+                         - title (str): Title of the PR triggered.
+
+    Returns:
+        CommandResults: Object containing the formatted extra data,
+                        raw response, and outputs for integration context.
+    """
     args = demisto.args()
-    request_body = {
-        "issueIds": argToList(args.get("issue_ids")),
-        "title": args.get("title"),
-        "fixBranchName": args.get("fix_branch_name")
-    }
+    issue_ids = argToList(args.get("issue_ids"))
+    if len(issue_ids) > 10:
+        raise DemistoException("Please provide a maximum of 10 issue IDs per request.")
+
+    request_body = {"issueIds": issue_ids, "title": args.get("title"), "fixBranchName": None}
     request_body = remove_empty_elements(request_body)
     response = client.appsec_remediate_issue(request_body)
     return CommandResults(
         readable_output=tableToMarkdown("Remediation Results", response, headerTransform=string_to_table_header),
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Appsec.Remediation",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.TriggerPR",
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
-    
+
 
 def main():  # pragma: no cover
     """
@@ -850,7 +861,7 @@ def main():  # pragma: no cover
 
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
-            
+
         elif command == "core-appsec-remediate-issue":
             return_results(appsec_remediate_issue_command(client, args))
 

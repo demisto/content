@@ -2378,3 +2378,261 @@ def test_get_issue_recommendations_command_api_calls(mocker):
     assert call_args["table_name"] == "ALERTS_VIEW_TABLE"
     assert call_args["type"] == "grid"
     assert "filter_data" in call_args
+
+
+class TestAppsecRemediateIssueCommand:
+    """Unit tests for appsec_remediate_issue_command function."""
+
+    def test_appsec_remediate_issue_command_success(self, mocker: MockerFixture):
+        """Test successful remediation issue command execution."""
+        # Arrange
+        from CortexPlatformCore import appsec_remediate_issue_command, INTEGRATION_CONTEXT_BRAND
+        from CommonServerPython import CommandResults
+
+        mock_client = mocker.Mock()
+        mock_args = {}
+
+        mocker.patch.object(demisto, "args", return_value={"issue_ids": "issue1,issue2", "title": "Fix security vulnerabilities"})
+
+        mock_arg_to_list = mocker.patch("CortexPlatformCore.argToList")
+        mock_arg_to_list.return_value = ["issue1", "issue2"]
+
+        mock_remove_empty_elements = mocker.patch("CortexPlatformCore.remove_empty_elements")
+        mock_remove_empty_elements.return_value = {"issueIds": ["issue1", "issue2"], "title": "Fix security vulnerabilities"}
+
+        mock_response = {"status": "success", "pr_url": "https://github.com/repo/pull/123", "branch_name": "fix-security-issues"}
+
+        mock_client.appsec_remediate_issue.return_value = mock_response
+
+        mock_table_to_markdown = mocker.patch("CortexPlatformCore.tableToMarkdown")
+        mock_table_to_markdown.return_value = (
+            "| Status | PR URL |\n|--------|--------|\n| success | https://github.com/repo/pull/123 |"
+        )
+
+        mock_string_to_table_header = mocker.patch("CortexPlatformCore.string_to_table_header")
+
+        # Act
+        result = appsec_remediate_issue_command(mock_client, mock_args)
+
+        # Assert
+        assert isinstance(result, CommandResults)
+        assert result.outputs_prefix == f"{INTEGRATION_CONTEXT_BRAND}.TriggerPR"
+        assert result.outputs == mock_response
+        assert result.raw_response == mock_response
+
+        # Verify client method was called with correct parameters
+        mock_client.appsec_remediate_issue.assert_called_once_with(
+            {"issueIds": ["issue1", "issue2"], "title": "Fix security vulnerabilities"}
+        )
+
+        # Verify argToList was called with issue_ids
+        mock_arg_to_list.assert_called_once_with("issue1,issue2")
+
+        # Verify remove_empty_elements was called
+        mock_remove_empty_elements.assert_called_once_with(
+            {"issueIds": ["issue1", "issue2"], "title": "Fix security vulnerabilities", "fixBranchName": None}
+        )
+
+        # Verify tableToMarkdown was called
+        mock_table_to_markdown.assert_called_once_with(
+            "Remediation Results", mock_response, headerTransform=mock_string_to_table_header
+        )
+
+    def test_appsec_remediate_issue_command_minimal_args(self, mocker: MockerFixture):
+        """Test remediation command with minimal arguments (only issue_ids)."""
+        # Arrange
+        from CortexPlatformCore import appsec_remediate_issue_command
+        from CommonServerPython import CommandResults
+
+        mock_client = mocker.Mock()
+        mock_args = {}
+
+        mocker.patch.object(demisto, "args", return_value={"issue_ids": "issue1"})
+
+        mock_arg_to_list = mocker.patch("CortexPlatformCore.argToList")
+        mock_arg_to_list.return_value = ["issue1"]
+
+        mock_remove_empty_elements = mocker.patch("CortexPlatformCore.remove_empty_elements")
+        mock_remove_empty_elements.return_value = {"issueIds": ["issue1"]}
+
+        mock_response = {"status": "queued", "request_id": "req123"}
+        mock_client.appsec_remediate_issue.return_value = mock_response
+
+        mocker.patch(
+            "CortexPlatformCore.tableToMarkdown",
+            return_value="| Status | Request ID |\n|--------|------------|\n| queued | req123 |",
+        )
+        mocker.patch("CortexPlatformCore.string_to_table_header")
+
+        # Act
+        result = appsec_remediate_issue_command(mock_client, mock_args)
+
+        # Assert
+        assert isinstance(result, CommandResults)
+        assert result.outputs == mock_response
+
+        # Verify client method was called with cleaned request body
+        mock_client.appsec_remediate_issue.assert_called_once_with({"issueIds": ["issue1"]})
+
+        # Verify remove_empty_elements was called with original request body
+        mock_remove_empty_elements.assert_called_once_with({"issueIds": ["issue1"], "title": None, "fixBranchName": None})
+
+    def test_appsec_remediate_issue_command_empty_args(self, mocker: MockerFixture):
+        """Test remediation command with empty arguments."""
+        # Arrange
+        from CortexPlatformCore import appsec_remediate_issue_command
+        from CommonServerPython import CommandResults
+
+        mock_client = mocker.Mock()
+        mock_args = {}
+
+        mocker.patch.object(demisto, "args", return_value={})
+
+        mock_arg_to_list = mocker.patch("CortexPlatformCore.argToList")
+        mock_arg_to_list.return_value = []
+
+        mock_remove_empty_elements = mocker.patch("CortexPlatformCore.remove_empty_elements")
+        mock_remove_empty_elements.return_value = {}
+
+        mock_response = {"error": "No issues provided"}
+        mock_client.appsec_remediate_issue.return_value = mock_response
+
+        mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="| Error |\n|-------|\n| No issues provided |")
+        mocker.patch("CortexPlatformCore.string_to_table_header")
+
+        # Act
+        result = appsec_remediate_issue_command(mock_client, mock_args)
+
+        # Assert
+        assert isinstance(result, CommandResults)
+        assert result.outputs == mock_response
+
+        # Verify client method was called with empty dict after cleaning
+        mock_client.appsec_remediate_issue.assert_called_once_with({})
+
+        # Verify argToList was called with None (from args.get("issue_ids"))
+        mock_arg_to_list.assert_called_once_with(None)
+
+    def test_appsec_remediate_issue_command_client_error(self, mocker: MockerFixture):
+        """Test remediation command when client raises an exception."""
+        # Arrange
+        from CortexPlatformCore import appsec_remediate_issue_command
+
+        mock_client = mocker.Mock()
+        mock_args = {}
+
+        mocker.patch.object(demisto, "args", return_value={"issue_ids": "issue1", "title": "Test fix"})
+
+        mock_arg_to_list = mocker.patch("CortexPlatformCore.argToList")
+        mock_arg_to_list.return_value = ["issue1"]
+
+        mock_remove_empty_elements = mocker.patch("CortexPlatformCore.remove_empty_elements")
+        mock_remove_empty_elements.return_value = {"issueIds": ["issue1"], "title": "Test fix"}
+
+        # Configure client to raise an exception
+        mock_client.appsec_remediate_issue.side_effect = Exception("API Error: Unauthorized")
+
+        # Act & Assert
+        with pytest.raises(Exception, match="API Error: Unauthorized"):
+            appsec_remediate_issue_command(mock_client, mock_args)
+
+    def test_appsec_remediate_issue_command_multiple_issues(self, mocker: MockerFixture):
+        """Test remediation command with multiple issue IDs."""
+        # Arrange
+        from CortexPlatformCore import appsec_remediate_issue_command, INTEGRATION_CONTEXT_BRAND
+        from CommonServerPython import CommandResults
+
+        mock_client = mocker.Mock()
+        mock_args = {}
+
+        mocker.patch.object(demisto, "args", return_value={"issue_ids": "issue1,issue2,issue3", "title": "Bulk security fix"})
+
+        mock_arg_to_list = mocker.patch("CortexPlatformCore.argToList")
+        mock_arg_to_list.return_value = ["issue1", "issue2", "issue3"]
+
+        mock_remove_empty_elements = mocker.patch("CortexPlatformCore.remove_empty_elements")
+        mock_remove_empty_elements.return_value = {"issueIds": ["issue1", "issue2", "issue3"], "title": "Bulk security fix"}
+
+        mock_response = {
+            "status": "success",
+            "processed_issues": 3,
+            "pr_urls": ["https://github.com/repo/pull/124", "https://github.com/repo/pull/125"],
+        }
+
+        mock_client.appsec_remediate_issue.return_value = mock_response
+
+        mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="Mock markdown table")
+        mocker.patch("CortexPlatformCore.string_to_table_header")
+
+        # Act
+        result = appsec_remediate_issue_command(mock_client, mock_args)
+
+        # Assert
+        assert isinstance(result, CommandResults)
+        assert result.outputs == mock_response
+        assert result.outputs_prefix == f"{INTEGRATION_CONTEXT_BRAND}.TriggerPR"
+
+        # Verify client was called with all issue IDs
+        mock_client.appsec_remediate_issue.assert_called_once_with(
+            {"issueIds": ["issue1", "issue2", "issue3"], "title": "Bulk security fix"}
+        )
+
+    def test_appsec_remediate_issue_command_integration_constant(self, mocker: MockerFixture):
+        """Test that the integration context brand constant is used correctly."""
+        # Arrange
+        from CortexPlatformCore import appsec_remediate_issue_command
+
+        mock_client = mocker.Mock()
+        mock_args = {}
+
+        mocker.patch.object(demisto, "args", return_value={"issue_ids": "test"})
+        mocker.patch("CortexPlatformCore.argToList", return_value=["test"])
+        mocker.patch("CortexPlatformCore.remove_empty_elements", return_value={"issueIds": ["test"]})
+        mock_client.appsec_remediate_issue.return_value = {"status": "ok"}
+        mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="test table")
+        mocker.patch("CortexPlatformCore.string_to_table_header")
+
+        # Act
+        result = appsec_remediate_issue_command(mock_client, mock_args)
+
+        # Assert
+        assert result.outputs_prefix == "Core.TriggerPR"  # INTEGRATION_CONTEXT_BRAND = "Core"
+
+    def test_appsec_remediate_issue_command_json_serializable_response(self, mocker: MockerFixture):
+        """Test that the response is JSON serializable."""
+        # Arrange
+        from CortexPlatformCore import appsec_remediate_issue_command
+        from CommonServerPython import CommandResults
+
+        mock_client = mocker.Mock()
+        mock_args = {}
+
+        mocker.patch.object(demisto, "args", return_value={"issue_ids": "issue1", "title": "JSON test"})
+
+        mocker.patch("CortexPlatformCore.argToList", return_value=["issue1"])
+        mocker.patch("CortexPlatformCore.remove_empty_elements", return_value={"issueIds": ["issue1"], "title": "JSON test"})
+
+        mock_response = {
+            "status": "success",
+            "timestamp": "2023-12-07T10:30:00Z",
+            "data": {"pr_id": 123, "repository": "test-repo", "fixes_applied": ["fix1", "fix2"]},
+        }
+
+        mock_client.appsec_remediate_issue.return_value = mock_response
+        mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="test table")
+        mocker.patch("CortexPlatformCore.string_to_table_header")
+
+        # Act
+        result = appsec_remediate_issue_command(mock_client, mock_args)
+
+        # Assert
+        assert isinstance(result, CommandResults)
+        assert result.outputs == mock_response
+
+        # Verify the response can be JSON serialized
+        json_str = json.dumps(result.outputs)
+        assert json_str is not None
+
+        # Verify we can deserialize it back
+        deserialized = json.loads(json_str)
+        assert deserialized == mock_response

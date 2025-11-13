@@ -1356,9 +1356,10 @@ script:
           description: The ID of the suggestion rule that generated this recommendation.
           type: String
     - arguments:
-      - description: comma-separated list of issue IDs to fix (maximum 10 per request).
+      - description: A comma-separated list of issue IDs to fix (maximum 10 per request).
         name: issue_ids
         required: true
+        isArray: true
       - description: Custom title for the pull request.
         name: title
       name: core-appsec-remediate-issue
