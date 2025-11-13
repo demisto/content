@@ -65,13 +65,95 @@ def test_date_str_to_azure_format(date, expected):
 @pytest.mark.parametrize(
     "incident,expected",
     [
-        ({}, {"name": "Azure AD:   ", "occurred": "2022-06-06Z", "rawJSON": "{}"}),
+        # Test empty riskDetection object returned by Microsoft.
+        # Is it relevant to trigger an incident in such a scenario ?
+        ({}, {"name": "Entra ID sign-in risk detected:  ", "occurred": "2022-06-06Z", "rawJSON": "{}"}),
+        # Test if riskLevel is not defined
         (
-            {"riskEventType": "3", "riskDetail": "2", "id": "1"},
+            {"riskEventType": "3", "riskDetail": "2", "id": "1", "userPrincipalName": "test@domain.com"},
             {
-                "name": "Azure AD: 1 3 2",
+                "name": "Entra ID sign-in risk detected for user test@domain.com: 3 2",
                 "occurred": "2022-06-06Z",
-                "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "id": "1"}',
+                "severity": 2,
+                "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "id": "1", "userPrincipalName": "test@domain.com"}',
+            },
+        ),
+        # Test the 6 riskLevel values according to https://learn.microsoft.com/en-us/graph/api/resources/riskdetection?view=graph-rest-1.0
+        (
+            {"riskEventType": "3", "riskDetail": "2", "riskLevel": "low", "id": "1", "userPrincipalName": "test@domain.com"},
+            {
+                "name": "Entra ID sign-in risk detected for user test@domain.com: 3 2",
+                "occurred": "2022-06-06Z",
+                "severity": 1,
+                "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "low", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
+            },
+        ),
+        (
+            {"riskEventType": "3", "riskDetail": "2", "riskLevel": "medium", "id": "1", "userPrincipalName": "test@domain.com"},
+            {
+                "name": "Entra ID sign-in risk detected for user test@domain.com: 3 2",
+                "occurred": "2022-06-06Z",
+                "severity": 2,
+                "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "medium", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
+            },
+        ),
+        (
+            {"riskEventType": "3", "riskDetail": "2", "riskLevel": "high", "id": "1", "userPrincipalName": "test@domain.com"},
+            {
+                "name": "Entra ID sign-in risk detected for user test@domain.com: 3 2",
+                "occurred": "2022-06-06Z",
+                "severity": 3,
+                "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "high", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
+            },
+        ),
+        (
+            {"riskEventType": "3", "riskDetail": "2", "riskLevel": "hidden", "id": "1", "userPrincipalName": "test@domain.com"},
+            {
+                "name": "Entra ID sign-in risk detected for user test@domain.com: 3 2",
+                "occurred": "2022-06-06Z",
+                "severity": 2,
+                "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "hidden", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
+            },
+        ),
+        (
+            {"riskEventType": "3", "riskDetail": "2", "riskLevel": "none", "id": "1", "userPrincipalName": "test@domain.com"},
+            {
+                "name": "Entra ID sign-in risk detected for user test@domain.com: 3 2",
+                "occurred": "2022-06-06Z",
+                "severity": 2,
+                "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "none", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
+            },
+        ),
+        (
+            {
+                "riskEventType": "3",
+                "riskDetail": "2",
+                "riskLevel": "unknownFutureValue",
+                "id": "1",
+                "userPrincipalName": "test@domain.com",
+            },  # noqa: E501
+            {
+                "name": "Entra ID sign-in risk detected for user test@domain.com: 3 2",
+                "occurred": "2022-06-06Z",
+                "severity": 2,
+                "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "unknownFutureValue", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
+            },
+        ),
+        # Test anomalousToken incident
+        (
+            {
+                "riskEventType": "anomalousToken",
+                "riskDetail": "2",
+                "riskLevel": "high",
+                "id": "1",
+                "userPrincipalName": "test@domain.com",
+            },
+            {
+                "name": "Microsoft Entra ID sign-in risk: Anomalous Token Detected",
+                "details": "Sign-in detected with an anomalous token for user test@domain.com.",
+                "severity": 3,
+                "occurred": "2022-06-06Z",
+                "rawJSON": '{"riskEventType": "anomalousToken", "riskDetail": "2", "riskLevel": "high", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
             },
         ),
     ],

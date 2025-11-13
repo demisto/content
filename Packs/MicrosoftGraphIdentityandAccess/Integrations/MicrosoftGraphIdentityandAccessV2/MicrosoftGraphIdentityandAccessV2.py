@@ -1156,128 +1156,115 @@ def detection_to_incident(detection: dict, detection_date: str) -> dict:
         "anomalousToken": {
             "alertName": "Microsoft Entra ID sign-in risk: Anomalous Token Detected",
             "alertDescription": "Sign-in detected with an anomalous token for user {userId}.",
-            "severity": "High"
         },
         "anomalousUserActivity": {
             "alertName": "Microsoft Entra ID sign-in risk: Anomalous User Activity",
             "alertDescription": "Sign-in flagged due to anomalous user activity for {userId}.",
-            "severity": "High"
         },
         "anonymizedIPAddress": {
             "alertName": "Microsoft Entra ID sign-in risk: Anonymized IP Address",
             "alertDescription": "Suspicious sign-in from an anonymized IP address detected for user {userId}.",
-            "severity": "Medium"
         },
         "generic": {
             "alertName": "Microsoft Entra ID sign-in risk: Generic Anomaly Detected",
             "alertDescription": "Sign-in flagged due to generic anomaly detection for user {userId}.",
-            "severity": "Medium"
         },
         "impossibleTravel": {
             "alertName": "Microsoft Entra ID sign-in risk: Impossible Travel Sign-In",
             "alertDescription": "Sign-in from two distant locations within a short time frame detected for user {userId}.",
-            "severity": "High"
         },
         "suspiciousSendingPatterns": {
             "alertName": "Microsoft Entra ID sign-in risk: Suspicious Sending Patterns",
             "alertDescription": "Suspicious email sending patterns detected for user {userId}.",
-            "severity": "High"
         },
         "leakedCredentials": {
             "alertName": "Microsoft Entra ID sign-in risk: Leaked Credentials Detected",
             "alertDescription": "Credentials for user {userId} found in known data breaches.",
-            "severity": "High"
         },
         "maliciousIPAddress": {
             "alertName": "Microsoft Entra ID sign-in risk: Malicious IP Address",
             "alertDescription": "Sign-in from an IP address flagged as malicious for user {userId}.",
-            "severity": "High"
         },
         "malwareInfectedIPAddress": {
             "alertName": "Microsoft Entra ID sign-in risk: Malware-Infected IP Address",
             "alertDescription": "Sign-in from an IP address associated with malware detected for user {userId}.",
-            "severity": "High"
         },
         "mcasSuspiciousInboxManipulationRules": {
             "alertName": "Microsoft Entra ID sign-in risk: Suspicious Inbox Manipulation Rules",
             "alertDescription": "Suspicious mailbox rule changes detected for user {userId}.",
-            "severity": "High"
         },
         "newCountry": {
             "alertName": "Microsoft Entra ID sign-in risk: New Country Sign-In",
             "alertDescription": "Sign-in from a country not previously associated with user {userId}.",
-            "severity": "Medium"
         },
         "passwordSpray": {
             "alertName": "Microsoft Entra ID sign-in risk: Password Spray Attack",
             "alertDescription": "Multiple failed sign-in attempts detected across accounts, targeting user {userId}.",
-            "severity": "High"
         },
         "riskyIPAddress": {
             "alertName": "Microsoft Entra ID sign-in risk: Risky IP Address",
             "alertDescription": "Sign-in from an IP address flagged as risky for user {userId}.",
-            "severity": "High"
         },
         "suspiciousAPITraffic": {
             "alertName": "Microsoft Entra ID sign-in risk: Suspicious API Traffic",
             "alertDescription": "Suspicious API traffic detected for user {userId}.",
-            "severity": "High"
         },
         "suspiciousBrowser": {
             "alertName": "Microsoft Entra ID sign-in risk: Suspicious Browser Sign-In",
             "alertDescription": "Sign-in detected from a browser associated with malicious activity for user {userId}.",
-            "severity": "Medium"
         },
         "suspiciousInboxForwarding": {
             "alertName": "Microsoft Entra ID sign-in risk: Suspicious Inbox Forwarding",
             "alertDescription": "Suspicious inbox forwarding rules detected for user {userId}.",
-            "severity": "High"
         },
         "suspiciousIPAddress": {
             "alertName": "Microsoft Entra ID sign-in risk: Suspicious IP Address",
             "alertDescription": "Sign-in from an IP address flagged as suspicious for user {userId}.",
-            "severity": "High"
         },
         "tokenIssuerAnomaly": {
             "alertName": "Microsoft Entra ID sign-in risk: Token Issuer Anomaly",
             "alertDescription": "Sign-in detected with an anomalous token issuer for user {userId}.",
-            "severity": "High"
         },
         "unfamiliarFeatures": {
             "alertName": "Microsoft Entra ID sign-in risk: Unfamiliar Features Detected",
             "alertDescription": "Sign-in using features not previously seen for user {userId}.",
-            "severity": "Medium"
         },
         "unlikelyTravel": {
             "alertName": "Microsoft Entra ID sign-in risk: Unlikely Travel Sign-In",
             "alertDescription": "Sign-in from a location unlikely based on user history for {userId}.",
-            "severity": "Medium"
         },
         "nationStateIP": {
             "alertName": "Microsoft Entra ID sign-in risk: Nation State IP Address",
             "alertDescription": "Sign-in detected from an IP address associated with nation-state activity for user {userId}.",
-            "severity": "High"
-        }
+        },
     }
 
     detection_type: str = detection.get("riskEventType", "")
     detection_detail: str = detection.get("riskDetail", "")
     detection_upn: str = detection.get("userPrincipalName", "")
-    
+    detection_severity: str = detection.get("riskLevel", "")
+
     risk = sign_in_risk_mapping.get(detection_type)
-    severity_map = {"Low": 1, "Medium": 2, "High": 3, "Critical": 4}
+    severity_map = {"low": 1, "medium": 2, "high": 3, "critical": 4}
 
     if isinstance(risk, dict):
         incident = {
             "name": risk.get("alertName"),
             "details": risk.get("alertDescription", "").replace("{userId}", detection_upn),
-            "severity": severity_map.get(risk.get("severity", "Low"), 1),
+            "severity": severity_map.get(detection_severity, 2),
+            "occurred": f"{detection_date}Z",
+            "rawJSON": json.dumps(detection),
+        }
+    elif len(detection_upn) > 0:
+        incident = {
+            "name": f"Entra ID sign-in risk detected for user {detection_upn}: {detection_type} {detection_detail}",
+            "severity": severity_map.get(detection_severity, 2),
             "occurred": f"{detection_date}Z",
             "rawJSON": json.dumps(detection),
         }
     else:
         incident = {
-            "name": f"Entra ID sign-in risk detected for user {detection_upn}:  {detection_type} {detection_detail}",
+            "name": f"Entra ID sign-in risk detected: {detection_type} {detection_detail}",
             "occurred": f"{detection_date}Z",
             "rawJSON": json.dumps(detection),
         }
