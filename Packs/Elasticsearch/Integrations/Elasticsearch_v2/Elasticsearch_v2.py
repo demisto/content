@@ -751,6 +751,7 @@ def results_to_incidents_datetime(response, last_fetch):
         source = hit.get("_source")
         if source is not None:
             time_field_value = get_value_by_dot_notation(source, str(TIME_FIELD))
+            if time_field_value is not None:
                 hit_date = parse(str(time_field_value))
                 hit_timestamp = int(hit_date.timestamp() * 1000)
 
