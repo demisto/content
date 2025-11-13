@@ -158,7 +158,7 @@ description: Use the Google SecOps Streaming API integration to ingest detection
 display: Google SecOps Streaming API
 name: Google Chronicle Backstory Streaming API
 script:
-  dockerimage: demisto/googleapi-python3:1.0.0.4892936
+  dockerimage: demisto/googleapi-python3:1.0.0.5476125
   longRunning: true
   isFetchSamples: true
   runonce: false

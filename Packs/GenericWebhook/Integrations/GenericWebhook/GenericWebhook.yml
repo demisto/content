@@ -69,7 +69,7 @@ display: Generic Webhook
 name: Generic Webhook
 script:
   commands: []
-  dockerimage: demisto/fastapi:0.116.1.4266494
+  dockerimage: demisto/fastapi:0.120.1.5622230
   longRunning: true
   longRunningPort: true
   script: '-'

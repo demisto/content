@@ -130,7 +130,7 @@ script:
       name: end_time
     description: Fetch events from AWS Security Hub.
     name: aws-securityhub-get-events
-  dockerimage: demisto/boto3py3:1.0.0.5295752
+  dockerimage: demisto/boto3py3:1.0.0.5712893
   isfetchevents: true
   script: '-'
   subtype: python3
