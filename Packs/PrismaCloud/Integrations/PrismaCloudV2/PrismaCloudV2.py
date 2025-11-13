@@ -868,6 +868,7 @@ class Client(BaseClient):
         sort_direction: Optional[str] = None,
         sort_field: Optional[str] = None,
         include_resource_json: Optional[str] = "true",
+        heuristic_search: Optional[str] = "true"
     ):
         total_items = []
         page_count = 1
@@ -879,7 +880,7 @@ class Client(BaseClient):
                 "sort": [{"direction": sort_direction, "field": sort_field}],
                 "timeRange": time_range,
                 "withResourceJson": include_resource_json,
-                "heuristicSearch": "true",
+                "heuristicSearch": heuristic_search,
             })
         
         first_page_response = self._http_request("POST", "search/config", json_data=data)
@@ -2242,6 +2243,7 @@ def alert_remediate_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query = args.get("query")
+    heuristic_search = args.get("heuristic_search", "true") # doc is bool bot hre is str????
     limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
     time_filter = handle_time_filter(
         base_case=TIME_FILTER_BASE_CASE,
@@ -2272,6 +2274,7 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
         sort_direction,
         sort_field,
         include_resource_json,
+        heuristic_search
     )
     if not include_additional_resource_fields:
         remove_additional_resource_fields(response_items)
