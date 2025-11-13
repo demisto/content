@@ -1609,7 +1609,10 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 if actions[0].get("action_id") == "xsoar-button-submit":
                     demisto.debug("Handling a SlackBlockBuilder response.")
                     if state:
-                        state.update({"xsoar-button-submit": "Successful"})
+                        state.update(
+                            {"xsoar-button-submit": "Successful"},
+                            {"submitting_user": user},
+                        )
                         action_text = json.dumps(state)
                 else:
                     demisto.debug("Not handling a SlackBlockBuilder response.")
