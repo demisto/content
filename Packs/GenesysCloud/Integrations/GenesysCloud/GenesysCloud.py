@@ -22,6 +22,17 @@ TOKEN_VALID_UNTIL_KEY = "valid_until"
 
 # Default Values
 DEFAULT_SERVER_URL = "https://api.mypurecloud.com"
+DEFAULT_SERVICE_NAMES = [
+    "Architect",
+    "PeoplePermissions",
+    "ContactCenter",
+    "Groups",
+    "Telephony",
+    "Outbound",
+    "Routing",
+    "Integrations",
+    "AnalyticsReporting",
+]
 DEFAULT_AUDIT_PAGE_SIZE = 500
 DEFAULT_GET_EVENTS_LIMIT = 10
 DEFAULT_FETCH_EVENTS_LIMIT = 2500  # per service
@@ -228,13 +239,15 @@ class AsyncClient:
 def deduplicate_and_format_events(
     raw_response: dict[str, Any],
     all_fetched_ids: set[str],
+    service_name: str,
 ) -> list[dict[str, Any]]:
     """
-    Processes events from a raw API response, deduplicates them, and adds the _time field.
+    Processes events from a raw API response, deduplicates them, and adds the `_time` and `source_log_type` fields.
 
     Args:
         raw_response (dict[str, Any]): A dictionary containing the raw API response of the audit events.
         all_fetched_ids (set[str]): A set of event IDs that have already been fetched.
+        service_name (str): The name of the service the events were fetched from.
 
     Returns:
         list[dict[str, Any]]: A list of new, processed events.
@@ -247,6 +260,7 @@ def deduplicate_and_format_events(
             continue
         all_fetched_ids.add(event_id)
         event["_time"] = arg_to_datetime(event.get("eventTime"), required=True).strftime(DATE_FORMAT)  # type: ignore [union-attr]
+        event["source_log_type"] = service_name
         events.append(event)
     return events
 
@@ -299,7 +313,7 @@ async def get_audit_events_for_service(
     # Process results from all pages
     for page_number, page_response in enumerate(page_responses):
         # Process and deduplicate events from this page
-        page_events = deduplicate_and_format_events(page_response, all_fetched_ids)
+        page_events = deduplicate_and_format_events(page_response, all_fetched_ids, service_name)
         all_events.extend(page_events)
 
         # Stop if limit was reached
@@ -309,6 +323,24 @@ async def get_audit_events_for_service(
 
     demisto.debug(f"[{service_name}] Fetched total of {len(all_events)} events from {max_page_number} pages.")
     return all_events
+
+
+""" COMMAND FUNCTIONS """
+
+
+async def test_module(client: AsyncClient, service_names: list[str]) -> str:
+    """
+    Tests the connection to the Gnenesys Cloud realtime audit events API.
+
+    Args:
+        client (AsyncClient): An instance of the AsyncClient.
+        service_names (list[str]): List of service names to fetch events from.
+
+    Returns:
+        str: "ok" if connection to the realtime audit events API succeeded.
+    """
+    await fetch_events_command(client, last_run={}, max_fetch=1, service_names=service_names)
+    return "ok"
 
 
 async def get_events_command(client: AsyncClient, args: dict[str, Any]) -> tuple[list[dict[str, Any]], CommandResults]:
@@ -323,7 +355,7 @@ async def get_events_command(client: AsyncClient, args: dict[str, Any]) -> tuple
         tuple[list[dict[str, Any]], CommandResults]: A tuple of the events list and the CommandResults.
     """
     from_date = arg_to_datetime(args.get("from_date")) or (datetime.now(tz=UTC) - timedelta(hours=1))
-    to_date = datetime.now(tz=UTC)
+    to_date = arg_to_datetime(args.get("to_date")) or datetime.now(tz=UTC)
     limit = arg_to_number(args.get("limit")) or DEFAULT_GET_EVENTS_LIMIT
     service_name = args["service_name"]
 
@@ -446,20 +478,19 @@ async def main() -> None:
     command: str = demisto.command()
 
     # HTTP Connection
-    base_url = params.get("url") or DEFAULT_SERVER_URL
+    base_url: str = params.get("url") or DEFAULT_SERVER_URL
     verify: bool = not params.get("insecure", False)
-    proxy = params.get("proxy", False)
+    proxy: bool = params.get("proxy", False)
 
     # OAuth Credentials
-    client_id = params.get("credentials", {}).get("identifier")
-    client_secret = params.get("credentials", {}).get("password")
+    client_id: str = params.get("credentials", {}).get("identifier", "")
+    client_secret: str = params.get("credentials", {}).get("password", "")
 
     # Fetch Events
-    is_fetch_events = params.get("isFetchEvents", False)
-    max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_FETCH_EVENTS_LIMIT
-    service_names = argToList(params.get("service_names"))
+    max_fetch: int = arg_to_number(params.get("max_fetch")) or DEFAULT_FETCH_EVENTS_LIMIT
+    service_names: list = argToList(params.get("service_names")) or DEFAULT_SERVICE_NAMES
 
-    demisto.debug(f"Command being called is {command}")
+    demisto.debug(f"Command being called is {command}.")
 
     try:
         async with AsyncClient(
@@ -470,10 +501,7 @@ async def main() -> None:
             proxy=proxy,
         ) as async_client:
             if command == "test-module":
-                test_results = "ok"
-                if is_fetch_events:
-                    pass
-                return_results(test_results)
+                return_results(await test_module(async_client, service_names=service_names))
 
             elif command == "genesis-cloud-get-events":
                 should_push_events = argToBoolean(args.pop("should_push_events", False))

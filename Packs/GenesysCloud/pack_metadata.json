@@ -1,6 +1,6 @@
 {
     "name": "Genesys Cloud",
-    "description": "Fetch audit events from Genesys Cloud's suite of products and services.",
+    "description": "Genesys Cloud is a unified, all-in-one cloud collaboration and contact center platform that provides customer interaction and operational audit event data.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

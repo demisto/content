@@ -22,7 +22,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### genesis-cloud-get-events
 
 ***
-Gets events from Hello World.
+Gets audit events from Genesys Cloud from the past 14 days. This command is intended for development and debugging purposes, as it may produce duplicate events.
 
 #### Base Command
 
@@ -34,8 +34,9 @@ Gets events from Hello World.
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
 | service_name | Filter by alert status. Possible values are: Architect, PeoplePermissions, ContactCenter, Groups, Telephony, Outbound, Routing, Integrations, AnalyticsReporting. | Optional |
-| limit | Maximum number of results to return. | Required |
-| from_date | Date from which to get events. | Optional |
+| limit | Maximum number of audit events to return. | Optional |
+| from_date | The start date from which to get events. Must be within the last 14 days. | Optional |
+| to_date | The end date till which to get events. Must be within the last 14 days. | Optional |
 
 #### Context Output
 

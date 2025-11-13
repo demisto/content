@@ -247,13 +247,15 @@ def test_deduplicate_and_format_events(
      - Ensure that events are correctly deduplicated and formatted.
      - Ensure that the set of fetched IDs is correctly updated.
     """
-    new_events = deduplicate_and_format_events(raw_response, all_fetched_ids)
+    service_name = "Integrations"
+    new_events = deduplicate_and_format_events(raw_response, all_fetched_ids, service_name)
 
     assert len(new_events) == expected_events_count
     assert len(all_fetched_ids) == expected_all_ids_count
 
     for event in new_events:
         assert event["_time"] == arg_to_datetime(event["eventTime"]).strftime(DATE_FORMAT)
+        assert event["source_log_type"] == service_name
 
 
 @pytest.mark.asyncio

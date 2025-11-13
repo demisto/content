@@ -57,26 +57,25 @@ configuration:
   required: false
   type: 0
   section: Collect
-description: Fetch audit events from Genesys Cloud's suite of products and services.
+description: Fetch audit events to see changes within a Genesys Cloud organization.
 display: Genesys Cloud
 name: GenesysCloud
 script:
   commands:
-  - arguments:
-    - auto: PREDEFINED
-      defaultValue: 'false'
+  - name: genesis-cloud-get-events
+    description: Gets audit events from Genesys Cloud from the past 14 days. This command is intended for development and debugging purposes, as it may produce duplicate events.
+    arguments:
+    - name: should_push_events
       description: If true, the command will create events, otherwise it will only display them.
-      isArray: false
-      name: should_push_events
+      auto: PREDEFINED
+      defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
       required: true
-    - auto: PREDEFINED
-      default: false
+    - name: service_name
       description: Filter by alert status.
-      isArray: false
-      name: service_name
+      auto: PREDEFINED
       predefined:
       - Architect
       - PeoplePermissions
@@ -87,22 +86,12 @@ script:
       - Routing
       - Integrations
       - AnalyticsReporting
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of results to return.
-      isArray: false
-      name: limit
-      required: true
-      secret: false
-    - default: false
-      description: Date from which to get events.
-      name: from_date
-      required: false
-    deprecated: false
-    description: Gets events from Hello World.
-    execution: false
-    name: genesis-cloud-get-events
+    - name: limit
+      description: Maximum number of audit events to return.
+    - name: from_date
+      description: The start date from which to get events. Must be within the last 14 days.
+    - name: to_date
+      description: The end date till which to get events. Must be within the last 14 days.
   dockerimage: demisto/auth-utils:1.0.0.4578605
   isfetchevents: true
   runonce: false
