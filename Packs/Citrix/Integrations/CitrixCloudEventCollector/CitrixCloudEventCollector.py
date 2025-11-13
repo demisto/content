@@ -147,7 +147,7 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
     return records, last_run
 
 
-def test_module(client: Client, args: dict):
+def test_module_command(client: Client, args: dict):
     get_events_command(client, args)
     return "ok"
 
@@ -173,7 +173,7 @@ def main():
         )
 
         if command == "test-module":
-            result = test_module(client, args)
+            result = test_module_command(client, args)
             return_results(result)
 
         elif command == "citrix-cloud-get-events":

@@ -69,7 +69,7 @@ script:
       name: end_date_time
     description: Returns system log events extracted from Citrix.
     name: citrix-cloud-get-events
-  dockerimage: demisto/python3:3.12.11.4508456
+  dockerimage: demisto/python3:3.12.12.5490952
   runonce: false
   script: '-'
   subtype: python3

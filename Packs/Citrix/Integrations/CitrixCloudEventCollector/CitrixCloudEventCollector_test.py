@@ -2,14 +2,7 @@ import pytest
 from CommonServerPython import *
 from unittest.mock import MagicMock
 
-from CitrixCloudEventCollector import Client, get_events_command, fetch_events_command, test_module
-
-
-BASE_URL = "https://api.cloud.com"
-
-CUSTOMER_ID = "TEST_CUSTOMER"
-CLIENT_ID = "TEST_CLIENT"
-CLIENT_SECRET = "TEST_CLIENT_SECRET"
+from CitrixCloudEventCollector import Client, get_events_command, fetch_events_command, test_module_command
 
 
 @pytest.fixture
@@ -19,7 +12,12 @@ def client() -> Client:
     Uses mock credentials defined at the top of the file.
     """
     return Client(
-        base_url=BASE_URL, customer_id=CUSTOMER_ID, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, verify=True, proxy=False
+        base_url="https://api.citrixcloud.com",
+        customer_id="cust",
+        client_id="id",
+        client_secret="secret",
+        verify=True,
+        proxy=False,
     )
 
 
@@ -182,5 +180,5 @@ def test_test_module_returns_ok(mocker):
     client = Client("url", "cust", "id", "secret", False, True)
     mocker.patch("CitrixCloudEventCollector.get_events_command", return_value="ok")
 
-    result = test_module(client, {})
+    result = test_module_command(client, {})
     assert result == "ok"
