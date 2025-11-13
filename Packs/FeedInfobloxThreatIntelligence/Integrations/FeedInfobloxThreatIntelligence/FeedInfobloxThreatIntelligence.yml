@@ -1,0 +1,400 @@
+category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: InfobloxThreatIntelligenceFeed
+  version: -1
+configuration:
+- section: Connect
+  display: ""
+  displaypassword: Service API Key
+  name: api_key
+  type: 9
+  required: true
+  hiddenusername: true
+  additionalinfo: 'Service API key for Infoblox TIDE API authentication'
+- section: Collect
+  display: Fetch indicators
+  name: feed
+  type: 8
+  required: false
+  defaultvalue: "true"
+- section: Collect
+  display: Indicator Types
+  name: indicator_types
+  type: 16
+  required: false
+  options:
+  - IP
+  - HOST
+  - URL
+  - EMAIL
+  - HASH
+  defaultvalue: IP,HOST,URL,EMAIL,HASH
+  additionalinfo: The type of indicators to be retrieved.
+- section: Collect
+  display: First Fetch Time
+  name: first_fetch
+  type: 0
+  required: false
+  defaultvalue: "1 hour"
+  additionalinfo: "The date or relative timestamp from where to start fetching indicators.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ\n\nFor example: 01 Mar 2025, 01 Mar 2025 04:45:33, 2025-05-17T04:45:33Z\n\nNote: The maximum allowed relative time is 4 hours or 240 minutes."
+- section: Collect
+  display: Max Indicators Per Fetch
+  name: max_fetch
+  type: 0
+  required: false
+  defaultvalue: "1000"
+  additionalinfo: "The maximum number of indicators to fetch in each run.\n\nNote: The maximum allowed value is 50000."
+- section: Collect
+  display: DGA Threat
+  name: dga_threat
+  type: 15
+  required: false
+  options:
+  - 'Yes'
+  - 'No'
+  additionalinfo: Filter the indicators having threats originated from dynamically generated algorithms.
+- section: Collect
+  display: Threat Classes
+  name: threat_classes
+  type: 16
+  required: false
+  options:
+  - APT
+  - Bot
+  - CompromisedDomain
+  - CompromisedHost
+  - Cryptocurrency
+  - DDoS
+  - DNSTunnel
+  - ExploitKit
+  - ICS
+  - IllegalContent
+  - InternetInfrastructure
+  - IntrusionAttempt
+  - LimitedDistro
+  - Malicious
+  - MaliciousNameserver
+  - MalwareC2
+  - MalwareC2DGA
+  - MalwareDownload
+  - Parked
+  - Phishing
+  - Policy
+  - PolicyViolation
+  - Proxy
+  - Scam
+  - Sinkhole
+  - Spambot
+  - Suspicious
+  - UncategorizedThreat
+  - Undefined
+  - UnwantedContent
+  - WebAppAttack
+  - Whitelist
+  additionalinfo: Filters the indicators according to the selected threat classes.
+- section: Collect
+  display: Data Providers
+  name: data_provider_profiles
+  type: 16
+  required: false
+  options:
+  - IID
+  - AISCOMM
+  additionalinfo: Filter indicators by data provider profiles.
+- section: Collect
+  display: Indicator Reputation
+  name: feedReputation
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  defaultvalue: Suspicious
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
+- section: Collect
+  display: Source Reliability
+  name: feedReliability
+  defaultvalue: B - Usually reliable
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data.
+- section: Collect
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  type: 15
+  required: false
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  defaultvalue: AMBER
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+- section: Collect
+  display: Tags
+  name: feedTags
+  type: 0
+  required: false
+  additionalinfo: Supports CSV values.
+- section: Collect
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+- section: Collect
+  display: ""
+  name: feedExpirationPolicy
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+- section: Collect
+  display: ""
+  name: feedExpirationInterval
+  defaultvalue: '20160'
+  type: 1
+  required: false
+- section: Collect
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: '60'
+  type: 19
+  required: false
+  additionalinfo: "Time interval for fetching indicators.\n\nNote: The maximum allowed interval is 4 hours or 240 minutes."
+- section: Collect
+  display: Incremental Feed
+  name: feedIncremental
+  type: 8
+  required: false
+  defaultvalue: 'true'
+  hidden: true
+- section: Connect
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- section: Connect
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+name: InfobloxThreatIntelligenceFeed
+display: 'Infoblox Threat Intelligence Feed'
+description: The Infoblox Threat Intelligence Feed retrieves the discovered indicators from the Infoblox platform based on user-specified filters.
+script:
+  commands:
+  - name: infoblox-cloud-get-indicators
+    arguments:
+    - name: limit
+      description: "The maximum number of indicators to retrieve.\n\nNote: The maximum allowed value is 50000."
+      defaultValue: "50"
+      required: false
+    - name: indicator_types
+      description: The type of indicators to be retrieved. Supports comma-separated values.
+      auto: PREDEFINED
+      predefined:
+      - IP
+      - HOST
+      - URL
+      - EMAIL
+      - HASH
+      required: false
+    - name: from_date
+      description: "The date or relative timestamp from which indicator retrieval begins.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ\n\nFor example: 01 Mar 2025, 01 Mar 2025 04:45:33, 2025-05-17T04:45:33Z."
+      required: false
+    - name: to_date
+      description: "The date or relative timestamp up to which indicator retrieval ends.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ\n\nFor example: 01 Mar 2025, 01 Mar 2025 04:45:33, 2025-05-17T04:45:33Z."
+      required: false
+    - name: dga_threat
+      description: Filter the indicators having threats originated from dynamically generated algorithms.
+      auto: PREDEFINED
+      predefined:
+      - "Yes"
+      - "No"
+      required: false
+    - name: threat_classes
+      description: Filters the indicators according to the provided threat classes. Supports comma-separated values.
+      auto: PREDEFINED
+      predefined:
+      - APT
+      - Bot
+      - CompromisedDomain
+      - CompromisedHost
+      - Cryptocurrency
+      - DDoS
+      - DNSTunnel
+      - ExploitKit
+      - ICS
+      - IllegalContent
+      - InternetInfrastructure
+      - IntrusionAttempt
+      - LimitedDistro
+      - Malicious
+      - MaliciousNameserver
+      - MalwareC2
+      - MalwareC2DGA
+      - MalwareDownload
+      - Parked
+      - Phishing
+      - Policy
+      - PolicyViolation
+      - Proxy
+      - Scam
+      - Sinkhole
+      - Spambot
+      - Suspicious
+      - UncategorizedThreat
+      - Undefined
+      - UnwantedContent
+      - WebAppAttack
+      - Whitelist
+      required: false
+      isArray: true
+    - name: data_provider_profiles
+      description: Filters the indicators according to the given data providers. Supports comma-separated values.
+      auto: PREDEFINED
+      predefined:
+      - IID
+      - AISCOMM
+      required: false
+      isArray: true
+    description: Fetches a given limit of indicators from the Infoblox platform and displays them in human-readable format in the war room.
+    outputs:
+    - contextPath: Infoblox.FeedIndicator.id
+      description: Unique identifier of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.type
+      description: Type of the indicator (HOST, IP, URL, EMAIL, HASH).
+      type: String
+    - contextPath: Infoblox.FeedIndicator.host
+      description: Hostname of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.domain
+      description: Domain of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.ip
+      description: IP address of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.email
+      description: Email address of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.hash
+      description: Hash of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.hash_type
+      description: Hash type of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.url
+      description: URL of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.value
+      description: The indicator value.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.tld
+      description: Top-level domain of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.threat_level
+      description: Threat level of the indicator (0-100).
+      type: Number
+    - contextPath: Infoblox.FeedIndicator.threat_label
+      description: Threat label of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.confidence
+      description: Confidence level of the indicator (0-100).
+      type: Number
+    - contextPath: Infoblox.FeedIndicator.threat_class
+      description: Threat class of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.property
+      description: Property of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.profile
+      description: Profile of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.detected
+      description: Detection timestamp.
+      type: Date
+    - contextPath: Infoblox.FeedIndicator.received
+      description: Reception timestamp.
+      type: Date
+    - contextPath: Infoblox.FeedIndicator.expiration
+      description: Expiration timestamp.
+      type: Date
+    - contextPath: Infoblox.FeedIndicator.up
+      description: Status of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.dga
+      description: Domain generation algorithm.
+      type: String      
+    - contextPath: Infoblox.FeedIndicator.batch_id
+      description: Batch ID of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.threat_score
+      description: Threat score of the indicator.
+      type: Number
+    - contextPath: Infoblox.FeedIndicator.threat_score_rating
+      description: Threat score rating of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.threat_score_vector
+      description: Threat score vector of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.confidence_score
+      description: Confidence score of the indicator.
+      type: Number
+    - contextPath: Infoblox.FeedIndicator.confidence_score_rating
+      description: Confidence score rating of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.confidence_score_vector
+      description: Confidence score vector of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.extended.notes
+      description: Notes for the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.extended.comments
+      description: Comments for the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.extended.cyberint_guid
+      description: GUID of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.extended.protocol
+      description: Protocol of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.extended.references
+      description: References of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.extended.original_profile
+      description: Original profile of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.extended.attack_chain
+      description: Attack chain of the indicator.
+      type: String
+    - contextPath: Infoblox.FeedIndicator.extended.sample_sha256
+      description: SHA256 of the sample.
+      type: String
+  dockerimage: demisto/python3:3.12.11.4819260
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

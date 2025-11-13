@@ -1,0 +1,47 @@
+# test-module
+test-module
+
+# cape-file-submit
+cape-file-submit entry_id="test_entry_id" package="test_package" timeout=60 priority=1 options="test_options" machine="test_machine" platform="test_platform" tags="tag1,tag2" custom="test_custom_data" memory=true enforce_timeout=false clock="2023-01-01 12:00:00"
+
+# cape-url-submit
+cape-url-submit url="http://example.com" package="test_package" timeout=60 priority=1 options="test_options" machine="test_machine" platform="test_platform" tags="tag1,tag2" custom="test_custom_data" memory=true enforce_timeout=false clock="2023-01-01 12:00:00"
+
+# cape-file-view
+cape-file-view task_id="test_task_id"
+cape-file-view md5="d41d8cd98f00b204e9800998ecf8427e"
+cape-file-view sha256="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+# cape-sample-download
+cape-sample-download task_id="test_task_id"
+cape-sample-download md5="d41d8cd98f00b204e9800998ecf8427e"
+cape-sample-download sha1="da39a3ee5e6b4b0d3255bfef95601890afd80709"
+cape-sample-download sha256="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+# cape-task-delete
+cape-task-delete task_id="test_task_id"
+
+# cape-tasks-list
+cape-tasks-list
+cape-tasks-list limit=10 page=1
+cape-tasks-list task_id="test_task_id"
+
+# cape-task-screenshot-download
+cape-task-screenshot-download task_id="test_task_id"
+cape-task-screenshot-download task_id="test_task_id" screenshot=1
+
+# cape-task-report-get
+cape-task-report-get task_id="test_task_id"
+cape-task-report-get task_id="test_task_id" format="json"
+cape-task-report-get task_id="test_task_id" zip=true
+
+# cape-pcap-file-download
+cape-pcap-file-download task_id="test_task_id"
+
+# cape-machines-list
+cape-machines-list
+cape-machines-list machine_name="test_machine"
+cape-machines-list all_results=true
+
+# cape-cuckoo-status-get
+cape-cuckoo-status-get
