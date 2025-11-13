@@ -4306,7 +4306,7 @@ def test_get_remote_detection_data(mocker):
     """
     from CrowdStrikeFalcon import get_remote_detection_data
 
-    detection_entity = input_data.response_detection.copy()
+    detection_entity = input_data.response_incident.copy()
     mocker.patch("CrowdStrikeFalcon.get_detections_entities", return_value={"resources": [detection_entity.copy()]})
     mirrored_data, updated_object = get_remote_detection_data(input_data.remote_incident_id)
     detection_entity["severity"] = 2

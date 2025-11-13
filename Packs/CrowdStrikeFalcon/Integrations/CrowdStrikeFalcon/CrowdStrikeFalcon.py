@@ -95,6 +95,20 @@ TIMEOUT_ON_ENRICHMENT = 15
 
 """ KEY DICTIONARY """
 
+LEGACY_DETECTIONS_BASE_KEY_MAP = {
+    "device.hostname": "System",
+    "device.cid": "CustomerID",
+    "hostinfo.domain": "MachineDomain",
+    "detection_id": "ID",
+    "created_timestamp": "ProcessStartTime",
+    "max_severity": "MaxSeverity",
+    "show_in_ui": "ShowInUi",
+    "status": "Status",
+    "first_behavior": "FirstBehavior",
+    "last_behavior": "LastBehavior",
+    "max_confidence": "MaxConfidence",
+}
+
 DETECTIONS_BASE_KEY_MAP = {
     "device.hostname": "System",
     "device.cid": "CustomerID",
@@ -284,6 +298,17 @@ CS_FALCON_INCIDENT_OUTGOING_ARGS = {
     "status": f'Updated incident status, one of {"/".join(STATUS_TEXT_TO_NUM.keys())}',
 }
 
+LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS = [
+    "status",
+    "severity",
+    "behaviors.tactic",
+    "behaviors.scenario",
+    "behaviors.objective",
+    "behaviors.technique",
+    "device.hostname",
+    "detection_id",
+    "behaviors.display_name",
+]
 CS_FALCON_DETECTION_INCOMING_ARGS = [
     "status",
     "severity",
@@ -2521,7 +2546,13 @@ def get_remote_data_command(args: dict[str, Any]):
                 set_xsoar_entries(updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list)
         # for legacy endpoint detections
         elif incident_type == IncidentType.LEGACY_ENDPOINT_DETECTION:
-            demisto.debug(f"Skipping legacy endpoint detection {remote_incident_id} – legacy mirroring is no longer supported.")
+            mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
+            if updated_object:
+                demisto.debug(f"Update detection {remote_incident_id} with fields: {updated_object}")
+                detection_type = "Detection"
+                set_xsoar_entries(
+                    updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list
+                )  # sets in place
         # for endpoint in the new version
         elif incident_type in (
             IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
@@ -2604,7 +2635,7 @@ def get_remote_detection_data(remote_incident_id: str):
     mirrored_data["severity"] = severity_string_to_int(severity)
     demisto.debug(f"In get_remote_detection_data {remote_incident_id=} {mirrored_data=}")
 
-    incoming_args = CS_FALCON_INCIDENT_INCOMING_ARGS
+    incoming_args = LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS
     updated_object: dict[str, Any] = {"incident_type": "detection"}
     set_updated_object(updated_object, mirrored_data, incoming_args)
     demisto.debug(f"After set_updated_object {updated_object=}")
