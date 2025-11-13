@@ -816,6 +816,3 @@ script:
 fromversion: 6.0.0
 tests:
 - Absolute_TestPlaybook
-supportedModules:
-- X1
-- X3
