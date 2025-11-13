@@ -646,6 +646,22 @@ script:
       name: nonsensitive_password
       required: false
       secret: false
+    - description: User ID or userPrincipalName to update password for.
+      name: password_method_id
+      hidden: true
+    - description: Polling url.
+      name: polling_url
+      hidden: true
+    outputs:
+    - contextPath: MSGraphUser.user
+      description: The user's ID.
+      type: String
+    - contextPath: MSGraphUser.status
+      description: The status of the operation.
+      type: String
+    - contextPath: MSGraphUser.polling_url
+      description: The polling url.
+      type: String
   - description: Tests connectivity to Microsoft Graph User.
     name: msgraph-user-test
   - arguments:
