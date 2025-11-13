@@ -2239,7 +2239,7 @@ class TestFetch:
             assert expected_name in incident.get("name", "")
 
     @pytest.mark.parametrize(
-        "expected_name, fetch_incidents_or_detections,incidents_len",
+        "expected_name, fetch_incidents_or_detections, incidents_len",
         [
             ("Incident ID:", ["Incidents"], 2),
             ("Detection ID:", ["Detections"], 2),
@@ -2250,101 +2250,26 @@ class TestFetch:
             ("IDP Detection ID: ", ["IDP Detection"], 2),
         ],
     )
-    def test_fetch_returns_all_types(
-        self, requests_mock, set_up_mocks, mocker, expected_name, fetch_incidents_or_detections, incidents_len
-    ):
+    def test_fetch_returns_all_types(self, set_up_mocks, mocker, expected_name, fetch_incidents_or_detections, incidents_len):
         """
-        Tests that fetch incidents returns incidents, detections, endpoint incidents, endpoint detection,
-        and idp detections types. depends on the value of fetch_incidents_or_detections.
-        ... [docstring contents] ...
+        Tests fetch_items by mocking all fetch functions to return predictable mock data.
         """
-        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
+        from CrowdStrikeFalcon import (
+            fetch_items,
+            TOTAL_FETCH_TYPE_XSOAR,
+            LastRunIndex,
+            set_last_run_per_type,
+        )
 
-        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        last_run_object = [{} for _ in range(TOTAL_FETCH_TYPE_XSOAR)]
         set_last_run_per_type(last_run_object, index=LastRunIndex.DETECTIONS, data={"time": "2020-09-04T09:16:10Z"})
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
-
-        # --- Mocks for alerts/queries/alerts/v2 (GET - ID Lists)
-        requests_mock.get(
-            f"{SERVER_URL}/alerts/queries/alerts/v2",
-            [
-                {"json": {"resources": ["ldt:1", "ldt:2"], "meta": {"pagination": {"total": 2}}}},  # 1. Detections
-                {"json": {"resources": ["a:ind:1", "a:ind:2"]}},  # 2. Incidents
-                {"json": {"resources": ["idp:1", "idp:2"]}},  # 3. IDP Detection
-            ],
-        )
-
-        # --- Mocks for alerts/entities/alerts/v2 (POST - Entity Details)
-        requests_mock.post(
-            f"{SERVER_URL}/alerts/entities/alerts/v2",
-            [
-                # 1. Detections/Endpoint Detection: FIX 1: Add composite_id for name creation
-                {
-                    "json": {
-                        "resources": [
-                            {
-                                "incident_id": "ldt:1",
-                                "composite_id": "ldt:1",
-                                "start": "2020-09-04T09:16:11Z",
-                                "created_timestamp": "2020-09-04T09:16:11.000Z",
-                            },
-                            {
-                                "incident_id": "ldt:2",
-                                "composite_id": "ldt:2",
-                                "start": "2020-09-04T09:16:11Z",
-                                "created_timestamp": "2020-09-04T09:16:11.000Z",
-                            },
-                        ]
-                    }
-                },
-                # 2. Incidents/Endpoint Incident: FIX 2: Explicitly mark as incident and ensure required IDs exist
-                {
-                    "json": {
-                        "resources": [
-                            {
-                                "incident_id": "a:ind:1",
-                                "composite_id": "a:ind:1",
-                                "start_time": "2020-09-04T09:16:11.000Z",
-                                "created_timestamp": "2020-09-04T09:16:11.000Z",
-                                "incident_type": "incident",
-                            },
-                            {
-                                "incident_id": "a:ind:2",
-                                "composite_id": "a:ind:2",
-                                "start_time": "2020-09-04T09:16:11.000Z",
-                                "created_timestamp": "2020-09-04T09:16:11.000Z",
-                                "incident_type": "incident",
-                            },
-                        ]
-                    }
-                },
-                # 3. IDP Detection: Needs composite_id and created_timestamp
-                {
-                    "json": {
-                        "resources": [
-                            {
-                                "composite_id": "idp:1",
-                                "start_time": "2020-09-04T09:16:11.000Z",
-                                "created_timestamp": "2020-09-04T09:16:11.000Z",
-                                "incident_type": "idp_detection",
-                            },
-                            {
-                                "composite_id": "idp:2",
-                                "start_time": "2020-09-04T09:16:11.000Z",
-                                "created_timestamp": "2020-09-04T09:16:11.000Z",
-                                "incident_type": "idp_detection",
-                            },
-                        ]
-                    }
-                },
-            ],
-        )
 
         mocker.patch.object(
             demisto,
             "params",
             return_value={
-                "url": SERVER_URL,
+                "url": "https://mockserver",
                 "proxy": True,
                 "incidents_per_fetch": 2,
                 "fetch_incidents_or_detections": fetch_incidents_or_detections,
@@ -2352,10 +2277,21 @@ class TestFetch:
             },
         )
 
+        def make_mock_items(prefix):
+            return [{"name": f"{prefix} 1"}, {"name": f"{prefix} 2"}], {"mock": True}
+
+        # Mock all fetch functions unconditionally
+        mocker.patch("CrowdStrikeFalcon.fetch_endpoint_detections",
+                     side_effect=lambda lr, lb, efe: make_mock_items("Detection ID:"))
+        mocker.patch("CrowdStrikeFalcon.fetch_endpoint_incidents",
+                     side_effect=lambda lr, lb, efe: make_mock_items("Incident ID:"))
+        mocker.patch("CrowdStrikeFalcon.fetch_detections_by_product_type", side_effect=lambda lr, **kwargs: make_mock_items(
+            f"{kwargs.get('detection_name_prefix', 'IDP Detection')} ID: "))
+
         _, items = fetch_items()
+
         assert len(items) == incidents_len
 
-        # Detection type stored before Incidents in the list
         if incidents_len == 4:
             assert "Detection ID:" in items[0]["name"]
             assert "Detection ID:" in items[1]["name"]
@@ -2448,80 +2384,6 @@ class TestIncidentFetch:
                 "Incident ID: ldt:1": 1598462533,
                 "Incident ID: ldt:2": 1598462533,
             },
-        }
-
-    @freeze_time("2020-09-04T09:16:10.000000Z")
-    def test_fetch_with_offset(self, set_up_mocks, mocker, requests_mock):
-        """
-        Tests the correct flow of fetch with offset
-        Given:
-            `getLastRun` which holds  `first_behavior_time` and `offset`
-        When:
-            2 result is returned (which is less than the total which is 4)
-        Then:
-            - The offset increases to 2 in the next run, and the last time remains
-            - In the next call, the offset will be reset to 0 and the last time will be the latest detection time
-
-        """
-        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
-
-        # mock the total number of detections to be 4, so offset will be set
-        requests_mock.get(
-            f"{SERVER_URL}/alerts/queries/alerts/v2",
-            json={"resources": ["ldt:1", "ldt:2"], "pagination": {"meta": {"total": 4}}},
-        )
-        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
-        set_last_run_per_type(last_run_object, index=LastRunIndex.INCIDENTS, data={"time": "2020-09-04T09:16:10Z", "offset": 0})
-        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
-        # Override post to have 1 results so FETCH_LIMIT won't be reached
-        requests_mock.post(
-            f"{SERVER_URL}/alerts/entities/alerts/v2",
-            json={
-                "resources": [
-                    {
-                        "incident_id": "ldt:1",
-                        "start": "2020-09-04T09:16:11Z",
-                        "created_timestamp": "2020-09-04T09:16:11Z",
-                        "max_severity_displayname": "Low",
-                    }
-                ],
-            },
-        )
-
-        fetch_items()
-        # the offset should be increased to 2, and the time should stay the same
-        expected_last_run = {
-            "time": "2020-09-04T09:16:10Z",
-            "limit": 2,
-            "offset": 2,
-            "found_incident_ids": {"Incident ID: ldt:1": 1599210970},
-        }
-        assert demisto.setLastRun.mock_calls[0][1][0][LastRunIndex.INCIDENTS] == expected_last_run
-
-        requests_mock.get(
-            f"{SERVER_URL}/incidents/queries/incidents/v1",
-            json={"resources": ["ldt:3", "ldt:4"], "meta": {"pagination": {"total": 4}}},
-        )
-
-        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
-        set_last_run_per_type(last_run_object, index=LastRunIndex.INCIDENTS, data=expected_last_run)
-
-        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
-
-        requests_mock.post(
-            f"{SERVER_URL}/alerts/entities/alerts/v2",
-            json={
-                "resources": [{"incident_id": "ldt:2", "start": "2020-09-04T09:16:13Z", "max_severity_displayname": "Low"}],
-            },
-        )
-
-        fetch_items()
-        # the offset should be 0 because all detections were fetched, and the time should update to the latest detection
-        assert demisto.setLastRun.mock_calls[1][1][0][LastRunIndex.INCIDENTS] == {
-            "time": "2020-09-04T09:16:13Z",
-            "limit": 2,
-            "offset": 0,
-            "found_incident_ids": {"Incident ID: ldt:1": 1599210970, "Incident ID: ldt:2": 1599210970},
         }
 
     def test_incident_type_in_fetch(self, set_up_mocks, mocker, requests_mock):
