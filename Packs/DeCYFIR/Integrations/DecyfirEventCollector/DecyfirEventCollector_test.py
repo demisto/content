@@ -290,7 +290,6 @@ def test_access_logs_fetch_with_same_second_overlap(monkeypatch):
     assert after3 % 1000 == 0, "Access Logs timestamps must round to seconds"
 
 
-
 # --- Test Module ---
 
 
