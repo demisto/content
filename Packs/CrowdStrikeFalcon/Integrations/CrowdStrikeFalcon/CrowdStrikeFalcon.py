@@ -1691,12 +1691,10 @@ def get_detections_entities(detections_ids: list):
 
     # Iterate through the detections_ids list in chunks of 1000 (According to API documentation).
     for i in range(0, len(detections_ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
-        batch_ids = detections_ids[i: i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
+        batch_ids = detections_ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
 
         ids_json = {"composite_ids": batch_ids}
-        demisto.debug(
-            f"Getting detections entities from {url} with {ids_json=} " f"with batch_ids len {len(batch_ids)}."
-        )
+        demisto.debug(f"Getting detections entities from {url} with {ids_json=} " f"with batch_ids len {len(batch_ids)}.")
 
         # Make the API call with the current batch.
         response = http_request("POST", url, data=json.dumps(ids_json))
@@ -2523,9 +2521,7 @@ def get_remote_data_command(args: dict[str, Any]):
                 set_xsoar_entries(updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list)
         # for legacy endpoint detections
         elif incident_type == IncidentType.LEGACY_ENDPOINT_DETECTION:
-            demisto.debug(
-                f"Skipping legacy endpoint detection {remote_incident_id} – legacy mirroring is no longer supported."
-            )
+            demisto.debug(f"Skipping legacy endpoint detection {remote_incident_id} – legacy mirroring is no longer supported.")
         # for endpoint in the new version
         elif incident_type in (
             IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,

@@ -4180,10 +4180,9 @@ DETECTION_FOR_INCIDENT_CASES = [
         "### Detection For Incident\n|behavior_id|detection_ids|incident_id|\n|---|---|---|"
         "\n| example_behavior | example_detection | example_incident_id |\n",
     ),
-    (
-        {"resources": []}, [], None, None, None, "Could not find behaviors for incident zz"
-    ),
+    ({"resources": []}, [], None, None, None, "Could not find behaviors for incident zz"),
 ]
+
 
 @pytest.mark.parametrize(
     "detections, resources, expected_outputs, expected_raw, expected_prefix, expected_md",
@@ -7508,11 +7507,7 @@ def test_error_handler():
             3,
             "product:'ngsiem'+created_timestamp:>'2024-06-19T15:25:00Z'",
         ),
-        (
-            "alerts/queries/alerts/v2?filter=",
-            3,
-            None
-        ),
+        ("alerts/queries/alerts/v2?filter=", 3, None),
     ],
 )
 def test_get_detection___url_and_params(mocker, url_suffix, expected_len, filter_args):
@@ -7668,7 +7663,9 @@ def test_detections_to_human_readable(mocker):
     """
     from CrowdStrikeFalcon import detections_to_human_readable
 
-    expected_output = [{"status": "open", "max_severity": "critical", "detection_id": "123", "created_time": "2022-01-01T00:00:00Z"}]
+    expected_output = [
+        {"status": "open", "max_severity": "critical", "detection_id": "123", "created_time": "2022-01-01T00:00:00Z"}
+    ]
     mock_table_to_markdown = mocker.patch("CrowdStrikeFalcon.tableToMarkdown")
     input = (
         {
@@ -7854,6 +7851,7 @@ def test_resolve_detections_request__url(mocker):
         - Validate that the correct url is used based on the Legacy_version flag
     """
     from CrowdStrikeFalcon import resolve_detections_request
+
     expected_url = "/alerts/entities/alerts/v3"
     http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
     resolve_detections_request(ids=["123"])
