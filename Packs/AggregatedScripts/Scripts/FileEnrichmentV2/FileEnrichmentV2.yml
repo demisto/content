@@ -5,8 +5,8 @@ args:
   isArray: true
 - name: external_enrichment
   description: "Whether to call external integrations for enrichment:
-    - 'true': enrich using enabled external integrations (e.g., VirusTotal (API v3), AlienVault OTX v2).
-    - 'false': Will enrich using WildFire-v2 if available; skip external integrations.
+    - 'true': enrich using all enabled integrations (e.g., VirusTotal (API v3), AlienVault OTX v2).
+    - 'false': Will enrich using only WildFire-v2 if available; skip external integrations.
     If the 'brands' argument is provided, this flag is ignored and enrichment is run only on the brands provided."
   auto: PREDEFINED
   predefined:
@@ -47,7 +47,7 @@ args:
   - 'false'
   required: false
   defaultValue: 'false'
-comment: This script gathers fo;e reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information in the context output.
+comment: This script gathers for reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information in the context output.
 commonfields:
   id: file-enrichment-v2
   version: -1
