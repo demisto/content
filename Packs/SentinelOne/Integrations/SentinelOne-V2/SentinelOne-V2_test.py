@@ -1471,6 +1471,43 @@ def test_create_bulk_ioc(mocker, requests_mock):
     assert command_results.outputs[0]["Creator"] == "mark@test.com"
 
 
+def test_get_threat_analysis_command(mocker, requests_mock):
+    """
+    Given
+        - required argument i.e threat_id
+    When
+        - running sentinelone-threat-analysis command
+    Then
+        - returns CommandResults with Threat Analysis data containing AgentDetectionInfo, AgentRealtimeInfo, and ThreatInfo
+    """
+    threat_analysis_response = util_load_json("test_data/threat_analysis_raw.json")
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/private/threats/12345/analysis", json=threat_analysis_response)
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+
+    mocker.patch.object(demisto, "command", return_value="sentinelone-threat-analysis")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "threat_id": "12345",
+        },
+    )
+
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results = call[0].args[0]
+    assert command_results.outputs_prefix == "SentinelOne.Threat"
+    assert command_results.outputs["ThreatInfo"]["threatId"] == "12345"
+    assert command_results.outputs["AgentDetectionInfo"]["accountName"] == "Test"
+
+
 def test_get_installed_applications(mocker, requests_mock):
     """
     Given
