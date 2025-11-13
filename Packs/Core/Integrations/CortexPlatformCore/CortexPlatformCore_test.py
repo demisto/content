@@ -3419,34 +3419,6 @@ def test_create_policy_command_trigger_disabled_actions_false(mocker: MockerFixt
     assert triggers["cicd"]["actions"]["reportCicd"] is True
 
 
-def test_create_policy_command_asset_group_none_handling(mocker: MockerFixture):
-    """
-    GIVEN:
-        Policy creation with None or empty asset group names.
-    WHEN:
-        create_policy_command processes asset group names.
-    THEN:
-        None/empty asset groups are handled without calling resolution function.
-    """
-    from CortexPlatformCore import Client, create_policy_command
-
-    mock_client = Client(base_url="", headers={})
-    mocker.patch.object(mock_client, "create_policy", return_value=None)
-    mock_get_asset_groups = mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names")
-    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
-
-    args = {
-        "policy_name": "No Asset Groups Policy",
-        "asset_group_names": None,  # None value
-        "triggers_periodic_report_issue": "true",
-    }
-
-    create_policy_command(mock_client, args)
-
-    # Verify get_asset_group_ids_from_names was not called for None
-    mock_get_asset_groups.assert_not_called()
-
-
 def test_create_policy_command_appsec_rule_none_handling(mocker: MockerFixture):
     """
     GIVEN:

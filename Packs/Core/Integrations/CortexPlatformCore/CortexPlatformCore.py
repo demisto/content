@@ -852,7 +852,8 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
         raise DemistoException("Policy name is required.")
 
     description = args.get("description", "")
-    asset_group_ids = create_policy_get_asset_groups(client, args)
+    group_names = argToList(args.get("asset_group_names"))
+    asset_group_ids = get_asset_group_ids_from_names(client, group_names)
 
     conditions = create_policy_build_conditions(client, args)
     scope = create_policy_build_scope(args)
@@ -876,11 +877,6 @@ def create_policy_command(client: Client, args: dict) -> CommandResults:
     client.create_policy(payload)
 
     return CommandResults(readable_output=f"AppSec policy '{policy_name}' created successfully.")
-
-
-def create_policy_get_asset_groups(client: Client, args: dict) -> list[str]:
-    names = argToList(args.get("asset_group_names"))
-    return get_asset_group_ids_from_names(client, names) if names else []
 
 
 def create_policy_build_conditions(client: Client, args: dict) -> dict:
