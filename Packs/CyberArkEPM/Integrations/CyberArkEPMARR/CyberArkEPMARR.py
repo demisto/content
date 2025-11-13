@@ -90,7 +90,7 @@ def search_endpoint_group_id(group_name: str, client: Client) -> str:
     Returns:
         str: The ID of the endpoint group, or None if not found.
     """
-    group_id = ''
+    group_id = ""
     data = {"filter": f"name EQ {group_name}"}
     context = get_integration_context().get(CONTEXT_KEY, {})
     set_id = context.get("set_id")
@@ -199,10 +199,12 @@ def main():
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
     set_name = params.get("set_name")
+
     try:
+        result: Any = None
         client = Client(base_url=base_url, username=username, password=password, application_id=application_id, set_name=set_name)
         if command == "test-module":
-            result = test_module(client)
+            return_results(test_module(client))
         elif command == "cyberarkepm-activate-risk-plan":
             args["action"] = RISK_PLAN_ACTION_ADD
             result = change_risk_plan_command(client, args)
@@ -211,7 +213,7 @@ def main():
             result = change_risk_plan_command(client, args)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
-        return_results(result)  # Returns either str, CommandResults and a list of CommandResults
+        return_results(result)
     # Log exceptions and return errors
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
