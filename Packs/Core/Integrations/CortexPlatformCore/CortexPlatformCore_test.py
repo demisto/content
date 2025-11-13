@@ -3009,3 +3009,214 @@ def test_create_policy_command_json_payload_structure(mocker: MockerFixture):
         assert "isEnabled" in triggers[trigger_type]
         assert "actions" in triggers[trigger_type]
         assert isinstance(triggers[trigger_type]["actions"], dict)
+
+
+def test_get_appsec_rule_ids_from_names_empty_list():
+    """
+    GIVEN:
+        A client and an empty list of AppSec rule names.
+    WHEN:
+        get_appsec_rule_ids_from_names is called.
+    THEN:
+        An empty list is returned without making API calls.
+    """
+    from CortexPlatformCore import Client, get_appsec_rule_ids_from_names
+
+    mock_client = Client(base_url="", headers={})
+    result = get_appsec_rule_ids_from_names(mock_client, [])
+
+    assert result == []
+
+
+def test_create_policy_command_client_create_policy_called_correctly(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and valid policy arguments.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The client.create_policy method is called with correctly formatted JSON.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    import json
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value={"id": "policy_123"})
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=["group_1"])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=["rule_1"])
+
+    args = {
+        "policy_name": "Test Policy",
+        "description": "Test Description",
+        "triggers_periodic_report_issue": "true",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify create_policy was called once
+    mock_create_policy.assert_called_once()
+
+    # Get the JSON payload that was passed
+    call_args = mock_create_policy.call_args[0][0]
+    payload = json.loads(call_args)
+
+    # Verify the JSON structure is valid and contains expected fields
+    assert payload["name"] == "Test Policy"
+    assert payload["description"] == "Test Description"
+    assert "triggers" in payload
+    assert "conditions" in payload
+    assert "scope" in payload
+
+
+def test_create_policy_command_edge_case_empty_asset_groups(mocker: MockerFixture):
+    """
+    GIVEN:
+        A policy creation request with empty asset group names.
+    WHEN:
+        create_policy_command is called with empty asset_group_names.
+    THEN:
+        The policy is created with empty assetGroupIds list.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    import json
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {
+        "policy_name": "Empty Groups Policy",
+        "asset_group_names": "",  # Empty string
+        "triggers_periodic_report_issue": "true",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify the payload has empty asset group IDs
+    call_args = mock_create_policy.call_args[0][0]
+    payload = json.loads(call_args)
+    assert payload["assetGroupIds"] == []
+
+
+def test_create_policy_conditions_builder_coverage(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation arguments with various condition parameters.
+    WHEN:
+        create_policy_command builds the conditions filter.
+    THEN:
+        All condition parameters are properly processed by FilterBuilder.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=["rule_1"])
+
+    args = {
+        "policy_name": "Conditions Test Policy",
+        "conditions_finding_type": "Vulnerabilities,Secrets",
+        "conditions_severity": "high,critical",
+        "conditions_respect_developer_suppression": "true",
+        "conditions_backlog_status": "active",
+        "conditions_package_name": "vulnerable-package",
+        "conditions_package_version": "1.0.0",
+        "conditions_package_operational_risk": "high",
+        "conditions_appsec_rule_names": "Test Rule",
+        "conditions_cvss": "7.5",
+        "conditions_epss": "0.8",
+        "conditions_has_a_fix": "true",
+        "conditions_is_kev": "false",
+        "conditions_secret_validity": "valid",
+        "conditions_license_type": "GPL",
+        "triggers_periodic_report_issue": "true",
+    }
+
+    result = create_policy_command(mock_client, args)
+
+    # Verify successful creation
+    assert result.readable_output == "AppSec policy 'Conditions Test Policy' created successfully."
+    mock_create_policy.assert_called_once()
+
+
+def test_create_policy_scope_builder_coverage(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation arguments with various scope parameters.
+    WHEN:
+        create_policy_command builds the scope filter.
+    THEN:
+        All scope parameters are properly processed by FilterBuilder.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {
+        "policy_name": "Scope Test Policy",
+        "scope_category": "Application,Repository",
+        "scope_business_application_names": "App1,App2",
+        "scope_application_business_criticality": "high",
+        "scope_repository_name": "test-repo",
+        "scope_is_public_repository": "true",
+        "scope_has_deployed_assets": "true",
+        "scope_has_internet_exposed_deployed_assets": "false",
+        "scope_has_sensitive_data_access": "true",
+        "scope_has_privileged_capabilities": "false",
+        "triggers_periodic_report_issue": "true",
+    }
+
+    result = create_policy_command(mock_client, args)
+
+    # Verify successful creation
+    assert result.readable_output == "AppSec policy 'Scope Test Policy' created successfully."
+    mock_create_policy.assert_called_once()
+
+
+def test_create_policy_trigger_configurations_coverage(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation arguments with all trigger configuration combinations.
+    WHEN:
+        create_policy_command processes trigger parameters.
+    THEN:
+        All trigger configurations are properly set in the policy payload.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    import json
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {
+        "policy_name": "Triggers Test Policy",
+        "triggers_periodic_report_issue": "true",
+        "triggers_periodic_override_severity": "critical",
+        "triggers_pr_report_issue": "false",
+        "triggers_pr_block_pr": "true",
+        "triggers_pr_report_pr_comment": "true",
+        "triggers_pr_override_severity": "high",
+        "triggers_cicd_report_issue": "true",
+        "triggers_cicd_block_cicd": "false",
+        "triggers_cicd_report_cicd": "true",
+        "triggers_cicd_override_severity": "medium",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify the triggers are configured correctly
+    call_args = mock_create_policy.call_args[0][0]
+    payload = json.loads(call_args)
+    triggers = payload["triggers"]
+
+    # Verify all trigger types are present and configured
+    assert "periodic" in triggers
+    assert "pr" in triggers
+    assert "cicd" in triggers
