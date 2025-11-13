@@ -440,15 +440,6 @@ Get cases information based on the specified filters.
 | Core.Case.case_domain | String | Domain associated with the case. |
 | Core.Case.custom_fields | Unknown | Custom fields for the case with standardized lowercase, whitespace-free names. |
 
-### core-update-issue
-
-***
-Updates the properties of an issue. This command does not provide an explicit indication of success.
-
-#### Base Command
-
-`core-update-issue`
-
 ### core-search-asset-groups
 
 ***
@@ -541,16 +532,6 @@ Retrieves asset from the Cortex platform using optional filter criteria.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | Issue ID to update. If empty, updates the current issue ID. | Optional |
-| assigned_user_mail | Email address of the user to assign the issue to. | Optional |
-| severity | Change the severity of an issue. Low (1), Medium (2), High (3), Critical (4). Must be a number. Possible values are: 1, 2, 3, 4. | Optional |
-| name | Change the issue name. | Optional |
-| occurred | Change the occurred time of an issue. Supports different time formats, for example: 3 days ago, 2017-09-27T10:00:00+03:00. | Optional |
-| phase | Change the phase of an issue. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
 | page_size | The number of assets to return per page. Default is 100. | Optional |
 | page_number | The page number for the assets to return for pagination. Default is 0. | Optional |
 | asset_names | Comma-separated list of asset names to search for. (e.g., "asset_name1,asset_name2"). | Optional |
@@ -611,3 +592,29 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 | Core.IssueRecommendations.remediation | String | Remediation steps and recommendations for the issue. |
 | Core.IssueRecommendations.playbook_suggestions.playbook_id | String | The ID of the suggested playbook. |
 | Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id | String | The ID of the suggestion rule that generated this recommendation. |
+
+### core-update-issue
+
+***
+Updates the properties of an issue. This command does not provide an explicit indication of success.
+
+#### Base Command
+
+`core-update-issue`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Issue ID to update. If empty, updates the current issue ID. | Optional |
+| assigned_user_mail | Email address of the user to assign the issue to. | Optional |
+| severity | Change the severity of an issue. Possible values are: low, medium, high, critical. | Optional |
+| name | Change the issue name. | Optional |
+| occurred | Change the occurred time of an issue. Supports different time formats, for example: 3 days ago, 2017-09-27T10:00:00+03:00. | Optional |
+| phase | Change the phase of an issue. Possible values are: Triage, Investigation, Containment, Response. | Optional |
+| type | Change the type of an issue. | Optional |
+| description | Change the description of an issue. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
