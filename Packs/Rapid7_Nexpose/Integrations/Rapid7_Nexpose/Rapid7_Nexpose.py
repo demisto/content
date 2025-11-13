@@ -356,17 +356,127 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created report configuration.
         """
-        post_data = {
-            "scope": scope,
-            "template": template_id,
-            "name": report_name,
-            "format": report_format.lower(),
+
+# bring all assets:
+        query = """WITH asset_tags AS (
+    SELECT
+        dta.asset_id,
+        -- Aggregates tag type and name into a single string: (Type: Name, Type: Name, ...)
+        array_to_string(array_agg(dt.tag_type || ': ' || dt.tag_name), ', ') AS aggregated_tags
+    FROM
+        dim_tag_asset dta
+    JOIN
+        dim_tag dt USING (tag_id)
+    GROUP BY
+        dta.asset_id
+)
+
+SELECT DISTINCT
+    da.last_assessed_for_vulnerabilities AS "Last Scan Date",
+    da.asset_id AS "id",
+    da.host_name AS "FQDNS",
+    da.ip_address AS "ipv4", 
+    da.mac_address AS "mac_address",
+    
+    -- OS and Certainty
+    dos.architecture AS "os_architecture",
+    dos.description AS "os_description",
+    dos.family AS "os_family",
+    dos.name AS "os_name",
+    dos.system AS "os_system_name",
+    dos.asset_type AS "os_type",
+    dos.vendor AS "os_vendor",
+    dos.version AS "os_version",
+    daos.certainty AS "os_certainty",
+    atags.aggregated_tags AS "Tags"
+FROM
+    dim_asset da
+LEFT JOIN
+    dim_asset_operating_system daos ON da.asset_id = daos.asset_id
+LEFT JOIN
+    dim_operating_system dos ON da.operating_system_id = dos.operating_system_id
+LEFT JOIN
+    asset_tags atags ON da.asset_id = atags.asset_id -- LEFT JOIN from the CTE
+ORDER BY
+    da.asset_id ASC"""
+
+
+
+
+
+
+
+
+
+
+
+# vulnerabilities query
+#         query = """WITH cve_references AS (
+#     SELECT
+#         dvr.vulnerability_id,
+#         -- Collects all reference links (e.g., CVE-2023-12345) into a single string
+#         array_to_string(array_agg(dvr.reference), ', ') AS aggregated_cves
+#     FROM
+#         dim_vulnerability_reference dvr
+#     WHERE
+#         dvr.source = 'CVE' -- Filters only the CVE source type
+#     GROUP BY
+#         dvr.vulnerability_id
+# ),
+# evidences AS (
+#     SELECT
+#         favf.vulnerability_id,
+#         string_agg(htmlToText(favi.proof), '\n') AS "evidence"
+#     FROM
+#         fact_asset_vulnerability_finding favf
+#     JOIN
+#         fact_asset_vulnerability_instance favi ON favf.vulnerability_id = favi.vulnerability_id
+#     GROUP BY
+#         favf.vulnerability_id
+# )
+# SELECT
+#     favf.asset_id AS "Asset ID",
+#     dv.nexpose_id AS "Vulnerability ID",
+#     da.last_assessed_for_vulnerabilities AS "last_found",
+#     cr.aggregated_cves AS "CVE",
+#     CASE 
+#     WHEN cr.aggregated_cves IS NULL OR cr.aggregated_cves = '' THEN dv.nexpose_id
+#     ELSE dv.nexpose_id || '-' || cr.aggregated_cves 
+# END AS "module_finding_id",
+#     e.evidence AS "evidence",
+#     dv.description AS "description",
+#     da.ip_address AS "target_ip",
+#     -- source
+#     dsn.scan_id AS "scan_name"
+#     -- last_authentication_scan_status
+
+# FROM
+#     fact_asset_vulnerability_finding favf
+# JOIN
+#     dim_vulnerability dv ON favf.vulnerability_id = dv.vulnerability_id
+# JOIN 
+#     dim_asset da ON favf.asset_id = da.asset_id 
+# JOIN 
+#     dim_scan dsn ON favf.scan_id = dsn.scan_id
+# JOIN 
+#     evidences e ON favf.vulnerability_id = e.vulnerability_id
+# LEFT JOIN
+#     cve_references cr ON dv.vulnerability_id = cr.vulnerability_id -- LEFT JOIN from CTE
+
+# ORDER BY
+#     da.asset_id ASC"""
+
+        payload = {
+            "format": "sql-query",
+            "name" : report_name,
+            "query": query,
+            "version" :"2.3.0",
         }
 
         return self._http_request(
             url_suffix="/reports",
             method="POST",
-            json_data=post_data,
+            json_data=payload,
             resp_type="json",
         )
 
@@ -2214,6 +2324,20 @@ class Client(BaseClient):
         )
 
         return self._http_request(method="POST", url_suffix="/asset_groups", json_data=json_data, resp_type="json")
+
+
+    def remove_report_instance(
+        self, report_id, instance_id
+    ) -> dict:
+
+        return self._http_request(method="DELETE", url_suffix=f"/reports/{report_id}/history/{instance_id}")
+
+
+    def remove_report_config(
+        self, report_id
+    ) -> dict:
+
+        return self._http_request(method="DELETE", url_suffix=f"/reports/{report_id}")
 
     def get_asset_groups(
         self,
@@ -6344,6 +6468,37 @@ def list_site_assets_command(client: Client, site_id: str, asset_type: str, targ
     )
 
 
+def remove_report_instnace_command(
+    client: Client,
+    report_id: str,
+    instance_id: str
+):
+    res = client.remove_report_instance(report_id, instance_id)
+
+    return CommandResults(
+        outputs_prefix="Nexpose.AssetGroup",
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=f"done. {res=}",
+        raw_response=res,
+    )
+
+
+def remove_report_config_command(
+    client: Client,
+    report_id: str,
+):
+    res = client.remove_report_config(report_id)
+
+    return CommandResults(
+        outputs_prefix="Nexpose.AssetGroup",
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=f"done. {res=}",
+        raw_response=res,
+    )
+
+
 def create_asset_group_command(
     client: Client,
     name: str,
@@ -6638,6 +6793,10 @@ def main():  # pragma: no cover
             results = get_list_asset_group_command(client=client, **args)
         elif command == "nexpose-create-asset-group":
             results = create_asset_group_command(client=client, **args)
+        elif command == "nexpose-remove-report-instance":
+            results = remove_report_instnace_command(client=client, **args)
+        elif command == "nexpose-remove-report-config":
+            results = remove_report_config_command(client=client, **args)
         else:
             raise NotImplementedError(f"Command {command} not implemented.")
 

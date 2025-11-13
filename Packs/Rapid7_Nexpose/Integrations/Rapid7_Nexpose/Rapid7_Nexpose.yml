@@ -754,7 +754,7 @@ script:
     - description: Asset IDs to create the report on. Can be a comma-separated list.
       isArray: true
       name: assets
-      required: true
+      required: false
     - description: Report template ID to create the report with. If not provided, the first available template will be used.
       name: template
     - description: Report name.
@@ -768,6 +768,7 @@ script:
       - xml
       - html
       - text
+      - csv
     - auto: PREDEFINED
       defaultValue: 'true'
       description: Whether to download the report immediately after the report is generated. Defaults to "true". If the report takes longer than 10 seconds to generate, set to "false".
@@ -1742,6 +1743,7 @@ script:
       - html
       - text
       - nexpose-simple-xml
+      - csv
       description: Report format (uses PDF by default).
       defaultValue: pdf
     name: nexpose-download-report
@@ -2169,6 +2171,21 @@ script:
       required: true
       description: The tag ID.
     description: Delete a tag.
+  - name: nexpose-remove-report-instance
+    arguments:
+    - name: report_id
+      required: true
+      description: The report ID to remove.
+    - name: instance_id
+      required: true
+      description: The report ID to remove.
+    description: Removes a report instance.
+  - name: nexpose-remove-report-config
+    arguments:
+    - name: report_id
+      required: true
+      description: The report ID to remove.
+    description: Removes a report config.
   - name: nexpose-list-tag
     arguments:
     - name: id
