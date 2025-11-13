@@ -5605,6 +5605,10 @@ script:
       description: 'Value of the configuration.'
       hidden: true
       defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
     name: azure-postgres-config-set-disconnection-logging-quick-action
     prettyname: Enable Disconnection Logging on PostgreSQL
     hidden: true
@@ -5641,6 +5645,10 @@ script:
       description: Value of the configuration.
       hidden: true
       defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
     name: azure-postgres-config-set-checkpoint-logging-quick-action
     prettyname: Enable PostgreSQL Checkpoint Logging
     hidden: true
@@ -5677,6 +5685,10 @@ script:
       description: Value of the configuration.
       hidden: true
       defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
     name: azure-postgres-config-set-connection-throttling-quick-action
     prettyname: Enable Connection Throttling on PostgreSQL
     hidden: true
@@ -5713,6 +5725,10 @@ script:
       description: Value of the configuration.
       hidden: true
       defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
     name: azure-postgres-config-set-session-connection-logging-quick-action
     prettyname: Enable Session Connection Logging on PostgreSQL
     hidden: true
@@ -5749,6 +5765,10 @@ script:
       description: Value of the configuration.
       hidden: true
       defaultValue: '4'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
     name: azure-postgres-config-set-log-retention-period-quick-action
     prettyname: Set Postgres Log Retention
     hidden: true
@@ -5785,6 +5805,10 @@ script:
       description: Value of the configuration.
       hidden: true
       defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
     name: azure-postgres-config-set-statement-logging-quick-action
     prettyname: Enable Postgres Statement Logging
     hidden: true
