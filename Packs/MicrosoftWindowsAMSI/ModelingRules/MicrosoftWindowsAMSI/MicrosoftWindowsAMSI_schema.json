@@ -1,5 +1,5 @@
 {
-    "microsoft_amsi_raw": {        
+    "microsoft_amsi_raw": {
         "event_data": {
             "type": "string",
             "is_array": false
@@ -58,6 +58,10 @@
         },
         "opcode": {
             "type": "string",
+            "is_array": false
+        },
+        "time_created": {
+            "type": "datetime",
             "is_array": false
         }
     }

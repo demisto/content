@@ -473,6 +473,7 @@ def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
 
     if "limit" not in query:  # if user did not provide a limit in the query, we will use the default one.
         query = f"{query} \n| limit {DEFAULT_LIMIT!s}"
+
     data: Dict[str, Any] = {
         "request_data": {
             "query": query,
