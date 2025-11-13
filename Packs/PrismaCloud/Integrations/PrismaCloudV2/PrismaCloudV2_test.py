@@ -2280,9 +2280,7 @@ def test_remove_additional_resource_fields(prisma_cloud_v2_client):
     """
     from PrismaCloudV2 import remove_additional_resource_fields
 
-    input = {
-        "data": {
-            "items": [
+    input = [
                 {
                     "data": {
                         "disks": [{"mode": "READ_WRITE", "shieldedInstanceInitialState": "s_val"}],
@@ -2295,22 +2293,16 @@ def test_remove_additional_resource_fields(prisma_cloud_v2_client):
                     }
                 }
             ]
-        }
-    }
-    expected = {
-        "data": {
-            "items": [
-                {
-                    "data": {
-                        "disks": [{"mode": "READ_WRITE"}],
-                        "metadata": {"items": [{"key": "not-removed-value", "value": "not_removed_value_val"}]},
-                    }
-                }
-            ]
-        }
-    }
 
-    remove_additional_resource_fields(input_dict=input)
+    expected = [
+        {
+        "data": {
+            "disks": [{"mode": "READ_WRITE"}],
+            "metadata": {"items": [{"key": "not-removed-value", "value": "not_removed_value_val"}]},
+            }
+        }
+        ]
+    remove_additional_resource_fields(items=input)
 
     assert input == expected
 
