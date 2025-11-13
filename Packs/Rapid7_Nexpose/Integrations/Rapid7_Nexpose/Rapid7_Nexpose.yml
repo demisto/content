@@ -1746,6 +1746,28 @@ script:
       - csv
       description: Report format (uses PDF by default).
       defaultValue: pdf
+    name: nexpose-stream-report
+  - arguments:
+    - name: report_id
+      required: true
+      description: ID of the report.
+    - name: instance_id
+      required: true
+      description: ID of the report instance. Supports a "latest" value.
+    - name: name
+      description: Report name.
+    - name: format
+      auto: PREDEFINED
+      predefined:
+      - pdf
+      - rtf
+      - xml
+      - html
+      - text
+      - nexpose-simple-xml
+      - csv
+      description: Report format (uses PDF by default).
+      defaultValue: pdf
     name: nexpose-download-report
     outputs:
     - contextPath: InfoFile.EntryId
