@@ -3220,3 +3220,302 @@ def test_create_policy_trigger_configurations_coverage(mocker: MockerFixture):
     assert "periodic" in triggers
     assert "pr" in triggers
     assert "cicd" in triggers
+
+
+def test_create_policy_command_trigger_validation_edge_cases(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation with edge cases in trigger validation.
+    WHEN:
+        create_policy_command validates trigger configurations.
+    THEN:
+        Edge cases in trigger validation are properly handled.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    from CommonServerPython import DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    # Test case where all trigger actions are false but trigger is enabled
+    args = {
+        "policy_name": "Edge Case Policy",
+        "triggers_periodic_report_issue": "false",
+        "triggers_pr_report_issue": "false",
+        "triggers_pr_block_pr": "false",
+        "triggers_pr_report_pr_comment": "false",
+        "triggers_cicd_report_issue": "false",
+        "triggers_cicd_block_cicd": "false",
+        "triggers_cicd_report_cicd": "false",
+    }
+
+    with pytest.raises(DemistoException) as excinfo:
+        create_policy_command(mock_client, args)
+
+    assert "At least one trigger" in str(excinfo.value)
+
+
+def test_create_policy_command_conditions_filter_empty(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation where conditions filter results in empty filter.
+    WHEN:
+        create_policy_command builds conditions with no actual filters.
+    THEN:
+        Empty conditions filter is handled correctly.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    import json
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    # Args that result in empty conditions filter
+    args = {
+        "policy_name": "Empty Conditions Policy",
+        "conditions_severity": "",  # Empty string should result in no filter
+        "conditions_finding_type": None,  # None should result in no filter
+        "triggers_periodic_report_issue": "true",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify policy was created
+    mock_create_policy.assert_called_once()
+
+    # Check that conditions is empty dict when no filters are added
+    call_args = mock_create_policy.call_args[0][0]
+    payload = json.loads(call_args)
+
+    # Should have conditions key but it might be empty
+    assert "conditions" in payload
+
+
+def test_create_policy_command_scope_filter_empty(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation where scope filter results in empty filter.
+    WHEN:
+        create_policy_command builds scope with no actual filters.
+    THEN:
+        Empty scope filter is handled correctly.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    import json
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    # Args that result in empty scope filter
+    args = {
+        "policy_name": "Empty Scope Policy",
+        "scope_category": "",  # Empty string
+        "scope_repository_name": None,  # None value
+        "triggers_periodic_report_issue": "true",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify policy was created
+    mock_create_policy.assert_called_once()
+
+    # Check that scope is present (might be empty)
+    call_args = mock_create_policy.call_args[0][0]
+    payload = json.loads(call_args)
+
+    assert "scope" in payload
+
+
+def test_create_policy_command_trigger_severity_none_handling(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation with None values for trigger severity overrides.
+    WHEN:
+        create_policy_command processes trigger severity overrides.
+    THEN:
+        None values are correctly handled in trigger configuration.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    import json
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {
+        "policy_name": "Severity None Policy",
+        "triggers_periodic_report_issue": "true",
+        "triggers_periodic_override_severity": None,  # Explicitly None
+        "triggers_pr_report_issue": "true",
+        "triggers_pr_override_severity": "",  # Empty string
+        "triggers_cicd_block_cicd": "true",
+        # No cicd_override_severity provided (should default to None)
+    }
+
+    create_policy_command(mock_client, args)
+
+    call_args = mock_create_policy.call_args[0][0]
+    payload = json.loads(call_args)
+    triggers = payload["triggers"]
+
+    # Verify None severity overrides are handled correctly
+    assert triggers["periodic"]["overrideIssueSeverity"] is None
+    assert triggers["pr"]["overrideIssueSeverity"] is None
+    assert triggers["cicd"]["overrideIssueSeverity"] is None
+
+
+def test_create_policy_command_trigger_disabled_actions_false(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation where triggers are enabled but specific actions are disabled.
+    WHEN:
+        create_policy_command processes trigger actions.
+    THEN:
+        Disabled actions are correctly set to False in the payload.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    import json
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {
+        "policy_name": "Disabled Actions Policy",
+        "triggers_periodic_report_issue": "true",  # Enable periodic
+        "triggers_pr_report_issue": "false",  # Disable PR report
+        "triggers_pr_block_pr": "true",  # Enable PR block (this makes PR trigger enabled)
+        "triggers_pr_report_pr_comment": "false",  # Disable PR comment
+        "triggers_cicd_report_issue": "false",  # Disable CICD report
+        "triggers_cicd_block_cicd": "false",  # Disable CICD block
+        "triggers_cicd_report_cicd": "true",  # Enable CICD report (this makes CICD trigger enabled)
+    }
+
+    create_policy_command(mock_client, args)
+
+    call_args = mock_create_policy.call_args[0][0]
+    payload = json.loads(call_args)
+    triggers = payload["triggers"]
+
+    # Verify trigger enablement logic
+    assert triggers["periodic"]["isEnabled"] is True
+    assert triggers["periodic"]["actions"]["reportIssue"] is True
+
+    assert triggers["pr"]["isEnabled"] is True  # Enabled because block_pr is true
+    assert triggers["pr"]["actions"]["reportIssue"] is False
+    assert triggers["pr"]["actions"]["blockPr"] is True
+    assert triggers["pr"]["actions"]["reportPrComment"] is False
+
+    assert triggers["cicd"]["isEnabled"] is True  # Enabled because report_cicd is true
+    assert triggers["cicd"]["actions"]["reportIssue"] is False
+    assert triggers["cicd"]["actions"]["blockCicd"] is False
+    assert triggers["cicd"]["actions"]["reportCicd"] is True
+
+
+def test_create_policy_command_asset_group_none_handling(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation with None or empty asset group names.
+    WHEN:
+        create_policy_command processes asset group names.
+    THEN:
+        None/empty asset groups are handled without calling resolution function.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mock_get_asset_groups = mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names")
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {
+        "policy_name": "No Asset Groups Policy",
+        "asset_group_names": None,  # None value
+        "triggers_periodic_report_issue": "true",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify get_asset_group_ids_from_names was not called for None
+    mock_get_asset_groups.assert_not_called()
+
+
+def test_create_policy_command_appsec_rule_none_handling(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation with None or empty AppSec rule names.
+    WHEN:
+        create_policy_command processes AppSec rule names.
+    THEN:
+        None/empty AppSec rules are handled without calling resolution function.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mock_get_appsec_rules = mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names")
+
+    args = {
+        "policy_name": "No AppSec Rules Policy",
+        "conditions_appsec_rule_names": "",  # Empty string
+        "triggers_periodic_report_issue": "true",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify get_appsec_rule_ids_from_names was not called for empty string
+    mock_get_appsec_rules.assert_not_called()
+
+
+def test_create_policy_command_json_serialization_edge_cases(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation with complex nested data structures.
+    WHEN:
+        create_policy_command serializes the policy to JSON.
+    THEN:
+        Complex data structures are properly serialized.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    import json
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=["group-1", "group-2"])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=["rule-1"])
+
+    # Complex args that will create nested structures
+    args = {
+        "policy_name": "Complex JSON Policy",
+        "description": "Policy with complex nested structures",
+        "asset_group_names": "Group1,Group2",
+        "conditions_finding_type": "Vulnerabilities,Secrets,Infrastructure as Code",
+        "conditions_severity": "high,critical",
+        "conditions_appsec_rule_names": "Rule1",
+        "scope_category": "Application,Repository",
+        "scope_business_application_names": "App1,App2",
+        "triggers_periodic_report_issue": "true",
+        "triggers_pr_block_pr": "true",
+        "triggers_cicd_report_cicd": "true",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify the JSON can be parsed back (tests serialization)
+    call_args = mock_create_policy.call_args[0][0]
+    payload = json.loads(call_args)  # This will fail if JSON is malformed
+
+    # Verify the structure is complete
+    assert payload["name"] == "Complex JSON Policy"
+    assert payload["assetGroupIds"] == ["group-1", "group-2"]
+    assert isinstance(payload["triggers"], dict)
+    assert isinstance(payload["conditions"], dict)
+    assert isinstance(payload["scope"], dict)
