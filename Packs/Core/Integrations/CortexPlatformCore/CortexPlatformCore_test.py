@@ -2,7 +2,7 @@ import json
 
 import pytest
 from pytest_mock import MockerFixture
-
+from unittest.mock import call
 import demistomock as demisto
 
 MAX_GET_INCIDENTS_LIMIT = 100
@@ -2378,3 +2378,204 @@ def test_get_issue_recommendations_command_api_calls(mocker):
     assert call_args["table_name"] == "ALERTS_VIEW_TABLE"
     assert call_args["type"] == "grid"
     assert "filter_data" in call_args
+
+
+def test_enable_scanners_command_single_repository(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with a single repository ID and scanner configuration.
+    When:
+        enable_scanners_command is called.
+    Then:
+        The repository configuration is updated successfully and appropriate results are returned.
+    """
+    from CortexPlatformCore import Client, enable_scanners_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_build_payload = mocker.patch("CortexPlatformCore.build_scanner_config_payload", return_value={"test": "payload"})
+    mock_enable_scanners = mocker.patch.object(mock_client, "enable_scanners", return_value={"status": "success"})
+
+    args = {"repository_ids": "repo_001", "enabled_scanners": "scanner1,scanner2", "disable_scanners": "scanner3"}
+
+    result = enable_scanners_command(mock_client, args)
+
+    mock_build_payload.assert_called_once_with(args)
+    mock_enable_scanners.assert_called_once_with({"test": "payload"}, "repo_001")
+    assert "Successfully updated repositories: repo_001" in result.readable_output
+
+
+def test_enable_scanners_command_repository_ids_as_list(mocker: MockerFixture):
+    """
+    Given:
+        A client and args where repository_ids is already a list.
+    When:
+        enable_scanners_command is called.
+    Then:
+        The function handles the list correctly and updates all repositories.
+    """
+    from CortexPlatformCore import Client, enable_scanners_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_build_payload = mocker.patch("CortexPlatformCore.build_scanner_config_payload", return_value={"payload": "test"})
+    mock_enable_scanners = mocker.patch.object(mock_client, "enable_scanners", return_value={"success": True})
+
+    args = {"repository_ids": ["repo_alpha", "repo_beta"], "enable_scanners": "vulnerability_scan"}
+
+    result = enable_scanners_command(mock_client, args)
+
+    mock_build_payload.assert_called_with(args)
+
+    expected_calls = [
+        call({"payload": "test"}, "repo_alpha"),
+        call({"payload": "test"}, "repo_beta"),
+    ]
+    mock_enable_scanners.assert_has_calls(expected_calls)
+    assert "Successfully updated repositories: repo_alpha, repo_beta" in result.readable_output
+
+
+def test_build_scanner_config_payload_secrets_scanner_with_validation(mocker: MockerFixture):
+    """
+    Given:
+        Args with secrets scanner enable and secret_validation set to True.
+    When:
+        build_scanner_config_payload is called.
+    Then:
+        The secrets scanner configuration includes secretValidation option.
+    """
+    from CortexPlatformCore import build_scanner_config_payload
+
+    mocker.patch("CortexPlatformCore.validate_scanner_name", return_value=True)
+
+    args = {"repository_ids": ["repo1"], "enable_scanners": "secrets", "secret_validation": "True"}
+
+    result = build_scanner_config_payload(args)
+
+    expected = {"scanners": {"SECRETS": {"isEnabled": True, "scanOptions": {"secretValidation": True}}}}
+
+    assert result == expected
+
+
+def test_build_scanner_config_payload_secrets_scanner_without_validation(mocker: MockerFixture):
+    """
+    Given:
+        Args with secrets scanner enable and secret_validation set to False.
+    When:
+        build_scanner_config_payload is called.
+    Then:
+        The secrets scanner configuration includes secretValidation as False.
+    """
+    from CortexPlatformCore import build_scanner_config_payload
+
+    mocker.patch("CortexPlatformCore.validate_scanner_name", return_value=True)
+
+    args = {"repository_ids": "repo1", "enable_scanners": "secrets", "secret_validation": "False"}
+
+    result = build_scanner_config_payload(args)
+
+    expected = {"scanners": {"SECRETS": {"isEnabled": True, "scanOptions": {"secretValidation": False}}}}
+
+    assert result == expected
+
+
+def test_build_scanner_config_payload_complete_configuration(mocker: MockerFixture):
+    """
+    Given:
+        Args with all possible configuration options specified.
+    When:
+        build_scanner_config_payload is called.
+    Then:
+        A complete configuration payload with all options is returned.
+    """
+    from CortexPlatformCore import build_scanner_config_payload
+
+    mocker.patch("CortexPlatformCore.validate_scanner_name", return_value=True)
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "repository_ids": ["repo1", "repo2"],
+        "enable_scanners": ["secrets", "iac"],
+        "disable_scanners": ["SCA"],
+        "secret_validation": "True",
+        "pr_scanning": "True",
+        "block_on_error": "False",
+        "tag_resource_blocks": "True",
+        "tag_module_blocks": "False",
+        "exclude_paths": ["exclude1", "exclude2"],
+    }
+
+    result = build_scanner_config_payload(args)
+
+    expected = {
+        "scanners": {
+            "SECRETS": {"isEnabled": True, "scanOptions": {"secretValidation": True}},
+            "IAC": {"isEnabled": True},
+            "SCA": {"isEnabled": False},
+        },
+        "prScanning": {"isEnabled": True, "blockOnError": False},
+        "taggingBot": {"tagResourceBlocks": True, "tagModuleBlocks": False},
+        "excludedPaths": ["exclude1", "exclude2"],
+    }
+
+    assert result == expected
+
+
+def test_build_scanner_config_payload_empty_scanners_lists(mocker: MockerFixture):
+    """
+    Given:
+        Args with empty enabled_scanners and disable_scanners lists.
+    When:
+        build_scanner_config_payload is called.
+    Then:
+        A configuration payload without scanners section is returned.
+    """
+    from CortexPlatformCore import build_scanner_config_payload
+
+    mocker.patch("CortexPlatformCore.validate_scanner_name", return_value=True)
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {"repository_ids": "repo1", "enable_scanners": [], "disable_scanners": []}
+
+    result = build_scanner_config_payload(args)
+
+    expected = {}
+
+    assert result == expected
+
+
+def test_build_scanner_config_payload_invalid_scanner_names(mocker: MockerFixture):
+    """
+    Given:
+        Args with invalid scanner names that fail validation.
+    When:
+        build_scanner_config_payload is called.
+    Then:
+        Invalid scanners are excluded from the configuration.
+    """
+
+    def mock_validate_scanner_name(scanner):
+        return scanner in [
+            "iac",
+            "sca",
+            "secrets",
+        ]
+
+    mocker.patch("CortexPlatformCore.validate_scanner_name", side_effect=mock_validate_scanner_name)
+
+
+def test_build_scanner_config_payload_enable_and_disable_same_scanner(mocker: MockerFixture):
+    """
+    Given:
+        Args with the same scanner in both enabled_scanners and disable_scanners lists.
+    When:
+        build_scanner_config_payload is called.
+    Then:
+        An error is thrown due to conflicting scanner configuration.
+    """
+    from CortexPlatformCore import build_scanner_config_payload
+
+    mocker.patch("CortexPlatformCore.validate_scanner_name", return_value=True)
+
+    args = {"repository_ids": "repo1", "enable_scanners": ["iac"], "disable_scanners": ["iac"]}
+
+    with pytest.raises(ValueError):
+        build_scanner_config_payload(args)
