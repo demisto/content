@@ -45,7 +45,8 @@ script:
     - description: Allow multiple endpoints to be added to the risk plan.
       name: allow_multiple_endpoints
       required: false
-    - defaultvalue: true
+      default: true
+      defaultValue: 'true'
       type: 8
     description: Activates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-activate-risk-plan
@@ -66,7 +67,8 @@ script:
     - description: Allow multiple endpoints to be removed from risk plan.
       name: allow_multiple_endpoints
       required: false
-    - defaultvalue: true
+      default: true
+      defaultValue: 'true'
       type: 8
     description: Deactivates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-deactivate-risk-plan
