@@ -451,9 +451,9 @@ Retrieve asset groups from the Cortex platform with optional filtering.
 
 #### Input
 
-| name | JSON list of asset groups to search for. (e.g. `["group1", "group2"]`). | Optional |
+| name | A JSON-encoded string of asset group names to search for. Supports substring matching. (e.g., `["group1", "group2"]`). | Optional |
 | type | Filter asset groups by type. | Optional |
-| description | JSON list of descriptions to search for. (e.g. `["description1", "description2"]`). | Optional |
+| description | A JSON-encoded string of asset group descriptions to search for. Supports substring matching. (e.g., `["description1", "description2"]`). | Optional |
 | limit | The maximum number of groups to return. | Optional |
 | id | Comma separated list of ids to search for. | Optional |
 
@@ -468,6 +468,8 @@ Retrieve asset groups from the Cortex platform with optional filtering.
 | Core.AssetGroups.modified_by_pretty | String | The formatted name of the user who created the asset group. |
 | Core.AssetGroups.created_by | String | The user who created the asset group. |
 | Core.AssetGroups.created_by_pretty | String | The formatted name of the user who created the asset group. |
+| Core.AssetGroupsMetadata.returned_count | String | The actual number of asset groups that match all filter criteria and returned in this specific response. |
+| Core.AssetGroupsMetadata.filtered_count | String | The total number of asset groups in the system that match all filter criteria. |
 
 ### core-get-vulnerabilities
 
