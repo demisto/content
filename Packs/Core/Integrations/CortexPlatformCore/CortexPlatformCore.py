@@ -1005,12 +1005,12 @@ def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
             reply = response.get("reply", {})
             data = reply.get("DATA", [])
             all_appsec_issues.extend(data)
-            if len(all_appsec_issues) >= limit:
-                break
         except Exception as e:
             raise DemistoException(f"Failed to retrieve issues from the {table_name} table: {e}")
 
-    filtered_appsec_issues = [normalize_and_filter_appsec_issue(issue) for issue in all_appsec_issues]
+    sorted_issues = sorted(all_appsec_issues, key=lambda issue: issue.get(sort_field, ""), reverse=(sort_order == "DESC"))
+    sorted_issues = sorted_issues[:limit]
+    filtered_appsec_issues = [normalize_and_filter_appsec_issue(issue) for issue in sorted_issues]
 
     readable_output = tableToMarkdown(
         "Application Security Issues", filtered_appsec_issues, headerTransform=string_to_table_header, sort_headers=False

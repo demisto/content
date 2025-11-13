@@ -1370,6 +1370,7 @@ script:
           predefined:
             - DESC
             - ASC
+          defaultValue: DESC
         - name: start_time
           description: "The start time for filtering according to issue insert time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
         - name: end_time
