@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: CyberArkEPMARR_test
+  id: CyberArkEPMARR
   version: -1
 configuration:
 - additionalinfo: 'Example: https://login.epm.cyberark.com'

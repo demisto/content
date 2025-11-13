@@ -15,17 +15,7 @@ RISK_PLAN_ACTION_REMOVE = "remove"
 
 
 class Client(BaseClient):
-
-    def __init__(
-        self,
-        base_url,
-        username,
-        password,
-        application_id,
-        set_name=None,
-        verify=True,
-        proxy=False
-    ):
+    def __init__(self, base_url, username, password, application_id, set_name=None, verify=True, proxy=False):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self._headers = {
             "Accept": "application/json",
@@ -36,7 +26,6 @@ class Client(BaseClient):
         self.application_id = application_id
         self.set_name = set_name
         self.epm_auth_to_cyber_ark()
-
 
     def epm_auth_to_cyber_ark(self):  # pragma: no cover
         data = {
@@ -57,6 +46,7 @@ class Client(BaseClient):
 
 """ HELPER FUNCTIONS """
 
+
 def search_endpoints(endpoint_name: str, external_ip: str, allow_multiple_endpoints: bool, client: Client) -> list:
     """Searches for endpoints by name and IP address.
 
@@ -69,12 +59,10 @@ def search_endpoints(endpoint_name: str, external_ip: str, allow_multiple_endpoi
     Returns:
         list: A list of endpoint IDs that match the search criteria.
     """
-    data = {
-        "filter": f"name EQ {endpoint_name} and ip EQ {external_ip}"
-    }
+    data = {"filter": f"name EQ {endpoint_name} and ip EQ {external_ip}"}
     sets = client.get_sets()
     if client.set_name:
-        set_ids = [set["Id"] for set in sets.get("Sets", []) if  client.set_name in set.get("Name")]
+        set_ids = [set["Id"] for set in sets.get("Sets", []) if client.set_name in set.get("Name")]
     else:
         set_ids = [set["Id"] for set in sets.get("Sets", [])]
     for set_id in set_ids:
@@ -82,16 +70,15 @@ def search_endpoints(endpoint_name: str, external_ip: str, allow_multiple_endpoi
         result = client._http_request("POST", url_suffix=url_suffix, json_data=data)
         if result.get("endpoints"):
             if allow_multiple_endpoints:
-                endpoint_ids = [endpoint.get("id") for endpoint in result.get("endpoints") if endpoint.get("connectionStatus") == "Connected"]
+                endpoint_ids = [
+                    endpoint.get("id") for endpoint in result.get("endpoints") if endpoint.get("connectionStatus") == "Connected"
+                ]
             else:
                 endpoint_ids = [result.get("endpoints")[0].get("id")]
-            set_integration_context({
-                CONTEXT_KEY: {
-                    "set_id": set_id
-                }
-            })
+            set_integration_context({CONTEXT_KEY: {"set_id": set_id}})
             return endpoint_ids
     return []
+
 
 def search_endpoint_group_id(group_name: str, client: Client) -> str:
     """Searches for an endpoint group ID by its name.
@@ -103,17 +90,16 @@ def search_endpoint_group_id(group_name: str, client: Client) -> str:
     Returns:
         str: The ID of the endpoint group, or None if not found.
     """
-    data = {
-        "filter": f"name EQ {group_name}"
-    }
+    group_id = ''
+    data = {"filter": f"name EQ {group_name}"}
     context = get_integration_context().get(CONTEXT_KEY, {})
     set_id = context.get("set_id")
     url_suffix = f"Sets/{set_id}/Endpoints/Groups/Search"
     result = client._http_request("POST", url_suffix=url_suffix, json_data=data)
     if result and len(result) > 0:
         endpoint_group_id = result[0].get("id")
-        return endpoint_group_id
-    return None
+        group_id = endpoint_group_id
+    return group_id
 
 
 def add_endpoint_to_group(endpoint_ids: list[str], endpoint_group_id: str, client: Client) -> dict:
@@ -124,9 +110,7 @@ def add_endpoint_to_group(endpoint_ids: list[str], endpoint_group_id: str, clien
         endpoint_group_id (str): The ID of the group to add the endpoint to.
         client (Client): The CyberArk EPM client.
     """
-    data = {
-        "membersIds": endpoint_ids
-    }
+    data = {"membersIds": endpoint_ids}
     context = get_integration_context().get(CONTEXT_KEY, {})
     set_id = context.get("set_id")
     url_suffix = f"Sets/{set_id}/Endpoints/Groups/{endpoint_group_id}/Members/ids"
@@ -141,32 +125,27 @@ def remove_endpoint_from_group(endpoint_ids: list[str], endpoint_group_id: str, 
         endpoint_group_id (str): The ID of the group to remove the endpoint from.
         client (Client): The CyberArk EPM client.
     """
-    data = {
-        "membersIds": endpoint_ids
-    }
+    data = {"membersIds": endpoint_ids}
     context = get_integration_context().get(CONTEXT_KEY, {})
     set_id = context.get("set_id")
     url_suffix = f"Sets/{set_id}/Endpoints/Groups/{endpoint_group_id}/Members/ids/remove"
     return client._http_request("POST", url_suffix=url_suffix, json_data=data)
 
+
 """ COMMAND FUNCTIONS """
 
 
-def change_risk_plan_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
-    risk_plan = args.get("risk_plan")
-    endpoint_name = args.get("endpoint_name")
-    external_ip = args.get("external_ip")
+def change_risk_plan_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    risk_plan = args.get("risk_plan", "")
+    endpoint_name = args.get("endpoint_name", "")
+    external_ip = args.get("external_ip", "")
     action = args.get("action", RISK_PLAN_ACTION_ADD)
     allow_multiple_endpoints = args.get("allow_multiple_endpoints", True)
 
     # Search for endpoints
     endpoint_ids = search_endpoints(
-        endpoint_name=endpoint_name,
-        external_ip=external_ip,
-        allow_multiple_endpoints=allow_multiple_endpoints,
-        client=client)
+        endpoint_name=endpoint_name, external_ip=external_ip, allow_multiple_endpoints=allow_multiple_endpoints, client=client
+    )
 
     if not endpoint_ids:
         raise DemistoException(f"No Endpoints found matching the name: {endpoint_name} and External IP: {external_ip}")
@@ -176,21 +155,16 @@ def change_risk_plan_command(
     if not endpoint_group_id:
         raise DemistoException(f"No Endpoint Group found matching the name: {risk_plan}")
 
-
     if action == RISK_PLAN_ACTION_ADD:
         raw_result = add_endpoint_to_group(endpoint_ids, endpoint_group_id, client)
     elif action == RISK_PLAN_ACTION_REMOVE:
         raw_result = remove_endpoint_from_group(endpoint_ids, endpoint_group_id, client)
     else:
         raise DemistoException(f"Invalid action: {action}")
-    result_context = {
-        "Endpoint_IDs": ",".join(endpoint_ids),
-        "Risk_Plan": risk_plan,
-        "Action": action
-    }
-    human_readable = tableToMarkdown(name="Risk Plan changed successfully",
-                                     t=result_context,
-                                     headers=["Endpoint_IDs", "Risk_Plan", "Action"])
+    result_context = {"Endpoint_IDs": ",".join(endpoint_ids), "Risk_Plan": risk_plan, "Action": action}
+    human_readable = tableToMarkdown(
+        name="Risk Plan changed successfully", t=result_context, headers=["Endpoint_IDs", "Risk_Plan", "Action"]
+    )
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix="CyberArkEPMARR",
@@ -198,6 +172,7 @@ def change_risk_plan_command(
         outputs=result_context,
         raw_response=raw_result,
     )
+
 
 def test_module(client: Client) -> str:
     """
@@ -225,13 +200,7 @@ def main():
     password = params.get("credentials").get("password")
     set_name = params.get("set_name")
     try:
-        client = Client(
-            base_url=base_url,
-            username=username,
-            password=password,
-            application_id=application_id,
-            set_name=set_name
-        )
+        client = Client(base_url=base_url, username=username, password=password, application_id=application_id, set_name=set_name)
         if command == "test-module":
             result = test_module(client)
         elif command == "cyberarkepm-activate-risk-plan":
@@ -242,9 +211,7 @@ def main():
             result = change_risk_plan_command(client, args)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
-        return_results(
-            result
-        )  # Returns either str, CommandResults and a list of CommandResults
+        return_results(result)  # Returns either str, CommandResults and a list of CommandResults
     # Log exceptions and return errors
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
