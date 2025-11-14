@@ -519,3 +519,94 @@ def test_scout_ip_list_command_for_all_ips_invalid(mock_client):
         scout_ip_list_command(mock_client, args)
 
     assert err.value.code == 0
+
+
+def test_ip_command_with_foundation_api(mock_client, requests_mock, mocker):
+    """
+    Test case scenario for successful execution of ip_command using Foundation API.
+
+    Given:
+       - mocked client with use_foundation_api=True and force_use_scout_details_api=False.
+    When:
+       - Calling [ip_command] function.
+    Then:
+       - Uses Foundation API and returns CommandResults from ip_enrichment_using_foundation_api.
+    """
+    response = util_load_json("test_data/scout_ip_list_response.json")
+
+    requests_mock.get(f'{BASE_URL}{ENDPOINTS["LIST_IPS"]}', json=response, status_code=200)
+
+    # Mock parameters with Foundation API enabled
+    params = {"use_foundation_api": True, "integrationReliability": "A - Completely reliable", "create_relationships": True}
+    args = {"ip": "0.0.0.1", "force_use_scout_details_api": "No"}
+
+    mocker.patch.object(demisto, "params", return_value=params)
+
+    from TeamCymruScout import ip_command
+
+    results = ip_command(mock_client, args)
+
+    # Verify Foundation API was used
+    assert len(results) == 2  # IP results + usage result
+    assert results[0].outputs_prefix == OUTPUT_PREFIX["IP"]
+    assert results[1].outputs_prefix == OUTPUT_PREFIX["QUERY_USAGE"]
+
+
+def test_ip_command_with_scout_details_api(mock_client, requests_mock, mocker):
+    """
+    Test case scenario for successful execution of ip_command using Scout Details API (default).
+
+    Given:
+       - mocked client with default parameters (Scout Details API).
+    When:
+       - Calling [ip_command] function.
+    Then:
+       - Uses Scout Details API and returns individual IP request results.
+    """
+    response = util_load_json("test_data/ip_response.json")
+
+    requests_mock.get(f'{BASE_URL}{ENDPOINTS["IP_DETAILS"].format("0.0.0.1")}', json=response, status_code=200)
+
+    # Mock parameters with default settings (Scout Details API)
+    params = {"use_foundation_api": False, "integrationReliability": "A - Completely reliable", "create_relationships": True}
+    args = {"ip": "0.0.0.1"}
+
+    mocker.patch.object(demisto, "params", return_value=params)
+
+    from TeamCymruScout import ip_command
+
+    results = ip_command(mock_client, args)
+
+    # Verify Scout Details API was used
+    assert len(results) == 2  # IP result + usage result
+    assert results[0].outputs_prefix == OUTPUT_PREFIX["IP"]
+    assert results[1].outputs_prefix == OUTPUT_PREFIX["QUERY_USAGE"]
+
+
+def test_ip_command_foundation_api_with_scout_details_override(mock_client, requests_mock, mocker):
+    """
+    Test case scenario for ip_command when both use_foundation_api=True and force_use_scout_details_api=True.
+
+    Given:
+       - mocked client with use_foundation_api=True and force_use_scout_details_api=True.
+    When:
+       - Calling [ip_command] function.
+    Then:
+       - Should use Scout Details API (force_use_scout_details_api takes priority).
+    """
+    response = util_load_json("test_data/ip_response.json")
+
+    requests_mock.get(f'{BASE_URL}{ENDPOINTS["IP_DETAILS"].format("0.0.0.1")}', json=response, status_code=200)
+
+    # Mock parameters with both APIs enabled, but force_use_scout_details_api=True should take priority
+    params = {"use_foundation_api": True, "integrationReliability": "A - Completely reliable", "create_relationships": True}
+    args = {"ip": "0.0.0.1", "force_use_scout_details_api": "Yes"}
+
+    mocker.patch.object(demisto, "params", return_value=params)
+
+    from TeamCymruScout import ip_command
+
+    results = ip_command(mock_client, args)
+
+    # Verify Scout Details API was used despite Foundation API being enabled
+    assert len(results) == 2  # IP result + usage result
