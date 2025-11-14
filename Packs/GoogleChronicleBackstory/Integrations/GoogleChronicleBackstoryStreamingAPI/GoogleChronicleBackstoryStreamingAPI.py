@@ -18,6 +18,7 @@ MAX_CONSECUTIVE_FAILURES = 7
 
 BACKSTORY_API_V2_URL = "https://{}backstory.googleapis.com/v2"
 SECOPS_V1_ALPHA_URL = "https://chronicle.{}.rep.googleapis.com/v1alpha"
+OLDER_SECOPS_V1_ALPHA_URL = "https://{}-chronicle.googleapis.com/v1alpha"
 
 ENDPOINTS = {
     # Stream detections endpoint.
@@ -133,6 +134,10 @@ class Client:
         # V1 Alpha API parameters
         self.project_id = service_account_credential.get("project_id", "")
         self.project_instance_id = params.get("project_instance_id", "")
+        project_number = params.get("project_number", "")
+        self.project_number = project_number if project_number else self.project_id
+        url_format = params.get("url_format", "<chronicle>.<REGION>.<rep.googleapis.com>").lower()
+        self.use_new_url_format = url_format == "<chronicle>.<region>.<rep.googleapis.com>"
         self.use_v1_alpha = use_v1_alpha
 
     def build_http_client(self):
@@ -264,6 +269,7 @@ def validate_configuration_parameters(param: dict[str, Any], command: str) -> tu
 
         use_v1_alpha = argToBoolean(param.get("use_v1_alpha", "false"))
         project_instance_id = param.get("project_instance_id", "")
+        project_number = param.get("project_number", "")
         project_location = param.get("region", "").lower()
 
         if project_location == "other":
@@ -271,6 +277,9 @@ def validate_configuration_parameters(param: dict[str, Any], command: str) -> tu
 
         if use_v1_alpha and not project_instance_id:
             raise ValueError("Please Provide the Google SecOps Project Instance ID to use V1 Alpha API.")
+
+        if use_v1_alpha and project_number and (not project_number.isnumeric() or project_number == "0"):
+            raise ValueError("Google SecOps Project Number should be a positive number.")
 
         if use_v1_alpha and not project_location:
             raise ValueError("Please Provide the valid region to use V1 Alpha API.")
@@ -742,12 +751,16 @@ def create_url_path(client: Client) -> str:
     :rtype: str
     """
     if client.use_v1_alpha:
-        project_id = client.project_id
+        project_number = client.project_number
         project_instance_id = client.project_instance_id
         project_location = client.region[:-1]
-        parent = f"projects/{project_id}/locations/{project_location}/instances/{project_instance_id}"
+        parent = f"projects/{project_number}/locations/{project_location}/instances/{project_instance_id}"
 
-        url = f"{SECOPS_V1_ALPHA_URL}/{parent}{ENDPOINTS['V1_ALPHA_STREAM_DETECTIONS_ENDPOINT']}"
+        if client.use_new_url_format:
+            url = f"{SECOPS_V1_ALPHA_URL}/{parent}{ENDPOINTS['V1_ALPHA_STREAM_DETECTIONS_ENDPOINT']}"
+        else:
+            url = f"{OLDER_SECOPS_V1_ALPHA_URL}/{parent}{ENDPOINTS['V1_ALPHA_STREAM_DETECTIONS_ENDPOINT']}"
+
         url = url.format(project_location)
     else:
         url = f"{BACKSTORY_API_V2_URL}{ENDPOINTS['STREAM_DETECTIONS_ENDPOINT']}"
