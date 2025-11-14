@@ -123,6 +123,13 @@
                     },
                     "simple": ""
                 },
+                "Bitsight Remediation Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation_status",
+                        "transformers": []
+                    }
+                },
                 "category": {
                     "complex": {
                         "accessor": "[0].category",
@@ -131,6 +138,38 @@
                         "transformers": []
                     },
                     "simple": ""
+                },
+                "dbotMirrorDirection": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_direction",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_id",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorInstance": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_instance",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorTags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_tags",
+                        "transformers": []
+                    }
                 },
                 "details": {
                     "complex": {
