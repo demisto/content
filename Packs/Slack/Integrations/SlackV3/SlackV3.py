@@ -1577,7 +1577,8 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         data: dict = req.payload
         event: dict = data.get("event", {})
         text = event.get("text", "")
-        user_id = data.get("user", {}).get("id", "")
+        user_profile = data.get("user", {})
+        user_id = user_profile.get("id", "")
         if not user_id:
             user_id = event.get("user", "")
         channel = event.get("channel", "")
@@ -1611,7 +1612,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                     if state:
                         action_dict = {
                             "xsoar-button-submit": "Successful",
-                            "submitting_user": user
+                            "submitting_user": user_profile
                         }
                         action_dict.update(state)
                         action_text = json.dumps(action_dict)
