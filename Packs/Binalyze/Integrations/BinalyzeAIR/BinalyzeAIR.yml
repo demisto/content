@@ -97,8 +97,91 @@ script:
       description: Organization Id of endpoint.
       type: number
     description: Acquire evidence from an endpoint.
-  dockerimage: demisto/python3:3.11.10.115186
+  - arguments:
+    - name: description
+    - name: rule
+    - auto: PREDEFINED
+      name: engine
+      predefined:
+      - yara
+      - sigma
+      - osquery
+    - auto: PREDEFINED
+      name: searchIn
+      predefined:
+      - system
+      - memory
+      - both
+      - event-records
+    - description: comma-seperated values.
+      name: organizationIds
+    name: binalyze-air-create-triage-rule
+  - arguments:
+    - name: rule
+    - auto: PREDEFINED
+      name: engine
+      predefined:
+      - yara
+      - sigma
+      - osquery
+    name: binalyze-air-validate-triage-rule
+  - arguments:
+    - name: name
+    - name: organizationId
+      required: true
+    - name: ownerUserId
+      required: true
+    - auto: PREDEFINED
+      name: visibility
+      predefined:
+      - Public to Organization
+      - Private to Users
+      required: true
+    - name: assignedUserIds
+    name: binalyze-air-create-case
+  - arguments:
+    - name: description
+    - name: rule
+    - auto: PREDEFINED
+      name: searchIn
+      predefined:
+      - system
+      - memory
+      - both
+      - event-records
+    - name: organizationIds
+    name: binalyze-air-update-triage-rule
+  - arguments:
+    - name: file_name
+    name: binalyze-air-download-file
+  - arguments:
+    - name: caseId
+    - description: comma separeted values.
+      name: triageRuleIds
+    - auto: PREDEFINED
+      defaultValue: use-policy
+      name: task_config_choice
+      predefined:
+      - use-policy
+      - use-custom-options
+    - defaultValue: '8'
+      description: min:1 max:100.
+      name: task_config_cpu_limit
+    - description: device name probably.
+      name: hostname
+    - auto: PREDEFINED
+      name: mitreAttack
+      predefined:
+      - 'True'
+      - 'False'
+    - description: comma separated values.
+      name: excludedEndpointIds
+    - description: comma separated values.
+      name: includedEndpointIds
+    name: binalyze-air-assign-triage-task
+  dockerimage: demisto/python3:3.12.12.5490952
   subtype: python3
+  runonce: false
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
