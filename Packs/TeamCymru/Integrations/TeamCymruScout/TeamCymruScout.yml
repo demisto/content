@@ -5,6 +5,9 @@ name: Team Cymru Scout
 display: Team Cymru Scout
 category: Data Enrichment & Threat Intelligence
 description: Team Cymru's Scout integration with Palo Alto XSOAR helps streamline incident triage and accelerate threat response by providing domain and threat intelligence data.
+sectionorder:
+- Connect
+- Collect
 configuration:
 - additionalinfo: The authentication type used for secure communication with the Team Cymru Scout platform.
   defaultvalue: API Key
@@ -15,18 +18,21 @@ configuration:
   - Basic Auth
   type: 15
   required: true
+  section: Connect
 - displaypassword: API Key
   additionalinfo: "The API key used for secure communication with the Team Cymru Scout platform. Required if \"API Key\" as Authentication Type is selected."
   name: api_key
   hiddenusername: true
   type: 9
   required: false
+  section: Connect
 - display: Username
   displaypassword: Password
   additionalinfo: "The username and password used for secure communication with the Team Cymru Scout platform. Required if \"Basic Auth\" as Authentication Type is selected."
   name: basic_auth
   type: 9
   required: false
+  section: Connect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -41,28 +47,33 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
+  section: Collect
 - defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of enrichment.
   display: Create relationships
   name: create_relationships
   type: 8
   required: false
+  section: Collect
 - name: use_foundation_api
   display: Use Foundation API for IP enrichment
   additionalinfo: 'Enable this parameter to allow the use of Foundation API for the "ip" command. If not selected, then "ip" command will utilize the Scout details API endpoint.'
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Collect
 - name: proxy
   display: Use system proxy settings
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Connect
 script:
   script: ''
   type: python
