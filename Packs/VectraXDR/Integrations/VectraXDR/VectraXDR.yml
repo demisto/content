@@ -1063,6 +1063,45 @@ script:
       type: String
   - arguments:
     - default: false
+      description: Specify the id of the detection.
+      isArray: false
+      name: detection_id
+      required: true
+      secret: false
+    - default: false
+      description: Note to be added in the specified detection_id.
+      isArray: false
+      name: note
+      required: true
+      secret: false
+    deprecated: false
+    description: Add a note to the detection.
+    execution: false
+    name: vectra-detections-note-add
+    outputs:
+    - contextPath: Vectra.Detection.Notes.entity_id
+      description: ID of the entity associated with the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Detection.Notes.date_created
+      description: Date when the note was created.
+      type: Date
+    - contextPath: Vectra.Detection.Notes.date_modified
+      description: Date when the note was last modified.
+      type: Unknown
+    - contextPath: Vectra.Detection.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.modified_by
+      description: User who last modified the note.
+      type: Unknown
+    - contextPath: Vectra.Detection.Notes.note
+      description: Content of the note.
+      type: String
+  - arguments:
+    - default: false
       description: Specify the id of the entity.
       isArray: false
       name: entity_id
@@ -1118,6 +1157,51 @@ script:
       type: String
   - arguments:
     - default: false
+      description: Specify the id of the detection.
+      isArray: false
+      name: detection_id
+      required: true
+      secret: false
+    - default: false
+      description: Specify the ID of the note.
+      isArray: false
+      name: note_id
+      required: true
+      secret: false
+    - default: false
+      description: Note to be updated for the specified note_id.
+      isArray: false
+      name: note
+      required: true
+      secret: false
+    deprecated: false
+    description: Update a note in the detection.
+    execution: false
+    name: vectra-detections-note-update
+    outputs:
+    - contextPath: Vectra.Detection.Notes.entity_id
+      description: ID of the entity associated with the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Detection.Notes.date_created
+      description: Date when the note was created.
+      type: Date
+    - contextPath: Vectra.Detection.Notes.date_modified
+      description: Date when the note was last modified.
+      type: Unknown
+    - contextPath: Vectra.Detection.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.modified_by
+      description: User who last modified the note.
+      type: Unknown
+    - contextPath: Vectra.Detection.Notes.note
+      description: Content of the note.
+      type: String
+  - arguments:
+    - default: false
       description: Specify the ID of the entity.
       isArray: false
       name: entity_id
@@ -1143,6 +1227,23 @@ script:
     description: Remove a note from the entity.
     execution: false
     name: vectra-entity-note-remove
+  - arguments:
+    - default: false
+      description: Specify the ID of the detection.
+      isArray: false
+      name: detection_id
+      required: true
+      secret: false
+    - default: false
+      description: Specify the ID of the note.
+      isArray: false
+      name: note_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove a note from the detection.
+    execution: false
+    name: vectra-detections-note-remove
   - arguments:
     - default: false
       description: Provide a list of detection IDs separated by commas or a single detection ID.
@@ -1212,16 +1313,16 @@ script:
       name: entity_id
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       description: Specify the type of the entity.
       isArray: false
       name: entity_type
+      required: true
+      secret: false
+      auto: PREDEFINED
       predefined:
       - account
       - host
-      required: true
-      secret: false
     - default: false
       description: Comma-separated values of tags to be removed from the entity.
       isArray: true
@@ -1497,12 +1598,12 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: Updated by XSOAR.
       description: A note to be added for resolving an assignment in the entity.
       isArray: false
       name: note
       required: false
       secret: false
+      defaultValue: Updated by XSOAR.
     - default: false
       description: Triage rule for resolving an assignment in the entity.
       isArray: false
@@ -1680,34 +1781,38 @@ script:
       name: entity_ids
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Specify the type of the entity.
+    - default: false
+      description: |-
+        Specify the type of the entity.
       isArray: false
       name: entity_type
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - account
       - host
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Filter by resolved status.
+    - default: false
+      description: |-
+        Filter by resolved status.
       isArray: false
       name: resolved
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - default: false
-      description: Filter by user ids of the assignment. Comma-separated values supported.
+      description: |-
+        Filter by user ids of the assignment. Comma-separated values supported.
       isArray: false
       name: assignees
       required: false
       secret: false
     - default: false
-      description: Filter by outcome ids of the resolution. Comma-separated values supported.
+      description: |-
+        Filter by outcome ids of the resolution. Comma-separated values supported.
       isArray: false
       name: resolution
       required: false
@@ -1719,19 +1824,20 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '1'
-      description: Enables the caller to specify a particular page of results.
+      description: |-
+        Enables the caller to specify a particular page of results.
       isArray: false
       name: page
       required: false
       secret: false
+      defaultValue: '1'
     - default: false
-      defaultValue: '50'
       description: Specify the desired page size for the request.
       isArray: false
       name: page_size
       required: false
       secret: false
+      defaultValue: '50'
     deprecated: false
     description: Returns a list of all assignments.
     execution: false
@@ -1826,19 +1932,19 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: '1'
       description: Enables the caller to specify a particular page of results.
       isArray: false
       name: page
       required: false
       secret: false
+      defaultValue: '1'
     - default: false
-      defaultValue: '50'
-      description: Specify the desired page size for the request.
+      description: "Specify the desired page size for the request."
       isArray: false
       name: page_size
       required: false
       secret: false
+      defaultValue: '50'
     deprecated: false
     description: Returns a list of all entity assignment outcomes.
     execution: false
@@ -1866,16 +1972,16 @@ script:
       name: entity_id
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Specify the type of the entity.
+    - default: false
+      description: "Specify the type of the entity."
       isArray: false
       name: entity_type
+      required: true
+      secret: false
+      auto: PREDEFINED
       predefined:
       - host
       - account
-      required: true
-      secret: false
     deprecated: false
     description: Returns a list of notes for a specified entity.
     execution: false
@@ -1906,6 +2012,45 @@ script:
       description: ID of the entity associated with the note.
       type: String
     - contextPath: Vectra.Entity.Notes.entity_type
+      description: Type of the entity associated with the note.
+      type: String
+  - arguments:
+    - default: false
+      description: Specify the ID of the detection.
+      isArray: false
+      name: detection_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a list of notes for a specified detection.
+    execution: false
+    name: vectra-detections-note-list
+    outputs:
+    - contextPath: Vectra.Detection.Notes.note_id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Detection.Notes.id
+      description: ID of the note.
+      type: Number
+    - contextPath: Vectra.Detection.Notes.date_created
+      description: Date when the note was created.
+      type: Date
+    - contextPath: Vectra.Detection.Notes.date_modified
+      description: Date when the note was last modified.
+      type: Unknown
+    - contextPath: Vectra.Detection.Notes.created_by
+      description: User who created the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.modified_by
+      description: User who last modified the note.
+      type: Unknown
+    - contextPath: Vectra.Detection.Notes.note
+      description: Content of the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.entity_id
+      description: ID of the entity associated with the note.
+      type: String
+    - contextPath: Vectra.Detection.Notes.entity_type
       description: Type of the entity associated with the note.
       type: String
   - arguments:

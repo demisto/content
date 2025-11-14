@@ -84,7 +84,9 @@ ENDPOINTS = {
     "GROUP_ENDPOINT": "/api/v3.3/groups",
     "ENTITY_ENDPOINT": "/api/v3.3/entities",
     "DETECTION_ENDPOINT": "/api/v3.3/detections",
+    "ADD_AND_LIST_DETECTION_NOTE_ENDPOINT": "/api/v3.3/detections/{}/notes",
     "ADD_AND_LIST_ENTITY_NOTE_ENDPOINT": "/api/v3.3/entities/{}/notes",
+    "UPDATE_AND_REMOVE_DETECTION_NOTE_ENDPOINT": "/api/v3.3/detections/{}/notes/{}",
     "UPDATE_AND_REMOVE_ENTITY_NOTE_ENDPOINT": "/api/v3.3/entities/{}/notes/{}",
     "ENTITY_TAG_ENDPOINT": "/api/v3.3/tagging/entity/{}",
     "ASSIGNMENT_ENDPOINT": "/api/v3.3/assignments",
@@ -422,6 +424,23 @@ class VectraClient(BaseClient):
         )
         return notes
 
+    def list_detection_note_request(self, detection_id: int = None) -> dict:
+        """
+        List entity notes.
+
+        Args:
+            entity_id (int): The ID of the detection to get the notes for.
+
+        Returns:
+            Dict: Response from the API.
+        """
+        notes = self.http_request(
+            method="GET",
+            url_suffix=ENDPOINTS["ADD_AND_LIST_DETECTION_NOTE_ENDPOINT"].format(detection_id),
+            response_type="json",
+        )
+        return notes
+
     def add_entity_note_request(self, entity_id: int = None, entity_type: str = None, note: str = None) -> dict:
         """
         Add a note to an entity.
@@ -440,6 +459,26 @@ class VectraClient(BaseClient):
             method="POST",
             url_suffix=ENDPOINTS["ADD_AND_LIST_ENTITY_NOTE_ENDPOINT"].format(entity_id),
             params=params,
+            data=data,
+            response_type="json",
+        )
+        return notes
+
+    def add_detection_note_request(self, detection_id: int = None, note: str = None) -> dict:
+        """
+        Add a note to an detection.
+
+        Args:
+            detection_id (int): The ID of the detection to add the note to.
+            note (str): The note to add.
+
+        Returns:
+            Dict: Response from the API containing the added note.
+        """
+        data = {"note": note}
+        notes = self.http_request(
+            method="POST",
+            url_suffix=ENDPOINTS["ADD_AND_LIST_DETECTION_NOTE_ENDPOINT"].format(detection_id),
             data=data,
             response_type="json",
         )
@@ -471,6 +510,27 @@ class VectraClient(BaseClient):
         )
         return notes
 
+    def update_detection_note_request(self, detection_id: int = None, note: str = None, note_id: int = None) -> dict:
+        """
+        Updates the note of an entity.
+
+        Args:
+            entity_id (int): The ID of the detection to update the note for.
+            note (str): The updated note for the detection.
+            note_id (int): The ID of the note to be updated.
+
+        Returns:
+            Dict: Response from the API containing the updated note details.
+        """
+        data = {"note": note}
+        notes = self.http_request(
+            method="PATCH",
+            url_suffix=ENDPOINTS["UPDATE_AND_REMOVE_DETECTION_NOTE_ENDPOINT"].format(detection_id, note_id),
+            data=data,
+            response_type="json",
+        )
+        return notes
+
     def remove_entity_note_request(self, entity_id: int = None, entity_type: str = None, note_id: int = None):
         """
         Removes a note from an entity.
@@ -488,6 +548,24 @@ class VectraClient(BaseClient):
             method="DELETE",
             url_suffix=ENDPOINTS["UPDATE_AND_REMOVE_ENTITY_NOTE_ENDPOINT"].format(entity_id, note_id),
             params=params,
+            response_type="response",
+        )
+        return res
+
+    def remove_detection_note_request(self, detection_id: int = None, note_id: int = None):
+        """
+        Removes a note from an entity.
+
+        Args:
+            entity_id (int): The ID of the detection to remove the note from.
+            note_id (int): The ID of the note to be removed.
+
+        Returns:
+            Dict: Response from the API confirming the removal of the note.
+        """
+        res = self.http_request(
+            method="DELETE",
+            url_suffix=ENDPOINTS["UPDATE_AND_REMOVE_DETECTION_NOTE_ENDPOINT"].format(detection_id, note_id),
             response_type="response",
         )
         return res
@@ -1063,6 +1141,21 @@ def validate_entity_note_list_command_args(args: dict[Any, Any]):
         raise ValueError(ERRORS["INVALID_COMMAND_ARG_VALUE"].format("entity_type", ", ".join(VALID_ENTITY_TYPE)))
 
 
+def validate_detection_note_list_command_args(args: dict[Any, Any]):
+    """
+    Validates the arguments provided for the detection list add command.
+
+    Args:
+        args (dict[Any, Any]): The arguments dictionary.
+
+    Raises:
+        ValueError: If any of the arguments are invalid.
+    """
+    entity_id = args.get("detection_id")
+    # Validate detection_id value
+    validate_positive_integer_arg(entity_id, arg_name="detection_id", required=True)
+
+
 def validate_entity_note_add_command_args(args: dict[Any, Any]):
     """
     Validates the arguments provided for the entity note add command.
@@ -1084,6 +1177,25 @@ def validate_entity_note_add_command_args(args: dict[Any, Any]):
     if entity_type and entity_type not in VALID_ENTITY_TYPE:
         raise ValueError(ERRORS["INVALID_COMMAND_ARG_VALUE"].format("entity_type", ", ".join(VALID_ENTITY_TYPE)))
     # Validate note value
+    if not note:
+        raise ValueError(ERRORS["REQUIRED_ARGUMENT"].format("note"))
+
+
+def validate_detection_note_add_command_args(args: dict[Any, Any]):
+    """
+    Validates the arguments provided for the detection note add command.
+
+    Args:
+        args (dict[Any, Any]): The arguments dictionary.
+
+    Raises:
+        ValueError: If any of the arguments are invalid.
+    """
+    note = args.get("note")
+    detection_id = args.get("detection_id")
+    # Validate detection_id value
+    validate_positive_integer_arg(detection_id, arg_name="detection_id", required=True)
+    # Validate entity_type value
     if not note:
         raise ValueError(ERRORS["REQUIRED_ARGUMENT"].format("note"))
 
@@ -1115,6 +1227,28 @@ def validate_entity_note_update_command_args(args: dict[Any, Any]):
         raise ValueError(ERRORS["REQUIRED_ARGUMENT"].format("note"))
 
 
+def validate_detection_note_update_command_args(args: dict[Any, Any]):
+    """
+    Validates the arguments provided for the entity note update command.
+
+    Args:
+        args (dict[Any, Any]): The arguments dictionary.
+
+    Raises:
+        ValueError: If any of the arguments are invalid.
+    """
+    note = args.get("note")
+    detection_id = args.get("detection_id")
+    note_id = args.get("note_id")
+    # Validate detection_id value
+    validate_positive_integer_arg(detection_id, arg_name="detection_id", required=True)
+    # Validate note_id value
+    validate_positive_integer_arg(note_id, arg_name="note_id", required=True)
+    # Validate note value
+    if not note:
+        raise ValueError(ERRORS["REQUIRED_ARGUMENT"].format("note"))
+
+
 def validate_entity_note_remove_command_args(args: dict[Any, Any]):
     """
     Validates the arguments provided for the entity note update command.
@@ -1137,6 +1271,24 @@ def validate_entity_note_remove_command_args(args: dict[Any, Any]):
         raise ValueError(ERRORS["REQUIRED_ARGUMENT"].format("entity_type"))
     if entity_type and entity_type.lower() not in VALID_ENTITY_TYPE:
         raise ValueError(ERRORS["INVALID_COMMAND_ARG_VALUE"].format("entity_type", ", ".join(VALID_ENTITY_TYPE)))
+
+
+def validate_detection_note_remove_command_args(args: dict[Any, Any]):
+    """
+    Validates the arguments provided for the entity note update command.
+
+    Args:
+        args (dict[Any, Any]): The arguments dictionary.
+
+    Raises:
+        ValueError: If any of the arguments are invalid.
+    """
+    detection_id = args.get("detection_id")
+    note_id = args.get("note_id")
+    # Validate detection_id value
+    validate_positive_integer_arg(detection_id, arg_name="detection_id", required=True)
+    # Validate note_id value
+    validate_positive_integer_arg(note_id, arg_name="note_id", required=True)
 
 
 def validate_entity_tag_add_command_args(args: dict[Any, Any]):
@@ -1899,6 +2051,43 @@ def get_list_entity_notes_command_hr(notes: dict, entity_id: Optional[int], enti
     # Prepare human-readable output table
     human_readable = tableToMarkdown(
         "Entity Notes Table",
+        hr_dict,
+        ["Note ID", "Note", "Created By", "Created Date", "Modified By", "Modified Date"],
+        removeNull=True,
+    )
+    return human_readable
+
+
+def get_list_detection_notes_command_hr(notes: dict, detection_id: Optional[int]) -> str:
+    """
+    Returns the human-readable output for the detection notes.
+
+    Args:
+        notes (Dict): The assignment details dictionary.
+        detection_id (Optional[int]): Detection ID.
+
+    Returns:
+        str: The human-readable output.
+    """
+    hr_dict = []
+    for note in notes:
+        note["note_id"] = note["id"]
+        note.update({"detection_id": detection_id})
+
+        hr_dict.append(
+            {
+                "Note ID": note.get("id"),
+                "Note": note.get("note"),
+                "Created By": note.get("created_by"),
+                "Created Date": note.get("date_created"),
+                "Modified By": note.get("modified_by"),
+                "Modified Date": note.get("date_modified"),
+            }
+        )
+
+    # Prepare human-readable output table
+    human_readable = tableToMarkdown(
+        "Detection Notes Table",
         hr_dict,
         ["Note ID", "Note", "Created By", "Created Date", "Modified By", "Modified Date"],
         removeNull=True,
@@ -2669,6 +2858,42 @@ def vectra_entity_note_list_command(client: VectraClient, args: dict[str, Any]):
         )
 
 
+def vectra_detection_note_list_command(client: VectraClient, args: dict[str, Any]):
+    """
+    List entity notes.
+
+    Args:
+        client (VectraClient): An instance of the VectraClient class.
+        args (Dict[str, Any]): The command arguments provided by the user.
+
+    Returns:
+        CommandResults: The command results containing the outputs, readable output, raw response, and outputs key field.
+    """
+    validate_detection_note_list_command_args(args)
+    # Get function arguments
+    detection_id = arg_to_number(args.get("detection_id"), arg_name="detection_id", required=True)
+
+    # Call Vectra API to add entity note
+    notes = client.list_detection_note_request(detection_id=detection_id)  # type: ignore
+    notes = remove_empty_elements(notes)
+    if notes:
+        human_readable = get_list_detection_notes_command_hr(notes, detection_id)
+
+        context = [createContext(note) for note in notes]
+
+        return CommandResults(
+            outputs_prefix="Vectra.Detection.Notes",
+            outputs=context,
+            readable_output=human_readable,
+            raw_response=notes,
+            outputs_key_field=["detection_id", "note_id"],
+        )
+    else:
+        return CommandResults(
+            outputs={}, readable_output="##### Couldn't find any notes for provided detection.", raw_response=notes
+        )
+
+
 def vectra_entity_note_add_command(client: VectraClient, args: dict[str, Any]):
     """
     Adds a note to an entity in Vectra API.
@@ -2701,6 +2926,40 @@ def vectra_entity_note_add_command(client: VectraClient, args: dict[str, Any]):
         readable_output=human_readable,
         raw_response=notes,
         outputs_key_field=["entity_id", "entity_type", "note_id"],
+    )
+
+
+def vectra_detection_note_add_command(client: VectraClient, args: dict[str, Any]):
+    """
+    Adds a note to an detection in Vectra API.
+
+    Args:
+        client (VectraClient): An instance of the VectraClient class.
+        args (Dict[str, Any]): The command arguments provided by the user.
+
+    Returns:
+        CommandResults: The command results containing the outputs, readable output, raw response, and outputs key field.
+    """
+    validate_detection_note_add_command_args(args)
+    # Get function arguments
+    detection_id = arg_to_number(args.get("detection_id"), arg_name="detection_id", required=True)
+    note = args.get("note")
+
+    # Call Vectra API to add entity note
+    notes = client.add_detection_note_request(detection_id=detection_id, note=note)  # type: ignore
+    if notes:
+        notes["note_id"] = notes["id"]
+        notes.update({"detection_id": detection_id})
+
+    human_readable = "##### The note has been successfully added to the detection."
+    human_readable += f"\nReturned Note ID: **{notes['note_id']}**"
+
+    return CommandResults(
+        outputs_prefix="Vectra.Detection.Notes",
+        outputs=createContext(remove_empty_elements(notes)),
+        readable_output=human_readable,
+        raw_response=notes,
+        outputs_key_field=["detection_id", "note_id"],
     )
 
 
@@ -2744,6 +3003,44 @@ def vectra_entity_note_update_command(client: VectraClient, args: dict[str, Any]
     )
 
 
+def vectra_detection_note_update_command(client: VectraClient, args: dict[str, Any]):
+    """
+    Updates a note to a detection in Vectra API.
+
+    Args:
+        client (VectraClient): An instance of the VectraClient class.
+        args (Dict[str, Any]): The command arguments provided by the user.
+
+    Returns:
+        CommandResults: The command results containing the outputs, readable output, raw response, and outputs key field.
+    """
+    validate_detection_note_update_command_args(args)
+    # Get function arguments
+    detection_id = arg_to_number(args.get("detection_id"), arg_name="detection_id", required=True)
+    note = args.get("note")
+    note_id = arg_to_number(args.get("note_id"), arg_name="note_id", required=True)
+
+    # Call Vectra API to update entity note
+    notes = client.update_detection_note_request(
+        detection_id=detection_id,  # type: ignore
+        note=note,  # type: ignore
+        note_id=note_id,  # type: ignore
+    )
+    if notes:
+        notes["note_id"] = notes["id"]
+        notes.update({"detection_id": detection_id})
+
+    human_readable = "##### The note has been successfully updated in the detection."
+
+    return CommandResults(
+        outputs_prefix="Vectra.Detection.Notes",
+        outputs=createContext(remove_empty_elements(notes)),
+        readable_output=human_readable,
+        raw_response=notes,
+        outputs_key_field=["detection_id", "note_id"],
+    )
+
+
 def vectra_entity_note_remove_command(client: VectraClient, args: dict[str, Any]):
     """
     Updates a note to an entity in Vectra API.
@@ -2765,6 +3062,34 @@ def vectra_entity_note_remove_command(client: VectraClient, args: dict[str, Any]
     response = client.remove_entity_note_request(
         entity_id=entity_id,  # type: ignore
         entity_type=entity_type,  # type: ignore
+        note_id=note_id,  # type: ignore
+    )
+    if response.status_code == 204:
+        human_readable = "##### The note has been successfully removed from the entity."
+    else:
+        human_readable = "Something went wrong."
+    return CommandResults(outputs={}, readable_output=human_readable)
+
+
+def vectra_detection_note_remove_command(client: VectraClient, args: dict[str, Any]):
+    """
+    Updates a note to an entity in Vectra API.
+
+    Args:
+        client (VectraClient): An instance of the VectraClient class.
+        args (Dict[str, Any]): The command arguments provided by the user.
+
+    Returns:
+        CommandResults: The command results containing the outputs, readable output, raw response, and outputs key field.
+    """
+    validate_detection_note_remove_command_args(args)
+    # Get function arguments
+    detection_id = arg_to_number(args.get("detection_id"), arg_name="detection_id", required=True)
+    note_id = arg_to_number(args.get("note_id"), arg_name="note_id", required=True)
+
+    # Call Vectra API to remove note
+    response = client.remove_detection_note_request(
+        entity_id=detection_id,  # type: ignore
         note_id=note_id,  # type: ignore
     )
     if response.status_code == 204:
@@ -4162,6 +4487,10 @@ def main():
         "vectra-entity-tag-list": vectra_entity_tag_list_command,
         "vectra-detections-mark-fixed": vectra_detections_mark_fixed_command,
         "vectra-detections-unmark-fixed": vectra_detections_unmark_fixed_command,
+        "vectra-detections-note-list": vectra_detection_note_list_command,
+        "vectra-detections-note-add": vectra_detection_note_add_command,
+        "vectra-detections-note-update": vectra_detection_note_update_command,
+        "vectra-detections-note-remove": vectra_detection_note_remove_command,
         "vectra-assignment-list": vectra_assignment_list_command,
         "vectra-entity-assignment-add": vectra_entity_assignment_add_command,
         "vectra-entity-assignment-update": vectra_entity_assignment_update_command,
