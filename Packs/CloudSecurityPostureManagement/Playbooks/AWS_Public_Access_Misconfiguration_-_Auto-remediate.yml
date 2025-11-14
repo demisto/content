@@ -1,17 +1,32 @@
 adopted: true
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: 6.10.0
+    isoverridable: false
+    itemVersion: 2.0.0
+    packID: ""
+    packName: Cloud Security Posture Management Playbooks
+    prevname: ""
+    supportedModules: []
+    toServerVersion: ""
 description: |-
-  Automated remediation of the following AWS Misconfigurations:
+  Automatically remediates 9 AWS public access misconfigurations: 1 RDS database, 1 EBS snapshot, and 7 S3 bucket issues:
   1. AWS RDS database instance is publicly accessible
-  2. AWS S3 Buckets Block public access setting disabled
+  2. AWS EBS snapshots are accessible to public
   3. AWS S3 buckets are accessible to public via ACL
-  4. AWS EBS snapshots are accessible to public
+  4. AWS S3 Buckets Block public access setting disabled
   5. AWS CloudTrail bucket is publicly accessible
   6. AWS Connect instance using publicly accessible S3 bucket
   7. AWS S3 bucket policy overly permissive to any principal
   8. AWS S3 bucket publicly readable
   9. AWS S3 bucket publicly writable
+
+  The playbook disables public access by modifying RDS publicly_accessible settings, removing EBS snapshot createVolumePermission, and enabling S3 PublicAccessBlockConfiguration respectively.
+
+  Optional stakeholder notification is available via the "Notify Stakeholders" sub-playbook by setting enableNotifications input to 'yes' (default: 'no'). When enabled, configure at least one recipient (email, Slack channel, or Teams channel) in the Notify Stakeholders playbook inputs. The playbook automatically updates issue status to "Resolved - Fixed" upon successful remediation.
 dirtyInputs: true
-id: 'AWS Public Access Misconfiguration - Remediate Without Review'
+id: AWS Public Access Misconfiguration - Remediate Without Review
 inputSections:
 - description: Generic group for inputs
   inputs:
@@ -26,7 +41,7 @@ inputs:
   required: true
   value:
     simple: "no"
-name: AWS Public Access Misconfiguration - Remediate Without Review
+name: AWS Public Access Misconfiguration - Auto-remediate
 outputSections:
 - description: Generic group for outputs
   name: General (Outputs group)
@@ -43,26 +58,26 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "58"
+      - "48"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: d7e0203a-da15-41f1-8c41-c6c9383164b8
+      id: 41897834-713d-4002-81f1-3a3426bee72d
       iscommand: false
       name: ""
       playbooktaskmissingcomponent: null
       version: -1
-    taskid: d7e0203a-da15-41f1-8c41-c6c9383164b8
+    taskid: 41897834-713d-4002-81f1-3a3426bee72d
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
-          "x": 1565,
-          "y": 50
+          "x": 1022.5,
+          "y": 220
         }
       }
   "5":
@@ -84,20 +99,20 @@ tasks:
     task:
       brand: Cortex Core - Platform
       description: Get asset information.
-      id: 5df5a959-bdbc-4732-825d-38db160154eb
+      id: afd8d509-8427-4ecb-8213-e8898ff67d8e
       iscommand: true
       name: Get Asset details
       playbooktaskmissingcomponent: null
       script: Cortex Core - Platform|||core-get-asset-details
       type: regular
       version: -1
-    taskid: 5df5a959-bdbc-4732-825d-38db160154eb
+    taskid: afd8d509-8427-4ecb-8213-e8898ff67d8e
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1237.5,
+          "x": 807.5,
           "y": 580
         }
       }
@@ -113,20 +128,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 28756627-9959-4565-8950-effe089a4751
+      id: b0736497-a18c-49c5-84d7-05843250b527
       iscommand: false
       name: Done
       playbooktaskmissingcomponent: null
       type: title
       version: -1
-    taskid: 28756627-9959-4565-8950-effe089a4751
+    taskid: b0736497-a18c-49c5-84d7-05843250b527
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2330
+          "x": 1135,
+          "y": 2370
         }
       }
   "15":
@@ -139,34 +154,33 @@ tasks:
     nexttasks:
       '#none#':
       - "52"
-    note: false
+    note: true
     quietmode: 0
     scriptarguments:
       value:
         simple: |-
-          Issue - ${issue.details}
-          Asset Name - ${issue.assetname}
-          Remediation - ${remediation_action}
+          # Remediation Action taken
+          **${remediation_action}**
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Prints text to war room (Markdown supported)
-      id: 582f7221-75ef-4ad2-8b32-9d8f5074efb4
+      description: Save note to issue war room about the remediation action taken.
+      id: 923513cb-e00a-4c7e-873b-d94dd741ec4e
       iscommand: false
-      name: Update Issue  details to War Room
+      name: Print remediation action taken
       playbooktaskmissingcomponent: null
       script: Print
       type: regular
       version: -1
-    taskid: 582f7221-75ef-4ad2-8b32-9d8f5074efb4
+    taskid: 923513cb-e00a-4c7e-873b-d94dd741ec4e
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1650
+          "x": 377.5,
+          "y": 1720
         }
       }
   "20":
@@ -187,22 +201,22 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.set.alert.status
-      id: 54bcf930-8c45-4cab-8b0b-2aa351529860
+      description: Sets the status of the issue to Resolved - Fixed
+      id: cd3ed51e-4b73-49ed-8cc9-9579cac09de6
       iscommand: true
       name: Update Issue status to Resolved - Fixed
       playbooktaskmissingcomponent: null
       script: Builtin|||setIssueStatus
       type: regular
       version: -1
-    taskid: 54bcf930-8c45-4cab-8b0b-2aa351529860
+    taskid: cd3ed51e-4b73-49ed-8cc9-9579cac09de6
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2150
+          "x": 377.5,
+          "y": 2200
         }
       }
   "23":
@@ -221,20 +235,20 @@ tasks:
     task:
       brand: AWS
       description: Section header to launch remediation steps.
-      id: bfc56e84-9fff-4dcd-8df7-70f4f3abec79
+      id: 27446e76-912b-4f17-8100-5dab7743c955
       iscommand: false
       name: Launch Remediation Steps
       playbooktaskmissingcomponent: null
       type: title
       version: -1
-    taskid: bfc56e84-9fff-4dcd-8df7-70f4f3abec79
+    taskid: 27446e76-912b-4f17-8100-5dab7743c955
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 960
+          "x": 377.5,
+          "y": 940
         }
       }
   "31":
@@ -256,22 +270,23 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Prints text to war room (Markdown supported)
-      id: bfb23538-9a09-4447-8fd8-f340145653c2
+      description: Prints message to war room to indicate AWS integration instance
+        is not active.
+      id: da855f95-bb9e-400f-8d28-4d93ba4f6e28
       iscommand: false
-      name: Print message to enable AWS and re-run this playbook
+      name: Print - enable AWS and re-run this playbook
       playbooktaskmissingcomponent: null
       script: Print
       type: regular
       version: -1
-    taskid: bfb23538-9a09-4447-8fd8-f340145653c2
+    taskid: da855f95-bb9e-400f-8d28-4d93ba4f6e28
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1910,
-          "y": 1110
+          "x": 1135,
+          "y": 2190
         }
       }
   "34":
@@ -282,32 +297,33 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "50"
+      - "10"
     note: false
     quietmode: 0
     scriptarguments:
       value:
-        simple: There is no remediation available for this asset or finding.
+        simple: The chosen playbook is not applicable to the selected issue. The issue was not remediated and remains unresolved.
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Prints text to war room (Markdown supported)
-      id: 32a84c34-912e-4b7c-8577-d147a14618a0
+      description: Prints message to war room that this playbook does not handle remediation
+        for the selected issue.
+      id: 4aba4d7c-55c6-4add-820c-0aac6200c59a
       iscommand: false
-      name: Update Issue War Room
+      name: Print - playbook not applicable
       playbooktaskmissingcomponent: null
       script: Print
       type: regular
       version: -1
-    taskid: 32a84c34-912e-4b7c-8577-d147a14618a0
+    taskid: 4aba4d7c-55c6-4add-820c-0aac6200c59a
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 2477.5,
-          "y": 580
+          "x": 1695,
+          "y": 2190
         }
       }
   "37":
@@ -317,6 +333,14 @@ tasks:
             iscontext: true
             value:
               simple: issue.ruleid
+          operator: isEqualString
+          right:
+            value:
+              simple: b3897fb4-5241-403b-8770-69f90cea0f11
+        - left:
+            iscontext: true
+            value:
+              simple: issue.matching_service_rule_id
           operator: isEqualString
           right:
             value:
@@ -331,64 +355,38 @@ tasks:
           right:
             value:
               simple: 7c714cb4-3d47-4c32-98d4-c13f92ce4ec5
+        - left:
+            iscontext: true
+            value:
+              simple: issue.matching_service_rule_id
+          operator: isEqualString
+          right:
+            value:
+              simple: 7c714cb4-3d47-4c32-98d4-c13f92ce4ec5
       label: EBS snapshots
     - condition:
       - - left:
             iscontext: true
             value:
               simple: issue.ruleid
-          operator: isEqualString
+          operator: inList
           right:
             value:
-              simple: b22df320-13e7-4108-8142-d1bd858b8d46
+              simple: b22df320-13e7-4108-8142-d1bd858b8d46, 67dc23e7-e6db-4efb-b7e8-b4bd7778c891,
+                f940021d-42bc-4f29-b9f9-0ae819318ba9, 4ca3ff4c-4f45-48ee-8f4f-a56e43f5cb5c,
+                eecb0c21-2dbe-40f4-8727-fbbaacef69dc, 70b5bb02-aafd-4c23-ac4b-4872b3aced30,
+                1c513ad3-7db5-4fbf-abdd-39969f222f13
         - left:
             iscontext: true
             value:
-              simple: issue.ruleid
-          operator: isEqualString
+              simple: issue.matching_service_rule_id
+          operator: inList
           right:
             value:
-              simple: 4ca3ff4c-4f45-48ee-8f4f-a56e43f5cb5c
-        - left:
-            iscontext: true
-            value:
-              simple: issue.ruleid
-          operator: isEqualString
-          right:
-            value:
-              simple: eecb0c21-2dbe-40f4-8727-fbbaacef69dc
-        - left:
-            iscontext: true
-            value:
-              simple: issue.ruleid
-          operator: isEqualString
-          right:
-            value:
-              simple: 70b5bb02-aafd-4c23-ac4b-4872b3aced30
-        - left:
-            iscontext: true
-            value:
-              simple: issue.ruleid
-          operator: isEqualString
-          right:
-            value:
-              simple: 1c513ad3-7db5-4fbf-abdd-39969f222f13
-        - left:
-            iscontext: true
-            value:
-              simple: issue.ruleid
-          operator: isEqualString
-          right:
-            value:
-              simple: 67dc23e7-e6db-4efb-b7e8-b4bd7778c891
-        - left:
-            iscontext: true
-            value:
-              simple: issue.ruleid
-          operator: isEqualString
-          right:
-            value:
-              simple: f940021d-42bc-4f29-b9f9-0ae819318ba9
+              simple: b22df320-13e7-4108-8142-d1bd858b8d46, 67dc23e7-e6db-4efb-b7e8-b4bd7778c891,
+                f940021d-42bc-4f29-b9f9-0ae819318ba9, 4ca3ff4c-4f45-48ee-8f4f-a56e43f5cb5c,
+                eecb0c21-2dbe-40f4-8727-fbbaacef69dc, 70b5bb02-aafd-4c23-ac4b-4872b3aced30,
+                1c513ad3-7db5-4fbf-abdd-39969f222f13
       label: S3 Buckets Block public access setting
     continueonerrortype: ""
     id: "37"
@@ -409,19 +407,19 @@ tasks:
     task:
       brand: ""
       description: Check if remediation is available for the issue ruleid.
-      id: 5c3702fd-fba5-4f19-baf5-77328f861974
+      id: 2118e886-81a2-4478-8578-89497b1509a0
       iscommand: false
       name: Check the type of remediation
       playbooktaskmissingcomponent: null
       type: condition
       version: -1
-    taskid: 5c3702fd-fba5-4f19-baf5-77328f861974
+    taskid: 2118e886-81a2-4478-8578-89497b1509a0
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 377.5,
           "y": 1110
         }
       }
@@ -454,21 +452,21 @@ tasks:
       description: Modifies an Amazon RDS DB instance. Allows changing various settings
         of an existing DB instance, such as instance class, storage capacity, security
         groups, and other configuration parameters.
-      id: 852dd21c-848c-46bb-98aa-da1e3d24abb3
+      id: b804e5fc-5512-484b-86c6-5f86a4562a1b
       iscommand: true
       name: Disable public access to RDS Database Instance
       playbooktaskmissingcomponent: null
       script: AWS|||aws-rds-db-instance-modify
       type: regular
       version: -1
-    taskid: 852dd21c-848c-46bb-98aa-da1e3d24abb3
+    taskid: b804e5fc-5512-484b-86c6-5f86a4562a1b
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 187.5,
-          "y": 1290
+          "x": -200,
+          "y": 1370
         }
       }
   "40":
@@ -503,69 +501,21 @@ tasks:
         Note: snapshots encrypted with the AWS-managed default key (alias/aws/ebs)
         cannot be shared—use unencrypted snapshots or those encrypted with a customer-managed
         KMS key to allow permission modifications.'
-      id: b0cbf80d-9dad-4646-b071-8a0c857f5ea2
+      id: 814af7cd-5028-4a86-8bec-a3fd1f9aadb2
       iscommand: true
       name: Disable public access to EBS Snapshots
       playbooktaskmissingcomponent: null
       script: AWS|||aws-ec2-snapshot-attribute-modify
       type: regular
       version: -1
-    taskid: b0cbf80d-9dad-4646-b071-8a0c857f5ea2
+    taskid: 814af7cd-5028-4a86-8bec-a3fd1f9aadb2
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1300
-        }
-      }
-  "46":
-    continueonerrortype: ""
-    id: "46"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    loop:
-      exitCondition: ""
-      iscommand: false
-      max: 0
-      wait: 1
-    nexttasks:
-      '#none#':
-      - "10"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      Message:
-        simple: No remediation available for this issue or finding.
-      Subject:
-        simple: ${issue.name} was not remediated
-    separatecontext: true
-    skipunavailable: false
-    task:
-      brand: ""
-      description: This playbook automates notifying stakeholders via Slack v3, Microsoft
-        Teams, or email. You have the flexibility to notify other teams via Slack,
-        Microsoft Teams or Email by configuring the necessary integration. This playbook
-        requires existing integrations with Slack, Microsoft Teams, Mail Sender or
-        Gmail to perform these actions. If none of these integrations are found in
-        your account, the playbook will exit with no action.
-      id: 72dd3344-6671-428c-aaf4-38236d7ff08c
-      iscommand: false
-      name: Notify Stakeholders - no remediation available
-      playbookId: 'Notify Stakeholders'
-      playbooktaskmissingcomponent: null
-      type: playbook
-      version: -1
-    taskid: 72dd3344-6671-428c-aaf4-38236d7ff08c
-    timertriggers: []
-    type: playbook
-    view: |-
-      {
-        "position": {
-          "x": 2695,
-          "y": 950
+          "x": 377.5,
+          "y": 1370
         }
       }
   "47":
@@ -585,21 +535,13 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      Message:
-        simple: |-
-          Issue Name - ${issue.name}
-          Severity - ${issue.severity}
-          Details - ${issue.details}
-          Category - ${issue.categoryname}
-          Asset Name - ${Core.CoreAsset.xdm__asset__name}
-          Asset Type - ${Core.CoreAsset.xdm__asset__type__name}
-          Cloud Region - ${Core.CoreAsset.xdm__asset__cloud__region}
-          Cloud Account ID - ${Core.CoreAsset.xdm__asset__realm}
-          Issue Created - ${issue.created}
-          Remediation Action - ${remediation_action}
+      Email Address:
+        simple: ""
+      Slack Channel:
+        simple: ""
       Subject:
         simple: Issue ${issue.name} has been resolved
-    separatecontext: true
+    separatecontext: false
     skipunavailable: false
     task:
       brand: ""
@@ -609,21 +551,21 @@ tasks:
         requires existing integrations with Slack, Microsoft Teams, Mail Sender or
         Gmail to perform these actions. If none of these integrations are found in
         your account, the playbook will exit with no action.
-      id: f9f05d6d-05d7-48bd-8658-b56ae07036c2
+      id: 212b271e-ad6b-49d4-8173-a7a61ba65308
       iscommand: false
       name: Notify Stakeholders - issue resolved
-      playbookId: 'Notify Stakeholders'
+      playbookId: Notify Stakeholders
       playbooktaskmissingcomponent: null
       type: playbook
       version: -1
-    taskid: f9f05d6d-05d7-48bd-8658-b56ae07036c2
+    taskid: 212b271e-ad6b-49d4-8173-a7a61ba65308
     timertriggers: []
     type: playbook
     view: |-
       {
         "position": {
-          "x": 187.5,
-          "y": 1990
+          "x": 642.5,
+          "y": 2050
         }
       }
   "48":
@@ -633,74 +575,26 @@ tasks:
             iscontext: true
             value:
               simple: issue.ruleid
-          operator: isEqualString
+          operator: inList
           right:
             value:
-              simple: b3897fb4-5241-403b-8770-69f90cea0f11
+              simple: b3897fb4-5241-403b-8770-69f90cea0f11, b22df320-13e7-4108-8142-d1bd858b8d46,
+                67dc23e7-e6db-4efb-b7e8-b4bd7778c891, 7c714cb4-3d47-4c32-98d4-c13f92ce4ec5,
+                f940021d-42bc-4f29-b9f9-0ae819318ba9, 4ca3ff4c-4f45-48ee-8f4f-a56e43f5cb5c,
+                eecb0c21-2dbe-40f4-8727-fbbaacef69dc, 70b5bb02-aafd-4c23-ac4b-4872b3aced30,
+                1c513ad3-7db5-4fbf-abdd-39969f222f13
         - left:
             iscontext: true
             value:
-              simple: issue.ruleid
-          operator: isEqualString
+              simple: issue.matching_service_rule_id
+          operator: inList
           right:
             value:
-              simple: b22df320-13e7-4108-8142-d1bd858b8d46
-        - left:
-            iscontext: true
-            value:
-              simple: issue.ruleid
-          operator: isEqualString
-          right:
-            value:
-              simple: 67dc23e7-e6db-4efb-b7e8-b4bd7778c891
-        - left:
-            iscontext: true
-            value:
-              simple: issue.ruleid
-          operator: isEqualString
-          right:
-            value:
-              simple: 7c714cb4-3d47-4c32-98d4-c13f92ce4ec5
-        - left:
-            iscontext: true
-            value:
-              simple: issue.ruleid
-          operator: isEqualString
-          right:
-            value:
-              simple: 4ca3ff4c-4f45-48ee-8f4f-a56e43f5cb5c
-        - left:
-            iscontext: true
-            value:
-              simple: issue.ruleid
-          operator: isEqualString
-          right:
-            value:
-              simple: eecb0c21-2dbe-40f4-8727-fbbaacef69dc
-        - left:
-            iscontext: true
-            value:
-              simple: issue.ruleid
-          operator: isEqualString
-          right:
-            value:
-              simple: 70b5bb02-aafd-4c23-ac4b-4872b3aced30
-        - left:
-            iscontext: true
-            value:
-              simple: issue.ruleid
-          operator: isEqualString
-          right:
-            value:
-              simple: 1c513ad3-7db5-4fbf-abdd-39969f222f13
-        - left:
-            iscontext: true
-            value:
-              simple: issue.ruleid
-          operator: isEqualString
-          right:
-            value:
-              simple: f940021d-42bc-4f29-b9f9-0ae819318ba9
+              simple: b3897fb4-5241-403b-8770-69f90cea0f11, b22df320-13e7-4108-8142-d1bd858b8d46,
+                67dc23e7-e6db-4efb-b7e8-b4bd7778c891, 7c714cb4-3d47-4c32-98d4-c13f92ce4ec5,
+                f940021d-42bc-4f29-b9f9-0ae819318ba9, 4ca3ff4c-4f45-48ee-8f4f-a56e43f5cb5c,
+                eecb0c21-2dbe-40f4-8727-fbbaacef69dc, 70b5bb02-aafd-4c23-ac4b-4872b3aced30,
+                1c513ad3-7db5-4fbf-abdd-39969f222f13
       label: "yes"
     continueonerrortype: ""
     id: "48"
@@ -718,20 +612,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if remediation is available for the issue ruleid.
-      id: 6c9261ea-02b7-4e56-86a7-cdf71ff16b08
+      description: Checks if the playbook is applicable to resolve the selected issue.
+      id: 60652df4-fb7f-4d3e-8979-e15b98a443ec
       iscommand: false
-      name: Is remediation available?
+      name: Is playbook applicable?
       playbooktaskmissingcomponent: null
       type: condition
       version: -1
-    taskid: 6c9261ea-02b7-4e56-86a7-cdf71ff16b08
+    taskid: 60652df4-fb7f-4d3e-8979-e15b98a443ec
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 1565,
+          "x": 1022.5,
           "y": 400
         }
       }
@@ -776,64 +670,20 @@ tasks:
       brand: ""
       description: Returns 'yes' if integration brand is available. Otherwise returns
         'no'.
-      id: d5880b46-e3fd-4967-8737-c3d76aba3883
+      id: 2d7b3ddd-b99f-4c5f-8558-622d4ae5e542
       iscommand: false
       name: Is AWS integration available?
       playbooktaskmissingcomponent: null
       type: condition
       version: -1
-    taskid: d5880b46-e3fd-4967-8737-c3d76aba3883
+    taskid: 2d7b3ddd-b99f-4c5f-8558-622d4ae5e542
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 770
-        }
-      }
-  "50":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.enableNotifications
-          operator: isEqualString
-          right:
-            value:
-              simple: "yes"
-      label: "yes"
-    continueonerrortype: ""
-    id: "50"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#default#':
-      - "10"
-      "yes":
-      - "46"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: e73daf19-aff3-4574-802a-b207f7a3af65
-      iscommand: false
-      name: Is notification enabled?
-      playbooktaskmissingcomponent: null
-      type: condition
-      version: -1
-    taskid: e73daf19-aff3-4574-802a-b207f7a3af65
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 2477.5,
-          "y": 770
+          "x": 807.5,
+          "y": 760
         }
       }
   "52":
@@ -864,20 +714,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: b9aec856-d3db-410c-8449-2f7c0d76edf4
+      id: c9b56a03-b7ff-44cf-8c28-1eb4d4160405
       iscommand: false
       name: Is notification enabled?
       playbooktaskmissingcomponent: null
       type: condition
       version: -1
-    taskid: b9aec856-d3db-410c-8449-2f7c0d76edf4
+    taskid: c9b56a03-b7ff-44cf-8c28-1eb4d4160405
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1830
+          "x": 377.5,
+          "y": 1890
         }
       }
   "53":
@@ -895,29 +745,31 @@ tasks:
       key:
         simple: remediation_action
       value:
-        simple: aws rds modify-db-instance --region ${Core.CoreAsset.xdm__asset__cloud__region}
+        simple: "The 'publicly_accessible' configuration was set to false for RDS
+          DB Instance -  ${Core.CoreAsset.xdm__asset__name}\nEquivalent AWS CLI Command:
+          \naws rds modify-db-instance --region ${Core.CoreAsset.xdm__asset__cloud__region}
           --db-instance-identifier ${Core.CoreAsset.xdm__asset__name} --no-publicly-accessible
-          --apply-immediately
+          --apply-immediately"
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: d3802323-e6bd-4fe0-ba3c-89529a1a16dc
+      id: 7b22088c-561e-436f-83f4-608f8aa1c94b
       iscommand: false
       name: Save remediation action
       playbooktaskmissingcomponent: null
       script: Set
       type: regular
       version: -1
-    taskid: d3802323-e6bd-4fe0-ba3c-89529a1a16dc
+    taskid: 7b22088c-561e-436f-83f4-608f8aa1c94b
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 187.5,
-          "y": 1460
+          "x": -200,
+          "y": 1530
         }
       }
   "55":
@@ -935,29 +787,31 @@ tasks:
       key:
         simple: remediation_action
       value:
-        simple: aws ec2 modify-snapshot-attribute --snapshot-id ${issue.referencedresourceid}
+        simple: "The 'createVolumePermission' attribute was removed for EBS Snapshot
+          Instance - ${Core.CoreAsset.xdm__asset__name} \nEquivalent AWS CLI Command:
+          \naws ec2 modify-snapshot-attribute --snapshot-id ${issue.referencedresourceid}
           --attribute createVolumePermission --operation-type remove --group-names
-          all --region ${Core.CoreAsset.xdm__cloud__region}
+          all --region ${Core.CoreAsset.xdm__cloud__region}"
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 26056bb2-2345-409e-bc28-61f2bc015853
+      id: caa6b98d-8250-4c4a-80c2-146afb887d42
       iscommand: false
       name: Save remediation action
       playbooktaskmissingcomponent: null
       script: Set
       type: regular
       version: -1
-    taskid: 26056bb2-2345-409e-bc28-61f2bc015853
+    taskid: caa6b98d-8250-4c4a-80c2-146afb887d42
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1450
+          "x": 377.5,
+          "y": 1530
         }
       }
   "56":
@@ -992,21 +846,21 @@ tasks:
       brand: AWS
       description: Creates or modifies the PublicAccessBlock configuration for an
         Amazon S3 bucket.
-      id: b4c68a71-3812-485e-a279-474291f60b9b
+      id: d37d4013-7096-4787-8734-38473b9861c6
       iscommand: true
       name: Disable public access to S3 Bucket via ACL
       playbooktaskmissingcomponent: null
       script: AWS|||aws-s3-public-access-block-update
       type: regular
       version: -1
-    taskid: b4c68a71-3812-485e-a279-474291f60b9b
+    taskid: d37d4013-7096-4787-8734-38473b9861c6
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 1290
+          "x": 910,
+          "y": 1370
         }
       }
   "57":
@@ -1026,88 +880,48 @@ tasks:
       key:
         simple: remediation_action
       value:
-        simple: aws s3api put-public-access-block --bucket ${Core.CoreAsset.xdm__asset__raw_fields.Platform
-          Discovery.Properties.BucketName} --public-access-block-configuration '{"BlockPublicAcls":true,"IgnorePublicAcls":true,"BlockPublicPolicy":true,"RestrictPublicBuckets":true}'
-          --region ${Core.CoreAsset.xdm__cloud__region}
+        simple: "The 'PublicAccessBlockConfiguration' was enabled for S3 bucket -
+          ${Core.CoreAsset.xdm__asset__name} \nEquivalent AWS CLI Command: \naws s3api
+          put-public-access-block --bucket ${Core.CoreAsset.xdm__asset__raw_fields.Platform
+          Discovery.Properties.BucketName} --public-access-block-configuration '{\"BlockPublicAcls\":true,\"IgnorePublicAcls\":true,\"BlockPublicPolicy\":true,\"RestrictPublicBuckets\":true}`
+          --region ${Core.CoreAsset.xdm__cloud__region}"
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 36131a6e-e437-40cd-b33c-f629e9b36c67
+      id: b49c0b67-2697-4e1a-8e80-edc37a157cae
       iscommand: false
       name: Save remediation action
       playbooktaskmissingcomponent: null
       script: Set
       type: regular
       version: -1
-    taskid: 36131a6e-e437-40cd-b33c-f629e9b36c67
+    taskid: b49c0b67-2697-4e1a-8e80-edc37a157cae
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 1460
-        }
-      }
-  "58":
-    continueonerrortype: ""
-    id: "58"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "48"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: "Delete field from context.\n\nThis automation runs using the default
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      id: 40c4f43e-df33-4939-8f8f-a12cbbcea5cb
-      iscommand: false
-      name: Delete Context
-      playbooktaskmissingcomponent: null
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: 40c4f43e-df33-4939-8f8f-a12cbbcea5cb
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1565,
-          "y": 220
+          "x": 910,
+          "y": 1530
         }
       }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {
-      "37_40_EBS snapshots": 0.48,
-      "48_5_yes": 0.51,
+      "37_38_RDS database instance": 0.55,
+      "37_40_EBS snapshots": 0.7,
       "49_23_yes": 0.4,
-      "50_46_yes": 0.51,
       "52_20_#default#": 0.59
     },
     "paper": {
       "dimensions": {
-        "height": 2340,
-        "width": 2887.5,
-        "x": 187.5,
-        "y": 50
+        "height": 2210,
+        "width": 2275,
+        "x": -200,
+        "y": 220
       }
     }
   }

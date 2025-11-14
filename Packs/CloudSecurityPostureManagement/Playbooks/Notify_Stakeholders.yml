@@ -1,4 +1,15 @@
 adopted: true
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: 6.10.0
+    isoverridable: false
+    itemVersion: 2.0.0
+    packID: ""
+    packName: Cloud Security Posture Management Playbooks
+    prevname: ""
+    supportedModules: []
+    toServerVersion: ""
 description: This playbook automates notifying stakeholders via Slack v3, Microsoft
   Teams, or email. You have the flexibility to notify other teams via Slack, Microsoft
   Teams or Email by configuring the necessary integration. This playbook requires
@@ -6,14 +17,13 @@ description: This playbook automates notifying stakeholders via Slack v3, Micros
   these actions. If none of these integrations are found in your account, the playbook
   will exit with no action.
 dirtyInputs: true
-id: 'Notify Stakeholders'
+id: Notify Stakeholders
 inputSections:
 - description: Default inputs defined at sub-playbook level
   inputs:
   - Teams Channel
   - Slack Channel
   - Email Address
-  - Message
   - Subject
   name: General Inputs
 inputs:
@@ -32,28 +42,13 @@ inputs:
   key: Email Address
   playbookInputQuery: null
   required: false
-  value:
-    simple: amore@paloaltonetworks.com
-- description: The text to include in your notification.
-  key: Message
-  playbookInputQuery: null
-  required: false
-  value:
-    simple: |-
-      Issue Name - ${issue.name}
-      Severity ${issue.severity}
-      Details - ${issue.details}
-      Category - ${issue.alert_category}
-      Asset Name - ${Core.CoreAsset.xdm__asset__name}
-      Asset Type - ${Core.CoreAsset.xdm__asset__type__name}
-      Cloud Region - ${Core.CoreAsset.xdm__asset__cloud__region}
-      Cloud Account ID - ${Core.CoreAsset.xdm__asset__realm}
-      Issue Created - ${issue.created}
+  value: {}
 - description: For email
   key: Subject
   playbookInputQuery: null
   required: false
-  value: {}
+  value:
+    simple: You have a new message for - ${issue.name}
 name: Notify Stakeholders
 outputSections:
 - description: Generic group for outputs
@@ -78,19 +73,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9a0ebb19-b027-4c60-8847-71580d3a8d26
+      id: 392e669d-6901-4f1b-841d-15fb88950703
       iscommand: false
       name: ""
       playbooktaskmissingcomponent: null
       version: -1
-    taskid: 9a0ebb19-b027-4c60-8847-71580d3a8d26
+    taskid: 392e669d-6901-4f1b-841d-15fb88950703
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
-          "x": 735,
-          "y": 70
+          "x": 500,
+          "y": 50
         }
       }
   "15":
@@ -105,20 +100,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: d173f18a-04f1-4544-8f98-a98c005cce9f
+      id: 7531e2bc-565f-4be2-8bb9-5715a477f073
       iscommand: false
       name: Done
       playbooktaskmissingcomponent: null
       type: title
       version: -1
-    taskid: d173f18a-04f1-4544-8f98-a98c005cce9f
+    taskid: 7531e2bc-565f-4be2-8bb9-5715a477f073
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 735,
-          "y": 1320
+          "x": 837.5,
+          "y": 1850
         }
       }
   "16":
@@ -165,136 +160,27 @@ tasks:
       '#default#':
       - "15"
       "yes":
-      - "42"
+      - "60"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: 00f1aedd-21b8-4996-b78e-51c96555bd26
+      id: 5f3a26fe-960a-4391-8beb-c2d9a8b2ee6c
       iscommand: false
       name: Is Microsoft Teams enabled and channel name provided?
       playbooktaskmissingcomponent: null
       type: condition
       version: -1
-    taskid: 00f1aedd-21b8-4996-b78e-51c96555bd26
+    taskid: 5f3a26fe-960a-4391-8beb-c2d9a8b2ee6c
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 972.5,
-          "y": 940
-        }
-      }
-  "33":
-    continueonerrortype: ""
-    id: "33"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "15"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      htmlBody:
-        simple: "<html>\n<body style=\"font-family: Arial, sans-serif; background-color:
-          #f6f7f9; margin: 0; padding: 30px;\">\n  <div style=\"max-width: 600px;
-          margin: auto; background-color: #ffffff; border-radius: 6px; box-shadow:
-          0 2px 5px rgba(0,0,0,0.1); padding: 25px 30px;\">\n\n    <div style=\"text-align:
-          center; color: #0067b8; font-size: 20px; font-weight: bold; margin-bottom:
-          25px;\">\n      Cortex Cloud Issue Details\n    </div>\n\n    <table style=\"width:
-          100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; border:
-          1px solid #e0e0e0;\">\n      <tr>\n        <td style=\"padding: 10px; border:
-          1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold; width:
-          40%;\">Issue Name</td>\n        <td style=\"padding: 10px; border: 1px solid
-          #e0e0e0;\">${issue.name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding:
-          10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight:
-          bold;\">Severity</td>\n        <td style=\"padding: 10px; border: 1px solid
-          #e0e0e0;\">${issue.severity}</td>\n      </tr>\n      <tr>\n        <td
-          style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9;
-          font-weight: bold;\">Details</td>\n        <td style=\"padding: 10px; border:
-          1px solid #e0e0e0;\">${issue.details}</td>\n      </tr>\n      <tr>\n        <td
-          style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9;
-          font-weight: bold;\">Category</td>\n        <td style=\"padding: 10px; border:
-          1px solid #e0e0e0;\">${issue.alert_category}</td>\n      </tr>\n      <tr>\n
-          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color:
-          #f9f9f9; font-weight: bold;\">Asset Name</td>\n        <td style=\"padding:
-          10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__name}</td>\n
-          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
-          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Type</td>\n
-          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__type__name}</td>\n
-          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
-          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Region</td>\n
-          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__cloud__region}</td>\n
-          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
-          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Account
-          ID</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__realm}</td>\n
-          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
-          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Issue Created</td>\n
-          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.created}</td>\n
-          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
-          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Remediation
-          Action Taken</td>\n        <td style=\"padding: 10px; border: 1px solid
-          #e0e0e0;\">${remediation_action}</td>\n      </tr>\n    </table>\n\n    <div
-          style=\"font-weight: bold; font-size: 14px; margin: 15px 0 8px;\">Asset
-          Tags</div>\n    <div style=\"background-color: #f2f2f2; border-radius: 4px;
-          font-family: monospace; font-size: 13px; color: #444; padding: 10px; white-space:
-          pre-wrap;\">\n      ${Core.CoreAsset.xdm__asset__tags}\n    </div>\n\n    <div
-          style=\"text-align: center; margin: 30px 0 10px;\">\n      <a href=\"${demistoUrls.server}/issue-view/${issue.id}\"
-          \n         target=\"_blank\"\n         style=\"display: inline-block; padding:
-          10px 24px; background-color: #0067b8; color: white !important; text-decoration:
-          none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n
-          \        View Issue\n      </a>\n      <a href=\"${demistoUrls.server}/assets/asset-layout/${Core.CoreAsset.xdm__asset__id}\"
-          \n         target=\"_blank\"\n         style=\"display: inline-block; padding:
-          10px 24px; background-color: #0067b8; color: white !important; text-decoration:
-          none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n
-          \        View Asset\n      </a>\n    </div>\n  </div>\n</body>\n</html>"
-      subject:
-        simple: ${inputs.Subject}
-      to:
-        complex:
-          root: inputs.Email Address
-          transformers:
-          - args:
-              applyIfEmpty: {}
-              defaultValue:
-                iscontext: true
-                value:
-                  simple: Provide at least 1 notification recipient.Answers.0
-            operator: SetIfEmpty
-          - args:
-              empty_values: {}
-              remove_keys: {}
-            operator: RemoveEmpty
-          - args:
-              delimiter:
-                value:
-                  simple: ','
-            operator: splitAndTrim
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: mail-sender
-      description: commands.server.mail.sendmail
-      id: 6946a413-d6bc-45d2-96e2-2b80846d7958
-      iscommand: true
-      name: Send Email Notification
-      playbooktaskmissingcomponent: null
-      script: mail-sender|||send-mail
-      type: regular
-      version: -1
-    taskid: 6946a413-d6bc-45d2-96e2-2b80846d7958
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 412.5,
-          "y": 1120
+          "x": 315,
+          "y": 1270
         }
       }
   "36":
@@ -309,6 +195,68 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
+      blocks:
+        simple: "[\n\t\t{\n\t\t\t\"type\": \"header\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\":
+          \"plain_text\",\n\t\t\t\t\"text\": \"${inputs.Subject}\",\n\t\t\t\t\"emoji\":
+          true\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"rich_text\",\n\t\t\t\"elements\":
+          [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"rich_text_section\",\n\t\t\t\t\t\"elements\":
+          [\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\": \"text\",\n\t\t\t\t\t\t\t\"text\":
+          \"Issue and Asset Details \\n\",\n\t\t\t\t\t\t\t\"style\": {\n\t\t\t\t\t\t\t\t\"bold\":
+          true\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t]\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"type\":
+          \"rich_text_list\",\n\t\t\t\t\t\"style\": \"bullet\",\n\t\t\t\t\t\"indent\":
+          0,\n\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\": \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\":
+          [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\": \"text\",\n\t\t\t\t\t\t\t\t\t\"text\":
+          \"Issue Name: \",\n\t\t\t\t\t\t\t\t\t\"style\": {\n\t\t\t\t\t\t\t\t\t\t\"bold\":
+          true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${issue.name}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"Severity: \",\n\t\t\t\t\t\t\t\t\t\"style\":
+          {\n\t\t\t\t\t\t\t\t\t\t\"bold\": true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${IssueSeverityText}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"Details: \",\n\t\t\t\t\t\t\t\t\t\"style\":
+          {\n\t\t\t\t\t\t\t\t\t\t\"bold\": true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${issue.details}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"Category: \",\n\t\t\t\t\t\t\t\t\t\"style\":
+          {\n\t\t\t\t\t\t\t\t\t\t\"bold\": true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${IssueCategory}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"Asset Name: \",\n\t\t\t\t\t\t\t\t\t\"style\":
+          {\n\t\t\t\t\t\t\t\t\t\t\"bold\": true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${Core.CoreAsset.xdm__asset__name}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"Asset Type: \",\n\t\t\t\t\t\t\t\t\t\"style\":
+          {\n\t\t\t\t\t\t\t\t\t\t\"bold\": true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${Core.CoreAsset.xdm__asset__type__name}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"Cloud Region: \",\n\t\t\t\t\t\t\t\t\t\"style\":
+          {\n\t\t\t\t\t\t\t\t\t\t\"bold\": true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${Core.CoreAsset.xdm__asset__cloud__region}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"Cloud Account ID: \",\n\t\t\t\t\t\t\t\t\t\"style\":
+          {\n\t\t\t\t\t\t\t\t\t\t\"bold\": true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${Core.CoreAsset.xdm__asset__realm}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"Issue Created: \",\n\t\t\t\t\t\t\t\t\t\"style\":
+          {\n\t\t\t\t\t\t\t\t\t\t\"bold\": true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${IssueCreationTimestamp}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t}\n\t\t\t\t\t]\n\t\t\t\t}\n\t\t\t]\n\t\t},\n\t\t{\n\t\t\t\"type\":
+          \"divider\"\n\t\t},\n\t\t{\n\t\t\t\"type\": \"rich_text\",\n\t\t\t\"elements\":
+          [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"rich_text_section\",\n\t\t\t\t\t\"elements\":
+          [\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\": \"text\",\n\t\t\t\t\t\t\t\"text\":
+          \"Remediation Action Taken\\n\",\n\t\t\t\t\t\t\t\"style\": {\n\t\t\t\t\t\t\t\t\"bold\":
+          true\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\"text\": \"${remediation_action_slack_block}\"\n\t\t\t\t\t\t}\n\t\t\t\t\t]\n\t\t\t\t}\n\t\t\t]\n\t\t},\n\t\t{\n\t\t\t\"type\":
+          \"divider\"\n\t\t},\n\t\t{\n\t\t\t\"type\": \"actions\",\n\t\t\t\"elements\":
+          [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"button\",\n\t\t\t\t\t\"text\": {\n\t\t\t\t\t\t\"type\":
+          \"plain_text\",\n\t\t\t\t\t\t\"text\": \"View Issue\",\n\t\t\t\t\t\t\"emoji\":
+          true\n\t\t\t\t\t},\n\t\t\t\t\t\"value\": \"view_issue\",\n\t\t\t\t\t\"action_id\":
+          \"view_issue\",\n\t\t\t\t\t\"url\": \"${demistoUrls.server}/issue-view/${issue.id}\",\n\t\t\t\t\t\"style\":
+          \"primary\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"button\",\n\t\t\t\t\t\"text\":
+          {\n\t\t\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\t\t\"text\": \"View Asset\",\n\t\t\t\t\t\t\"emoji\":
+          true\n\t\t\t\t\t},\n\t\t\t\t\t\"value\": \"view_asset\",\n\t\t\t\t\t\"action_id\":
+          \"view_asset\",\n\t\t\t\t\t\"url\": \"${demistoUrls.server}/assets/asset-layout/${Core.CoreAsset.xdm__asset__id}\",\n\t\t\t\t\t\"style\":
+          \"primary\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]"
       channel:
         complex:
           root: inputs.Slack Channel
@@ -324,28 +272,26 @@ tasks:
               empty_values: {}
               remove_keys: {}
             operator: RemoveEmpty
-      message:
-        simple: ${inputs.Message}
     separatecontext: false
     skipunavailable: false
     task:
       brand: SlackV3
       description: Sends a message to a user, group, or channel.
-      id: c4008e60-0b7f-4456-9917-f3ab59fe6ae2
+      id: 9d6001e1-98e4-4c41-8bbe-8ca44424b40b
       iscommand: true
       name: Send Slack Notification
       playbooktaskmissingcomponent: null
-      script: SlackV3|||slack-send-notification-quick-action
+      script: SlackV3|||send-notification
       type: regular
       version: -1
-    taskid: c4008e60-0b7f-4456-9917-f3ab59fe6ae2
+    taskid: 9d6001e1-98e4-4c41-8bbe-8ca44424b40b
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1525,
-          "y": 1120
+          "x": 837.5,
+          "y": 1630
         }
       }
   "42":
@@ -376,27 +322,47 @@ tasks:
               remove_keys: {}
             operator: RemoveEmpty
       message:
-        simple: ${inputs.Message}
+        simple: |-
+          # Issue and Asset Details
+
+          | Field | Value |
+          |-------|-------|
+          | **Issue Name** | ${issue.name} |
+          | **Severity** | ${IssueSeverityText} |
+          | **Details** | ${issue.details} |
+          | **Category** | ${IssueCategory} |
+          | **Asset Name** | ${Core.CoreAsset.xdm__asset__name} |
+          | **Asset Type** | ${Core.CoreAsset.xdm__asset__type__name} |
+          | **Cloud Region** | ${Core.CoreAsset.xdm__asset__cloud__region} |
+          | **Cloud Account ID** | ${Core.CoreAsset.xdm__asset__realm} |
+          | **Issue Created** | ${IssueCreationTimestamp} |
+          | **Remediation Action Taken** | ${remediation_action_markdown} |
+
+          ---
+
+          **Actions:**
+          - [View Issue](${demistoUrls.server}/issue-view/${issue.id})
+          - [View Asset](${demistoUrls.server}/assets/asset-layout/${Core.CoreAsset.xdm__asset__id})
     separatecontext: false
     skipunavailable: false
     task:
       brand: Microsoft Teams
       description: Sends a message to the specified teams.
-      id: fc12cda9-9b7b-4c4c-8e14-365628d1a68d
+      id: bbcbc724-4a3c-4e57-8455-9e5086f81e31
       iscommand: true
       name: Send Microsoft Teams Notification
       playbooktaskmissingcomponent: null
       script: Microsoft Teams|||teams-send-notification-quick-action
       type: regular
       version: -1
-    taskid: fc12cda9-9b7b-4c4c-8e14-365628d1a68d
+    taskid: bbcbc724-4a3c-4e57-8455-9e5086f81e31
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1065,
-          "y": 1120
+          "x": 315,
+          "y": 1630
         }
       }
   "43":
@@ -440,27 +406,27 @@ tasks:
       '#default#':
       - "15"
       "yes":
-      - "33"
+      - "61"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: 7076fdb5-fe3b-4abc-a345-b32f8e35ee7e
+      id: 1056d6df-2489-4c98-8403-e731fdbcc495
       iscommand: false
-      name: Is and Email integration enabled and address provided?
+      name: Is an Email integration enabled and address provided?
       playbooktaskmissingcomponent: null
       type: condition
       version: -1
-    taskid: 7076fdb5-fe3b-4abc-a345-b32f8e35ee7e
+    taskid: 1056d6df-2489-4c98-8403-e731fdbcc495
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 940
+          "x": 1340,
+          "y": 1270
         }
       }
   "44":
@@ -491,7 +457,7 @@ tasks:
                     operator: isEqualString
                     right:
                       value:
-                        simple: Slack
+                        simple: SlackV3
                 root: modules
           operator: isEqualString
           right:
@@ -507,72 +473,27 @@ tasks:
       '#default#':
       - "15"
       "yes":
-      - "36"
+      - "59"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: 6364bd14-d007-49f8-8928-cbcaf4160525
+      id: ed7488d3-91ba-4835-8df2-510f68f3d10f
       iscommand: false
       name: Is Slack enabled and channel name provided?
       playbooktaskmissingcomponent: null
       type: condition
       version: -1
-    taskid: 6364bd14-d007-49f8-8928-cbcaf4160525
+    taskid: ed7488d3-91ba-4835-8df2-510f68f3d10f
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 1412.5,
-          "y": 940
-        }
-      }
-  "45":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.Message
-          operator: isNotEmpty
-          right:
-            value: {}
-      label: "yes"
-    continueonerrortype: ""
-    id: "45"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#default#':
-      - "15"
-      "yes":
-      - "43"
-      - "16"
-      - "44"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 1324680c-84db-40fd-8d80-01549918ea08
-      iscommand: false
-      name: Is the notification message provided?
-      playbooktaskmissingcomponent: null
-      type: condition
-      version: -1
-    taskid: 1324680c-84db-40fd-8d80-01549918ea08
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 735,
-          "y": 760
+          "x": 837.5,
+          "y": 1270
         }
       }
   "46":
@@ -605,26 +526,26 @@ tasks:
       '#default#':
       - "47"
       "yes":
-      - "45"
+      - "50"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: 2f850360-f056-4c0f-b54f-75ffd45e10ba
+      id: 1256d5ee-c20b-4397-8ee6-5552a0046bf8
       iscommand: false
       name: Is at least one notification recipient provided?
       playbooktaskmissingcomponent: null
       type: condition
       version: -1
-    taskid: 2f850360-f056-4c0f-b54f-75ffd45e10ba
+    taskid: 1256d5ee-c20b-4397-8ee6-5552a0046bf8
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 735,
+          "x": 500,
           "y": 220
         }
       }
@@ -711,13 +632,13 @@ tasks:
     task:
       brand: ""
       description: Prints an error entry with a given message.
-      id: cacc329b-97fd-44ba-a2c0-c000ebea9952
+      id: 1dad5497-be97-4a17-8450-2ddb734c17de
       iscommand: false
       name: Please provide at least 1 notification recipient
       playbooktaskmissingcomponent: null
       type: collection
       version: -1
-    taskid: cacc329b-97fd-44ba-a2c0-c000ebea9952
+    taskid: 1dad5497-be97-4a17-8450-2ddb734c17de
     timertriggers: []
     type: collection
     view: |-
@@ -757,20 +678,20 @@ tasks:
       '#default#':
       - "49"
       "yes":
-      - "45"
+      - "50"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: 35bd83ef-56d0-4870-a825-5e8130c5bd55
+      id: 0efa90f7-f71d-4644-8e63-bcd3934cf750
       iscommand: false
       name: Is at least one notification recipient provided?
       playbooktaskmissingcomponent: null
       type: condition
       version: -1
-    taskid: 35bd83ef-56d0-4870-a825-5e8130c5bd55
+    taskid: 0efa90f7-f71d-4644-8e63-bcd3934cf750
     timertriggers: []
     type: condition
     view: |-
@@ -792,49 +713,506 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      id:
-        simple: "47"
+      value:
+        simple: No recipient was provided for notification and hence no message was
+          sent.
     separatecontext: false
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.task.reopen
-      id: 8e5d2f91-4d6b-4d18-833a-0d4445c1b6af
-      iscommand: true
-      name: Reopen task to ask for notification recipient
+      description: Prints text to war room (Markdown supported)
+      id: a9e1f60e-fb8a-4f50-844d-1d46d3554c73
+      iscommand: false
+      name: Update war room - no message sent
       playbooktaskmissingcomponent: null
-      script: Builtin|||taskReopen
+      script: Print
       type: regular
       version: -1
-    taskid: 8e5d2f91-4d6b-4d18-833a-0d4445c1b6af
+    taskid: a9e1f60e-fb8a-4f50-844d-1d46d3554c73
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": -247.5,
+          "x": -150,
+          "y": 1450
+        }
+      }
+  "50":
+    continueonerrortype: ""
+    id: "50"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "52"
+      - "54"
+      - "55"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Format data for notification message
+      id: 2b0efc35-6d96-4cf8-8a67-61b73225ab49
+      iscommand: false
+      name: Format details
+      playbooktaskmissingcomponent: null
+      type: title
+      version: -1
+    taskid: 2b0efc35-6d96-4cf8-8a67-61b73225ab49
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
           "y": 760
+        }
+      }
+  "51":
+    continueonerrortype: ""
+    id: "51"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      htmlBody:
+        simple: "<html>\n<body style=\"font-family: Arial, sans-serif; background-color:
+          #f6f7f9; margin: 0; padding: 30px;\">\n  <div style=\"max-width: 600px;
+          margin: auto; background-color: #ffffff; border-radius: 6px; box-shadow:
+          0 2px 5px rgba(0,0,0,0.1); padding: 25px 30px;\">\n\n    <div style=\"text-align:
+          center; color: #0067b8; font-size: 20px; font-weight: bold; margin-bottom:
+          25px;\">\n      Issue and Asset Details\n    </div>\n\n    <table style=\"width:
+          100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; border:
+          1px solid #e0e0e0;\">\n      <tr>\n        <td style=\"padding: 10px; border:
+          1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold; width:
+          40%;\">Issue Name</td>\n        <td style=\"padding: 10px; border: 1px solid
+          #e0e0e0;\">${issue.name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding:
+          10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight:
+          bold;\">Severity</td>\n        <td style=\"padding: 10px; border: 1px solid
+          #e0e0e0;\">${IssueSeverityText}</td>\n      </tr>\n      <tr>\n        <td
+          style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9;
+          font-weight: bold;\">Details</td>\n        <td style=\"padding: 10px; border:
+          1px solid #e0e0e0;\">${issue.details}</td>\n      </tr>\n      <tr>\n        <td
+          style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9;
+          font-weight: bold;\">Category</td>\n        <td style=\"padding: 10px; border:
+          1px solid #e0e0e0;\">${IssueCategory}</td>\n      </tr>\n      <tr>\n        <td
+          style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9;
+          font-weight: bold;\">Asset Name</td>\n        <td style=\"padding: 10px;
+          border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__name}</td>\n      </tr>\n
+          \     <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;
+          background-color: #f9f9f9; font-weight: bold;\">Asset Type</td>\n        <td
+          style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__type__name}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Region</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__cloud__region}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Account
+          ID</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__realm}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Issue Created</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${IssueCreationTimestamp}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Remediation
+          Action Taken</td>\n        <td style=\"padding: 10px; border: 1px solid
+          #e0e0e0;\">${remediation_action_html}</td>\n      </tr>\n    </table>\n\n
+          \   <div style=\"text-align: center; margin: 30px 0 10px;\">\n      <a href=\"${demistoUrls.server}/issue-view/${issue.id}\"
+          \n         target=\"_blank\"\n         style=\"display: inline-block; padding:
+          10px 24px; background-color: #0067b8; color: white !important; text-decoration:
+          none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n
+          \        View Issue\n      </a>\n      <a href=\"${demistoUrls.server}/assets/asset-layout/${Core.CoreAsset.xdm__asset__id}\"
+          \n         target=\"_blank\"\n         style=\"display: inline-block; padding:
+          10px 24px; background-color: #0067b8; color: white !important; text-decoration:
+          none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n
+          \        View Asset\n      </a>\n    </div>\n  </div>\n</body>\n</html>"
+      subject:
+        simple: ${inputs.Subject}
+      to:
+        complex:
+          root: inputs.Email Address
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                iscontext: true
+                value:
+                  simple: Provide at least 1 notification recipient.Answers.0
+            operator: SetIfEmpty
+          - args:
+              empty_values: {}
+              remove_keys: {}
+            operator: RemoveEmpty
+          - args:
+              delimiter:
+                value:
+                  simple: ','
+            operator: splitAndTrim
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: mail-sender
+      description: commands.server.mail.sendmail
+      id: ac29f23d-f485-4bb0-869e-6e7670b78988
+      iscommand: true
+      name: Send Email Notification
+      playbooktaskmissingcomponent: null
+      script: mail-sender|||send-mail
+      type: regular
+      version: -1
+    taskid: ac29f23d-f485-4bb0-869e-6e7670b78988
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1630
+        }
+      }
+  "52":
+    continueonerrortype: ""
+    id: "52"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "53"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: IssueSeverityText
+      value:
+        complex:
+          accessor: severity
+          root: issue
+          transformers:
+          - args:
+              input_values:
+                value:
+                  simple: 1,2,3,4
+              mapped_values:
+                value:
+                  simple: Low,Medium,High,Critical
+            operator: MapValuesTransformer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set the value of issue severity transformed from an integer value
+        to its corresponding text value. 1 - Low, 2 - Medium, 3 - High, 4 - Critical
+      id: ec2f0a37-de94-43c5-8228-cab36c42d669
+      iscommand: false
+      name: Set Issue Severity Text
+      playbooktaskmissingcomponent: null
+      script: Set
+      type: regular
+      version: -1
+    taskid: ec2f0a37-de94-43c5-8228-cab36c42d669
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 315,
+          "y": 940
+        }
+      }
+  "53":
+    continueonerrortype: ""
+    id: "53"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+      - "44"
+      - "43"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d70077ee-7ba4-4b04-820b-f8c89f966738
+      iscommand: false
+      name: Send Notification with Details
+      playbooktaskmissingcomponent: null
+      type: title
+      version: -1
+    taskid: d70077ee-7ba4-4b04-820b-f8c89f966738
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 1120
+        }
+      }
+  "54":
+    continueonerrortype: ""
+    id: "54"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "53"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: IssueCategory
+      value:
+        complex:
+          accessor: alert_category
+          root: issue
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                iscontext: true
+                value:
+                  simple: issue.categoryname
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set the value of issue category to a context key depending on the
+        field name in the current platform.
+      id: faa0efb1-5b16-488c-8aee-3cd177163906
+      iscommand: false
+      name: Set Issue Category
+      playbooktaskmissingcomponent: null
+      script: Set
+      type: regular
+      version: -1
+    taskid: faa0efb1-5b16-488c-8aee-3cd177163906
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 940
+        }
+      }
+  "55":
+    continueonerrortype: ""
+    id: "55"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "53"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: IssueCreationTimestamp
+      value:
+        simple: ${issue.created}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set the value of issue created timestamp to a context key because
+        otherwise it includes additional quotes.
+      id: d67b7eb5-8e39-48e7-8a69-a9d740451fbc
+      iscommand: false
+      name: Set Issue Creation timestamp
+      playbooktaskmissingcomponent: null
+      script: Set
+      type: regular
+      version: -1
+    taskid: d67b7eb5-8e39-48e7-8a69-a9d740451fbc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 950
+        }
+      }
+  "59":
+    continueonerrortype: ""
+    id: "59"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: remediation_action_slack_block
+      value:
+        complex:
+          root: remediation_action
+          transformers:
+          - args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: \"
+              toReplace:
+                value:
+                  simple: '"'
+            operator: replace
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: d6c6e045-3d95-4778-8620-f66516b65c59
+      iscommand: false
+      name: Slack block formatting for quotes
+      playbooktaskmissingcomponent: null
+      script: Set
+      type: regular
+      version: -1
+    taskid: d6c6e045-3d95-4778-8620-f66516b65c59
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 1450
+        }
+      }
+  "60":
+    continueonerrortype: ""
+    id: "60"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: remediation_action_markdown
+      value:
+        complex:
+          root: remediation_action
+          transformers:
+          - args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: </br>
+              toReplace:
+                value:
+                  simple: |2+
+
+            operator: replace
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: b953b9a8-db4a-4baa-83bd-ba6f4ba3df4f
+      iscommand: false
+      name: Markdown formatting for new lines
+      playbooktaskmissingcomponent: null
+      script: Set
+      type: regular
+      version: -1
+    taskid: b953b9a8-db4a-4baa-83bd-ba6f4ba3df4f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 315,
+          "y": 1450
+        }
+      }
+  "61":
+    continueonerrortype: ""
+    id: "61"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "51"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: remediation_action_html
+      value:
+        complex:
+          root: remediation_action
+          transformers:
+          - args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: <br>
+              toReplace:
+                value:
+                  simple: |2+
+
+            operator: replace
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 36834b78-e1af-41b5-84a2-3d7e17fc143b
+      iscommand: false
+      name: Html formatting for new lines
+      playbooktaskmissingcomponent: null
+      script: Set
+      type: regular
+      version: -1
+    taskid: 36834b78-e1af-41b5-84a2-3d7e17fc143b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1450
         }
       }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {
-      "16_15_#default#": 0.27,
-      "16_42_yes": 0.46,
+      "16_15_#default#": 0.24,
+      "16_60_yes": 0.51,
       "43_15_#default#": 0.23,
-      "44_15_#default#": 0.26,
-      "44_36_yes": 0.45,
-      "45_15_#default#": 0.24,
-      "45_43_yes": 0.51,
-      "46_45_yes": 0.42
+      "43_61_yes": 0.42,
+      "44_15_#default#": 0.27
     },
     "paper": {
       "dimensions": {
-        "height": 1310,
-        "width": 2152.5,
-        "x": -247.5,
-        "y": 70
+        "height": 1860,
+        "width": 1870,
+        "x": -150,
+        "y": 50
       }
     }
   }

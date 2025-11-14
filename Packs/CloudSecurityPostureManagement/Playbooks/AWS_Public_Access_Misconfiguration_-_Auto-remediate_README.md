@@ -1,13 +1,17 @@
-Automated remediation of the following AWS Misconfigurations:
+Automatically remediates 9 AWS public access misconfigurations: 1 RDS database, 1 EBS snapshot, and 7 S3 bucket issues:
 1. AWS RDS database instance is publicly accessible
-2. AWS S3 Buckets Block public access setting disabled
+2. AWS EBS snapshots are accessible to public
 3. AWS S3 buckets are accessible to public via ACL
-4. AWS EBS snapshots are accessible to public
+4. AWS S3 Buckets Block public access setting disabled
 5. AWS CloudTrail bucket is publicly accessible
 6. AWS Connect instance using publicly accessible S3 bucket
 7. AWS S3 bucket policy overly permissive to any principal
 8. AWS S3 bucket publicly readable
 9. AWS S3 bucket publicly writable
+
+The playbook disables public access by modifying RDS publicly_accessible settings, removing EBS snapshot createVolumePermission, and enabling S3 PublicAccessBlockConfiguration respectively.
+
+Optional stakeholder notification is available via the "Notify Stakeholders" sub-playbook by setting enableNotifications input to 'yes' (default: 'no'). When enabled, configure at least one recipient (email, Slack channel, or Teams channel) in the Notify Stakeholders playbook inputs. The playbook automatically updates issue status to "Resolved - Fixed" upon successful remediation.
 
 ## Dependencies
 
@@ -15,8 +19,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Notify Stakeholders - issue resolved
-* Notify Stakeholders - no remediation available
+* Notify Stakeholders
 
 ### Integrations
 
@@ -25,7 +28,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* DeleteContext
 * Print
 * Set
 
@@ -54,4 +56,4 @@ There are no outputs for this playbook.
 
 ---
 
-![AWS Public Access Misconfiguration - Remediate Without Review](../doc_files/AWS_Public_Access_Misconfiguration_-_Remediate_Without_Review.png)
+![AWS Public Access Misconfiguration - Auto-remediate](../doc_files/AWS_Public_Access_Misconfiguration_-_Auto-remediate.png)

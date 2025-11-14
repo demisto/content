@@ -16,13 +16,15 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-This playbook does not use any scripts.
+* Print
+* Set
+* SetIfEmpty
+* MapValuesTransformer
 
 ### Commands
 
 * send-mail
-* slack-send-notification-quick-action
-* taskReopen
+* send-notification (SlackV3)
 * teams-send-notification-quick-action
 
 ## Playbook Inputs
@@ -33,9 +35,8 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | Teams Channel | Provide Microsoft Teams channel name to which to send messages. |  | Optional |
 | Slack Channel | Provide Slack channel name to which to send messages. |  | Optional |
-| Email Address | Provide an email address for notifications. Use comma separated values to provide multiple addresses | amore@paloaltonetworks.com | Optional |
-| Message | The text to include in your notification. | Issue Name - ${issue.name}<br/>Severity ${issue.severity}<br/>Details - ${issue.details}<br/>Category - ${issue.alert_category}<br/>Asset Name - ${Core.CoreAsset.xdm__asset__name}<br/>Asset Type - ${Core.CoreAsset.xdm__asset__type__name}<br/>Cloud Region - ${Core.CoreAsset.xdm__asset__cloud__region}<br/>Cloud Account ID - ${Core.CoreAsset.xdm__asset__realm}<br/>Issue Created - ${issue.created} | Optional |
-| Subject | For email |  | Optional |
+| Email Address | Provide an email address for notifications. Use comma separated values to provide multiple addresses |  | Optional |
+| Subject | For email | You have a new message for - ${issue.name} | Optional |
 
 ## Playbook Outputs
 
