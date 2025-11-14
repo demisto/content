@@ -6,7 +6,7 @@ import Cyberint
 import pytest
 from CommonServerPython import DemistoException, EntryType, GetModifiedRemoteDataResponse, GetRemoteDataResponse
 
-BASE_URL = "https://test.cyberint.io/alert"
+BASE_URL = "https://test.cyberint.io"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
@@ -25,7 +25,7 @@ def client():
     from Cyberint import Client
 
     return Client(
-        base_url=BASE_URL,
+        base_url=f"{BASE_URL}/us/alert/",
         region="us",
         access_token="xxx",
         verify_ssl=False,
@@ -38,7 +38,7 @@ def client_with_eu_region():
     from Cyberint import Client
 
     return Client(
-        base_url=BASE_URL,
+        base_url=f"{BASE_URL}/eu/alert/",
         region="eu",
         access_token="xxx",
         verify_ssl=False,
@@ -51,7 +51,7 @@ def client_without_region():
     from Cyberint import Client
 
     return Client(
-        base_url=BASE_URL,
+        base_url=f"{BASE_URL}/us/alert/",
         region="",
         access_token="xxx",
         verify_ssl=False,

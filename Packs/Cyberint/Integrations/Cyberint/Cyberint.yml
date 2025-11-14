@@ -26,12 +26,13 @@ configuration:
   section: Connect
 - display: Region
   name: region
-  type: 16
-  required: false
+  type: 15
+  required: true
   additionalinfo: Select the data region for GDPR compliance (US or EU).
   options:
   - US
   - EU
+  defaultvalue: US
   section: Connect
 - display: Create an incident per CSV record
   additionalinfo: An incident will be created with the originated Alert details per CSV file record.

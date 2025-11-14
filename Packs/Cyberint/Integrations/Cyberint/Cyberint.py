@@ -63,7 +63,7 @@ class Client(BaseClient):
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": "1.1.9",
+            "X-Integration-Version": "1.1.12",
         }
         super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy)
 
@@ -118,9 +118,7 @@ class Client(BaseClient):
             },
         }
         body = remove_empty_elements(body)
-        response = self._http_request(
-            method="POST", json_data=body, cookies=self._cookies, url_suffix=f"{self._region}/api/v1/alerts"
-        )
+        response = self._http_request(method="POST", json_data=body, cookies=self._cookies, url_suffix="api/v1/alerts")
         return response
 
     def update_alerts(
@@ -151,9 +149,7 @@ class Client(BaseClient):
             },
         }
         body = remove_empty_elements(body)
-        response = self._http_request(
-            method="PUT", json_data=body, cookies=self._cookies, url_suffix=f"{self._region}/api/v1/alerts/status"
-        )
+        response = self._http_request(method="PUT", json_data=body, cookies=self._cookies, url_suffix="api/v1/alerts/status")
         return response
 
     def get_csv_file(self, alert_id: str, attachment_id: str, delimiter: bytes = b"\r\n") -> Iterable[str]:
@@ -168,7 +164,7 @@ class Client(BaseClient):
         Returns:
             row (generator(str)): Generator containing each line of the CSV.
         """
-        url_suffix = f"{self._region}/api/v1/alerts/{alert_id}/attachments/{attachment_id}"
+        url_suffix = f"api/v1/alerts/{alert_id}/attachments/{attachment_id}"
         with closing(
             self._http_request(method="GET", url_suffix=url_suffix, cookies=self._cookies, resp_type="all", stream=True)
         ) as r:
@@ -187,7 +183,7 @@ class Client(BaseClient):
             Response: API response from Cyberint.
         """
 
-        url_suffix = f"{self._region}/api/v1/alerts/{alert_ref_id}/attachments/{attachment_id}"
+        url_suffix = f"api/v1/alerts/{alert_ref_id}/attachments/{attachment_id}"
         return self._http_request(method="GET", cookies=self._cookies, url_suffix=url_suffix, resp_type="response")
 
     def get_alert(
@@ -204,7 +200,7 @@ class Client(BaseClient):
             Response: API response from Cyberint.
         """
 
-        url_suffix = f"{self._region}/api/v1/alerts/{alert_ref_id}"
+        url_suffix = f"api/v1/alerts/{alert_ref_id}"
         return self._http_request(method="GET", cookies=self._cookies, url_suffix=url_suffix)
 
     def get_analysis_report(self, alert_ref_id: str) -> Response:
@@ -218,7 +214,7 @@ class Client(BaseClient):
             Response: API response from Cyberint.
 
         """
-        url_suffix = f"{self._region}/api/v1/alerts/{alert_ref_id}/analysis_report"
+        url_suffix = f"api/v1/alerts/{alert_ref_id}/analysis_report"
         return self._http_request(method="GET", cookies=self._cookies, url_suffix=url_suffix, resp_type="response")
 
 
@@ -922,7 +918,7 @@ def main():
     verify_certificate = not params.get("insecure", False)
     first_fetch_time = params.get("first_fetch", "3 days").strip()
     proxy = params.get("proxy", False)
-    base_url = f"{url}/alert/"
+    base_url = f"{url}/{region}/alert/"
     demisto.info(f"Command being called is {command}")
     try:
         client = Client(
