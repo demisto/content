@@ -1,4 +1,4 @@
-Unified gateway to security insights - all from a unified Microsoft Graph User API.
+The Entra ID Users integration (formerly Azure Active Directory Users) is a Unified gateway to security insights - all from a unified Microsoft Graph User API.
 
 ## Authentication
 
@@ -10,7 +10,7 @@ Required Permissions:
 - User.ReadWrite.All - Application
 - User.Read - Delegated
 
-## Authorize Cortex XSOAR for Azure Active Directory Users (Self deployed Azure App)
+## Authorize Cortex XSOAR for Entra ID Users (Self deployed Azure App)
 
 There are two different authentication methods for a self-deployed configuration:
 
@@ -22,7 +22,7 @@ In order to use the msgraph-user-change-password command, you must configure wit
 
 Note: When using the Authorization Code flow, make sure the user you authenticate with has the correct roles in Azure AD in order to use the command.
 
-## Configure Azure Active Directory Users in Cortex
+## Configure Entra ID Users in Cortex
 
 | **Parameter**                                                          | **Description**                                                                                                                                                                                                                                                                                                                                        | **Required** |
 |------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
