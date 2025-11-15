@@ -709,7 +709,7 @@ def test_test_module_ok(requests_mock, client):
     from Cyberint import test_module
 
     mock_response = json.loads(load_mock_response("list_alerts.json"))
-    requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
+    requests_mock.post(f"{BASE_URL}/us/alert/api/v1/alerts", json=mock_response)
 
     result = test_module(client)
 
@@ -728,7 +728,7 @@ def test_test_module_invalid_token(requests_mock, client):
     """
 
     error_response = {"error": "Invalid token or token expired"}
-    requests_mock.post(f"{BASE_URL}/api/v1/alerts", status_code=401, json=error_response)
+    requests_mock.post(f"{BASE_URL}/us/alert/api/v1/alerts", status_code=401, json=error_response)
 
     assert (
         Cyberint.test_module(client)
@@ -748,7 +748,7 @@ def test_test_module_error(requests_mock, client):
     """
 
     error_response = {"error": "Not found"}
-    requests_mock.post(f"{BASE_URL}/api/v1/alerts", status_code=404, json=error_response)
+    requests_mock.post(f"{BASE_URL}/us/alert/api/v1/alerts", status_code=404, json=error_response)
 
     assert Cyberint.test_module(client) == 'Error in API call [404] - None\n{"error": "Not found"}'
 
