@@ -399,9 +399,9 @@ def test_cyberint_alerts_fetch_command(requests_mock, client):
     from Cyberint import cyberint_alerts_fetch_command
 
     mock_response = load_mock_response("csv_example.csv")
-    requests_mock.get(f"{BASE_URL}/us/api/v1/alerts/ARG-3/attachments/X", json=mock_response)
+    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-3/attachments/X", json=mock_response)
     mock_response = json.loads(load_mock_response("list_alerts.json"))
-    requests_mock.post(f"{BASE_URL}/us/api/v1/alerts", json=mock_response)
+    requests_mock.post(f"{BASE_URL}/us/alert/api/v1/alerts", json=mock_response)
 
     result = cyberint_alerts_fetch_command(client, {})
     assert len(result.outputs) == 3
@@ -435,7 +435,7 @@ def test_cyberint_alerts_status_update_command(requests_mock, client):
     from Cyberint import cyberint_alerts_status_update
 
     mock_response = {}
-    requests_mock.put(f"{BASE_URL}/api/v1/alerts/status", json=mock_response)
+    requests_mock.put(f"{BASE_URL}/us/alert/api/v1/alerts/status", json=mock_response)
 
     result = cyberint_alerts_status_update(client, {"alert_ref_ids": "alert1", "status": "acknowledged"})
     assert len(result.outputs) == 1
@@ -501,14 +501,14 @@ def test_fetch_incidents(requests_mock, duplicate_alerts, client) -> None:
     from Cyberint import fetch_incidents
 
     mock_response = load_mock_response("csv_example.csv")
-    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-3/attachments/X", json=mock_response)
+    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-3/attachments/X", json=mock_response)
 
     with open("test_data/expert_analysis_mock.pdf", "rb") as pdf_content_mock:
-        requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-4/analysis_report", content=pdf_content_mock.read())
-    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-4/attachments/X", json=mock_response)
+        requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-4/analysis_report", content=pdf_content_mock.read())
+    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-4/attachments/X", json=mock_response)
 
     mock_response = json.loads(load_mock_response("list_alerts.json"))
-    requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
+    requests_mock.post(f"{BASE_URL}/us/alert/api/v1/alerts", json=mock_response)
 
     last_fetch, incidents = fetch_incidents(
         client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, duplicate_alerts, "Incoming And Outgoing", False
@@ -535,14 +535,14 @@ def test_fetch_incidents_no_last_fetch(requests_mock, client):
     from Cyberint import fetch_incidents
 
     mock_response = load_mock_response("csv_example.csv")
-    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-3/attachments/X", json=mock_response)
+    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-3/attachments/X", json=mock_response)
 
     with open("test_data/expert_analysis_mock.pdf", "rb") as pdf_content_mock:
-        requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-4/analysis_report", content=pdf_content_mock.read())
-    requests_mock.get(f"{BASE_URL}/api/v1/alerts/ARG-4/attachments/X", json=mock_response)
+        requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-4/analysis_report", content=pdf_content_mock.read())
+    requests_mock.get(f"{BASE_URL}/us/alert/api/v1/alerts/ARG-4/attachments/X", json=mock_response)
 
     mock_response = json.loads(load_mock_response("list_alerts.json"))
-    requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
+    requests_mock.post(f"{BASE_URL}/us/alert/api/v1/alerts", json=mock_response)
 
     last_fetch, incidents = fetch_incidents(client, {}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing", False)
     wanted_time = datetime.timestamp(datetime.strptime("2020-12-30T00:00:57Z", DATE_FORMAT))
@@ -567,7 +567,7 @@ def test_fetch_incidents_empty_response(requests_mock, client):
     from Cyberint import fetch_incidents
 
     mock_response = json.loads(load_mock_response("empty.json"))
-    requests_mock.post(f"{BASE_URL}/api/v1/alerts", json=mock_response)
+    requests_mock.post(f"{BASE_URL}/us/alert/api/v1/alerts", json=mock_response)
 
     last_fetch, incidents = fetch_incidents(
         client, {"last_fetch": 100000000}, "3 days", [], [], [], [], 50, False, "Incoming And Outgoing", False
