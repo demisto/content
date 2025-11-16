@@ -619,7 +619,6 @@ Create automated pull requests to fix multiple security issues in a single bulk 
 | Core.TriggerPR.triggeredPrs.issueId | String | The issue identifier. |
 | Core.TriggerPR.triggeredPrs.status | String | Either "triggered" or "automated_fix_not_available". |
 
-
 ### core-enable-scanners
 
 ***

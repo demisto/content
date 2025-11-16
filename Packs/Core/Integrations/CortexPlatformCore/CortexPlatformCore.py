@@ -424,7 +424,7 @@ class Client(CoreClient):
             headers={**self._headers, "content-type": "application/json"},
             url_suffix="/v1/issues/fix/trigger_fix_pull_request",
         )
-        
+
     def create_policy(self, policy_payload: str) -> dict:
         """
         Creates a new policy in Cortex XDR.
@@ -960,6 +960,7 @@ def appsec_remediate_issue_command(client: Client, args: dict) -> CommandResults
         raw_response=response,
     )
 
+
 def get_appsec_rule_ids_from_names(client, rule_names: list[str]) -> list[str]:
     """
     Retrieves the IDs of AppSec rules based on their names using exact and partial matching.
@@ -1358,7 +1359,7 @@ def main():  # pragma: no cover
 
         elif command == "core-appsec-remediate-issue":
             return_results(appsec_remediate_issue_command(client, args))
-            
+
         elif command == "core-create-appsec-policy":
             return_results(create_policy_command(client, args))
 
