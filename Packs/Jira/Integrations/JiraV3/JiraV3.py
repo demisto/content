@@ -3572,7 +3572,7 @@ def jira_test_module(client: JiraBaseClient, params: Dict[str, Any]) -> str:
             " and complete the process in the URL that is returned. You will then be redirected"
             " to the callback URL. Copy the authorization code found in the query parameter"
             " `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish"
-            " the process."
+            " the process. Then you can test it by running the `!jira-oauth-test` command."
         )
 
 
@@ -3858,28 +3858,23 @@ def create_fetch_incidents_query(
         str: The query to use to fetch the appropriate incidents.
     """
     issue_field_in_fetch_query_error_message = "The issue field to fetch by cannot be in the fetch query"
-    if issue_field_to_fetch_from in fetch_query:
+    tokens = re.findall(r"\w+", fetch_query)
+    if issue_field_to_fetch_from in tokens:
         raise DemistoException(issue_field_in_fetch_query_error_message)
     error_message = f"Could not create the proper fetch query for the issue field {issue_field_to_fetch_from}"
     exclude_issue_ids_query = f" AND ID NOT IN ({', '.join(map(str, issue_ids_to_exclude))}) " if issue_ids_to_exclude else " "
     if issue_field_to_fetch_from == "id":
-        if "id" not in fetch_query:
-            return f"{fetch_query} AND id >= {last_fetch_id}{exclude_issue_ids_query}ORDER BY id ASC"
-        error_message = f"{error_message}\n{issue_field_in_fetch_query_error_message}"
+        return f"{fetch_query} AND id >= {last_fetch_id}{exclude_issue_ids_query}ORDER BY id ASC"
     elif issue_field_to_fetch_from == "created date":
-        if "created" not in fetch_query:
-            return (
-                f'{fetch_query} AND created >= "{last_fetch_created_time or first_fetch_interval}"{exclude_issue_ids_query}'
-                "ORDER BY created ASC"
-            )
-        error_message = f"{error_message}\n{issue_field_in_fetch_query_error_message}"
+        return (
+            f'{fetch_query} AND created >= "{last_fetch_created_time or first_fetch_interval}"{exclude_issue_ids_query}'
+            "ORDER BY created ASC"
+        )
     elif issue_field_to_fetch_from == "updated date":
-        if "updated" not in fetch_query:
-            return (
-                f'{fetch_query} AND updated >= "{last_fetch_updated_time or first_fetch_interval}"{exclude_issue_ids_query}'
-                "ORDER BY updated ASC"
-            )
-        error_message = f"{error_message}\n{issue_field_in_fetch_query_error_message}"
+        return (
+            f'{fetch_query} AND updated >= "{last_fetch_updated_time or first_fetch_interval}"{exclude_issue_ids_query}'
+            "ORDER BY updated ASC"
+        )
     raise DemistoException(error_message)
 
 
