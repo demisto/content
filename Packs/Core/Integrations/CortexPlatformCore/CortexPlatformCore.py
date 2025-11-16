@@ -25,7 +25,13 @@ ASSET_FIELDS = {
 }
 
 
-WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations", "core-update-issue", "core-create-appsec-policy"]
+WEBAPP_COMMANDS = [
+    "core-get-vulnerabilities",
+    "core-search-asset-groups",
+    "core-get-issue-recommendations",
+    "core-update-issue",
+    "core-create-appsec-policy",
+]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners"]
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
