@@ -298,5 +298,5 @@ script:
   subtype: python3
   type: python
 tests:
-- MicrosoftManagementActivity - Test
+- No test
 fromversion: 5.0.0
