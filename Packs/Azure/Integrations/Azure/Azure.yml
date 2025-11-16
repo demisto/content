@@ -5839,6 +5839,7 @@ script:
       type: String
       description: Whether to enable SSL authentication when connecting to the server.
       defaultValue: Enabled
+      hidden: true
     name: azure-postgres-server-update-ssl-enforcement-quick-action
     description: Enforces SSL/TLS connections for the PostgreSQL server to reject unencrypted traffic.
     outputs: [] # No outputs are returned in the response.
