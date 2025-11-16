@@ -361,24 +361,45 @@ class Client(BaseClient):
         query = """WITH asset_tags AS (
     SELECT
         dta.asset_id,
-        -- Aggregates tag type and name into a single string: (Type: Name, Type: Name, ...)
-        array_to_string(array_agg(dt.tag_type || ': ' || dt.tag_name), ', ') AS aggregated_tags
+        json_agg(
+            json_build_object(
+                'Name', dt.tag_name,
+                'Type', dt.tag_type
+            )
+        ) AS aggregated_tags_json
     FROM
         dim_tag_asset dta
     JOIN
         dim_tag dt USING (tag_id)
     GROUP BY
         dta.asset_id
+),
+max_certainty AS (
+    SELECT
+        daos.asset_id,
+        MAX(daos.certainty) AS max_os_certainty
+    FROM
+        dim_asset_operating_system daos
+    GROUP BY
+        daos.asset_id
 )
 
-SELECT DISTINCT
+SELECT
     da.last_assessed_for_vulnerabilities AS "Last Scan Date",
+    fad.last_discovered AS "Last found date",
     da.asset_id AS "id",
     da.host_name AS "FQDNS",
-    da.ip_address AS "ipv4", 
-    da.mac_address AS "mac_address",
+    CASE 
+        WHEN da.ip_address LIKE '%:%' THEN NULL
+        ELSE da.ip_address
+    END AS "ipv4",
     
-    -- OS and Certainty
+    -- IPv6 Column
+    CASE 
+        WHEN da.ip_address LIKE '%:%' THEN da.ip_address
+        ELSE NULL
+    END AS "ipv6",
+    da.mac_address AS "mac_address",
     dos.architecture AS "os_architecture",
     dos.description AS "os_description",
     dos.family AS "os_family",
@@ -387,16 +408,19 @@ SELECT DISTINCT
     dos.asset_type AS "os_type",
     dos.vendor AS "os_vendor",
     dos.version AS "os_version",
-    daos.certainty AS "os_certainty",
-    atags.aggregated_tags AS "Tags"
+    mc.max_os_certainty AS "os_certainty",
+    atags.aggregated_tags_json AS "Tags"
 FROM
     dim_asset da
 LEFT JOIN
-    dim_asset_operating_system daos ON da.asset_id = daos.asset_id
+    fact_asset_discovery fad ON da.asset_id = fad.asset_id
 LEFT JOIN
     dim_operating_system dos ON da.operating_system_id = dos.operating_system_id
 LEFT JOIN
-    asset_tags atags ON da.asset_id = atags.asset_id -- LEFT JOIN from the CTE
+    asset_tags atags ON da.asset_id = atags.asset_id
+LEFT JOIN
+    max_certainty mc ON da.asset_id = mc.asset_id
+
 ORDER BY
     da.asset_id ASC"""
 
@@ -4172,7 +4196,6 @@ def download_report_command(
         report_format = "pdf"
 
     report_data = client.download_report(report_id=report_id, instance_id=instance_id)
-    print(report_data)
     return fileResult(
         filename=f"{name}.{report_format.lower()}",
         data=report_data,
