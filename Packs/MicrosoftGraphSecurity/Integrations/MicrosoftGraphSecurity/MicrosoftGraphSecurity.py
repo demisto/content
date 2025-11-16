@@ -270,7 +270,7 @@ class MsGraphClient:
         body = {"purgeType": purge_type, "purgeAreas": purge_areas}
         return self.ms_client.http_request(method="POST", url_suffix=url, json_data=body, resp_type="response")
 
-    def run_estimate_statistics_request(self, case_id, search_id, statistics_options=None):
+    def start_estimate_statistics_request(self, case_id, search_id, statistics_options=None):
         url = f"security/cases/ediscoveryCases/{case_id}/searches/{search_id}/estimateStatistics"
         body = {}
         if statistics_options:
@@ -1554,45 +1554,46 @@ def purge_ediscovery_data_command(client: MsGraphClient, args):
     return CommandResults(readable_output=f"eDiscovery purge status is {status}.")
 
 
-def run_estimate_statistics_command(client: MsGraphClient, args):
+def run_estimate_statistics_command(client: MsGraphClient, args) -> CommandResults:
     case_id = args.get("case_id")
     search_id = args.get("search_id")
     statistics_options = argToList(args.get("statistics_options", []))
 
-    # Run the async estimate operation and fetch its status
-    operation = client.run_estimate_statistics_request(case_id, search_id, statistics_options)
+    # Start the estimate statistics operation
+    client.start_estimate_statistics_request(case_id, search_id, statistics_options)
 
-    outputs = {
-        "operationId": operation.get("id"),
-        "caseId": case_id,
-        "searchId": search_id,
-        "status": operation.get("status"),
-        "operationType": operation.get("operationType"),
-        "percentProgress": operation.get("percentProgress"),
-        "createdDateTime": operation.get("createdDateTime"),
-        "completedDateTime": operation.get("completedDateTime"),
-    }
+    demisto.info(f"[run_estimate_statistics_command] Estimate statistics started for case {case_id}, search {search_id}.")
 
-    # Prepare human-readable output
-    human_readable = tableToMarkdown(
-        name=f"eDiscovery Estimate Operation for search {search_id}",
-        t=[outputs],
-        headers=["caseId", "searchId", "operationId", "status", "percentProgress", "createdDateTime", "completedDateTime"],
-        removeNull=True,
-    )
-
+    # Return confirmation only
     return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix="MsGraph.eDiscovery.EstimateStatistics",
-        outputs_key_field="operationId",
-        outputs=outputs,
-        raw_response=operation,
+        readable_output=f"Estimate statistics request initiated for case `{case_id}`, search `{search_id}`.",
     )
 
 
-def get_last_estimate_statistics_operation_command(client: MsGraphClient, args):
-    resp = client.get_last_estimate_statistics_operation(args.get("case_id"), args.get("search_id"))
-    # Extract key details for display
+# @polling_function(
+#     "msg-get-last-estimate-statistics-operation",
+#     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 600)),
+#     requires_polling_arg=False,
+# )
+def _get_last_estimate_statistics_command(args, client: MsGraphClient) -> PollResult:
+    case_id = args.get("case_id")
+    search_id = args.get("search_id")
+
+    resp = client.get_last_estimate_statistics_operation(case_id, search_id)
+    status = (resp.get("status") or "").lower()
+
+    if status not in ("succeeded", "completed"):
+        demisto.debug(f"[get_last_estimate_statistics_command] Status: {status}, scheduling next poll.")
+        return PollResult(
+            continue_to_poll=True,
+            args_for_next_run=args,
+            response=None,
+            partial_result=CommandResults(
+                readable_output=f"Estimate statistics operation is still running... (Status: {status})"
+            ),
+        )
+
+    # Completed — return final statistics
     stats_info = {
         "Operation ID": resp.get("id"),
         "Status": resp.get("status"),
@@ -1609,15 +1610,29 @@ def get_last_estimate_statistics_operation_command(client: MsGraphClient, args):
         "Site Count": resp.get("siteCount"),
     }
 
-    human_readable = tableToMarkdown(
-        name=f"eDiscovery Estimate Statistics for Search `{args.get('search_id')}`", t=stats_info, removeNull=True
+    readable_output = tableToMarkdown(
+        f"eDiscovery Estimate Statistics for Search `{search_id}`",
+        stats_info,
+        removeNull=True,
     )
-    return CommandResults(
-        outputs_prefix="MsGraph.eDiscovery.EstimateStatistics",
-        outputs_key_field="id",
-        outputs=resp,
-        readable_output=human_readable,
+
+    return PollResult(
+        response=CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="MsGraph.eDiscovery.EstimateStatistics",
+            outputs_key_field="id",
+            outputs=resp,
+            raw_response=resp,
+        )
     )
+
+
+# Decorated version for XSOAR runtime
+get_last_estimate_statistics_command = polling_function(
+    "msg-get-last-estimate-statistics-operation",
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 600)),
+    requires_polling_arg=False,
+)(_get_last_estimate_statistics_command)
 
 
 def create_ediscovery_search_command(client: MsGraphClient, args):
@@ -2179,7 +2194,6 @@ def main():
         "msg-delete-ediscovery-search": delete_ediscovery_search_command,
         "msg-purge-ediscovery-data": purge_ediscovery_data_command,
         "msg-run-estimate-statistics": run_estimate_statistics_command,
-        "msg-get-last-estimate-statistics-operation": get_last_estimate_statistics_operation_command,
         "msg-advanced-hunting": advanced_hunting_command,
         "msg-list-security-incident": get_list_security_incident_command,
         "msg-update-security-incident": update_incident_command,
@@ -2233,6 +2247,8 @@ def main():
             return_results(create_url_assessment_request_command(args, client))
         elif command == "msg-list-threat-assessment-requests":
             return_results(list_threat_assessment_requests_command(client, args))
+        elif command == "msg-get-last-estimate-statistics-operation":
+            return_results(get_last_estimate_statistics_command(args, client))
         elif command == "ms-graph-security-auth-reset":
             return_results(reset_auth())
         elif demisto.command() == "msg-generate-login-url":

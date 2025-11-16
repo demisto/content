@@ -2,10 +2,11 @@ import itertools
 import json
 import re
 from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 import demistomock as demisto
 import pytest
-from CommonServerPython import DemistoException, CommandResults
+from CommonServerPython import DemistoException, CommandResults, PollResult
 from MicrosoftGraphSecurity import (
     MANAGED_IDENTITIES_TOKEN_URL,
     MsGraphClient,
@@ -878,138 +879,152 @@ def test_update_incident_command(mocker):
     assert results.readable_output == expected_results["readable_output"]
 
 
-# ==============================
-# Tests for Estimate Statistics
-# ==============================
-
 from MicrosoftGraphSecurity import (
     run_estimate_statistics_command,
-    get_last_estimate_statistics_operation_command,
+    _get_last_estimate_statistics_command,
 )
 
 
+# ==============================
+# Dummy Client
+# ==============================
 class DummyEstimateClient:
+    """Dummy client simulating Microsoft Graph eDiscovery estimate statistics operations."""
+
     def __init__(self):
-        self.ms_client = self
+        # Store operations by (case_id, search_id)
+        self.operations = {}
 
-    def http_request(self, method, url_suffix=None, json_data=None, resp_type=None, ok_codes=None):
-        """Mock the POST and GET calls for estimateStatistics."""
-        if method == "POST":
-            # Simulate POST that returns Location header
-            class DummyResponse:
-                headers = {"Location": "https://graph.microsoft.com/v1.0/security/cases/CASE1/searches/SEARCH1/operations/OP1"}
-
-            return DummyResponse()
-
-        elif method == "GET":
-            # Simulate operation status GET
-            return {
-                "id": "OP1",
-                "status": "running",
-                "createdDateTime": "2025-11-05T10:00:00Z",
-                "lastActionDateTime": "2025-11-05T10:01:00Z",
-                "percentProgress": 20,
-            }
-
-        raise ValueError(f"Unexpected method {method}")
-
-    def run_estimate_statistics_request(self, case_id, search_id, statistics_options=None):
-        # Simulate the operation Graph API response
-        return {
-            "id": "operation-id-123",
-            "status": "completed",
-            "createdDateTime": "2025-11-05T10:00:00Z",
-            "lastActionDateTime": "2025-11-05T10:05:00Z",
-            "indexedItemCount": 200,
-            "indexedItemsSize": 1024000,
-            "unindexedItemCount": 5,
-            "unindexedItemsSize": 4096,
-            "mailboxCount": 4,
-            "siteCount": 3,
+    def start_estimate_statistics_request(self, case_id, search_id, statistics_options=None):
+        """
+        Simulate starting an estimate statistics request.
+        """
+        self.operations[(case_id, search_id)] = {
+            "id": "OP123",
+            "status": "running",
+            "percentProgress": 0,
+            "createdDateTime": "2025-11-16T10:00:00Z",
+            "lastActionDateTime": "2025-11-16T10:00:00Z",
+            "indexedItemCount": 100,
+            "indexedItemsSize": 50000,
+            "unindexedItemCount": 2,
+            "unindexedItemsSize": 1024,
+            "totalItemCount": 102,
+            "totalItemsSize": 51024,
+            "mailboxCount": 3,
+            "siteCount": 2,
+            "call_count": 0,  # track how many times get_last was called
         }
 
+    def get_last_estimate_statistics_operation(self, case_id, search_id):
+        """
+        Simulate polling: first call returns running, second call returns succeeded.
+        """
+        op = self.operations.get((case_id, search_id))
+        if not op:
+            raise KeyError(f"No estimate operation found for case {case_id}, search {search_id}")
 
-def test_run_estimate_statistics_command_running_status():
+        # Increment call count
+        op["call_count"] += 1
+
+        # First call: still running
+        if op["call_count"] == 1:
+            op["status"] = "running"
+            op["percentProgress"] = 50
+        else:
+            op["status"] = "succeeded"
+            op["percentProgress"] = 100
+
+        return op
+
+
+# ==============================
+# Tests
+# ==============================
+def test_run_estimate_statistics_command():
+    """
+    Given:
+        A case_id and search_id
+    When:
+        Calling run_estimate_statistics_command
+    Then:
+        The estimate request is started and confirmation CommandResults is returned
+    """
     client = DummyEstimateClient()
-    args = {"case_id": "CASE1", "search_id": "SEARCH1", "statistics_options": None}
+    args = {"case_id": "CASE1", "search_id": "SEARCH1"}
 
     result = run_estimate_statistics_command(client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "MsGraph.eDiscovery.EstimateStatistics"
-    assert result.outputs_key_field == "operationId"
-    assert result.outputs["status"] == "completed"
-    assert "completed" in result.readable_output
+    assert "initiated" in result.readable_output
+    assert ("CASE1", "SEARCH1") in client.operations
 
 
-def test_run_estimate_statistics_command_missing_location():
-    class BadClient(DummyEstimateClient):
-        def run_estimate_statistics_request(self, case_id, search_id, statistics_options=None):
-            # Simulate missing Location header
-            url = f"security/cases/ediscoveryCases/{case_id}/searches/{search_id}/estimateStatistics"
-            body = {}
-            if statistics_options:
-                if isinstance(statistics_options, list):
-                    statistics_options = ",".join(statistics_options)
-                body["statisticsOptions"] = statistics_options
+def test_get_last_estimate_statistics_command_missing_operation():
+    """
+    Given:
+        A case_id and search_id with no started operation
+    When:
+        Calling get_last_estimate_statistics_command
+    Then:
+        Raises KeyError indicating no operation found
+    """
+    client = DummyEstimateClient()
+    args = {"case_id": "CASE_UNKNOWN", "search_id": "SEARCH_UNKNOWN"}
 
-            # Simulate POST response with missing Location
-            class DummyResponse:
-                headers = {}  # No Location header
+    with pytest.raises(KeyError) as e:
+        _get_last_estimate_statistics_command(args, client)
 
-            response = DummyResponse()
-            location_url = response.headers.get("Location")
-            if not location_url:
-                raise DemistoException("Missing Location header in estimateStatistics response")
-
-    client = BadClient()
-    args = {"case_id": "CASE1", "search_id": "SEARCH1", "statistics_options": None}
-
-    with pytest.raises(DemistoException) as e:
-        run_estimate_statistics_command(client, args)
-
-    assert "Missing Location header" in str(e.value)
+    assert "No estimate operation found" in str(e.value)
 
 
-def test_get_last_estimate_statistics_operation_success(mocker):
-    mock_resp = {
-        "id": "OP2",
-        "status": "succeeded",
-        "createdDateTime": "2025-11-05T10:05:00Z",
-        "lastActionDateTime": "2025-11-05T10:06:00Z",
-        "indexedItemCount": 1756,
-        "indexedItemsSize": 89489297,
-        "unindexedItemCount": 1,
-        "unindexedItemsSize": 57952,
-        "mailboxCount": 4,
-        "siteCount": 6,
-    }
-
-    mock_client = mocker.Mock()
-    mock_client.get_last_estimate_statistics_operation.return_value = mock_resp
-
-    args = {"case_id": "CASE1", "search_id": "SEARCH1"}
-    result = get_last_estimate_statistics_operation_command(mock_client, args)
-
-    assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "MsGraph.eDiscovery.EstimateStatistics"
-    assert result.outputs["status"] == "succeeded"
-    assert result.outputs["indexedItemCount"] == 1756
-    assert "1756" in result.readable_output
-
-
-def test_get_last_estimate_statistics_operation_running_status(mocker):
-    mock_resp = {
-        "id": "OP3",
+def test_get_last_estimate_statistics_command_pending():
+    args = {"case_id": "case-123", "search_id": "search-456"}
+    mock_client = MagicMock()
+    mock_client.get_last_estimate_statistics_operation.return_value = {
         "status": "running",
-        "percentProgress": 40,
-        "createdDateTime": "2025-11-05T10:07:00Z",
+        "id": "op-123",
+        "percentProgress": 50,
     }
 
-    mock_client = mocker.Mock()
-    mock_client.get_last_estimate_statistics_operation.return_value = mock_resp
+    result = _get_last_estimate_statistics_command(args, mock_client)
 
-    args = {"case_id": "CASE1", "search_id": "SEARCH1"}
-    result = get_last_estimate_statistics_operation_command(mock_client, args)
+    assert isinstance(result, PollResult)
+    assert result.continue_to_poll is True
+    assert result.args_for_next_run == args
+    assert result.response is None
+    assert isinstance(result.partial_result, CommandResults)
+    assert "still running" in result.partial_result.readable_output.lower()
 
-    assert result.outputs["status"] == "running"
+
+def test_get_last_estimate_statistics_command_completed():
+    # Arrange
+    args = {"case_id": "case-123", "search_id": "search-456"}
+    mock_client = MagicMock()
+    # Simulate a completed operation
+    response_data = {
+        "id": "op-789",
+        "status": "Succeeded",
+        "percentProgress": 100,
+        "createdDateTime": "2025-11-16T00:00:00Z",
+        "lastActionDateTime": "2025-11-16T01:00:00Z",
+        "indexedItemCount": 50,
+        "indexedItemsSize": 1024,
+        "unindexedItemCount": 5,
+        "unindexedItemsSize": 512,
+        "totalItemCount": 55,
+        "totalItemsSize": 1536,
+        "mailboxCount": 3,
+        "siteCount": 2,
+    }
+    mock_client.get_last_estimate_statistics_operation.return_value = response_data
+
+    result = _get_last_estimate_statistics_command(args, mock_client)
+
+    assert isinstance(result, PollResult)
+    assert result.continue_to_poll is False or result.continue_to_poll is None  # completed
+    assert isinstance(result.response, CommandResults)
+    assert result.partial_result is None
+    assert result.response.outputs_prefix == "MsGraph.eDiscovery.EstimateStatistics"
+    assert result.response.raw_response == response_data
+    assert "eDiscovery Estimate Statistics" in result.response.readable_output
