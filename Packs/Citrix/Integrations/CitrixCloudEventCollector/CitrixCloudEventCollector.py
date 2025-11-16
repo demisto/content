@@ -87,7 +87,9 @@ class Client(BaseClient):
         else:
             return response.json()
 
-    def get_records_with_pagination(self, limit: int, start_date_time: str | None, end_date_time: str | None = None, last_record_id: str | None = None):
+    def get_records_with_pagination(
+        self, limit: int, start_date_time: str | None, end_date_time: str | None = None, last_record_id: str | None = None
+    ):
         records: list[dict] = []
         continuation_token = None
         raw_res = None
@@ -96,18 +98,17 @@ class Client(BaseClient):
             raw_res = self.get_records(
                 start_date_time=start_date_time, end_date_time=end_date_time, continuation_token=continuation_token, limit=limit
             )
-            
+
             items = raw_res.get("items", [])
-            
+
             # get the items after the last fetched record id to avoid duplicates
             if items and last_record_id:
                 for idx, item in enumerate(items):
                     if item.get("recordId") == last_record_id:
-
                         # DESCENDING ORDER → items AFTER this record are those BEFORE its index
                         items = items[:idx]
                         break
-                   
+
             records.extend(items)
             continuation_token = raw_res.get("continuationToken")
 
@@ -151,7 +152,9 @@ def get_events_command(client: Client, args: dict):  # type: ignore
 
 
 def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
-    records, _ = client.get_records_with_pagination(limit=max_fetch, start_date_time=last_run.get("LastRun"), last_record_id=last_run.get("RecordId"))
+    records, _ = client.get_records_with_pagination(
+        limit=max_fetch, start_date_time=last_run.get("LastRun"), last_record_id=last_run.get("RecordId")
+    )
 
     # take the last record time because the response sort data in descending order,
     # the first value is the latest date
