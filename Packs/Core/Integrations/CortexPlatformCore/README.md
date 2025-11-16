@@ -709,6 +709,7 @@ Retrieves a list of assets (e.g., Repositories, CI/CD Pipelines, Container Image
 | Core.Coverage.Asset.scanners_data | Array | An array containing detailed information from the scanners that evaluated the asset, including scan results, timestamps, and metadata. |
 | Core.Coverage.Asset.status_coverage | String | The overall scan coverage of the asset. Possible values: FULLY SCANNED, PARTIALLY SCANNED, NOT SCANNED. |
 | Core.Coverage.Asset.unified_provider | String | The unified provider name associated with the asset. Standardized across different vendor integrations. Possible values: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_PIPELINES, AZURE_REPOS, BITBUCKET, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITLAB, GITLAB_CI, HCP_TFC_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI. |
+
 ### core-create-appsec-policy
 
 ***

@@ -1033,6 +1033,8 @@ def get_asset_coverage_histogram_command(client: Client, args: dict):
         outputs=outputs,
         raw_response=response,
     )
+
+
 def get_appsec_rule_ids_from_names(client, rule_names: list[str]) -> list[str]:
     """
     Retrieves the IDs of AppSec rules based on their names using exact and partial matching.
