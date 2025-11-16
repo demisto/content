@@ -14,7 +14,9 @@
         "Security",
         "Network"
     ],
-    "useCases": [],
+    "useCases": [
+        "Network Security"
+    ],
     "keywords": [
         "broadcom"
     ],
