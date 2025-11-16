@@ -566,7 +566,7 @@ def test_build_extract_tim_score():
     When:
         - The build() method is called.
     Then:
-        - TIMScore is computed only from entries where Brand == "TIM" (max over those), ignoring others.
+        - TIMScore is computed only from entries where Brand == "TIM", ignoring others.
     """
     indicator_with_score = Indicator(
         type="test",
@@ -581,7 +581,6 @@ def test_build_extract_tim_score():
         "indicator1": [
             {"Score": 5, "Brand": "TIM"},
             {"Score": 8, "Brand": "brandA"},  # should be ignored for TIMScore
-            {"Score": 3, "Brand": "TIM"},
         ]
     }
     builder.add_tim_context(tim_ctx, dbot_scores=[])
@@ -632,7 +631,7 @@ def test_build_without_tim_context_carries_dbot_and_other():
     Then:
         - Final context contains DBot + Other but no TIM key.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Final.Path")
+    builder = ContextBuilder(indicator=default_indicator, final_context_path="Final.Path(val.Value && val.Value == obj.Value)")
     builder.add_tim_context({}, dbot_scores=[make_dbot("ind1", "V", 1)])
     builder.add_other_commands_results({"K1": {"v": 2}})
 

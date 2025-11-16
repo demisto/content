@@ -37,7 +37,7 @@ def file_enrichment_script(
         enrichment_brands (list[str]): List of brands to enrich with.
         additional_fields (bool): Whether to include additional fields in the output.
     Returns:
-        CommandResult: The result of the command.
+        CommandResults: The result of the command.
     """
     demisto.debug("Extracting indicators")
     file_list = extract_indicators(file_list, "file")
@@ -61,7 +61,7 @@ def file_enrichment_script(
         "Score": "Score",
     }
 
-    url_indicator = Indicator(
+    file_indicator = Indicator(
         type="file",
         value_field=FILE_HASH_TYPES,
         context_path_prefix="File",
@@ -94,6 +94,7 @@ def file_enrichment_script(
             args={"sha256": file},
             brand="Cortex Core - IR",
             command_type=CommandType.INTERNAL,
+            context_output_mapping={},
         )
         for file in file_list
     ]
@@ -115,7 +116,7 @@ def file_enrichment_script(
         final_context_path="FileEnrichmentV2(val.Value && val.Value == obj.Value)",
         args=args,
         data=file_list,
-        indicator=url_indicator,
+        indicator=file_indicator,
     )
     return file_reputation.run()
 
@@ -135,7 +136,7 @@ def main():  # pragma: no cover
     try:
         return_results(file_enrichment_script(file_list, external_enrichment, verbose, brands, additional_fields, args))
     except Exception as ex:
-        return_error(f"Failed to execute !url-enrichment. Error: {str(ex)}")
+        return_error(f"Failed to execute !file-enrichment. Error: {str(ex)}")
 
 
 """ ENTRY POINT """
