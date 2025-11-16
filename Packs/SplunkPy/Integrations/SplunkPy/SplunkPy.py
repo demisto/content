@@ -1234,7 +1234,9 @@ def get_drilldown_searches(notable_data):
     # the 'drilldown_searches' key) and submit a splunk enrichment for each one of them.
     # To maintain backwards compatibility we keep using the 'drilldown_search' key as well.
 
-    if drilldown_search := notable_data.get("drilldown_search"):
+    drilldown_search = notable_data.get("drilldown_search")
+
+    if drilldown_search and drilldown_search.lower() != "null":
         # The drilldown_searches are in 'old' format a simple string query.
         return [drilldown_search]
     if drilldown_search := notable_data.get("drilldown_searches", []):
@@ -1270,6 +1272,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
         for i in range(total_searches):
             # Iterates over the drilldown searches of the given notable to enrich each one of them
             search = searches[i]
+            demisto.debug(f"search = {search}")
             demisto.debug(f"Enriches drilldown search number {i+1} out of {total_searches} for notable {notable_data[EVENT_ID]}")
 
             if isinstance(search, dict):

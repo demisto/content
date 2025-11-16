@@ -2060,6 +2060,86 @@ def test_drilldown_enrichment(notable_data, expected_result):
         assert isinstance(job_and_queries[2], client.Job)
 
 
+
+
+
+@pytest.mark.parametrize(
+    "notable_data, expected_result",
+    [
+        (
+            {
+                "event_id": "test_id",
+                "drilldown_name": "View all login attempts by system $src$",
+                "drilldown_search": 'NULL',
+                "drilldown_searches": ['{"name":"View all login attempts by system $src$","search":"| from datamodel:\\"Authent'
+                'ication\\".\\"Authentication\\" | search src=$src|s$","earliest":1715040000,'
+                '"latest":1715126400}'],
+                "_raw": "src='test_src'",
+                "drilldown_latest": "1715126400.000000000",
+                "drilldown_earliest": "1715040000.000000000",
+            },
+            [
+                (
+                    "View all login attempts by system 'test_src'",
+                    '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"',
+                )
+            ],
+        ),
+        (
+            {
+                "event_id": "test_id2",
+                "drilldown_search": '{"name":"View all login attempts by system $src$","search":"| from datamodel:\\"Authent'
+                'ication\\".\\"Authentication\\" | search src=$src|s$","earliest":1715040000,'
+                '"latest":1715126400}',
+                "drilldown_searches": [],
+                "_raw": "src='test_src', user='test_user'",
+            },
+            [
+                (
+                    "View all login attempts by system 'test_src'",
+                    '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"',
+                ),
+                ("View all test involving user=\"'test_user'\"", 'search index="test"\n| where user="\'test_user\'"'),
+            ],
+        ),
+        (
+            {
+                "event_id": "test_id3",
+                "drilldown_searches": [
+                    '{"name":"View all login attempts by system $src$","search":"| from datamodel:\\"Authentication\\".\\"Authe'
+                    'ntication\\" | search src=$src|s$","earliest_offset":1715040000,"latest_offset":1715126400}',
+                    '{"name":"View all test involving user=\\"$user$\\"","search":"index=\\"test\\"\\n| where '
+                    'user = $user|s$","earliest_offset":1716955500,"latest_offset":1716959400}',
+                ],
+                "_raw": "src='test_src', user='test_user'",
+            },
+            [
+                (
+                    "View all login attempts by system 'test_src'",
+                    '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"',
+                ),
+                ("View all test involving user=\"'test_user'\"", 'search index="test"\n| where user="\'test_user\'"'),
+            ],
+        ),
+    ]
+)
+def test_drilldown_enrichment_fillnull(notable_data, expected_result):
+
+    from splunklib import client
+
+    service = Service("DONE")
+    jobs_and_queries = splunk.drilldown_enrichment(service, notable_data, 5)
+    for i in range(len(jobs_and_queries)):
+        job_and_queries = jobs_and_queries[i]
+        assert job_and_queries[0] == expected_result[i][0]
+        assert job_and_queries[1] == expected_result[i][1]
+        assert isinstance(job_and_queries[2], client.Job)
+
+
+
+
+
+
 @pytest.mark.parametrize(
     "notable_data, debug_log_message",
     [
@@ -4861,3 +4941,51 @@ def test_fetch_vs_mirror_comment_storage_difference(mocker):
     assert all(isinstance(comment, dict) and "Comment" in comment for comment in mirror_notable_map[test_id]["SplunkComments"])
     assert mirror_notable_map[test_id]["SplunkComments"][0]["Comment"] == "Second comment"  # Most recent first
     assert mirror_notable_map[test_id]["SplunkComments"][1]["Comment"] == "First comment"
+
+
+
+
+# def test_submit_notable(mocker):
+#     from SplunkPy import submit_notable
+
+#     mocker.patch.object(client.Service, "login")
+
+
+#     mocker.patch("SplunkPy.ENABLED_ENRICHMENTS",["Drilldown"] )
+#     notable = mocker.MagicMock()
+    
+#     res = mocker.patch.object(demisto, 'drilldown_enrichment')
+
+#     notable.data = {"event_id":"id","drilldown_search": "NULL", "drilldown_searches" : [ '{"name":"test", "search":"|key in (line_1\nline_2)", "earliest_offset":"1715040000", "latest": "1715126400", "search": "search"}']}
+#     notable.enrichments = []
+#     notable.get_submitted_enrichments.return_value = (False, False, False)
+#     notable.submitted.return_value = True
+
+
+
+#     submit_notable(Service(status="RUNNING"),notable,None)
+#     assert 1 == 1
+    
+    
+def test_drilldown_enrichment(mocker):
+    from SplunkPy import drilldown_enrichment
+
+    # mocker.patch.object(client.Service, "login")
+
+
+    # mocker.patch("SplunkPy.ENABLED_ENRICHMENTS",["Drilldown"] )
+    # notable = mocker.MagicMock()
+    
+    # # res = mocker.patch.object(demisto, 'drilldown_enrichment')
+
+    # notable.data = {"event_id":"id","drilldown_search": "NULL", "drilldown_searches" : [ '{"name":"test", "search":"|key in (line_1\nline_2)", "earliest_offset":"1715040000", "latest": "1715126400", "search": "search"}']}
+    # notable.enrichments = []
+    # notable.get_submitted_enrichments.return_value = (False, False, False)
+    # notable.submitted.return_value = True
+
+    notable_data = {"event_id":"id","drilldown_search": "NULL", "drilldown_searches" : [ '{"name":"test", "search":"|key in (line_1\nline_2)", "earliest_offset":"1715040000", "latest": "1715126400", "search": "search"}']}
+
+    res = drilldown_enrichment(Service(status="RUNNING"),notable_data,5)
+    assert 1 == 1
+    
+    
