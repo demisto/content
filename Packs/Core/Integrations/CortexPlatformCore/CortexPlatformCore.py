@@ -950,7 +950,7 @@ def appsec_remediate_issue_command(client: Client, args: dict) -> CommandResults
     if len(issue_ids) > 10:
         raise DemistoException("Please provide a maximum of 10 issue IDs per request.")
 
-    request_body = {"issueIds": issue_ids, "title": args.get("title"), "fixBranchName": None}
+    request_body = {"issueIds": issue_ids, "title": args.get("title")}
     request_body = remove_empty_elements(request_body)
     response = client.appsec_remediate_issue(request_body)
     return CommandResults(
