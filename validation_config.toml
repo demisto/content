@@ -52,7 +52,7 @@ select = [
     "TR100",
     "VC100", "VC101"
 ]
-warning = ["PB130", "PB131", "RN116", "GR109", "GR110", "BC117"]
+warning = ["PB130", "PB131", "RN116", "GR109", "GR110"]
 
 
 [path_based_validations]
@@ -86,12 +86,12 @@ select = [
     "TR100",
     "VC100", "VC101"
 ]
-warning = ["RM108", "PB130", "PB131", "GR107", "GR109", "GR110", "BC117"]
+warning = ["RM108", "PB130", "PB131", "GR107", "GR109", "GR110"]
 
 
 [Custom_Categories]
 select = []
-warning = ["BC117"]
+warning = []
 
 
 [support_level]
