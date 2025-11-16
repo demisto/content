@@ -25,12 +25,7 @@ ASSET_FIELDS = {
 }
 
 
-WEBAPP_COMMANDS = [
-    "core-get-vulnerabilities",
-    "core-search-asset-groups",
-    "core-get-issue-recommendations",
-    "core-update-issue"
-]
+WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations", "core-update-issue"]
 
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners"]
@@ -733,7 +728,7 @@ def update_issue_command(client: Client, args: dict):
 
     # Send update to API
     filter_data = create_filter_data(issue_id, filtered_update_args)
-   
+
     demisto.debug(filter_data)
     client.update_issue(filter_data)
     return "done"
