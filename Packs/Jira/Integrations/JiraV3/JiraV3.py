@@ -3572,7 +3572,7 @@ def jira_test_module(client: JiraBaseClient, params: Dict[str, Any]) -> str:
             " and complete the process in the URL that is returned. You will then be redirected"
             " to the callback URL. Copy the authorization code found in the query parameter"
             " `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish"
-            " the process. Then you can test it bu running the `!jira-oauth-test` command."
+            " the process. Then you can test it by running the `!jira-oauth-test` command."
         )
 
 
