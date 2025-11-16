@@ -30,7 +30,7 @@ VALID_ARGS: set[str] = {
 }
 
 
-def get_command_results(command: str, args: dict[str, Any]) -> dict[str, Any] | list[Any]:
+def get_command_results(command: str, args: dict[str, Any]) -> dict[str, Any]:
     """Execute a Cortex XSOAR (Demisto) command and return the parsed result.
 
     Args:
@@ -140,19 +140,12 @@ def main() -> None:
 
         # Fetch asset coverage details
         asset_coverage = get_command_results("core-get-asset-coverage", args)
-        if not isinstance(asset_coverage, dict):
-            asset_coverage = {}
-
         assets = asset_coverage.get("DATA", [])
 
         # Fetch coverage histogram data
         args["columns"] = ", ".join(SCANNER_COLUMNS + ["status_coverage"])
         asset_coverage_histograms = get_command_results("core-get-asset-coverage-histogram", args)
 
-        # Process histogram outputs
-        if type(asset_coverage_histograms) is not dict:
-            demisto.debug(f"asset_coverage_histograms are not dict {asset_coverage_histograms}")
-            asset_coverage_histograms = {}
         scanner_histograms, coverage_percentage = transform_scanner_histograms_outputs(asset_coverage_histograms)
         status_histogram = transform_status_coverage_histogram_output(asset_coverage_histograms)
 
