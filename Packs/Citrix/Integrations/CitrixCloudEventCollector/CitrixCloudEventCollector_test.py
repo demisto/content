@@ -187,7 +187,9 @@ def test_fetch_events_command_sets_last_run(mocker):
         - The function should return events and set a new LastRun value.
     """
     client = Client("url", "cust", "id", "secret", False, True)
-    mocker.patch.object(client, "get_records_with_pagination", return_value=([{"_time": "2024-01-01T00:00:00Z", "recordId": "id1"}], {}))
+    mocker.patch.object(
+        client, "get_records_with_pagination", return_value=([{"_time": "2024-01-01T00:00:00Z", "recordId": "id1"}], {})
+    )
 
     events, last_run = fetch_events_command(client, 5, {"LastRun": "2024-01-01T00:00:00Z"})
 
