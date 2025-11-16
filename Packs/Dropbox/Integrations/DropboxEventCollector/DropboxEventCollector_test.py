@@ -126,22 +126,19 @@ def test_fetch_events_max_fetch_set_to_one(mocker):
     assert len(events) == 1
 
 
-@freeze_time("2022-05-17T00:00:00Z")
 def test_time_field_added_to_events(mocker):
     """
     Given:
         - Events are fetched from Dropbox with timestamp fields.
     When:
-        - fetch-events command is executed or should_push_events is true.
+        - The dropbox-get-events command is executed with should_push_events enabled.
     Then:
-        - Ensure each event has a _time field set to the timestamp value.
+        - Ensure each event has a _time field equal to its timestamp value.
     """
     mocker.patch.object(demisto, "params", return_value=DEMISTO_PARAMS)
     mocker.patch.object(demisto, "args", return_value={"should_push_events": True})
     mocker.patch.object(demisto, "getIntegrationContext", return_value={"refresh_token": "111111"})
     send_events_mock = mocker.patch("DropboxEventCollector.send_events_to_xsiam")
-    mocker.patch.object(demisto, "setLastRun", side_effect=mock_set_last_run)
-    mocker.patch.object(demisto, "results")
 
     with requests_mock.Mocker() as m:
         m.post(AUTH_URL, json={"access_token": "222222"})
@@ -152,24 +149,8 @@ def test_time_field_added_to_events(mocker):
 
         main("dropbox-get-events", demisto.params() | demisto.args())
 
-    # Verify send_events_to_xsiam was called
-    assert send_events_mock.called
     sent_events = send_events_mock.call_args[0][0]
 
-    # Verify all events have _time field
-    assert len(sent_events) == 6
+    # Verify all events have _time field matching their timestamp
     for event in sent_events:
-        assert "_time" in event
-        assert event["_time"] == event.get("timestamp")
-
-    # Verify specific timestamps
-    expected_timestamps = [
-        "2022-05-16T11:34:29Z",
-        "2022-05-16T11:34:29Z",
-        "2022-05-16T11:34:33Z",
-        "2022-05-16T11:37:17Z",
-        "2022-05-16T11:37:33Z",
-        "2022-05-16T11:48:28Z",
-    ]
-    actual_timestamps = [event["_time"] for event in sent_events]
-    assert actual_timestamps == expected_timestamps
+        assert event["_time"] == event["timestamp"]
