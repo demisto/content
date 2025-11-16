@@ -842,7 +842,7 @@ class AzureClient:
         self.http_request(method="DELETE", full_url=full_url, params=params, resp_type="response")
 
     def storage_container_create_blob_request(
-        self, container_name: str, account_name: str, file_entry_id: str, file_name: str = ""
+        self, container_name: str, account_name: str, file_entry_id: str, blob_name: str, xsoar_system_file_path: str
     ) -> requests.Response | dict[str, Any]:  # noqa: E501
         """
         Create or update Blob under the specified Container.
@@ -857,9 +857,6 @@ class AzureClient:
 
         """
 
-        xsoar_file_data = demisto.getFilePath(file_entry_id)  # Retrieve XSOAR system file path and name, given file entry ID.
-        xsoar_system_file_path = xsoar_file_data["path"]
-        blob_name = file_name if file_name else xsoar_file_data["name"]
         full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
 
         try:
@@ -2845,8 +2842,12 @@ def storage_container_blob_create_command(client: AzureClient, params: dict, arg
     account_name = args.get("account_name", "")
     file_entry_id = args["file_entry_id"]
     blob_name = args.get("blob_name", "")
+    
+    xsoar_file_data = demisto.getFilePath(file_entry_id)  # Retrieve XSOAR system file path and name, given file entry ID.
+    xsoar_system_file_path = xsoar_file_data["path"]
+    file_name = blob_name if blob_name else xsoar_file_data["name"]
 
-    response = client.storage_container_create_blob_request(container_name, account_name, file_entry_id, blob_name)
+    response = client.storage_container_create_blob_request(container_name, account_name, file_entry_id, file_name, xsoar_system_file_path)  # noqa: E501
 
     command_results = CommandResults(readable_output=f"Blob {blob_name} successfully created.", raw_response=response)
 
@@ -2967,7 +2968,7 @@ def storage_container_blob_tag_set_command(client: AzureClient, params: dict, ar
 
     if append_tags:
         results = storage_container_blob_tag_get_command(client, params, args)
-        original_tags = results["Blob"]["Tag"]
+        original_tags = results.outputs["Blob"]["Tag"]
         tags.update(original_tags)
 
     xml_data = create_set_tags_request_body(tags)
@@ -3033,7 +3034,6 @@ def storage_container_blob_property_get_command(client: AzureClient, params: dic
     readable_output = tableToMarkdown(
         f"Blob {blob_name} Properties:",
         outputs.get("Blob").get("Property"),  # type: ignore
-        # headers=["creation_time", "last_modified", "content_length", "content_type", "etag"],
         headerTransform=string_to_table_header,
         removeNull=True,
     )
