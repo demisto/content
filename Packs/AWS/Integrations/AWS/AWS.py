@@ -3849,7 +3849,6 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-bucket-encryption-get": S3.get_bucket_encryption_command,
     "aws-s3-bucket-policy-get": S3.get_bucket_policy_command,
     "aws-cloudtrail-trails-describe": CloudTrail.describe_trails_command,
-    "aws-ecs-update-cluster-settings": ECS.update_cluster_settings_command,
     "aws-acm-certificate-options-update": ACM.update_certificate_options_command,
     "aws-ecs-cluster-settings-update": ECS.update_cluster_settings_command,
     "aws-lambda-function-configuration-get": Lambda.get_function_configuration_command,
