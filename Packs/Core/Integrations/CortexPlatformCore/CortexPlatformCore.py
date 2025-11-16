@@ -399,7 +399,7 @@ class Client(CoreClient):
             method="POST",
             data=request_body,
             headers={**self._headers, "content-type": "application/json"},
-            url_suffix="/trigger_fix_pull_request",
+            url_suffix="/v1/issues/fix/trigger_fix_pull_request",
         )
 
 
