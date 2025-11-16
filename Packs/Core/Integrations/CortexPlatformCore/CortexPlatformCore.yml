@@ -1377,6 +1377,68 @@ script:
       - contextPath: Core.TriggerPR.triggeredPrs.status
         description: Either "triggered" or "automated_fix_not_available".
         type: String
+    - arguments:
+        - description: List of repository asset IDs to configure scanners for.
+          name: repository_ids
+          isArray: true
+          required: true
+        - auto: PREDEFINED
+          description: List of scanners to enable.
+          name: enable_scanners
+          isArray: true
+          predefined:
+            - SECRETS
+            - IAC
+            - SCA
+        - auto: PREDEFINED
+          description: List of scanners to disable.
+          name: disable_scanners
+          isArray: true
+          predefined:
+            - SECRETS
+            - IAC
+            - SCA
+        - auto: PREDEFINED
+          description: Enable live validation of discovered secrets. This argument only relevant when SECRETS scanner is enabled.
+          type: boolean
+          name: secret_validation
+          predefined:
+            - "true"
+            - "false"
+        - auto: PREDEFINED
+          description: Enable scanning on pull requests.
+          type: boolean
+          name: pr_scanning
+          predefined:
+            - "true"
+            - "false"
+        - auto: PREDEFINED
+          description: Block deployment on scanner errors.
+          name: block_on_error
+          type: boolean
+          predefined:
+            - "true"
+            - "false"
+        - auto: PREDEFINED
+          description: Enable tagging of resource blocks.
+          name: tag_resource_blocks
+          type: boolean
+          predefined:
+            - "true"
+            - "false"
+        - auto: PREDEFINED
+          description: Enable tagging of module blocks.
+          name: tag_module_blocks
+          type: boolean
+          predefined:
+            - "true"
+            - "false"
+        - description: List of file paths to exclude from scanning.
+          name: exclude_paths
+          isArray: true
+      name: core-enable-scanners
+      description: Enable or disable scanners with the specified configuration.
+          
   runonce: false
   script: "-"
   subtype: python3
