@@ -592,7 +592,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         final_context_path: str,
         external_enrichment: bool = False,
         additional_fields: bool = False,
-        internal_enrichment_brands: list[str] = [],
+        internal_enrichment_brands: list[str] | None = None,
         verbose: bool = False,
         commands: list[list[Command]] | None = None,
     ):
@@ -619,10 +619,11 @@ class ReputationAggregatedCommand(AggregatedCommand):
         self.additional_fields = additional_fields
         self.data = data
         self.indicator = indicator
+        self.internal_enrichment_brands = internal_enrichment_brands or []
         # If no brands and external_enrichment is false, will insert internal enrichment if available
         # Addes internal command brands as well to make sure they also will run
         if not brands and not external_enrichment:
-            active_internal_enrichment_brands = list(set(internal_enrichment_brands) & BrandManager.enabled_brands())
+            active_internal_enrichment_brands = list(set(self.internal_enrichment_brands) & BrandManager.enabled_brands())
             if active_internal_enrichment_brands:
                 brands = active_internal_enrichment_brands + BrandManager.get_brands_by_type(commands, CommandType.INTERNAL)
         super().__init__(args, brands, verbose, commands)
@@ -671,14 +672,17 @@ class ReputationAggregatedCommand(AggregatedCommand):
 
     def prepare_commands_batches(self, external_enrichment: bool = False) -> list[list[Command]]:
         """
-        Filters the initial command list based on execution policies.
-        1. If external_enrichment is True, all commands will be executed (unless brands is not empty).
-        2. If external_enrichment is False, only internal commands will be executed.
-        3. If brands is not empty, external_enrichment will be overridden and only commands.
-        that are in the brands list will be executed.
-        4. Built-in commands will always be executed.
+        The commands that will be added to execution are filtered as follow:
+        1. external_enrichment=False, brands=[] → INTERNAL + BUILTIN.
+        2. external_enrichment=True, brands=[] → INTERNAL + EXTERNAL + BUILTIN.
+        3. external_enrichment=False, brands != []:
+            - INTERNAL only if command.brand in self.brands.
+            - EXTERNAL: all external commands are included (using-brand: {brands} injected to the command later).
+            - BUILTIN included.
         Args:
             external_enrichment (bool): Flag to determine if external commands should run.
+        Return:
+            list[list[Command]]: The command batches after filtering.
         """
         demisto.debug(f"Preparing commands. External enrichment: {external_enrichment}")
         prepared_commands: list[list[Command]] = []
@@ -754,7 +758,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         Args:
             iocs (list[dict[str, Any]]): The IOC objects from the TIM search.
         Returns:
-            tuple[ContextResult, list[EntryResult]]: The TIM context output and DBot scores list.
+            tuple[ContextResult, list[EntryResult]]: The TIM context output and entry results.
             ContextResult: TIM Context Output.
                 Example:
                 {
@@ -763,7 +767,6 @@ class ReputationAggregatedCommand(AggregatedCommand):
                         {"Data": "https://example.com", "Brand": "Brand2", "additionalFields": {..},}
                     ]}
 
-            DBotScoreList: DBot Scores List.
             list[EntryResult]: Result Entries.
         """
         demisto.debug(f"Processing {len(iocs)} IOCs from TIM.")
@@ -825,6 +828,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         """
 
         customFields = ioc.get("CustomFields", {})
+        # all Keys under CustomFields are lowercase while the mapping are CamelCase, this insure we will find the right keys
         lower_mapping = {k.lower(): v for k, v in self.indicator.context_output_mapping.items()}
         mapped_indicator = self.map_command_context(customFields.copy(), lower_mapping, is_indicator=True)
 
@@ -965,7 +969,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             dict[str, Any]: The mapped context.
         """
         if context_output_mapping is None:
-            demisto.debug("Mapping is None, return None.")
+            demisto.debug("Mapping is None, return Empty Dict}.")
             return {}
 
         if not context_output_mapping:
