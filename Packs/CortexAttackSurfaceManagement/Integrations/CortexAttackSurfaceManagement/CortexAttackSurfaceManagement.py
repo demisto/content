@@ -17,7 +17,7 @@ class NotFoundError(Exception):
 
 class ProcessingError(Exception):
     """Exception raised when a 500 error is returned from the API
-    with a json body containing an error code and message"""
+    with a json body containing an error code and message""" 
 
 
 class Client(BaseClient):
