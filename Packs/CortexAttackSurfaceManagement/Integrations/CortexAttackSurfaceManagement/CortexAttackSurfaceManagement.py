@@ -7,7 +7,7 @@ from requests import Response  # Used to typing Response as a return from functi
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-DEFAULT_SEARCH_LIMIT = 100 
+DEFAULT_SEARCH_LIMIT = 100
 
 
 class NotFoundError(Exception):
