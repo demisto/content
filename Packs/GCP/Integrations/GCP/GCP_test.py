@@ -2039,7 +2039,7 @@ def test_gcp_compute_instances_list_command_basic_success(mocker):
 
     # Verify API call parameters
     mock_instances.list.assert_called_once_with(
-        project="test-project", zone="us-central1-a", filter=None, maxResults=500, orderBy=None, pageToken=None
+        project="test-project", zone="us-central1-a", filter=None, maxResults=50, orderBy=None, pageToken=None
     )
 
     # Verify outputs structure
