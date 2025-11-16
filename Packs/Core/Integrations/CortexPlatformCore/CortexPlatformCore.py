@@ -29,6 +29,7 @@ WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
     "core-search-asset-groups",
     "core-get-issue-recommendations",
+    "core-update-issue"
 ]
 
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
@@ -719,7 +720,7 @@ def update_issue_command(client: Client, args: dict):
         "assigned_user": args.get("assigned_user_mail"),
         "severity": severity_map.get(severity_value) if severity_value is not None else None,
         "name": args.get("name"),
-        "occurred": arg_to_timestamp(args.get("occurred"), "occurred"),
+        "occurred": arg_to_timestamp(args.get("occurred"), ""),
         "phase": args.get("phase"),
         "type": args.get("type"),
         "description": args.get("description"),
@@ -732,6 +733,7 @@ def update_issue_command(client: Client, args: dict):
 
     # Send update to API
     filter_data = create_filter_data(issue_id, filtered_update_args)
+   
     demisto.debug(filter_data)
     client.update_issue(filter_data)
     return "done"

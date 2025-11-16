@@ -2678,14 +2678,17 @@ def test_update_issue_command_only_issue_id(mocker):
         update_issue is called with empty update_data.
     """
     from CortexPlatformCore import update_issue_command, Client
+    from CommonServerPython import DemistoException
 
     client = Client(base_url="", headers={})
-    mocker.patch.object(client, "update_issue")
+    mock_update_issue = mocker.patch.object(client, "update_issue")
     mocker.patch.object(demisto, "debug")
 
     args = {"id": "12345"}
+    with pytest.raises(DemistoException, match="Please provide arguments to update the issue."):
+        update_issue_command(client, args)
 
-    update_issue_command(client, args)
+    mock_update_issue.assert_not_called()
 
 
 def test_get_issue_recommendations_command(mocker):
