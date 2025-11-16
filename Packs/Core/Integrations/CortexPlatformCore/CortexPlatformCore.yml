@@ -1516,6 +1516,46 @@ script:
           description: The type of the file artifact.
           type: String
     - arguments:
+      - description: Issue ID to update. If empty, updates the current issue ID.
+        name: id
+        type: string
+      - description: Email address of the user to assign the issue to.
+        name: assigned_user_mail
+        type: string
+      - name: severity
+        auto: PREDEFINED
+        description: Change the severity of an issue.
+        type: string
+        predefined:
+          - low
+          - medium
+          - high
+          - critical
+      - name: name
+        description: Change the issue name.
+        type: string
+      - name: occurred
+        description: >
+          Change the occurred time of an issue. Supports different time formats, for example: 3 days ago, 2017-09-27T10:00:00+03:00.
+        type: string
+      - name: phase
+        description: Change the phase of an issue.
+        type: string
+        auto: PREDEFINED
+        predefined:
+          - Triage
+          - Investigation
+          - Containment
+          - Response
+      - name: type
+        description: Change the type of an issue.
+        type: string
+      - name: description
+        description: Change the description of an issue.
+        type: string
+      name: core-update-issue
+      description: Updates the properties of an issue. This command does not provide an explicit indication of success.
+    - arguments:
       - name: page_size
         description: The number of assets to return per page. Default is 100.
       - name: page_number
