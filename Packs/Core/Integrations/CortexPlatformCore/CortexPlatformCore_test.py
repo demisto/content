@@ -2636,8 +2636,8 @@ class TestAppsecRemediateIssueCommand:
         # Verify we can deserialize it back
         deserialized = json.loads(json_str)
         assert deserialized == mock_response
-        
-        
+
+
 def test_enable_scanners_command_single_repository(mocker: MockerFixture):
     """
     Given:

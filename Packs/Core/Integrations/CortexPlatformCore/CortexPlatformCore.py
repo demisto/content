@@ -1002,13 +1002,12 @@ def main():  # pragma: no cover
 
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
-            
+
         elif command == "core-enable-scanners":
             return_results(enable_scanners_command(client, args))
 
         elif command == "core-appsec-remediate-issue":
             return_results(appsec_remediate_issue_command(client, args))
-
 
     except Exception as err:
         demisto.error(traceback.format_exc())
