@@ -66,6 +66,7 @@ class AppsecIssues:
     ]
 
     SPECIAL_FILTERS = {
+        # List of filters that aren't a part of every Appsec table
         "urgency",
         "repository",
         "file_path",
@@ -359,9 +360,6 @@ def arg_to_float(arg: Optional[str]):
     arg = encode_string_results(arg)
 
     if isinstance(arg, str):
-        if arg.isdigit():
-            return int(arg)
-
         try:
             return float(arg)
         except Exception:
@@ -1019,7 +1017,7 @@ def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AppsecIssue",
-        outputs_key_field="ISSUE_ID",
+        outputs_key_field="internal_id",
         outputs=filtered_appsec_issues,
         raw_response=all_appsec_issues,
     )
