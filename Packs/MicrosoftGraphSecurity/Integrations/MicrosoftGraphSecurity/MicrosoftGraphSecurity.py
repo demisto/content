@@ -2030,6 +2030,7 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
 
 def test_module(client: MsGraphClient, args):
     client.ms_client.main_test_module('msg-')
+    return "ok"
 
 
 def main():

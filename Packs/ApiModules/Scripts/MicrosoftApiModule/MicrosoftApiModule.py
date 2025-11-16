@@ -676,6 +676,8 @@ def get_auth_type_flow(auth_flow):
         "Authorization Code": AUTHORIZATION_CODE,
         "Device Code": DEVICE_CODE
     }
+    return auth_flow_dict.get(auth_flow, None)
+
 
 class MicrosoftClient(BaseClient):
     def __init__(
@@ -915,6 +917,7 @@ class MicrosoftClient(BaseClient):
         Checks all necessary fields for the specific authentication flow.
         """
         flow = self.grant_type
+        demisto.debug(f"Testing flow {flow}")
 
         def require_fields(fields: list[str], message_prefix: str):
             """Helper to validate required fields."""
