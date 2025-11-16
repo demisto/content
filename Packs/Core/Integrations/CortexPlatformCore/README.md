@@ -593,66 +593,79 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 | Core.IssueRecommendations.playbook_suggestions.playbook_id | String | The ID of the suggested playbook. |
 | Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id | String | The ID of the suggestion rule that generated this recommendation. |
 
-### core-get-appsec-issues
+### core-enable-scanners
 
 ***
-Retrieves application security issues based on specified filters.
+Enable or disable scanners with the specified configuration.
 
 #### Base Command
 
-`core-get-appsec-issues`
+`core-enable-scanners`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of issues to return. Default is 50. | Optional |
-| sort_field | The field by which to sort the results. Default is severity. | Optional |
-| sort_order | The order in which to sort the results. Possible values are: DESC, ASC. | Optional |
-| start_time | The start time for filtering according to issue insert time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional |
-| end_time | The end time for filtering according to issue insert time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. | Optional |
-| issue_id | The issue ID. Accepts a comma-separated list. | Optional |
-| assignee | The email of the user assigned to the issue. Accepts a comma-separated list. <br/>Use 'unassigned' for all unassigned issues or 'assigned' for all assigned issues.<br/>. | Optional |
-| collaborator | The collaborators of the issue. Accepts a comma-separated list. | Optional |
-| status | The issue status. Accepts a comma-separated list. Possible values are: New, In Progress, Resolved. | Optional |
-| issue_name | The issue name. Accepts a comma-separated list. | Optional |
-| asset_name | The name of the affected asset for the issue. Accepts a comma-separated list. | Optional |
-| repository | The repository of the issue. Accepts a comma-separated list. | Optional |
-| file_path | The path of the relevant file for the issue. Accepts a comma-separated list. | Optional |
-| backlog_status | The backlog status of the issue. Accepts a comma-separated list. Possible values are: BACKLOG, NEW. | Optional |
-| cvss_score_gte | The minimum CVSS score. | Optional |
-| epss_score_gte | The minimum EPSS score. | Optional |
-| has_kev | Filter by vulnerabilities that have a Known Exploited Vulnerability (KEV). Possible values are: true, false. | Optional |
-| severity | The severity of the issue. Accepts a comma-separated list. Possible values are: info, low, medium, high, critical. | Optional |
-| urgency | The urgency of the issue. Accepts a comma-separated list. Possible values are: N/A, NOT_URGENT, URGENT, TOP_URGENT. | Optional |
-| automated_fix_available | Is there an available automated fix. Possible values are: true, false. | Optional |
-| sla | SLA status of the issue. Accepts a comma-separated list. Possible values are: Approaching, On Track, Overdue. | Optional |
-| validation | Validation status of the issue. Accepts a comma-separated list. Possible values are: INVALID, NO_VALIDATION, PRIVILEGED, UNAVAILABLE, VALID. | Optional |
+| asset_ids | List of repository asset IDs to configure scanners for. | Required |
+| enable_scanners | List of scanners to enable. Possible values are: SECRETS, IAC, SCA. | Optional |
+| disable_scanners | List of scanners to disable. Possible values are: SECRETS, IAC, SCA. | Optional |
+| secret_validation | Enable live validation of discovered secrets. Possible values are: true, false. | Optional |
+| pr_scanning | Enable scanning on pull requests. This argument only relevant when SECRETS scanner is enabled. Possible values are: true, false. | Optional |
+| block_on_error | Block deployment on scanner errors. Possible values are: true, false. | Optional |
+| tag_resource_blocks | Enable tagging of resource blocks. Possible values are: true, false. | Optional |
+| tag_module_blocks | Enable tagging of module blocks. Possible values are: true, false. | Optional |
+| exclude_paths | List of file paths to exclude from scanning. | Optional |
+
+### core-create-appsec-policy
+
+***
+Creates a new AppSec policy in Cortex Platform with defined conditions, scope, and triggers for application security governance.
+
+#### Base Command
+
+`core-create-appsec-policy`
+
+#### Input
+
+| **Argument Name**                          | **Description**                                                                                                                                                                                                                                                      | **Required** |
+|--------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| policy_name                                | A unique name for the AppSec policy. Must be descriptive and follow organizational naming conventions.                                                                                                                                                               | Required     |
+| description                                | A detailed explanation of the policy's objective, use case, and expected outcomes.                                                                                                                                                                                   | Optional     |
+| asset_group_names                          | Comma-separated list of Asset Group names to apply the policy to. Asset groups will be automatically resolved to their corresponding IDs.                                                                                                                            | Optional     |
+| conditions_finding_type                    | Filter by specific finding types to target policy enforcement. Supported values: Vulnerabilities, IaC Misconfiguration, Licenses, Operational Risk, Secrets, Code Weaknesses, CI/CD Risks.                                                                           | Optional     |
+| conditions_severity                        | Filter findings by severity level to prioritize policy actions. Supported values: CRITICAL, HIGH, MEDIUM, LOW.                                                                                                                                                       | Optional     |
+| conditions_respect_developer_suppression   | Controls whether a developer’s manual suppression should be honored. Set to 'true' to respect developer suppression (evaluate only non-suppressed findings). Set to 'false' to ignore suppression and always evaluate the finding. Possible values are: true, false. | Optional     |
+| conditions_backlog_status                  | Filter findings based on their backlog workflow status (NEW or BACKLOG). Possible values are: NEW, BACKLOG.                                                                                                                                                          | Optional     |
+| conditions_package_name                    | Target specific software packages by name for license or vulnerability policies.                                                                                                                                                                                     | Optional     |
+| conditions_package_version                 | Specify software package version constraints for precise policy targeting.                                                                                                                                                                                           | Optional     |
+| conditions_package_operational_risk        | Filter packages by their operational risk assessment level. Supported values: HIGH, MEDIUM, LOW.                                                                                                                                                                     | Optional     |
+| conditions_appsec_rule_names               | Comma-separated list of AppSec rule names to include in policy evaluation. Rule names will be automatically resolved to their corresponding IDs.                                                                                                                     | Optional     |
+| conditions_cvss                            | CVSS base score threshold for vulnerability findings (0.0-10.0). Only vulnerabilities meeting or exceeding this score will trigger the policy.                                                                                                                       | Optional     |
+| conditions_epss                            | Exploit Prediction Scoring System score threshold (0-100). Targets vulnerabilities with higher exploitation probability.                                                                                                                                             | Optional     |
+| conditions_has_a_fix                       | Filter findings based on whether a remediation fix or patch is available. Possible values are: true, false.                                                                                                                                                          | Optional     |
+| conditions_is_kev                          | Target findings listed in CISA's Known Exploited Vulnerabilities (KEV) catalog for prioritized remediation. Possible values are: true, false.                                                                                                                        | Optional     |
+| conditions_secret_validity                 | Filter exposed secrets by their validity status. Supported values: VALID (active secrets), PRIVILEGED (high-access secrets), INVALID (expired/revoked), UNAVAILABLE (status unknown).                                                                                | Optional     |
+| conditions_license_type                    | Target specific software license types for compliance and legal risk management.                                                                                                                                                                                     | Optional     |
+| scope_category                             | Define asset categories to include in policy scope. Supported values: Application, Repository, CI/CD Instance, CI/CD Pipeline, VCS Collaborator, VCS Organization.                                                                                                   | Optional     |
+| scope_business_application_names           | Target specific business applications by name for focused policy enforcement.                                                                                                                                                                                        | Optional     |
+| scope_application_business_criticality     | Filter applications by business criticality level. Supported values: CRITICAL, HIGH, MEDIUM, LOW.                                                                                                                                                                    | Optional     |
+| scope_repository_name                      | Target specific code repositories by name for repository-focused policies.                                                                                                                                                                                           | Optional     |
+| scope_is_public_repository                 | Filter repositories based on their visibility (public vs private) for exposure risk management. Possible values are: true, false.                                                                                                                                    | Optional     |
+| scope_has_deployed_assets                  | Target repositories or applications that have associated deployed infrastructure or runtime assets. Possible values are: true, false.                                                                                                                                | Optional     |
+| scope_has_internet_exposed_deployed_assets | Filter assets based on whether the deployed components are exposed to internet traffic for external attack surface management. Possible values are: true, false.                                                                                                     | Optional     |
+| scope_has_sensitive_data_access            | Target deployed assets that have access to sensitive data stores, databases, or classified information. Possible values are: true, false.                                                                                                                            | Optional     |
+| scope_has_privileged_capabilities          | Filter deployed assets with elevated privileges, admin access, or high-impact system capabilities. Possible values are: true, false.                                                                                                                                 | Optional     |
+| triggers_periodic_report_issue             | Enables detection during scheduled scans. When a violation is found in a periodic scan, an issue will be created ("Detect"). Possible values are: true, false.                                                                                                       | Optional     |
+| triggers_periodic_override_severity        | Override the default severity level for issues created by periodic scan detections. Possible values are: Critical, High, Medium, Low.                                                                                                                                | Optional     |
+| triggers_pr_report_issue                   | Enables detection during pull request scans. When a violation is found in a PR, an issue is created. Required for PR-based detection. Possible values are: true, false.                                                                                              | Optional     |
+| triggers_pr_block_pr                       | Blocks merging of pull requests that contain violations detected by the policy. Possible values are: true, false.                                                                                                                                                    | Optional     |
+| triggers_pr_report_pr_comment              | Adds an automated comment to pull requests summarizing detected violations and guidance. Possible values are: true, false.                                                                                                                                           | Optional     |
+| triggers_pr_override_severity              | Override the default severity level for issues created by pull request detections. Possible values are: Critical, High, Medium, Low.                                                                                                                                 | Optional     |
+| triggers_cicd_report_issue                 | Enables detection during CI/CD pipeline scans. When a violation is found in a pipeline run, an issue is created. Possible values are: true, false.                                                                                                                   | Optional     |
+| triggers_cicd_block_cicd                   | Blocks or fails CI/CD pipeline runs when violations occur. Possible values are: true, false.                                                                                                                                                                         | Optional     |
+| triggers_cicd_report_cicd                  | Reports violation details back to the CI/CD system (pipeline logs, dashboards, status checks). Possible values are: true, false.                                                                                                                                     | Optional     |
+| triggers_cicd_override_severity            | Override the default severity level for issues created by CI/CD pipeline detections. Possible values are: Critical, High, Medium, Low.                                                                                                                               | Optional     |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Core.AppsecIssue.internal_id | String | The unique identifier for the issue. |
-| Core.AppsecIssue.asset_name | String | The names of the assets related to the issue. |
-| Core.AppsecIssue.severity | String | The severity of the issue. |
-| Core.AppsecIssue.epss_score | Number | The Exploit Prediction Scoring System \(EPSS\) score. |
-| Core.AppsecIssue.cvss_score | Number | The Common Vulnerability Scoring System \(CVSS\) score. |
-| Core.AppsecIssue.assignee | String | The full name of the user assigned to the issue. |
-| Core.AppsecIssue.is_fixable | Boolean | Whether a fix is available for the issue. |
-| Core.AppsecIssue.issue_name | String | The name of the issue. |
-| Core.AppsecIssue.issue_source | String | The source of the issue. |
-| Core.AppsecIssue.issue_category | String | The category of the issue. |
-| Core.AppsecIssue.issue_domain | String | The domain of the issue. |
-| Core.AppsecIssue.issue_description | String | The description of the issue. |
-| Core.AppsecIssue.status | String | The status of the issue. |
-| Core.AppsecIssue.time_added | Number | The timestamp when the issue was inserted. |
-| Core.AppsecIssue.urgency | String | The urgency of the issue. |
-| Core.AppsecIssue.sla_status | String | The SLA status of the issue. |
-| Core.AppsecIssue.secret_validation | String | The secret validation status of the issue. |
-| Core.AppsecIssue.repository_name | String | The name of the repository where the issue was found. |
-| Core.AppsecIssue.repository_organization | String | The organization of the repository where the issue was found. |
-| Core.AppsecIssue.file_path | String | The file path related to the issue. |
-| Core.AppsecIssue.collaborator | String | The collaborator associated with the issue. |
-| Core.AppsecIssue.has_kev | Boolean | Whether the issue is part of the Known Exploited Vulnerabilities catalog \(KEV\). |
-| Core.AppsecIssue.backlog_status | String | The backlog status of the issue. |
+There is no context output for this command.
