@@ -704,6 +704,8 @@ def update_issue_command(client: Client, args: dict):
 
     # Remove None values before sending to API
     filtered_update_args = {k: v for k, v in update_args.items() if v is not None}
+    if not filtered_update_args:
+        raise DemistoException("Please provide arguments to update the issue.")
 
     # Send update to API
     filter_data = create_filter_data(issue_id, filtered_update_args)
