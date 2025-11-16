@@ -31,33 +31,29 @@ VALID_ARGS: set[str] = {
 
 
 def get_command_results(command: str, args: dict[str, Any]) -> dict[str, Any]:
-    """Execute a Cortex XSOAR (Demisto) command and return the parsed result.
+    """Execute a Cortex XSOAR command and return the parsed result."""
+    demisto.debug(f"Executing command: {command} with args: {args}")
 
-    Args:
-        command (str): The name of the Cortex XSOAR command to execute.
-        args (Dict[str, Any]): The arguments to pass to the command.
-
-    Returns:
-        Union[Dict[str, Any], List[Any]]: The parsed result from the command,
-        or an empty dictionary if no valid result is found.
-
-    Raises:
-        Exception: If the command execution returns an error entry.
-    """
     results = demisto.executeCommand(command, args)
+    demisto.debug(f"Raw results from {command}: {results}")
 
     if not results or not isinstance(results, list):
+        demisto.debug(f"No valid results returned from {command}")
         return {}
 
     result = results[0]
     if not isinstance(result, dict):
+        demisto.debug(f"First result from {command} is not a dict")
         return {}
 
-    # Check for execution error
     if result.get("Type") == EntryType.ERROR:
-        raise Exception(result.get("Contents", "Unknown error occurred."))
+        error_msg = result.get("Contents", "Unknown error occurred.")
+        demisto.error(f"Error returned from {command}: {error_msg}")
+        raise Exception(error_msg)
 
     contents = result.get("Contents")
+    demisto.debug(f"Parsed contents from {command}: {contents}")
+
     if isinstance(contents, dict):
         return contents.get("reply", {})
 
@@ -65,53 +61,45 @@ def get_command_results(command: str, args: dict[str, Any]) -> dict[str, Any]:
 
 
 def transform_scanner_histograms_outputs(asset_coverage_histograms: dict[str, Any]) -> tuple[dict[str, dict[str, float]], float]:
-    """Transform scanner histogram data into a summarized structure.
-
-    Args:
-        asset_coverage_histograms (Dict[str, Any]): The histogram data for each scanner type.
-
-    Returns:
-        Tuple[Dict[str, Dict[str, float]], float]: A tuple containing:
-            - A dictionary with scanner coverage statistics per scanner type.
-            - The overall coverage percentage across all scanners.
-    """
+    """Transform scanner histogram data into a summarized structure."""
+    demisto.debug(f"Transforming scanner histogram data: {asset_coverage_histograms}")
 
     def get_count(data: list[dict[str, Any]], value: str) -> int:
-        """Retrieve the count for a given value from histogram data."""
-        return next((item.get("count", 0) for item in data if item.get("value") == value), 0)
+        count = next((item.get("count", 0) for item in data if item.get("value") == value), 0)
+        demisto.debug(f"Count for {value}: {count} in data: {data}")
+        return count
 
     output: dict[str, dict[str, float]] = {}
     total_enabled = total_relevant = 0
 
     for column in SCANNER_COLUMNS:
         data = asset_coverage_histograms.get(column, [])
+        demisto.debug(f"Processing column {column} with data: {data}")
+
         enabled_count = get_count(data, "ENABLED")
         disabled_count = get_count(data, "DISABLED")
         relevant_count = enabled_count + disabled_count
 
+        coverage_pct = (enabled_count / relevant_count) if relevant_count else 0.0
         output[column] = {
             "enabled": enabled_count,
             "disabled": disabled_count,
-            "coverage_percentage": (enabled_count / relevant_count) if relevant_count else 0.0,
+            "coverage_percentage": coverage_pct,
         }
 
         total_enabled += enabled_count
         total_relevant += relevant_count
 
     overall_coverage = (total_enabled / total_relevant) if total_relevant else 0.0
+    demisto.debug(f"Scanner histogram transformation result: {output}, overall: {overall_coverage}")
+
     return output, overall_coverage
 
 
 def transform_status_coverage_histogram_output(data: dict[str, Any]) -> dict[str, dict[str, int | float]]:
-    """Transform the status coverage histogram into a flattened dictionary.
+    """Transform the status coverage histogram into a flattened dictionary."""
+    demisto.debug(f"Transforming status coverage histogram: {data}")
 
-    Args:
-        data (Dict[str, Any]): The histogram data containing the "status_coverage" field.
-
-    Returns:
-        Dict[str, Dict[str, Union[int, float]]]: A dictionary containing
-        counts and percentages for each scan status.
-    """
     mapping = {
         "PARTIALLY SCANNED": "partially_scanned",
         "FULLY SCANNED": "fully_scanned",
@@ -125,6 +113,7 @@ def transform_status_coverage_histogram_output(data: dict[str, Any]) -> dict[str
         output[f"{label}_count"] = item.get("count", 0)
         output[f"{label}_percentage"] = item.get("percentage", 0.0)
 
+    demisto.debug(f"Status histogram output: {output}")
     return {"aspm_status_coverage": output}
 
 
@@ -132,24 +121,30 @@ def main() -> None:
     """Main execution entry point for the Cortex XSOAR script."""
     try:
         args = demisto.args()
+        demisto.debug(f"Received script arguments: {args}")
 
-        # Validate incoming arguments
         extra_args = set(args.keys()) - VALID_ARGS
         if extra_args:
+            demisto.error(f"Unexpected args found: {extra_args}")
             raise ValueError(f"Unexpected args found: {extra_args}")
 
         # Fetch asset coverage details
+        demisto.debug("Fetching asset coverage via core-get-asset-coverage")
         asset_coverage = get_command_results("core-get-asset-coverage", args)
+        demisto.debug(f"Asset coverage received: {asset_coverage}")
+
         assets = asset_coverage.get("DATA", [])
 
         # Fetch coverage histogram data
         args["columns"] = ", ".join(SCANNER_COLUMNS + ["status_coverage"])
+        demisto.debug(f"Fetching histogram using args: {args}")
+
         asset_coverage_histograms = get_command_results("core-get-asset-coverage-histogram", args)
+        demisto.debug(f"Histogram result: {asset_coverage_histograms}")
 
         scanner_histograms, coverage_percentage = transform_scanner_histograms_outputs(asset_coverage_histograms)
         status_histogram = transform_status_coverage_histogram_output(asset_coverage_histograms)
 
-        # Prepare final outputs
         outputs = {
             "total_filtered_assets": asset_coverage.get("FILTER_COUNT"),
             "number_returned_assets": len(assets),
@@ -157,6 +152,8 @@ def main() -> None:
             "Metrics": {**scanner_histograms, **status_histogram},
             "Asset": assets,
         }
+
+        demisto.debug(f"Final output: {outputs}")
 
         return_results(
             CommandResults(
@@ -167,6 +164,7 @@ def main() -> None:
         )
 
     except Exception as e:
+        demisto.error(f"Exception occurred: {str(e)}")
         return_error(f"Failed to execute script.\nError:\n{str(e)}")
 
 
