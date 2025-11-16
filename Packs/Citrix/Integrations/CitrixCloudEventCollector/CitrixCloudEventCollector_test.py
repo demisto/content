@@ -150,6 +150,26 @@ def test_get_events_command_returns_results(mocker):
     assert results.outputs[0]["recordId"] == "r1"
 
 
+def test_fetch_events_command_first_run(mocker):
+    """
+    Given:
+        - A client returning 2 event records.
+    When:
+        - Running `fetch_events_command` for the first time to retrieve events.
+    Then:
+        - The function should return events and set a new LastRun value with the timestamp and record id of te first event in the list(descending order).
+    """
+    client = Client("url", "cust", "id", "secret", False, True)
+    mocker.patch.object(client, "get_records_with_pagination", return_value=([{"_time": "2025-01-01T00:00:00Z", "recordId": "id2"}, {"_time": "2024-01-01T00:00:00Z", "recordId": "id1"}], {}))
+
+    events, last_run = fetch_events_command(client, 5,{})
+
+    assert len(events) == 2
+    assert "LastRun" in last_run
+    assert last_run["LastRun"] == "2025-01-01T00:00:00Z"
+    assert last_run["RecordId"] == "id2"
+
+
 def test_fetch_events_command_sets_last_run(mocker):
     """
     Given:
