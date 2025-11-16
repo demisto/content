@@ -203,10 +203,10 @@ class MsGraphClient:
         )
 
         polling_url = response.headers.get("Location", "")
-        
+
         if not polling_url:
             raise ValueError(f"Failed to get polling URL (Location header) from the API response for user {user}.")
-            
+
         return polling_url
 
     def get_delta(self, properties):
@@ -508,9 +508,10 @@ def validate_input_password(args: dict[str, Any]) -> str:
 
 #     return CommandResults(readable_output=f"The password of user {user} has been changed successfully.")
 
+
 @polling_function(
-    "msgraph-user-change-password-on-premise", # The specified command name
-    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 600)), 
+    "msgraph-user-change-password-on-premise",  # The specified command name
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 600)),
     requires_polling_arg=False,
 )
 def change_password_user_on_premise_command(
@@ -528,30 +529,26 @@ def change_password_user_on_premise_command(
         new_password = validate_input_password(args)
         password_method_id = client.fetch_password_method_id(user)
         demisto.debug("Got password method id")
-        
+
         demisto.debug(f"Initiating password reset for user: {user}")
         try:
             polling_url = client.password_change_user_on_premise(
-                user=user,
-                password=new_password,
-                password_method_id=password_method_id
+                user=user, password=new_password, password_method_id=password_method_id
             )
             demisto.debug(f"Got polling url: {polling_url}")
-            
+
             # Prepare context for the next poll run
             args_for_next_run = {
                 "user": user,
                 "polling_url": polling_url,
             }
             demisto.debug(f"{args_for_next_run=}")
-            
+
             return PollResult(
                 continue_to_poll=True,
                 args_for_next_run=args_for_next_run,
                 response=None,
-                partial_result=CommandResults(
-                    readable_output=f"Password reset initiated for **{user}**. Polling for status..."
-                )
+                partial_result=CommandResults(readable_output=f"Password reset initiated for **{user}**. Polling for status..."),
             )
 
         except Exception as e:
@@ -560,44 +557,42 @@ def change_password_user_on_premise_command(
     # --- 2. Polling Loop (Subsequent Runs) ---
     else:
         demisto.debug(f"Checking status for {user} at: {polling_url}")
-        
+
         # Poll the status URL (returns the longRunningOperation object)
-        status_response = client.ms_client.http_request( # Use client's underlying HTTP method
-            method='GET',
-            full_url=polling_url,
-            resp_type='json'
+        status_response = client.ms_client.http_request(  # Use client's underlying HTTP method
+            method="GET", full_url=polling_url, resp_type="json"
         )
         demisto.debug(f"Got {status_response=}")
 
         # Get status from the microsoft.graph.longRunningOperation object
-        operation_status = status_response.get('status', 'unknown')
-        
-        outputs = {
-            'user': user,
-            'status': operation_status,
-            'polling_url': polling_url
-        }
+        operation_status = status_response.get("status", "unknown")
 
-        if operation_status == 'succeeded':
+        outputs = {"user": user, "status": operation_status, "polling_url": polling_url}
+
+        if operation_status == "succeeded":
             # Success: Stop polling
             readable_output = f"Password reset **succeeded** for user **{user}**."
             results = CommandResults(
                 readable_output=readable_output,
                 raw_response=status_response,
                 outputs=outputs,
-                outputs_prefix="MSGraphUser.PasswordResetOperation"
+                outputs_prefix="MSGraphUser.PasswordResetOperation",
             )
             return PollResult(response=results)
 
-        elif operation_status in ('failed', 'canceled'):
+        elif operation_status in ("failed", "canceled"):
             # Failure: Stop polling
-            error_details = status_response.get('error', {}).get('message') or status_response.get("statusDetail") or "No specific error message."  # noqa: E501
-            outputs['error'] = error_details
+            error_details = (
+                status_response.get("error", {}).get("message")
+                or status_response.get("statusDetail")
+                or "No specific error message."
+            )  # noqa: E501
+            outputs["error"] = error_details
             readable_output = f"Password reset **failed** for user **{user}**. Details: {error_details}"
-            
+
             raise DemistoException(f"Password reset **failed** for user **{user}**. Details: {error_details}")
 
-        else: # 'running' or 'notStarted'
+        else:  # 'running' or 'notStarted'
             # Pending: Continue polling
             return PollResult(
                 continue_to_poll=True,
@@ -607,6 +602,7 @@ def change_password_user_on_premise_command(
                     readable_output=f"Password reset status for **{user}** is **{operation_status}**. Still waiting..."
                 ),
             )
+
 
 def get_delta_command(client: MsGraphClient, args: dict):
     properties = args.get("properties", "") + ",userPrincipalName"
