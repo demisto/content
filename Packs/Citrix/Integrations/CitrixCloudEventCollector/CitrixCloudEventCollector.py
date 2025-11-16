@@ -63,8 +63,8 @@ class Client(BaseClient):
             endDateTime=end_date_time,
         )
 
-        if limit and limit <= 200:
-            params["Limit"] = limit
+        # Use the smaller of requested limit or API max per request
+        params["Limit"] = min(limit if limit else RECORDS_REQUEST_LIMIT, RECORDS_REQUEST_LIMIT)
 
         headers = {
             "Authorization": f"CwsAuth Bearer={access_token}",
@@ -112,7 +112,7 @@ class Client(BaseClient):
 
 
 def get_events_command(client: Client, args: dict):  # type: ignore
-    limit = int(args.get("limit", "100"))
+    limit = int(args.get("limit", "10"))
     start_date_time = args.get("start_date_time")
     end_date_time = args.get("end_date_time")
     should_push_events = argToBoolean(args.get("should_push_events", False))
@@ -141,6 +141,8 @@ def get_events_command(client: Client, args: dict):  # type: ignore
 def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
     records, _ = client.get_records_with_pagination(limit=max_fetch, start_date_time=last_run.get("LastRun"))
 
+    # take the last record time because the response sort data in descending order,
+    # the first value is the latest date
     if records:
         last_run = {"LastRun": records[0]["_time"]}
 
@@ -187,6 +189,8 @@ def main():
 
             events, last_run = fetch_events_command(client, max_fetch, last_run)
 
+            if not events:
+                demisto.info("No events found")
             demisto.debug(f"send {len(events)} events to xsiam")
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(last_run)

@@ -29,9 +29,9 @@ configuration:
   type: 0
   defaultvalue: 'masproductio'
   section: Connect
-- additionalinfo: 'The maximum amount of events to retrieve.'
+- display: Max events per fetch
+  additionalinfo: 'The maximum amount of events to retrieve.'
   defaultvalue: '2000'
-  display: Max events per fetch
   name: max_fetch
   section: Collect
   type: 0
@@ -51,24 +51,27 @@ display: Citrix Cloud Event Collector
 name: CitrixCloudEventCollector
 script:
   commands:
-  - arguments:
-    - auto: PREDEFINED
+  - name: citrix-cloud-get-events
+    description: |
+    Returns system log events extracted from Citrix.
+    This command is used for developing/debugging and is to be used with caution, 
+    as it can create events, leading to events duplication and API request limitation exceeding.
+    arguments:
+    - name: should_push_events
+      auto: PREDEFINED
       defaultValue: 'false'
       description: Set this argument to True in order to create events, otherwise the command will only display the events.
-      name: should_push_events
       predefined:
       - 'true'
       - 'false'
       required: true
-    - description: The maximum number of logs to return.
-      name: limit
-      defaultValue: 2000
-    - description: Start DateTime for the records to be retrieved.
-      name: start_date_time
-    - description: End DateTime for the records to be retrieved.
-      name: end_date_time
-    description: Returns system log events extracted from Citrix.
-    name: citrix-cloud-get-events
+    - name: limit
+      description: The maximum number of logs to return.
+      defaultValue: 10
+    - name: start_date_time
+      description: Start DateTime for the records to be retrieved.
+    - name: end_date_time
+      description: End DateTime for the records to be retrieved.
   dockerimage: demisto/python3:3.12.12.5490952
   runonce: false
   script: '-'
