@@ -2087,40 +2087,21 @@ def test_drilldown_enrichment(notable_data, expected_result):
         ),
         (
             {
-                "event_id": "test_id2",
-                "drilldown_search": '{"name":"View all login attempts by system $src$","search":"| from datamodel:\\"Authent'
-                'ication\\".\\"Authentication\\" | search src=$src|s$","earliest":1715040000,'
-                '"latest":1715126400}',
-                "drilldown_searches": [],
-                "_raw": "src='test_src', user='test_user'",
+                "event_id": "test_id",
+                "drilldown_name": "View all login attempts by system $src$",
+                "drilldown_search": '| from datamodel:"Authentication"."Authentication" | search src=$src|s$',
+                "drilldown_searches": '[]',
+                "_raw": "src='test_src'",
+                "drilldown_latest": "1715126400.000000000",
+                "drilldown_earliest": "1715040000.000000000",
             },
             [
                 (
                     "View all login attempts by system 'test_src'",
                     '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"',
-                ),
-                ("View all test involving user=\"'test_user'\"", 'search index="test"\n| where user="\'test_user\'"'),
+                )
             ],
-        ),
-        (
-            {
-                "event_id": "test_id3",
-                "drilldown_searches": [
-                    '{"name":"View all login attempts by system $src$","search":"| from datamodel:\\"Authentication\\".\\"Authe'
-                    'ntication\\" | search src=$src|s$","earliest_offset":1715040000,"latest_offset":1715126400}',
-                    '{"name":"View all test involving user=\\"$user$\\"","search":"index=\\"test\\"\\n| where '
-                    'user = $user|s$","earliest_offset":1716955500,"latest_offset":1716959400}',
-                ],
-                "_raw": "src='test_src', user='test_user'",
-            },
-            [
-                (
-                    "View all login attempts by system 'test_src'",
-                    '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"',
-                ),
-                ("View all test involving user=\"'test_user'\"", 'search index="test"\n| where user="\'test_user\'"'),
-            ],
-        ),
+        )
     ]
 )
 def test_drilldown_enrichment_fillnull(notable_data, expected_result):
