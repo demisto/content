@@ -683,14 +683,14 @@ Updates the properties of an issue. This command does not provide an explicit in
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Issue ID to update. If empty, updates the current issue ID. | Optional | 
-| assigned_user_mail | Email address of the user to assign the issue to. | Optional | 
-| severity | Change the severity of an issue. Possible values are: low, medium, high, critical. | Optional | 
-| name | Change the issue name. | Optional | 
-| occurred | Change the occurred time of an issue. Supports different time formats, for example: 3 days ago, 2017-09-27T10:00:00+03:00.<br/>. | Optional | 
-| phase | Change the phase of an issue. Possible values are: Triage, Investigation, Containment, Response. | Optional | 
-| type | Change the type of an issue. | Optional | 
-| description | Change the description of an issue. | Optional | 
+| id | Issue ID to update. If empty, updates the current issue ID. | Optional |
+| assigned_user_mail | Email address of the user to assign the issue to. | Optional |
+| severity | Change the severity of an issue. Possible values are: low, medium, high, critical. | Optional |
+| name | Change the issue name. | Optional |
+| occurred | Change the occurred time of an issue. Supports different time formats, for example: 3 days ago, 2017-09-27T10:00:00+03:00. | Optional |
+| phase | Change the phase of an issue. Possible values are: Triage, Investigation, Containment, Response. | Optional |
+| type | Change the type of an issue. | Optional |
+| description | Change the description of an issue. | Optional |
 
 #### Context Output
 
