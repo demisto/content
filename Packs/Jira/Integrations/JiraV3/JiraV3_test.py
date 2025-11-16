@@ -2578,13 +2578,13 @@ class TestJiraFetchIncidents:
         ),
         (
             "id",
-            'Status NOT IN (Resolved, Canceled, Closed) AND "request type" = "Report a Potential Security Incident"',
+            '"request type" = "Report a Potential Security Incident"',
             "0",
             "",
             "",
             "",
             [],
-            'Status NOT IN (Resolved, Canceled, Closed) AND "request type" = "Report a Potential Security Incident" AND id >= 0 ORDER BY id ASC',
+            '"request type" = "Report a Potential Security Incident" AND id >= 0 ORDER BY id ASC',
         ),
     ]
 
