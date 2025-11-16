@@ -396,10 +396,12 @@ def test_main_successful_execution(mocker: MockerFixture):
             [
                 CommandResults(readable_output="#### Result for !get-user-data user_name..."),
                 CommandResults(readable_output="#### Result for !get-user-data user_name..."),
+                CommandResults(readable_output="#### Result for !get-user-data user_name..."),
             ],
             {
                 "user1": [{"Source": "Okta v2", "Value": "123"}],
                 "user2": [{"Source": "Microsoft Graph User", "Value": "456"}],
+                "user3": [{"Source": "GSuiteAdmin", "Value": "789"}],
             },
         ),
     )
@@ -620,28 +622,42 @@ def test_clear_user_sessions(mocker: MockerFixture):
                     "Result": "Success",
                     "Brand": "Okta v2",
                     "UserName": "user1@test.com",
+                    "UserId": "1234"
                 },
             ],
         ),
-        # Test one user which exists in two brands
+        # Test one user which exists in three brands
         (
             {
                 "user_name": ["user1@test.com"],
                 "brands": None,
             },
-            {"user1@test.com": [{"Source": "Okta v2", "Value": "11"}, {"Source": "Microsoft Graph User", "Value": "22"}]},
+            {"user1@test.com": [
+                {"Source": "Okta v2", "Value": "11"},
+                {"Source": "Microsoft Graph User", "Value": "22"},
+                {"Source": "GSuiteAdmin", "Value": "33"},
+            ]},
             [
                 {
                     "Message": "User session was cleared for user1@test.com",
                     "Result": "Success",
                     "Brand": "Okta v2",
                     "UserName": "user1@test.com",
+                    "UserId": "11"
                 },
                 {
                     "Message": "User session was cleared for user1@test.com",
                     "Result": "Success",
                     "Brand": "Microsoft Graph User",
                     "UserName": "user1@test.com",
+                    "UserId": "22"
+                },
+                {
+                    "Message": "User session was cleared for user1@test.com",
+                    "Result": "Success",
+                    "Brand": "GSuiteAdmin",
+                    "UserName": "user1@test.com",
+                    "UserId": "33"
                 },
             ],
         ),
@@ -658,12 +674,21 @@ def test_clear_user_sessions(mocker: MockerFixture):
                     "Result": "Success",
                     "Brand": "Okta v2",
                     "UserName": "user1@test.com",
+                    "UserId": "11"
                 },
                 {
                     "Message": "Username not found or no integration configured.",
                     "Result": "Failed",
                     "Brand": "Microsoft Graph User",
                     "UserName": "user1@test.com",
+                    "UserId": ""
+                },
+                {
+                    "Message": "Username not found or no integration configured.",
+                    "Result": "Failed",
+                    "Brand": "GSuiteAdmin",
+                    "UserName": "user1@test.com",
+                    "UserId": ""
                 },
             ],
         ),
@@ -703,3 +728,270 @@ def test_final_context_format(inputs, get_user_data_context, expected_output, mo
     assert mock_return_results.called, "return_results should have been called"
     result = mock_return_results.call_args[0][0]
     assert result[0].outputs == expected_output
+
+def test_main_with_user_id_argument(mocker: MockerFixture):
+    """
+    Given:
+        Valid user_id arguments provided directly.
+    When:
+        The main function is called with user_id arguments.
+    Then:
+        The function should execute clear session commands for each user_id and brand combination.
+    """
+    # Mock demisto.args()
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "user_id": "123,456",
+            "brands": "Okta v2,Microsoft Graph User,GSuiteAdmin",
+            "verbose": "false"
+        },
+    )
+
+    # Mock clear_user_sessions to return success
+    mock_clear_user_sessions = mocker.patch(
+        "ClearUserSession.clear_user_sessions",
+        return_value=([], "", None)
+    )
+
+    # Mock return_results
+    mock_return_results = mocker.patch("ClearUserSession.return_results")
+
+    # Call the main function
+    main()
+
+    # Assert clear_user_sessions was called for each user_id and brand combination
+    assert mock_clear_user_sessions.call_count == 6  # 2 user_ids * 3 brands
+
+    # Verify return_results was called
+    assert mock_return_results.called
+
+    # Check the output structure
+    result = mock_return_results.call_args[0][0]
+    outputs = result[0].outputs
+
+    # Should have 4 entries (2 user_ids * 3 brands)
+    assert len(outputs) == 3
+
+    # Verify each output has the expected structure
+    for output in outputs:
+        assert output["Result"] == "Success"
+        assert output["Brand"] in ["Okta v2", "Microsoft Graph User", "GsuiteAdmin"]
+        assert output["UserId"] in ["123", "456"]
+        assert output["UserName"] == ""
+
+
+def test_main_skip_duplicate_users_with_user_id(mocker: MockerFixture):
+    """
+    Given:
+        Both user_name and user_id arguments where the user_name resolves to IDs
+        that are already provided in user_id arguments.
+    When:
+        The main function is called.
+    Then:
+        The function should skip processing the user_name since commands were
+        already executed for those user IDs.
+    """
+    # Mock demisto.args()
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "user_name": "user1@test.com,user2@test.com",
+            "user_id": "123,456",
+            "brands": "Okta v2,Microsoft Graph User"
+        },
+    )
+
+    # Mock get_user_data to return user data that matches the provided user_ids
+    mocker.patch(
+        "ClearUserSession.get_user_data",
+        return_value=(
+            [],
+            {
+                "user1@test.com": [{"Source": "Okta v2", "Value": "123"}],
+                "user2@test.com": [{"Source": "Microsoft Graph User", "Value": "456"}],
+            },
+        ),
+    )
+
+    # Mock clear_user_sessions
+    mock_clear_user_sessions = mocker.patch(
+        "ClearUserSession.clear_user_sessions",
+        return_value=([], "", None)
+    )
+
+    # Mock demisto.debug to capture skip messages
+    mock_debug = mocker.patch.object(demisto, "debug")
+
+    # Mock return_results
+    mock_return_results = mocker.patch("ClearUserSession.return_results")
+
+    # Call the main function
+    main()
+
+    # Verify that debug messages were logged for skipped users
+    skip_calls = [call for call in mock_debug.call_args_list
+                  if "Already performed action for that user using their id" in str(call)]
+    assert len(skip_calls) == 2  # Both users should be skipped
+
+    # Should only have 4 calls for user_ids (2 user_ids * 2 brands), no additional calls for user_names
+    assert mock_clear_user_sessions.call_count == 4
+
+    # Verify return_results was called
+    assert mock_return_results.called
+
+    # Check that outputs only contain results for user_ids, not duplicate user_names
+    result = mock_return_results.call_args[0][0]
+    outputs = result[0].outputs
+
+    # Should only have 4 entries from user_ids, no additional entries from user_names
+    assert len(outputs) == 4
+
+
+def test_main_partial_user_id_overlap(mocker: MockerFixture):
+    """
+    Given:
+        Both user_name and user_id arguments where only some user_names resolve
+        to IDs that overlap with provided user_ids.
+    When:
+        The main function is called.
+    Then:
+        The function should skip only the overlapping users and process the rest.
+    """
+    # Mock demisto.args()
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "user_name": "user1@test.com,user2@test.com,user3@test.com",
+            "user_id": "123",
+            "brands": "Okta v2"
+        },
+    )
+
+    # Mock get_user_data - user1 overlaps with user_id, user2 and user3 don't
+    mocker.patch(
+        "ClearUserSession.get_user_data",
+        return_value=(
+            [],
+            {
+                "user1@test.com": [{"Source": "Okta v2", "Value": "123"}],  # Overlaps
+                "user2@test.com": [{"Source": "Okta v2", "Value": "456"}],  # Doesn't overlap
+                "user3@test.com": [{"Source": "Okta v2", "Value": "789"}],  # Doesn't overlap
+            },
+        ),
+    )
+
+    # Mock clear_user_sessions
+    mock_clear_user_sessions = mocker.patch(
+        "ClearUserSession.clear_user_sessions",
+        return_value=([], "", None)
+    )
+
+    # Mock demisto.debug
+    mock_debug = mocker.patch.object(demisto, "debug")
+
+    # Mock return_results
+    mock_return_results = mocker.patch("ClearUserSession.return_results")
+
+    # Call the main function
+    main()
+
+    # Verify that only user1 was skipped
+    skip_calls = [call for call in mock_debug.call_args_list
+                  if "Already performed action for that user using their id 123" in str(call)]
+    assert len(skip_calls) == 1
+
+    # Should have 3 calls total: 1 for user_id + 2 for non-overlapping user_names
+    assert mock_clear_user_sessions.call_count == 3
+
+    # Verify return_results was called
+    assert mock_return_results.called
+
+    # Check outputs: 1 from user_id + 2 from non-overlapping user_names
+    result = mock_return_results.call_args[0][0]
+    outputs = result[0].outputs
+
+    assert len(outputs) == 3
+
+    # Verify the specific users in outputs
+    user_ids_in_output = [output["UserId"] for output in outputs]
+    assert "123" in user_ids_in_output  # From user_id argument
+    assert "456" in user_ids_in_output  # From user2@test.com
+    assert "789" in user_ids_in_output  # From user3@test.com
+
+
+def test_main_user_id_with_multiple_brands_overlap(mocker: MockerFixture):
+    """
+    Given:
+        User_name that has IDs in multiple brands, and user_id that matches one of them.
+    When:
+        The main function is called.
+    Then:
+        The function should skip the user_name entirely if any of their IDs match the provided user_id.
+    """
+    # Mock demisto.args()
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "user_name": "user1@test.com",
+            "user_id": "123",
+            "brands": "Okta v2,Microsoft Graph User,GSuiteAdmin"
+        },
+    )
+
+    # Mock get_user_data - user1 has IDs in all brands, but only Okta ID matches user_id
+    mocker.patch(
+        "ClearUserSession.get_user_data",
+        return_value=(
+            [],
+            {
+                "user1@test.com": [
+                    {"Source": "Okta v2", "Value": "123"},           # Matches user_id
+                    {"Source": "Microsoft Graph User", "Value": "456"},  # Doesn't match
+                    {"Source": "GSuiteAdmin", "Value": "789"},       # Doesn't match
+                ],
+            },
+        ),
+    )
+
+    # Mock clear_user_sessions
+    mock_clear_user_sessions = mocker.patch(
+        "ClearUserSession.clear_user_sessions",
+        return_value=([], "", None)
+    )
+
+    # Mock demisto.debug
+    mock_debug = mocker.patch.object(demisto, "debug")
+
+    # Mock return_results
+    mock_return_results = mocker.patch("ClearUserSession.return_results")
+
+    # Call the main function
+    main()
+
+    # Verify that user1 was skipped
+    skip_calls = [call for call in mock_debug.call_args_list
+                  if "Already performed action for that user using their id 123" in str(call)]
+    assert len(skip_calls) == 1
+
+    # Should have 3 calls only for user_id (1 user_id * 3 brands)
+    assert mock_clear_user_sessions.call_count == 3
+
+    # Verify return_results was called
+    assert mock_return_results.called
+
+    # Check outputs: only 3 entries from user_id argument
+    result = mock_return_results.call_args[0][0]
+    outputs = result[0].outputs
+
+    assert len(outputs) == 3
+
+    # All outputs should be for user_id "123"
+    for output in outputs:
+        assert output["UserId"] == "123"
+        assert output["UserName"] == ""
+

@@ -10,7 +10,6 @@ MS_GRAPH_BRAND = "Microsoft Graph User"
 GSUITE_BRAND = "GSuiteAdmin"
 DEFAULT_BRANDS = [OKTA_BRAND, MS_GRAPH_BRAND, GSUITE_BRAND]
 SYSTEM_USERS = {"administrator", "system"}
-SUCCESS_MESSAGE = "User session was cleared."
 COMMANDS_BY_BRAND = {
     OKTA_BRAND: "okta-clear-user-sessions",
     MS_GRAPH_BRAND: "msgraph-user-session-revoke",
@@ -370,8 +369,8 @@ def main():
         verbose = argToBoolean(args.get("verbose", False))
         brands = argToList(args.get("brands", DEFAULT_BRANDS))
 
-        outputs: list = []
         results_for_verbose: list[CommandResults] = []
+        filtered_users_names, outputs = remove_system_user(users_names, brands)
 
         for user_id in user_ids_arg:
             clear_session_results: list[tuple[str, str, str]] = []
@@ -383,10 +382,12 @@ def main():
                     "Result": result,
                     "Brand": brand,
                     "UserId": user_id,
+                    "UserName": ""
                 }
                 outputs.append(user_output)
 
-        filtered_users_names, outputs = remove_system_user(users_names, brands)
+        command_results_list: list[CommandResults] = []
+
 
         # get ID for users
         get_user_data_command = Command(
@@ -420,29 +421,29 @@ def main():
             clear_session_results: list[tuple[str, str, str]] = []
             # Okta v2
             if okta_v2_id:
-                run_command(okta_v2_id, results_for_verbose, clear_session_results, OKTA_BRAND)
+                run_command(okta_v2_id, results_for_verbose, clear_session_results, OKTA_BRAND, user_name)
             elif OKTA_BRAND in brands:
                 clear_session_results.append((OKTA_BRAND, "Failed", "Username not found or no integration configured."))
 
             # Microsoft Graph User
             if microsoft_graph_id:
-                run_command(microsoft_graph_id, results_for_verbose, clear_session_results, MS_GRAPH_BRAND)
+                run_command(microsoft_graph_id, results_for_verbose, clear_session_results, MS_GRAPH_BRAND, user_name)
             elif MS_GRAPH_BRAND in brands:
                 clear_session_results.append((MS_GRAPH_BRAND, "Failed", "Username not found or no integration configured."))
 
             # GSuiteAdmin
             if gsuite_id:
-                run_command(gsuite_id, results_for_verbose, clear_session_results, GSUITE_BRAND)
+                run_command(gsuite_id, results_for_verbose, clear_session_results, GSUITE_BRAND, user_name)
             elif GSUITE_BRAND in brands:
                 clear_session_results.append((GSUITE_BRAND, "Failed", "Username not found or no integration configured."))
 
-            user_id = okta_v2_id or microsoft_graph_id or gsuite_id
             for brand, result, message in clear_session_results:
                 user_output = {
                     "Message": message,
                     "Result": result,
                     "Brand": brand,
-                    "UserId": user_id,
+                    "UserId": get_user_id(users_ids, brand, user_name),
+                    "UserName": user_name,
                 }
                 outputs.append(user_output)
 
@@ -450,7 +451,6 @@ def main():
         ### Complete for all users ###
         ##############################
 
-        command_results_list: list[CommandResults] = []
         if verbose:
             command_results_list.extend(results_for_verbose)
 
