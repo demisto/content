@@ -1438,7 +1438,181 @@ script:
           isArray: true
       name: core-enable-scanners
       description: Enable or disable scanners with the specified configuration.
-          
+
+    - name: core-create-appsec-policy
+      description: Creates a new AppSec policy in Cortex Platform with defined conditions, scope, and triggers for application security governance.
+      arguments:
+        - name: policy_name
+          description: A unique name for the AppSec policy. Must be descriptive and follow organizational naming conventions.
+          required: true
+        - name: description
+          description: A detailed explanation of the policy's objective, use case, and expected outcomes.
+        - name: asset_group_names
+          description: Comma-separated list of Asset Group names to apply the policy to. Asset groups will be automatically resolved to their corresponding IDs.
+          isArray: true
+        # Condition Filters (Findings Criteria)
+        - name: conditions_finding_type
+          description: "Filter by specific finding types to target policy enforcement. Supported values: Vulnerabilities, IaC Misconfiguration, Licenses, Operational Risk, Secrets, Code Weaknesses, CI/CD Risks."
+          isArray: true
+        - name: conditions_severity
+          description: "Filter findings by severity level to prioritize policy actions. Supported values: CRITICAL, HIGH, MEDIUM, LOW."
+          isArray: true
+        - name: conditions_respect_developer_suppression
+          description: "Controls whether a developer’s manual suppression should be honored. 
+          Set to 'true' to respect developer suppression (evaluate only non-suppressed findings). 
+          Set to 'false' to ignore suppression and always evaluate the finding."
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: conditions_backlog_status
+          description: Filter findings based on their backlog workflow status (NEW or BACKLOG).
+          auto: PREDEFINED
+          predefined:
+            - NEW
+            - BACKLOG
+        - name: conditions_package_name
+          description: Target specific software packages by name for license or vulnerability policies.
+        - name: conditions_package_version
+          description: Specify software package version constraints for precise policy targeting.
+        - name: conditions_package_operational_risk
+          description: "Filter packages by their operational risk assessment level. Supported values: HIGH, MEDIUM, LOW."
+        - name: conditions_appsec_rule_names
+          description: Comma-separated list of AppSec rule names to include in policy evaluation. Rule names will be automatically resolved to their corresponding IDs.
+          isArray: true
+        - name: conditions_cvss
+          description: CVSS base score threshold for vulnerability findings (0.0-10.0). Only vulnerabilities meeting or exceeding this score will trigger the policy.
+        - name: conditions_epss
+          description: Exploit Prediction Scoring System score threshold (0-100). Targets vulnerabilities with higher exploitation probability.
+        - name: conditions_has_a_fix
+          description: Filter findings based on whether a remediation fix or patch is available.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: conditions_is_kev
+          description: Target findings listed in CISA's Known Exploited Vulnerabilities (KEV) catalog for prioritized remediation.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: conditions_secret_validity
+          description: "Filter exposed secrets by their validity status. Supported values: VALID (active secrets), PRIVILEGED (high-access secrets), INVALID (expired/revoked), UNAVAILABLE (status unknown)."
+          isArray: true
+        - name: conditions_license_type
+          description: Target specific software license types for compliance and legal risk management.
+          isArray: true
+
+        # Scope Filters (Asset Criteria)
+        - name: scope_category
+          description: "Define asset categories to include in policy scope. Supported values: Application, Repository, CI/CD Instance, CI/CD Pipeline, VCS Collaborator, VCS Organization."
+          isArray: true
+        - name: scope_business_application_names
+          description: Target specific business applications by name for focused policy enforcement.
+          isArray: true
+        - name: scope_application_business_criticality
+          description: "Filter applications by business criticality level. Supported values: CRITICAL, HIGH, MEDIUM, LOW."
+          isArray: true
+        - name: scope_repository_name
+          description: Target specific code repositories by name for repository-focused policies.
+          isArray: true
+        - name: scope_is_public_repository
+          description: Filter repositories based on their visibility (public vs private) for exposure risk management.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: scope_has_deployed_assets
+          description: Target repositories or applications that have associated deployed infrastructure or runtime assets.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: scope_has_internet_exposed_deployed_assets
+          description: Filter assets based on whether the deployed components are exposed to internet traffic for external attack surface management.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: scope_has_sensitive_data_access
+          description: Target deployed assets that have access to sensitive data stores, databases, or classified information.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: scope_has_privileged_capabilities
+          description: Filter deployed assets with elevated privileges, admin access, or high-impact system capabilities.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        # Trigger Settings (Policy Execution Events)
+        - name: triggers_periodic_report_issue
+          description: Enables detection during scheduled scans. When a violation is found in a periodic scan, an issue will be created ("Detect").
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_periodic_override_severity
+          description: Override the default severity level for issues created by periodic scan detections.
+          auto: PREDEFINED
+          predefined:
+            - Critical
+            - High
+            - Medium
+            - Low
+        - name: triggers_pr_report_issue
+          description: Enables detection during pull request scans. When a violation is found in a PR, an issue is created. Required for PR-based detection.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_pr_block_pr
+          description: Blocks merging of pull requests that contain violations detected by the policy.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_pr_report_pr_comment
+          description: Adds an automated comment to pull requests summarizing detected violations and guidance.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_pr_override_severity
+          description: Override the default severity level for issues created by pull request detections.
+          auto: PREDEFINED
+          predefined:
+            - Critical
+            - High
+            - Medium
+            - Low
+        - name: triggers_cicd_report_issue
+          description: Enables detection during CI/CD pipeline scans. When a violation is found in a pipeline run, an issue is created.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_cicd_block_cicd
+          description: Blocks or fails CI/CD pipeline runs when violations occur.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_cicd_report_cicd
+          description: Reports violation details back to the CI/CD system (pipeline logs, dashboards, status checks).
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_cicd_override_severity
+          description: Override the default severity level for issues created by CI/CD pipeline detections.
+          auto: PREDEFINED
+          predefined:
+            - Critical
+            - High
+            - Medium
+            - Low
   runonce: false
   script: "-"
   subtype: python3
