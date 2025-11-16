@@ -1477,7 +1477,6 @@ script:
       required: true
     description: Adds or updates an inline policy document that is embedded in the specified IAM role.
     name: aws-iam-put-role-policy
-
   - arguments:
     - description: The policy document. You must provide policies in JSON format in IAM.
       name: policyDocument
