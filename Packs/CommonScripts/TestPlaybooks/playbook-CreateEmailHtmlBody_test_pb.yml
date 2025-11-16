@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3b3ffe8d-1fb2-46a5-8add-add99b8bb693
+    taskid: 9dee18e1-4672-4688-86bf-4db990b787ed
     type: start
     task:
-      id: 3b3ffe8d-1fb2-46a5-8add-add99b8bb693
+      id: 9dee18e1-4672-4688-86bf-4db990b787ed
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 715,
+          "x": 685,
           "y": 50
         }
       }
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 8fd1239b-aa15-493c-b455-cdc6fc5e1a87
+    taskid: 0c504a0c-c793-4925-8a1c-337523278b58
     type: regular
     task:
-      id: 8fd1239b-aa15-493c-b455-cdc6fc5e1a87
+      id: 0c504a0c-c793-4925-8a1c-337523278b58
       version: -1
       name: createList
       description: commands.local.cmd.list.create
@@ -58,7 +58,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 920,
           "y": 1070
         }
       }
@@ -72,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 031ad8d6-a5d3-4cda-9bfa-d6198a202354
+    taskid: 4aff5905-da34-4553-875d-226bd5297d85
     type: regular
     task:
-      id: 031ad8d6-a5d3-4cda-9bfa-d6198a202354
+      id: 4aff5905-da34-4553-875d-226bd5297d85
       version: -1
       name: create email html body
       scriptName: CreateEmailHtmlBody
@@ -94,7 +94,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 920,
           "y": 1245
         }
       }
@@ -108,21 +108,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: dcc6c85d-0640-4b54-b7a0-936ebb44225c
+    taskid: f1cd83ad-016d-4dae-8314-2cab1f40a91b
     type: condition
     task:
-      id: dcc6c85d-0640-4b54-b7a0-936ebb44225c
+      id: f1cd83ad-016d-4dae-8314-2cab1f40a91b
       version: -1
       name: Test the script
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "yes":
+      platform:
+      - "20"
+      xsiam:
+      - "19"
+      xsoar 8/6:
       - "5"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: "xsoar 8/6"
       condition:
       - - operator: isEqualString
           left:
@@ -133,7 +137,7 @@ tasks:
             value:
               simple: incident.name
             iscontext: true
-    - label: condition-2
+    - label: xsiam
       condition:
       - - operator: isEqualString
           left:
@@ -144,7 +148,7 @@ tasks:
             value:
               simple: alert.custom_status
             iscontext: true
-    - label: condition-3
+    - label: platform
       condition:
       - - operator: isEqualString
           left:
@@ -158,7 +162,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 920,
           "y": 1420
         }
       }
@@ -172,10 +176,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a76a48da-03d3-48f5-8260-1cce286fad75
+    taskid: b6d43558-fc69-46aa-82db-b8f57e619d89
     type: regular
     task:
-      id: a76a48da-03d3-48f5-8260-1cce286fad75
+      id: b6d43558-fc69-46aa-82db-b8f57e619d89
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -193,7 +197,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 715,
+          "x": 685,
           "y": 210
         }
       }
@@ -207,10 +211,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 2e9f6f8f-1c1b-44f9-85d4-f14e5c1594c5
+    taskid: 7ba02870-1a7b-41c7-8bfc-772c8ee90305
     type: title
     task:
-      id: 2e9f6f8f-1c1b-44f9-85d4-f14e5c1594c5
+      id: 7ba02870-1a7b-41c7-8bfc-772c8ee90305
       version: -1
       name: Done
       type: title
@@ -221,7 +225,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 275,
           "y": 1595
         }
       }
@@ -235,10 +239,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: c50870df-2d6f-4e00-a9a7-4652bb6d3901
+    taskid: eec4aa8e-69f9-4e27-8439-466cc763707b
     type: regular
     task:
-      id: c50870df-2d6f-4e00-a9a7-4652bb6d3901
+      id: eec4aa8e-69f9-4e27-8439-466cc763707b
       version: -1
       name: Set the list data in the context
       description: Set a value in context under the key you entered.
@@ -259,8 +263,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 360,
+          "y": 890
         }
       }
     note: false
@@ -272,10 +276,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 49b13ec2-6b9e-47d9-b7b9-369f414bf969
+    taskid: a35fb8e9-0fa4-4225-8593-9ad4af830676
     type: regular
     task:
-      id: 49b13ec2-6b9e-47d9-b7b9-369f414bf969
+      id: a35fb8e9-0fa4-4225-8593-9ad4af830676
       version: -1
       name: Get Cortex Version
       description: Get version and URL of current XSOAR server.
@@ -293,7 +297,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 715,
+          "x": 685,
           "y": 385
         }
       }
@@ -306,10 +310,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 16a762e8-a0b1-4f62-8c8a-122e5f60ca43
+    taskid: 69ee5386-e3af-4b6d-8d6c-ad0632c5eb59
     type: condition
     task:
-      id: 16a762e8-a0b1-4f62-8c8a-122e5f60ca43
+      id: 69ee5386-e3af-4b6d-8d6c-ad0632c5eb59
       version: -1
       name: Is xsoar
       type: condition
@@ -336,7 +340,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 50,
           "y": 560
         }
       }
@@ -349,10 +353,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 20e3c11b-855f-445b-9583-b1f6a072e1bc
+    taskid: a4df95da-1cc8-4392-8aff-71100d7e355d
     type: title
     task:
-      id: 20e3c11b-855f-445b-9583-b1f6a072e1bc
+      id: a4df95da-1cc8-4392-8aff-71100d7e355d
       version: -1
       name: XSOAR
       type: title
@@ -367,7 +371,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 360,
           "y": 735
         }
       }
@@ -380,10 +384,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: e2a5a13f-05ef-493b-bfec-137a80529870
+    taskid: dbb78332-b55c-4e42-8b0e-d7e241b2a4b1
     type: condition
     task:
-      id: e2a5a13f-05ef-493b-bfec-137a80529870
+      id: dbb78332-b55c-4e42-8b0e-d7e241b2a4b1
       version: -1
       name: Is XSIAM
       type: condition
@@ -423,10 +427,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: ffa0bf8d-1476-420e-8c3b-ff5258bb4fc3
+    taskid: eba7360e-62f5-4997-8079-60b26dd91306
     type: title
     task:
-      id: ffa0bf8d-1476-420e-8c3b-ff5258bb4fc3
+      id: eba7360e-62f5-4997-8079-60b26dd91306
       version: -1
       name: XSIAM
       type: title
@@ -441,7 +445,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 920,
           "y": 735
         }
       }
@@ -454,10 +458,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 9aad674d-6bdb-42da-84be-64d8c9cac91c
+    taskid: 5c239407-5c1a-408c-8efd-97bdf3f92e67
     type: condition
     task:
-      id: 9aad674d-6bdb-42da-84be-64d8c9cac91c
+      id: 5c239407-5c1a-408c-8efd-97bdf3f92e67
       version: -1
       name: Is PLATFORM
       type: condition
@@ -484,7 +488,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1190,
+          "x": 1340,
           "y": 560
         }
       }
@@ -497,10 +501,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: ad052b21-0fa1-4a85-a5a6-6d15f3dc2f5c
+    taskid: 030dec94-7381-49ca-8f6a-2c856160e511
     type: title
     task:
-      id: ad052b21-0fa1-4a85-a5a6-6d15f3dc2f5c
+      id: 030dec94-7381-49ca-8f6a-2c856160e511
       version: -1
       name: PLATFORM
       type: title
@@ -515,8 +519,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1030,
-          "y": 730
+          "x": 1350,
+          "y": 735
         }
       }
     note: false
@@ -528,10 +532,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 41245174-6ed4-4e2f-8ff8-7450191e831a
+    taskid: 40c4d654-8fe9-48d0-80b6-9cc44c8746ea
     type: regular
     task:
-      id: 41245174-6ed4-4e2f-8ff8-7450191e831a
+      id: 40c4d654-8fe9-48d0-80b6-9cc44c8746ea
       version: -1
       name: Set the list data in the context
       description: Set a value in context under the key you entered.
@@ -552,7 +556,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 920,
           "y": 895
         }
       }
@@ -565,10 +569,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 30213014-616b-4ba5-ab5c-5f8e28684d1a
+    taskid: 57beb6fa-1c1a-42d2-88f6-2b065941639f
     type: regular
     task:
-      id: 30213014-616b-4ba5-ab5c-5f8e28684d1a
+      id: 57beb6fa-1c1a-42d2-88f6-2b065941639f
       version: -1
       name: Set the list data in the context
       description: Set a value in context under the key you entered.
@@ -589,8 +593,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1030,
-          "y": 875
+          "x": 1350,
+          "y": 895
         }
       }
     note: false
@@ -602,10 +606,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 41af353a-d2c9-41d1-97c3-c3c8b8b41887
+    taskid: 52594061-de0a-42a6-8db5-40e7e00525b6
     type: title
     task:
-      id: 41af353a-d2c9-41d1-97c3-c3c8b8b41887
+      id: 52594061-de0a-42a6-8db5-40e7e00525b6
       version: -1
       name: Done
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
@@ -617,8 +621,64 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1580,
+          "x": -120,
           "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 8c4200ee-e8a3-4cb8-be57-123db0030f2d
+    type: title
+    task:
+      id: 8c4200ee-e8a3-4cb8-be57-123db0030f2d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: b46be9db-9720-4f8b-babb-acd16377ac7c
+    type: title
+    task:
+      id: b46be9db-9720-4f8b-babb-acd16377ac7c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 1595
         }
       }
     note: false
@@ -634,8 +694,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1605,
-        "width": 1910,
-        "x": 50,
+        "width": 1850,
+        "x": -120,
         "y": 50
       }
     }
