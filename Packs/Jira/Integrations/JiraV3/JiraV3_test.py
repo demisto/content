@@ -2576,6 +2576,16 @@ class TestJiraFetchIncidents:
             [1, 2, 3, 4],
             'status!=done AND updated >= "2023-02-01" AND ID NOT IN (1, 2, 3, 4) ORDER BY updated ASC',
         ),
+        (
+            "id",
+            '"request type" = "Report a Potential Security Incident"',
+            "0",
+            "",
+            "",
+            "",
+            [],
+            '"request type" = "Report a Potential Security Incident" AND id >= 0 ORDER BY id ASC',
+        ),
     ]
 
     @pytest.mark.parametrize(
