@@ -22,6 +22,7 @@ ASSET_FIELDS = {
     "asset_providers": "xdm.asset.provider",
     "asset_realms": "xdm.asset.realm",
     "asset_group_ids": "xdm.asset.group_ids",
+    "asset_categories": "xdm.asset.type.category",
 }
 
 WEBAPP_COMMANDS = [
@@ -31,8 +32,9 @@ WEBAPP_COMMANDS = [
     "core-get-asset-coverage",
     "core-get-asset-coverage-histogram",
 ]
-DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 
+DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
+APPSEC_COMMANDS = ["core-enable-scanners"]
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
@@ -51,6 +53,12 @@ VULNERABILITIES_SEVERITY_MAPPING = {
     "high": "SEV_060_HIGH",
     "critical": "SEV_070_CRITICAL",
 }
+
+ALLOWED_SCANNERS = [
+    "SCA",
+    "IAC",
+    "SECRETS",
+]
 
 COVERAGE_API_FIELDS_MAPPING = {"vendor_name": "asset_provider", "asset_provider": "unified_provider"}
 
@@ -367,6 +375,17 @@ class Client(CoreClient):
             method="POST",
             url_suffix="/get_histograms",
             json_data=request_data,
+        )
+
+    def enable_scanners(self, payload: dict, repository_id: str) -> dict:
+        return self._http_request(
+            method="PUT",
+            url_suffix=f"/v1/repositories/{repository_id}/scan-configuration",
+            json_data=payload,
+            headers={
+                **self._headers,
+                "Content-Type": "application/json",
+            },
         )
 
     def get_playbook_suggestion_by_issue(self, issue_id):
@@ -725,6 +744,7 @@ def search_assets_command(client: Client, args):
     filter.add_field(ASSET_FIELDS["asset_providers"], FilterType.EQ, argToList(args.get("asset_providers", "")))
     filter.add_field(ASSET_FIELDS["asset_realms"], FilterType.EQ, argToList(args.get("asset_realms", "")))
     filter.add_field(ASSET_FIELDS["asset_group_ids"], FilterType.ARRAY_CONTAINS, asset_group_ids)
+    filter.add_field(ASSET_FIELDS["asset_categories"], FilterType.EQ, argToList(args.get("asset_categories", "")))
     filter_str = filter.to_dict()
 
     demisto.debug(f"Search Assets Filter: {filter_str}")
@@ -741,6 +761,124 @@ def search_assets_command(client: Client, args):
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
         outputs=response,
         raw_response=raw_response,
+    )
+
+
+def validate_scanner_name(scanner_name: str):
+    """
+    Validate that a scanner name is allowed.
+
+    Args:
+        scanner_name (str): The name of the scanner to validate.
+
+    Returns:
+        bool: True if the scanner name is valid.
+
+    Raises:
+        ValueError: If the scanner name is not in the list of allowed scanners.
+    """
+    if scanner_name.upper() not in ALLOWED_SCANNERS:
+        raise ValueError(f"Invalid scanner '{scanner_name}'. Allowed scanners are: {', '.join(sorted(ALLOWED_SCANNERS))}")
+
+
+def build_scanner_config_payload(args: dict) -> dict:
+    """
+    Build a scanner configuration payload for repository scanning.
+
+    Args:
+        args (dict): Dictionary containing configuration arguments.
+                    Expected to include:
+                        - enable_scanners (list): List of scanners to enable.
+                        - disable_scanners (list): List of scanners to disable.
+                        - pr_scanning (bool): Whether to enable PR scanning.
+                        - block_on_error (bool): Whether to block on scanning errors.
+                        - tag_resource_blocks (bool): Whether to tag resource blocks.
+                        - tag_module_blocks (bool): Whether to tag module blocks.
+                        - exclude_paths (list): List of paths to exclude from scanning.
+
+    Returns:
+        dict: Scanner configuration payload.
+
+    Raises:
+        ValueError: If the same scanner is specified in both enable and disabled lists.
+    """
+    enabled_scanners = argToList(args.get("enable_scanners", []))
+    disabled_scanners = argToList(args.get("disable_scanners", []))
+    secret_validation = argToBoolean(args.get("secret_validation", "False"))
+    enable_pr_scanning = arg_to_bool_or_none(args.get("pr_scanning"))
+    block_on_error = arg_to_bool_or_none(args.get("block_on_error"))
+    tag_resource_blocks = arg_to_bool_or_none(args.get("tag_resource_blocks"))
+    tag_module_blocks = arg_to_bool_or_none(args.get("tag_module_blocks"))
+    exclude_paths = argToList(args.get("exclude_paths", []))
+
+    overlap = set(enabled_scanners) & set(disabled_scanners)
+    if overlap:
+        raise ValueError(f"Cannot enable and disable the same scanner(s) simultaneously: {', '.join(overlap)}")
+
+    # Build scanners configuration
+    scanners = {}
+    for scanner in enabled_scanners:
+        validate_scanner_name(scanner)
+        if scanner.upper() == "SECRETS":
+            scanners["SECRETS"] = {"isEnabled": True, "scanOptions": {"secretValidation": secret_validation}}
+        else:
+            scanners[scanner.upper()] = {"isEnabled": True}
+
+    for scanner in disabled_scanners:
+        validate_scanner_name(scanner)
+        scanners[scanner.upper()] = {"isEnabled": False}
+
+    # Build scan configuration payload with only relevant arguments
+    scan_configuration = {}
+
+    if scanners:
+        scan_configuration["scanners"] = scanners
+
+    if args.get("pr_scanning") is not None:
+        scan_configuration["prScanning"] = {
+            "isEnabled": enable_pr_scanning,
+            **({"blockOnError": block_on_error} if block_on_error is not None else {}),
+        }
+
+    if args.get("tag_resource_blocks") is not None or args.get("tag_module_blocks") is not None:
+        scan_configuration["taggingBot"] = {
+            **({"tagResourceBlocks": tag_resource_blocks} if tag_resource_blocks is not None else {}),
+            **({"tagModuleBlocks": tag_module_blocks} if tag_module_blocks is not None else {}),
+        }
+
+    if exclude_paths:
+        scan_configuration["excludedPaths"] = exclude_paths
+
+    demisto.debug(f"{scan_configuration=}")
+
+    return scan_configuration
+
+
+def enable_scanners_command(client: Client, args: dict):
+    """
+    Updates repository scan configuration by enabling/disabling scanners and setting scan options.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing configuration arguments including repository_ids,
+                    enabled_scanners, disabled_scanners, and other scan settings.
+
+    Returns:
+        CommandResults: Command results with readable output showing update status and raw response.
+    """
+    repository_ids = argToList(args.get("repository_ids"))
+    payload = build_scanner_config_payload(args)
+
+    # Send request to update repository scan configuration
+    responses = []
+    for repository_id in repository_ids:
+        responses.append(client.enable_scanners(payload, repository_id))
+
+    readable_output = f"Successfully updated repositories: {', '.join(repository_ids)}"
+
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=responses,
     )
 
 
@@ -873,7 +1011,7 @@ def main():  # pragma: no cover
     webapp_api_url = "/api/webapp"
     public_api_url = f"{webapp_api_url}/public_api/v1"
     data_platform_api_url = f"{webapp_api_url}/data-platform"
-
+    appsec_api_url = f"{webapp_api_url}/public_api/appsec"
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
 
@@ -888,6 +1026,8 @@ def main():  # pragma: no cover
         client_url = webapp_api_url
     elif command in DATA_PLATFORM_COMMANDS:
         client_url = data_platform_api_url
+    elif command in APPSEC_COMMANDS:
+        client_url = appsec_api_url
 
     client = Client(
         base_url=client_url,
@@ -937,6 +1077,8 @@ def main():  # pragma: no cover
 
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
+        elif command == "core-enable-scanners":
+            return_results(enable_scanners_command(client, args))
 
         elif command == "core-get-asset-coverage":
             return_results(get_asset_coverage_command(client, args))
