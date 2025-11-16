@@ -560,10 +560,6 @@ class XSOAR2STIXParser:
             and (relationships := self.create_relationships_objects(iocs, extensions))
         ):
             demisto.info(f"create_indicators {len(relationships)=}")
-
-            for relationship in relationships:
-                relationship["IOC_TYPE"] = "relationship"
-
             total += len(relationships)
             iocs.extend(relationships)
             iocs = sorted(iocs, key=lambda k: k["modified"])
