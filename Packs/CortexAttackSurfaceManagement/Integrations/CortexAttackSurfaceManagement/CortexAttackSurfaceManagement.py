@@ -9,7 +9,7 @@ urllib3.disable_warnings()
 
 DEFAULT_SEARCH_LIMIT = 100
 
-
+ 
 class NotFoundError(Exception):
     """Exception raised when an error is encountered that does
     not have an error message, like with a waitress error"""
