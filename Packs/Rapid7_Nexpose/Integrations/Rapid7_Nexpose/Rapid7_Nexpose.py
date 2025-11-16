@@ -393,8 +393,7 @@ SELECT
         WHEN da.ip_address LIKE '%:%' THEN NULL
         ELSE da.ip_address
     END AS "ipv4",
-    
-    -- IPv6 Column
+
     CASE 
         WHEN da.ip_address LIKE '%:%' THEN da.ip_address
         ELSE NULL
@@ -438,12 +437,11 @@ ORDER BY
 #         query = """WITH cve_references AS (
 #     SELECT
 #         dvr.vulnerability_id,
-#         -- Collects all reference links (e.g., CVE-2023-12345) into a single string
 #         array_to_string(array_agg(dvr.reference), ', ') AS aggregated_cves
 #     FROM
 #         dim_vulnerability_reference dvr
 #     WHERE
-#         dvr.source = 'CVE' -- Filters only the CVE source type
+#         dvr.source = 'CVE'
 #     GROUP BY
 #         dvr.vulnerability_id
 # ),
@@ -459,20 +457,16 @@ ORDER BY
 #         favf.vulnerability_id
 # )
 # SELECT
-#     favf.asset_id AS "Asset ID",
-#     dv.nexpose_id AS "Vulnerability ID",
+#     favf.asset_id AS "asset_id",
+#     dv.vulnerability_id AS "vulnerability_id",
 #     da.last_assessed_for_vulnerabilities AS "last_found",
-#     cr.aggregated_cves AS "CVE",
-#     CASE 
-#     WHEN cr.aggregated_cves IS NULL OR cr.aggregated_cves = '' THEN dv.nexpose_id
-#     ELSE dv.nexpose_id || '-' || cr.aggregated_cves 
-# END AS "module_finding_id",
-#     e.evidence AS "evidence",
+#     cr.aggregated_cves AS "cve",
+#     dv.nexpose_id AS "module_finding_id",
 #     dv.description AS "description",
+#     e.evidence AS "evidence",
 #     da.ip_address AS "target_ip",
-#     -- source
-#     dsn.scan_id AS "scan_name"
-#     -- last_authentication_scan_status
+#     dse.name AS "source",
+#     dsn.scan_name AS "scan_name"
 
 # FROM
 #     fact_asset_vulnerability_finding favf
@@ -485,7 +479,13 @@ ORDER BY
 # JOIN 
 #     evidences e ON favf.vulnerability_id = e.vulnerability_id
 # LEFT JOIN
-#     cve_references cr ON dv.vulnerability_id = cr.vulnerability_id -- LEFT JOIN from CTE
+#     cve_references cr ON dv.vulnerability_id = cr.vulnerability_id
+# LEFT JOIN
+#     dim_site_scan dss ON favf.scan_id = dss.scan_id
+# LEFT JOIN
+#    dim_site_scan_config dssc ON dss.site_id = dssc.site_id
+# LEFT JOIN
+#    dim_scan_engine dse ON dssc.scan_engine_id = dse.scan_engine_id
 
 # ORDER BY
 #     da.asset_id ASC"""
