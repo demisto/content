@@ -1461,7 +1461,7 @@ def upload_and_associate_command(client: Client, args: dict[str, str]):
         record, _, errors = client.get_record(app_id, content_id, 0)
         if errors:
             return_error(errors)
-        record_attachments = record.get("Attachments", [])
+        record_attachments = record.get(associate_field, []) or []
         demisto.debug(f"Record id {content_id} already has {record_attachments=} will add the new {attachment_ids=} as well")
         attachment_ids.extend(record_attachments)
         demisto.debug(f"All {attachment_ids=}")

@@ -593,28 +593,25 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 | Core.IssueRecommendations.playbook_suggestions.playbook_id | String | The ID of the suggested playbook. |
 | Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id | String | The ID of the suggestion rule that generated this recommendation. |
 
-### core-update-issue
+### core-enable-scanners
 
 ***
-Updates the properties of an issue. This command does not provide an explicit indication of success.
+Enable or disable scanners with the specified configuration.
 
 #### Base Command
 
-`core-update-issue`
+`core-enable-scanners`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Issue ID to update. If empty, updates the current issue ID. | Optional |
-| assigned_user_mail | Email address of the user to assign the issue to. | Optional |
-| severity | Change the severity of an issue. Possible values are: low, medium, high, critical. | Optional |
-| name | Change the issue name. | Optional |
-| occurred | Change the occurred time of an issue. Supports different time formats, for example: 3 days ago, 2017-09-27T10:00:00+03:00. | Optional |
-| phase | Change the phase of an issue. Possible values are: Triage, Investigation, Containment, Response. | Optional |
-| type | Change the type of an issue. | Optional |
-| description | Change the description of an issue. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
+| asset_ids | List of repository asset IDs to configure scanners for. | Required |
+| enable_scanners | List of scanners to enable. Possible values are: SECRETS, IAC, SCA. | Optional |
+| disable_scanners | List of scanners to disable. Possible values are: SECRETS, IAC, SCA. | Optional |
+| secret_validation | Enable live validation of discovered secrets. Possible values are: true, false. | Optional |
+| pr_scanning | Enable scanning on pull requests. This argument only relevant when SECRETS scanner is enabled. Possible values are: true, false. | Optional |
+| block_on_error | Block deployment on scanner errors. Possible values are: true, false. | Optional |
+| tag_resource_blocks | Enable tagging of resource blocks. Possible values are: true, false. | Optional |
+| tag_module_blocks | Enable tagging of module blocks. Possible values are: true, false. | Optional |
+| exclude_paths | List of file paths to exclude from scanning. | Optional |
