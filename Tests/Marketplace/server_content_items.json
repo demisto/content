@@ -308,8 +308,7 @@
         "unAssociateIndicatorsFromAlert",
         "generateOTP",
         "revokeOTP",
-        "getServerConfig",
-        "setIssue"
+        "getServerConfig"
     ],
     "Command": [
         "ad-default-domain",
