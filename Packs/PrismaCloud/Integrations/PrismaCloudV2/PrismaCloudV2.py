@@ -2264,7 +2264,7 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     demisto.debug(
         f"Searching for config with the following params: {query=}, {limit=}, {time_filter=}, {include_resource_json=},"
-        f" {include_additional_resource_fields=}"
+        f" {include_additional_resource_fields=}, {heuristic_search=}"
     )
     response_items = client.config_search_request(
         time_filter,

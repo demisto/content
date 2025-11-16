@@ -844,6 +844,13 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: 'Optimised Search. default is true.'
+      name: heuristic_search
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
     name: prisma-cloud-config-search
     outputs:
@@ -911,13 +918,6 @@ script:
       description: State ID.
       type: String
   - arguments:
-    - description: 'Optimised Search. default is true.'
-      name: heuristic_search
-      defaultValue: 'true'
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
     - description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_from
     - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
