@@ -101,8 +101,7 @@ def test_get_command_results_error_entry(monkeypatch):
     """
     error_result = [{"Type": cc.EntryType.ERROR, "Contents": "Error message"}]
     monkeypatch.setattr(demisto, "executeCommand", lambda c, a: error_result)
-    monkeypatch.setattr(demisto, "error", lambda c, a: error_result)
-
+    monkeypatch.setattr(demisto, "error", lambda c: error_result)
 
     with pytest.raises(Exception, match="Error message"):
         cc.get_command_results("cmd", {})
