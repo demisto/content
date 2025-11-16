@@ -29,6 +29,7 @@ WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
     "core-search-asset-groups",
     "core-get-issue-recommendations",
+    "core-update-issue",
     "core-create-appsec-policy",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
@@ -353,6 +354,9 @@ class Client(CoreClient):
         )
 
         return reply
+
+    def update_issue(self, filter_data):
+        return self._http_request(method="POST", json_data=filter_data, url_suffix="/alerts/update_alerts")
 
     def search_assets(self, filter, page_number, page_size, on_demand_fields):
         reply = self._http_request(
@@ -700,6 +704,78 @@ def get_cases_command(client, args):
         outputs=mapped_raw_cases,
         raw_response=mapped_raw_cases,
     )
+
+
+def get_issue_id(args) -> str:
+    """Retrieve the issue ID from either provided arguments or calling context.
+
+    Args:
+        args (dict): Arguments passed in the command, containing optional issue_id
+
+    Returns:
+        str: The extracted issue ID
+    """
+    issue_id = args.get("id", "")
+    if not issue_id:
+        issues = demisto.callingContext.get("context", {}).get("Incidents")
+        if issues:
+            issue = issues[0]
+            issue_id = issue.get("id")
+
+    return issue_id
+
+
+def create_filter_data(issue_id: str, update_args: dict) -> dict:
+    """Creates filter data for updating an issue with specified parameters.
+
+    Args:
+        issue_id (bool): Issue ID from args or context
+        update_args (dict): Dictionary of fields to update
+
+    Returns:
+        dict: Object representing updated issue details
+    """
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("internal_id", FilterType.EQ, issue_id)
+
+    filter_data = {"filter_data": {"filter": filter_builder.to_dict()}, "filter_type": "static", "update_data": update_args}
+    return filter_data
+
+
+def update_issue_command(client: Client, args: dict):
+    """Updates an issue with specified parameters.
+
+    Args:
+        client (Client): Client instance to execute the request
+        args (dict): Command arguments for updating an issue
+    """
+    issue_id = get_issue_id(args)
+    if not issue_id:
+        raise DemistoException("Issue ID is required for updating an issue.")
+
+    severity_map = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
+    severity_value = args.get("severity")
+    update_args = {
+        "assigned_user": args.get("assigned_user_mail"),
+        "severity": severity_map.get(severity_value) if severity_value is not None else None,
+        "name": args.get("name"),
+        "occurred": arg_to_timestamp(args.get("occurred"), ""),
+        "phase": args.get("phase"),
+        "type": args.get("type"),
+        "description": args.get("description"),
+    }
+
+    # Remove None values before sending to API
+    filtered_update_args = {k: v for k, v in update_args.items() if v is not None}
+    if not filtered_update_args:
+        raise DemistoException("Please provide arguments to update the issue.")
+
+    # Send update to API
+    filter_data = create_filter_data(issue_id, filtered_update_args)
+
+    demisto.debug(filter_data)
+    client.update_issue(filter_data)
+    return "done"
 
 
 def get_extra_data_for_case_id_command(client: CoreClient, args):
@@ -1305,11 +1381,15 @@ def main():  # pragma: no cover
 
         elif command == "core-get-case-extra-data":
             return_results(get_extra_data_for_case_id_command(client, args))
+
         elif command == "core-search-assets":
             return_results(search_assets_command(client, args))
 
         elif command == "core-get-vulnerabilities":
             return_results(get_vulnerabilities_command(client, args))
+
+        elif command == "core-update-issue":
+            return_results(update_issue_command(client, args))
 
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
