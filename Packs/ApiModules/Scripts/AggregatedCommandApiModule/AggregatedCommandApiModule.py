@@ -115,10 +115,9 @@ class Indicator:
                 out["Value"] = val
             return out
 
-
-        lower_data = {k.lower():v for k,v in data.items()}
+        lower_data = {k.lower(): v for k, v in data.items()}
         for candidate in self.value_field:
-            if (val := lower_data.get(candidate.lower())):
+            if val := lower_data.get(candidate.lower()):
                 out[candidate] = val
         return out
 
@@ -433,7 +432,7 @@ class ContextBuilder:
             current_indicator: dict[str, Any] = {}
             if tim_indicator := [indicator for indicator in tim_context_result if indicator.get("Brand") == "TIM"]:
                 if self.indicator.type == "file":
-                    current_indicator.update({"Hashes":self.indicator.get_all_values_from(tim_indicator[0])})
+                    current_indicator.update({"Hashes": self.indicator.get_all_values_from(tim_indicator[0])})
                 current_indicator.update(
                     {
                         "Value": indicator_value,
@@ -483,7 +482,7 @@ class BrandManager:
     def enabled(self) -> set[str]:
         """Return set of active integration brands."""
         return BrandManager.enabled_brands()
-    
+
     @staticmethod
     def enabled_brands() -> set[str]:
         """Return set of active integration brands."""
@@ -491,13 +490,13 @@ class BrandManager:
         enabled_brands = {module.get("brand") for module in all_modules.values() if module.get("state") == "active"}
         demisto.debug(f"[BrandManager] enabled={enabled_brands}")
         return enabled_brands
-    
+
     @staticmethod
-    def get_brands_by_type(command_batches:list[list[Command]] | None, command_type:CommandType) -> list[str]:
+    def get_brands_by_type(command_batches: list[list[Command]] | None, command_type: CommandType) -> list[str]:
         """Return the brands list of the command type"""
         if not command_batches:
             return []
-        brands:set[str] = set()
+        brands: set[str] = set()
         for batch in command_batches:
             for command in batch:
                 if command.command_type == command_type:
@@ -623,8 +622,9 @@ class ReputationAggregatedCommand(AggregatedCommand):
         # If no brands and external_enrichment is false, will insert internal enrichment if available
         # Addes internal command brands as well to make sure they also will run
         if not brands and not external_enrichment:
-            if active_internal_enrichment_brands := list(set(internal_enrichment_brands) & BrandManager.enabled_brands()):
-                brands = active_internal_enrichment_brands + BrandManager.get_brands_by_type(commands,CommandType.INTERNAL)
+            active_internal_enrichment_brands = list(set(internal_enrichment_brands) & BrandManager.enabled_brands())
+            if active_internal_enrichment_brands:
+                brands = active_internal_enrichment_brands + BrandManager.get_brands_by_type(commands, CommandType.INTERNAL)
         super().__init__(args, brands, verbose, commands)
 
     @cached_property
@@ -795,7 +795,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         if self.indicator.type == "file":
             value = map_back_to_input(self.data, self.indicator.get_all_values_from(tim_indicator)) or value
         all_parsed_indicators.append(tim_indicator)
-        
+
         found_brands = []
         for brand, brand_data in ioc.get("insightCache", {}).get("scores", {}).items():
             demisto.debug(f"Processing TIM indicators from brand: {brand}")
@@ -1097,14 +1097,17 @@ class ReputationAggregatedCommand(AggregatedCommand):
 
 
 """HELPER FUNCTIONS"""
-def map_back_to_input(values:list[str], mapping:dict[str,str]):
+
+
+def map_back_to_input(values: list[str], mapping: dict[str, str]):
     lower_mapping_values = [v.lower() for v in mapping.values()]
     for v in values:
         if v.lower() in lower_mapping_values:
             return v
     return None
 
-def extract_indicators(data: list[str], type: str) -> list[str]:
+
+def extract_indicators(data: list[str], type: str):
     """
     Validate the provided `self.data` list to ensure all items are valid indicators
     of the configured `self.indicator.type`.

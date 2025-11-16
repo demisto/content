@@ -59,28 +59,28 @@ outputs:
   description: The File hash by the following rules. #TODO 
   type: String
 - contextPath: FileEnrichment.Hashes.MD5
-  description: The file MD5 hash if exists
+  description: The file MD5 hash if exists.
   type: String
 - contextPath: FileEnrichment.Hashes.SHA1
-  description: The file SHA1 hash if exists
+  description: The file SHA1 hash if exists.
   type: String
 - contextPath: FileEnrichment.Hashes.SHA256
-  description: The file SHA256 hash if exists
+  description: The file SHA256 hash if exists.
   type: String
 - contextPath: FileEnrichment.Hashes.SHA512
-  description: The file SHA512 hash if exists
+  description: The file SHA512 hash if exists.
   type: String
 - contextPath: FileEnrichment.Hashes.CRC32
-  description: The file CRC32 hash if exists
+  description: The file CRC32 hash if exists.
   type: String
 - contextPath: FileEnrichment.Hashes.CTPH
-  description: The file CTPH hash if exists
+  description: The file CTPH hash if exists.
   type: String
 - contextPath: FileEnrichment.Hashes.SSDeep
-  description: The file SSDeep hash if exists
+  description: The file SSDeep hash if exists.
   type: String
 - contextPath: FileEnrichment.Hashes.ImpHash
-  description: The file ImpHash hash if exists
+  description: The file ImpHash hash if exists.
   type: String
 - contextPath: FileEnrichment.MaxScore
   description: The max score of all the indicators found.
