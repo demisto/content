@@ -2843,7 +2843,6 @@ class TestGetIssueRecommendationsCommand:
         self.issue_id = "test_issue_123"
         self.base_args = {"issue_id": self.issue_id}
 
-        # Base issue data
         self.base_issue = {
             "internal_id": self.issue_id,
             "alert_name": "Test Security Issue",
@@ -2852,16 +2851,12 @@ class TestGetIssueRecommendationsCommand:
             "remediation": "Base remediation steps",
         }
 
-        # Base webapp response
         self.base_webapp_response = {"reply": {"DATA": [self.base_issue]}}
-
-        # Base playbook response
         self.base_playbook_response = {"reply": {"suggested_playbooks": ["Playbook1", "Playbook2"]}}
 
     @patch("CortexPlatformCore.build_webapp_request_data")
     def test_appsec_issue_with_fix_suggestion(self, mock_build_request):
         """Test AppSec issue with successful fix suggestion retrieval"""
-        # Arrange
         appsec_issue = self.base_issue.copy()
         appsec_issue.update({"alert_source": "CAS_CVE_SCANNER", "extended_fields": {"action": "Manual fix instructions"}})
 
@@ -2874,10 +2869,8 @@ class TestGetIssueRecommendationsCommand:
         self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
         self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
 
-        # Act
         result = get_issue_recommendations_command(self.mock_client, self.base_args)
 
-        # Assert
         self.mock_client.get_appsec_suggested_fix.assert_called_once_with(self.issue_id)
 
         expected_recommendation = {
@@ -2898,7 +2891,6 @@ class TestGetIssueRecommendationsCommand:
     @patch("CortexPlatformCore.build_webapp_request_data")
     def test_appsec_issue_without_manual_fix(self, mock_build_request):
         """Test AppSec issue without manual fix, should use base remediation"""
-        # Arrange
         appsec_issue = self.base_issue.copy()
         appsec_issue.update(
             {
@@ -2916,10 +2908,8 @@ class TestGetIssueRecommendationsCommand:
         self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
         self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
 
-        # Act
         result = get_issue_recommendations_command(self.mock_client, self.base_args)
 
-        # Assert
         expected_recommendation = {
             "issue_id": self.issue_id,
             "issue_name": "Test Security Issue",
@@ -2936,7 +2926,6 @@ class TestGetIssueRecommendationsCommand:
     @patch("CortexPlatformCore.build_webapp_request_data")
     def test_appsec_issue_no_fix_suggestion(self, mock_build_request):
         """Test AppSec issue when fix suggestion API returns None"""
-        # Arrange
         appsec_issue = self.base_issue.copy()
         appsec_issue.update({"alert_source": "CAS_SECRET_SCANNER", "extended_fields": {"action": "Manual secret remediation"}})
 
@@ -2946,14 +2935,10 @@ class TestGetIssueRecommendationsCommand:
         self.mock_client.get_webapp_data.return_value = webapp_response
         self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
         self.mock_client.get_appsec_suggested_fix.return_value = None  # No fix suggestion
-
-        # Act
         result = get_issue_recommendations_command(self.mock_client, self.base_args)
 
-        # Assert
         self.mock_client.get_appsec_suggested_fix.assert_called_once_with(self.issue_id)
 
-        # Should not have code blocks in the recommendation
         expected_recommendation = {
             "issue_id": self.issue_id,
             "issue_name": "Test Security Issue",
@@ -2973,7 +2958,6 @@ class TestGetIssueRecommendationsCommand:
         appsec_sources = ["CAS_CVE_SCANNER", "CAS_IAC_SCANNER", "CAS_SECRET_SCANNER"]
 
         for source in appsec_sources:
-            # Arrange
             appsec_issue = self.base_issue.copy()
             appsec_issue["alert_source"] = source
 
@@ -2986,14 +2970,11 @@ class TestGetIssueRecommendationsCommand:
             self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
             self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
 
-            # Act
             result = get_issue_recommendations_command(self.mock_client, self.base_args)
 
-            # Assert
             assert result.outputs["existing_code_block"] == f"issue_in_{source}"
             assert result.outputs["suggested_code_block"] == f"fix_for_{source}"
 
-            # Reset mock for next iteration
             self.mock_client.reset_mock()
 
 
