@@ -26,13 +26,13 @@
         }
     },
   "supportedModules": [
-      "C1",
-      "C3",
-      "X5",
-      "ENT_PLUS",
-      "xsiam",
-      "agentix",
-      "cloud",
-      "cloud_posture"
+        "C1",
+        "C3",
+        "X5",
+        "cloud_runtime_security",
+        "agentix",
+        "cloud_posture",
+        "xsiam",
+        "cloud"
     ]
 }

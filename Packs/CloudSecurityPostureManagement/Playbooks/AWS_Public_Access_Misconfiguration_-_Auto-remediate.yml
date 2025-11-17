@@ -1,7 +1,6 @@
 adopted: true
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
     fromServerVersion: 6.10.0
     isoverridable: false
     itemVersion: 2.0.0
@@ -25,7 +24,6 @@ description: |-
   The playbook disables public access by modifying RDS publicly_accessible settings, removing EBS snapshot createVolumePermission, and enabling S3 PublicAccessBlockConfiguration respectively.
 
   Optional stakeholder notification is available via the "Notify Stakeholders" sub-playbook by setting enableNotifications input to 'yes' (default: 'no'). When enabled, configure at least one recipient (email, Slack channel, or Teams channel) in the Notify Stakeholders playbook inputs. The playbook automatically updates issue status to "Resolved - Fixed" upon successful remediation.
-dirtyInputs: true
 id: AWS Public Access Misconfiguration - Auto-remediate
 inputSections:
 - description: Generic group for inputs
@@ -925,4 +923,4 @@ view: |-
       }
     }
   }
-fromversion: 6.10.0
+fromversion: 8.11.0

@@ -1,7 +1,6 @@
 adopted: true
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
     fromServerVersion: 6.10.0
     isoverridable: false
     itemVersion: 2.0.0
@@ -16,7 +15,6 @@ description: This playbook automates notifying stakeholders via Slack v3, Micros
   existing integrations with Slack, Microsoft Teams, Mail Sender or Gmail to perform
   these actions. If none of these integrations are found in your account, the playbook
   will exit with no action.
-dirtyInputs: true
 id: Notify Stakeholders
 inputSections:
 - description: Default inputs defined at sub-playbook level
