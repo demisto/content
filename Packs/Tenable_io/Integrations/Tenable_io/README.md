@@ -1,9 +1,14 @@
 A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications.
 This integration was integrated and tested with January 2023 release of Tenable.io.
 
-## Configure Tenable Vulnerability Management on Cortex XSOAR
+## Configure Tenable Vulnerability Management on Cortex XSOAR/XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. After installing the Tenable Vulnerability Management (formerly Tenable.io) content pack, do one of the following:
+
+- Cortex XSIAM: Go to **Settings** > **Configurations** > **Automation & Feed Integrations**.
+- Cortex XSOAR 8:  Go to **Settings & Info** > **Instances**.
+- Cortex XSOAR 6: Go to **Settings** > **Integrations** > **Servers & Services**.
+
 2. Search for Tenable Vulnerability Management.
  Click **Add instance** to create and configure a new integration instance.
 
@@ -802,7 +807,7 @@ When inserting invalid arguments, an error message could be returned.
 | sources | A comma-separated list of sources. Possible values are: AWS, NESSUS_AGENT, PVS,NESSUS_SCAN, WAS. When specified, the results returned in the list are limited to assets that have the specified source. | Optional |
 | hasPluginResults | If true, returns all assets that have a plugin results associated with it. Possible values are: true, false. | Optional |
 | tagCategory | When specified, the results returned in the list are limited to assets with the specified tag category. | Optional |
-| tagValue | When specified, the results returned in the list are limited to assets with the specified tag value. | Optional |
+| tagValue | When specified, the results returned in the list are limited to assets with the specified tag value. Can be comma-delimited for multiple items. | Optional |
 | exportUuid | The export uuid. | Optional |
 
 #### Context Output
@@ -1067,7 +1072,7 @@ When inserting invalid arguments, an error message could be returned.
 | since | The start date for the range of data you want to export. Date format will be epoch date format or relational expressions like “7 days ago”. Note: This filter cannot be used in conjunction with the firstFound, lastFound, or lastFixed. | Optional |
 | state | A comma-separated list of states of the vulnerabilities you want the export to include. Supported, case-insensitive values are: open, reopened, fixed. This parameter is required if your request includes firstFound, lastFound, or lastFixed parameters. If your request omits this parameter, the export includes default states open and reopened only. | Optional |
 | tagCategory | When specified, the results returned in the list are limited to assets with the specified tag category. | Optional |
-| tagValue | When specified, the results returned in the list are limited to assets with the specified tag value. | Optional |
+| tagValue | When specified, the results returned in the list are limited to assets with the specified tag value. Can be comma-delimited for multiple items.| Optional |
 | vprScoreOperator | An operator that determines the limitation on Vulnerability Priority Rating (VPR), scores value specified at vprScoreValue argument. Supported values are: equal, not equal, lt-lesser, lte-lesser than or equal , gt-greater than , gte-greater than or equal. Possible values are: gte, gt, lte, lt, equal, not equal. | Optional |
 | vprScoreValue | When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR), score or scores according to the score operator (vprScoreOperator) argument. | Optional |
 | vprScoreRange | When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR) score range. Example value: 2.5-3.5. | Optional |
@@ -1575,7 +1580,7 @@ Scans that are actively running cannot be exported (run "tenable-io-list-scans" 
 | historyUuid | The UUID of the historical data to export. Run the "tenable-io-get-scan-history" command to get history UUIDs. | Optional |
 | format | The file format to export the scan in. Scans can be export in the HTML and PDF formats for up to 35 days.<br/> For scans that are older than 35 days, only the Nessus and CSV formats are supported.<br/> The "chapters" argument must be defined if the chosen format is HTML or PDF.<br/>. Possible values are: Nessus, HTML, PDF, CSV. Default is CSV. | Required |
 | chapters | A comma-separated list of chapters to include in the export. This argument is required if the file format is PDF or HTML. Possible values are: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance. | Optional |
-| filter | A comma-separated list of filters, in the format of "name quality value" to apply to the exported scan report.<br/> Example: "port.protocol eq tcp, plugin_id eq 1234567"<br/> Note: when used literally, commas and spaces should be escaped. (i.e. "\\\\," for comma and "\\\\s" for space)<br/> Filters cannot be applied to scans older than 35 days.<br/> Run "tenable-io-list-scan-filters" to get all available filters, ("Filter name" (name), "Filter operators" (quality) and "Readable regex" (value) in response).<br/> For more information: https://developer.tenable.com/docs/scan-export-filters-tio<br/>. | Optional |
+| filter | A comma-separated list of filters, in the format of "name quality value" to apply to the exported scan report.<br/> Example: "port.protocol eq tcp, plugin_id eq 1234567"<br/> Note: when used literally, commas and spaces should be escaped. (i.e. "\\\\," for comma and "\\\\s" for space)<br/> Filters cannot be applied to scans older than 35 days.<br/> Run "tenable-io-list-scan-filters" to get all available filters, ("Filter name" (name), "Filter operators" (quality) and "Readable regex" (value) in response).<br/> For more information: <https://developer.tenable.com/docs/scan-export-filters-tio><br/>. | Optional |
 | filterSearchType | For multiple filters, specifies whether to use the AND or the OR logical operator. Possible values are: AND, OR. Default is AND. | Optional |
 | assetId | The ID of the asset scanned. | Optional |
 

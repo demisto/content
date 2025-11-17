@@ -60,8 +60,4 @@ fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
 marketplaces:
-  - platform
-supportedModules:
-  - agentix
-  - xsiam
-  - cloud_posture
+- platform

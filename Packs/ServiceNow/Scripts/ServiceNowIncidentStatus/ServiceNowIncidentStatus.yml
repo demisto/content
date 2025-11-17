@@ -20,9 +20,3 @@ tests:
 fromversion: 6.0.0
 skipprepare:
 - script-name-incident-to-alert
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix
