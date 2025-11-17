@@ -7,7 +7,7 @@ sectionorder:
 name: TheHive Project
 display: TheHive Project
 category: Case Management
-description: Integration with The Hive Project Security Incident Response Platform.
+description: Integration with The Hive Project Security Incident Response Platform. Supports TheHive versions 3, 4, and 5.
 configuration:
 - display: Host
   name: url
@@ -232,7 +232,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: ID of the case.
+      description: ID of the case. Compatible with TheHive v3, v4, and v5.
     outputs:
     - contextPath: TheHive.Cases._routing
       description: The root level object which the current object belongs to. For example, a log entry is part of a task, which is part of a case. The _routing in this example would point to the ID of the case.

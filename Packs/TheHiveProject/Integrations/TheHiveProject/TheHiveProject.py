@@ -16,12 +16,33 @@ class Client(BaseClient):
         self.version = self.get_version()
 
     def get_version(self):
-        res = self._http_request("GET", "status", ok_codes=[200, 201, 404], resp_type="response")
-        if "versions" in res.json():
-            if "TheHive" in res.json()["versions"]:
-                return res.json()["versions"]["TheHive"]
-            else:
-                return "Unknown"
+        # Try v5 endpoint first
+        try:
+            res = self._http_request("GET", "v1/status/public", ok_codes=[200], resp_type="response", timeout=10)
+            if res.status_code == 200:
+                json_res = res.json()
+                # v5 returns version in a different format
+                if "versions" in json_res and "TheHive" in json_res["versions"]:
+                    return json_res["versions"]["TheHive"]
+                elif "version" in json_res:
+                    return json_res["version"]
+                else:
+                    # Assume v5 if the v1/status/public endpoint exists
+                    return "5.0.0"
+        except Exception:
+            pass
+        
+        # Fall back to v3/v4 endpoint
+        try:
+            res = self._http_request("GET", "status", ok_codes=[200, 201, 404], resp_type="response")
+            if "versions" in res.json():
+                if "TheHive" in res.json()["versions"]:
+                    return res.json()["versions"]["TheHive"]
+                else:
+                    return "Unknown"
+        except Exception:
+            pass
+        
         return None
 
     def get_cases(self, limit: int = DEFAULT_LIMIT, start_time: int = 0):
@@ -56,16 +77,46 @@ class Client(BaseClient):
         return cases
 
     def get_case(self, case_id):
-        res = self._http_request("GET", f"case/{case_id}", ok_codes=[200, 201, 404], resp_type="response")
-        if res.status_code == 404:
-            return None
-        case = res.json()
-        case["tasks"] = self.get_tasks(case_id)
-        case["observables"] = self.list_observables(case["id"])
+        if self.version and self.version[0] == "5":
+            # TheHive v5 uses different API endpoint structure
+            res = self._http_request("GET", f"v1/case/{case_id}", ok_codes=[200, 404], resp_type="response")
+            if res.status_code == 404:
+                return None
+            case = res.json()
+            
+            # Normalize v5 response to match v3/v4 structure
+            # v5 may have different field names, so we map them
+            if "_id" in case:
+                case["id"] = case["_id"]
+            if "_createdAt" in case:
+                case["createdAt"] = case["_createdAt"]
+            if "_createdBy" in case:
+                case["createdBy"] = case["_createdBy"]
+            if "_updatedAt" in case:
+                case["updatedAt"] = case["_updatedAt"]
+            
+            # Get tasks and observables for v5
+            case["tasks"] = self.get_tasks(case_id)
+            case["observables"] = self.list_observables(case.get("id", case_id))
+        else:
+            # v3/v4 implementation
+            res = self._http_request("GET", f"case/{case_id}", ok_codes=[200, 201, 404], resp_type="response")
+            if res.status_code == 404:
+                return None
+            case = res.json()
+            case["tasks"] = self.get_tasks(case_id)
+            case["observables"] = self.list_observables(case["id"])
+        
         return case
 
     def search_cases(self, args: dict = None):
-        if self.version[0] == "4":
+        if self.version and self.version[0] == "5":
+            # TheHive v5 search implementation
+            # v5 uses different search endpoint
+            res = self._http_request(
+                "POST", "v1/case/_search", ok_codes=[200, 404], json_data=args, resp_type="response"
+            )
+        elif self.version and self.version[0] == "4":
             res = self._http_request(
                 "POST", "case/_search", params={"name": "cases"}, ok_codes=[200, 201, 404], json_data=args, resp_type="response"
             )
@@ -118,7 +169,47 @@ class Client(BaseClient):
             return res.json()
 
     def get_tasks(self, case_id):
-        if self.version[0] == "4":
+        if self.version and self.version[0] == "5":
+            # TheHive v5 API for getting tasks
+            try:
+                res = self._http_request(
+                    "GET",
+                    f"v1/case/{case_id}/task",
+                    ok_codes=[200, 404],
+                    resp_type="response",
+                )
+                if res.status_code != 200:
+                    return []
+                tasks = res.json()
+                
+                # Normalize v5 task response
+                if isinstance(tasks, dict) and "items" in tasks:
+                    tasks = tasks["items"]
+                elif not isinstance(tasks, list):
+                    tasks = []
+                
+                # Process each task
+                for task in tasks:
+                    # Map v5 fields to expected structure
+                    if "_id" in task and "id" not in task:
+                        task["id"] = task["_id"]
+                    if "_createdAt" in task:
+                        task["createdAt"] = task["_createdAt"]
+                    if "_createdBy" in task:
+                        task["createdBy"] = task["_createdBy"]
+                    
+                    # Get logs for each task
+                    task_id = task.get("id", task.get("_id"))
+                    if task_id:
+                        task["logs"] = self.get_task_logs(task_id)
+                    else:
+                        task["logs"] = []
+                
+                return tasks
+            except Exception as e:
+                demisto.debug(f"Error getting tasks for v5: {str(e)}")
+                return []
+        elif self.version and self.version[0] == "4":
             query = {
                 "query": [
                     {"_name": "getCase", "idOrName": case_id},
@@ -157,7 +248,33 @@ class Client(BaseClient):
         return tasks
 
     def get_task(self, task_id: str = None):
-        if self.version[0] == "4":
+        if self.version and self.version[0] == "5":
+            # TheHive v5 API for getting a single task
+            try:
+                res = self._http_request(
+                    "GET",
+                    f"v1/task/{task_id}",
+                    ok_codes=[200, 404],
+                    resp_type="response",
+                )
+                if res.status_code != 200:
+                    return None
+                task = res.json()
+                
+                # Normalize v5 task response
+                if "_id" in task and "id" not in task:
+                    task["id"] = task["_id"]
+                if "_createdAt" in task:
+                    task["createdAt"] = task["_createdAt"]
+                if "_createdBy" in task:
+                    task["createdBy"] = task["_createdBy"]
+                
+                task["logs"] = self.get_task_logs(task_id)
+                return task
+            except Exception as e:
+                demisto.debug(f"Error getting task for v5: {str(e)}")
+                return None
+        elif self.version and self.version[0] == "4":
             query = {"query": [{"_name": "getTask", "idOrName": task_id}, {"_name": "page", "from": 0, "to": 1}]}
             res = self._http_request(
                 "POST",
@@ -185,7 +302,47 @@ class Client(BaseClient):
         return res.json()
 
     def get_task_logs(self, task_id: str = None):
-        if self.version[0] == "4":
+        if self.version and self.version[0] == "5":
+            # TheHive v5 API for getting task logs
+            try:
+                res = self._http_request(
+                    "GET",
+                    f"v1/task/{task_id}/log",
+                    ok_codes=[200, 404],
+                    resp_type="response"
+                )
+                if res.status_code != 200:
+                    return []
+                    
+                logs_data = res.json()
+                
+                # Normalize v5 response
+                if isinstance(logs_data, dict) and "items" in logs_data:
+                    logs = logs_data["items"]
+                elif isinstance(logs_data, list):
+                    logs = logs_data
+                else:
+                    logs = []
+                
+                # Process logs
+                processed_logs = []
+                for log in logs:
+                    # Map v5 fields
+                    if "_id" in log and "id" not in log:
+                        log["id"] = log["_id"]
+                    if "_createdAt" in log:
+                        log["createdAt"] = log["_createdAt"]
+                    if "_createdBy" in log:
+                        log["createdBy"] = log["_createdBy"]
+                    
+                    log["has_attachments"] = bool(log.get("attachment", None))
+                    processed_logs.append(log)
+                
+                return processed_logs
+            except Exception as e:
+                demisto.debug(f"Error getting task logs for v5: {str(e)}")
+                return []
+        elif self.version and self.version[0] == "4":
             query = {
                 "query": [
                     {"_name": "getTask", "idOrName": task_id},
@@ -209,7 +366,16 @@ class Client(BaseClient):
             return logs
 
     def get_log(self, log_id: str = None):
-        if self.version[0] == "4":
+        if self.version and self.version[0] == "5":
+            # TheHive v5 API for getting a single log
+            try:
+                res = self._http_request("GET", f"v1/log/{log_id}", ok_codes=[200, 404], resp_type="response")
+                if res.status_code != 200:
+                    return None
+                return res.json()
+            except Exception:
+                return None
+        elif self.version and self.version[0] == "4":
             return "Not yet implemented"
         else:
             res = self._http_request("GET", f"case/task/log/{log_id}", ok_codes=[200, 404], resp_type="response")
@@ -241,7 +407,10 @@ class Client(BaseClient):
         return res.json() if res.status_code != 404 else None
 
     def create_user(self, user_data: dict):
-        if self.version[0] == "4":
+        if self.version and self.version[0] == "5":
+            # TheHive v5 user creation
+            res = self._http_request("POST", "v1/user", data=user_data, ok_codes=[201, 200])
+        elif self.version and self.version[0] == "4":
             res = self._http_request("POST", "v1/user", data=user_data, ok_codes=[201, 200])
         else:
             res = self._http_request("POST", "user", data=user_data, ok_codes=[201, 200])
@@ -252,7 +421,40 @@ class Client(BaseClient):
         return res.status_code == 204
 
     def list_observables(self, case_id: str = None):
-        if self.version[0] == "4":
+        if self.version and self.version[0] == "5":
+            # TheHive v5 API for getting observables
+            try:
+                res = self._http_request(
+                    "GET",
+                    f"v1/case/{case_id}/observable",
+                    ok_codes=[200, 404],
+                    resp_type="response",
+                )
+                if res.status_code != 200:
+                    return []
+                    
+                observables = res.json()
+                
+                # Normalize v5 response
+                if isinstance(observables, dict) and "items" in observables:
+                    observables = observables["items"]
+                elif not isinstance(observables, list):
+                    observables = []
+                
+                # Map v5 fields to expected structure
+                for obs in observables:
+                    if "_id" in obs and "id" not in obs:
+                        obs["id"] = obs["_id"]
+                    if "_createdAt" in obs:
+                        obs["createdAt"] = obs["_createdAt"]
+                    if "_createdBy" in obs:
+                        obs["createdBy"] = obs["_createdBy"]
+                
+                return observables
+            except Exception as e:
+                demisto.debug(f"Error getting observables for v5: {str(e)}")
+                return []
+        elif self.version and self.version[0] == "4":
             query4 = {
                 "query": [
                     {"_name": "getCase", "idOrName": case_id if case_id else ""},
