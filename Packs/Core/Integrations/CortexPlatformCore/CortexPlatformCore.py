@@ -504,7 +504,16 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
 
     # Application Security issue
-    appsec_sources = ["CAS_CVE_SCANNER", "CAS_IAC_SCANNER", "CAS_SECRET_SCANNER", "CAS_LICENSE_SCANNER", "CAS_SAST_SCANNER", "CAS_OPERATIONAL_RISK_SCANNER", "CAS_CI_CD_RISK_SCANNER", "CAS_DRIFT_SCANNER"]
+    appsec_sources = [
+        "CAS_CVE_SCANNER",
+        "CAS_IAC_SCANNER",
+        "CAS_SECRET_SCANNER",
+        "CAS_LICENSE_SCANNER",
+        "CAS_SAST_SCANNER",
+        "CAS_OPERATIONAL_RISK_SCANNER",
+        "CAS_CI_CD_RISK_SCANNER",
+        "CAS_DRIFT_SCANNER",
+    ]
     if issue.get("alert_source") in appsec_sources:
         manual_fix = issue.get("extended_fields", {}).get("action")
         recommendation["remediation"] = manual_fix if manual_fix else recommendation.get("remediation")
