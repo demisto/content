@@ -3961,11 +3961,6 @@
         {
             "integrations": "MicrosoftGraphApplications",
             "playbookID": "MSGraph Applications Test",
-            "instance_names": "ms_graph_applications_device_code"
-        },
-        {
-            "integrations": "MicrosoftGraphApplications",
-            "playbookID": "MSGraph Applications Test",
             "instance_names": "ms_graph_applications_client_cred"
         },
         {
@@ -4855,6 +4850,7 @@
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
             "memory_threshold": 300,
+            "timeout": 1200,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -6289,7 +6285,6 @@
         "ThreatGridv2": "No instance - developed by Qmasters",
         "SentinelOne V2": "No instance - developed by partner",
         "CheckPhish": "Issue CRTX-86562",
-        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure.",
         "ThreatExchange v2": "No instance",
         "PhishLabs IOC EIR": "No instance, CRTX-91214",
         "fortimail": "No instance",
@@ -6415,7 +6410,8 @@
         "servicenow_test_v2",
         "Rasterize Test",
         "AbuseIPDB Test",
-        "AbuseIPDB PopulateIndicators Test"
+        "AbuseIPDB PopulateIndicators Test",
+        "O365-SecurityAndComplianceV2-Test"
     ],
     "parallel_integrations": [
         "AWS - ACM",

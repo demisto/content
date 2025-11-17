@@ -1,0 +1,32 @@
+{
+    "id": "incident_infobloxclouddhcpfingerprint",
+    "version": -1,
+    "modified": "2025-09-22T11:28:02.287359403+05:30",
+    "name": "Infoblox Cloud DHCP Fingerprint",
+    "ownerOnly": false,
+    "description": "The DHCP Fingerprint of the Infoblox DNS Security Event.",
+    "cliName": "infobloxclouddhcpfingerprint",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Infoblox Cloud DNS Security Event"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}
