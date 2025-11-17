@@ -3693,7 +3693,7 @@ script:
   dockerimage: demisto/auth-utils:1.0.0.5633969
   isfetch: true
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
 tests:
