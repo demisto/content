@@ -27,7 +27,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### decyfir-get-events
 
 ***
-Retrieve Decyfir events manually. This command is primarily used for testing or debugging.
+Retrieve Decyfir events manually. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
 
 #### Base Command
 
