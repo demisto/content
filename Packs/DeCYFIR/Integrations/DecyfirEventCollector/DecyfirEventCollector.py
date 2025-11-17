@@ -389,8 +389,9 @@ def main() -> None:
             demisto.debug(f"Updated last_run {current_run}")
 
     except Exception as e:
-        demisto.error("Exception occurred", {"error": str(e)})
-        return_error(f"Failed to execute {command}. Error: {str(e)}")
+        tb = traceback.format_exc()
+        demisto.error("Exception occurred", {"error": str(e), "traceback": tb})
+        return_error(f"Failed to execute {command}. Error: {e}\n\nTraceback:\n{tb}")
 
 
 """ ENTRY POINT """
