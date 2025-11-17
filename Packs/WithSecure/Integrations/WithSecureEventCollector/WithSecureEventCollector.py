@@ -2,6 +2,9 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
+import json
+from typing import Any, Dict, List, Optional, Tuple
+
 import urllib3
 
 # Disable insecure warnings
@@ -13,6 +16,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 MAX_FETCH_LIMIT = 1000
+MAX_INCIDENT_FETCH_LIMIT = 50
 VENDOR = "WithSecure"
 PRODUCT = "Endpoint Protection"
 
@@ -26,6 +30,8 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.client_id = client_id
         self.client_secret = client_secret
+        # User-Agent header is required by WithSecure API
+        self.default_headers = {"User-Agent": "CortexXSOAR-WithSecureEventCollector/1.1.0"}
 
     def authenticate(self) -> tuple[str, int]:
         """Get the access token from the WithSecure API.
@@ -39,6 +45,7 @@ class Client(BaseClient):
             url_suffix="as/token.oauth2",
             auth=(self.client_id, self.client_secret),
             data={"grant_type": "client_credentials"},
+            headers=self.default_headers,
             error_handler=access_token_error_handler,
         )
 
@@ -74,14 +81,29 @@ class Client(BaseClient):
         return token
 
     def get_events_api_call(self, fetch_from: str, limit: int, next_anchor: str = None):
-        params = {"persistenceTimestampStart": fetch_from, "limit": limit, "order": "asc"}
+        """Get security events using POST endpoint (GET is deprecated).
+        
+        According to WithSecure API spec, POST /security-events/v1/security-events
+        is the recommended endpoint. GET endpoint is deprecated.
+        """
+        headers = {
+            **self.default_headers,
+            "Authorization": f"Bearer {self.get_access_token()}",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept": "application/json",
+        }
+        data = {
+            "persistenceTimestampStart": fetch_from,
+            "limit": limit,
+            "order": "asc"
+        }
         if next_anchor:
-            params["anchor"] = next_anchor
+            data["anchor"] = next_anchor
         return self._http_request(
-            method="GET",
+            method="POST",
             url_suffix="security-events/v1/security-events",
-            headers={"Authorization": f"Bearer {self.get_access_token()}"},
-            params=params,
+            headers=headers,
+            data=data,
         )
 
     def get_incidents(self, incident_id: str = None, status: str = None, risk_level: str = None,
@@ -98,10 +120,14 @@ class Client(BaseClient):
             params["source"] = source
         if next_anchor:
             params["anchor"] = next_anchor
+        headers = {
+            **self.default_headers,
+            "Authorization": f"Bearer {self.get_access_token()}",
+        }
         return self._http_request(
             method="GET",
             url_suffix="incidents/v1/incidents",
-            headers={"Authorization": f"Bearer {self.get_access_token()}"},
+            headers=headers,
             params=params,
         )
 
@@ -110,26 +136,30 @@ class Client(BaseClient):
         data = {"targets": [incident_id], "status": status}
         if resolution:
             data["resolution"] = resolution
+        headers = {
+            **self.default_headers,
+            "Authorization": f"Bearer {self.get_access_token()}",
+            "Content-Type": "application/json",
+        }
         return self._http_request(
             method="PATCH",
             url_suffix="incidents/v1/incidents",
-            headers={
-                "Authorization": f"Bearer {self.get_access_token()}",
-                "Content-Type": "application/json",
-            },
+            headers=headers,
             json_data=data,
         )
 
     def add_incident_comment(self, incident_ids: list[str], comment: str):
         """Add comment to incidents."""
         data = {"targets": incident_ids, "comment": comment}
+        headers = {
+            **self.default_headers,
+            "Authorization": f"Bearer {self.get_access_token()}",
+            "Content-Type": "application/json",
+        }
         return self._http_request(
             method="POST",
             url_suffix="incidents/v1/comments",
-            headers={
-                "Authorization": f"Bearer {self.get_access_token()}",
-                "Content-Type": "application/json",
-            },
+            headers=headers,
             json_data=data,
         )
 
@@ -138,10 +168,14 @@ class Client(BaseClient):
         params = {"incidentId": incident_id, "limit": limit}
         if next_anchor:
             params["anchor"] = next_anchor
+        headers = {
+            **self.default_headers,
+            "Authorization": f"Bearer {self.get_access_token()}",
+        }
         return self._http_request(
             method="GET",
             url_suffix="incidents/v1/detections",
-            headers={"Authorization": f"Bearer {self.get_access_token()}"},
+            headers=headers,
             params=params,
         )
 
@@ -164,13 +198,15 @@ class Client(BaseClient):
             params["protectionStatusOverview"] = protection_status
         if next_anchor:
             params["anchor"] = next_anchor
+        headers = {
+            **self.default_headers,
+            "Authorization": f"Bearer {self.get_access_token()}",
+            "Accept": "application/json",
+        }
         return self._http_request(
             method="GET",
             url_suffix="devices/v1/devices",
-            headers={
-                "Authorization": f"Bearer {self.get_access_token()}",
-                "Accept": "application/json",
-            },
+            headers=headers,
             params=params,
         )
 
@@ -179,54 +215,90 @@ class Client(BaseClient):
         data = {"operation": "isolateFromNetwork", "targets": device_ids}
         if message:
             data["parameters"] = {"message": message}
+        headers = {
+            **self.default_headers,
+            "Authorization": f"Bearer {self.get_access_token()}",
+            "Content-Type": "application/json",
+        }
         return self._http_request(
             method="POST",
             url_suffix="devices/v1/operations",
-            headers={
-                "Authorization": f"Bearer {self.get_access_token()}",
-                "Content-Type": "application/json",
-            },
+            headers=headers,
             json_data=data,
         )
 
     def release_endpoint(self, device_ids: list[str]):
         """Release endpoints from network isolation."""
         data = {"operation": "releaseFromNetworkIsolation", "targets": device_ids}
+        headers = {
+            **self.default_headers,
+            "Authorization": f"Bearer {self.get_access_token()}",
+            "Content-Type": "application/json",
+        }
         return self._http_request(
             method="POST",
             url_suffix="devices/v1/operations",
-            headers={
-                "Authorization": f"Bearer {self.get_access_token()}",
-                "Content-Type": "application/json",
-            },
+            headers=headers,
             json_data=data,
         )
 
     def scan_endpoint(self, device_ids: list[str]):
         """Trigger malware scan on endpoints."""
         data = {"operation": "scanForMalware", "targets": device_ids}
+        headers = {
+            **self.default_headers,
+            "Authorization": f"Bearer {self.get_access_token()}",
+            "Content-Type": "application/json",
+        }
         return self._http_request(
             method="POST",
             url_suffix="devices/v1/operations",
-            headers={
-                "Authorization": f"Bearer {self.get_access_token()}",
-                "Content-Type": "application/json",
-            },
+            headers=headers,
             json_data=data,
         )
 
     def get_device_operations(self, device_id: str):
         """Get operations for a specific device."""
         params = {"deviceId": device_id}
+        headers = {
+            **self.default_headers,
+            "Authorization": f"Bearer {self.get_access_token()}",
+        }
         return self._http_request(
             method="GET",
             url_suffix="devices/v1/operations",
-            headers={"Authorization": f"Bearer {self.get_access_token()}"},
+            headers=headers,
             params=params,
         )
 
 
 """ HELPER FUNCTIONS """
+
+
+def build_readable_output(title: str, rows: list, headers: Optional[list[str]], empty_message: str) -> str:
+    return tableToMarkdown(title, rows, headers=headers) if rows else empty_message
+
+
+SEVERITY_TO_LEVEL = {
+    "informational": 0,
+    "info": 0,
+    "low": 1,
+    "medium": 2,
+    "moderate": 2,
+    "high": 3,
+    "critical": 3,
+    "severe": 4,
+}
+
+
+def convert_severity_to_level(severity: Optional[str], fallback: Optional[str] = None) -> Optional[int]:
+    value = (severity or fallback or "").lower()
+    return SEVERITY_TO_LEVEL.get(value)
+
+
+def to_csv_from_list(values: list[str]) -> Optional[str]:
+    cleaned_values = [value for value in values if value]
+    return ",".join(cleaned_values) if cleaned_values else None
 
 
 def access_token_error_handler(response: requests.Response):
@@ -274,6 +346,65 @@ def parse_events(events: list, last_fetch: str, last_event_id: str) -> tuple[str
     return parse_date(last_event_time), new_event_id, parsed_events
 
 
+def parse_incidents(
+    incidents: list,
+    last_fetch: str,
+    last_incident_id: str,
+    incident_type: Optional[str],
+) -> tuple[list, str, str]:
+    last_fetch_timestamp = date_to_timestamp(last_fetch, DATE_FORMAT)
+    new_last_fetch = last_fetch
+    new_last_incident_id = last_incident_id
+    parsed_incidents: list = []
+
+    sorted_incidents = sorted(
+        incidents,
+        key=lambda inc: inc.get("createdTimestamp") or inc.get("updatedTimestamp") or "",
+    )
+
+    latest_timestamp = last_fetch_timestamp
+
+    for incident in sorted_incidents:
+        created_time = incident.get("createdTimestamp") or incident.get("updatedTimestamp")
+        incident_id = incident.get("incidentId")
+
+        if not created_time or not incident_id:
+            continue
+
+        occurred = parse_date(created_time)
+        incident_timestamp = date_to_timestamp(occurred, DATE_FORMAT)
+
+        if incident_timestamp < last_fetch_timestamp:
+            continue
+
+        if incident_timestamp == last_fetch_timestamp and incident_id == last_incident_id:
+            continue
+
+        demisto_incident: dict[str, Any] = {
+            "name": incident.get("name") or incident.get("incidentPublicId") or incident_id,
+            "occurred": occurred,
+            "rawJSON": json.dumps(incident),
+        }
+
+        severity = convert_severity_to_level(incident.get("severity"), incident.get("riskLevel"))
+        if severity is not None:
+            demisto_incident["severity"] = severity
+
+        if incident_type:
+            demisto_incident["type"] = incident_type
+
+        parsed_incidents.append(demisto_incident)
+
+        if incident_timestamp > latest_timestamp or (
+            incident_timestamp == latest_timestamp and incident_id != new_last_incident_id
+        ):
+            latest_timestamp = incident_timestamp
+            new_last_fetch = occurred
+            new_last_incident_id = incident_id
+
+    return parsed_incidents, new_last_fetch, new_last_incident_id
+
+
 def get_events(client: Client, fetch_from: str, limit: int) -> list:
     events: list = []
     next_anchor = "first"
@@ -286,7 +417,7 @@ def get_events(client: Client, fetch_from: str, limit: int) -> list:
     return events
 
 
-def fetch_events(client: Client, fetch_from: str, limit: int, next_anchor):
+def fetch_events(client: Client, fetch_from: str, limit: int, next_anchor: Optional[str]) -> tuple[list, Optional[str]]:
     events: list = []
     req_limit = min(limit, MAX_FETCH_LIMIT)
     res = client.get_events_api_call(fetch_from, req_limit, next_anchor if next_anchor else None)
@@ -294,6 +425,57 @@ def fetch_events(client: Client, fetch_from: str, limit: int, next_anchor):
     next_anchor = res.get("nextAnchor")
 
     return events, next_anchor
+
+
+def fetch_incident_items(
+    client: Client,
+    limit: int,
+    status: Optional[str],
+    risk_level: Optional[str],
+    source: Optional[str],
+) -> list:
+    incidents: list = []
+    next_anchor: Optional[str] = None
+
+    while len(incidents) < limit:
+        req_limit = min(limit - len(incidents), MAX_INCIDENT_FETCH_LIMIT)
+        response = client.get_incidents(
+            status=status,
+            risk_level=risk_level,
+            limit=req_limit,
+            source=source,
+            next_anchor=next_anchor,
+        )
+        batch = response.get("items", [])
+        incidents.extend(batch)
+        next_anchor = response.get("nextAnchor")
+
+        if not batch or not next_anchor:
+            break
+
+    return incidents
+
+
+def get_last_run_section(last_run: dict, section: str) -> dict:
+    if section in last_run:
+        return last_run.get(section, {})
+
+    legacy_keys = ("fetch_from", "next_anchor", "event_id")
+    if section == "events" and any(last_run.get(key) for key in legacy_keys):
+        return {key: last_run.get(key) for key in legacy_keys if last_run.get(key)}
+
+    return {}
+
+
+def update_last_run_section(section: str, data: dict):
+    last_run = demisto.getLastRun() or {}
+
+    if section == "events":
+        for legacy_key in ("fetch_from", "next_anchor", "event_id"):
+            last_run.pop(legacy_key, None)
+
+    last_run[section] = data
+    demisto.setLastRun(last_run)
 
 
 """ COMMAND FUNCTIONS """
@@ -317,7 +499,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults]:
+def get_events_command(client: Client, args: dict, default_first_fetch: str) -> tuple[list, CommandResults]:
     """
     Gets all the events from the WithSecure API for each log type.
     Args:
@@ -327,12 +509,17 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
         list: A list containing the events
         CommandResults: A CommandResults object that contains the events in a table format.
     """
-    fetch_from = parse_date(args.get("fetch_from") or demisto.params().get("first_fetch", "3 days"))
+    fetch_from = parse_date(args.get("fetch_from") or default_first_fetch)
     limit = arg_to_number(args.get("limit")) or MAX_FETCH_LIMIT
     events = get_events(client, fetch_from, limit)
 
     events = events[:limit]
-    hr = tableToMarkdown(name="With Secure Events", t=events)
+    hr = build_readable_output(
+        title="WithSecure Events",
+        rows=events,
+        headers=None,
+        empty_message="No security events were found for the given inputs.",
+    )
     return events, CommandResults(readable_output=hr)
 
 
@@ -352,16 +539,55 @@ def fetch_events_command(client: Client, first_fetch: str, limit: int) -> tuple[
         list: List of events that will be created in XSIAM.
         dict: The lastRun object for the next fetch run
     """
-    last_run = demisto.getLastRun()
-    fetch_from = last_run.get("fetch_from") or first_fetch
-    next_anchor = last_run.get("next_anchor")
-    event_id = last_run.get("event_id", "")
+    last_run = demisto.getLastRun() or {}
+    events_state = get_last_run_section(last_run, "events")
+    fetch_from = events_state.get("fetch_from") or first_fetch
+    next_anchor = events_state.get("next_anchor")
+    event_id = events_state.get("event_id", "")
     events, next_anchor = fetch_events(client, fetch_from, limit, next_anchor)
 
     last_fetch, event_id, parsed_events = parse_events(events[:limit], fetch_from, event_id)
     next_run = {"fetch_from": last_fetch, "next_anchor": next_anchor, "event_id": event_id}
 
     return parsed_events, next_run
+
+
+def fetch_incidents_command(
+    client: Client,
+    first_fetch: str,
+    max_fetch: int,
+    statuses: list[str],
+    risk_levels: list[str],
+    sources: list[str],
+    incident_type: Optional[str],
+) -> tuple[list, dict]:
+    last_run = demisto.getLastRun() or {}
+    incidents_state = get_last_run_section(last_run, "incidents")
+    fetch_from = incidents_state.get("fetch_from") or first_fetch
+    incident_id = incidents_state.get("incident_id", "")
+
+    status_filter = to_csv_from_list(statuses)
+    risk_filter = to_csv_from_list(risk_levels)
+    source_filter = to_csv_from_list(sources)
+
+    incidents_items = fetch_incident_items(
+        client=client,
+        limit=max_fetch,
+        status=status_filter,
+        risk_level=risk_filter,
+        source=source_filter,
+    )
+
+    parsed_incidents, last_fetch, incident_id = parse_incidents(
+        incidents_items,
+        fetch_from,
+        incident_id,
+        incident_type,
+    )
+
+    next_run = {"fetch_from": last_fetch, "incident_id": incident_id}
+
+    return parsed_incidents[:max_fetch], next_run
 
 
 def get_incidents_command(client: Client, args: dict) -> CommandResults:
@@ -375,14 +601,29 @@ def get_incidents_command(client: Client, args: dict) -> CommandResults:
     result = client.get_incidents(incident_id, status, risk_level, limit, source)
     incidents = result.get("items", [])
 
+    readable_output = build_readable_output(
+        title="WithSecure EDR Incidents",
+        rows=incidents,
+        headers=[
+            "incidentId",
+            "incidentPublicId",
+            "name",
+            "status",
+            "severity",
+            "riskLevel",
+            "riskScore",
+            "categories",
+            "sources",
+            "createdTimestamp",
+        ],
+        empty_message="No incidents were found for the given filters.",
+    )
+
     return CommandResults(
         outputs_prefix="WithSecure.Incident",
         outputs_key_field="incidentId",
         outputs=incidents,
-        readable_output=tableToMarkdown("WithSecure EDR Incidents", incidents, headers=[
-            "incidentId", "incidentPublicId", "name", "status", "severity", "riskLevel",
-            "riskScore", "categories", "sources", "createdTimestamp"
-        ])
+        readable_output=readable_output,
     )
 
 
@@ -432,14 +673,29 @@ def get_incident_detections_command(client: Client, args: dict) -> CommandResult
     result = client.get_incident_detections(incident_id, limit)
     detections = result.get("items", [])
 
+    readable_output = build_readable_output(
+        title=f"Detections for Incident {incident_id}",
+        rows=detections,
+        headers=[
+            "detectionId",
+            "deviceId",
+            "name",
+            "detectionClass",
+            "severity",
+            "riskLevel",
+            "exePath",
+            "cmdl",
+            "username",
+            "createdTimestamp",
+        ],
+        empty_message=f"No detections were found for incident {incident_id}.",
+    )
+
     return CommandResults(
         outputs_prefix="WithSecure.Detection",
         outputs_key_field="detectionId",
         outputs=detections,
-        readable_output=tableToMarkdown(f"Detections for Incident {incident_id}", detections, headers=[
-            "detectionId", "deviceId", "name", "detectionClass", "severity", "riskLevel",
-            "exePath", "cmdl", "username", "createdTimestamp"
-        ])
+        readable_output=readable_output,
     )
 
 
@@ -456,14 +712,28 @@ def get_devices_command(client: Client, args: dict) -> CommandResults:
     result = client.get_devices(device_id, name, device_type, state, online, protection_status, limit)
     devices = result.get("items", [])
 
+    readable_output = build_readable_output(
+        title="WithSecure Devices",
+        rows=devices,
+        headers=[
+            "id",
+            "name",
+            "type",
+            "state",
+            "online",
+            "protectionStatusOverview",
+            "clientVersion",
+            "os",
+            "lastUser",
+        ],
+        empty_message="No devices were found for the given filters.",
+    )
+
     return CommandResults(
         outputs_prefix="WithSecure.Device",
         outputs_key_field="id",
         outputs=devices,
-        readable_output=tableToMarkdown("WithSecure Devices", devices, headers=[
-            "id", "name", "type", "state", "online", "protectionStatusOverview",
-            "clientVersion", "os", "lastUser"
-        ])
+        readable_output=readable_output,
     )
 
 
@@ -562,13 +832,25 @@ def get_device_operations_command(client: Client, args: dict) -> CommandResults:
     result = client.get_device_operations(device_id)
     operations = result.get("items", [])
 
+    readable_output = build_readable_output(
+        title=f"Operations for Device {device_id}",
+        rows=operations,
+        headers=[
+            "id",
+            "operationName",
+            "status",
+            "startedTimestamp",
+            "lastUpdatedTimestamp",
+            "expirationTimestamp",
+        ],
+        empty_message=f"No operations were found for device {device_id}.",
+    )
+
     return CommandResults(
         outputs_prefix="WithSecure.DeviceOperation",
         outputs_key_field="id",
         outputs=operations,
-        readable_output=tableToMarkdown(f"Operations for Device {device_id}", operations, headers=[
-            "id", "operationName", "status", "startedTimestamp", "lastUpdatedTimestamp", "expirationTimestamp"
-        ])
+        readable_output=readable_output,
     )
 
 
@@ -587,8 +869,19 @@ def main() -> None:
     base_url = params.get("url")
     client_id = params.get("credentials", {}).get("identifier")
     client_secret = params.get("credentials", {}).get("password")
-    first_fetch = parse_date(params.get("first_fetch", "3 months"))
-    limit = arg_to_number(params.get("limit", 1000))
+
+    first_fetch_param = params.get("first_fetch_time", "3 days")
+    first_fetch = parse_date(first_fetch_param)
+    event_fetch_limit = arg_to_number(params.get("limit", MAX_FETCH_LIMIT)) or MAX_FETCH_LIMIT
+    event_fetch_limit = min(MAX_FETCH_LIMIT, max(1, event_fetch_limit))
+
+    incidents_max_fetch = arg_to_number(params.get("incidents_max_fetch", 20)) or 20
+    incidents_max_fetch = min(MAX_INCIDENT_FETCH_LIMIT, max(1, incidents_max_fetch))
+
+    fetch_statuses = argToList(params.get("fetch_incident_statuses")) or ["new", "acknowledged", "inProgress"]
+    fetch_risk_levels = argToList(params.get("fetch_incident_risk_levels")) or []
+    fetch_sources = argToList(params.get("fetch_incident_sources")) or []
+    incident_type = params.get("incidentType")
 
     verify_ssl = not params.get("insecure", False)
 
@@ -598,17 +891,30 @@ def main() -> None:
     try:
         client = Client(base_url=base_url, verify=verify_ssl, client_id=client_id, client_secret=client_secret, proxy=proxy)
 
-        if demisto.command() == "test-module":
+        if command == "test-module":
             return_results(test_module(client))
 
         elif command == "with-secure-get-events":
-            _, result = get_events_command(client, args)
+            _, result = get_events_command(client, args, first_fetch_param)
             return_results(result)
 
         elif command == "fetch-events":
-            events, next_run = fetch_events_command(client, first_fetch, limit)  # type: ignore
+            events, next_run = fetch_events_command(client, first_fetch, event_fetch_limit)  # type: ignore
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            demisto.setLastRun(next_run)
+            update_last_run_section("events", next_run)
+
+        elif command == "fetch-incidents":
+            incidents, next_run = fetch_incidents_command(
+                client,
+                first_fetch,
+                incidents_max_fetch,
+                fetch_statuses,
+                fetch_risk_levels,
+                fetch_sources,
+                incident_type,
+            )
+            demisto.incidents(incidents)  # type: ignore[arg-type]
+            update_last_run_section("incidents", next_run)
 
         elif command == "with-secure-get-incidents":
             return_results(get_incidents_command(client, args))
@@ -636,6 +942,9 @@ def main() -> None:
 
         elif command == "with-secure-get-device-operations":
             return_results(get_device_operations_command(client, args))
+
+        else:
+            raise NotImplementedError(f"Command '{command}' is not implemented.")
 
     except Exception as e:
         return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")

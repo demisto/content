@@ -3,13 +3,14 @@ import pytest
 import demistomock as demisto
 from WithSecureEventCollector import (
     Client,
-    get_events_command,
     fetch_events_command,
-    get_incidents_command,
-    update_incident_status_command,
+    fetch_incidents_command,
     get_devices_command,
+    get_events_command,
+    get_incidents_command,
     isolate_endpoint_command,
     release_endpoint_command,
+    update_incident_status_command,
 )
 
 
@@ -49,12 +50,12 @@ def test_get_events_command(requests_mock, mocker):
     client = mock_client()
     mock_response = util_load_json("test_data/get_events.json")
     args = {"fetch_from": "2022-12-26T00:00:00Z", "limit": 2}
-    mocker.patch.object(Client, "get_access_token", return_value={"access_token": "access_token"})
-    requests_mock.get(
-        "https://test.com/security-events/v1/security-events?limit=2&persistenceTimestampStart=2022-12-26T00:00:00Z",
+    mocker.patch.object(Client, "get_access_token", return_value="access_token")
+    requests_mock.post(
+        "https://test.com/security-events/v1/security-events",
         json=mock_response,
     )
-    events, response = get_events_command(client, args)
+    events, response = get_events_command(client, args, "3 days")
 
     assert len(events) == 2
     assert events == mock_response.get("items")
@@ -69,10 +70,10 @@ def test_fetch_events_command(requests_mock, mocker):
 
     client = mock_client()
     mock_response = util_load_json("test_data/fetch_events.json")
-    mocker.patch.object(Client, "get_access_token", return_value={"access_token": "access_token"})
+    mocker.patch.object(Client, "get_access_token", return_value="access_token")
     mocker.patch.object(demisto, "getLastRun", return_value={"fetch_from": "2023-03-15T14:39:13Z", "event_id": "test_id"})
-    requests_mock.get(
-        "https://test.com/security-events/v1/security-events?persistenceTimestampStart=2023-03-15T14:39:13Z&limit=100",
+    requests_mock.post(
+        "https://test.com/security-events/v1/security-events",
         json=mock_response,
     )
     events, _ = fetch_events_command(client, first_fetch="1 day", limit=100)
@@ -81,6 +82,49 @@ def test_fetch_events_command(requests_mock, mocker):
     expected = [mock_response.get("items")[0]]
     assert len(events) == 1
     assert events == expected
+
+
+def test_fetch_incidents_command(mocker):
+    """Tests fetch-incidents command logic."""
+    client = mock_client()
+    mock_response = {
+        "items": [
+            {
+                "incidentId": "2c902c73-e2a6-40fd-9532-257ee102e1c2",
+                "incidentPublicId": "3599-654321",
+                "createdTimestamp": "2024-03-20T08:00:00Z",
+                "severity": "high",
+                "riskLevel": "high",
+                "name": "Test incident",
+            }
+        ]
+    }
+
+    mocker.patch.object(
+        demisto,
+        "getLastRun",
+        return_value={"incidents": {"fetch_from": "2024-03-19T00:00:00Z", "incident_id": "prev"}},
+    )
+    mocker.patch.object(
+        Client,
+        "get_incidents",
+        side_effect=[mock_response, {"items": []}],
+    )
+
+    incidents, next_run = fetch_incidents_command(
+        client,
+        "2024-03-19T00:00:00Z",
+        10,
+        ["new"],
+        [],
+        [],
+        "WithSecure Incident",
+    )
+
+    assert len(incidents) == 1
+    assert incidents[0]["type"] == "WithSecure Incident"
+    assert incidents[0]["severity"] == 3
+    assert next_run["incident_id"] == "2c902c73-e2a6-40fd-9532-257ee102e1c2"
 
 
 def test_get_incidents_command(requests_mock, mocker):
@@ -109,6 +153,20 @@ def test_get_incidents_command(requests_mock, mocker):
     result = get_incidents_command(client, args)
     assert result.outputs == mock_response.get("items")
     assert len(result.outputs) == 1
+
+
+def test_get_incidents_command_no_results(requests_mock, mocker):
+    """Ensures a readable message is returned when no incidents are available."""
+    client = mock_client()
+    args = {}
+    mocker.patch.object(Client, "get_access_token", return_value="access_token")
+    requests_mock.get(
+        "https://test.com/incidents/v1/incidents?limit=20&archived=false",
+        json={"items": []},
+    )
+    result = get_incidents_command(client, args)
+    assert result.outputs == []
+    assert result.readable_output == "No incidents were found for the given filters."
 
 
 def test_update_incident_status_command(requests_mock, mocker):
@@ -153,6 +211,20 @@ def test_get_devices_command(requests_mock, mocker):
     result = get_devices_command(client, args)
     assert result.outputs == mock_response.get("items")
     assert len(result.outputs) == 1
+
+
+def test_get_devices_command_no_results(requests_mock, mocker):
+    """Ensures a readable message is returned when device list is empty."""
+    client = mock_client()
+    args = {}
+    mocker.patch.object(Client, "get_access_token", return_value="access_token")
+    requests_mock.get(
+        "https://test.com/devices/v1/devices?limit=50",
+        json={"items": []},
+    )
+    result = get_devices_command(client, args)
+    assert result.outputs == []
+    assert result.readable_output == "No devices were found for the given filters."
 
 
 def test_isolate_endpoint_command(requests_mock, mocker):

@@ -10,8 +10,20 @@ This integration was integrated and tested with version 1.0 of WithSecure Elemen
 | Client Secret | Client Secret for OAuth2 authentication | True |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | How far back to fetch events on first run | False |
 | Maximum number of events per fetch, Max 1000 | Maximum events to fetch per interval | False |
+| Incident statuses to fetch | Comma-separated statuses that should be ingested as Cortex XSOAR incidents | False |
+| Incident risk levels to fetch | Optional risk levels to filter fetched incidents | False |
+| Incident sources to fetch | Optional sources (endpoint, cloud, etc.) for the fetched incidents | False |
+| Maximum number of incidents per fetch. Max 50 | Caps the amount of WithSecure incidents ingested per cycle | False |
+| Incident type | Incident type that will be assigned to fetched incidents | False |
 | Trust any certificate (not secure) | Skip SSL certificate verification | False |
 | Use system proxy settings | Use system proxy for API calls | False |
+
+## Incident Fetching
+
+- Incident fetching is optional; enable *Fetch Incidents* in the integration instance to start ingesting WithSecure incidents.
+- The integration deduplicates incidents by `createdTimestamp` and `incidentId`, ensuring incidents are fetched once.
+- Default filters ingest incidents with statuses `new`, `acknowledged`, or `inProgress`. Adjust the configuration parameters to match your workflow (status, risk level, sources, and maximum per fetch).
+- Fetched incidents are assigned Cortex XSOAR severities based on the WithSecure severity/risk level (`info` → 0, `low` → 1, `medium` → 2, `high` → 3, `severe` → 4).
 
 ## Authentication Process
 
