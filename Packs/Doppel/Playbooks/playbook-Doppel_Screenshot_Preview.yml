@@ -12,6 +12,7 @@ tasks:
       id: e519b1ba-2c26-4296-8204-7e849fb4a4d3
       version: -1
       name: ""
+      description: Start Playbook
       iscommand: false
       brand: ""
     nexttasks:
