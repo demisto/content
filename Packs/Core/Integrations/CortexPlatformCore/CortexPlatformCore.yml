@@ -1356,7 +1356,7 @@ script:
           description: The ID of the suggestion rule that generated this recommendation.
           type: String
     - arguments:
-      - description: A comma-separated list of issue IDs to fix (maximum 10 per request).
+      - description: A comma-separated list of issue IDs to fix (maximum 100 per request).
         name: issue_ids
         required: true
         isArray: true
@@ -1365,16 +1365,10 @@ script:
       name: core-appsec-remediate-issue
       description: Create automated pull requests to fix multiple security issues in a single bulk operation.
       outputs:
-      - contextPath: Core.TriggerPR.message
-        description: Operation result message.
-        type: String
-      - contextPath: Core.TriggerPR.status
-        description: Overall process status.
-        type: String
-      - contextPath: Core.TriggerPR.triggeredPrs.issueId
+      - contextPath: Core.TriggeredPRs.issueId
         description: The issue identifier.
         type: String
-      - contextPath: Core.TriggerPR.triggeredPrs.status
+      - contextPath: Core.TriggeredPRs.status
         description: Either "triggered" or "automated_fix_not_available".
         type: String
     - arguments:

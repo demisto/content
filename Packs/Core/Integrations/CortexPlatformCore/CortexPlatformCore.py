@@ -947,17 +947,22 @@ def appsec_remediate_issue_command(client: Client, args: dict) -> CommandResults
     """
     args = demisto.args()
     issue_ids = argToList(args.get("issue_ids"))
-    if len(issue_ids) > 10:
-        raise DemistoException("Please provide a maximum of 10 issue IDs per request.")
+   
+    triggered_prs = []
+    for issue_id in issue_ids:
+        request_body = {"issueIds": [issue_id], "title": args.get("title")}
+        request_body = remove_empty_elements(request_body)
+        current_response = client.appsec_remediate_issue(request_body)
+        current_triggered_prs = current_response.get("triggeredPrs")
+        if current_response and isinstance(current_triggered_prs, list) and len(current_triggered_prs) > 0:
+            triggered_prs.append(current_triggered_prs[0])
 
-    request_body = {"issueIds": issue_ids, "title": args.get("title")}
-    request_body = remove_empty_elements(request_body)
-    response = client.appsec_remediate_issue(request_body)
     return CommandResults(
-        readable_output=tableToMarkdown("Remediation Results", response, headerTransform=string_to_table_header),
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.TriggerPR",
-        outputs=response,
-        raw_response=response,
+        readable_output=tableToMarkdown(name="Triggered PRs", t=triggered_prs),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.TriggeredPRs",
+        outputs=triggered_prs,
+        outputs_key_field="issueId",
+        raw_response=triggered_prs,
     )
 
 
