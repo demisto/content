@@ -523,7 +523,6 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
                 {
                     "existing_code_block": fix_suggestion.get("existingCodeBlock", ""),
                     "suggested_code_block": fix_suggestion.get("suggestedCodeBlock", ""),
-                    "remediation": manual_fix if manual_fix else recommendation.get("remediation"),
                 }
             )
             headers.append("existing_code_block")
