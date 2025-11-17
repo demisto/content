@@ -611,4 +611,7 @@ script:
   longRunningPort: false
 tests:
 - No tests
+defaultclassifier: Cyberint - Classifier
+defaultmapperin: CyberInt Incoming (mapper)
+defaultmapperout: CyberInt Outgoing (mapper)
 fromversion: 5.0.0
