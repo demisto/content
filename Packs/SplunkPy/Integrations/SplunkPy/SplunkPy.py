@@ -85,6 +85,7 @@ CREATION_TIME = "creation_time"
 QUERY_NAME = "query_name"
 QUERY_SEARCH = "query_search"
 INCIDENT_CREATED = "incident_created"
+FILLNULL_VALUE = None
 
 DRILLDOWN_REGEX = r'([^\s\$]+)\s*=\s*"?(\$[^\s\$\\]+\$)"?|"?(\$[^\s\$\\]+\$)"?'
 
@@ -432,8 +433,7 @@ def build_fetch_query(params):
         raw_value = match.group(1)
 
         # Strip quotes if needed
-        if (raw_value.startswith('"') and raw_value.endswith('"')) or \
-           (raw_value.startswith("'") and raw_value.endswith("'")):
+        if (raw_value.startswith('"') and raw_value.endswith('"')) or (raw_value.startswith("'") and raw_value.endswith("'")):
             raw_value = raw_value[1:-1]
 
         global FILLNULL_VALUE

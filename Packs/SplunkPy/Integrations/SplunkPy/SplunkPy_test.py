@@ -2060,7 +2060,6 @@ def test_drilldown_enrichment(notable_data, expected_result):
         assert isinstance(job_and_queries[2], client.Job)
 
 
-
 @pytest.mark.parametrize(
     "notable_data, expected_result",
     [
@@ -2068,10 +2067,12 @@ def test_drilldown_enrichment(notable_data, expected_result):
             {
                 "event_id": "test_id",
                 "drilldown_name": "View all login attempts by system $src$",
-                "drilldown_search": 'NULL',
-                "drilldown_searches": ['{"name":"View all login attempts by system $src$","search":"| from datamodel:\\"Authent'
-                'ication\\".\\"Authentication\\" | search src=$src|s$","earliest":1715040000,'
-                '"latest":1715126400}'],
+                "drilldown_search": "NULL",
+                "drilldown_searches": [
+                    '{"name":"View all login attempts by system $src$","search":"| from datamodel:\\"Authent'
+                    'ication\\".\\"Authentication\\" | search src=$src|s$","earliest":1715040000,'
+                    '"latest":1715126400}'
+                ],
                 "_raw": "src='test_src'",
                 "drilldown_latest": "1715126400.000000000",
                 "drilldown_earliest": "1715040000.000000000",
@@ -2088,7 +2089,7 @@ def test_drilldown_enrichment(notable_data, expected_result):
                 "event_id": "test_id",
                 "drilldown_name": "View all login attempts by system $src$",
                 "drilldown_search": '| from datamodel:"Authentication"."Authentication" | search src=$src|s$',
-                "drilldown_searches": '[]',
+                "drilldown_searches": "[]",
                 "_raw": "src='test_src'",
                 "drilldown_latest": "1715126400.000000000",
                 "drilldown_earliest": "1715040000.000000000",
@@ -2099,8 +2100,8 @@ def test_drilldown_enrichment(notable_data, expected_result):
                     '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"',
                 )
             ],
-        )
-    ]
+        ),
+    ],
 )
 def test_drilldown_enrichment_fillnull(notable_data, expected_result):
     """
@@ -2119,14 +2120,13 @@ def test_drilldown_enrichment_fillnull(notable_data, expected_result):
 
     service = Service("DONE")
     splunk.FILLNULL_VALUE = "NULL"
-    
+
     jobs_and_queries = splunk.drilldown_enrichment(service, notable_data, 5)
     for i in range(len(jobs_and_queries)):
         job_and_queries = jobs_and_queries[i]
         assert job_and_queries[0] == expected_result[i][0]
         assert job_and_queries[1] == expected_result[i][1]
         assert isinstance(job_and_queries[2], client.Job)
-
 
 
 def test_build_fetch_query_fillnull():
@@ -2141,9 +2141,7 @@ def test_build_fetch_query_fillnull():
         - The fillnull value is correctly extracted and stored in 'splunk.FILLNULL_VALUE'
     """
 
-    params = {
-        "fetchQuery": "search something | fillnull value=NULL"
-    }
+    params = {"fetchQuery": "search something | fillnull value=NULL"}
 
     splunk.build_fetch_query(params)
 
@@ -4953,8 +4951,6 @@ def test_fetch_vs_mirror_comment_storage_difference(mocker):
     assert mirror_notable_map[test_id]["SplunkComments"][1]["Comment"] == "First comment"
 
 
-
-
 # def test_submit_notable(mocker):
 #     from SplunkPy import submit_notable
 
@@ -4963,7 +4959,7 @@ def test_fetch_vs_mirror_comment_storage_difference(mocker):
 
 #     mocker.patch("SplunkPy.ENABLED_ENRICHMENTS",["Drilldown"] )
 #     notable = mocker.MagicMock()
-    
+
 #     res = mocker.patch.object(demisto, 'drilldown_enrichment')
 
 #     notable.data = {"event_id":"id","drilldown_search": "NULL", "drilldown_searches" : [ '{"name":"test", "search":"|key in (line_1\nline_2)", "earliest_offset":"1715040000", "latest": "1715126400", "search": "search"}']}
@@ -4972,20 +4968,18 @@ def test_fetch_vs_mirror_comment_storage_difference(mocker):
 #     notable.submitted.return_value = True
 
 
-
 #     submit_notable(Service(status="RUNNING"),notable,None)
 #     assert 1 == 1
-    
-    
+
+
 def test_drilldown_enrichment(mocker):
     from SplunkPy import drilldown_enrichment
 
     # mocker.patch.object(client.Service, "login")
 
-
     # mocker.patch("SplunkPy.ENABLED_ENRICHMENTS",["Drilldown"] )
     # notable = mocker.MagicMock()
-    
+
     # # res = mocker.patch.object(demisto, 'drilldown_enrichment')
 
     # notable.data = {"event_id":"id","drilldown_search": "NULL", "drilldown_searches" : [ '{"name":"test", "search":"|key in (line_1\nline_2)", "earliest_offset":"1715040000", "latest": "1715126400", "search": "search"}']}
@@ -4993,9 +4987,13 @@ def test_drilldown_enrichment(mocker):
     # notable.get_submitted_enrichments.return_value = (False, False, False)
     # notable.submitted.return_value = True
 
-    notable_data = {"event_id":"id","drilldown_search": "NULL", "drilldown_searches" : [ '{"name":"test", "search":"|key in (line_1\nline_2)", "earliest_offset":"1715040000", "latest": "1715126400", "search": "search"}']}
+    notable_data = {
+        "event_id": "id",
+        "drilldown_search": "NULL",
+        "drilldown_searches": [
+            '{"name":"test", "search":"|key in (line_1\nline_2)", "earliest_offset":"1715040000", "latest": "1715126400", "search": "search"}'
+        ],
+    }
 
-    res = drilldown_enrichment(Service(status="RUNNING"),notable_data,5)
+    res = drilldown_enrichment(Service(status="RUNNING"), notable_data, 5)
     assert 1 == 1
-    
-    
