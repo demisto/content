@@ -2601,7 +2601,7 @@ def gcp_compute_image_get(creds: Credentials, args: dict[str, Any]) -> CommandRe
     headers = ["id", "name", "creationTimestamp", "description"]
 
     readable_output = tableToMarkdown(
-        f"GCP images {image}", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
+        f"GCP image {image}", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
     )
 
     return CommandResults(
@@ -2723,7 +2723,7 @@ def gcp_compute_network_insert(creds: Credentials, args: dict[str, Any]) -> Comm
         args (dict[str, Any]): Arguments including:
             - name: Name of the network
             - description: Optional description
-            - autoCreateSubnetworks: "true"/"false" (optional, defaults to True)
+            - auto_create_sub_networks: "true"/"false" (optional, defaults to True)
             - routing_config_routing_mode: "REGIONAL" or "GLOBAL" (optional)
             - project_id: GCP project ID
     Returns:
@@ -2733,8 +2733,7 @@ def gcp_compute_network_insert(creds: Credentials, args: dict[str, Any]) -> Comm
 
     # Name (required)
     if args.get("name"):
-        name = args.get("name", "").lower()
-        config["name"] = name
+        config["name"] = args.get("name", "")
     else:
         raise ValueError("The 'name' argument is required to create a network.")
 
@@ -2743,10 +2742,8 @@ def gcp_compute_network_insert(creds: Credentials, args: dict[str, Any]) -> Comm
         config["description"] = args.get("description")
 
     # Auto-create subnets (default to True)
-    auto_create_sub_networks = args.get("autoCreateSubnetworks")
+    auto_create_sub_networks = argToBoolean(args.get("autoCreateSubnetworks"))
     if auto_create_sub_networks is not None:
-        if isinstance(auto_create_sub_networks, str):
-            auto_create_sub_networks = auto_create_sub_networks.lower() == "true"
         config["autoCreateSubnetworks"] = auto_create_sub_networks
     else:
         config["autoCreateSubnetworks"] = True  # default to subnet-mode network
@@ -2792,7 +2789,7 @@ def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> Comma
     Retrieves the list of networks available to the specified project.
     """
     project = args.get("project_id")
-    limit = (arg_to_number(args.get("limit")) or 500) if args.get("limit", "500") != "0" else 0
+    limit = (arg_to_number(args.get("limit")) or 50) if args.get("limit", "50") != "0" else 0
     filters = args.get("filters")
     order_by = args.get("order_by")
     page_token = args.get("page_token")
@@ -2825,7 +2822,7 @@ def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> Comma
         else None
     )
 
-    if limit < 500:
+    if limit != 50:
         metadata = f"{metadata} {limit=}"
 
     if next_page_token:
@@ -2835,7 +2832,6 @@ def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> Comma
         response["Networks"] = response.pop("items")
 
     for item in response.get("Networks", [{}]):
-        # output.append(item)
         data_res_item = {
             "name": item.get("name"),
             "id": item.get("id"),
@@ -2851,6 +2847,7 @@ def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> Comma
         headers=headers,
         removeNull=True,
         metadata=metadata,
+        headerTransform=pascalToSpace,
     )
 
     outputs = {
