@@ -1,5 +1,7 @@
 import pytest
 from datetime import datetime, UTC
+
+from CommonServerPython import arg_to_datetime
 from DecyfirEventCollector import (
     Client,
     ACCESS_LOGS,
@@ -169,8 +171,9 @@ def test_update_fetched_event_ids():
     THEN the current_run dict stores fetched UIDs for deduplication.
     """
     current_run = {}
-    logs = [{"uid": "A1"}, {"uid": "A2"}]
-    update_fetched_event_ids(current_run, ACCESS_LOGS, logs)
+    logs = [{"uid": "A1" , "event_date" : "2025-11-13T05:30:59.000+00:00"}, {"uid": "A2", "event_date" : "2025-11-13T05:30:59"
+                                                                                                         ".000+00:00"}]
+    update_fetched_event_ids(current_run, ACCESS_LOGS, logs, arg_to_datetime("2025-11-13T05:30:59.000+00:00") )
     assert current_run["Access Logs"]["fetched_events_ids"] == ["A1", "A2"]
 
 
