@@ -2109,6 +2109,8 @@ def test_drilldown_enrichment_fillnull(notable_data, expected_result):
     from splunklib import client
 
     service = Service("DONE")
+    splunk.FILLNULL_VALUE = "NULL"
+    
     jobs_and_queries = splunk.drilldown_enrichment(service, notable_data, 5)
     for i in range(len(jobs_and_queries)):
         job_and_queries = jobs_and_queries[i]
@@ -2118,7 +2120,7 @@ def test_drilldown_enrichment_fillnull(notable_data, expected_result):
 
 
 
-def test_fill_null():
+def test_build_fetch_query_fillnull():
     params = {
         "fetchQuery": "search something | fillnull value=NULL"
     }

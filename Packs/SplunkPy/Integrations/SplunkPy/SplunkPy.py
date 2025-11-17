@@ -437,7 +437,7 @@ def build_fetch_query(params):
             raw_value = raw_value[1:-1]
 
         global FILLNULL_VALUE
-        FILLNULL_VALUE = raw_value  # store in global variable
+        FILLNULL_VALUE = raw_value
 
     return fetch_query
 
@@ -1248,9 +1248,11 @@ def get_drilldown_searches(notable_data):
     # the 'drilldown_searches' key) and submit a splunk enrichment for each one of them.
     # To maintain backwards compatibility we keep using the 'drilldown_search' key as well.
 
+    global FILLNULL_VALUE
+
     drilldown_search = notable_data.get("drilldown_search")
 
-    if drilldown_search and drilldown_search.lower() != "null":
+    if drilldown_search and drilldown_search != FILLNULL_VALUE:
         # The drilldown_searches are in 'old' format a simple string query.
         return [drilldown_search]
     if drilldown_search := notable_data.get("drilldown_searches", []):
