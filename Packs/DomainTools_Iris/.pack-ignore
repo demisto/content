@@ -4,3 +4,14 @@ ignore=RM104
 [file:DomainTools_Iris.yml]
 ignore=BA108,BA109,IN144,IN153,BA124
 
+[file:DomainTools_Auto_Pivots.yml]
+ignore=RM116
+
+[file:DomainTools_Associate_Indicator_to_Incident.yml]
+ignore=RM116
+
+[file:DomainTools_Check_Domain_Risk_Score_By_Iris_Tags.yml]
+ignore=RM116
+
+[file:DomainTools_Check_New_Domains_by_Iris_Hash.yml]
+ignore=RM116
