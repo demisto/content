@@ -4,10 +4,6 @@ from CommonServerUserPython import *
 from AggregatedCommandApiModule import *
 
 INTERNAL_ENRICHMENT_BRANDS = ["WildFire-v2"]
-FILE_CONTEXT_PATH = "FileEnrichmentV2(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
-                       'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || ' \
-                       'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || ' \
-                       'val.SSDeep && val.SSDeep == obj.SSDeep)"
 
 FILE_HASH_TYPES = [
     "MD5",
@@ -19,6 +15,28 @@ FILE_HASH_TYPES = [
     "SSDeep",
     "ImpHash",
 ]
+
+# Used as well for determining Main keys
+# What not under this list will go to AdditionalFields
+INDICATOR_MAPPING = {
+    "MD5": "MD5",
+    "SHA1": "SHA1",
+    "SHA256": "SHA256",
+    "SHA512": "SHA512",
+    "CRC32": "CRC32",
+    "CTPH": "CTPH",
+    "SSDeep": "SSDeep",
+    "ImpHash": "ImpHash",
+    "SourceTimeStamp": "SourceTimeStamp",
+    "Modified": "Modified",
+    "Path": "Path",
+    "Size": "Size",
+    "FileExtension": "FileExtension",
+    "AssociatedFileNames": "AssociatedFileNames",
+    "Brand": "Brand",
+    "Score": "Score",
+}
+
 
 def file_enrichment_script(
     file_list: list[str],
@@ -42,30 +60,11 @@ def file_enrichment_script(
     demisto.debug("Extracting indicators")
     file_list = extract_indicators(file_list, "file")
 
-    indicator_mapping = {
-        "MD5": "MD5",
-        "SHA1": "SHA1",
-        "SHA256": "SHA256",
-        "SHA512": "SHA512",
-        "CRC32": "CRC32",
-        "CTPH": "CTPH",
-        "SSDeep": "SSDeep",
-        "ImpHash": "ImpHash",
-        "SourceTimeStamp": "SourceTimeStamp",
-        "Modified": "Modified",
-        "Path": "Path",
-        "Size": "Size",
-        "FileExtension": "FileExtension",
-        "AssociatedFileNames": "AssociatedFileNames",
-        "Brand": "Brand",
-        "Score": "Score",
-    }
-
     file_indicator = Indicator(
         type="file",
         value_field=FILE_HASH_TYPES,
         context_path_prefix="File",
-        context_output_mapping=indicator_mapping,
+        context_output_mapping=INDICATOR_MAPPING,
     )
 
     # --- Command Batch 1: create indicators (BUILTIN) ---
@@ -94,7 +93,8 @@ def file_enrichment_script(
             command_type=CommandType.INTERNAL,
             context_output_mapping={},
         )
-        for file in file_list if get_hash_type(file) == "sha256"
+        for file in file_list
+        if get_hash_type(file) == "sha256"
     ]
 
     commands = [command_batch1, command_batch2]

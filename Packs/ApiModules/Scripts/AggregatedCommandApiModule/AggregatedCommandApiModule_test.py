@@ -2,7 +2,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import DemistoException, entryTypes, Common
 from AggregatedCommandApiModule import *
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 
 
 # =================================================================================================
@@ -946,7 +946,9 @@ def test_internal_enrichment_brands_injected_when_no_brands_and_external_false(m
     # Patch enabled_brands to simulate active integrations
     mocker.patch("AggregatedCommandApiModule.BrandManager.enabled_brands", return_value={"WildFire-v2", "OtherBrand"})
 
-    cmd_internal = Command(name="core-get-hash-analytics-prevalence", args={}, brand="Cortex Core - IR", command_type=CommandType.INTERNAL)
+    cmd_internal = Command(
+        name="core-get-hash-analytics-prevalence", args={}, brand="Cortex Core - IR", command_type=CommandType.INTERNAL
+    )
     cmd_external = Command(name="enrichIndicators", args={}, command_type=CommandType.EXTERNAL)
 
     module = module_factory(
@@ -1382,6 +1384,76 @@ def test_create_tim_indicator_uses_score_and_status(module_factory, mocker):
     assert res["ModifiedTime"] is None
 
 
+def test_create_tim_indicator_file_type_maps_value_using_hashes(module_factory, mocker):
+    """
+    Given:
+        - A ReputationAggregatedCommand configured for type='file' with multiple hash fields.
+        - self.data contains the original input hash (MD5).
+        - The TIM IOC 'value' is SHA256, and CustomFields include both md5/sha256.
+    When:
+        - create_tim_indicator is called.
+    Then:
+        - The resulting TIM indicator:
+            - Has Brand='TIM'.
+            - Has MD5/SHA256 fields mapped from CustomFields.
+            - Has Score taken from ioc['score'].
+            - Has Status/ModifiedTime set from get_indicator_status_from_ioc/ioc['modifiedTime'].
+            - Has Value equal to the original input hash (MD5), via map_back_to_input.
+    """
+    # Indicator for file with multiple hash fields
+    file_indicator = Indicator(
+        type="file",
+        value_field=["MD5", "SHA256"],
+        context_path_prefix="File(",
+        context_output_mapping={
+            "MD5": "MD5",
+            "SHA256": "SHA256",
+            "Score": "Score",
+        },
+    )
+
+    original_md5 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    sha256_val = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+
+    mod = module_factory(
+        indicator=file_indicator,
+        data=[original_md5],
+    )
+    ioc = {
+        "score": 3,
+        "value": sha256_val,
+        "modifiedTime": "2025-09-01T00:00:00Z",
+        "CustomFields": {
+            "md5": original_md5,
+            "sha256": sha256_val,
+        },
+    }
+
+    status_mock = mocker.patch.object(
+        mod,
+        "get_indicator_status_from_ioc",
+        return_value=IndicatorStatus.FRESH.value,
+    )
+
+    res = mod.create_tim_indicator(ioc)
+
+    # Status was computed through the helper
+    status_mock.assert_called_once_with(ioc)
+
+    # Brand / Score / Status / ModifiedTime
+    assert res["Brand"] == "TIM"
+    assert res["Score"] == 3
+    assert res["Status"] == IndicatorStatus.FRESH.value
+    assert res["ModifiedTime"] == "2025-09-01T00:00:00Z"
+
+    # Hash fields mapped from CustomFields (lowercase → CamelCase via context_output_mapping)
+    assert res["MD5"] == original_md5
+    assert res["SHA256"] == sha256_val
+
+    # For file indicators: Value is mapped back to the original input (MD5), not the TIM 'value' (SHA256)
+    assert res["Value"] == original_md5
+
+
 @pytest.mark.parametrize(
     "has_manual, modified_mode, expected_status",
     [
@@ -1409,7 +1481,7 @@ def test_get_indicator_status_from_ioc_various(module_factory, has_manual, modif
         - Else STALE (including invalid/no modifiedTime).
     """
     mod = module_factory()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     def iso(dt: datetime) -> str:
         # Code under test accepts 'Z' or '+00:00'; it replaces Z → +00:00, so we emit 'Z' here.
@@ -1443,7 +1515,7 @@ def test_get_indicator_status_from_ioc_boundary_freshness_window(module_factory)
         - Returns FRESH at the boundary (minus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     boundary_time = now - STATUS_FRESHNESS_WINDOW + timedelta(hours=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
@@ -1460,7 +1532,7 @@ def test_get_indicator_status_from_ioc_boundary_stale(module_factory):
         - Returns STALE at the boundary (plus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     boundary_time = now - STATUS_FRESHNESS_WINDOW - timedelta(seconds=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}

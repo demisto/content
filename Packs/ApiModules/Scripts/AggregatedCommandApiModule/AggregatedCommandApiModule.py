@@ -772,7 +772,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         final_tim_context: ContextResult = defaultdict(list)
         final_result_entries: list[EntryResult] = []
 
-        for i,ioc in enumerate(iocs):
+        for i, ioc in enumerate(iocs):
             demisto.debug(f"Processing #{i+1} TIM result")
             parsed_indicators, entry, value = self._process_single_tim_ioc(ioc)
             final_tim_context[value].extend(parsed_indicators)
@@ -792,8 +792,8 @@ class ReputationAggregatedCommand(AggregatedCommand):
         all_parsed_indicators = []
         tim_indicator = self.create_tim_indicator(ioc)
         all_parsed_indicators.append(tim_indicator)
-        
-        value = tim_indicator.get("Value","")
+
+        value = tim_indicator.get("Value", "")
 
         found_brands = []
         demisto.debug(f"Extracting per brand information for {value}")
