@@ -69,7 +69,6 @@ def file_enrichment_script(
     )
 
     # --- Command Batch 1: create indicators (BUILTIN) ---
-    demisto.debug("Creating commands - Batch 1: Creating new indicators")
     command_batch1: list[Command] = [
         Command(
             name="CreateNewIndicatorsOnly",
@@ -81,7 +80,6 @@ def file_enrichment_script(
     ]
 
     # --- Command Batch 2: external enrichment + Core IR---
-    demisto.debug("Creating commands - Batch 2: Enriching indicators")
     command_batch2: list[Command] = [
         Command(
             name="enrichIndicators",
@@ -96,11 +94,11 @@ def file_enrichment_script(
             command_type=CommandType.INTERNAL,
             context_output_mapping={},
         )
-        for file in file_list
+        for file in file_list if get_hash_type(file) == "sha256"
     ]
 
     commands = [command_batch1, command_batch2]
-    demisto.debug("Commands: ")
+    demisto.debug("Commands Batches")
     for i, batch in enumerate(commands):
         demisto.debug(f"Batch {i}")
         for j, cmd in enumerate(batch):

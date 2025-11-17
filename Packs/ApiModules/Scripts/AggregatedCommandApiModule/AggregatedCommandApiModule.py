@@ -232,13 +232,13 @@ class BatchExecutor:
             processed_command_results = []
             for i, result in enumerate(results_list):
                 if is_debug_entry(result):
-                    demisto.debug(f"Result #{i} is debug")
+                    demisto.debug(f"Result #{i+1} is debug")
                     continue
                 hr_output = ""
                 error_message = ""
                 brand = result.get("Metadata", {}).get("brand") or command.brand or "Unknown"
                 if is_error(result):
-                    demisto.debug(f"Result #{i} is error")
+                    demisto.debug(f"Result #{i+1} is error")
                     error_message = get_error(result)
                     if verbose:
                         hr_output = (
@@ -252,7 +252,7 @@ class BatchExecutor:
                         hr_output = (
                             f"#### Result for name={command.name} args={command.args} current brand={brand}\n{human_readable}"
                         )
-                demisto.debug(f"Result #{i} processed")
+                demisto.debug(f"Result #{i+1} processed")
                 processed_command_results.append((result, hr_output, error_message))
             final_results.append(processed_command_results)
         return final_results
@@ -277,7 +277,7 @@ class BatchExecutor:
         commands_to_execute = [command.to_batch_item(brands_to_run) for command in commands]
         demisto.debug(f"Executing batch: {len(commands_to_execute)} commands; brands={brands_to_run or 'all'}")
         results = demisto.executeCommandBatch(commands_to_execute)  # Results is list of lists, for each command list of results
-        demisto.debug("Batch returned " + ", ".join(str(len(r)) for r in results) + " results (per command) before processing")
+        demisto.debug("Batch returned [" + ", ".join(str(len(r)) for r in results) + "] results before processing")
         return self.process_results(results, commands, verbose)
 
     def execute_list_of_batches(
@@ -313,10 +313,10 @@ class BatchExecutor:
         out: list[list[list[tuple[ContextResult, str, str]]]] = []
         for i, batch in enumerate(list_of_batches):
             if not batch:
-                demisto.debug(f"Skipping empty batch #{i} (no commands).")
+                demisto.debug(f"Skipping empty batch #{i+1} (no commands).")
                 out.append([])  # keep alignment; process_results will just see nothing
                 continue
-            demisto.debug(f"Executing batch #{i} with {len(batch)} commands")
+            demisto.debug(f"Executing batch #{i+1} with {len(batch)} commands")
             out.append(self.execute_batch(batch, brands_to_run or [], verbose))
         return out
 
@@ -626,6 +626,8 @@ class ReputationAggregatedCommand(AggregatedCommand):
             active_internal_enrichment_brands = list(set(self.internal_enrichment_brands) & BrandManager.enabled_brands())
             if active_internal_enrichment_brands:
                 brands = active_internal_enrichment_brands + BrandManager.get_brands_by_type(commands, CommandType.INTERNAL)
+                demisto.debug("External enrichment false with no brands asked; using internal enrichment + commands")
+
         super().__init__(args, brands, verbose, commands)
 
     @cached_property
@@ -727,7 +729,6 @@ class ReputationAggregatedCommand(AggregatedCommand):
             demisto.debug("Failed to search TIM.")
             return {}, [entry_result]
 
-        demisto.debug(f"Found {len(iocs)} IOCs in TIM. Processing results.")
         tim_context, result_entries = self.process_tim_results(iocs)
         return tim_context, result_entries
 
@@ -737,7 +738,6 @@ class ReputationAggregatedCommand(AggregatedCommand):
         Returns:
             tuple[list[ContextResult], Status, str]: The search results, status and message.
         """
-        demisto.debug(f"Searching TIM for {self.indicator.type} indicators: {self.data}")
         indicators = " or ".join({f"value:{indicator}" for indicator in self.data})
         query = f"type:{self.indicator.type} and ({indicators})"
         try:
@@ -773,33 +773,31 @@ class ReputationAggregatedCommand(AggregatedCommand):
         final_tim_context: ContextResult = defaultdict(list)
         final_result_entries: list[EntryResult] = []
 
-        for ioc in iocs:
-            demisto.debug(f"Processing TIM results for indicator: {ioc.get('value')}")
-            parsed_indicators, entry = self._process_single_tim_ioc(ioc)
-            if value := ioc.get("value"):
-                final_tim_context[value].extend(parsed_indicators)
+        for i,ioc in enumerate(iocs):
+            demisto.debug(f"Processing #{i+1} TIM result")
+            parsed_indicators, entry, value = self._process_single_tim_ioc(ioc)
+            final_tim_context[value].extend(parsed_indicators)
             final_result_entries.append(entry)
 
         return dict(final_tim_context), final_result_entries
 
-    def _process_single_tim_ioc(self, ioc: dict[str, Any]) -> tuple[list[dict], EntryResult]:
+    def _process_single_tim_ioc(self, ioc: dict[str, Any]) -> tuple[list[dict], EntryResult, str]:
         """
         Processes a single IOC object returned from a TIM search.
         Extract Score and brand and add them to parsed indicators.
         Args:
             ioc (dict[str, Any]): The IOC object to process.
         Returns:
-            tuple[list[dict], EntryResult]: The parsed indicators and entry result.
+            tuple[list[dict], EntryResult, str]: The parsed indicators, entry result, and indicator value.
         """
-        value = ioc.get("value")
-        demisto.debug(f"Processing TIM results for indicator: {value}")
         all_parsed_indicators = []
         tim_indicator = self.create_tim_indicator(ioc)
-        if self.indicator.type == "file":
-            value = map_back_to_input(self.data, self.indicator.get_all_values_from(tim_indicator)) or value
         all_parsed_indicators.append(tim_indicator)
+        
+        value = tim_indicator.get("Value","")
 
         found_brands = []
+        demisto.debug(f"Extracting per brand information for {value}")
         for brand, brand_data in ioc.get("insightCache", {}).get("scores", {}).items():
             demisto.debug(f"Processing TIM indicators from brand: {brand}")
             score = brand_data.get("score", 0)
@@ -815,7 +813,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             command_name="search-indicators-in-tim", args=value, brand="TIM", status=Status.SUCCESS, message=message
         )
 
-        return all_parsed_indicators, entry
+        return all_parsed_indicators, entry, value
 
     def create_tim_indicator(self, ioc: dict[str, Any]) -> dict[str, Any]:
         """
@@ -826,7 +824,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         Returns:
             dict[str, Any]: The TIM indicator.
         """
-
+        demisto.debug("Extracting Custom Fields")
         customFields = ioc.get("CustomFields", {})
         # all Keys under CustomFields are lowercase while the mapping are CamelCase, this insure we will find the right keys
         lower_mapping = {k.lower(): v for k, v in self.indicator.context_output_mapping.items()}
@@ -843,8 +841,12 @@ class ReputationAggregatedCommand(AggregatedCommand):
                 "ModifiedTime": ioc.get("modifiedTime"),
             }
         )
-
-        mapped_indicator.update({"Value": ioc.get("value")})
+        if self.indicator.type == "file":
+            value = map_back_to_input(self.data, self.indicator.get_all_values_from(mapped_indicator))
+        else:
+            value = ioc.get("value", "")
+        mapped_indicator.update({"Value": value})
+        demisto.debug(f"Created TIM Indicator for {value}")
         return mapped_indicator
 
     def get_indicator_status_from_ioc(self, ioc: dict) -> str | None:
@@ -969,7 +971,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             dict[str, Any]: The mapped context.
         """
         if context_output_mapping is None:
-            demisto.debug("Mapping is None, return Empty Dict}.")
+            demisto.debug("Mapping is None, return Empty Dict.")
             return {}
 
         if not context_output_mapping:
@@ -1103,12 +1105,26 @@ class ReputationAggregatedCommand(AggregatedCommand):
 """HELPER FUNCTIONS"""
 
 
-def map_back_to_input(values: list[str], mapping: dict[str, str]):
+def map_back_to_input(values: list[str], mapping: dict[str, str]) -> str:
+    """
+    Find the original input value that matches one of the mapped hash values.
+
+    This compares `values` to `mapping.values()` case-insensitively and returns the first
+    input value that appears in the mapping (e.g., to map back from TIM hash fields to the
+    hash the user originally provided).
+
+    Args:
+        values: Original input values (e.g., hashes provided by the user).
+        mapping: Hash field → value mapping (e.g., {"MD5": "...", "SHA256": "..."}).
+
+    Returns:
+        The matching original value, or an empty string if no match is found.
+    """
     lower_mapping_values = [v.lower() for v in mapping.values()]
     for v in values:
         if v.lower() in lower_mapping_values:
             return v
-    return None
+    return ""
 
 
 def extract_indicators(data: list[str], type: str):
