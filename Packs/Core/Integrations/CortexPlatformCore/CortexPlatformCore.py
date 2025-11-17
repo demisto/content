@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 import dateparser
 from enum import Enum
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -43,6 +44,7 @@ VULNERABILITIES_SEVERITY_MAPPING = {
     "high": "SEV_060_HIGH",
     "critical": "SEV_070_CRITICAL",
 }
+
 
 class FilterBuilder:
     """
@@ -367,7 +369,7 @@ class Client(CoreClient):
         )
 
         return reply
-    
+
     def get_appsec_suggested_fix(self, issue_id: str) -> dict | None:
         reply = self._http_request(
             method="GET",
@@ -419,32 +421,28 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         "severity": issue.get("severity"),
         "description": issue.get("alert_description"),
         "remediation": issue.get("remediation"),
-        "playbook_suggestions": playbook_suggestions
+        "playbook_suggestions": playbook_suggestions,
     }
-        
-    headers = [
-        "issue_id",
-        "issue_name",
-        "severity",
-        "description",
-        "remediation"
-    ]
-    
+
+    headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
+
     # Application Security issue
-    appsec_sources = ["CAS_CVE_SCANNER", "CAS_IAC_SCANNER", "CAS_SECRET_SCANNER"]
+    appsec_sources = ["CAS_CVE_SCANNER", "CAS_IAC_SCANNER", "CAS_SECRET_SCANNER", "CAS_LICENSE_SCANNER", "CAS_SAST_SCANNER", "CAS_OPERATIONAL_RISK_SCANNER", "CAS_CI_CD_RISK_SCANNER", "CAS_DRIFT_SCANNER"]
     if issue.get("alert_source") in appsec_sources:
         manual_fix = issue.get("extended_fields", {}).get("action")
+        recommendation["remediation"] = manual_fix if manual_fix else recommendation.get("remediation")
         fix_suggestion = client.get_appsec_suggested_fix(issue_id)
         if fix_suggestion:
             recommendation.update(
                 {
-                "existing_code_block": fix_suggestion.get("existingCodeBlock", ""),
-                "suggested_code_block": fix_suggestion.get("suggestedCodeBlock", ""),
-                "remediation": manual_fix if manual_fix else recommendation.get("remediation")
-            })
+                    "existing_code_block": fix_suggestion.get("existingCodeBlock", ""),
+                    "suggested_code_block": fix_suggestion.get("suggestedCodeBlock", ""),
+                    "remediation": manual_fix if manual_fix else recommendation.get("remediation"),
+                }
+            )
             headers.append("existing_code_block")
             headers.append("suggested_code_block")
-        
+
     readable_output = tableToMarkdown(
         f"Issue Recommendations for {issue_id}",
         [recommendation],
@@ -761,24 +759,6 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
     return group_ids
 
 
-# def get_appsec_suggested_fix_command(client, args):
-#     args = demisto.args()
-#     issue_id = args.get('issue_id')
-#     params = {
-#         "showCodeBlock": args.get('show_code_block', "true"),
-#         "showRemediationInstruction": args.get('show_remediation_instruction', "true"),
-#         "showSuggestedCodeBlock": args.get('show_suggested_code_block', "true")
-#     }
-#     response = client.get_appsec_suggested_fix(issue_id, params)
-#     return CommandResults(
-#         readable_output=tableToMarkdown("AppSec Suggested Fix", response),
-#         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AppSecSuggestedFix",
-#         outputs=response,
-#         raw_response=response,
-#         outputs_key_field="issueId"
-#     )
-    
-
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -849,7 +829,7 @@ def main():  # pragma: no cover
 
         elif command == "core-get-case-extra-data":
             return_results(get_extra_data_for_case_id_command(client, args))
-            
+
         elif command == "core-search-assets":
             return_results(search_assets_command(client, args))
 
@@ -858,7 +838,7 @@ def main():  # pragma: no cover
 
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
-            
+
         # elif command == "core-appsec-suggest-fix":
         #     return_results(get_appsec_suggested_fix_command(client, args))
 
