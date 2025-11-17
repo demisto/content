@@ -362,6 +362,7 @@ class AWSServices(str, Enum):
     LAMBDA = "lambda"
     CloudTrail = "cloudtrail"
     ECS = "ecs"
+    ACM = "acm"
     KMS = "kms"
     ELB = "elb"
     CostExplorer = "ce"
@@ -3725,6 +3726,43 @@ class Lambda:
         )
 
 
+class ACM:
+    service = AWSServices.ACM
+
+    @staticmethod
+    def update_certificate_options_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Updates Certificate Transparency (CT) logging preference for an ACM certificate.
+        Args:
+            client: The AWS ACM boto3 client used to perform the update request.
+            args (dict): A dictionary containing the certificate ARN and the desired
+                transparency logging preference ("ENABLED" or "DISABLED").
+
+        Returns:
+            CommandResults: An object containing a human-readable summary of the change,
+                the raw AWS API response, and related metadata.
+        """
+        arn = args.get("certificate_arn")
+        pref = args.get("transparency_logging_preference")
+        kwargs = {"CertificateArn": arn, "Options": {"CertificateTransparencyLoggingPreference": pref}}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"UpdateCertificateOptions params: {kwargs}")
+
+        try:
+            resp = client.update_certificate_options(**kwargs)
+            status = resp.get("ResponseMetadata", {}).get("HTTPStatusCode")
+            if status in (HTTPStatus.OK, HTTPStatus.NO_CONTENT):
+                hr = f"Updated Certificate Transparency (CT) logging to '{pref}' for certificate '{arn}'."
+                return CommandResults(readable_output=hr, raw_response=resp)
+            return AWSErrorHandler.handle_response_error(resp)
+
+        except ClientError as e:
+            return AWSErrorHandler.handle_client_error(e)
+
+        except Exception as e:
+            raise DemistoException(f"Error updating certificate options for '{arn}': {str(e)}")
+
+
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
     return filepath_result
@@ -3811,6 +3849,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-bucket-encryption-get": S3.get_bucket_encryption_command,
     "aws-s3-bucket-policy-get": S3.get_bucket_policy_command,
     "aws-cloudtrail-trails-describe": CloudTrail.describe_trails_command,
+    "aws-acm-certificate-options-update": ACM.update_certificate_options_command,
     "aws-ecs-cluster-settings-update": ECS.update_cluster_settings_command,
     "aws-lambda-function-configuration-get": Lambda.get_function_configuration_command,
     "aws-lambda-function-url-config-get": Lambda.get_function_url_configuration_command,

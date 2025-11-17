@@ -6137,3 +6137,56 @@ def test_get_ipam_discovered_public_addresses_command_failure(mocker):
     }
     with pytest.raises(SystemExit):
         EC2.get_ipam_discovered_public_addresses_command(mock_client, {})
+
+
+def test_acm_update_certificate_options_success(mocker):
+    """
+    Given: A mocked ACM client returning HTTP 200 and valid args.
+    When: update_certificate_options_command is called.
+    Then: It returns CommandResults with success message and calls boto with correct kwargs.
+    """
+    from AWS import ACM, CommandResults
+
+    mock_client = mocker.Mock()
+    mock_client.update_certificate_options.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "certificate_arn": "arn:aws:acm:us-east-1:111122223333:certificate/abc-123",
+        "transparency_logging_preference": "ENABLED",
+    }
+
+    result = ACM.update_certificate_options_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Updated Certificate Transparency (CT) logging to 'ENABLED'" in result.readable_output
+
+    mock_client.update_certificate_options.assert_called_once_with(
+        CertificateArn="arn:aws:acm:us-east-1:111122223333:certificate/abc-123",
+        Options={"CertificateTransparencyLoggingPreference": "ENABLED"},
+    )
+
+
+def test_acm_update_certificate_options_non_ok_calls_handler(mocker):
+    """
+    Given: Boto returns a non-OK status code.
+    When: update_certificate_options_command is called.
+    Then: AWSErrorHandler.handle_response_error is invoked with the raw response.
+    """
+    from AWS import ACM, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    resp = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.update_certificate_options.return_value = resp
+
+    handle_resp = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+    mocker.patch("AWS.remove_nulls_from_dictionary", side_effect=lambda d: d)
+    mocker.patch("AWS.print_debug_logs")
+
+    args = {
+        "certificate_arn": "arn:aws:acm:us-east-1:111122223333:certificate/abc-123",
+        "transparency_logging_preference": "DISABLED",
+    }
+
+    ACM.update_certificate_options_command(mock_client, args)
+
+    handle_resp.assert_called_once_with(resp)
