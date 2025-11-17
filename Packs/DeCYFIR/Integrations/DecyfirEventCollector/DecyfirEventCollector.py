@@ -215,13 +215,13 @@ def update_fetched_event_ids(current_run: dict[str, Any], event_type: str, logs:
     demisto.debug(f"Updated fetched_event_ids for {event_type}. Count : {len(ids)}")
 
 
-def compute_next_fetch_time(events: List[dict[str, Any]], previous_time: Optional[datetime], event_type: str) -> Optional[str]:
+def compute_next_fetch_time(events: List[dict[str, Any]], after: int, event_type: str) -> Optional[str]:
     """
     Determine next fetch time based on the latest event timestamp.
 
     Args:
         events (List[Dict[str, Any]]): List of fetched events.
-        previous_time (Optional[datetime]): Last recorded fetch time.
+        after (int): Last recorded fetch time timestamp in ms- after param used in the current call.
         event_type (str): Type of event.
 
     Returns:
@@ -231,6 +231,7 @@ def compute_next_fetch_time(events: List[dict[str, Any]], previous_time: Optiona
     times: List[datetime] = [t for e in events if (t := extract_event_time(e, event_type)) is not None]
 
     if not times:
+        previous_time = datetime.fromtimestamp(after / 1000)
         # Fall back to previous time if no valid timestamps found
         return previous_time.isoformat() if previous_time else None
 
@@ -280,7 +281,7 @@ def fetch_events(
             add_event_fields(events, event_type)
             all_events.extend(events)
 
-        latest_time = compute_next_fetch_time(events, first_fetch_time, event_type)
+        latest_time = compute_next_fetch_time(events, after, event_type)
         current_run.setdefault(event_type, {})["next_fetch_time"] = latest_time
 
     demisto.debug(f"Fetch complete. Total events: {len(all_events)}")

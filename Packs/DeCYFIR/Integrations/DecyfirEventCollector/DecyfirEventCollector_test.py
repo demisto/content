@@ -185,7 +185,8 @@ def test_compute_next_fetch_time_from_latest(access_event):
     """
     events = [access_event]
     prev_time = datetime(2025, 11, 6, 4, 0, 0, tzinfo=UTC)
-    result = compute_next_fetch_time(events, prev_time, ACCESS_LOGS)
+    ts = prev_time.timestamp()  # seconds (float)
+    result = compute_next_fetch_time(events, int(ts * 1000), ACCESS_LOGS)
     assert "2025-11-06T04:24:12" in result
 
 
