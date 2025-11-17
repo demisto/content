@@ -91,11 +91,6 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- defaultvalue: '1'
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
 description: Integration to GitHub API.
 display: GitHub
 name: GitHub
