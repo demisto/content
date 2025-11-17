@@ -1966,22 +1966,3 @@ Deactivates the specified MFA device and removes it from association with the us
 #### Context Output
 
 There is no context output for this command.
-
-### aws-iam-update-account-password-policy-quick-action
-
-***
-Updates the password policy to require a minimum length of 14 characters, at least one lowercase letter, one uppercase letter, one symbol. Allows users to reset password, disallow reuse of the last 24 passwords and set password expiration to 90 days. It runs the aws-iam-update-account-password-policy CLI command in your AWS environment and requires the 'iam:UpdateAccountPasswordPolicy' permission.
-
-#### Base Command
-
-`aws-iam-update-account-password-policy-quick-action`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-
-#### Context Output
-
-There is no context output for this command.
