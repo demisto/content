@@ -10,7 +10,7 @@ This integration utilizes Analyst1's system API to:
 2. submit Evidence as content created in XSOAR, downloaded by XSOAR, or a synthesis of both back to Analsyt1 as 'evidence'.
 3. access the Analyst1 Sensor records to get indicator and/or signature tasking definitions for deployment to IDS/IPS/Firewall/XDR/other boundary tools.
 
-This integration was integrated and tested with version 2.1.0 of Analyst1.
+This integration was integrated and tested with version 2.1.12 of Analyst1.
 
 For full documentation on the Analyst1 API, please access the "Help" or "Guides" section within your Analyst1 instance. For help please contact support@analyst1.com.
 
@@ -46,7 +46,30 @@ For additional example playbooks please contact support@analyst1.com.
     * __Domain of Analyst1 server to use__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
+    * __Source Reliability__: Reliability of the source providing the intelligence data (default: B - Usually reliable)
+    * __Risk Score Mapping: Lowest__: XSOAR Verdict to set when Analyst1 Risk Score is "Lowest" (default: Benign)
+    * __Risk Score Mapping: Low__: XSOAR Verdict to set when Analyst1 Risk Score is "Low" (default: Unknown)
+    * __Risk Score Mapping: Moderate__: XSOAR Verdict to set when Analyst1 Risk Score is "Moderate" (default: Suspicious)
+    * __Risk Score Mapping: High__: XSOAR Verdict to set when Analyst1 Risk Score is "High" (default: Suspicious)
+    * __Risk Score Mapping: Critical__: XSOAR Verdict to set when Analyst1 Risk Score is "Critical" (default: Malicious)
+    * __Risk Score Mapping: Unknown__: XSOAR Verdict to set when Analyst1 Risk Score is "Unknown" or not present (default: Unknown)
 4. Click __Test__ to validate the URLs, token, and connection.
+
+### Risk Score to XSOAR Verdict Mapping
+
+The Analyst1 integration uses the Risk Score from Analyst1 indicators to determine the XSOAR Verdict (Unknown, Benign, Suspicious, Malicious).
+
+__Important Notes:__
+
+* If an indicator has `benign=true` in Analyst1, the XSOAR Verdict will always be set to __Benign__, regardless of the risk score.
+* The risk score mappings are configurable per integration instance, allowing you to customize how Analyst1 risk scores map to XSOAR verdicts.
+* Default mappings:
+  * __Lowest__ → Benign (1)
+  * __Low__ → Unknown (0)
+  * __Moderate__ → Suspicious (2)
+  * __High__ → Suspicious (2)
+  * __Critical__ → Malicious (3)
+  * __Unknown__ → Unknown (0)
 
 ## Commands
 
@@ -108,6 +131,7 @@ Queries the Analyst1 REST API and enriches the given domain with Analyst1 Indica
 | Analyst1.Domain.Actors.Name | string | Each matched actor name in Analyst1. |
 | Analyst1.Domain.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
 | Analyst1.Domain.IpResolution | string | The resolved IP address for this domain. |
+| Analyst1.Domain.RiskScore | string | The Analyst1 risk score for this indicator (Lowest, Low, Moderate, High, Critical, Unknown). |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Score | Number | The actual score. |
 | DBotScore.Type | String | The indicator type. |
@@ -196,6 +220,7 @@ Queries the Analyst1 REST API and enriches the given email with Analyst1 indicat
 | Analyst1.Email.Actors.ID | number | Each matched actor unique identifier in Analyst1. |
 | Analyst1.Email.Actors.Name | string | Each matched actor name in Analyst1. |
 | Analyst1.Email.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
+| Analyst1.Email.RiskScore | string | The Analyst1 risk score for this indicator (Lowest, Low, Moderate, High, Critical, Unknown). |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Score | Number | The actual score. |
 | DBotScore.Type | String | The indicator type. |
@@ -289,6 +314,7 @@ Queries the Analyst1 REST API and enriches the given IP address with Analyst1 in
 | Analyst1.Ip.Actors.ID | number | Each matched actor unique identifier in Analyst1. |
 | Analyst1.Ip.Actors.Name | string | Each matched actor name in Analyst1. |
 | Analyst1.Ip.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
+| Analyst1.Ip.RiskScore | string | The Analyst1 risk score for this indicator (Lowest, Low, Moderate, High, Critical, Unknown). |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Score | Number | The actual score. |
 | DBotScore.Type | String | The indicator type. |
@@ -379,6 +405,7 @@ Queries the Analyst1 REST API and enriches the given file with Analyst1 indicato
 | Analyst1.File.Actors.ID | number | Each matched actor unique identifier in Analyst1. |
 | Analyst1.File.Actors.Name | string | Each matched actor name in Analyst1. |
 | Analyst1.File.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
+| Analyst1.File.RiskScore | string | The Analyst1 risk score for this indicator (Lowest, Low, Moderate, High, Critical, Unknown). |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Score | Number | The actual score. |
 | DBotScore.Type | String | The indicator type. |
@@ -479,6 +506,7 @@ Queries the Analyst1 REST API and enriches the given string with Analyst1 indica
 | Analyst1.String.Actors.ID | number | Each matched actor unique identifier in Analyst1. |
 | Analyst1.String.Actors.Name | string | Each matched actor name in Analyst1. |
 | Analyst1.String.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
+| Analyst1.String.RiskScore | string | The Analyst1 risk score for this indicator (Lowest, Low, Moderate, High, Critical, Unknown). |
 
 #### Command Example
 
@@ -562,6 +590,7 @@ Queries the Analyst1 REST API and enriches the given IP address with Analyst1 in
 | Analyst1.Ipv6.Actors.ID | number | Each matched actor unique identifier in Analyst1. |
 | Analyst1.Ipv6.Actors.Name | string | Each matched actor name in Analyst1. |
 | Analyst1.Ipv6.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
+| Analyst1.Ipv6.RiskScore | string | The Analyst1 risk score for this indicator (Lowest, Low, Moderate, High, Critical, Unknown). |
 
 #### Command Example
 
@@ -634,6 +663,7 @@ Queries the Analyst1 REST API and enriches the given mutex with Analyst1 indicat
 | Analyst1.Mutex.Actors.ID | number | Each matched actor unique identifier in Analyst1. |
 | Analyst1.Mutex.Actors.Name | string | Each matched actor name in Analyst1. |
 | Analyst1.Mutex.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
+| Analyst1.Mutex.RiskScore | string | The Analyst1 risk score for this indicator (Lowest, Low, Moderate, High, Critical, Unknown). |
 
 #### Command Example
 
@@ -720,6 +750,7 @@ Queries the Analyst1 REST API and enriches the given HTTP request with Analyst1 
 | Analyst1.Httprequest.Actors.ID | number | Each matched actor unique identifier in Analyst1. |
 | Analyst1.Httprequest.Actors.Name | string | Each matched actor name in Analyst1. |
 | Analyst1.Httprequest.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
+| Analyst1.Httprequest.RiskScore | string | The Analyst1 risk score for this indicator (Lowest, Low, Moderate, High, Critical, Unknown). |
 
 #### Command Example
 
@@ -791,6 +822,7 @@ Queries the Analyst1 REST API and enriches the given URL with Analyst1 indicator
 | Analyst1.Url.Actors.ID | number | Each matched actor unique identifier in Analyst1 |
 | Analyst1.Url.Actors.Name | string | Each matched actor name in Analyst1. |
 | Analyst1.Url.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
+| Analyst1.Url.RiskScore | string | The Analyst1 risk score for this indicator (Lowest, Low, Moderate, High, Critical, Unknown). |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Score | Numbe | The actual score. |
 | DBotScore.Type | String | The indicator type. |
