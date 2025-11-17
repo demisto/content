@@ -21,7 +21,7 @@ configuration:
     displaypassword: API Key
     name: api_key
     type: 9
-    required: false
+    required: true
     hiddenusername: true
     additionalinfo: API key for authenticating with Arista VeloCloud
     section: Connect
