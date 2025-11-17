@@ -1722,7 +1722,7 @@ def reverse_ip_command():
 
     if domain:
         results = reverse_ip(domain=domain, limit=limit)
-    elif ip:
+    else:
         results = host_domains(ip=ip, limit=limit)
 
     addresses: list | dict = results.get("ip_addresses") or []
