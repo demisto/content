@@ -1645,7 +1645,7 @@ Get the list of eDiscoverySearch resources from an eDiscovery case.
 ### msg-purge-ediscovery-data
 
 ***
-Delete Exchange mailbox items or Microsoft Teams messages contained in an eDiscovery search.
+Deletes mailbox items in Exchange or messages in Microsoft Teams that are included in an eDiscovery search.
 
 You can collect and purge the following categories of Teams content:
 
