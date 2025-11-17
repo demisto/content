@@ -2,8 +2,8 @@
   "trigger_id": "48fe389e557125e4a7666870eb4994e7",
   "trigger_name": "Trigger - AWS Public Access Misconfiguration",
   "playbook_id": "AWS Public Access Misconfiguration - Auto-remediate",
-  "suggestion_reason": "Automatically resolves 9 High Severity AWS Public Access Misconfiguration detections",
-  "description": "This trigger is responsible for handling auto-remediation of 9 high severity AWS Public Access Misconfiguration detections",
+  "suggestion_reason": "Automatically secure the publicly exposed AWS resource by setting the necessary configurations to block public access immediately.",
+  "description": "This playbook automatically remediates the misconfiguration issues for publicly accessible AWS RDS databases, EBS snapshots and S3 buckets.",
   "alerts_filter": {
     "filter": {
         "OR": [
