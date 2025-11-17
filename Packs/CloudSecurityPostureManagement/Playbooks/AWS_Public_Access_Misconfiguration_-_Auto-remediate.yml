@@ -26,7 +26,7 @@ description: |-
 
   Optional stakeholder notification is available via the "Notify Stakeholders" sub-playbook by setting enableNotifications input to 'yes' (default: 'no'). When enabled, configure at least one recipient (email, Slack channel, or Teams channel) in the Notify Stakeholders playbook inputs. The playbook automatically updates issue status to "Resolved - Fixed" upon successful remediation.
 dirtyInputs: true
-id: AWS Public Access Misconfiguration - Remediate Without Review
+id: AWS Public Access Misconfiguration - Auto-remediate
 inputSections:
 - description: Generic group for inputs
   inputs:
@@ -925,3 +925,4 @@ view: |-
       }
     }
   }
+fromversion: 6.10.0
