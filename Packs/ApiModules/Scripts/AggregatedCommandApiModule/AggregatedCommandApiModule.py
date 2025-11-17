@@ -102,7 +102,7 @@ class Indicator:
         """
         Return ALL identity-like fields that exist in this entry.
         For File, that could return {"MD5": "...", "SHA1": "...", ...}
-        For URL (single value_field), this just returns {"Data": "..."} if available.
+        For URL (single value_field), this just returns {"Value": "..."} if available.
         Args:
             data (dict[str, Any]): The Context.
         Returns:
@@ -429,13 +429,12 @@ class ContextBuilder:
         """
         results: list[dict] = []
         for indicator_value, tim_context_result in self.tim_context.items():
-            current_indicator: dict[str, Any] = {}
+            current_indicator: dict[str, Any] = {"Value": indicator_value}
             if tim_indicator := [indicator for indicator in tim_context_result if indicator.get("Brand") == "TIM"]:
                 if self.indicator.type == "file":
                     current_indicator.update({"Hashes": self.indicator.get_all_values_from(tim_indicator[0])})
                 current_indicator.update(
                     {
-                        "Value": indicator_value,
                         "Status": pop_dict_value(tim_indicator[0], "Status"),
                         "ModifiedTime": pop_dict_value(tim_indicator[0], "ModifiedTime"),
                     }

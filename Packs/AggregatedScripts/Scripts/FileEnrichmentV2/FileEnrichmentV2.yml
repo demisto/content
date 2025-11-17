@@ -56,7 +56,7 @@ name: file-enrichment-v2
 outputs:
 # FileEnrichment
 - contextPath: FileEnrichment.Value
-  description: The File hash by the following rules. #TODO 
+  description: The File hash from the input Value.
   type: String
 - contextPath: FileEnrichment.Hashes.MD5
   description: The file MD5 hash if exists.
