@@ -622,7 +622,7 @@ def test_clear_user_sessions(mocker: MockerFixture):
                     "Result": "Success",
                     "Brand": "Okta v2",
                     "UserName": "user1@test.com",
-                    "UserId": "1234"
+                    "UserId": "1234",
                 },
             ],
         ),
@@ -632,32 +632,34 @@ def test_clear_user_sessions(mocker: MockerFixture):
                 "user_name": ["user1@test.com"],
                 "brands": None,
             },
-            {"user1@test.com": [
-                {"Source": "Okta v2", "Value": "11"},
-                {"Source": "Microsoft Graph User", "Value": "22"},
-                {"Source": "GSuiteAdmin", "Value": "33"},
-            ]},
+            {
+                "user1@test.com": [
+                    {"Source": "Okta v2", "Value": "11"},
+                    {"Source": "Microsoft Graph User", "Value": "22"},
+                    {"Source": "GSuiteAdmin", "Value": "33"},
+                ]
+            },
             [
                 {
                     "Message": "User session was cleared for user1@test.com",
                     "Result": "Success",
                     "Brand": "Okta v2",
                     "UserName": "user1@test.com",
-                    "UserId": "11"
+                    "UserId": "11",
                 },
                 {
                     "Message": "User session was cleared for user1@test.com",
                     "Result": "Success",
                     "Brand": "Microsoft Graph User",
                     "UserName": "user1@test.com",
-                    "UserId": "22"
+                    "UserId": "22",
                 },
                 {
                     "Message": "User session was cleared for user1@test.com",
                     "Result": "Success",
                     "Brand": "GSuiteAdmin",
                     "UserName": "user1@test.com",
-                    "UserId": "33"
+                    "UserId": "33",
                 },
             ],
         ),
@@ -674,21 +676,21 @@ def test_clear_user_sessions(mocker: MockerFixture):
                     "Result": "Success",
                     "Brand": "Okta v2",
                     "UserName": "user1@test.com",
-                    "UserId": "11"
+                    "UserId": "11",
                 },
                 {
                     "Message": "Username not found or no integration configured.",
                     "Result": "Failed",
                     "Brand": "Microsoft Graph User",
                     "UserName": "user1@test.com",
-                    "UserId": ""
+                    "UserId": "",
                 },
                 {
                     "Message": "Username not found or no integration configured.",
                     "Result": "Failed",
                     "Brand": "GSuiteAdmin",
                     "UserName": "user1@test.com",
-                    "UserId": ""
+                    "UserId": "",
                 },
             ],
         ),
@@ -729,6 +731,7 @@ def test_final_context_format(inputs, get_user_data_context, expected_output, mo
     result = mock_return_results.call_args[0][0]
     assert result[0].outputs == expected_output
 
+
 def test_main_with_user_id_argument(mocker: MockerFixture):
     """
     Given:
@@ -742,18 +745,11 @@ def test_main_with_user_id_argument(mocker: MockerFixture):
     mocker.patch.object(
         demisto,
         "args",
-        return_value={
-            "user_id": "123,456",
-            "brands": "Okta v2,Microsoft Graph User,GSuiteAdmin",
-            "verbose": "false"
-        },
+        return_value={"user_id": "123,456", "brands": "Okta v2,Microsoft Graph User,GSuiteAdmin", "verbose": "false"},
     )
 
     # Mock clear_user_sessions to return success
-    mock_clear_user_sessions = mocker.patch(
-        "ClearUserSession.clear_user_sessions",
-        return_value=([], "", None)
-    )
+    mock_clear_user_sessions = mocker.patch("ClearUserSession.clear_user_sessions", return_value=([], "", None))
 
     # Mock return_results
     mock_return_results = mocker.patch("ClearUserSession.return_results")
@@ -771,13 +767,13 @@ def test_main_with_user_id_argument(mocker: MockerFixture):
     result = mock_return_results.call_args[0][0]
     outputs = result[0].outputs
 
-    # Should have 4 entries (2 user_ids * 3 brands)
-    assert len(outputs) == 3
+    # Should have 6 entries (2 user_ids * 3 brands)
+    assert len(outputs) == 6
 
     # Verify each output has the expected structure
     for output in outputs:
         assert output["Result"] == "Success"
-        assert output["Brand"] in ["Okta v2", "Microsoft Graph User", "GsuiteAdmin"]
+        assert output["Brand"] in ["Okta v2", "Microsoft Graph User", "GSuiteAdmin"]
         assert output["UserId"] in ["123", "456"]
         assert output["UserName"] == ""
 
@@ -800,7 +796,7 @@ def test_main_skip_duplicate_users_with_user_id(mocker: MockerFixture):
         return_value={
             "user_name": "user1@test.com,user2@test.com",
             "user_id": "123,456",
-            "brands": "Okta v2,Microsoft Graph User"
+            "brands": "Okta v2,Microsoft Graph User",
         },
     )
 
@@ -817,10 +813,7 @@ def test_main_skip_duplicate_users_with_user_id(mocker: MockerFixture):
     )
 
     # Mock clear_user_sessions
-    mock_clear_user_sessions = mocker.patch(
-        "ClearUserSession.clear_user_sessions",
-        return_value=([], "", None)
-    )
+    mock_clear_user_sessions = mocker.patch("ClearUserSession.clear_user_sessions", return_value=([], "", None))
 
     # Mock demisto.debug to capture skip messages
     mock_debug = mocker.patch.object(demisto, "debug")
@@ -832,8 +825,9 @@ def test_main_skip_duplicate_users_with_user_id(mocker: MockerFixture):
     main()
 
     # Verify that debug messages were logged for skipped users
-    skip_calls = [call for call in mock_debug.call_args_list
-                  if "Already performed action for that user using their id" in str(call)]
+    skip_calls = [
+        call for call in mock_debug.call_args_list if "Already performed action for that user using their id" in str(call)
+    ]
     assert len(skip_calls) == 2  # Both users should be skipped
 
     # Should only have 4 calls for user_ids (2 user_ids * 2 brands), no additional calls for user_names
@@ -864,11 +858,7 @@ def test_main_partial_user_id_overlap(mocker: MockerFixture):
     mocker.patch.object(
         demisto,
         "args",
-        return_value={
-            "user_name": "user1@test.com,user2@test.com,user3@test.com",
-            "user_id": "123",
-            "brands": "Okta v2"
-        },
+        return_value={"user_name": "user1@test.com,user2@test.com,user3@test.com", "user_id": "123", "brands": "Okta v2"},
     )
 
     # Mock get_user_data - user1 overlaps with user_id, user2 and user3 don't
@@ -885,10 +875,7 @@ def test_main_partial_user_id_overlap(mocker: MockerFixture):
     )
 
     # Mock clear_user_sessions
-    mock_clear_user_sessions = mocker.patch(
-        "ClearUserSession.clear_user_sessions",
-        return_value=([], "", None)
-    )
+    mock_clear_user_sessions = mocker.patch("ClearUserSession.clear_user_sessions", return_value=([], "", None))
 
     # Mock demisto.debug
     mock_debug = mocker.patch.object(demisto, "debug")
@@ -900,8 +887,9 @@ def test_main_partial_user_id_overlap(mocker: MockerFixture):
     main()
 
     # Verify that only user1 was skipped
-    skip_calls = [call for call in mock_debug.call_args_list
-                  if "Already performed action for that user using their id 123" in str(call)]
+    skip_calls = [
+        call for call in mock_debug.call_args_list if "Already performed action for that user using their id 123" in str(call)
+    ]
     assert len(skip_calls) == 1
 
     # Should have 3 calls total: 1 for user_id + 2 for non-overlapping user_names
@@ -936,11 +924,7 @@ def test_main_user_id_with_multiple_brands_overlap(mocker: MockerFixture):
     mocker.patch.object(
         demisto,
         "args",
-        return_value={
-            "user_name": "user1@test.com",
-            "user_id": "123",
-            "brands": "Okta v2,Microsoft Graph User,GSuiteAdmin"
-        },
+        return_value={"user_name": "user1@test.com", "user_id": "123", "brands": "Okta v2,Microsoft Graph User,GSuiteAdmin"},
     )
 
     # Mock get_user_data - user1 has IDs in all brands, but only Okta ID matches user_id
@@ -950,19 +934,16 @@ def test_main_user_id_with_multiple_brands_overlap(mocker: MockerFixture):
             [],
             {
                 "user1@test.com": [
-                    {"Source": "Okta v2", "Value": "123"},           # Matches user_id
+                    {"Source": "Okta v2", "Value": "123"},  # Matches user_id
                     {"Source": "Microsoft Graph User", "Value": "456"},  # Doesn't match
-                    {"Source": "GSuiteAdmin", "Value": "789"},       # Doesn't match
+                    {"Source": "GSuiteAdmin", "Value": "789"},  # Doesn't match
                 ],
             },
         ),
     )
 
     # Mock clear_user_sessions
-    mock_clear_user_sessions = mocker.patch(
-        "ClearUserSession.clear_user_sessions",
-        return_value=([], "", None)
-    )
+    mock_clear_user_sessions = mocker.patch("ClearUserSession.clear_user_sessions", return_value=([], "", None))
 
     # Mock demisto.debug
     mock_debug = mocker.patch.object(demisto, "debug")
@@ -974,8 +955,9 @@ def test_main_user_id_with_multiple_brands_overlap(mocker: MockerFixture):
     main()
 
     # Verify that user1 was skipped
-    skip_calls = [call for call in mock_debug.call_args_list
-                  if "Already performed action for that user using their id 123" in str(call)]
+    skip_calls = [
+        call for call in mock_debug.call_args_list if "Already performed action for that user using their id 123" in str(call)
+    ]
     assert len(skip_calls) == 1
 
     # Should have 3 calls only for user_id (1 user_id * 3 brands)
@@ -994,4 +976,3 @@ def test_main_user_id_with_multiple_brands_overlap(mocker: MockerFixture):
     for output in outputs:
         assert output["UserId"] == "123"
         assert output["UserName"] == ""
-

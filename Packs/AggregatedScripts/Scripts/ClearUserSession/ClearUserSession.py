@@ -13,14 +13,9 @@ SYSTEM_USERS = {"administrator", "system"}
 COMMANDS_BY_BRAND = {
     OKTA_BRAND: "okta-clear-user-sessions",
     MS_GRAPH_BRAND: "msgraph-user-session-revoke",
-    GSUITE_BRAND: "gsuite-user-signout"
+    GSUITE_BRAND: "gsuite-user-signout",
 }
-ARG_NAME_BY_BRAND = {
-    OKTA_BRAND: "userId",
-    MS_GRAPH_BRAND: "user",
-    GSUITE_BRAND: "user_key"
-}
-
+ARG_NAME_BY_BRAND = {OKTA_BRAND: "userId", MS_GRAPH_BRAND: "user", GSUITE_BRAND: "user_key"}
 
 
 class Command:
@@ -332,6 +327,7 @@ def create_readable_output(outputs: list):
 
     return readable_output
 
+
 def run_command(
     user_id: str,
     results_for_verbose: list[CommandResults],
@@ -377,17 +373,10 @@ def main():
             for brand in brands:
                 run_command(user_id, results_for_verbose, clear_session_results, brand)
             for brand, result, message in clear_session_results:
-                user_output = {
-                    "Message": message,
-                    "Result": result,
-                    "Brand": brand,
-                    "UserId": user_id,
-                    "UserName": ""
-                }
+                user_output = {"Message": message, "Result": result, "Brand": brand, "UserId": user_id, "UserName": ""}
                 outputs.append(user_output)
 
         command_results_list: list[CommandResults] = []
-
 
         # get ID for users
         get_user_data_command = Command(
@@ -418,7 +407,7 @@ def main():
 
             demisto.debug(f"Start getting user account data for user: {user_name=}")
 
-            clear_session_results: list[tuple[str, str, str]] = []
+            clear_session_results = []
             # Okta v2
             if okta_v2_id:
                 run_command(okta_v2_id, results_for_verbose, clear_session_results, OKTA_BRAND, user_name)
