@@ -41,7 +41,7 @@ script:
       required: true
     - description: The external IP address of the endpoint.
       name: external_ip
-      required: true
+      required: false
     - description: Allow multiple endpoints to be added to the risk plan.
       name: allow_multiple_endpoints
       required: false
@@ -63,7 +63,7 @@ script:
       required: true
     - description: The external IP address of the endpoint.
       name: external_ip
-      required: true
+      required: false
     - description: Allow multiple endpoints to be removed from risk plan.
       name: allow_multiple_endpoints
       required: false

@@ -59,7 +59,9 @@ def search_endpoints(endpoint_name: str, external_ip: str, allow_multiple_endpoi
     Returns:
         list: A list of endpoint IDs that match the search criteria.
     """
-    data = {"filter": f"name EQ {endpoint_name} and ip EQ {external_ip}"}
+    search_filter = f"name EQ {endpoint_name}{'and ip EQ {external_ip}' if external_ip else ''}"
+    demisto.info(f"Endpoint Search filter: {search_filter}")
+    data = {"filter": search_filter}
     sets = client.get_sets()
     if client.set_name:
         set_ids = [set["Id"] for set in sets.get("Sets", []) if client.set_name in set.get("Name")]
