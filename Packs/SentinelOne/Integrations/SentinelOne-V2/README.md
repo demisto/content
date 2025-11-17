@@ -2082,3 +2082,26 @@ To set up the mirroring:
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and SentinelOne v2.
+
+### sentinelone-threat-download-from-cloud
+
+***
+Download a file associated with the threat from the Cloud (BinaryVault).
+
+#### Base Command
+
+`sentinelone-threat-download-from-cloud`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| threat_id | Please provide the Valid Threat ID. Example: 14629133470822878. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Threat.ID | String | The threat ID. |
+| SentinelOne.Threat.Downloadable | Boolean | Whether the file is downloadable. |
+| SentinelOne.Threat.ZippedFile | String | Details of the zipped folder. |
