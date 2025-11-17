@@ -887,7 +887,7 @@ def find_indicators(
 def remove_old_cache(integration_context: dict) -> None:
     """Remove expired entries from cache['search_after_cache'] if older than 24 hours."""
     now = datetime.now(timezone.utc)
-    expiry_time = timedelta(hours=24)
+    expiry_time = timedelta(hours=48)
     # expiry_time = timedelta(minutes=10)
 
     search_cache = integration_context.get(SEARCH_AFTER_KEY_NAME)
