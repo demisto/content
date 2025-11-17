@@ -1,8 +1,8 @@
 args:
-- description: A list of usernames to run a session clearance operation for.
+- description: A list of usernames to run the session clearance operation for.
   name: user_name
   isArray: true
-- description: A list of user ids to run a session clearance operation for.
+- description: A list of user ids to run the session clearance operation for.
   name: user_id
   isArray: true
 - description: |-
