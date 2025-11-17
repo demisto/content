@@ -513,7 +513,7 @@ script:
         e.g., UseAccounts,RetrieveAccounts.
       isArray: true
       name: permissions
-    - description: The name of the safe to add a member to.
+    - description: The URL encoded name of the safe to add a member to.
       name: safe_name
       required: true
     - auto: PREDEFINED
@@ -557,7 +557,7 @@ script:
         e.g., UseAccounts,RetrieveAccounts.
       isArray: true
       name: permissions
-    - description: The name of the safe to which the safe member belongs.
+    - description: The URL encoded name of the safe to which the safe member belongs.
       name: safe_name
       required: true
     - auto: PREDEFINED
@@ -589,7 +589,7 @@ script:
       description: The vault or domain where the user or group was found.
       type: String
   - arguments:
-    - description: The name of the safe to delete a member from.
+    - description: The URL encoded name of the safe to delete a member from.
       name: safe_name
       required: true
     - description: The name of the safe member to delete from the safe’s list of members.
@@ -694,8 +694,26 @@ script:
     description: Delete a specific account in the vault.
     name: cyberark-pas-account-delete
     outputs:
+    - contextPath: CyberArkPAS.Accounts.id
+      description: The unique ID of the account.
+      type: String
+    - contextPath: CyberArkPAS.Accounts.secretManagement
+      description: Whether the account secret is automatically managed by the CPM.
+      type: String
+    - contextPath: CyberArkPAS.Accounts.address
+      description: The name or address of the machine where the account will be used.
+      type: String
+    - contextPath: CyberArkPAS.Accounts.secretType
+      description: The type of password.
+      type: String
+    - contextPath: CyberArkPAS.Accounts.safeName
+      description: The safe where the account was created.
+      type: String
+    - contextPath: CyberArkPAS.Accounts.userName
+      description: The user name of the account.
+      type: String
     - contextPath: CyberArkPAS.Accounts.Deleted
-      description: Whether the safe was deleted.
+      description: Whether the account was deleted.
       type: Boolean
   - arguments:
     - description: The unique ID of the account to update.
@@ -934,7 +952,7 @@ script:
     - contextPath: CyberArkPAS.SecurityEvents.type
       description: The type of the security events.
       type: String
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   runonce: false
   script: '-'

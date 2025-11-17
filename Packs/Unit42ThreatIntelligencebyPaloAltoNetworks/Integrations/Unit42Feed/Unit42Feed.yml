@@ -2,7 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Unit 42 Feed
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

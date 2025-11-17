@@ -3961,11 +3961,6 @@
         {
             "integrations": "MicrosoftGraphApplications",
             "playbookID": "MSGraph Applications Test",
-            "instance_names": "ms_graph_applications_device_code"
-        },
-        {
-            "integrations": "MicrosoftGraphApplications",
-            "playbookID": "MSGraph Applications Test",
             "instance_names": "ms_graph_applications_client_cred"
         },
         {
@@ -4855,6 +4850,7 @@
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
             "memory_threshold": 300,
+            "timeout": 1200,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -5888,6 +5884,7 @@
         },
         {
             "playbookID": "QuarantineFile-Test",
+            "integrations": "Cortex XDR - IR",
             "timeout": 300,
             "fromversion": "6.10.0"
         },
@@ -5940,8 +5937,21 @@
             "fromversion": "6.10.0"
         },
         {
+            "playbookID": "GetEndpointData-Test",
+            "integrations": ["Active Directory Query v2", "CrowdstrikeFalcon", "FireEyeHX v2", "Cortex XDR - IR"],
+            "instance_names": [
+                "active_directory_80k"
+            ],
+            "timeout": 300,
+            "fromversion": "6.10.0"
+        },
+        {
             "integrations": "Unit 42 Intelligence",
             "playbookID": "Unit 42 Intelligence Test"
+        },
+        {
+            "playbookID": "CVEEnrichment-Test",
+            "integrations": ["CIRCL CVE Search","Palo Alto Networks Threat Vault v2"]
         }
     ],
     "skipped_tests": {
@@ -6275,7 +6285,6 @@
         "ThreatGridv2": "No instance - developed by Qmasters",
         "SentinelOne V2": "No instance - developed by partner",
         "CheckPhish": "Issue CRTX-86562",
-        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure.",
         "ThreatExchange v2": "No instance",
         "PhishLabs IOC EIR": "No instance, CRTX-91214",
         "fortimail": "No instance",
@@ -6343,6 +6352,7 @@
         "PaloAltoNetworks_IoT",
         "PaloAltoNetworksAIOps",
         "Jira",
+        "AggregatedScripts",
         "Campaign"
     ],
     "selected_nightly_tpb": [
@@ -6400,7 +6410,8 @@
         "servicenow_test_v2",
         "Rasterize Test",
         "AbuseIPDB Test",
-        "AbuseIPDB PopulateIndicators Test"
+        "AbuseIPDB PopulateIndicators Test",
+        "O365-SecurityAndComplianceV2-Test"
     ],
     "parallel_integrations": [
         "AWS - ACM",

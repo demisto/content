@@ -1,0 +1,29 @@
+commonfields:
+  id: ArrayAnyMatch
+  version: -1
+name: ArrayAnyMatch
+script: ''
+type: javascript
+tags:
+- general
+- transformer
+- entirelist
+comment: Returns true if an element is shared between two lists.
+enabled: true
+args:
+- name: left
+  required: true
+  default: true
+  description: Left list.
+  isArray: true
+- name: right
+  required: true
+  default: true
+  description: An array in which to check if an element is in the left list.
+  isArray: true
+scripttarget: 0
+isllm: false
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -65,34 +65,28 @@ To configure Microsoft Azure WAF to send logs to Cortex XSIAM, follow the below 
 
 ### Stream Logs Flow
 
-1. Sign in to the **Microsoft Entra admin center**.
-2. Navigate to **Identity** &rarr; **Monitoring & health** &rarr; **Diagnostic settings**.
-    - To stream Front Door logs, select the relevant Front Door profile
-    - Within the profile, navigate to **Monitoring**, and select **Diagnostic Setting**.
-    - Select the log options for FrontDoorAccessLog and FrontDoorWebApplicationFirewallLog.
-3. Select **+ Add diagnostic setting** to create a new integration or select **Edit setting** for an existing integration.
-4. Enter a **Diagnostic setting name**. If you're editing an existing integration, you can't change the name.
-5. Select the log categories that you want to stream. Refer to the **Log Normalization** section for the supported log categories for normalization.
-6. Select the streaming and storing method.
-
-   6.1. For Event Hub:
+1. Sign in to the **Azure Portal**.
+2. Navigate to Your WAF Resource:
+   - To stream **Front Door (Global WAF)** logs, select the relevant **Front Door** profile.
+   - To stream **Application Gateway (Regional WAF)** logs, select the relevant **Application Gateway** resource.
+   - Within the resource, navigate to **Monitoring**, and select **Diagnostic settings**.
+   - Select the log options for the appropriate WAF type:
+     - **Front Door:** `FrontDoorAccessLog`, `FrontDoorWebApplicationFirewallLog`
+     - **Application Gateway:** `ApplicationGatewayAccessLog`, `ApplicationGatewayFirewallLog`
+3. Select **Add diagnostic setting** to create a new integration, or select **Edit setting** for an existing integration.
+4. Enter a **Diagnostic setting name**.  
+   - If you're editing an existing integration, you can't change the name.
+5. Select the log categories that you want to stream.  
+   Refer to the **Log Normalization** section for supported log categories for normalization.
+6. Select the Event Hub streaming method.
    - Click the **Stream to an event hub** checkbox.
-   - (Optional) Click **Archive to a storage account** to save the diagnostic logs.
-   - Under **Subscription** choose the relevant Azure subscription.
-   - Under **Event Hub Namespace** select the event hub namespace.
-   - (Optional) Select event hub name.
+   - Under **Subscription**, choose the relevant Azure subscription.
+   - Under **Event Hub Namespace**, select the Event Hub namespace.
+7. Select **Save** to apply your configuration.
 
-   6.2. For Log Analytics:
-   - Click the **Send To Log Analytics** checkbox.
-   - (Optional) Click **Archive to a storage account** to save the diagnostic logs.
-   - Under **Subscription** choose the relevant Azure subscription.
-   - Under **Log Analytics Workspace** select the Log Analytics workspace to store the logs.
+For more information, refer to Microsoft's official [Azure Front Door Logs](https://learn.microsoft.com/en-us/azure/frontdoor/standard-premium/how-to-logs) or [Azure Application Gateway](https://learn.microsoft.com/en-us/azure/application-gateway/application-gateway-diagnostics).
 
-For more information, refer to Microsoft's official [documentation](https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub).
-
-For more information on creating a Log Analytics workspace, see [Create a Log Analytics workspace](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/quick-create-workspace?tabs=azure-portal).
-
-### Cortex XSIAM side
+### Cortex side
 
 To connect Cortex XSIAM to the Azure Event Hub, follow the below steps.
 

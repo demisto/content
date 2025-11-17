@@ -96,6 +96,7 @@ args:
   - HH:mm:ss
   description: The name of a key to choose which time component to return.
 scripttarget: 0
+isllm: false
 subtype: python3
 dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
