@@ -31,7 +31,6 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
-  display: ''
 - display: Credentials
   name: credentials
   type: 9
