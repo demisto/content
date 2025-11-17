@@ -102,6 +102,7 @@
             ]
         },
         "customFields": {
+            "mitreid": "",
             "stixid": "attack-pattern--19da6e1c-71ab-4c2f-886d-d620d09d3b5a",
             "firstseenbysource": "2016-08-08T15:50:10.983Z",
             "modified": "2017-01-30T21:15:04.127Z",
@@ -137,6 +138,7 @@
             ]
         },
         "customFields": {
+            "mitreid": "",
             "stixid": "attack-pattern--f6050ea6-a9a3-4524-93ed-c27858d6cb3c",
             "firstseenbysource": "2016-08-08T15:50:10.983Z",
             "modified": "2017-01-30T21:15:04.127Z",

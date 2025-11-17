@@ -1458,6 +1458,7 @@
       ]
     },
     "customFields": {
+      "mitreid": "",
       "stixid": "attack-pattern--3098c57b-d623-4c11-92f4-5905da66658b",
       "firstseenbysource": "2015-05-15T09:12:16.432Z",
       "modified": "2015-05-15T09:12:16.432Z",
@@ -1495,6 +1496,7 @@
       ]
     },
     "customFields": {
+      "mitreid": "",
       "stixid": "attack-pattern--1e2c4237-d469-4144-9c0b-9e5c0c513c49",
       "firstseenbysource": "2015-05-15T09:12:16.432Z",
       "modified": "2015-05-15T09:12:16.432Z",
@@ -1558,6 +1560,7 @@
       ]
     },
     "customFields": {
+      "mitreid": "",
       "stixid": "attack-pattern--e13f3e6d-4f9c-4265-b1cf-f997a1bf7827",
       "firstseenbysource": "2015-05-15T09:12:16.432Z",
       "modified": "2015-05-15T09:12:16.432Z",
@@ -1711,6 +1714,7 @@
       ]
     },
     "customFields": {
+      "mitreid": "",
       "stixid": "attack-pattern--5728f45b-2eca-4942-a7f6-bc4267c1ab8d",
       "firstseenbysource": "2015-05-15T09:12:16.432Z",
       "modified": "2015-05-15T09:12:16.432Z",
@@ -1742,6 +1746,7 @@
       ]
     },
     "customFields": {
+      "mitreid": "",
       "stixid": "attack-pattern--0bea2358-c244-4905-a664-a5cdce7bb767",
       "firstseenbysource": "2015-05-15T09:12:16.432Z",
       "modified": "2015-05-15T09:12:16.432Z",
@@ -1773,6 +1778,7 @@
       ]
     },
     "customFields": {
+      "mitreid": "",
       "stixid": "attack-pattern--7151c6d0-7e97-47ce-9290-087315ea3db7",
       "firstseenbysource": "2015-05-15T09:12:16.432Z",
       "modified": "2015-05-15T09:12:16.432Z",
@@ -1804,6 +1810,7 @@
       ]
     },
     "customFields": {
+      "mitreid": "",
       "stixid": "attack-pattern--0781fe70-4c94-4300-8865-4b08b98611b4",
       "firstseenbysource": "2015-05-15T09:12:16.432Z",
       "modified": "2015-05-15T09:12:16.432Z",
