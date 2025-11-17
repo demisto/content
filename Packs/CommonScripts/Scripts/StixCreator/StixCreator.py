@@ -259,11 +259,11 @@ def main():
                                 # STIX requires objects with kill_chain_name and phase_name (lowercase with hyphens)
                                 # Docs for this can be found here: https://docs.oasis-open.org/cti/stix/v2.1/os/stix-v2.1-os.html#_i4tjv75ce50h
                                 stix_kill_chain_phases = []
-                                
+
                                 # Handle both list and comma-separated string formats
                                 if isinstance(kill_chain_phases, str):
                                     kill_chain_phases = [phase.strip() for phase in kill_chain_phases.split(",")]
-                                
+
                                 for phase in kill_chain_phases:
                                     # Strip whitespace and convert human-readable name to lowercase with hyphens
                                     # e.g., " Defense Evasion" -> "defense-evasion"
