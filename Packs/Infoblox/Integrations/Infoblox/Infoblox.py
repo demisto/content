@@ -6,7 +6,9 @@ from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
 from collections.abc import Callable
+import ipaddress
 from typing import Any, cast
+from urllib.parse import unquote
 
 import urllib3
 
@@ -100,10 +102,30 @@ NETWORK_INFO_MAPPING: dict[str, str] = {
     INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY: INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY,
 }
 
-INTEGRATION_IPV4_CONTEXT_NAME = "IP"
+INTEGRATION_IP_CONTEXT_NAME = "IP"
 INTEGRATION_MAX_RESULTS_DEFAULT = 50
 
 RESPONSE_TRANSLATION_DICTIONARY = {"_ref": "ReferenceID", "fqdn": "FQDN", "rp_zone": "Zone"}
+RESPONSE_KEY_REFACTOR_DICTIONARY = {
+    "dns_name": "DNSName",
+    "ddns_protected": "DDNSProtected",
+    "ipv4addrs": "IPV4Addresses",
+    "ipv6addrs": "IPV6Addresses",
+    "ipv4addr": "IPV4Address",
+    "ipv6addr": "IPV6Address",
+    "configure_for_dhcp": "ConfigureForDHCP",
+    "ipv6_prefix_bits": "IPV6PrefixBits",
+    "rrset_order": "RRSetOrder",
+    "use_cli_credentials": "UseCLICredentials",
+    "use_snmp_credential": "UseSNMPCredential",
+    "use_snmp3_credential": "UseSNMP3Credential",
+    "use_ttl": "UseTTL",
+    "is_invalid_mac": "IsInvalidMAC",
+    "cltt": "CLTT",
+    "uid": "UID",
+    "configure_for_dns": "ConfigureForDNS",
+    "tstp": "TSTP",
+}
 
 RPZ_RULES_DICT = {
     "Passthru": {
@@ -198,7 +220,26 @@ class InfoBloxNIOSClient(BaseClient):
     }
     REQUEST_PARAM_CREATE_RULE = {REQUEST_PARAM_RETURN_FIELDS_KEY: "name,rp_zone,comment,canonical,disable"}
     REQUEST_PARAM_LIST_RULES = {REQUEST_PARAM_RETURN_FIELDS_KEY: "name,zone,comment,disable,type"}
-    REQUEST_PARAM_SEARCH_RULES = {REQUEST_PARAM_RETURN_FIELDS_KEY: "name,zone,comment,disable"}
+    REQUEST_PARAM_SEARCH_RULES = {REQUEST_PARAM_RETURN_FIELDS_KEY: "name,zone,comment,disable,canonical"}
+    REQUEST_PARAM_UPDATE_RULE = {REQUEST_PARAM_RETURN_FIELDS_KEY: "name,rp_zone,comment,canonical,disable,view,zone,extattrs"}
+    REQUEST_PARAM_CREATE_HOST = {
+        REQUEST_PARAM_RETURN_FIELDS_KEY: (
+            "aliases,allow_telnet,cli_credentials,cloud_info,comment,configure_for_dns,ddns_protected,"
+            "device_description,device_location,device_type,device_vendor,disable,disable_discovery,"
+            "dns_aliases,dns_name,extattrs,ipv4addrs,ipv6addrs,ms_ad_user_data,name,network_view,"
+            "rrset_order,snmp3_credential,snmp_credential,ttl,use_cli_credentials,use_snmp3_credential,"
+            "use_snmp_credential,use_ttl,view,zone"
+        )
+    }
+    REQUEST_PARAM_DHCP_LEASE_LOOKUP = {
+        REQUEST_PARAM_RETURN_FIELDS_KEY: (
+            "address,billing_class,binding_state,client_hostname,cltt,discovered_data,ends,hardware,"
+            "ipv6_duid,ipv6_iaid,ipv6_preferred_lifetime,ipv6_prefix_bits,is_invalid_mac,ms_ad_user_data,"
+            "network,network_view,never_ends,never_starts,next_binding_state,on_commit,on_expiry,on_release,"
+            "option,protocol,remote_id,served_by,server_host_name,starts,tsfp,tstp,uid,username,variable,"
+            "fingerprint"
+        )
+    }
 
     REQUEST_PARAM_PAGING_FLAG = {"_paging": "1"}
     REQUEST_PARAM_MAX_RESULTS_KEY = "_max_results"
@@ -255,27 +296,33 @@ class InfoBloxNIOSClient(BaseClient):
         """
         return self.list_response_policy_zones()
 
-    def list_response_policy_zones(self, max_results: int | None = None) -> dict:
+    def list_response_policy_zones(
+        self, max_results: int | None = None, fqdn: str | None = None, view: str | None = None, comment: str | None = None
+    ) -> dict:
         """List all response policy zones.
         Args:
                 max_results:  maximum number of results
+                fqdn:  FQDN of the response policy zone
+                view:  View of the response policy zone
+                comment:  Comment of the response policy zone
         Returns:
             Response JSON
         """
         suffix = "zone_rp"
-        request_params = assign_params(_max_results=max_results)
+        request_params = assign_params(_max_results=max_results, fqdn=fqdn, view=view, comment=comment)
         request_params.update(self.REQUEST_PARAM_ZONE)
         return self._http_request("GET", suffix, params=request_params)
 
-    def get_ipv4_address_from_ip(
+    def get_ip_address_from_ip(
         self,
         ip: str,
         status: str,
         extended_attributes: Optional[str],
         max_results: Optional[int] = INTEGRATION_MAX_RESULTS_DEFAULT,
+        ip_type: Optional[str] = "ipv4",
     ) -> dict:
         """
-        Get IPv4 information based on an IP address.
+        Get IPv4 or IPv6 information based on an IP address.
         Args:
         - `ip` (``str``): ip to retrieve.
         - `status` (``str``): status of the IP address.
@@ -297,17 +344,22 @@ class InfoBloxNIOSClient(BaseClient):
             for e in extended_attributes_params:
                 request_params.update(e)
 
-        return self._get_ipv4_addresses(params=request_params)
+        return (
+            self._get_ipv4_addresses(params=request_params)
+            if ip_type == "ipv4"
+            else self._get_ipv6_addresses(params=request_params)
+        )
 
-    def get_ipv4_address_from_netmask(
+    def get_ip_address_from_netmask(
         self,
         network: str,
         status: str,
         extended_attributes: Optional[str],
         max_results: Optional[int] = INTEGRATION_MAX_RESULTS_DEFAULT,
+        ip_type: Optional[str] = "ipv4",
     ) -> dict:
         """
-        Get IPv4 network information based on a netmask.
+        Get IPv4 or IPv6 network information based on a netmask.
 
         Args:
         - `network` (``str``): Netmask to retrieve the IPv4 for.
@@ -329,17 +381,22 @@ class InfoBloxNIOSClient(BaseClient):
             for e in extended_attributes_params:
                 request_params.update(e)
 
-        return self._get_ipv4_addresses(params=request_params)
+        return (
+            self._get_ipv4_addresses(params=request_params)
+            if ip_type == "ipv4"
+            else self._get_ipv6_addresses(params=request_params)
+        )
 
-    def get_ipv4_address_range(
+    def get_ip_address_range(
         self,
         start_ip: str,
         end_ip: str,
         extended_attributes: Optional[str],
         max_results: Optional[int] = INTEGRATION_MAX_RESULTS_DEFAULT,
+        ip_type: Optional[str] = "ipv4",
     ) -> dict:
         """
-        Get IPv4 address range information based on a start and end IP.
+        Get IPv4 or IPv6 address range information based on a start and end IP.
 
         Args:
         - `start_ip` (``str``): Start IP of the range.
@@ -362,10 +419,17 @@ class InfoBloxNIOSClient(BaseClient):
             for e in extended_attributes_params:
                 request_params.update(e)
 
-        return self._get_ipv4_addresses(params=request_params)
+        return (
+            self._get_ipv4_addresses(params=request_params)
+            if ip_type == "ipv4"
+            else self._get_ipv6_addresses(params=request_params)
+        )
 
     def _get_ipv4_addresses(self, params: dict[str, Any]) -> dict:
         return self._http_request("GET", "ipv4address", params=params)
+
+    def _get_ipv6_addresses(self, params: dict[str, Any]) -> dict:
+        return self._http_request("GET", "ipv6address", params=params)
 
     def search_related_objects_by_ip(self, ip: str | None, max_results: str | None) -> dict:
         """Search ip related objects.
@@ -643,6 +707,103 @@ class InfoBloxNIOSClient(BaseClient):
 
         return self._http_request("GET", "network", params=request_params)
 
+    def update_rpz_rule(
+        self,
+        reference_id: str,
+        rule_type: str,
+        name: str,
+        rp_zone: str,
+        view: str | None,
+        substitute_name: str | None,
+        comment: str | None = None,
+        additional_parameters: dict | None = None,
+    ) -> dict:
+        """Updates an existing response policy zone rule.
+        Args:
+            reference_id: Reference ID of the rule to update.
+            rule_type: Type of rule to create.
+            name: Rule name.
+            rp_zone: The zone to assign the rule.
+            view: The DNS view in which the records are located. By default, the 'default' DNS view is searched.
+            substitute_name: The substitute name to assign (In case of substitute domain only).
+            comment: A comment for this rule.
+        Returns:
+            Response JSON
+        """
+        canonical: str | None = ""
+        if rule_type.lower() == "passthru":  # type: ignore
+            canonical = "rpz-passthru" if ":clientipaddress" in reference_id else name  # type: ignore
+        elif rule_type.lower() == "block (no data)":  # type: ignore
+            canonical = "*"
+        elif rule_type.lower() == "block (no such domain)":  # type: ignore
+            canonical = ""
+        elif rule_type.lower() == "substitute (domain name)":  # type: ignore
+            canonical = substitute_name
+
+        data = assign_params(name=name, rp_zone=rp_zone, view=view, comment=comment)
+        data.update({"canonical": canonical})
+        if additional_parameters:
+            data.update(additional_parameters)
+        request_params = self.REQUEST_PARAM_UPDATE_RULE
+        suffix = f"{reference_id}"
+        rule = self._http_request("PUT", suffix, data=json.dumps(data), params=request_params)
+        rule["result"]["type"] = suffix.split("/")[0]
+        return rule
+
+    def create_host_record(
+        self,
+        name: str,
+        ipv4_address: list | None = [],
+        ipv6_address: list | None = [],
+        view: str | None = None,
+        comment: str | None = None,
+        aliases: list | None = [],
+        configure_for_dns: bool = True,
+        extended_attributes: str | None = None,
+        additional_parameters: dict | None = None,
+    ) -> dict:
+        data = assign_params(name=name, view=view, comment=comment, extattrs=extended_attributes)
+        if additional_parameters:
+            data.update(additional_parameters)
+        if ipv4_address:
+            data.update({"ipv4addrs": ipv4_address})
+        if ipv6_address:
+            data.update({"ipv6addrs": ipv6_address})
+        if aliases:
+            data.update({"aliases": aliases})
+        if configure_for_dns is not None:
+            data.update({"configure_for_dns": argToBoolean(configure_for_dns)})
+        request_params = self.REQUEST_PARAM_CREATE_HOST
+        record = self._http_request("POST", "record:host", data=json.dumps(data), params=request_params)
+        record["result"]["type"] = "record:host"
+        return record
+
+    def dhcp_lease_lookup(
+        self,
+        ip_address: str | None = None,
+        hardware: str | None = None,
+        hostname: str | None = None,
+        ipv6_duid: str | None = None,
+        protocol: str | None = None,
+        fingerprint: str | None = None,
+        username: str | None = None,
+        limit: int | None = None,
+    ) -> dict:
+        additional_params = assign_params(
+            address=ip_address,
+            hardware=hardware,
+            client_hostname=hostname,
+            ipv6_duid=ipv6_duid,
+            protocol=protocol,
+            fingerprint=fingerprint,
+            username=username,
+            _max_results=limit,
+        )
+        request_params = self.REQUEST_PARAM_DHCP_LEASE_LOOKUP
+        request_params.update(additional_params)
+        records = self._http_request("GET", "lease", params=request_params)
+        return records
+
 
 """ HELPER FUNCTIONS """
 
@@ -775,6 +936,38 @@ def transform_ip_context(ip_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return output
 
 
+def get_ip_type(value: str) -> str:
+    """
+    Get the type of IP address or network (IPv4 or IPv6) for the given value.
+    Supports both individual IP addresses and CIDR notation.
+
+    Args:
+        value (str): The string value to check (IP address or CIDR network)
+
+    Returns:
+        str: 'ipv4' if it's a valid IPv4 address or network,
+             'ipv6' if it's a valid IPv6 address or network
+    """
+    try:
+        # First try to parse as an IP address
+        ip = ipaddress.ip_address(value)
+        if isinstance(ip, ipaddress.IPv4Address):
+            return "ipv4"
+        elif isinstance(ip, ipaddress.IPv6Address):
+            return "ipv6"
+    except ValueError:
+        # If IP address parsing fails, try to parse as a network (CIDR)
+        try:
+            network = ipaddress.ip_network(value, strict=False)
+            if isinstance(network, ipaddress.IPv4Network):
+                return "ipv4"
+            elif isinstance(network, ipaddress.IPv6Network):
+                return "ipv6"
+        except ValueError:
+            pass
+    raise ValueError(f"Invalid IP address or network: {value}")
+
+
 def transform_host_records_context(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Helper function to transform the host records
@@ -874,6 +1067,85 @@ def get_extended_attributes_context(v: dict[str, Any]) -> dict:
     return ext_attr_value
 
 
+def validate_json_arg(arg, name):
+    """Validate that the argument is a valid JSON.
+    Args:
+        arg: The argument to validate.
+        name: The name of the argument.
+
+    Returns:
+        The validated argument.
+    """
+    if isinstance(arg, dict):
+        return arg
+    try:
+        arg = json.loads(arg)
+        if not isinstance(arg, dict):
+            raise ValueError(f"{name} is not a dictionary: {arg}")
+    except Exception as e:
+        raise ValueError(f"Invalid JSON for {name}: {e}")
+    return arg
+
+
+def validate_json_list_arg(arg, name):
+    """Validate that the argument is a valid JSON list.
+    Args:
+        arg: The argument to validate.
+        name: The name of the argument.
+
+    Returns:
+        The validated argument.
+    """
+    if isinstance(arg, list):
+        return arg
+    try:
+        arg = json.loads(arg)
+        if not isinstance(arg, list):
+            raise ValueError(f"{name} is not a list: {arg}")
+    except Exception as e:
+        raise ValueError(f"Invalid JSON for {name}: {e}")
+    return arg
+
+
+def decode_all_strings(obj):
+    """Recursively decode all string values in a JSON object
+    Args:
+        obj: The JSON object to decode.
+    Returns:
+        The decoded JSON object.
+    """
+    if isinstance(obj, dict):
+        return {key: decode_all_strings(value) for key, value in obj.items()}
+    elif isinstance(obj, list):
+        return [decode_all_strings(item) for item in obj]
+    elif isinstance(obj, str):
+        return unquote(obj)
+    else:
+        return obj
+
+
+def transform_keys_nested(obj, translation_dict, fallback_func):
+    """Recursively transform keys in nested dictionaries.
+
+    Args:
+        obj: The object to transform (dict, list, or other)
+        translation_dict: Dictionary mapping old keys to new keys
+        fallback_func: Function to call for keys not in translation_dict
+
+    Returns:
+        The object with transformed keys
+    """
+    if isinstance(obj, dict):
+        return {
+            translation_dict.get(key, fallback_func(key)): transform_keys_nested(val, translation_dict, fallback_func)
+            for key, val in obj.items()
+        }
+    elif isinstance(obj, list):
+        return [transform_keys_nested(item, translation_dict, fallback_func) for item in obj]
+    else:
+        return obj
+
+
 """ COMMANDS """
 
 
@@ -910,18 +1182,21 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
     extended_attributes = args.get("extended_attrs")
 
     if ip:
+        ip_type = get_ip_type(ip)
         status = args.get("status", IPv4AddressStatus.USED.value)
-        raw_response = client.get_ipv4_address_from_ip(
-            ip, status=status, max_results=max_results, extended_attributes=extended_attributes
+        raw_response = client.get_ip_address_from_ip(
+            ip, status=status, max_results=max_results, extended_attributes=extended_attributes, ip_type=ip_type
         )
     elif network:
+        ip_type = get_ip_type(network)
         status = args.get("status", IPv4AddressStatus.USED.value)
-        raw_response = client.get_ipv4_address_from_netmask(
-            network, status=status, max_results=max_results, extended_attributes=extended_attributes
+        raw_response = client.get_ip_address_from_netmask(
+            network, status=status, max_results=max_results, extended_attributes=extended_attributes, ip_type=ip_type
         )
     elif from_ip and to_ip:
-        raw_response = client.get_ipv4_address_range(
-            from_ip, to_ip, max_results=max_results, extended_attributes=extended_attributes
+        ip_type = get_ip_type(from_ip)
+        raw_response = client.get_ip_address_range(
+            from_ip, to_ip, max_results=max_results, extended_attributes=extended_attributes, ip_type=ip_type
         )
     else:
         raw_response = {}
@@ -935,7 +1210,7 @@ def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[st
     else:
         output = transform_ip_context(ip_list)
         title = f"{INTEGRATION_NAME}"
-        context = {f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}": output}
+        context = {f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IP_CONTEXT_NAME}": output}
         human_readable = tableToMarkdown(title, output)
     return human_readable, context, raw_response
 
@@ -1024,7 +1299,10 @@ def list_response_policy_zones_command(client: InfoBloxNIOSClient, args: dict) -
         Outputs
     """
     max_results = arg_to_number(args.get("max_results", INTEGRATION_MAX_RESULTS_DEFAULT), required=False)
-    raw_response = client.list_response_policy_zones(max_results)
+    fqdn = args.get("fqdn")
+    view = args.get("view")
+    comment = args.get("comment")
+    raw_response = client.list_response_policy_zones(max_results, fqdn, view, comment)
     zones_list = raw_response.get("result")
     if not zones_list:
         return f"{INTEGRATION_NAME} - No Response Policy Zones were found", {}, {}
@@ -1032,7 +1310,7 @@ def list_response_policy_zones_command(client: InfoBloxNIOSClient, args: dict) -
     for zone in zones_list:
         fixed_keys_zone = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in zone.items()}
         fixed_keys_zone_list.append(fixed_keys_zone)
-    display_first_x_results = f"(first {max_results} results)" if max_results else ""
+    display_first_x_results = f"(fetched {len(zones_list)} results)" if max_results else ""
     title = f"{INTEGRATION_NAME} - Response Policy Zones list {display_first_x_results}:"
     context = {f"{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)": fixed_keys_zone_list}
     human_readable = tableToMarkdown(title, fixed_keys_zone_list, headerTransform=pascalToSpace)
@@ -1582,12 +1860,154 @@ def get_network_info_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
     return hr, context, raw_response
 
 
+def update_rpz_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
+    """
+    Args:
+    - `client` (``InfoBloxNIOSClient``): Client object
+    - `args` (``dict``): Usually demisto.args()
+
+    Returns:
+    - `tuple[str, Dict, Dict]`: The human readable output, the records and the raw response.
+    """
+
+    reference_id = args.get("reference_id")
+    rule_type = args.get("rule_type")
+    name = args.get("name")
+    rp_zone = args.get("rp_zone")
+    comment = args.get("comment")
+    substitute_name = args.get("substitute_name")
+    view = args.get("view")
+    additional_parameters = (
+        validate_json_arg(args.get("additional_parameters"), "additional_parameters")
+        if args.get("additional_parameters")
+        else None
+    )  # type: ignore
+
+    # need to append 'rp_zone' or else this error is returned: "'<name>'. FQDN must belong to zone '<rp_zone>'."
+    if name and not name.endswith(f".{rp_zone}"):
+        name = f"{name}.{rp_zone}"
+
+    if rule_type.lower() == "substitute (domain name)" and not substitute_name:  # type: ignore
+        raise DemistoException("Substitute (domain name) rules requires a substitute name argument")
+    raw_response = client.update_rpz_rule(
+        reference_id,  # type: ignore
+        rule_type,  # type: ignore
+        name,  # type: ignore
+        rp_zone,  # type: ignore
+        view,
+        substitute_name,
+        comment,
+        additional_parameters,
+    )
+    rule = raw_response.get("result", {})
+    fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in rule.items()}
+    title = f"{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been updated:"
+    context = {
+        f"{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)": fixed_keys_rule_res
+    }
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace, removeNull=True)
+    return human_readable, context, raw_response
+
+
+def create_host_record_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
+    """
+    Args:
+    - `client` (``InfoBloxNIOSClient``): Client object
+    - `args` (``dict``): Usually demisto.args()
+
+    Returns:
+    - `tuple[str, Dict, Dict]`: The human readable output, the records and the raw response.
+    """
+    name = args.get("name")
+    ipv4_address = validate_json_list_arg(args.get("ipv4_address"), "ipv4_address") if args.get("ipv4_address") else None  # type: ignore
+    ipv6_address = validate_json_list_arg(args.get("ipv6_address"), "ipv6_address") if args.get("ipv6_address") else None  # type: ignore
+    view = args.get("view")
+    comment = args.get("comment")
+    aliases = validate_json_list_arg(args.get("aliases"), "aliases") if args.get("aliases") else None  # type: ignore
+    configure_for_dns = args.get("configure_for_dns")
+    extended_attributes = (
+        validate_json_arg(
+            args.get(INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY),
+            INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY,
+        )
+        if args.get(INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY)
+        else None
+    )  # type: ignore
+    additional_parameters = (
+        validate_json_arg(args.get("additional_parameters"), "additional_parameters")
+        if args.get("additional_parameters")
+        else None
+    )  # type: ignore
+
+    raw_response = client.create_host_record(
+        name,  # type: ignore
+        ipv4_address,
+        ipv6_address,
+        view,
+        comment,
+        aliases,
+        configure_for_dns,  # type: ignore
+        extended_attributes,
+        additional_parameters,
+    )
+
+    if "Error" in raw_response:
+        msg = raw_response.get("text")
+        raise DemistoException(f"Error creating host record: {msg}", res=raw_response)
+
+    record = raw_response.get("result", {})
+    record = decode_all_strings(record)
+    translation_dictionary = {**RESPONSE_TRANSLATION_DICTIONARY, **RESPONSE_KEY_REFACTOR_DICTIONARY}
+    fixed_keys_record = transform_keys_nested(record, translation_dictionary, string_to_context_key)
+    title = "Host record created"
+    context = {f"{INTEGRATION_CONTEXT_NAME}.Host(val.Name && val.Name === obj.Name)": fixed_keys_record}
+    json_transformer = {"IPV4Addresses": JsonTransformer(), "IPV6Addresses": JsonTransformer()}
+    human_readable = tableToMarkdown(
+        title, fixed_keys_record, headerTransform=pascalToSpace, json_transform_mapping=json_transformer, removeNull=True
+    )
+
+    return human_readable, context, raw_response
+
+
+def dhcp_lease_lookup_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
+    """
+    Args:
+    - `client` (``InfoBloxNIOSClient``): Client object
+    - `args` (``dict``): Usually demisto.args()
+
+    Returns:
+    - `tuple[str, Dict, Dict]`: The human readable output, the records and the raw response.
+    """
+    ip_address = args.get("ip_address")
+    hardware = args.get("hardware")
+    hostname = args.get("hostname")
+    ipv6_duid = args.get("ipv6_duid")
+    protocol = args.get("protocol")
+    fingerprint = args.get("fingerprint")
+    username = args.get("username")
+    limit = arg_to_number(args.get("limit", INTEGRATION_MAX_RESULTS_DEFAULT), required=False)
+    raw_response = client.dhcp_lease_lookup(ip_address, hardware, hostname, ipv6_duid, protocol, fingerprint, username, limit)  # type: ignore
+    if "Error" in raw_response:
+        msg = raw_response.get("text")
+        raise DemistoException(f"Error looking up DHCP lease: {msg}", res=raw_response)
+    records = raw_response.get("result", [])
+    records = decode_all_strings(records)
+    translation_dictionary = {**RESPONSE_TRANSLATION_DICTIONARY, **RESPONSE_KEY_REFACTOR_DICTIONARY}
+    fixed_keys_record = [
+        {translation_dictionary.get(key, string_to_context_key(key)): val for key, val in record.items()} for record in records
+    ]
+    title = f"DHCP lease lookup, found {len(records)} records"
+    context = {f"{INTEGRATION_CONTEXT_NAME}.DHCPLease(val.Address && val.Address === obj.Address)": fixed_keys_record}
+    human_readable = tableToMarkdown(title, fixed_keys_record, headerTransform=pascalToSpace, removeNull=True)
+    return human_readable, context, raw_response
+
+
 """ COMMANDS MANAGER / SWITCH PANEL """
 
 
 def main():  # pragma: no cover
     params = demisto.params()
-    base_url = f"{params.get('url', '').rstrip('/')}/wapi/v2.3/"
+    base_url = f"{params.get('url', '').rstrip('/')}/wapi/v2.13.1/"
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     user = demisto.get(params, "credentials.identifier")
@@ -1622,6 +2042,9 @@ def main():  # pragma: no cover
         f"{INTEGRATION_COMMAND_NAME}-delete-rpz-rule": delete_rpz_rule_command,
         f"{INTEGRATION_COMMAND_NAME}-list-host-info": get_host_records_command,
         f"{INTEGRATION_COMMAND_NAME}-list-network-info": get_network_info_command,
+        f"{INTEGRATION_COMMAND_NAME}-update-rpz-rule": update_rpz_rule_command,
+        f"{INTEGRATION_COMMAND_NAME}-create-host-record": create_host_record_command,
+        f"{INTEGRATION_COMMAND_NAME}-dhcp-lease-lookup": dhcp_lease_lookup_command,
     }
     try:
         if command in commands:
