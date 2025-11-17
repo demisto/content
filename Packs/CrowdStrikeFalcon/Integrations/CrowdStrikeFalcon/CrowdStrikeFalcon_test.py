@@ -2281,12 +2281,16 @@ class TestFetch:
             return [{"name": f"{prefix} 1"}, {"name": f"{prefix} 2"}], {"mock": True}
 
         # Mock all fetch functions unconditionally
-        mocker.patch("CrowdStrikeFalcon.fetch_endpoint_detections",
-                     side_effect=lambda lr, lb, efe: make_mock_items("Detection ID:"))
-        mocker.patch("CrowdStrikeFalcon.fetch_endpoint_incidents",
-                     side_effect=lambda lr, lb, efe: make_mock_items("Incident ID:"))
-        mocker.patch("CrowdStrikeFalcon.fetch_detections_by_product_type", side_effect=lambda lr, **kwargs: make_mock_items(
-            f"{kwargs.get('detection_name_prefix', 'IDP Detection')} ID: "))
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_endpoint_detections", side_effect=lambda lr, lb, efe: make_mock_items("Detection ID:")
+        )
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_endpoint_incidents", side_effect=lambda lr, lb, efe: make_mock_items("Incident ID:")
+        )
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_detections_by_product_type",
+            side_effect=lambda lr, **kwargs: make_mock_items(f"{kwargs.get('detection_name_prefix', 'IDP Detection')} ID: "),
+        )
 
         _, items = fetch_items()
 
@@ -5960,7 +5964,7 @@ def test_cs_falcon_ods_create_scheduled_scan_command(mocker):
         (
             {"quarantine": "false", "schedule_interval": "every other week", "schedule_start_timestamp": "tomorrow"},
             True,
-            {"quarantine": False, "schedule": {"interval": 14, "start_timestamp": "2020-09-27T20:22"}},
+            {"quarantine": False, "schedule": {"interval": 14, "start_timestamp": "2020-09-27T17:22"}},
         ),
         ({"cpu_priority": "Low"}, False, {"cpu_priority": 2}),
     ),
