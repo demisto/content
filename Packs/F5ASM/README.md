@@ -36,7 +36,7 @@ The screen displays additional fields.
 Additional fields related to remote logging are displayed.
 7. From the Logging Format list, select **Common Event Format (ArcSight)**
 8. For the Protocol setting, select the protocol that the remote storage server uses: **TCP** (the default setting), **TCP-RFC3195**, or **UDP**.
-9. For **Server Addresses**, Type the** IP Address of the Broker VM and Port** (default is 514), and click **Add**.
+9. For **Server Addresses**, Type the**IP Address of the Broker VM and Port** (default is 514), and click **Add**.
 10. Click **Finished**.
 
 For more information about remote logging, refer to [this documentation](https://techdocs.f5.com/en-us/bigip-14-1-0/big-ip-asm-implementations-14-1-0/logging-application-security-events.html).
