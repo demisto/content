@@ -1,3 +1,4 @@
+
 import json
 from unittest.mock import MagicMock, patch
 
@@ -51,6 +52,9 @@ from Azure import (
     STORAGE_RESOURCE,
     STORAGE_SCOPE,
     get_command_and_token_scopes,
+    storage_container_set_headers,
+    create_set_tags_request_body,
+    transform_response_to_context_format,
 )
 from MicrosoftApiModule import Resources
 from requests import Response
@@ -4035,3 +4039,134 @@ def test_remove_query_param_from_url_no_query():
     url = "https://example.com/path"
     out = remove_query_param_from_url(url, "b")
     assert out == url
+
+
+def test_storage_container_set_headers(mocker):
+    """
+    Given: An Azure client instance
+    When: The storage_container_set_headers function is called
+    Then: The headers should be properly set with the correct values
+    """
+    # Create a client instance
+    client = AzureClient()
+    
+    # Mock datetime to get consistent test results
+    mock_datetime = mocker.patch("Azure.dt.datetime")
+    mock_datetime.utcnow.return_value.strftime.return_value = "Wed, 17 Nov 2025 09:30:00 GMT"
+    
+    # Call the function
+    client.storage_container_set_headers(custom_headers={"x-custom-header": "test-value"})
+    
+    # Verify headers were set correctly
+    expected_headers = {
+        "x-ms-version": "2023-11-03",
+        "x-ms-date": "Wed, 17 Nov 2025 09:30:00 GMT",
+        "x-custom-header": "test-value"
+    }
+    
+    assert client.headers == expected_headers
+    mock_datetime.utcnow.assert_called_once()
+    mock_datetime.utcnow.return_value.strftime.assert_called_once_with(STORAGE_DATE_FORMAT)
+
+
+def test_create_set_tags_request_body():
+    """
+    Given: A dictionary of tags
+    When: The create_set_tags_request_body function is called
+    Then: The function should return a properly formatted XML string
+    """
+    # Test data
+    tags = {
+        "key1": "value1",
+        "key2": "value2"
+    }
+    
+    # Call the function
+    result = create_set_tags_request_body(tags)
+    
+    # Verify the result is bytes
+    assert isinstance(result, bytes)
+    
+    # Convert to string for easier assertion
+    result_str = result.decode('utf-8')
+    
+    # Verify XML structure
+    assert '<?xml version="1.0" encoding="utf-8"?>' in result_str
+    assert '<Tags>' in result_str
+    assert '<TagSet>' in result_str
+    assert '<Tag>' in result_str
+    assert '<Key>key1</Key>' in result_str
+    assert '<Value>value1</Value>' in result_str
+    assert '<Key>key2</Key>' in result_str
+    assert '<Value>value2</Value>' in result_str
+    
+    # Parse XML to verify structure
+    import xml.etree.ElementTree as ET
+    root = ET.fromstring(result)
+    
+    # Check structure
+    assert root.tag == 'Tags'
+    tag_set = root.find('TagSet')
+    assert tag_set is not None
+    
+    # Check tags
+    tags_elements = tag_set.findall('Tag')
+    assert len(tags_elements) == 2
+    
+    # Check first tag
+    tag1 = tags_elements[0]
+    assert tag1.find('Key').text in ['key1', 'key2']
+    if tag1.find('Key').text == 'key1':
+        assert tag1.find('Value').text == 'value1'
+    else:
+        assert tag1.find('Value').text == 'value2'
+
+
+def test_transform_response_to_context_format():
+    """
+    Given: A dictionary of response headers and a list of keys
+    When: The transform_response_to_context_format function is called
+    Then: The function should return a transformed dictionary with proper formatting
+    """
+    # Test data
+    data = {
+        "X-Ms-Version": "2023-11-03",
+        "X-Ms-Request-Id": "12345",
+        "Content-Type": "application/xml",
+        "X-Ms-Creation-Time": "Wed, 17 Nov 2025 09:30:00 GMT",
+        "X-Ms-Blob-Type": "BlockBlob"
+    }
+    
+    keys = ["X-Ms-Version", "X-Ms-Request-Id", "X-Ms-Creation-Time", "X-Ms-Blob-Type"]
+    
+    # Call the function
+    result = transform_response_to_context_format(data, keys)
+    
+    # Verify the result
+    expected = {
+        "version": "2023-11-03",
+        "request_id": "12345",
+        "creation_time": "Wed, 17 Nov 2025 09:30:00 GMT",
+        "blob_type": "BlockBlob"
+    }
+    
+    assert result == expected
+    
+    # Test with hyphens in header names
+    data_with_hyphens = {
+        "X-Ms-Content-Type": "application/json",
+        "X-Ms-Content-Length": "1024",
+        "X-Ms-Content-MD5": "abcdef123456"
+    }
+    
+    keys_with_hyphens = ["X-Ms-Content-Type", "X-Ms-Content-Length", "X-Ms-Content-MD5"]
+    
+    result_with_hyphens = transform_response_to_context_format(data_with_hyphens, keys_with_hyphens)
+    
+    expected_with_hyphens = {
+        "content_type": "application/json",
+        "content_length": "1024",
+        "content_md5": "abcdef123456"
+    }
+    
+    assert result_with_hyphens == expected_with_hyphens
