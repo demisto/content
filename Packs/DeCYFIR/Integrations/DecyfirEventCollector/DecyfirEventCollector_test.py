@@ -171,9 +171,11 @@ def test_update_fetched_event_ids():
     THEN the current_run dict stores fetched UIDs for deduplication.
     """
     current_run = {}
-    logs = [{"uid": "A1" , "event_date" : "2025-11-13T05:30:59.000+00:00"}, {"uid": "A2", "event_date" : "2025-11-13T05:30:59"
-                                                                                                         ".000+00:00"}]
-    update_fetched_event_ids(current_run, ACCESS_LOGS, logs, arg_to_datetime("2025-11-13T05:30:59.000+00:00") )
+    logs = [
+        {"uid": "A1", "event_date": "2025-11-13T05:30:59.000+00:00"},
+        {"uid": "A2", "event_date": "2025-11-13T05:30:59" ".000+00:00"},
+    ]
+    update_fetched_event_ids(current_run, ACCESS_LOGS, logs, arg_to_datetime("2025-11-13T05:30:59.000+00:00"))
     assert current_run["Access Logs"]["fetched_events_ids"] == ["A1", "A2"]
 
 
