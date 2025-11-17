@@ -200,8 +200,9 @@ def remove_duplicate_logs(logs: list[dict[str, Any]], last_run: dict[str, Any], 
     return unique_logs
 
 
-def update_fetched_event_ids(current_run: dict[str, Any], event_type: str, logs: list[dict[str, Any]],
-                             latest_time: datetime) -> None:
+def update_fetched_event_ids(
+    current_run: dict[str, Any], event_type: str, logs: list[dict[str, Any]], latest_time: datetime
+) -> None:
     """
     Update 'fetched_events_ids' in current_run for deduplication, keeping only logs
     whose event time falls within the same date and within the same second resolution for access logs.
@@ -230,16 +231,13 @@ def update_fetched_event_ids(current_run: dict[str, Any], event_type: str, logs:
             should_keep = same_second(event_time, latest_time)
         else:
             # Other event types: exact time match
-            should_keep = (event_time == latest_time)
+            should_keep = event_time == latest_time
 
         if should_keep and (uid := log.get("uid")):
             filtered_ids.append(uid)
 
     current_run[event_type]["fetched_events_ids"] = filtered_ids
-    demisto.debug(
-        f"Updated fetched_event_ids for {event_type}. Count: {len(filtered_ids)}"
-    )
-
+    demisto.debug(f"Updated fetched_event_ids for {event_type}. Count: {len(filtered_ids)}")
 
 
 def compute_next_fetch_time(events: List[dict[str, Any]], after: int, event_type: str) -> Optional[str]:
