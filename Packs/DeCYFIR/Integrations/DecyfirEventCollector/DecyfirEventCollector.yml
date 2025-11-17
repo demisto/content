@@ -109,6 +109,8 @@ script:
   subtype: python3
   type: python
 
+supportlevelheader: xsoar
+
 marketplaces:
 - marketplacev2
 - platform
