@@ -1,8 +1,8 @@
 args:
-- description: List of names of the users to retrieve.
+- description: A list of usernames to run a session clearance operation for.
   name: user_name
   isArray: true
-- description: List of ids of the users to retrieve.
+- description: A list of user ids to run a session clearance operation for.
   name: user_id
   isArray: true
 - description: |-
@@ -26,6 +26,9 @@ name: clear-user-session
 outputs:
 - contextPath: SessionClearResults.UserName
   description: The username for which the session clearance operation was performed.
+  type: string
+- contextPath: SessionClearResults.UserId
+  description: The user id for which the session clearance operation was performed.
   type: string
 - contextPath: SessionClearResults.Message
   description: A message indicating the outcome of the session clearance operation, such as success confirmation or error details.
