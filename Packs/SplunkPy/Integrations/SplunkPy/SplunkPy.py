@@ -1288,7 +1288,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
         for i in range(total_searches):
             # Iterates over the drilldown searches of the given notable to enrich each one of them
             search = searches[i]
-            demisto.debug(f"search = {search}")
+            demisto.debug(f"notable drilldown search = {search}")
             demisto.debug(f"Enriches drilldown search number {i+1} out of {total_searches} for notable {notable_data[EVENT_ID]}")
 
             if isinstance(search, dict):

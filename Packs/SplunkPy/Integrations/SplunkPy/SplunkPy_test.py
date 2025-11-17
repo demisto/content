@@ -2061,8 +2061,6 @@ def test_drilldown_enrichment(notable_data, expected_result):
 
 
 
-
-
 @pytest.mark.parametrize(
     "notable_data, expected_result",
     [
@@ -2105,7 +2103,18 @@ def test_drilldown_enrichment(notable_data, expected_result):
     ]
 )
 def test_drilldown_enrichment_fillnull(notable_data, expected_result):
+    """
+    Tests the drilldown enrichment process when a 'splunk.FILLNULL_VALUE' is "NULL"
 
+    Given:
+        1. A notable data with a drilldown_search=NULL
+        2. A notable data with a drilldown_searches is empty
+    When:
+        Performing drilldown enrichment to generate search jobs and queries
+    Then:
+        - The generated queries match the expected enriched queries
+        - The fillnull value is correctly applied during query construction
+    """
     from splunklib import client
 
     service = Service("DONE")
@@ -2121,6 +2130,17 @@ def test_drilldown_enrichment_fillnull(notable_data, expected_result):
 
 
 def test_build_fetch_query_fillnull():
+    """
+    Tests the parsing of the 'fillnull' value from the fetch query.
+
+    Given:
+        - A fetch query containing a 'fillnull' command with a specific value
+    When:
+        Parsing the fetch query in order to extract the fillnull default value
+    Then:
+        - The fillnull value is correctly extracted and stored in 'splunk.FILLNULL_VALUE'
+    """
+
     params = {
         "fetchQuery": "search something | fillnull value=NULL"
     }
@@ -2128,7 +2148,6 @@ def test_build_fetch_query_fillnull():
     splunk.build_fetch_query(params)
 
     assert splunk.FILLNULL_VALUE == "NULL"
-
 
 
 @pytest.mark.parametrize(
