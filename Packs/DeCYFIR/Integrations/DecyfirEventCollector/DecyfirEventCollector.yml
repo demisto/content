@@ -71,7 +71,7 @@ display: DeCYFIR Event Collector
 name: DecyfirEventCollector
 script:
   commands:
-  - description: Retrieve DeCYFIR events manually. This command is primarily used for testing or debugging.
+  - description: Manual command to fetch events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
     name: decyfir-get-events
     arguments:
     - auto: PREDEFINED
