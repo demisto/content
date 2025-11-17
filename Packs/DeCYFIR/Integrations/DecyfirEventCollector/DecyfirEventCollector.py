@@ -343,7 +343,7 @@ def get_events_command(
 def main() -> None:
     """
     Integration entry point.
-    Handles Cortex XSOAR command routing and lifecycle.
+    Handles Cortex XSIAM command routing and lifecycle.
     """
     params = demisto.params()
     args = demisto.args()
