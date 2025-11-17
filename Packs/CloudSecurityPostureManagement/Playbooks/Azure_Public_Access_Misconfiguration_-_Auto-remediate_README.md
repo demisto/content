@@ -1,4 +1,5 @@
-Automatically remediates 3 Azure public access misconfigurations: 
+Automatically remediates 3 Azure public access misconfigurations:
+
 1. Azure storage account has a blob container with public access
 2. Azure VM disk configured with overly permissive network access
 3. Azure Storage Account default network access is set to 'Allow'

@@ -1,4 +1,5 @@
 Automatically remediates 9 AWS public access misconfigurations: 1 RDS database, 1 EBS snapshot, and 7 S3 bucket issues:
+
 1. AWS RDS database instance is publicly accessible
 2. AWS EBS snapshots are accessible to public
 3. AWS S3 buckets are accessible to public via ACL

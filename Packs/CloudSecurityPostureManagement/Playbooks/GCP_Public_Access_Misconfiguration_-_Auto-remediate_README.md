@@ -1,4 +1,5 @@
 Automatically remediates 2 GCP public access misconfigurations:
+
 1. GCP Storage buckets are publicly accessible to all users
 2. GCP Storage buckets are publicly accessible to all authenticated users
 
