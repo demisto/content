@@ -74,7 +74,7 @@ def github_delete_file_command():
         file_sha = response.get('sha')
     except Exception as e:
         # Handle file not found (404) or other API errors
-        return_error(f'Could not retrieve file SHA for deletion: {e}')
+        raise DemistoException(f'Could not retrieve file SHA for deletion: {e}')
 
     # 2. Build the DELETE request body
     delete_body = {
