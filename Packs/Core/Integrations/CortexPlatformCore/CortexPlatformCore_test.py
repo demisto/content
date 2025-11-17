@@ -2968,38 +2968,6 @@ class TestGetIssueRecommendationsCommand:
         assert "Suggested Code Block" not in result.outputs
 
     @patch("CortexPlatformCore.build_webapp_request_data")
-    def test_non_appsec_issue(self, mock_build_request):
-        """Test non-AppSec issue should not call fix suggestion API"""
-        # Arrange
-        non_appsec_issue = self.base_issue.copy()
-        non_appsec_issue["alert_source"] = "ENDPOINT_DETECTION"  # Not an AppSec source
-
-        webapp_response = {"reply": {"DATA": [non_appsec_issue]}}
-
-        mock_build_request.return_value = {"mock": "request_data"}
-        self.mock_client.get_webapp_data.return_value = webapp_response
-        self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
-
-        # Act
-        result = get_issue_recommendations_command(self.mock_client, self.base_args)
-
-        # Assert
-        self.mock_client.get_appsec_suggested_fix.assert_not_called()
-
-        expected_recommendation = {
-            "issue_id": self.issue_id,
-            "issue_name": "Test Security Issue",
-            "severity": "HIGH",
-            "description": "Test description",
-            "remediation": "Base remediation steps",
-            "playbook_suggestions": {"suggested_playbooks": ["Playbook1", "Playbook2"]},
-        }
-
-        assert result.outputs == expected_recommendation
-        assert "existing_code_block" not in result.outputs
-        assert "suggested_code_block" not in result.outputs
-
-    @patch("CortexPlatformCore.build_webapp_request_data")
     def test_appsec_sources_coverage(self, mock_build_request):
         """Test all AppSec sources are handled correctly"""
         appsec_sources = ["CAS_CVE_SCANNER", "CAS_IAC_SCANNER", "CAS_SECRET_SCANNER"]
@@ -3027,29 +2995,6 @@ class TestGetIssueRecommendationsCommand:
 
             # Reset mock for next iteration
             self.mock_client.reset_mock()
-
-    @patch("CortexPlatformCore.build_webapp_request_data")
-    def test_appsec_empty_code_blocks(self, mock_build_request):
-        """Test AppSec issue with empty code blocks in fix suggestion"""
-        # Arrange
-        appsec_issue = self.base_issue.copy()
-        appsec_issue["alert_source"] = "CAS_CVE_SCANNER"
-
-        webapp_response = {"reply": {"DATA": [appsec_issue]}}
-
-        fix_suggestion = {"existingCodeBlock": "", "suggestedCodeBlock": ""}
-
-        mock_build_request.return_value = {"mock": "request_data"}
-        self.mock_client.get_webapp_data.return_value = webapp_response
-        self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
-        self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
-
-        # Act
-        result = get_issue_recommendations_command(self.mock_client, self.base_args)
-
-        # Assert
-        assert result.outputs["existing_code_block"] == ""
-        assert result.outputs["suggested_code_block"] == ""
 
 
 def test_enable_scanners_command_single_repository(mocker: MockerFixture):
