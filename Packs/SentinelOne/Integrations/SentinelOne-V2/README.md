@@ -2186,7 +2186,7 @@ Abort the endpoint virus scan on provided agent IDs.
 ### sentinelone-create-bulk-ioc
 
 ***
-Add bulk list of IoCs to the Threat Intelligence database. Relevant for API version 2.1.
+Adds a bulk list of IoCs to the Threat Intelligence database. To use this command, the user must upload a JSON file containing a list of IoC objects(each object represents a single IoC to be created) with the required attributes specified in the sentinelone-create-ioc command.  Relevant for API version 2.1.
 
 #### Base Command
 
