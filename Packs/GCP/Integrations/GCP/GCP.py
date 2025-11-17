@@ -2794,10 +2794,7 @@ def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> Comma
     order_by = args.get("order_by")
     page_token = args.get("page_token")
 
-    if not limit or (limit and (limit > 500 or limit < 1)):
-        raise DemistoException(
-            f"The acceptable values of the argument limit are 1 to 500, inclusive. Currently the value is {limit}"
-        )
+    validate_limit(limit)
 
     data_res = []
     compute = GCPServices.COMPUTE.build(creds)
