@@ -378,11 +378,6 @@ def main():
     api_key = api_key.strip() if api_key else ""
 
     # Check required parameters based on auth type
-    if not api_key:
-        raise ValueError("API Key is required for authentication")
-
-    if not enterprise_id:
-        raise ValueError("Enterprise ID is required")
 
     # Validate that enterprise_id is numeric
     try:
