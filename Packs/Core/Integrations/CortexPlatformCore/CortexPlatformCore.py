@@ -839,9 +839,6 @@ def main():  # pragma: no cover
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
 
-        # elif command == "core-appsec-suggest-fix":
-        #     return_results(get_appsec_suggested_fix_command(client, args))
-
     except Exception as err:
         demisto.error(traceback.format_exc())
         return_error(str(err))
