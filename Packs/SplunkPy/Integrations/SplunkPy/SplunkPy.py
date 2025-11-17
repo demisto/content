@@ -425,6 +425,20 @@ def build_fetch_query(params):
             field_trimmed = field.strip()
             fetch_query = f"{fetch_query} | eval {field_trimmed}={field_trimmed}"
 
+    # --- Extract fillnull value if present ---
+    # Matches patterns like: fillnull value=0, fillnull value="N/A", fillnull value='unknown'
+    match = re.search(r'fillnull\s+value\s*=\s*("[^"]*"|\'[^\']*\'|\S+)', fetch_query)
+    if match:
+        raw_value = match.group(1)
+
+        # Strip quotes if needed
+        if (raw_value.startswith('"') and raw_value.endswith('"')) or \
+           (raw_value.startswith("'") and raw_value.endswith("'")):
+            raw_value = raw_value[1:-1]
+
+        global FILLNULL_VALUE
+        FILLNULL_VALUE = raw_value  # store in global variable
+
     return fetch_query
 
 

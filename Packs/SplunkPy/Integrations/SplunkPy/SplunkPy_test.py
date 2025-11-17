@@ -2118,6 +2118,14 @@ def test_drilldown_enrichment_fillnull(notable_data, expected_result):
 
 
 
+def test_fill_null():
+    params = {
+        "fetchQuery": "search something | fillnull value=NULL"
+    }
+
+    splunk.build_fetch_query(params)
+
+    assert splunk.FILLNULL_VALUE == "NULL"
 
 
 
