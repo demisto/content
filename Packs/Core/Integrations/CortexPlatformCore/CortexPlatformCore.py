@@ -465,7 +465,7 @@ class Client(CoreClient):
         )
 
 
-def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommendation: dict, issue_id: str) -> tuple[list,dict]:
+def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommendation: dict, issue_id: str) -> tuple[list, dict]:
     """
     Append Application Security - related suggestions to the recommendation data.
 
@@ -483,7 +483,7 @@ def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommenda
     recommendation["remediation"] = manual_fix if manual_fix else recommendation.get("remediation")
     fix_suggestion = client.get_appsec_suggested_fix(issue_id)
     demisto.debug(f"AppSec fix suggestion: {fix_suggestion}")
-    
+
     # Avoid situations where existingCodeBlock is dirty, leaving suggestedCodeBlock empty.
     if fix_suggestion and fix_suggestion.get("suggestedCodeBlock"):
         recommendation.update(
@@ -494,7 +494,7 @@ def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommenda
         )
         headers.append("existing_code_block")
         headers.append("suggested_code_block")
-    
+
     return headers, recommendation
 
 
@@ -545,7 +545,6 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
 
     headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
 
-    
     if issue.get("alert_source") in APPSEC_SOURCES:
         headers, recommendation = get_appsec_suggestion(client, headers, issue, recommendation, issue_id)
 
