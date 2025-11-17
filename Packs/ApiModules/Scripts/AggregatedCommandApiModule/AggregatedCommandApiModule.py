@@ -275,7 +275,7 @@ class BatchExecutor:
         """
         brands_to_run = brands_to_run or []
         commands_to_execute = [command.to_batch_item(brands_to_run) for command in commands]
-        demisto.debug(f"Executing batch: {len(commands_to_execute)} commands; brands={brands_to_run or 'all'}")
+        demisto.debug(f"Executing batch: {len(commands_to_execute)} commands; using-brands={brands_to_run or 'all'}")
         results = demisto.executeCommandBatch(commands_to_execute)  # Results is list of lists, for each command list of results
         demisto.debug("Batch returned [" + ", ".join(str(len(r)) for r in results) + "] results before processing")
         return self.process_results(results, commands, verbose)
