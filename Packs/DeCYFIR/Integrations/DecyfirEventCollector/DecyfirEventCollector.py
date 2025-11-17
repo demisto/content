@@ -200,19 +200,46 @@ def remove_duplicate_logs(logs: list[dict[str, Any]], last_run: dict[str, Any], 
     return unique_logs
 
 
-def update_fetched_event_ids(current_run: dict[str, Any], event_type: str, logs: list[dict[str, Any]]) -> None:
+def update_fetched_event_ids(current_run: dict[str, Any], event_type: str, logs: list[dict[str, Any]],
+                             latest_time: datetime) -> None:
     """
-    Update 'fetched_events_ids' in current_run for deduplication.
+    Update 'fetched_events_ids' in current_run for deduplication, keeping only logs
+    whose event time falls within the same date and within the same second resolution for access logs.
 
     Args:
         current_run (Dict[str, Any]): Run state dictionary.
         event_type (str): Event type.
         logs (List[Dict[str, Any]]): Fetched logs.
+        latest_time (datetime): latest time to be saved in current_run
     """
+
     current_run.setdefault(event_type, {})
-    ids = [log.get("uid") for log in logs if log.get("uid")]
-    current_run[event_type]["fetched_events_ids"] = ids
-    demisto.debug(f"Updated fetched_event_ids for {event_type}. Count : {len(ids)}")
+
+    def same_second(t1, t2):
+        return t1.replace(microsecond=0) == t2.replace(microsecond=0)
+
+    filtered_ids = []
+
+    for log in logs:
+        event_time = extract_event_time(log, event_type)
+        if event_time is None:
+            continue
+
+        if event_type == ACCESS_LOGS:
+            # ACCESS_LOGS: match within the same second
+            should_keep = same_second(event_time, latest_time)
+        else:
+            # Other event types: exact time match
+            should_keep = (event_time == latest_time)
+
+        if should_keep and (uid := log.get("uid")):
+            filtered_ids.append(uid)
+
+    current_run[event_type]["fetched_events_ids"] = filtered_ids
+    demisto.debug(
+        f"Updated fetched_event_ids for {event_type}. Count: {len(filtered_ids)}"
+    )
+
 
 
 def compute_next_fetch_time(events: List[dict[str, Any]], after: int, event_type: str) -> Optional[str]:
@@ -235,9 +262,7 @@ def compute_next_fetch_time(events: List[dict[str, Any]], after: int, event_type
         # Fall back to previous time if no valid timestamps found
         return previous_time.isoformat() if previous_time else None
 
-    # mypy-safe: times only contains datetime objects
-    latest: datetime = max(times)
-    next_time: datetime = latest + timedelta(milliseconds=1)
+    next_time: datetime = max(times)
     return next_time.isoformat()
 
 
@@ -269,20 +294,19 @@ def fetch_events(
     all_events: list[dict[str, Any]] = []
 
     for event_type in event_types_to_fetch:
+        filtered_events = []
         demisto.debug(f"Fetching for {event_type}")
         after = get_after_param(last_run, event_type, first_fetch_time)
         events = client.search_events(event_type, max_events_per_fetch.get(event_type, MAX_EVENTS_PER_FETCH), after)
 
         if events:
-            if event_type == ACCESS_LOGS:
-                update_fetched_event_ids(current_run, event_type, events)
-                events = remove_duplicate_logs(events, last_run, event_type)
+            filtered_events = remove_duplicate_logs(events, last_run, event_type)
+            add_event_fields(filtered_events, event_type)
+            all_events.extend(filtered_events)
 
-            add_event_fields(events, event_type)
-            all_events.extend(events)
-
-        latest_time = compute_next_fetch_time(events, after, event_type)
+        latest_time = compute_next_fetch_time(filtered_events, after, event_type)
         current_run.setdefault(event_type, {})["next_fetch_time"] = latest_time
+        update_fetched_event_ids(current_run, event_type, events, arg_to_datetime(latest_time))
 
     demisto.debug(f"Fetch complete. Total events: {len(all_events)}")
     return current_run, all_events
