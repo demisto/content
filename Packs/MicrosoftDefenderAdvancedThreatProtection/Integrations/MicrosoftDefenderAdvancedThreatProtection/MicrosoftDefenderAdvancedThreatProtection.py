@@ -1241,15 +1241,9 @@ class MsClient:
         alert_detectionsource_to_fetch: str | None = None,
     ):
         self.endpoint_type = endpoint_type
-        if auth_type == "Authorization Code":
-            token_retrieval_url = urljoin(
-                MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS.get(endpoint_type), "/organizations/oauth2/v2.0/token"
-            )
-            grant_type = AUTHORIZATION_CODE
-        else:
-            token_retrieval_url = None
-            grant_type = None
-
+        grant_type = get_auth_type_flow(auth_type)
+        token_retrieval_url = (MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS.get(endpoint_type),
+                               "/organizations/oauth2/v2.0/token" if grant_type == AUTHORIZATION_CODE else None)
         client_args = assign_params(
             self_deployed=self_deployed,
             auth_id=auth_id,
@@ -5186,8 +5180,12 @@ def cover_up_command(client, args):  # pragma: no cover
     )
 
 
-def test_module(client: MsClient):
+def test_connection(client: MsClient):
     client.ms_client.http_request(method="GET", url_suffix="/alerts", params={"$top": "1"}, overwrite_rate_limit_retry=True)
+
+
+def test_module(client: MsClient):
+    client.ms_client.main_test_module("microsoft-atp")
 
 
 def get_dbot_indicator(dbot_type, dbot_score, value):
@@ -6402,7 +6400,7 @@ def main():  # pragma: no cover
             demisto.results("ok")
 
         elif command == "microsoft-atp-test":
-            test_module(client)
+            test_connection(client)
             return_results("✅ Success!")
 
         elif command == "fetch-incidents":

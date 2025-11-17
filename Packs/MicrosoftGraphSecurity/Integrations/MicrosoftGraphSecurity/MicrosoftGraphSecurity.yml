@@ -21,6 +21,16 @@ configuration:
   - Alerts v2
   section: Connect
   required: false
+- defaultvalue: Not Selected
+  display: Authentication Flow
+  name: auth_flow
+  type: 15
+  options:
+    - Not Selected
+    - Client Credentials
+    - Authorization Code
+  section: Connect
+  required: false
 - name: creds_auth_id
   type: 9
   section: Connect
@@ -39,47 +49,19 @@ configuration:
   displaypassword: Key or Client Secret
   hiddenusername: true
   required: false
-- additionalinfo: See the Help tab.
-  display: Application ID or Client ID
-  name: auth_id
-  type: 4
-  section: Connect
-  hidden: true
-  required: false
-- additionalinfo: See the Help tab.
-  display: Token or Tenant ID
-  name: tenant_id
-  type: 4
-  section: Connect
-  hidden: true
-  required: false
-- display: Key or Client Secret
-  name: enc_key
-  type: 4
-  section: Connect
-  additionalinfo: See the Help tab.
-  hidden: true
-  required: false
 - display: Certificate Thumbprint
   name: creds_certificate
   type: 9
   section: Connect
   displaypassword: Private Key
   required: false
-- display: Certificate Thumbprint
-  name: certificate_thumbprint
-  type: 4
+- display: Use a self-deployed Azure application
+  name: self_deployed
+  type: 8
   section: Connect
-  additionalinfo: Used for certificate authentication as it appears in the "Certificates & secrets" page of the app.
-  hidden: true
   required: false
-- display: Private Key
-  name: private_key
-  type: 14
-  section: Connect
-  additionalinfo: Used for certificate authentication. The private key of the registered certificate.
-  hidden: true
-  required: false
+  additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  advanced: false
 - display: Application redirect URI (for self-deployed mode)
   name: redirect_uri
   type: 0
@@ -118,13 +100,6 @@ configuration:
   section: Connect
   required: false
   advanced: true
-- display: Use a self-deployed Azure application
-  name: self_deployed
-  type: 8
-  section: Connect
-  required: false
-  additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
-  advanced: false
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -181,6 +156,42 @@ configuration:
   required: false
   additionalinfo: Save Hunting Query result to the Microsoft 365 Defender context path.
   section: Collect
+  # Hidden Params
+- additionalinfo: See the Help tab.
+  display: Application ID or Client ID
+  name: auth_id
+  type: 4
+  section: Connect
+  hidden: true
+  required: false
+- display: Certificate Thumbprint
+  name: certificate_thumbprint
+  type: 4
+  section: Connect
+  additionalinfo: Used for certificate authentication as it appears in the "Certificates & secrets" page of the app.
+  hidden: true
+  required: false
+- display: Private Key
+  name: private_key
+  type: 14
+  section: Connect
+  additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  hidden: true
+  required: false
+- additionalinfo: See the Help tab.
+  display: Token or Tenant ID
+  name: tenant_id
+  type: 4
+  section: Connect
+  hidden: true
+  required: false
+- display: Key or Client Secret
+  name: enc_key
+  type: 4
+  section: Connect
+  additionalinfo: See the Help tab.
+  hidden: true
+  required: false
 description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
 display: Microsoft Graph Security
 name: Microsoft Graph

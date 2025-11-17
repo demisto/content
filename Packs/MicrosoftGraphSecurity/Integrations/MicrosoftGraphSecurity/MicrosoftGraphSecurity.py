@@ -89,8 +89,9 @@ class MsGraphClient:
     Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
     """
 
-    def __init__(self, tenant_id, proxy, certificate_thumbprint: str | None = None, api_version: str = "", **kwargs):
+    def __init__(self, tenant_id, proxy, grant_type, certificate_thumbprint: str | None = None, api_version: str = "", **kwargs):
         self.ms_client = MicrosoftClient(
+            grant_type=grant_type,
             tenant_id=tenant_id,
             proxy=proxy,
             certificate_thumbprint=certificate_thumbprint,
@@ -2027,6 +2028,10 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
     return command_results
 
 
+def test_module(client: MsGraphClient, args):
+    client.ms_client.main_test_module('msg-')
+
+
 def main():
     params: dict = demisto.params()
     args: dict = demisto.args()
@@ -2052,7 +2057,7 @@ def main():
             raise DemistoException("Key or Certificate Thumbprint and Private Key must be provided.")
 
     commands = {
-        "test-module": test_function,
+        "test-module": test_module,
         "msg-auth-test": test_auth_code_command,
         "msg-search-alerts": search_alerts_command,
         "msg-get-alert-details": get_alert_details_command,
@@ -2093,8 +2098,12 @@ def main():
     try:
         auth_code = params.get("auth_code", {}).get("password")
         redirect_uri = params.get("redirect_uri")
-        grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
-
+        auth_flow = get_auth_type_flow(params.get("auth_flow"))
+        grant_type = (
+            auth_flow if auth_flow
+            else AUTHORIZATION_CODE if auth_code and redirect_uri
+            else CLIENT_CREDENTIALS
+        )
         client: MsGraphClient = MsGraphClient(
             tenant_id=tenant,
             auth_code=auth_code,

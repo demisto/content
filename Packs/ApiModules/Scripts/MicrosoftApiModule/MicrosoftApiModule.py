@@ -668,6 +668,17 @@ def get_azure_cloud(params, integration_name):
     return AZURE_CLOUDS.get(AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg), AZURE_WORLDWIDE_CLOUD)  # type: ignore[arg-type]
 
 
+def get_auth_type_flow(auth_flow):
+    auth_flow_dict = {
+        "Not Selected": None,
+        "Client Credentials": CLIENT_CREDENTIALS,
+        "Authorization Code": AUTHORIZATION_CODE,
+        "Device Code": DEVICE_CODE
+    }
+    # in case azure managed identites is sent
+    return auth_flow_dict.get(auth_flow, None)
+
+
 class MicrosoftClient(BaseClient):
     def __init__(
         self,
@@ -901,6 +912,46 @@ class MicrosoftClient(BaseClient):
         except ValueError as exception:
             raise DemistoException(f"Failed to parse json object from response: {response.content}", exception)
 
+    def main_test_module(self, integration_command_prefix: str):
+        """
+        Checks all necessary fields for the specific authentication flow.
+        """
+        flow = self.grant_type
+
+        def require_fields(fields: list[str], message_prefix: str):
+            """Helper to validate required fields."""
+            for field in fields:
+                if not getattr(self, field):
+                    raise DemistoException(f"{message_prefix} enter your {field.replace('_', ' ').title()}.")
+
+        if flow == CLIENT_CREDENTIALS:
+            require_fields(fields=["tenant_id", "client_secret", "client_id"],
+                           message_prefix="When using client credentials flow you must")
+            self.get_access_token()
+            return "ok"
+
+        elif flow == DEVICE_CODE:
+            require_fields(["client_id"], "When using device code flow you must")
+            raise DemistoException(
+                f"The *Test* button is not available for the Device Code Flow. "
+                f"Please run !{integration_command_prefix}-auth-start and then "
+                f"{integration_command_prefix}-auth-complete. Then you can check the connection using the"
+                f"!{integration_command_prefix}-auth-test command."
+            )
+
+        elif flow == AUTHORIZATION_CODE:
+            require_fields(["tenant_id", "client_secret", "client_id", "redirect_uri"],
+                           "When using authorization code flow you must")
+            raise DemistoException(
+                f"The *Test* button is not available for the Authorization Code Flow. "
+                f"Please use the !{integration_command_prefix}-generate-login-url command. "
+                f"Then you can check the connection using the"
+                f"!{integration_command_prefix}-auth-test command."
+            )
+
+        else:
+            raise DemistoException(f"Unsupported grant type: {flow}")
+
     def get_access_token(self, resource: str = "", scope: str | None = None) -> str:
         """
         Obtains access and refresh token from oproxy server or just a token from a self deployed app.
@@ -917,6 +968,7 @@ class MicrosoftClient(BaseClient):
         """
         integration_context = get_integration_context()
         refresh_token = integration_context.get("current_refresh_token", "")
+
         # Set keywords. Default without the scope prefix.
         access_token_keyword = f"{scope}_access_token" if scope else "access_token"
         valid_until_keyword = f"{scope}_valid_until" if scope else "valid_until"
@@ -1133,7 +1185,9 @@ class MicrosoftClient(BaseClient):
                 )
             response_json = response.json()
         except Exception as e:
-            return_error(f"Error in Microsoft authorization: {e!s}")
+            return_error(f"Error in Microsoft authorization."
+                         f" If you are using a self-deployed app, make sure the checkbox of self-deployed is selected if exists."
+                         f" Error: {e!s}")
 
         access_token = response_json.get("access_token", "")
         expires_in = int(response_json.get("expires_in", 3595))
@@ -1185,7 +1239,9 @@ class MicrosoftClient(BaseClient):
                 )
             response_json = response.json()
         except Exception as e:
-            return_error(f"Error in Microsoft authorization: {e!s}")
+            return_error(f"Error in Microsoft authorization."
+                         f" If you are using a self-deployed app, make sure the checkbox of self-deployed is selected if exists."
+                         f" Error: {e!s}")
 
         access_token = response_json.get("access_token", "")
         expires_in = int(response_json.get("expires_in", 3595))
@@ -1251,7 +1307,9 @@ class MicrosoftClient(BaseClient):
                 )
             response_json = response.json()
         except Exception as e:
-            return_error(f"Error in Microsoft authorization: {e!s}")
+            return_error(f"Error in Microsoft authorization."
+                         f" If you are using a self-deployed app, make sure the checkbox of self-deployed is selected if exists."
+                         f" Error: {e!s}")
 
         access_token = response_json.get("access_token", "")
         expires_in = int(response_json.get("expires_in", 3595))
