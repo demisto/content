@@ -99,7 +99,7 @@ def github_delete_file_command():
         ))
 
     except Exception as e:
-        return_error(f'Failed to delete file on GitHub: {e}')
+        raise DemistoException(f'Failed to delete file on GitHub: {e}')
 
 
 def create_jwt(private_key: str, integration_id: str):
