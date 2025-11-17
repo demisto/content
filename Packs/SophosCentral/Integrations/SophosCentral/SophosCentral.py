@@ -2051,9 +2051,7 @@ def validate_item_fields(args: dict[str, str]):
     item_types = ["path", "certificateSigner", "sha256"]
     for item_type in item_types:
         if args.get("item_type") == item_type and not args.get(camel_case_to_underscore(item_type)):
-            raise DemistoException(
-                f"{item_type} item requires a value in the {camel_case_to_underscore(item_type)} argument."
-            )
+            raise DemistoException(f"{item_type} item requires a value in the {camel_case_to_underscore(item_type)} argument.")
 
 
 def sophos_central_allowed_item_list_command(client: Client, args: dict) -> CommandResults:
