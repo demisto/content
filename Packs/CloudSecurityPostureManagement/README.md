@@ -1,13 +1,13 @@
 ## Overview
 
-This content pack helps fix common cloud misconfigurations automatically with analyst approval. It currently supports AWS, with planned support for Azure and GCP. The pack also includes a versatile and cloud-agnostic playbook for creating tickets and sending notifications through ServiceNow, Jira, Slack, and Microsoft Teams.
+This content pack helps fix common cloud misconfigurations automatically with analyst approval as well as auto-remediation without approval with the option to notify stakeholders. The pack also includes 2 versatile and cloud-agnostic playbooks for creating tickets and sending notifications through ServiceNow, Jira, Email, Slack, and Microsoft Teams.
 
 ## Key Use Cases
 
 - Automatically remediate AWS misconfigurations with optional analyst approval.
+- Automatically remediate AWS, Azure and GCP Public Access Misconfiguration issues with no/minimal manual intervention.
 - Create or update issue tickets in Jira or ServiceNow.
 - Notify teams through Slack, Microsoft Teams, or email.
-- Build cloud-agnostic, modular remediation workflows.
 
 ## Included Playbooks
 
@@ -30,25 +30,52 @@ This content pack helps fix common cloud misconfigurations automatically with an
    - Detects and remediates publicly accessible S3 buckets (read or write access).
    - Ensures S3 compliance with cloud security policies.
 
+4. **AWS Public Access Misconfiguration - Auto-remediate**
+    - Automatically disables public access settings for RDS Database instances, EBS Snapshots and S3 buckets.
+    - Option to notify stakeholders about the remediation via Email, Slack or MS Teams.
+        - Set enableNotifications to 'yes' and configure inputs for the Notify Stakeholders playbook to send issue, asset and remediation details.
+
+### Azure Remediation Playbooks
+
+1. **Azure Public Access Misconfiguration - Auto-remediate**
+    - Automatically remediates the misconfiguration issues for publicly accessible Azure blob containers, overly permissive Azure VM Disks or default Allow network access to Azure Storage Accounts.
+    - Option to notify stakeholders about the remediation via Email, Slack or MS Teams.
+        - Set enableNotifications to 'yes' and configure inputs for the Notify Stakeholders playbook to send issue, asset and remediation details.
+
+### GCP Remediation Playbooks
+
+1. **GCP Public Access Misconfiguration - Auto-remediate**
+    - Automatically secure the publicly exposed GCP bucket by updating policies to block public access immediately.
+    - Option to notify stakeholders about the remediation via Email, Slack or MS Teams.
+        - Set enableNotifications to 'yes' and configure inputs for the Notify Stakeholders playbook to send issue, asset and remediation details.
+
 All remediation playbooks leverage:
 
 - AWS integrations
-- Sub-playbooks for ticket creation and notification
+- Sub-playbooks for ticket creation and/or notification
 - Context-aware command execution
 
 ### Generic Utility Playbook
 
-4. **Create Ticket and Notify**
+1. **Create Ticket and Notify**
    - Creates or updates incident tickets using Jira V3 or ServiceNow v2.
    - Notifies stakeholders via Slack, Microsoft Teams, or email.
    - Customizable behavior: ticket-only, notification-only, or both.
    - Detects available integrations and adapts accordingly.
+
+2. **Notify Stakeholders**
+    - This is a sub-playbook that is used in the Public Access Misconfiguration remediation playbooks for AWS, Azure, and GCP.
+    - It is used to send issue and asset details along with the remediation action taken, in a well formatted notification message via Email, Slack or MS Teams, depending on the configured and enabled integrations.
+    - Configure recipients for email, slack or MS Teams notification in the Playbook Triggered header of this playbook
+    - If no inputs are pre-configured and enableNotifications is set to 'yes' in the remediation playbook, the playbook will stop on manual input during execution to request at least 1 recipient.
 
 ## Dependencies
 
 This pack uses the following integrations:
 
 - AWS
+- Azure
+- GCP
 - Cortex Core - IR
 - Jira V3
 - ServiceNow v2
@@ -58,12 +85,11 @@ This pack uses the following integrations:
 
 ## Future Roadmap
 
-- Add Azure remediation playbooks (e.g., Azure Storage, RBAC misconfigurations)
-- Add GCP remediation playbooks (e.g., GCS bucket access, IAM conditions)
+- Additional coverage for High/Critical severity AWS, Azure, and GCP misconfiguration issues
 
 ## Requirements
 
-- Active integrations for AWS, Jira, ServiceNow, Slack, Microsoft Teams (depending on use)
+- Active integrations for AWS, Azure, GCP, Jira, ServiceNow, Slack, Microsoft Teams (depending on use)
 - Access to cloud account APIs with sufficient permissions for remediation
 
 ### Pack Contributors
@@ -71,5 +97,6 @@ This pack uses the following integrations:
 ---
 
 - Shashi Kiran N
+- Aneesha More
 
 Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).

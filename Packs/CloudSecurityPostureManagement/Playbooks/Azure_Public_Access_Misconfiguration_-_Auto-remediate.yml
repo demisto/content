@@ -228,7 +228,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: AWS
+      brand: ""
       description: Section header to launch remediation steps.
       id: 7c550129-ff50-4fac-8a08-4d361eea1527
       iscommand: false
@@ -265,7 +265,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Prints message to war room to indicate AWS integration instance
+      description: Prints message to war room to indicate Azure integration instance
         is not active.
       id: 09fcb1fe-0245-49e7-8b27-04c70ffa1b95
       iscommand: false

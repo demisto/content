@@ -226,7 +226,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: AWS
+      brand: ""
       description: Section header to launch remediation steps.
       id: ad6d8ab9-f91f-437a-84d5-5dfd7311210a
       iscommand: false
