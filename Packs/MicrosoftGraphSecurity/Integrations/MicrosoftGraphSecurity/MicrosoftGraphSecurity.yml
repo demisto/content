@@ -1619,7 +1619,7 @@ script:
       isArray: false
       name: search_id
       required: true
-    - description: "Bitwise options that specify the statistics to generate. The possible values are: includeRefiners, includeQueryStats, includeUnindexedStats, advancedIndexing, locationsWithoutHits. The advancedIndexing and locationsWithoutHits values are only considered if includeUnindexedStats is set."
+    - description: "Specify the statistics to generate. The possible values are: includeRefiners, includeQueryStats, includeUnindexedStats, advancedIndexing, locationsWithoutHits. The advancedIndexing and locationsWithoutHits values are only considered if includeUnindexedStats is set."
       isArray: false
       name: statistics_options
       required: false
