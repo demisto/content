@@ -4146,10 +4146,6 @@ tasks:
         simple: PRIMARY_DISPLAY_NAME
       type:
         simple: USER
-      retry-count:
-        simple: "3"
-      retry-interval:
-        simple: "5"
     separatecontext: false
     continueonerrortype: ""
     view: |-
