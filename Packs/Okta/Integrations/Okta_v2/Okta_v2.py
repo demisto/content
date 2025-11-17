@@ -3,6 +3,7 @@ from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from OktaApiModule import *
+import datetime as dt
 
 # CONSTANTS
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -110,7 +111,7 @@ class Client(OktaClient):
         uri = f"/api/v1/users/{user_id}/lifecycle/unsuspend"
         return self.http_request(method="POST", url_suffix=uri)
 
-    def get_user_factors(self, user_id):
+    def get_user_factors(self, user_id) -> requests.Response:
         uri = f"/api/v1/users/{user_id}/factors"
         return self.http_request(method="GET", url_suffix=uri, resp_type="response")
 
@@ -228,9 +229,9 @@ class Client(OktaClient):
             dict: The rate limit data to the context
         """
         rate_limit_context = {
-            "X-Rate-Limit-Limit": headers["x-rate-limit-limit"],
-            "X-Rate-Limit-Remaining": headers["x-rate-limit-remaining"],
-            "X-Rate-Limit-Reset": headers["x-rate-limit-reset"],
+            "x-rate-limit-limit": headers["x-rate-limit-limit"],
+            "x-rate-limit-remaining": headers["x-rate-limit-remaining"],
+            "x-rate-limit-reset": headers["x-rate-limit-reset"],
         }
         return rate_limit_context
 
@@ -365,9 +366,11 @@ class Client(OktaClient):
                 users.append(user)
             return users
 
-    def get_user(self, user_term):
+    def get_user(self, user_term) -> requests.Response:
+        """Gets the user details
+        """
         uri = f"/api/v1/users/{encode_string_results(user_term)}"
-        return self.http_request(method="GET", url_suffix=uri)
+        return self.http_request(method="GET", url_suffix=uri, resp_type="response")
 
     def create_user(self, cred, profile, group_ids, activate):
         body = {"profile": profile, "groupIds": group_ids or [], "credentials": cred}
@@ -464,7 +467,7 @@ class Client(OktaClient):
         after = None
         if "next" in response.links and len(response.json()) > 0:
             after = get_after_tag(response.links.get("next").get("url"))
-        return (paged_results, after)
+        return (paged_results, after, response.headers)
 
     def list_groups(self, args):
         # Base url - if none of the the above specified - returns all the groups (default 200 items)
@@ -589,7 +592,7 @@ def unsuspend_user_command(client, args):
     return (readable_output, {}, raw_response)
 
 
-def deconstruct_raw_response(raw_response):
+def deconstruct_raw_response(raw_response: requests.Response):
     """deconstruct the raw response to headers and content"""
     headers = raw_response.headers
     content = raw_response.json()
@@ -615,7 +618,7 @@ def get_user_factors_command(client, args):
     context = createContext(factors, removeNull=True)
     outputs = {
         "Account(val.ID && val.ID === obj.ID)": {"Factor": context, "ID": user_id},
-        "Okta": {"Metadata": rate_limit_context},
+        "Okta(true)": {"Metadata": rate_limit_context},
     }
     readable_output = f"Factors for user: {user_id}\n {tableToMarkdown('Factors', factors)}"
     return (readable_output, outputs, content)
@@ -760,11 +763,12 @@ def get_user_command(client: Client, args: dict):
 
     raw_response = None
     if user_term := args.get("userEmail"):
-        raw_response, _ = client.list_users({"filter": f'profile.email eq "{user_term}"', "limit": 1})
+        raw_response, _ , headers= client.list_users({"filter": f'profile.email eq "{user_term}"', "limit": 1})
     else:
         user_term = args.get("userId") or args.get("username")
         try:
-            raw_response = client.get_user(user_term)
+            response = client.get_user(user_term)
+            raw_response, headers = deconstruct_raw_response(response)
         except Exception as e:
             if "404" not in str(e):
                 raise e
@@ -776,7 +780,9 @@ def get_user_command(client: Client, args: dict):
 
     user_context = client.get_users_context(raw_response)
     user_readable = client.get_readable_users(raw_response, verbose)
-    outputs = {"Account(val.ID && val.ID === obj.ID)": createContext(user_context)}
+    rate_limit_context = client.get_rate_limit_context(headers)
+    outputs = {"Account(val.ID && val.ID === obj.ID)": createContext(user_context),
+               "Okta(true)": {"Metadata": rate_limit_context},}
     readable_output = user_readable if verbose == "true" else f"{tableToMarkdown(f'User:{user_term}', user_readable)} "
     return (readable_output, outputs, raw_response)
 
@@ -821,7 +827,7 @@ def get_group_members_command(client, args):
 
 
 def list_users_command(client, args):
-    raw_response, after_tag = client.list_users(args)
+    raw_response, after_tag, _ = client.list_users(args)
     verbose = args.get("verbose")
     users = client.get_readable_users(raw_response, verbose)
     user_context = client.get_users_context(raw_response)
