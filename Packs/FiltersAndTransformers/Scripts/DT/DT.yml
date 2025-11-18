@@ -18,6 +18,7 @@ args:
   required: true
   description: DT expression.
 scripttarget: 0
+isllm: false
 tests:
 - No tests - script used for testing
 fromversion: 5.0.0
