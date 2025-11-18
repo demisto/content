@@ -133,7 +133,9 @@ If you're uncertain which API version to use, it is recommended to use the lates
 
 ## Troubleshooting
 
-When *Fetch with events* is configured, the integration will fetch the offense events from `QRadar`.
+### Fetch with Events Retries
+
+When "*Fetch with events*" is configured, the integration will fetch the offense events from IBM QRadar.
 Nevertheless, some events may not be available when trying to fetch them during an incident creation. If **Retry events fetch** is enabled, the integration tries to fetch more events when the number fetched is less than the expected `event_count`. In the default setting, the integration will try 3 times, with a wait time of 100 seconds between retries.
 In order to change the default values, configure the following **Advanced Parameters** in the instance configuration:
 
@@ -152,6 +154,13 @@ This feature collects metadata on QRadar API calls and their success status.
 API Call metrics are not available for long-running commands such as `fetch incidents`.
 
 API Metrics are shown in the built-in **API Execution Metrics** dashboard, and are available to use in custom widgets.
+
+### Duplicate Incidents
+
+When running on an Engine Load-Balancing Group, concurrent fetches may run on multiple containers, leading to the creation of duplicate Incidents.
+
+- **Option A - Preserve high availability**: Continue running the integration on the Load-Balancing Group for optimal fault tolerance and higher availability. Create an [Incident Pre-processing Rule](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-SaaS-Documentation/Pre-process-rules) to drop duplicate incidents.
+- **Option B - Use a simplified setup**: Alternatively, run the integration on a single custom engine or use the default "*No engine*" option if possible for a more streamlined configuration.
 
 ## Commands
 
