@@ -1804,14 +1804,30 @@ def test_module(client: Client, api_key: str, api_secret: str) -> str:
         return "ok"
     except DemistoException as err:
         demisto.debug(str(err))
-        return f"Error: {get_request_error_message(err.res.json())}"
+        return f"Error: {get_request_error_message(err)}"
 
 
 # HELPER COMMANDS
 
 
-def get_request_error_message(error_data: dict[str, Any]) -> str:
-    return error_data.get("errorMessage") or error_data.get("message") or str(json.dumps(error_data))
+def get_request_error_message(err) -> str:
+    if not hasattr(err, "res") or err.res is None:
+        demisto.debug("The error does not have a response object")
+        return str(err)
+
+    if hasattr(err.res, "json"):
+        demisto.debug("The error type is: JSON with error dict")
+        try:
+            error_dict = err.res.json()
+            return error_dict.get("errorMessage") or error_dict.get("message") or str(json.dumps(error_dict))
+        except (ValueError, json.JSONDecodeError):
+            demisto.debug("Failed to parse JSON response, falling back to text")
+
+    if hasattr(err.res, "text"):
+        demisto.debug("The error type is: Text response")
+        return f"HTTP {err.res.status_code}: {err.res.text or err.res.reason}"
+
+    return str(err)
 
 
 def parse_domain_history(data: list[dict[str, Any]]):
@@ -1973,7 +1989,7 @@ def main() -> None:
                 execution_metrics.general_error += 1
             elif err.res.status_code == http.HTTPStatus.TOO_MANY_REQUESTS:
                 execution_metrics.quota_error += 1
-            cr = CommandResults(readable_output=get_request_error_message(err.res.json()))
+            cr = CommandResults(readable_output=get_request_error_message(err))
             return_results(append_metrics(execution_metrics, [cr]))
         else:
             return_results(CommandResults(readable_output=str(err)))
