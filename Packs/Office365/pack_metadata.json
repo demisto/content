@@ -13,7 +13,9 @@
         "Network",
         "Security"
     ],
-    "useCases": [],
+    "useCases": [
+        "Network Security"
+    ],
     "keywords": [
         "office",
         "365"
