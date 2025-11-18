@@ -1236,14 +1236,6 @@ def get_drilldown_searches(notable_data):
     # the 'drilldown_searches' key) and submit a splunk enrichment for each one of them.
     # To maintain backwards compatibility we keep using the 'drilldown_search' key as well.
 
-    if drilldown_search := notable_data.get("drilldown_searches", []):
-        if isinstance(drilldown_search, list):
-            # The drilldown_searches are a list of searches data stored as json strings:
-            return parse_drilldown_searches(drilldown_search)
-        else:
-            # The drilldown_searches are a dict/list of the search data in a JSON string representation.
-            return parse_drilldown_searches([drilldown_search])
-
     fill_null_value = None
     fetch_query = demisto.params().get("fetchQuery", "")
 
@@ -1263,7 +1255,13 @@ def get_drilldown_searches(notable_data):
     if drilldown_search and drilldown_search != fill_null_value:
         # The drilldown_searches are in 'old' format a simple string query.
         return [drilldown_search]
-
+    if drilldown_search := notable_data.get("drilldown_searches", []):
+        if isinstance(drilldown_search, list):
+            # The drilldown_searches are a list of searches data stored as json strings:
+            return parse_drilldown_searches(drilldown_search)
+        else:
+            # The drilldown_searches are a dict/list of the search data in a JSON string representation.
+            return parse_drilldown_searches([drilldown_search])
     return []
 
 
