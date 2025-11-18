@@ -14,12 +14,13 @@ call o365_common_fields
 	EnforcementMode = to_integer(EnforcementMode), 
 	SourceWorkload = to_integer(SourceWorkload), 
 	Scope = to_integer(Scope), 
-	FileSize = to_integer(FileSize)	
+	FileSize = to_integer(FileSize),
+	src_ip = coalesce(ClientIP, UserIp, SenderIp),
 | alter
+	src_ip = arraystring(arraymap(split(src_ip, "."), to_string(to_integer("@element"))), "."),
 	platform_lowercase = lowercase(to_string(Platform)),
 	user_type_string = to_string(UserType),
 	translate_EnforcementMode = if(EnforcementMode = 1, "Audit", EnforcementMode = 2, "Warn (Block with override)", EnforcementMode = 3, "Warn and bypass", EnforcementMode = 4, "Block", EnforcementMode = 5, "Allow (Audit without alerts)"),
-	src_ip = coalesce(ClientIP, UserIp, SenderIp),
 	filename_name = if(FileName ~= "\.", FileName, null),
 	filename_extension = arrayindex(regextract(FileName, "\.([^.]+)$"), 0), // extract trailing suffix after last period 
 	members_upn = arraystring(arraymap(Members -> [], "@element" -> UPN), ","),
@@ -29,7 +30,6 @@ call o365_common_fields
 	object_id_file_name = arrayindex(regextract(ObjectId, ".+[\\\/]([^\\\/]+)$"), 0), 
 	object_id_file_path = arrayindex(regextract(ObjectId, "(.+)[\\\/][^\\\/]+$"), 0)
 | alter
-	src_ip = arraystring(arraymap(split(src_ip, "."), to_string(to_integer("@element"))), "."),
 	src_ipv4_addresses = arraydistinct(regextract(src_ip, "((?:\d{1,3}\.){3}\d{1,3})")),
 	src_ipv6_addresses = arraydistinct(regextract(src_ip, "((?:[:]{2}[fF]{4}:(?:\d{1,3}\.){3}\d{1,3})|(?:(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}))")), // ipv6 could also be an IPv4-mapped IPv6 address 
 	src_interface = arrayindex(regextract(src_ip, "%(\d+)"), 0), // extract interface identifier from the client ip address if such exists 
