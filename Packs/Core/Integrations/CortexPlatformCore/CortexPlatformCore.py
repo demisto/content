@@ -13,6 +13,34 @@ INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 
+
+CASE_FIELDS = {
+    "case_id_list": "CASE_ID",
+    "case_domain": "INCIDENT_DOMAIN",
+    "case_name": "NAME",
+    "case_description": "DESCRIPTION",
+    "status": "STATUS_PROGRESS",
+    "severity": "SEVERITY",
+    "creation_time": "CREATION_TIME",
+    "asset_ids": "UAI_ASSET_IDS",
+    "asset_groups": "UAI_ASSET_GROUP_IDS",
+    "tags": "CURRENT_TAGS",
+    "assignee": "ASSIGNED_USER_PRETTY",
+    "name": "CONTAINS",
+    "description": "DESCRIPTION",
+    "last_updated": "LAST_UPDATE_TIME",
+    "hosts": "HOSTS",
+    "starred": "CASE_STARRED",
+}
+
+CASE_SEVERITY = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
+
+CASE_STATUS = {
+    "new": "STATUS_010_NEW",
+    "under_investigation": "STATUS_020_UNDER_INVESTIGATION",
+    "resolved": "STATUS_025_RESOLVED",
+}
+
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
     "asset_types": "xdm.asset.type.name",
@@ -25,16 +53,13 @@ ASSET_FIELDS = {
 }
 
 
-WEBAPP_COMMANDS = [
-    "core-get-vulnerabilities",
-    "core-search-asset-groups",
-    "core-get-issue-recommendations",
-]
+WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations", "core-get-cases"]
 
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners"]
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
+CASES_TABLE = "CASE_MANAGER_TABLE"
 
 ASSET_GROUP_FIELDS = {
     "asset_group_name": "XDM__ASSET_GROUP__NAME",
@@ -80,6 +105,8 @@ class FilterBuilder:
         EQ = ("EQ", "OR")
         RANGE = ("RANGE", "OR")
         CONTAINS = ("CONTAINS", "OR")
+        CASE_HOST_EQ = ("CASE_HOSTS_EQ", "OR")
+        CONTAINS_IN_LIST = ("CONTAINS_IN_LIST", "OR")
         GTE = ("GTE", "OR")
         ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
         JSON_WILDCARD = ("JSON_WILDCARD", "OR")
@@ -647,20 +674,145 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def map_case_format(case_list):
+    if not case_list or not isinstance(case_list, list):
+        return {}
+
+    mapped_cases = []
+    for case_data in case_list:
+        mapped_case = {
+            "case_id": str(case_data.get("CASE_ID")),
+            "case_name": case_data.get("NAME"),
+            "description": case_data.get("DESCRIPTION"),
+            "creation_time": case_data.get("CREATION_TIME"),
+            "modification_time": case_data.get("LAST_UPDATE_TIME"),
+            "resolved_timestamp": case_data.get("RESOLVED_TIMESTAMP"),
+            "status": case_data.get("STATUS").split("_")[-1].lower(),
+            "severity": case_data.get("SEVERITY").split("_")[-1].lower(),
+            "case_domain": case_data.get("INCIDENT_DOMAIN"),
+            "original_tags": [tag.get("tag_name") for tag in case_data.get("ORIGINAL_TAGS", [])],
+            "tags": [tag.get("tag_name") for tag in case_data.get("CURRENT_TAGS", [])],
+            "issue_count": case_data.get("ACC_ALERT_COUNT"),
+            "critical_severity_issue_count": case_data.get("CRITICAL_SEVERITY_ALERTS"),
+            "high_severity_issue_count": case_data.get("HIGH_SEVERITY_ALERTS"),
+            "med_severity_issue_count": case_data.get("MEDIUM_SEVERITY_ALERTS"),
+            "low_severity_issue_count": case_data.get("LOW_SEVERITY_ALERTS"),
+            "rule_based_score": case_data.get("CALCULATED_SCORE"),
+            "aggregated_score": case_data.get("SCORE"),
+            "manual_score": case_data.get("MANUAL_SCORE"),
+            "predicted_score": case_data.get("SCORTEX"),
+            "wildfire_hits": case_data.get("WF_HITS"),
+            "assigned_user_pretty_name": case_data.get("ASSIGNED_USER_PRETTY"),
+            "assigned_user_mail": case_data.get("ASSIGNED_USER"),
+            "resolve_comment": case_data.get("RESOLVED_COMMENT"),
+            "issues_grouping_status": case_data.get("CASE_GROUPING_STATUS").split("_")[-1],
+            "starred": case_data.get("CASE_STARRED"),
+            "case_sources": case_data.get("INCIDENT_SOURCES"),
+            "custom_fields": case_data.get("EXTENDED_FIELDS"),
+            "hosts": case_data.get("HOSTS") or [],
+            "users": case_data.get("USERS") or [],
+            "issue_categories": case_data.get("ALERT_CATEGORIES"),
+            "mitre_techniques_ids_and_names": case_data.get("MITRE_TECHNIQUES"),
+            "mitre_tactics_ids_and_names": case_data.get("MITRE_TACTICS"),
+            "manual_severity": case_data.get("USER_SEVERITY"),
+            "starred_manually": case_data.get("CASE_STARRED"),
+            "host_count": len(case_data.get("HOSTS", []) or []),
+            "user_count": len(case_data.get("USERS", []) or []),
+            "asset_accounts": case_data.get("UAI_ASSET_ACCOUNTS", []),
+            "asset_categories": case_data.get("UAI_ASSET_CATEGORIES", []),
+            "asset_classes": case_data.get("UAI_ASSET_CLASSES", []),
+            "asset_group_ids": case_data.get("UAI_ASSET_GROUP_IDS", []),
+            "asset_ids": case_data.get("UAI_ASSET_IDS", []),
+            "asset_names": case_data.get("UAI_ASSET_NAMES", []),
+            "asset_providers": case_data.get("UAI_ASSET_PROVIDERS", []),
+            "asset_regions": case_data.get("UAI_ASSET_REGIONS", []),
+            "asset_types": case_data.get("UAI_ASSET_TYPES", []),
+        }
+
+        mapped_cases.append(mapped_case)
+
+    return mapped_cases
+
+
 def get_cases_command(client, args):
     """
     Retrieve a list of Cases from XDR, filtered by some filters.
     """
-    args = preprocess_get_cases_args(args)
-    _, _, raw_incidents = get_incidents_command(client, args)
-    mapped_raw_cases = preprocess_get_cases_outputs(raw_incidents)
+    page = arg_to_number(args.get("page")) or 0
+    limit_per_page = arg_to_number(args.get("limit")) or 50
+    limit = (page + 1) * limit_per_page
+    sort_by_modification_time = args.get("sort_by_modification_time")
+    sort_by_creation_time = args.get("sort_by_creation_time")
+    since_creation_start_time = args.get("since_creation_time")
+    since_creation_end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") if since_creation_start_time else None
+    since_modification_start_time = args.get("since_modification_time")
+    since_modification_end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") if since_modification_start_time else None
+    gte_creation_time = args.get("gte_creation_time")
+    lte_creation_time = args.get("lte_creation_time")
+    gte_modification_time = args.get("gte_modification_time")
+    lte_modification_time = args.get("lte_modification_time")
+
+    sort_field, sort_order = get_cases_sort_order(sort_by_creation_time, sort_by_modification_time)
+
+    status_values = [CASE_STATUS[status] for status in argToList(args.get("status"))]
+    severity_values = [CASE_SEVERITY[severity] for severity in argToList(args.get("severity"))]
+
+    filter_builder = FilterBuilder()
+    filter_builder.add_time_range_field(CASE_FIELDS["creation_time"], gte_creation_time, lte_creation_time)
+    filter_builder.add_time_range_field(CASE_FIELDS["last_updated"], gte_modification_time, lte_modification_time)
+    filter_builder.add_time_range_field(CASE_FIELDS["creation_time"], since_creation_start_time, since_creation_end_time)
+    filter_builder.add_time_range_field(CASE_FIELDS["last_updated"], since_modification_start_time, since_modification_end_time)
+    filter_builder.add_field(CASE_FIELDS["status"], FilterType.EQ, status_values)
+    filter_builder.add_field(CASE_FIELDS["severity"], FilterType.EQ, severity_values)
+    filter_builder.add_field(CASE_FIELDS["case_id_list"], FilterType.EQ, argToList(args.get("case_id_list")))
+    filter_builder.add_field(CASE_FIELDS["case_domain"], FilterType.EQ, argToList(args.get("case_domain")))
+    filter_builder.add_field(CASE_FIELDS["case_name"], FilterType.CONTAINS, argToList(args.get("case_name")))
+    filter_builder.add_field(CASE_FIELDS["case_description"], FilterType.CONTAINS, argToList(args.get("case_description")))
+    filter_builder.add_field(CASE_FIELDS["starred"], FilterType.EQ, argToList(args.get("starred")))
+    filter_builder.add_field(CASE_FIELDS["asset_ids"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_ids")))
+    filter_builder.add_field(CASE_FIELDS["asset_groups"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_groups")))
+    filter_builder.add_field(CASE_FIELDS["hosts"], FilterType.EQ, argToList(args.get("hosts")))
+    filter_builder.add_field(CASE_FIELDS["tags"], FilterType.EQ, argToList(args.get("tags")))
+    filter_builder.add_field(CASE_FIELDS["assignee"], FilterType.CONTAINS, argToList(args.get("assignee")))
+
+    request_data = build_webapp_request_data(
+        table_name=CASES_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=limit,
+        sort_field=sort_field,
+        sort_order=sort_order,
+    )
+    demisto.info(f"{request_data=}")
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+    demisto.debug(f"Raw case data retrieved from API: {data}")
+    data = map_case_format(data)
+    demisto.debug(f"Case data after mapping and formatting: {data}")
+
     return CommandResults(
-        readable_output=tableToMarkdown("Cases", mapped_raw_cases, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
         outputs_prefix="Core.Case",
         outputs_key_field="case_id",
-        outputs=mapped_raw_cases,
-        raw_response=mapped_raw_cases,
+        outputs=data,
+        raw_response=data,
     )
+
+
+def get_cases_sort_order(sort_by_creation_time, sort_by_modification_time):
+    if sort_by_creation_time and sort_by_modification_time:
+        raise ValueError("Should be provide either sort_by_creation_time or sort_by_modification_time. Can't provide both")
+
+    if sort_by_creation_time:
+        sort_field = "CREATION_TIME"
+        sort_order = sort_by_creation_time
+    elif sort_by_modification_time:
+        sort_field = "LAST_UPDATE_TIME"
+        sort_order = sort_by_modification_time
+    else:
+        sort_field = "LAST_UPDATE_TIME"
+        sort_order = "DESC"
+    return sort_field, sort_order
 
 
 def get_extra_data_for_case_id_command(client: CoreClient, args):
@@ -680,7 +832,7 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
     """
     case_id = args.get("case_id")
     issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
-    response = client.get_incident_data(case_id, issues_limit)
+    response = client.get_incident_data(case_id, issues_limit, full_alert_fields=True)
     mapped_response = preprocess_get_case_extra_data_outputs(response)
     return CommandResults(
         readable_output=tableToMarkdown("Case", mapped_response, headerTransform=string_to_table_header),

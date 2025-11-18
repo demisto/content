@@ -12,23 +12,15 @@ args:
     isArray: true
     name: case_id_list
   - description: "The start time for filtering according to case creation time. Supports free text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
-    name: start_time
+    name: creation_start_time
   - description: "The end time for filtering according to case creation time. Supports free text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
-    name: end_time
+    name: creation_end_time
   - auto: PREDEFINED
     description: Sorts returned cases by the date/time that the case was created ("asc" - ascending, "desc" - descending).
     name: sort_by_creation_time
     predefined:
       - asc
       - desc
-  - description: 'Filters for cases with the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
-    name: status
-  - auto: PREDEFINED
-    description: Whether the case is starred.
-    name: starred
-    predefined:
-      - 'true'
-      - 'false'
   - auto: PREDEFINED
     description: Whether to include enriched case data in the response. Recommended for up to 10 cases.
     name: get_enriched_case_data
@@ -42,6 +34,36 @@ args:
   - defaultValue: '100'
     description: Maximum number of cases to return per page. The default and maximum is 100.
     name: page_size
+  - description: Filter cases by domain.
+    isArray: true
+    name: case_domain
+  - description: Filter cases by status.
+    isArray: true
+    name: status
+  - description: Filter cases by severity level.
+    isArray: true
+    name: severity
+  - description: Filter cases by asset IDs.
+    isArray: true
+    name: asset_ids
+  - description: Filter cases by asset groups.
+    isArray: true
+    name: asset_groups
+  - description: Filter cases by hosts.
+    isArray: true
+    name: hosts
+  - description: Filter cases by tags.
+    isArray: true
+    name: tags
+  - description: Filter cases by assignee name or email.
+    name: assignee
+  - description: Filter cases by case name.
+    name: case_name
+  - description: Filter cases by case description.
+    name: case_description
+  - description: "Filter cases by last updated time. Supports free text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
+    isArray: true
+    name: last_updated
     
 outputs:
   - contextPath: Core.Case.case_id
@@ -56,9 +78,6 @@ outputs:
   - contextPath: Core.Case.modification_time
     description: Timestamp when the case was last modified.
     type: Number
-  - contextPath: Core.Case.detection_time
-    description: Timestamp when the first issue was detected in the case. May be null.
-    type: Date
   - contextPath: Core.Case.status
     description: Current status of the case.
     type: String
@@ -95,9 +114,6 @@ outputs:
   - contextPath: Core.Case.host_count
     description: Number of hosts involved in the case.
     type: Number
-  - contextPath: Core.Case.notes
-    description: Notes related to the case. May be null.
-    type: String
   - contextPath: Core.Case.resolve_comment
     description: Comments added when resolving the case. May be null.
     type: String
@@ -107,17 +123,8 @@ outputs:
   - contextPath: Core.Case.manual_severity
     description: Severity manually assigned by the user. May be null.
     type: Number
-  - contextPath: Core.Case.manual_description
-    description: Description manually provided by the user.
-    type: String
-  - contextPath: Core.Case.xdr_url
-    description: URL to view the case in Cortex XDR.
-    type: String
   - contextPath: Core.Case.starred
     description: Indicates whether the case is starred.
-    type: Boolean
-  - contextPath: Core.Case.starred_manually
-    description: True if the case was starred manually; false if starred by rules.
     type: Boolean
   - contextPath: Core.Case.hosts
     description: List of hosts involved in the case.
@@ -128,11 +135,11 @@ outputs:
   - contextPath: Core.Case.case_sources
     description: Sources of the case.
     type: Array
-  - contextPath: Core.Case.rule_based_score
-    description: Score based on rules.
-    type: Number
   - contextPath: Core.Case.manual_score
     description: Manually assigned score. May be null.
+    type: Number
+  - contextPath: Core.Case.rule_based_score
+    description: Score based on rules.
     type: Number
   - contextPath: Core.Case.wildfire_hits
     description: Number of WildFire hits.
@@ -170,6 +177,22 @@ outputs:
   - contextPath: Core.Case.CaseExtraData.network_artifacts
     description: Network artifacts associated with the case.
     type: Array
+  - contextPath: Core.Case.CaseExtraData.starred_manually
+    description: True if the case was starred manually; false if starred by rules.
+    type: Boolean
+  - contextPath: Core.Case.CaseExtraData.xdr_url
+    description: URL to view the case in Cortex XDR.
+    type: String
+  - contextPath: Core.Case.CaseExtraData.manual_description
+    description: Description manually provided by the user.
+    type: String
+  - name: Core.Case.CaseExtraData.notes
+    description: The notes related to the case.
+    type: String
+  - name: Core.Case.CaseExtraData.detection_time
+    description: The timestamp when the first issue was detected in the case.
+    type: Date
+
 subtype: python3
 dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.6.0

@@ -374,168 +374,6 @@ script:
         - contextPath: Core.CoreAsset.all_sources
           description: A list of all sources providing information about the asset.
     - arguments:
-        - description: A datetime with the format 2019-12-31T23:59:00. Only cases that were created on or before the specified datetime will be retrieved.
-          name: lte_creation_time
-        - description: A datetime with the format 2019-12-31T23:59:00. Only cases that were created on or after the specified datetime will be retrieved.
-          name: gte_creation_time
-        - description: Filters for returned cases that were created on or before the specified datetime with the format 2019-12-31T23:59:00.
-          name: lte_modification_time
-        - description: Filters for returned cases that were modified on or after the specified datetime with the format 2019-12-31T23:59:00.
-          name: gte_modification_time
-        - description: A comma separated list of case IDs.
-          isArray: true
-          name: case_id_list
-        - description: Filters for returned cases that were created on or after the specified date range, for example, 1 month, 2 days, 1 hour, and so on.
-          name: since_creation_time
-        - description: Filters for returned cases that were modified on or after the specified date range, for example, 1 month, 2 days, 1 hour, and so on.
-          name: since_modification_time
-        - auto: PREDEFINED
-          description: Sorts returned cases by the datetime that the case was last modified ("asc" - ascending, "desc" - descending).
-          name: sort_by_modification_time
-          predefined:
-            - asc
-            - desc
-        - auto: PREDEFINED
-          description: Sorts returned cases by the datetime that the case was created ("asc" - ascending, "desc" - descending).
-          name: sort_by_creation_time
-          predefined:
-            - asc
-            - desc
-        - defaultValue: '0'
-          description: Page number (for pagination).
-          name: page
-        - defaultValue: '100'
-          description: Maximum number of cases to return per page. The maximum is 100.
-          name: limit
-        - description: 'Filters for cases with the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
-          name: status
-        - auto: PREDEFINED
-          description: 'Whether the case is starred.'
-          name: starred
-          predefined:
-            - 'true'
-            - 'false'
-      name: core-get-cases
-      description: Get case information based on the specified filters.
-      outputs:
-        - contextPath: Core.Case.case_id
-          description: Unique ID assigned to each returned case.
-          type: String
-        - contextPath: Core.Case.case_name
-          description: Name of the case.
-          type: String
-        - contextPath: Core.Case.creation_time
-          description: Timestamp when the case was created.
-          type: Number
-        - contextPath: Core.Case.modification_time
-          description: Timestamp when the case was last modified.
-          type: Number
-        - contextPath: Core.Case.detection_time
-          description: Timestamp when the first issue was detected in the case. May be null.
-          type: Date
-        - contextPath: Core.Case.status
-          description: Current status of the case.
-          type: String
-        - contextPath: Core.Case.severity
-          description: Severity level of the case.
-          type: String
-        - contextPath: Core.Case.description
-          description: Description of the case.
-          type: String
-        - contextPath: Core.Case.assigned_user_mail
-          description: Email address of the assigned user. May be null.
-          type: String
-        - contextPath: Core.Case.assigned_user_pretty_name
-          description: Full name of the assigned user. May be null.
-          type: String
-        - contextPath: Core.Case.issue_count
-          description: Total number of issues in the case.
-          type: Number
-        - contextPath: Core.Case.low_severity_issue_count
-          description: Number of issues with low severity.
-          type: Number
-        - contextPath: Core.Case.med_severity_issue_count
-          description: Number of issues with medium severity.
-          type: Number
-        - contextPath: Core.Case.high_severity_issue_count
-          description: Number of issues with high severity.
-          type: Number
-        - contextPath: Core.Case.critical_severity_issue_count
-          description: Number of issues with critical severity.
-          type: Number
-        - contextPath: Core.Case.user_count
-          description: Number of users involved in the case.
-          type: Number
-        - contextPath: Core.Case.host_count
-          description: Number of hosts involved in the case.
-          type: Number
-        - contextPath: Core.Case.notes
-          description: Notes related to the case. May be null.
-          type: String
-        - contextPath: Core.Case.resolve_comment
-          description: Comments added when resolving the case. May be null.
-          type: String
-        - contextPath: Core.Case.resolved_timestamp
-          description: Timestamp when the case was resolved.
-          type: Number
-        - contextPath: Core.Case.manual_severity
-          description: Severity manually assigned by the user. May be null.
-          type: Number
-        - contextPath: Core.Case.manual_description
-          description: Description manually provided by the user.
-          type: String
-        - contextPath: Core.Case.xdr_url
-          description: URL to view the case in Cortex XDR.
-          type: String
-        - contextPath: Core.Case.starred
-          description: Indicates whether the case is starred.
-          type: Boolean
-        - contextPath: Core.Case.starred_manually
-          description: True if the case was starred manually; false if starred by rules.
-          type: Boolean
-        - contextPath: Core.Case.hosts
-          description: List of hosts involved in the case.
-          type: Array
-        - contextPath: Core.Case.users
-          description: List of users involved in the case.
-          type: Array
-        - contextPath: Core.Case.case_sources
-          description: Sources of the case.
-          type: Array
-        - contextPath: Core.Case.rule_based_score
-          description: Score based on rules.
-          type: Number
-        - contextPath: Core.Case.manual_score
-          description: Manually assigned score. May be null.
-          type: Number
-        - contextPath: Core.Case.wildfire_hits
-          description: Number of WildFire hits.
-          type: Number
-        - contextPath: Core.Case.issues_grouping_status
-          description: Status of issue grouping.
-          type: String
-        - contextPath: Core.Case.mitre_tactics_ids_and_names
-          description: List of MITRE ATT&CK tactic IDs and names associated with the case.
-          type: Array
-        - contextPath: Core.Case.mitre_techniques_ids_and_names
-          description: List of MITRE ATT&CK technique IDs and names associated with the case.
-          type: Array
-        - contextPath: Core.Case.issue_categories
-          description: Categories of issues associated with the case.
-          type: Array
-        - contextPath: Core.Case.original_tags
-          description: Original tags assigned to the case.
-          type: Array
-        - contextPath: Core.Case.tags
-          description: Current tags assigned to the case.
-          type: Array
-        - contextPath: Core.Case.case_domain
-          description: Domain associated with the case.
-          type: String
-        - contextPath: Core.Case.custom_fields
-          description: Custom fields for the case with standardized lowercase, whitespace-free names.
-          type: Unknown
-    - arguments:
       - description: A comma separated list of case IDs.
         isArray: true
         name: case_id
@@ -1416,7 +1254,206 @@ script:
           isArray: true
       name: core-enable-scanners
       description: Enable or disable scanners with the specified configuration.
-          
+
+    - arguments:
+        - name: case_id_list
+          description: A comma-separated list of case IDs to filter by.
+          isArray: true
+        - auto: PREDEFINED
+          description: Sorts returned cases by the date/time that the case was created ("asc" - ascending, "desc" - descending).
+          name: sort_by_creation_time
+          predefined:
+            - asc
+            - desc
+        - auto: PREDEFINED
+          description: Sorts returned cases by the date/time that the case was modified ("asc" - ascending, "desc" - descending).
+          name: sort_by_modification_time
+          predefined:
+            - asc
+            - desc
+        - auto: PREDEFINED
+          description: Whether to include enriched case data in the response. Recommended for up to 10 cases.
+          name: get_enriched_case_data
+          defaultValue: 'false'
+          predefined:
+            - 'true'
+            - 'false'
+        - defaultValue: '0'
+          description: Page number (for pagination). The default is 0 (the first page).
+          name: page
+        - defaultValue: '100'
+          description: Maximum number of cases to return per page. The default and maximum value is 100.
+          name: limit
+        - description: A comma-separated list of domains to filter cases by.
+          isArray: true
+          name: case_domain
+        - auto: PREDEFINED
+          description: |
+            A comma-separated list of case statuses to filter cases by.
+          isArray: true
+          name: status
+          predefined:
+            - 'new'
+            - 'under_investigation'
+            - 'resolved'
+        - auto: PREDEFINED
+          description: |
+            A comma-separated list of severity levels to filter cases by.
+          isArray: true
+          name: severity
+          predefined:
+            - 'low'
+            - 'medium'
+            - 'high'
+            - 'critical'
+        - description: A comma-separated list of Asset IDs associated with the case by which to filter the cases.
+          isArray: true
+          name: asset_ids
+        - description: A comma-separated list of Asset Group IDs, where the case is filtered by the assets contained within those groups.
+          isArray: true
+          name: asset_groups
+        - description: A comma-separated list of hosts to filter cases by.
+          isArray: true
+          name: hosts
+        - description: A comma-separated list of tags to filter cases by.
+          isArray: true
+          name: tags
+        - description: A comma-separated list of assignee names or emails to filter cases by.
+          name: assignee
+        - auto: PREDEFINED
+          description: Filter cases by whether they are starred or not.
+          name: starred
+          isArray: true
+          predefined:
+            - 'true'
+            - 'false'
+        - description: A comma-separated list of names to filter cases by.
+          name: case_name
+        - description: A comma-separated list of descriptions to filter cases by.
+          name: case_description
+        - description: A datetime with the format 2019-12-31T23:59:00. Only cases that were created on or before the specified datetime will be retrieved.
+          name: lte_creation_time
+        - description: A datetime with the format 2019-12-31T23:59:00. Only cases that were created on or after the specified datetime will be retrieved.
+          name: gte_creation_time
+        - description: Filters for returned cases that were created on or before the specified datetime with the format 2019-12-31T23:59:00.
+          name: lte_modification_time
+        - description: Filters for returned cases that were modified on or after the specified datetime with the format 2019-12-31T23:59:00.
+          name: gte_modification_time
+        - description: A comma separated list of case IDs.
+          isArray: true
+          name: case_id_list
+        - description: Filters for returned cases that were created on or after the specified date range, for example, 1 month, 2 days, 1 hour, and so on.
+          name: since_creation_time
+        - description: Filters for returned cases that were modified on or after the specified date range, for example, 1 month, 2 days, 1 hour, and so on.
+          name: since_modification_time
+      name: core-get-cases
+      description: Get case information based on the specified filters.
+      outputs:
+        - contextPath: Core.Case.case_id
+          description: Unique ID assigned to each returned case.
+          type: String
+        - contextPath: Core.Case.case_name
+          description: Name of the case.
+          type: String
+        - contextPath: Core.Case.creation_time
+          description: Timestamp when the case was created.
+          type: Number
+        - contextPath: Core.Case.modification_time
+          description: Timestamp when the case was last modified.
+          type: Number
+        - contextPath: Core.Case.status
+          description: Current status of the case.
+          type: String
+        - contextPath: Core.Case.severity
+          description: Severity level of the case.
+          type: String
+        - contextPath: Core.Case.description
+          description: Description of the case.
+          type: String
+        - contextPath: Core.Case.assigned_user_mail
+          description: Email address of the assigned user. May be null.
+          type: String
+        - contextPath: Core.Case.assigned_user_pretty_name
+          description: Full name of the assigned user. May be null.
+          type: String
+        - contextPath: Core.Case.issue_count
+          description: Total number of issues in the case.
+          type: Number
+        - contextPath: Core.Case.low_severity_issue_count
+          description: Number of issues with low severity.
+          type: Number
+        - contextPath: Core.Case.med_severity_issue_count
+          description: Number of issues with medium severity.
+          type: Number
+        - contextPath: Core.Case.high_severity_issue_count
+          description: Number of issues with high severity.
+          type: Number
+        - contextPath: Core.Case.critical_severity_issue_count
+          description: Number of issues with critical severity.
+          type: Number
+        - contextPath: Core.Case.user_count
+          description: Number of users involved in the case.
+          type: Number
+        - contextPath: Core.Case.host_count
+          description: Number of hosts involved in the case.
+          type: Number
+        - contextPath: Core.Case.resolve_comment
+          description: Comments added when resolving the case. May be null.
+          type: String
+        - contextPath: Core.Case.resolved_timestamp
+          description: Timestamp when the case was resolved.
+          type: Number
+        - contextPath: Core.Case.manual_severity
+          description: Severity manually assigned by the user. May be null.
+          type: Number
+        - contextPath: Core.Case.manual_description
+          description: Description manually provided by the user.
+          type: String
+        - contextPath: Core.Case.starred
+          description: Indicates whether the case is starred.
+          type: Boolean
+        - contextPath: Core.Case.hosts
+          description: List of hosts involved in the case.
+          type: Array
+        - contextPath: Core.Case.users
+          description: List of users involved in the case.
+          type: Array
+        - contextPath: Core.Case.case_sources
+          description: Sources of the case.
+          type: Array
+        - contextPath: Core.Case.manual_score
+          description: Manually assigned score. May be null.
+          type: Number
+        - contextPath: Core.Case.rule_based_score
+          description: Score based on rules.
+          type: Number
+        - contextPath: Core.Case.wildfire_hits
+          description: Number of WildFire hits.
+          type: Number
+        - contextPath: Core.Case.issues_grouping_status
+          description: Status of issue grouping.
+          type: String
+        - contextPath: Core.Case.mitre_tactics_ids_and_names
+          description: List of MITRE ATT&CK tactic IDs and names associated with the case.
+          type: Array
+        - contextPath: Core.Case.mitre_techniques_ids_and_names
+          description: List of MITRE ATT&CK technique IDs and names associated with the case.
+          type: Array
+        - contextPath: Core.Case.issue_categories
+          description: Categories of issues associated with the case.
+          type: Array
+        - contextPath: Core.Case.original_tags
+          description: Original tags assigned to the case.
+          type: Array
+        - contextPath: Core.Case.tags
+          description: Current tags assigned to the case.
+          type: Array
+        - contextPath: Core.Case.case_domain
+          description: Domain associated with the case.
+          type: String
+        - contextPath: Core.Case.custom_fields
+          description: Custom fields for the case with standardized lowercase, whitespace-free names.
+          type: Unknown
   runonce: false
   script: "-"
   subtype: python3
