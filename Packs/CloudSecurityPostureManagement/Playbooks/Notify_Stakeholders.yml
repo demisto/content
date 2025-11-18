@@ -65,7 +65,6 @@ tasks:
       id: 392e669d-6901-4f1b-841d-15fb88950703
       iscommand: false
       name: ""
-      playbooktaskmissingcomponent: null
       version: -1
     taskid: 392e669d-6901-4f1b-841d-15fb88950703
     timertriggers: []
@@ -92,7 +91,6 @@ tasks:
       id: 7531e2bc-565f-4be2-8bb9-5715a477f073
       iscommand: false
       name: Done
-      playbooktaskmissingcomponent: null
       type: title
       version: -1
     taskid: 7531e2bc-565f-4be2-8bb9-5715a477f073
@@ -159,7 +157,6 @@ tasks:
       id: 5f3a26fe-960a-4391-8beb-c2d9a8b2ee6c
       iscommand: false
       name: Is Microsoft Teams enabled and channel name provided?
-      playbooktaskmissingcomponent: null
       type: condition
       version: -1
     taskid: 5f3a26fe-960a-4391-8beb-c2d9a8b2ee6c
@@ -269,7 +266,6 @@ tasks:
       id: 9d6001e1-98e4-4c41-8bbe-8ca44424b40b
       iscommand: true
       name: Send Slack Notification
-      playbooktaskmissingcomponent: null
       script: SlackV3|||send-notification
       type: regular
       version: -1
@@ -340,7 +336,6 @@ tasks:
       id: bbcbc724-4a3c-4e57-8455-9e5086f81e31
       iscommand: true
       name: Send Microsoft Teams Notification
-      playbooktaskmissingcomponent: null
       script: Microsoft Teams|||teams-send-notification-quick-action
       type: regular
       version: -1
@@ -405,7 +400,6 @@ tasks:
       id: 1056d6df-2489-4c98-8403-e731fdbcc495
       iscommand: false
       name: Is an Email integration enabled and address provided?
-      playbooktaskmissingcomponent: null
       type: condition
       version: -1
     taskid: 1056d6df-2489-4c98-8403-e731fdbcc495
@@ -472,7 +466,6 @@ tasks:
       id: ed7488d3-91ba-4835-8df2-510f68f3d10f
       iscommand: false
       name: Is Slack enabled and channel name provided?
-      playbooktaskmissingcomponent: null
       type: condition
       version: -1
     taskid: ed7488d3-91ba-4835-8df2-510f68f3d10f
@@ -525,7 +518,6 @@ tasks:
       id: 1256d5ee-c20b-4397-8ee6-5552a0046bf8
       iscommand: false
       name: Is at least one notification recipient provided?
-      playbooktaskmissingcomponent: null
       type: condition
       version: -1
     taskid: 1256d5ee-c20b-4397-8ee6-5552a0046bf8
@@ -624,7 +616,6 @@ tasks:
       id: 1dad5497-be97-4a17-8450-2ddb734c17de
       iscommand: false
       name: Please provide at least 1 notification recipient
-      playbooktaskmissingcomponent: null
       type: collection
       version: -1
     taskid: 1dad5497-be97-4a17-8450-2ddb734c17de
@@ -677,7 +668,6 @@ tasks:
       id: 0efa90f7-f71d-4644-8e63-bcd3934cf750
       iscommand: false
       name: Is at least one notification recipient provided?
-      playbooktaskmissingcomponent: null
       type: condition
       version: -1
     taskid: 0efa90f7-f71d-4644-8e63-bcd3934cf750
@@ -713,7 +703,6 @@ tasks:
       id: a9e1f60e-fb8a-4f50-844d-1d46d3554c73
       iscommand: false
       name: Update war room - no message sent
-      playbooktaskmissingcomponent: null
       script: Print
       type: regular
       version: -1
@@ -748,7 +737,6 @@ tasks:
       id: 2b0efc35-6d96-4cf8-8a67-61b73225ab49
       iscommand: false
       name: Format details
-      playbooktaskmissingcomponent: null
       type: title
       version: -1
     taskid: 2b0efc35-6d96-4cf8-8a67-61b73225ab49
@@ -852,7 +840,6 @@ tasks:
       id: ac29f23d-f485-4bb0-869e-6e7670b78988
       iscommand: true
       name: Send Email Notification
-      playbooktaskmissingcomponent: null
       script: mail-sender|||send-mail
       type: regular
       version: -1
@@ -902,7 +889,6 @@ tasks:
       id: ec2f0a37-de94-43c5-8228-cab36c42d669
       iscommand: false
       name: Set Issue Severity Text
-      playbooktaskmissingcomponent: null
       script: Set
       type: regular
       version: -1
@@ -936,7 +922,6 @@ tasks:
       id: d70077ee-7ba4-4b04-820b-f8c89f966738
       iscommand: false
       name: Send Notification with Details
-      playbooktaskmissingcomponent: null
       type: title
       version: -1
     taskid: d70077ee-7ba4-4b04-820b-f8c89f966738
@@ -984,7 +969,6 @@ tasks:
       id: faa0efb1-5b16-488c-8aee-3cd177163906
       iscommand: false
       name: Set Issue Category
-      playbooktaskmissingcomponent: null
       script: Set
       type: regular
       version: -1
@@ -1023,7 +1007,6 @@ tasks:
       id: d67b7eb5-8e39-48e7-8a69-a9d740451fbc
       iscommand: false
       name: Set Issue Creation timestamp
-      playbooktaskmissingcomponent: null
       script: Set
       type: regular
       version: -1
@@ -1072,7 +1055,6 @@ tasks:
       id: d6c6e045-3d95-4778-8620-f66516b65c59
       iscommand: false
       name: Slack block formatting for quotes
-      playbooktaskmissingcomponent: null
       script: Set
       type: regular
       version: -1
@@ -1122,7 +1104,6 @@ tasks:
       id: b953b9a8-db4a-4baa-83bd-ba6f4ba3df4f
       iscommand: false
       name: Markdown formatting for new lines
-      playbooktaskmissingcomponent: null
       script: Set
       type: regular
       version: -1
@@ -1172,7 +1153,6 @@ tasks:
       id: 36834b78-e1af-41b5-84a2-3d7e17fc143b
       iscommand: false
       name: Html formatting for new lines
-      playbooktaskmissingcomponent: null
       script: Set
       type: regular
       version: -1

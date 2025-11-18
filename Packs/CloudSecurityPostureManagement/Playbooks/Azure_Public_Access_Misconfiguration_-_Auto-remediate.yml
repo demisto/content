@@ -51,7 +51,6 @@ tasks:
       id: 6024ecbf-ae4c-4b64-8ced-2b89cde8fb18
       iscommand: false
       name: ""
-      playbooktaskmissingcomponent: null
       version: -1
     taskid: 6024ecbf-ae4c-4b64-8ced-2b89cde8fb18
     timertriggers: []
@@ -85,7 +84,6 @@ tasks:
       id: 076acded-c500-4703-8c72-aad63c1ce288
       iscommand: true
       name: Get Asset details
-      playbooktaskmissingcomponent: null
       script: Cortex Core - Platform|||core-get-asset-details
       type: regular
       version: -1
@@ -114,7 +112,6 @@ tasks:
       id: dbedc2c9-fdfb-43e5-8452-75ef06ca3933
       iscommand: false
       name: Done
-      playbooktaskmissingcomponent: null
       type: title
       version: -1
     taskid: dbedc2c9-fdfb-43e5-8452-75ef06ca3933
@@ -152,7 +149,6 @@ tasks:
       id: e72c5e83-7fd4-4f2b-8a99-ad64f200c16d
       iscommand: false
       name: Print remediation action taken
-      playbooktaskmissingcomponent: null
       script: Print
       type: regular
       version: -1
@@ -188,7 +184,6 @@ tasks:
       id: d38ad57b-ea78-4fc6-8780-ce0f848734b4
       iscommand: true
       name: Update Issue status to Resolved - Fixed
-      playbooktaskmissingcomponent: null
       script: Builtin|||setIssueStatus
       type: regular
       version: -1
@@ -221,7 +216,6 @@ tasks:
       id: 7c550129-ff50-4fac-8a08-4d361eea1527
       iscommand: false
       name: Launch Remediation Steps
-      playbooktaskmissingcomponent: null
       type: title
       version: -1
     taskid: 7c550129-ff50-4fac-8a08-4d361eea1527
@@ -258,7 +252,6 @@ tasks:
       id: 09fcb1fe-0245-49e7-8b27-04c70ffa1b95
       iscommand: false
       name: Print - enable Azure and re-run this playbook
-      playbooktaskmissingcomponent: null
       script: Print
       type: regular
       version: -1
@@ -294,7 +287,6 @@ tasks:
       id: bb241136-96ea-4bdb-8a58-c6fcc3cc77bc
       iscommand: false
       name: Print - playbook not applicable
-      playbooktaskmissingcomponent: null
       script: Print
       type: regular
       version: -1
@@ -386,7 +378,6 @@ tasks:
       id: e2e14ba5-9ea0-4bed-8d7e-0edcd21b5459
       iscommand: false
       name: Check the type of remediation
-      playbooktaskmissingcomponent: null
       type: condition
       version: -1
     taskid: e2e14ba5-9ea0-4bed-8d7e-0edcd21b5459
@@ -441,7 +432,6 @@ tasks:
       id: 83d906d8-4037-46cc-9c0d-fe8787146d11
       iscommand: false
       name: Is playbook applicable?
-      playbooktaskmissingcomponent: null
       type: condition
       version: -1
     taskid: 83d906d8-4037-46cc-9c0d-fe8787146d11
@@ -498,7 +488,6 @@ tasks:
       id: f65b5536-845f-4f17-8d1e-ee1ab45c2ea2
       iscommand: false
       name: Is Azure integration available?
-      playbooktaskmissingcomponent: null
       type: condition
       version: -1
     taskid: f65b5536-845f-4f17-8d1e-ee1ab45c2ea2
@@ -539,7 +528,6 @@ tasks:
       id: fe73ed6c-03a3-4a59-a5c9-e4dda732f958
       iscommand: true
       name: 'Blob Container: Disable public access'
-      playbooktaskmissingcomponent: null
       script: Azure|||azure-storage-account-update
       type: regular
       version: -1
@@ -582,7 +570,6 @@ tasks:
       id: da1b5926-9960-44f0-8c41-bf6b6b81eb3f
       iscommand: false
       name: Set remediation action
-      playbooktaskmissingcomponent: null
       script: Set
       type: regular
       version: -1
@@ -627,7 +614,6 @@ tasks:
       id: b7e91c15-c188-4b0f-887e-080c07db1ef8
       iscommand: false
       name: Is notification enabled?
-      playbooktaskmissingcomponent: null
       type: condition
       version: -1
     taskid: b7e91c15-c188-4b0f-887e-080c07db1ef8
@@ -670,7 +656,6 @@ tasks:
       id: 53cf5c69-5f37-430c-bf52-b56d4d8d199e
       iscommand: true
       name: 'VM Disk: Disable public access'
-      playbooktaskmissingcomponent: null
       script: Azure|||azure-disk-update
       type: regular
       version: -1
@@ -713,7 +698,6 @@ tasks:
       id: dd011461-99c2-4e8b-8249-8c61a235007d
       iscommand: false
       name: Set remediation action
-      playbooktaskmissingcomponent: null
       script: Set
       type: regular
       version: -1
@@ -760,7 +744,6 @@ tasks:
       iscommand: false
       name: Notify Stakeholders
       playbookId: Notify Stakeholders
-      playbooktaskmissingcomponent: null
       type: playbook
       version: -1
     taskid: d84d9d6f-03a0-4d1f-8fab-ef0db76de9ad
@@ -801,7 +784,6 @@ tasks:
       id: 94357669-45e2-46ca-b7b0-cdead9ee9d2c
       iscommand: true
       name: 'Storage Account: Set Default network access to Deny'
-      playbooktaskmissingcomponent: null
       script: Azure|||azure-storage-account-update
       type: regular
       version: -1
@@ -844,7 +826,6 @@ tasks:
       id: 3839098f-6d7d-40f6-ae36-efd29029c35e
       iscommand: false
       name: Set remediation action
-      playbooktaskmissingcomponent: null
       script: Set
       type: regular
       version: -1

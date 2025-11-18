@@ -57,7 +57,6 @@ tasks:
       id: 41897834-713d-4002-81f1-3a3426bee72d
       iscommand: false
       name: ""
-      playbooktaskmissingcomponent: null
       version: -1
     taskid: 41897834-713d-4002-81f1-3a3426bee72d
     timertriggers: []
@@ -91,7 +90,6 @@ tasks:
       id: afd8d509-8427-4ecb-8213-e8898ff67d8e
       iscommand: true
       name: Get Asset details
-      playbooktaskmissingcomponent: null
       script: Cortex Core - Platform|||core-get-asset-details
       type: regular
       version: -1
@@ -120,7 +118,6 @@ tasks:
       id: b0736497-a18c-49c5-84d7-05843250b527
       iscommand: false
       name: Done
-      playbooktaskmissingcomponent: null
       type: title
       version: -1
     taskid: b0736497-a18c-49c5-84d7-05843250b527
@@ -158,7 +155,6 @@ tasks:
       id: 923513cb-e00a-4c7e-873b-d94dd741ec4e
       iscommand: false
       name: Print remediation action taken
-      playbooktaskmissingcomponent: null
       script: Print
       type: regular
       version: -1
@@ -194,7 +190,6 @@ tasks:
       id: cd3ed51e-4b73-49ed-8cc9-9579cac09de6
       iscommand: true
       name: Update Issue status to Resolved - Fixed
-      playbooktaskmissingcomponent: null
       script: Builtin|||setIssueStatus
       type: regular
       version: -1
@@ -227,7 +222,6 @@ tasks:
       id: 27446e76-912b-4f17-8100-5dab7743c955
       iscommand: false
       name: Launch Remediation Steps
-      playbooktaskmissingcomponent: null
       type: title
       version: -1
     taskid: 27446e76-912b-4f17-8100-5dab7743c955
@@ -264,7 +258,6 @@ tasks:
       id: da855f95-bb9e-400f-8d28-4d93ba4f6e28
       iscommand: false
       name: Print - enable AWS and re-run this playbook
-      playbooktaskmissingcomponent: null
       script: Print
       type: regular
       version: -1
@@ -301,7 +294,6 @@ tasks:
       id: 4aba4d7c-55c6-4add-820c-0aac6200c59a
       iscommand: false
       name: Print - playbook not applicable
-      playbooktaskmissingcomponent: null
       script: Print
       type: regular
       version: -1
@@ -399,7 +391,6 @@ tasks:
       id: 2118e886-81a2-4478-8578-89497b1509a0
       iscommand: false
       name: Check the type of remediation
-      playbooktaskmissingcomponent: null
       type: condition
       version: -1
     taskid: 2118e886-81a2-4478-8578-89497b1509a0
@@ -444,7 +435,6 @@ tasks:
       id: b804e5fc-5512-484b-86c6-5f86a4562a1b
       iscommand: true
       name: Disable public access to RDS Database Instance
-      playbooktaskmissingcomponent: null
       script: AWS|||aws-rds-db-instance-modify
       type: regular
       version: -1
@@ -493,7 +483,6 @@ tasks:
       id: 814af7cd-5028-4a86-8bec-a3fd1f9aadb2
       iscommand: true
       name: Disable public access to EBS Snapshots
-      playbooktaskmissingcomponent: null
       script: AWS|||aws-ec2-snapshot-attribute-modify
       type: regular
       version: -1
@@ -544,7 +533,6 @@ tasks:
       iscommand: false
       name: Notify Stakeholders - issue resolved
       playbookId: Notify Stakeholders
-      playbooktaskmissingcomponent: null
       type: playbook
       version: -1
     taskid: 212b271e-ad6b-49d4-8173-a7a61ba65308
@@ -605,7 +593,6 @@ tasks:
       id: 60652df4-fb7f-4d3e-8979-e15b98a443ec
       iscommand: false
       name: Is playbook applicable?
-      playbooktaskmissingcomponent: null
       type: condition
       version: -1
     taskid: 60652df4-fb7f-4d3e-8979-e15b98a443ec
@@ -662,7 +649,6 @@ tasks:
       id: 2d7b3ddd-b99f-4c5f-8558-622d4ae5e542
       iscommand: false
       name: Is AWS integration available?
-      playbooktaskmissingcomponent: null
       type: condition
       version: -1
     taskid: 2d7b3ddd-b99f-4c5f-8558-622d4ae5e542
@@ -706,7 +692,6 @@ tasks:
       id: c9b56a03-b7ff-44cf-8c28-1eb4d4160405
       iscommand: false
       name: Is notification enabled?
-      playbooktaskmissingcomponent: null
       type: condition
       version: -1
     taskid: c9b56a03-b7ff-44cf-8c28-1eb4d4160405
@@ -747,7 +732,6 @@ tasks:
       id: 7b22088c-561e-436f-83f4-608f8aa1c94b
       iscommand: false
       name: Save remediation action
-      playbooktaskmissingcomponent: null
       script: Set
       type: regular
       version: -1
@@ -789,7 +773,6 @@ tasks:
       id: caa6b98d-8250-4c4a-80c2-146afb887d42
       iscommand: false
       name: Save remediation action
-      playbooktaskmissingcomponent: null
       script: Set
       type: regular
       version: -1
@@ -838,7 +821,6 @@ tasks:
       id: d37d4013-7096-4787-8734-38473b9861c6
       iscommand: true
       name: Disable public access to S3 Bucket via ACL
-      playbooktaskmissingcomponent: null
       script: AWS|||aws-s3-public-access-block-update
       type: regular
       version: -1
@@ -882,7 +864,6 @@ tasks:
       id: b49c0b67-2697-4e1a-8e80-edc37a157cae
       iscommand: false
       name: Save remediation action
-      playbooktaskmissingcomponent: null
       script: Set
       type: regular
       version: -1
