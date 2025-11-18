@@ -557,58 +557,68 @@ def fetch_request(
     return responses
 
 
-def filter_service_records_by_time(service_records: List[dict[str, Any]], fetch_start_datetime: datetime) -> List[dict[str, Any]]:
+def filter_service_records_by_time(
+    service_records: List[dict[str, Any]], fetch_start_datetime: datetime, use_classic_date_format: bool = False
+) -> List[dict[str, Any]]:
     """
     Returns the service records that changed after the fetch_start_datetime, from the service_records given.
 
     :param service_records: Service records as given form SysAid.
     :param fetch_start_datetime: The datetime to start fetching service records from.
+    :param use_classic_date_format: Whether to use SysAid Classic date format (DD-MM-YYYY).
     """
     filtered_service_records = []
     for service_record in service_records:
-        update_time = get_service_record_update_time(service_record)
+        update_time = get_service_record_update_time(service_record, use_classic_date_format)
         if update_time and update_time >= fetch_start_datetime:
             filtered_service_records.append(service_record)
 
     return filtered_service_records
 
 
-def filter_service_records_by_id(service_records: List[dict[str, Any]], fetch_start_datetime: datetime, last_id_fetched: str):
+def filter_service_records_by_id(
+    service_records: List[dict[str, Any]], fetch_start_datetime: datetime, last_id_fetched: str, use_classic_date_format: bool = False
+):
     # only for service_records with the same update_time as fetch_start_datetime
     return [
         service_record
         for service_record in service_records
-        if get_service_record_update_time(service_record) != fetch_start_datetime or service_record["id"] > last_id_fetched
+        if get_service_record_update_time(service_record, use_classic_date_format) != fetch_start_datetime
+        or service_record["id"] > last_id_fetched
     ]
 
 
 def reduce_service_records_to_limit(
-    service_records: List[dict[str, Any]], limit: int, last_fetch: datetime, last_id_fetched: str
+    service_records: List[dict[str, Any]], limit: int, last_fetch: datetime, last_id_fetched: str, use_classic_date_format: bool = False
 ) -> tuple[datetime, str, List[dict[str, Any]]]:
     incidents_count = min(limit, len(service_records))
     # limit can't be 0 or less, but there could be no service_records at the wanted time
     if incidents_count > 0:
         service_records = service_records[:limit]
         last_fetched_service_record = service_records[incidents_count - 1]
-        last_fetch = get_service_record_update_time(last_fetched_service_record)  # type: ignore
+        last_fetch = get_service_record_update_time(last_fetched_service_record, use_classic_date_format)  # type: ignore
         last_id_fetched = last_fetched_service_record["id"]
     return last_fetch, last_id_fetched, service_records
 
 
 def parse_service_records(
-    service_records: List[dict[str, Any]], limit: int, fetch_start_datetime: datetime, last_id_fetched: str
+    service_records: List[dict[str, Any]], limit: int, fetch_start_datetime: datetime, last_id_fetched: str, use_classic_date_format: bool = False
 ) -> tuple[datetime, str, List[dict[str, Any]]]:
-    service_records = filter_service_records_by_time(service_records, fetch_start_datetime)
-    service_records = filter_service_records_by_id(service_records, fetch_start_datetime, last_id_fetched)
+    service_records = filter_service_records_by_time(service_records, fetch_start_datetime, use_classic_date_format)
+    service_records = filter_service_records_by_id(service_records, fetch_start_datetime, last_id_fetched, use_classic_date_format)
 
     # sorting service_records by date and then by id
-    service_records.sort(key=lambda service_record: (get_service_record_update_time(service_record), service_record["id"]))
-
-    last_fetch, last_id_fetched, service_records = reduce_service_records_to_limit(
-        service_records, limit, fetch_start_datetime, last_id_fetched
+    service_records.sort(
+        key=lambda service_record: (get_service_record_update_time(service_record, use_classic_date_format), service_record["id"])
     )
 
-    incidents: List[dict[str, Any]] = [service_record_to_incident_context(service_record) for service_record in service_records]
+    last_fetch, last_id_fetched, service_records = reduce_service_records_to_limit(
+        service_records, limit, fetch_start_datetime, last_id_fetched, use_classic_date_format
+    )
+
+    incidents: List[dict[str, Any]] = [
+        service_record_to_incident_context(service_record, use_classic_date_format) for service_record in service_records
+    ]
     return last_fetch, last_id_fetched, incidents
 
 
@@ -625,18 +635,29 @@ def calculate_fetch_start_datetime(last_fetch: str, first_fetch: str):
     return max(last_fetch_datetime, first_fetch_datetime)
 
 
-def get_service_record_update_time(service_record: dict[str, Any]) -> Optional[datetime]:
+def get_service_record_update_time(service_record: dict[str, Any], use_classic_date_format: bool = False) -> Optional[datetime]:
     for service_record_info in service_record["info"]:
         if service_record_info["key"] == "update_time":
             # We are using 'valueCaption' and not 'value' as they hold different values
             occurred = str(service_record_info["valueCaption"])
-            return dateparser.parse(occurred, settings={"TIMEZONE": "UTC"})
+            
+            # SysAid Classic uses non-ISO date format causing ambiguous parsing when day <= 12
+            if use_classic_date_format:
+                demisto.debug(f"Parsing with SysAid Classic format (DMY): {occurred}")
+                parsed_date = dateparser.parse(occurred, settings={"TIMEZONE": "UTC", "DATE_ORDER": "DMY"})
+                demisto.debug(f"Parsed result: {parsed_date}")
+                return parsed_date
+            else:
+                demisto.debug(f"Parsing with standard format: {occurred}")
+                parsed_date = dateparser.parse(occurred, settings={"TIMEZONE": "UTC"})
+                demisto.debug(f"Parsed result: {parsed_date}")
+                return parsed_date
 
     demisto.debug(f'The service record with ID {service_record["id"]} does not have a modify time (update_time).')
     return None
 
 
-def service_record_to_incident_context(service_record: dict[str, Any]):
+def service_record_to_incident_context(service_record: dict[str, Any], use_classic_date_format: bool = False):
     title, record_type = "", ""
     for service_record_info in service_record["info"]:
         if service_record_info["key"] == "sr_type":
@@ -644,7 +665,7 @@ def service_record_to_incident_context(service_record: dict[str, Any]):
         elif service_record_info["key"] == "title":
             title = service_record_info["valueCaption"]
 
-    occurred_datetime = get_service_record_update_time(service_record)
+    occurred_datetime = get_service_record_update_time(service_record, use_classic_date_format)
     occurred = occurred_datetime.strftime(DATE_FORMAT) if occurred_datetime else None
 
     incident_context = {
@@ -1062,6 +1083,7 @@ def fetch_incidents(
     included_statuses: str = None,
     include_archived: bool = False,
     fetch_types: str = None,
+    use_classic_date_format: bool = False,
 ):
     last_fetch = demisto.getLastRun().get("last_fetch")
     last_id_fetched = demisto.getLastRun().get("last_id_fetched", "-1")
@@ -1077,7 +1099,9 @@ def fetch_incidents(
 
     responses = fetch_request(client, fetch_types, include_archived, included_statuses, filter_times)
     limit = limit or MAX_INCIDENTS_TO_FETCH
-    last_fetch, last_id_fetched, incidents = parse_service_records(responses, limit, fetch_start_datetime, last_id_fetched)
+    last_fetch, last_id_fetched, incidents = parse_service_records(
+        responses, limit, fetch_start_datetime, last_id_fetched, use_classic_date_format
+    )
     demisto.setLastRun({"last_fetch": last_fetch.isoformat(), "last_id_fetched": last_id_fetched})
 
     return incidents
@@ -1162,8 +1186,9 @@ def main() -> None:
             include_archived = argToBoolean(params.get("include_archived", False))
             limit = arg_to_number(params.get("max_fetch"))
             fetch_types = params.get("fetch_types")
+            use_classic_date_format = argToBoolean(params.get("use_classic_date_format", False))
 
-            incidents = fetch_incidents(client, first_fetch, limit, included_statuses, include_archived, fetch_types)
+            incidents = fetch_incidents(client, first_fetch, limit, included_statuses, include_archived, fetch_types, use_classic_date_format)
             demisto.incidents(incidents)
 
         elif command == "test-module":

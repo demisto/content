@@ -80,6 +80,13 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- additionalinfo: Select this option for SysAid Classic instances to ensure correct timestamp parsing.
+  display: Use SysAid Classic Date Format
+  name: use_classic_date_format
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
 description: SysAid is a robust IT management system designed to meet all of the needs of an IT department.
 display: SysAid
 name: SysAid
