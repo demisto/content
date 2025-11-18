@@ -13,6 +13,7 @@ INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 
+
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
     "asset_types": "xdm.asset.type.name",
@@ -23,19 +24,30 @@ ASSET_FIELDS = {
     "asset_group_ids": "xdm.asset.group_ids",
     "asset_categories": "xdm.asset.type.category",
 }
-
-
+APPSEC_SOURCES = [
+    "CAS_CVE_SCANNER",
+    "CAS_IAC_SCANNER",
+    "CAS_SECRET_SCANNER",
+    "CAS_LICENSE_SCANNER",
+    "CAS_SAST_SCANNER",
+    "CAS_OPERATIONAL_RISK_SCANNER",
+    "CAS_CI_CD_RISK_SCANNER",
+    "CAS_DRIFT_SCANNER",
+]
 WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
     "core-search-asset-groups",
     "core-get-issue-recommendations",
     "core-update-issue",
+    "core-get-asset-coverage",
+    "core-get-asset-coverage-histogram",
     "core-create-appsec-policy",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners"]
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
+ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 
 ASSET_GROUP_FIELDS = {
@@ -59,6 +71,7 @@ ALLOWED_SCANNERS = [
     "SECRETS",
 ]
 
+COVERAGE_API_FIELDS_MAPPING = {"vendor_name": "asset_provider", "asset_provider": "unified_provider"}
 # Policy finding type mapping
 POLICY_FINDING_TYPE_MAPPING = {
     "CI/CD Risk": "CAS_CI_CD_RISK_SCANNER",
@@ -392,6 +405,13 @@ class Client(CoreClient):
             json_data=request_data,
         )
 
+    def get_webapp_histograms(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/get_histograms",
+            json_data=request_data,
+        )
+
     def enable_scanners(self, payload: dict, repository_id: str) -> dict:
         return self._http_request(
             method="PUT",
@@ -420,6 +440,14 @@ class Client(CoreClient):
 
         return reply
 
+    def get_appsec_suggested_fix(self, issue_id: str) -> dict | None:
+        reply = self._http_request(
+            method="GET",
+            headers=self._headers,
+            full_url=f"/api/webapp/public_api/appsec/v1/issues/fix/{issue_id}/fix_suggestion",
+        )
+        return reply
+
     def create_policy(self, policy_payload: str) -> dict:
         """
         Creates a new policy in Cortex XDR.
@@ -437,6 +465,39 @@ class Client(CoreClient):
         )
 
 
+def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommendation: dict, issue_id: str) -> tuple[list, dict]:
+    """
+    Append Application Security - related suggestions to the recommendation data.
+
+    Args:
+        client (Client): Client instance used to send the request.
+        headers (list): Headers for the readable output.
+        issue (dict): Details of the issue.
+        recommendation (dict): The base remediation recommendation.
+        issue_id (str): The issue ID.
+
+    Returns:
+        tuple[list, dict]: Updated headers and recommendation including AppSec additions.
+    """
+    manual_fix = issue.get("extended_fields", {}).get("action")
+    recommendation["remediation"] = manual_fix if manual_fix else recommendation.get("remediation")
+    fix_suggestion = client.get_appsec_suggested_fix(issue_id)
+    demisto.debug(f"AppSec fix suggestion: {fix_suggestion}")
+
+    # Avoid situations where existingCodeBlock is dirty, leaving suggestedCodeBlock empty.
+    if fix_suggestion and fix_suggestion.get("suggestedCodeBlock"):
+        recommendation.update(
+            {
+                "existing_code_block": fix_suggestion.get("existingCodeBlock", ""),
+                "suggested_code_block": fix_suggestion.get("suggestedCodeBlock", ""),
+            }
+        )
+        headers.append("existing_code_block")
+        headers.append("suggested_code_block")
+
+    return headers, recommendation
+
+
 def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
     """
     Get comprehensive recommendations for an issue, including remediation steps and playbook suggestions.
@@ -447,7 +508,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         raise DemistoException("issue_id is required.")
 
     filter_builder = FilterBuilder()
-    filter_builder.add_field("internal_id", FilterType.CONTAINS, issue_id)
+    filter_builder.add_field("internal_id", FilterType.EQ, issue_id)
 
     request_data = build_webapp_request_data(
         table_name="ALERTS_VIEW_TABLE",
@@ -482,13 +543,10 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         "playbook_suggestions": playbook_suggestions,
     }
 
-    headers = [
-        "issue_id",
-        "issue_name",
-        "severity",
-        "description",
-        "remediation",
-    ]
+    headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
+
+    if issue.get("alert_source") in APPSEC_SOURCES:
+        headers, recommendation = get_appsec_suggestion(client, headers, issue, recommendation, issue_id)
 
     readable_output = tableToMarkdown(
         f"Issue Recommendations for {issue_id}",
@@ -568,15 +626,16 @@ def build_webapp_request_data(
     table_name: str,
     filter_dict: dict,
     limit: int,
-    sort_field: str,
+    sort_field: str | None,
     on_demand_fields: list | None = None,
-    sort_order: str = "DESC",
+    sort_order: str | None = "DESC",
 ) -> dict:
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
     """
+    sort = [{"FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field), "ORDER": sort_order}] if sort_field else []
     filter_data = {
-        "sort": [{"FIELD": sort_field, "ORDER": sort_order}],
+        "sort": sort,
         "paging": {"from": 0, "to": limit},
         "filter": filter_dict,
     }
@@ -586,6 +645,23 @@ def build_webapp_request_data(
         on_demand_fields = []
 
     return {"type": "grid", "table_name": table_name, "filter_data": filter_data, "jsons": [], "onDemandFields": on_demand_fields}
+
+
+def build_histogram_request_data(table_name: str, filter_dict: dict, max_values_per_column: int, columns: list) -> dict:
+    """
+    Builds the request data for the generic /api/webapp//get_histograms endpoint.
+    """
+    filter_data = {
+        "filter": filter_dict,
+    }
+    demisto.debug(f"{filter_data=}")
+
+    return {
+        "table_name": table_name,
+        "filter_data": filter_data,
+        "max_values_per_column": max_values_per_column,
+        "columns": columns,
+    }
 
 
 def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
@@ -997,6 +1073,91 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
     return group_ids
 
 
+def build_asset_coverage_filter(args: dict) -> FilterBuilder:
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("asset_id", FilterType.CONTAINS, argToList(args.get("asset_id")))
+    filter_builder.add_field("asset_name", FilterType.CONTAINS, argToList(args.get("asset_name")))
+    filter_builder.add_field(
+        "business_application_names", FilterType.ARRAY_CONTAINS, argToList(args.get("business_application_names"))
+    )
+    filter_builder.add_field("status_coverage", FilterType.EQ, argToList(args.get("status_coverage")))
+    filter_builder.add_field("is_scanned_by_vulnerabilities", FilterType.EQ, argToList(args.get("is_scanned_by_vulnerabilities")))
+    filter_builder.add_field("is_scanned_by_code_weakness", FilterType.EQ, argToList(args.get("is_scanned_by_code_weakness")))
+    filter_builder.add_field("is_scanned_by_secrets", FilterType.EQ, argToList(args.get("is_scanned_by_secrets")))
+    filter_builder.add_field("is_scanned_by_iac", FilterType.EQ, argToList(args.get("is_scanned_by_iac")))
+    filter_builder.add_field("is_scanned_by_malware", FilterType.EQ, argToList(args.get("is_scanned_by_malware")))
+    filter_builder.add_field("is_scanned_by_cicd", FilterType.EQ, argToList(args.get("is_scanned_by_cicd")))
+    filter_builder.add_field("last_scan_status", FilterType.EQ, argToList(args.get("last_scan_status")))
+    filter_builder.add_field("asset_type", FilterType.EQ, argToList(args.get("asset_type")))
+    filter_builder.add_field("unified_provider", FilterType.EQ, argToList(args.get("asset_provider")))
+    filter_builder.add_field("asset_provider", FilterType.EQ, argToList(args.get("vendor_name")))
+
+    return filter_builder
+
+
+def get_asset_coverage_command(client: Client, args: dict):
+    """
+    Retrieves ASPM assets coverage using the generic /api/webapp/get_data endpoint.
+    """
+
+    request_data = build_webapp_request_data(
+        table_name=ASSET_COVERAGE_TABLE,
+        filter_dict=build_asset_coverage_filter(args).to_dict(),
+        limit=arg_to_number(args.get("limit")) or 100,
+        sort_field=args.get("sort_field"),
+        sort_order=args.get("sort_order"),
+    )
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    readable_output = tableToMarkdown("ASPM Coverage", data, headerTransform=string_to_table_header, sort_headers=False)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Asset",
+        outputs_key_field="asset_id",
+        outputs=data,
+        raw_response=response,
+    )
+
+
+def get_asset_coverage_histogram_command(client: Client, args: dict):
+    """
+    Retrieves ASPM assets coverage histogrm using the generic /api/webapp/get_histograms endpoint.
+    """
+    columns = argToList(args.get("columns"))
+    columns = [COVERAGE_API_FIELDS_MAPPING.get(col, col) for col in columns]
+    if not columns:
+        raise ValueError("Please provide column value to create the histogram.")
+    request_data = build_histogram_request_data(
+        table_name=ASSET_COVERAGE_TABLE,
+        filter_dict=build_asset_coverage_filter(args).to_dict(),
+        columns=columns,
+        max_values_per_column=arg_to_number(args.get("max_values_per_column")) or 100,
+    )
+
+    response = client.get_webapp_histograms(request_data)
+    reply = response.get("reply", {})
+    outputs = [{"column_name": column_name, "data": data} for column_name, data in reply.items()]
+
+    readable_output = "\n".join(
+        tableToMarkdown(
+            f"ASPM Coverage {output['column_name']} Histogram",
+            output["data"],
+            headerTransform=string_to_table_header,
+            sort_headers=False,
+        )
+        for output in outputs
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Histogram",
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
 def get_appsec_rule_ids_from_names(client, rule_names: list[str]) -> list[str]:
     """
     Retrieves the IDs of AppSec rules based on their names using exact and partial matching.
@@ -1396,6 +1557,11 @@ def main():  # pragma: no cover
         elif command == "core-enable-scanners":
             return_results(enable_scanners_command(client, args))
 
+        elif command == "core-get-asset-coverage":
+            return_results(get_asset_coverage_command(client, args))
+
+        elif command == "core-get-asset-coverage-histogram":
+            return_results(get_asset_coverage_histogram_command(client, args))
         elif command == "core-create-appsec-policy":
             return_results(create_policy_command(client, args))
 
