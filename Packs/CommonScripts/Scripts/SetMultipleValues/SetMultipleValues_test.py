@@ -14,10 +14,19 @@ def test_main(mocker):
         - Validating the outputs as expected.
     """
     results_mock = mocker.patch.object(demisto, "results")
+    excepted_result = {"Test(true)": {"a": "1", "b": "2", "c": "3"}}
+    # checking default delimiter: ','
     args = {"keys": "a,b,c", "values": "1,2,3", "parent": "Test"}
     mocker.patch.object(demisto, "args", return_value=args)
     main()
-    assert results_mock.call_args[0][0]["Contents"] == {"Test(true)": {"a": "1", "b": "2", "c": "3"}}
+    assert results_mock.call_args[0][0]["Contents"] == excepted_result
+    
+    # checking customize delimiter: ':'
+    args = {"keys": "a:b:c", "values": "1:2:3", "parent": "Test", "delimiter": ":"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    main()
+    assert results_mock.call_args[0][0]["Contents"] == excepted_result
+    
 
 
 @pytest.mark.parametrize(
