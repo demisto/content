@@ -7,21 +7,18 @@ from SetMultipleValues import main
 @pytest.mark.parametrize(
     "args, excepted_result",
     [
-        (
-            {"keys": "a,b,c", "values": "1,2,3", "parent": "Test"},
-            {"Test(true)": {"a": "1", "b": "2", "c": "3"}}
-        ),
+        ({"keys": "a,b,c", "values": "1,2,3", "parent": "Test"}, {"Test(true)": {"a": "1", "b": "2", "c": "3"}}),
         (
             {"keys": "a:b:c", "values": "1:2:3", "parent": "Test", "delimiter": ":"},
-            {"Test(true)": {"a": "1", "b": "2", "c": "3"}}
+            {"Test(true)": {"a": "1", "b": "2", "c": "3"}},
         ),
         (
             {"keys": "a|||b|||c", "values": "1,|||2,|||3,", "parent": "Test", "delimiter": "|||"},
-            {"Test(true)": {"a": "1,", "b": "2,", "c": "3,"}}
-        )
+            {"Test(true)": {"a": "1,", "b": "2,", "c": "3,"}},
+        ),
     ],
 )
-def test_main(mocker,args, excepted_result):
+def test_main(mocker, args, excepted_result):
     """
     Given:
         - The script args.
