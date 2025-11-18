@@ -1,4 +1,6 @@
 import itertools
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
 import urllib3
@@ -65,38 +67,192 @@ EVENT_TYPES = {
 DEVICES_LAST_FETCH = "devices_last_fetch_time"
 API_TIMEOUT = BaseClient.REQUESTS_TIMEOUT * 3
 
+""" INTEGRATION CONTEXT MANAGER """
+
+
+class IntegrationContextManager:
+    """Thread-safe manager for integration context operations.
+
+    This class provides thread-safe access to the integration context (last_run)
+    with proper locking mechanisms to prevent race conditions when multiple threads
+    are accessing or updating the context simultaneously.
+    """
+
+    def __init__(self):
+        """Initialize the context manager with thread locks."""
+        self._lock = threading.RLock()  # Reentrant lock for nested acquisitions
+        self._token_refresh_lock = threading.Lock()  # Separate lock for token refresh coordination
+
+    def get_access_token(self) -> str | None:
+        """Thread-safe retrieval of access token from integration context.
+
+        Returns:
+            Optional[str]: The current access token, or None if not set.
+        """
+        with self._lock:
+            last_run = demisto.getLastRun()
+            return last_run.get("access_token")
+
+    def save_access_token_to_context(self, new_token: str) -> None:
+        """Thread-safe persistence of access token to integration context.
+
+        This method saves the access token to the integration context (last_run),
+        making it available to all threads and persisting it between executions.
+
+        Args:
+            new_token (str): The new access token to store.
+        """
+        with self._lock:
+            last_run = demisto.getLastRun()
+            last_run["access_token"] = new_token
+            demisto.setLastRun(last_run)
+            demisto.debug(f"Access token saved to integration context by thread {threading.current_thread().name}")
+
+    def update_event_type_state(self, state: dict) -> None:
+        """Thread-safe update of event type specific state in integration context.
+
+        Args:
+            state (dict): Dictionary containing event type state to merge into last_run.
+        """
+        with self._lock:
+            last_run = demisto.getLastRun()
+            last_run.update(state)
+            demisto.setLastRun(last_run)
+
+    def get_last_run(self) -> dict:
+        """Thread-safe retrieval of entire last_run dictionary.
+
+        Returns:
+            dict: A copy of the current last_run state.
+        """
+        with self._lock:
+            return demisto.getLastRun().copy()
+
+    def acquire_token_refresh_lock(self):
+        """Acquire the token refresh lock for coordinated token refresh.
+
+        Returns:
+            The token refresh lock context manager.
+        """
+        return self._token_refresh_lock
+
+
 """ CLIENT CLASS """
 
 
 class Client(BaseClient):
     """Client class to interact with Armis API - this Client implements API calls"""
 
-    def __init__(self, base_url, api_key, access_token, verify=False, proxy=False):
+    def __init__(
+        self,
+        base_url,
+        api_key,
+        access_token,
+        verify=False,
+        proxy=False,
+        context_manager: IntegrationContextManager | None = None,
+    ):
         self._api_key = api_key
+        self._context_manager = context_manager
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         if not access_token or not self.is_valid_access_token(access_token):
             demisto.debug("Invalid access token was used, attempting to get new access token.")
-            access_token = self.get_access_token()
+            access_token = self.refresh_access_token()
             demisto.debug("New access token was successfully generated.")
-        self.update_access_token(access_token)
+        self.apply_access_token(access_token)
 
-    def update_access_token(self, access_token=None):
+    def apply_access_token(self, access_token=None):
+        """Apply access token to client instance (updates headers and internal state).
+
+        This method updates the client's in-memory state with the provided token.
+        It does NOT persist the token to integration context.
+
+        Args:
+            access_token (str, optional): The access token to use. If None, generates a new one.
+        """
         if not access_token:
             access_token = self.get_access_token()
         headers = {"Authorization": f"{access_token}", "Accept": "application/json"}
         self._headers = headers
         self._access_token = access_token
 
+    def refresh_access_token(self) -> str:
+        """Coordinate token refresh across threads to prevent collisions.
+
+        When multiple threads detect an expired token, this method ensures only one
+        thread performs the actual refresh while others wait and use the refreshed token.
+
+        Returns:
+            str: The refreshed access token.
+        """
+        if not self._context_manager:
+            # No context manager - single-threaded mode, just refresh
+            return self.get_access_token()
+
+        # Use token refresh lock to ensure only one thread refreshes at a time
+        with self._context_manager.acquire_token_refresh_lock():
+            # Double-check: another thread might have refreshed while we were waiting
+            current_token = self._context_manager.get_access_token()
+            if current_token and current_token != self._access_token:
+                # Token was updated by another thread, validate it
+                if self.is_valid_access_token(current_token):
+                    demisto.debug(
+                        f"Thread {threading.current_thread().name}: Token was refreshed by another thread, using updated token"
+                    )
+                    return current_token
+
+            # This thread needs to perform the refresh
+            demisto.debug(f"Thread {threading.current_thread().name}: Refreshing access token")
+            new_token = self.get_access_token()
+
+            # Save to context so other threads can see it
+            if self._context_manager:
+                self._context_manager.save_access_token_to_context(new_token)
+
+            return new_token
+
     def perform_fetch(self, params):
+        """Perform API fetch with coordinated token refresh on expiration.
+
+        Args:
+            params (dict): Query parameters for the API request.
+
+        Returns:
+            dict: The API response.
+
+        Raises:
+            Exception: If the request fails for reasons other than token expiration.
+        """
         try:
             raw_response = self._http_request(
                 url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
             )
         except Exception as e:
             if "Invalid access token" in str(e):
-                demisto.debug("Expired or invalid access token, attempting to update access token.")
-                self.update_access_token()
-                demisto.debug("Access token successfully updated.")
+                demisto.debug(f"Thread {threading.current_thread().name}: Expired or invalid access token detected")
+
+                # If using context manager, try to get fresh token from context first
+                if self._context_manager:
+                    fresh_token = self._context_manager.get_access_token()
+                    if fresh_token and fresh_token != self._access_token:
+                        demisto.debug(f"Thread {threading.current_thread().name}: Using refreshed token from context")
+                        self.apply_access_token(fresh_token)
+                        # Retry with the fresh token
+                        try:
+                            return self._http_request(
+                                url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
+                            )
+                        except Exception as retry_e:
+                            if "Invalid access token" not in str(retry_e):
+                                raise retry_e
+                            # Token from context was also invalid, need to refresh
+
+                # Perform coordinated token refresh
+                new_token = self.refresh_access_token()
+                self.apply_access_token(new_token)
+                demisto.debug(f"Thread {threading.current_thread().name}: Access token successfully applied")
+
+                # Retry the request with new token
                 raw_response = self._http_request(
                     url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
                 )
@@ -126,7 +282,7 @@ class Client(BaseClient):
         after: datetime,
         order_by: str = "time",
         from_param: None | int = None,
-        before: Optional[datetime] = None,
+        before: datetime | None = None,
         event_type: str = "",
     ):
         """Fetches events using AQL query.
@@ -463,6 +619,53 @@ fetched {len(activities_response)} Activities and {len(devices_response)} Device
     alert["devicesData"] = devices_response if devices_response else {}
 
 
+def fetch_event_type_worker(
+    client: Client,
+    event_type_name: str,
+    event_type: EVENT_TYPE,
+    max_fetch: int,
+    last_run: dict,
+    fetch_start_time: datetime | None,
+    fetch_delay: int,
+    context_manager: IntegrationContextManager,
+) -> tuple[str, dict, dict]:
+    """Worker function to fetch events for a specific event type in a thread.
+
+    Args:
+        client (Client): Armis client to use for API calls.
+        event_type_name (str): Name of the event type being fetched.
+        event_type (EVENT_TYPE): Event type configuration object.
+        max_fetch (int): Maximum number of events to fetch.
+        last_run (dict): Last run state for this event type.
+        fetch_start_time (datetime | None): Start time for fetching.
+        fetch_delay (int): Delay in minutes for fetching.
+        context_manager (IntegrationContextManager): Thread-safe context manager.
+
+    Returns:
+        tuple[str, dict, dict]: Event type name, fetched events dict, and next_run state.
+    """
+    thread_id = threading.current_thread().name
+    demisto.debug(f"[{thread_id}] Starting fetch for {event_type_name}")
+
+    events: dict[str, list[dict]] = {}
+    next_run: dict[str, list | str] = {}
+
+    try:
+        fetch_by_event_type(client, event_type, events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay)
+
+        # Update context for this event type atomically
+        context_manager.update_event_type_state(next_run)
+
+        event_count = len(events.get(event_type.dataset_name, []))
+        demisto.debug(f"[{thread_id}] Completed fetch for {event_type_name}: {event_count} events")
+
+        return event_type_name, events, next_run
+
+    except Exception as e:
+        demisto.error(f"[{thread_id}] Error fetching {event_type_name}: {str(e)}")
+        raise
+
+
 def fetch_events(
     client: Client,
     max_fetch: int,
@@ -472,8 +675,10 @@ def fetch_events(
     event_types_to_fetch: list[str],
     device_fetch_interval: timedelta | None,
     fetch_delay: int = DEFAULT_FETCH_DELAY,
+    use_multithreading: bool = False,
+    context_manager: IntegrationContextManager | None = None,
 ):
-    """Fetch events from Armis API.
+    """Fetch events from Armis API with optional multithreading support.
 
     Args:
         client (Client): Armis client to use for API calls.
@@ -484,42 +689,148 @@ def fetch_events(
         event_types_to_fetch (list[str]): List of event types to fetch.
         device_fetch_interval (timedelta | None): Time interval to fetch devices.
         fetch_delay (int): The number of minutes to delay in the search.
+        use_multithreading (bool): Whether to use multithreading for parallel fetching.
+        context_manager (Optional[IntegrationContextManager]): Thread-safe context manager.
     Returns:
         (list[dict], dict) : List of fetched events and next run dictionary.
     """
+    fetch_start = datetime.now()
+    demisto.debug(f"=== Starting fetch_events cycle at {fetch_start.strftime('%Y-%m-%d %H:%M:%S')} ===")
+    demisto.debug(f"Event types requested: {event_types_to_fetch}")
+    demisto.debug(f"Multithreading enabled: {use_multithreading}")
+    demisto.debug(f"Max fetch - Alerts/Activities: {max_fetch}, Devices: {devices_max_fetch}")
+
     events: dict[str, list[dict]] = {}
     next_run: dict[str, list | str] = {}
+
+    # Filter out Devices if not ready
     if "Devices" in event_types_to_fetch and not should_run_device_fetch(last_run, device_fetch_interval, datetime.now()):
-        demisto.debug("skipping Devices fetch as it is not yet reached the device interval.")
+        demisto.debug("Skipping Devices fetch - interval not reached")
         event_types_to_fetch.remove("Devices")
 
+    demisto.debug(f"Event types after filtering: {event_types_to_fetch}")
+
+    # Handle Alerts specially (needs sequential processing for activities/devices)
     if "Alerts" in event_types_to_fetch:
-        # begin Alerts fetch flow: fetch Alerts extract and fetch activities and devices from alert response.
+        demisto.debug("Processing Alerts sequentially (requires fetching related activities/devices)")
+        alerts_start = datetime.now()
         fetch_by_event_type(
             client, EVENT_TYPES["Alerts"], events, max_fetch, last_run, next_run, fetch_start_time, fetch_delay=fetch_delay
         )
+        alerts_count = len(events.get(EVENT_TYPE_ALERTS, []))
+        demisto.debug(f"Fetched {alerts_count} alerts in {(datetime.now() - alerts_start).total_seconds():.2f}s")
+
         if events and events.get(EVENT_TYPE_ALERTS):
-            for alert in events[EVENT_TYPE_ALERTS]:
+            demisto.debug(f"Fetching related activities and devices for {alerts_count} alerts")
+            for idx, alert in enumerate(events[EVENT_TYPE_ALERTS], 1):
                 alert_id = alert.get("alertId")
                 aql_with_alerts_id = f"alert:(alertId:({alert_id}))"  # noqa: E231
                 fetch_events_for_specific_alert_ids(client, alert, aql_with_alerts_id)
+                if idx % 10 == 0:  # Log every 10 alerts
+                    demisto.debug(f"Processed {idx}/{alerts_count} alerts for related data")
         event_types_to_fetch.remove("Alerts")
-    for event_type in event_types_to_fetch:
-        event_max_fetch = max_fetch if event_type != "Devices" else devices_max_fetch
-        fetch_by_event_type(
-            client,
-            EVENT_TYPES[event_type],
-            events,
-            event_max_fetch,
-            last_run,
-            next_run,
-            fetch_start_time,
-            fetch_delay=fetch_delay,
-        )
+
+    # Process remaining event types
+    if not event_types_to_fetch:
+        demisto.debug("No remaining event types to fetch")
+        next_run["access_token"] = client._access_token
+        fetch_duration = (datetime.now() - fetch_start).total_seconds()
+        total_events = sum(len(event_list) for event_list in events.values())
+        demisto.debug(f"=== Fetch cycle completed in {fetch_duration:.2f}s - Total events: {total_events} ===")
+        return events, next_run
+
+    # Use multithreading only if enabled and there are multiple event types
+    if not use_multithreading or len(event_types_to_fetch) == 1 or not context_manager:
+        # Fallback to sequential processing
+        demisto.debug(f"Using sequential processing for {len(event_types_to_fetch)} event type(s): {event_types_to_fetch}")
+        for event_type in event_types_to_fetch:
+            event_max_fetch = max_fetch if event_type != "Devices" else devices_max_fetch
+            type_start = datetime.now()
+            demisto.debug(f"Starting sequential fetch for {event_type} (max: {event_max_fetch})")
+
+            fetch_by_event_type(
+                client,
+                EVENT_TYPES[event_type],
+                events,
+                event_max_fetch,
+                last_run,
+                next_run,
+                fetch_start_time,
+                fetch_delay=fetch_delay,
+            )
+
+            type_duration = (datetime.now() - type_start).total_seconds()
+            type_count = len(events.get(EVENT_TYPES[event_type].dataset_name, []))
+            demisto.debug(f"Completed {event_type} fetch: {type_count} events in {type_duration:.2f}s")
+    else:
+        # Parallel processing with ThreadPoolExecutor
+        max_workers = min(len(event_types_to_fetch), 3)  # Max 3 threads
+        parallel_start = datetime.now()
+        demisto.debug(f"=== Starting parallel processing with {max_workers} worker(s) ===")
+        demisto.debug(f"Event types for parallel fetch: {event_types_to_fetch}")
+
+        with ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="ArmisWorker") as executor:
+            submitted_tasks = {}
+
+            worker_num = 0
+            for event_type_name in event_types_to_fetch:
+                worker_num += 1
+                event_max_fetch = max_fetch if event_type_name != "Devices" else devices_max_fetch
+                demisto.debug(f"[Worker-{worker_num}:{event_type_name}] Submitting task (max: {event_max_fetch})")
+
+                task = executor.submit(
+                    fetch_event_type_worker,
+                    client,
+                    event_type_name,
+                    EVENT_TYPES[event_type_name],
+                    event_max_fetch,
+                    last_run.copy(),  # Each thread gets its own copy
+                    fetch_start_time,
+                    fetch_delay,
+                    context_manager,
+                )
+                submitted_tasks[task] = event_type_name
+
+            demisto.debug(f"All {len(submitted_tasks)} worker tasks submitted, waiting for completion...")
+            completed_count = 0
+
+            # Collect results as they complete
+            for completed_task in as_completed(submitted_tasks):
+                event_type_name = submitted_tasks[completed_task]
+                completed_count += 1
+                try:
+                    _, thread_events, thread_next_run = completed_task.result()
+
+                    # Merge events
+                    events_merged = 0
+                    for dataset_name, event_list in thread_events.items():
+                        events.setdefault(dataset_name, []).extend(event_list)
+                        events_merged += len(event_list)
+
+                    # Merge next_run (already updated in context by worker)
+                    next_run.update(thread_next_run)
+
+                    demisto.debug(
+                        f"[Worker:{event_type_name}] Completed ({completed_count}/{len(submitted_tasks)}) - {events_merged} events merged"
+                    )
+
+                except Exception as e:
+                    demisto.error(f"[Worker:{event_type_name}] Failed: {str(e)}")
+                    demisto.debug(f"Continuing with remaining workers ({completed_count}/{len(submitted_tasks)} completed)")
+
+            parallel_duration = (datetime.now() - parallel_start).total_seconds()
+            demisto.debug(f"=== Parallel processing completed in {parallel_duration:.2f}s ===")
 
     next_run["access_token"] = client._access_token
 
-    demisto.debug(f"events: {events}")
+    # Final summary
+    fetch_duration = (datetime.now() - fetch_start).total_seconds()
+    total_events = sum(len(event_list) for event_list in events.values())
+    events_by_type = {dataset: len(event_list) for dataset, event_list in events.items()}
+    demisto.debug(f"=== Fetch cycle completed in {fetch_duration:.2f}s ===")
+    demisto.debug(f"Total events fetched: {total_events}")
+    demisto.debug(f"Events by type: {events_by_type}")
+
     return events, next_run
 
 
@@ -656,11 +967,22 @@ def main():  # pragma: no cover
     parsed_interval = dateparser.parse(params.get("deviceFetchInterval", "24 hours")) or dateparser.parse("24 hours")
     device_fetch_interval: timedelta = datetime.now() - parsed_interval  # type: ignore[operator]
     fetch_delay = arg_to_number(params.get("fetch_delay")) or DEFAULT_FETCH_DELAY
+    use_multithreading = argToBoolean(params.get("enable_multithreading", True))
 
     demisto.debug(f"Command being called is {command}")
 
     try:
-        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, api_key=api_key, access_token=access_token)
+        # Initialize context manager for thread-safe operations when multithreading is enabled
+        context_manager = IntegrationContextManager() if use_multithreading else None
+
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            proxy=proxy,
+            api_key=api_key,
+            access_token=access_token,
+            context_manager=context_manager,
+        )
 
         if command == "test-module":
             return_results(test_module(client))
@@ -693,6 +1015,8 @@ def main():  # pragma: no cover
                 event_types_to_fetch=event_types_to_fetch,
                 device_fetch_interval=device_fetch_interval,
                 fetch_delay=fetch_delay,
+                use_multithreading=use_multithreading and command == "fetch-events",
+                context_manager=context_manager,
             )
             for key, value in events.items():
                 demisto.debug(f"{len(value)} events of type: {key} fetched from armis api")

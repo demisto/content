@@ -73,6 +73,14 @@ configuration:
   defaultvalue: "4 hours"
   type: 0
   required: false
+- section: Collect
+  advanced: true
+  display: Enable Multithreading
+  additionalinfo: Enable parallel fetching of event types in a single instance. This improves performance and prevents access token collisions when fetching multiple event types. Recommended to keep enabled.
+  name: enable_multithreading
+  defaultvalue: "true"
+  type: 8
+  required: false
 description: Collects alerts, devices and activities from Armis resources.
 display: Armis Event Collector
 name: ArmisEventCollector
