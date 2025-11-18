@@ -4144,7 +4144,6 @@ def test_create_policy_command_json_serialization_edge_cases(mocker: MockerFixtu
     assert isinstance(payload["scope"], dict)
 
 
-
 def test_appsec_remediate_issue_command_single_issue_success(mocker: MockerFixture):
     """
     Given:
