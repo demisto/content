@@ -85,7 +85,6 @@ CREATION_TIME = "creation_time"
 QUERY_NAME = "query_name"
 QUERY_SEARCH = "query_search"
 INCIDENT_CREATED = "incident_created"
-FILLNULL_VALUE = None
 
 DRILLDOWN_REGEX = r'([^\s\$]+)\s*=\s*"?(\$[^\s\$\\]+\$)"?|"?(\$[^\s\$\\]+\$)"?'
 
@@ -426,19 +425,8 @@ def build_fetch_query(params):
             field_trimmed = field.strip()
             fetch_query = f"{fetch_query} | eval {field_trimmed}={field_trimmed}"
 
-    # --- Extract fillnull value if present ---
-    # Matches patterns like: fillnull value=0, fillnull value="N/A", fillnull value='unknown'
-    match = re.search(r'fillnull\s+value\s*=\s*("[^"]*"|\'[^\']*\'|\S+)', fetch_query)
-    if match:
-        raw_value = match.group(1)
-
-        # Strip quotes if needed
-        if (raw_value.startswith('"') and raw_value.endswith('"')) or (raw_value.startswith("'") and raw_value.endswith("'")):
-            raw_value = raw_value[1:-1]
-
-        global FILLNULL_VALUE
-        FILLNULL_VALUE = raw_value
-
+    if '| expandtoken' not in fetch_query:
+        demisto.info('**WARNING**: Could not find "expandtoken" in fetch query.')
     return fetch_query
 
 
@@ -1248,11 +1236,25 @@ def get_drilldown_searches(notable_data):
     # the 'drilldown_searches' key) and submit a splunk enrichment for each one of them.
     # To maintain backwards compatibility we keep using the 'drilldown_search' key as well.
 
-    global FILLNULL_VALUE
+    fill_null_value=None
+    fetch_query = demisto.params().get("fetchQuery")
+
+    # --- Extract fillnull value if present ---
+    # Matches patterns like: fillnull value=0, fillnull value="N/A", fillnull value='unknown'
+    match = re.search(r'fillnull\s+value\s*=\s*("[^"]*"|\'[^\']*\'|\S+)', fetch_query)
+    if match:
+        raw_value = match.group(1)
+
+        # Strip quotes if needed
+        if (raw_value.startswith('"') and raw_value.endswith('"')) or (raw_value.startswith("'") and raw_value.endswith("'")):
+            raw_value = raw_value[1:-1]
+
+        fill_null_value = raw_value
+
 
     drilldown_search = notable_data.get("drilldown_search")
 
-    if drilldown_search and drilldown_search != FILLNULL_VALUE:
+    if drilldown_search and drilldown_search != fill_null_value:
         # The drilldown_searches are in 'old' format a simple string query.
         return [drilldown_search]
     if drilldown_search := notable_data.get("drilldown_searches", []):

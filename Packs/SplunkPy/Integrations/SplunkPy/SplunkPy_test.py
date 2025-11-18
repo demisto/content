@@ -2103,7 +2103,7 @@ def test_drilldown_enrichment(notable_data, expected_result):
         ),
     ],
 )
-def test_drilldown_enrichment_fillnull(notable_data, expected_result):
+def test_drilldown_enrichment_fillnull(mocker: MockerFixture, notable_data, expected_result):
     """
     Tests the drilldown enrichment process when a 'splunk.FILLNULL_VALUE' is "NULL"
 
@@ -2119,7 +2119,9 @@ def test_drilldown_enrichment_fillnull(notable_data, expected_result):
     from splunklib import client
 
     service = Service("DONE")
-    splunk.FILLNULL_VALUE = "NULL"
+
+    mock_params = {"fetchQuery": "`notable` is cool | fillnull value=NULL"}
+    mocker.patch("demistomock.params", return_value=mock_params)
 
     jobs_and_queries = splunk.drilldown_enrichment(service, notable_data, 5)
     for i in range(len(jobs_and_queries)):
@@ -2127,25 +2129,6 @@ def test_drilldown_enrichment_fillnull(notable_data, expected_result):
         assert job_and_queries[0] == expected_result[i][0]
         assert job_and_queries[1] == expected_result[i][1]
         assert isinstance(job_and_queries[2], client.Job)
-
-
-def test_build_fetch_query_fillnull():
-    """
-    Tests the parsing of the 'fillnull' value from the fetch query.
-
-    Given:
-        - A fetch query containing a 'fillnull' command with a specific value
-    When:
-        Parsing the fetch query in order to extract the fillnull default value
-    Then:
-        - The fillnull value is correctly extracted and stored in 'splunk.FILLNULL_VALUE'
-    """
-
-    params = {"fetchQuery": "search something | fillnull value=NULL"}
-
-    splunk.build_fetch_query(params)
-
-    assert splunk.FILLNULL_VALUE == "NULL"
 
 
 @pytest.mark.parametrize(
