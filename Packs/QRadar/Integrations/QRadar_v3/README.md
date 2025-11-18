@@ -159,6 +159,8 @@ API Metrics are shown in the built-in **API Execution Metrics** dashboard, and a
 
 When running on an Engine Load-Balancing Group, concurrent fetches may run on multiple containers, leading to the creation of duplicate Incidents.
 
+Recommended workarounds:
+
 - **Option A - Preserve high availability**: Continue running the integration on the Load-Balancing Group for optimal fault tolerance and higher availability. Create an [Incident Pre-processing Rule](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-SaaS-Documentation/Pre-process-rules) to drop duplicate incidents.
 - **Option B - Use a simplified setup**: Alternatively, run the integration on a single custom engine or use the default "*No engine*" option if possible for a more streamlined configuration.
 
