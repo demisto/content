@@ -2415,7 +2415,7 @@ def test_update_issue_command_success_all_fields(mocker):
         "name": "Test Issue",
         "occurred": "2023-01-01T00:00:00Z",
         "phase": "investigation",
-        "status": "New"
+        "status": "New",
     }
 
     result = update_issue_command(client, args)
@@ -2564,7 +2564,7 @@ def test_update_issue_command_invalid_severity_mapping(mocker):
     update_data = call_args["update_data"]
     assert "severity" not in update_data
     assert update_data["name"] == "Test Issue"
-    
+
 
 def test_update_issue_command_invalid_status_mapping(mocker):
     """
