@@ -16,10 +16,16 @@ args:
   description: The parent key to which we append all the other keys.
 - name: keys
   required: true
-  description: Comma separated list of keys.
+  description: Separated list of keys separated by the specified delimiter (Comma is the default delimiter).
 - name: values
   required: true
-  description: Comma separated list of values.
+  description: Separated list of values separated by the specified delimiter (Comma is the default delimiter).
+- name: delimiter
+  required: false
+  defaultValue: ','
+  description: |-
+        Delimiter by which the content of the values and keys lists are separated.
+        Eg:  "," , ":", ";".
 scripttarget: 0
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.12.12.5490952
