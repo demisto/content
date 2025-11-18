@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: CitrixCloudEventCollector
+  id: CitrixCloud
   version: -1
 configuration:
 - display: Server URL
@@ -30,7 +30,7 @@ configuration:
   defaultvalue: 'masproductio'
   section: Connect
 - display: Max events per fetch
-  additionalinfo: 'The maximum amount of events to retrieve.'
+  additionalinfo: 'Maximum number of SystemLog events per fetch.'
   defaultvalue: '2000'
   name: max_fetch
   section: Collect
@@ -46,9 +46,9 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Citrix Cloud Event Collector integration.
-display: Citrix Cloud Event Collector
-name: CitrixCloudEventCollector
+description: Citrix cloud services simplify delivery and management of Citrix technologies.
+display: Citrix Cloud
+name: CitrixCloud
 script:
   commands:
   - name: citrix-cloud-get-events
