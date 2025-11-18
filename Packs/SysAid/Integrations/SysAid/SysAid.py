@@ -698,22 +698,22 @@ def get_service_record_update_time(service_record: dict[str, Any], use_classic_d
                 except ValueError as e:
                     demisto.debug(f"Format '{date_format}' failed: {str(e)}, falling back to dateparser")
                     # Fallback to dateparser with appropriate date order
-                    parsed_date = dateparser.parse(occurred, settings={"TIMEZONE": "UTC", "DATE_ORDER": date_order})
-                    if parsed_date:
-                        demisto.debug(f"Dateparser succeeded with {date_order} order: {parsed_date}")
-                        return parsed_date
+                    fallback_parsed = dateparser.parse(occurred, settings={"TIMEZONE": "UTC", "DATE_ORDER": date_order})
+                    if fallback_parsed:
+                        demisto.debug(f"Dateparser succeeded with {date_order} order: {fallback_parsed}")
+                        return fallback_parsed
                     else:
                         demisto.debug(f"Dateparser also failed for: {occurred}")
                         return None
             else:
                 # Standard parsing for ISO format (new SysAid) when classic mode disabled
                 demisto.debug(f"Standard ISO format parsing for: {occurred}")
-                parsed_date = dateparser.parse(occurred, settings={"TIMEZONE": "UTC"})
-                if parsed_date:
-                    demisto.debug(f"Successfully parsed: {parsed_date}")
+                iso_parsed = dateparser.parse(occurred, settings={"TIMEZONE": "UTC"})
+                if iso_parsed:
+                    demisto.debug(f"Successfully parsed: {iso_parsed}")
                 else:
                     demisto.debug(f"Failed to parse: {occurred}")
-                return parsed_date
+                return iso_parsed
 
     demisto.debug(f'The service record with ID {service_record["id"]} does not have a modify time (update_time).')
     return None
