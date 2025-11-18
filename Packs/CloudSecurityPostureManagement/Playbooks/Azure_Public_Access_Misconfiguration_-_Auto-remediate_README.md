@@ -4,9 +4,9 @@ Automatically remediates 3 Azure public access misconfigurations:
 2. Azure VM disk configured with overly permissive network access
 3. Azure Storage Account default network access is set to 'Allow'
 
-The playbook disables public access by setting allowBlobPublicAccess to false, configuring VM disk publicNetworkAccess to Disabled with DenyAll policy, and updating storage account default network access action to Deny respectively.
+The playbook disables public access by setting allowBlobPublicAccess to false, configuring VM disk publicNetworkAccess to Disabled with a DenyAll policy, and updating the storage account default network access action to Deny.
 
-Optional stakeholder notification is available via the "Notify Stakeholders" sub-playbook by setting enableNotifications input to 'yes' (default: 'no'). When enabled, configure at least one recipient (email, Slack channel, or Teams channel) in the Notify Stakeholders playbook inputs. The playbook automatically updates issue status to "Resolved - Fixed" upon successful remediation.Automatic remediation for the following Azure Detections:
+Optional stakeholder notification is available via the "Notify Stakeholders" sub-playbook by setting enableNotifications input to 'yes' (default: 'no'). When enabled, configure at least one recipient (email, Slack channel, or Teams channel) in the Notify Stakeholders playbook inputs. The playbook automatically updates the issue status to "Resolved - Fixed" upon successful remediation.
 
 ## Dependencies
 

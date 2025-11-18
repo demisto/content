@@ -1,11 +1,11 @@
 ## Overview
 
-This content pack helps fix common cloud misconfigurations automatically with analyst approval as well as auto-remediation without approval with the option to notify stakeholders. The pack also includes 2 versatile and cloud-agnostic playbooks for creating tickets and sending notifications through ServiceNow, Jira, Email, Slack, and Microsoft Teams.
+This content pack helps fix common cloud misconfigurations automatically with analyst approval or performs auto-remediation without approval, optionally notifying stakeholders. It also includes two versatile, cloud-agnostic playbooks for creating tickets and sending notifications via ServiceNow, Jira, Email, Slack, or Microsoft Teams.
 
 ## Key Use Cases
 
 - Automatically remediate AWS misconfigurations with optional analyst approval.
-- Automatically remediate AWS, Azure and GCP Public Access Misconfiguration issues with no/minimal manual intervention.
+- Automatically remediate AWS, Azure, and GCP public access misconfigurations with minimal or no manual intervention.
 - Create or update issue tickets in Jira or ServiceNow.
 - Notify teams through Slack, Microsoft Teams, or email.
 
@@ -67,7 +67,7 @@ All remediation playbooks leverage:
     - This is a sub-playbook that is used in the Public Access Misconfiguration remediation playbooks for AWS, Azure, and GCP.
     - It is used to send issue and asset details along with the remediation action taken, in a well formatted notification message via Email, Slack or MS Teams, depending on the configured and enabled integrations.
     - Configure recipients for email, slack or MS Teams notification in the Playbook Triggered header of this playbook
-    - If no inputs are pre-configured and enableNotifications is set to 'yes' in the remediation playbook, the playbook will stop on manual input during execution to request at least 1 recipient.
+    - If no inputs are pre-configured and enableNotifications is set to 'yes' in the remediation playbook, execution will pause to request at least one recipient.
 
 ## Dependencies
 

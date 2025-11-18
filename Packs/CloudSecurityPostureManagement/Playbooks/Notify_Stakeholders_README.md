@@ -33,8 +33,8 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Teams Channel | Provide Microsoft Teams channel name to which to send messages. |  | Optional |
-| Slack Channel | Provide Slack channel name to which to send messages. |  | Optional |
+| Teams Channel | Provide the Microsoft Teams channel to send messages to. |  | Optional |
+| Slack Channel | Provide the Slack channel to send messages to. |  | Optional |
 | Email Address | Provide an email address for notifications. Use comma separated values to provide multiple addresses |  | Optional |
 | Subject | For email | You have a new message for - ${issue.name} | Optional |
 

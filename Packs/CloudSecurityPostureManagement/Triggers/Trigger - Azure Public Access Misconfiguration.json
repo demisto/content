@@ -3,7 +3,7 @@
   "trigger_name": "Trigger - Azure Public Access Misconfiguration",
   "playbook_id": "Azure Public Access Misconfiguration - Auto-remediate",
   "suggestion_reason": "Automatically secure the publicly exposed Azure resource by disabling public access immediately.",
-  "description": "Suggests a playbook that automatically remediates 3 High severity  misconfiguration issues for publicly accessible Azure blob containers, overly permissive Azure VM Disks or default Allow network access to Azure Storage Accounts",
+  "description": "Suggests a playbook that automatically remediates three high-severity misconfiguration issues caused by publicly accessible Azure Blob containers, overly permissive Azure VM disks, or Storage Accounts with default Allow network access.",
   "alerts_filter": {
     "filter": {
         "OR": [

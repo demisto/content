@@ -15,12 +15,12 @@ inputSections:
   - Subject
   name: General Inputs
 inputs:
-- description: Provide Microsoft Teams channel name to which to send messages.
+- description: Provide the Microsoft Teams channel to send messages to.
   key: Teams Channel
   playbookInputQuery: null
   required: false
   value: {}
-- description: Provide Slack channel name to which to send messages.
+- description: Provide the Slack channel to send messages to.
   key: Slack Channel
   playbookInputQuery: null
   required: false
@@ -897,7 +897,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Set the value of issue severity transformed from an integer value
+      description: Sets the value of issue severity transformed from an integer value
         to its corresponding text value. 1 - Low, 2 - Medium, 3 - High, 4 - Critical
       id: ec2f0a37-de94-43c5-8228-cab36c42d669
       iscommand: false
@@ -979,7 +979,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Set the value of issue category to a context key depending on the
+      description: Sets the value of issue category to a context key depending on the
         field name in the current platform.
       id: faa0efb1-5b16-488c-8aee-3cd177163906
       iscommand: false
@@ -1018,8 +1018,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Set the value of issue created timestamp to a context key because
-        otherwise it includes additional quotes.
+      description: Sets the issue creation timestamp into a context key to prevent additional quotation marks from being added.
+   
       id: d67b7eb5-8e39-48e7-8a69-a9d740451fbc
       iscommand: false
       name: Set Issue Creation timestamp

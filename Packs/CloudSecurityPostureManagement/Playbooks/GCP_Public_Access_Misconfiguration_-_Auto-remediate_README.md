@@ -5,7 +5,7 @@ Automatically remediates 2 GCP public access misconfigurations:
 
 The playbook removes public IAM policy bindings by deleting 'allUsers' and 'allAuthenticatedUsers' entities from the bucket's Access Control List respectively.
 
-Optional stakeholder notification is available via the "Notify Stakeholders" sub-playbook by setting enableNotifications input to 'yes' (default: 'no'). When enabled, configure at least one recipient (email, Slack channel, or Teams channel) in the Notify Stakeholders playbook inputs. The playbook automatically updates issue status to "Resolved - Fixed" upon successful remediation.
+Optional stakeholder notification is available via the "Notify Stakeholders" sub-playbook by setting enableNotifications input to 'yes' (default: 'no'). When enabled, configure at least one recipient (email, Slack channel, or Teams channel) in the Notify Stakeholders playbook inputs. The playbook automatically updates the issue status to "Resolved - Fixed" upon successful remediation.
 
 ## Dependencies
 

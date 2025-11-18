@@ -3,7 +3,7 @@
   "trigger_name": "Trigger - GCP Public Access Misconfiguration",
   "playbook_id": "GCP Public Access Misconfiguration - Auto-remediate",
   "suggestion_reason": "Automatically secure the publicly exposed GCP bucket by updating policies to block public access immediately.",
-  "description": "Suggests a playbook that automatically remediates the 2 High severity misconfiguration issues for GCP Storage buckets accessible to allUSers or allAuthenticatedUSers",
+  "description": "Suggests a playbook that automatically remediates two high-severity misconfiguration issues caused by GCP Storage buckets accessible to allUsers or allAuthenticatedUsers.",
   "alerts_filter": {
     "filter": {
         "OR": [
