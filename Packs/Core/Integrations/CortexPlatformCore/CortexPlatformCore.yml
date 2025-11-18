@@ -1816,7 +1816,7 @@ script:
           description: Original vulnerable code.
           type: String
         - contextPath: Core.IssueRecommendations.suggested_code_block
-          description: Automated fix suggestion.
+          description: Code block fix suggestion.
           type: String
     - arguments:
         - description: List of repository asset IDs to configure scanners for.
