@@ -14,6 +14,7 @@ PRODUCT = "Cloud"
 RECORDS_REQUEST_LIMIT = 200
 ACCESS_TOKEN_CONST = "access_token"
 SOURCE_LOG_TYPE = "systemlog"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 
 
 """ CLIENT CLASS """
@@ -126,8 +127,13 @@ class Client(BaseClient):
 
 def get_events_command(client: Client, args: dict):  # type: ignore
     limit = int(args.get("limit", "10"))
-    start_date_time = args.get("start_date_time")
+
     end_date_time = args.get("end_date_time")
+    end_date_time = dateparser.parse(end_date_time).strftime(DATE_FORMAT) if end_date_time else None
+
+    start_date_time = args.get("start_date_time")
+    start_date_time = dateparser.parse(start_date_time).strftime(DATE_FORMAT) if start_date_time else None
+
     should_push_events = argToBoolean(args.get("should_push_events", False))
 
     demisto.debug(f"Running citrix-cloud-get-events with {should_push_events=}")
@@ -152,7 +158,7 @@ def get_events_command(client: Client, args: dict):  # type: ignore
 
 
 def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
-    start_date_time = last_run.get("LastRun") or datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.0000Z")
+    start_date_time = last_run.get("LastRun") or datetime.utcnow().strftime(DATE_FORMAT)
     records, _ = client.get_records_with_pagination(
         limit=max_fetch, start_date_time=start_date_time, last_record_id=last_run.get("RecordId")
     )
