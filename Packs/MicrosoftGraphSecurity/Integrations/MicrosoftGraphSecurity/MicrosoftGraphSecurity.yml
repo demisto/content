@@ -2283,7 +2283,6 @@ script:
 tests:
 - Microsoft Graph Security Test dev
 - Microsoft Graph Security Test prod
-- Microsoft Graph Security Test self deployed
 - Microsoft Graph Security Test dev v2
 - Microsoft Graph Security Test prod v2
 - Microsoft Graph Security Test self deployed v2
