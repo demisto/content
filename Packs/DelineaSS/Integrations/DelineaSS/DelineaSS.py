@@ -45,26 +45,26 @@ class AuthenticationModel:
 
 
 class AuthenticationService:
-    def __init__(self):
-        pass
-
     def authenticate_async(self, auth_model: AuthenticationModel):
-        try:
-            platform_health_check_url = auth_model.server_url.rstrip("/") + "/health"
-            ss_health_check_url = auth_model.server_url.rstrip("/") + "/api/v1/healthcheck"
-            is_ss_healthy = self.check_json_response_async(ss_health_check_url)
-            if is_ss_healthy:
-                auth_model.set_platform_login(False)
-            else:
-                is_platform_healthy = self.check_json_response_async(platform_health_check_url)
-                if is_platform_healthy:
-                    auth_model.set_platform_login(True)
-                    platform_login = PlatformLogin()
-                    return platform_login.platform_authentication(auth_model)
-                else:
-                    auth_model.set_error(f"Invalid Server URL {auth_model.server_url}")
 
+        try:
+            base = auth_model.server_url.rstrip("/")
+            ss_url = f"{base}/api/v1/healthcheck"
+            pf_url = f"{base}/health"
+
+            # Check Secret Server first
+            if self.check_json_response_async(ss_url):
+                auth_model.set_platform_login(False)
+                return auth_model
+
+            # If not SS, check Platform
+            if self.check_json_response_async(pf_url):
+                auth_model.set_platform_login(True)
+                return PlatformLogin().platform_authentication(auth_model)
+
+            auth_model.set_error(f"Invalid Server URL {auth_model.server_url}")
             return auth_model
+
         except Exception as e:
             raise RuntimeError(str(e))
 
@@ -73,16 +73,15 @@ class AuthenticationService:
             response = requests.get(url)
             if response.status_code != 200:
                 return False
-            response_body = response.text
-            if response_body:
-                try:
-                    json_response = response.json()
-                    return json_response.get("healthy", False)
-                except json.JSONDecodeError:
-                    return "Healthy" in response_body
+
+            try:
+                json_body = response.json()
+                return json_body.get("healthy", False)
+            except json.JSONDecodeError:
+                return "Healthy" in response.text
+
+        except requests.exceptions.RequestException:
             return False
-        except requests.exceptions.RequestException as e:
-            raise RuntimeError(str(e))
 
 
 class PlatformLogin:
@@ -91,102 +90,55 @@ class PlatformLogin:
 
     def platform_authentication(self, auth_model: AuthenticationModel):
         try:
+            # 1. ACCESS TOKEN
             response = self.get_access_token(auth_model)
             if response.status_code != 200:
                 return self.handle_error_response(response.text)
 
-            auth_response = response.json()
-            if not auth_response:
-                return self.handle_error_response(
-                    f"Unable to authenticate for user {auth_model.user_name} on server {auth_model.server_url}")
+            auth_data = response.json()
+            auth_model.set_token(auth_data.get("access_token"))
+            auth_model.set_token_expiration(auth_data.get("expires_in"))
 
-            auth_model.set_token(auth_response['access_token'])
-            auth_model.set_token_expiration(auth_response['expires_in'])
-            response.close()
-
-            response = self.get_vaults(auth_model, auth_response['access_token'])
+            # 2. GET VAULTS
+            response = self.get_vaults(auth_model, auth_model.token)
             if response.status_code != 200:
                 return self.handle_error_response(response.text)
 
-            vaults_response = response.json()
-            if not vaults_response:
-                return self.handle_error_response(f"Unable to fetch vaults from server {auth_model.server_url}")
+            vaults = response.json().get("vaults", [])
+            vault = next((v for v in vaults if v["isDefault"] and v["isActive"]), None)
 
-            vault = next((v for v in vaults_response.get('vaults', []) if v['isDefault'] and v['isActive']), None)
-            if vault:
-                auth_model.set_vault_url(vault['connection']['url'])
-                auth_model.set_vault_type(vault['type'])
-            else:
-                return self.handle_error_response(f"Unable to fetch vaults from server {auth_model.server_url}")
+            if not vault:
+                return self.handle_error_response("No active default vault found")
 
+            auth_model.set_vault_url(vault["connection"]["url"])
+            auth_model.set_vault_type(vault["type"])
             return auth_model
-        except Exception as e:
-            raise Exception(f"Error occurred in PlatformAuthentication:\n{str(e)}")
 
-    def handle_error_response(self, error_message):
-        return AuthenticationModel(error_message=error_message, platform_login=True)
+        except Exception as e:
+            raise Exception(f"Platform authentication error: {e}")
+
+    def handle_error_response(self, msg):
+        return AuthenticationModel(error=msg, platform_login=True)
+
 
     def get_access_token(self, auth_model: AuthenticationModel):
-        api_url = auth_model.server_url.rstrip("/") + "/identity/api/oauth2/token/xpmplatform"
-        scope = "xpmheadless"
-
-        if not auth_model.server_url:
-            raise ValueError("Missing required environment variables")
-
-        headers = {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-        request_body = f"grant_type=client_credentials&client_id={auth_model.user_name}&client_secret={auth_model.password}&scope={scope}"
-        response = requests.post(api_url, headers=headers, data=request_body, verify=True)
-        return response
+        url = auth_model.server_url.rstrip("/") + "/identity/api/oauth2/token/xpmplatform"
+        body = (
+            f"grant_type=client_credentials&client_id={auth_model.user_name}"
+            f"&client_secret={auth_model.password}&scope=xpmheadless"
+        )
+        return requests.post(url, headers={"Content-Type": "application/x-www-form-urlencoded"}, data=body, verify=True)
 
     def get_vaults(self, auth_model: AuthenticationModel, token):
-        api_url = auth_model.server_url.rstrip("/") + "/vaultbroker/api/vaults"
-        headers = {
-            "Authorization": f"bearer {token}"
-        }
-        response = requests.get(api_url, headers=headers, verify=True)
-        return response
-
-
-def get_access_token(url, username, password):
-    access_token = None
-    try:
-        headers = {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-
-        data = f"grant_type=password&username={username}&password={password}"
-        response = requests.post(url + "/oauth2/token", data=data, headers=headers, verify=True)
-        if response.status_code == 200:
-            content = response.json()
-            if 'access_token' in content:
-                access_token = content['access_token']
-            else:
-                print(f"Failed to get access token. Response: {content}")
-        else:
-            print(f"Failed to get access token. Status Code: {response.status_code}")
-    except requests.exceptions.RequestException as e:
-        print(f"HTTP error occurred: {str(e)}")
-    return access_token
+        url = auth_model.server_url.rstrip("/") + "/vaultbroker/api/vaults"
+        headers = {"Authorization": f"Bearer {token}"}
+        return requests.get(url, headers=headers, verify=True)
 
 
 def is_platform_or_ss(url, username, password):
-    authentication_model = AuthenticationModel(username, password, url)
-    token = None
-    try:
-        auth_service = AuthenticationService()
-        authentication_model = auth_service.authenticate_async(authentication_model)
-        is_platform_login = authentication_model.platform_login
-        if is_platform_login:
-            token = authentication_model.token
-        elif not is_platform_login:
-            token = get_access_token(url, username, password)
-        else:
-            print(authentication_model.error)
-    except Exception as e:
-        print(f"Error: {e}")
-    return authentication_model
+    model = AuthenticationModel(username, password, url)
+    service = AuthenticationService()
+    return service.authenticate_async(model)
 
 
 class Client(BaseClient):
@@ -195,20 +147,26 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, server_url: str, username: str, password: str, proxy: bool, verify: bool, isplatform: bool):
+    def __init__(self, server_url: str, username: str, password: str, proxy: bool, verify: bool):
         super().__init__(base_url=server_url, proxy=proxy, verify=verify)
         self._username = username
         self._password = password
-        self._isplatform = isplatform
-        if self._isplatform:
-            authentication_model = is_platform_or_ss(server_url, self._username, self._password)
+        self._token = self.authenticate()
+        self._headers = None
+
+    def authenticate(self):
+        authentication_model = is_platform_or_ss(self._base_url, self._username, self._password)
+        if authentication_model.platform_login:
+            if authentication_model.error:
+                raise Exception(authentication_model.error)
             self._token = authentication_model.token
-            server_url = authentication_model.vault_url
-            self._base_url = server_url
+            self._base_url = authentication_model.vault_url
             self._headers = {'Authorization': f'Bearer {self._token}', 'Content-Type': 'application/json'}
+            return self._token
         else:
             self._token = self._generate_token()
             self._headers = {'Authorization': self._token, 'Content-Type': 'application/json'}
+            return self._token
 
     def _generate_token(self) -> str:
         """Generate an Access token using the user name and password
@@ -845,7 +803,6 @@ def main():
     url = params.get('url')
     proxy = params.get('proxy', False)
     verify = not params.get('insecure', False)
-    isplatform = not params.get('isplatform', False)
     secretids = params.get('secrets')
 
     demisto.info(f'Command being called is {demisto.command()}')
@@ -882,8 +839,7 @@ def main():
                         username=username,
                         password=password,
                         proxy=proxy,
-                        verify=verify,
-                        isplatform=isplatform)
+                        verify=verify)
         if command in delinea_commands:
             return_results(
                 delinea_commands[command](client, **demisto.args())  # type: ignore[operator]

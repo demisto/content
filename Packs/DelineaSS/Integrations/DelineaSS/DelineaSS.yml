@@ -15,10 +15,6 @@ configuration:
   name: insecure
   type: 8
   required: false
-- display: Use Platform
-  name: isplatform
-  type: 8
-  required: true
 - display: Use system proxy settings
   name: proxy
   type: 8
