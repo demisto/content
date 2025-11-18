@@ -1835,6 +1835,22 @@ script:
           description: Code block fix suggestion.
           type: String
     - arguments:
+      - description: A comma-separated list of issue IDs to fix (maximum 10 per request).
+        name: issue_ids
+        required: true
+        isArray: true
+      - description: Custom title for the pull request.
+        name: title
+      name: core-appsec-remediate-issue
+      description: Create automated pull requests to fix multiple security issues in a single bulk operation.
+      outputs:
+      - contextPath: Core.TriggeredPRs.issueId
+        description: The issue identifier.
+        type: String
+      - contextPath: Core.TriggeredPRs.status
+        description: Either "triggered" or "automated_fix_not_available".
+        type: String
+    - arguments:
         - description: List of repository asset IDs to configure scanners for.
           name: repository_ids
           isArray: true

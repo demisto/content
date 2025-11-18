@@ -792,3 +792,26 @@ Updates the properties of an issue. This command does not provide an explicit in
 #### Context Output
 
 There is no context output for this command.
+
+### core-appsec-remediate-issue
+
+***
+Create automated pull requests to fix multiple security issues in a single bulk operation.
+
+#### Base Command
+
+`core-appsec-remediate-issue`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_ids | A comma-separated list of issue IDs to fix (maximum 10 per request). | Required |
+| title | Custom title for the pull request. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.TriggeredPRs.issueId | String | The issue identifier. |
+| Core.TriggeredPRs.status | String | Either "triggered" or "automated_fix_not_available". |
