@@ -37,6 +37,7 @@ runas: DBotWeakRole
 runonce: false
 script: ''
 scripttarget: 0
+isllm: false
 subtype: python3
 tags:
 - transformer
