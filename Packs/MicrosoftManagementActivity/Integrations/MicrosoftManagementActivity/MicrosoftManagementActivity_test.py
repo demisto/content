@@ -689,3 +689,137 @@ def test_fetch_start_time(mocker):
 
     assert fetch_start_time_str == "2023-08-02T14:22:49"
     assert fetch_end_time_str == "2023-08-03T14:22:49"
+
+def test_test_module_with_auth_code(mocker, self_deployed, auth_code, redirect_uri, managed_identities_client_id, first_fetch_delta, expected_error):
+    """
+    Given:
+        - Various configurations of self_deployed, auth_code, redirect_uri, and first_fetch_delta parameters.
+    When:
+        - Calling test_module function.
+    Then:
+        - Ensure the appropriate error is raised based on the configuration.
+    """
+    from MicrosoftManagementActivity import Client, test_module
+
+    # Mock demisto.params()
+    params = {
+        "self_deployed": self_deployed,
+        "redirect_uri": redirect_uri,
+        "first_fetch_delta": first_fetch_delta,
+    }
+    mocker.patch.object(demisto, "params", return_value=params)
+
+    # Create client
+    client = Client(
+        base_url="https://manage.office.com/api/v1.0/",
+        verify=True,
+        proxy=False,
+        self_deployed=self_deployed,
+        auth_and_token_url="test_auth_id",
+        refresh_token="test_refresh_token",
+        enc_key="test_enc_key",
+        auth_code=auth_code,
+        tenant_id="test_tenant_id",
+        redirect_uri=redirect_uri,
+        timeout=15,
+        managed_identities_client_id=managed_identities_client_id,
+    )
+
+    # Test that the appropriate exception is raised
+    with pytest.raises(DemistoException) as exc_info:
+        test_module(client=client, auth_code=auth_code)
+
+    assert expected_error in str(exc_info.value)
+
+
+def test_test_module_with_managed_identities_returns_ok(mocker, requests_mock):
+    """
+    Given:
+        - Managed Identities client id is configured.
+    When:
+        - Calling test_module function.
+    Then:
+        - Ensure the function returns "ok" without raising an exception.
+    """
+    from MicrosoftManagementActivity import Client, test_module, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import jwt
+
+    # Mock the managed identities token endpoint
+    mock_token = {"access_token": "test_token", "expires_in": "86400"}
+    requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+
+    # Mock demisto.params()
+    params = {
+        "self_deployed": False,
+        "first_fetch_delta": "10 minutes",
+        "managed_identities_client_id": {"password": "test_client_id"},
+    }
+    mocker.patch.object(demisto, "params", return_value=params)
+
+    # Mock jwt.decode to return a valid token
+    mocker.patch.object(jwt, "decode", return_value={"tid": "test_tenant_id", "exp": 9999999999})
+
+    # Create client with managed identities
+    client = Client(
+        base_url="https://manage.office.com/api/v1.0/",
+        verify=True,
+        proxy=False,
+        self_deployed=False,
+        auth_and_token_url="",
+        refresh_token="",
+        enc_key="",
+        auth_code="",
+        tenant_id="",
+        redirect_uri="",
+        timeout=15,
+        managed_identities_client_id="test_client_id",
+    )
+
+    # Test that the function returns "ok"
+    result = test_module(client=client, auth_code="")
+    assert result == "ok"
+
+
+def test_test_module_self_deployed_with_valid_params_raises_cannot_check_error(mocker):
+    """
+    Given:
+        - Self-deployed mode is enabled with valid auth_code and redirect_uri.
+        - First fetch delta is within acceptable range (less than 7 days).
+    When:
+        - Calling test_module function.
+    Then:
+        - Ensure it raises the "cannot be checked using Test button" error (not the auth_code/redirect_uri error).
+    """
+    from MicrosoftManagementActivity import Client, test_module
+
+    # Mock demisto.params()
+    params = {
+        "self_deployed": True,
+        "redirect_uri": "https://valid.redirect.uri",
+        "first_fetch_delta": "10 minutes",
+    }
+    mocker.patch.object(demisto, "params", return_value=params)
+
+    # Create client with valid auth_code and redirect_uri
+    client = Client(
+        base_url="https://manage.office.com/api/v1.0/",
+        verify=True,
+        proxy=False,
+        self_deployed=True,
+        auth_and_token_url="test_auth_id",
+        refresh_token="test_refresh_token",
+        enc_key="test_enc_key",
+        auth_code="valid_auth_code",
+        tenant_id="test_tenant_id",
+        redirect_uri="https://valid.redirect.uri",
+        timeout=15,
+    )
+
+    # Test that it raises the "cannot be checked" error, not the auth_code/redirect_uri error
+    with pytest.raises(DemistoException) as exc_info:
+        test_module(client=client, auth_code="valid_auth_code")
+
+    error_message = str(exc_info.value)
+    assert "authentication cannot be checked using the *Test* button" in error_message
+    assert "Authorization code" not in error_message  # Should NOT be the auth_code error
+
