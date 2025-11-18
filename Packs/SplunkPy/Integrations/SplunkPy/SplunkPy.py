@@ -425,7 +425,7 @@ def build_fetch_query(params):
             field_trimmed = field.strip()
             fetch_query = f"{fetch_query} | eval {field_trimmed}={field_trimmed}"
 
-    if '| expandtoken' not in fetch_query:
+    if "| expandtoken" not in fetch_query:
         demisto.info('**WARNING**: Could not find "expandtoken" in fetch query.')
     return fetch_query
 
@@ -1244,9 +1244,8 @@ def get_drilldown_searches(notable_data):
             # The drilldown_searches are a dict/list of the search data in a JSON string representation.
             return parse_drilldown_searches([drilldown_search])
 
-
-    fill_null_value=None
-    fetch_query = demisto.params().get("fetchQuery")
+    fill_null_value = None
+    fetch_query = demisto.params().get("fetchQuery",'')
 
     # --- Extract fillnull value if present ---
     # Matches patterns like: fillnull value=0, fillnull value="N/A", fillnull value='unknown'
