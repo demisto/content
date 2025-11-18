@@ -918,13 +918,15 @@ def test_get_readable_logs():
 def test_set_password_command():
     client = Client(base_url="https://demisto.com", api_token="XXX")
     headers = {
-            "x-rate-limit-limit": "1",
-            "x-rate-limit-remaining": "1",
-            "x-rate-limit-reset": "1",
-        }
+        "x-rate-limit-limit": "1",
+        "x-rate-limit-remaining": "1",
+        "x-rate-limit-reset": "1",
+    }
     with requests_mock.Mocker() as m:
         m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{"id": "1234"}], headers=headers)
-        mock_request = m.post("https://demisto.com/api/v1/users/1234", json={"passwordChanged": "2020-03-26T13:57:13.000Z"}, headers=headers)
+        mock_request = m.post(
+            "https://demisto.com/api/v1/users/1234", json={"passwordChanged": "2020-03-26T13:57:13.000Z"}, headers=headers
+        )
 
         result = set_password_command(client, {"username": "test", "password": "a1b2c3"})
 
@@ -935,15 +937,17 @@ def test_set_password_command():
 def test_set_temp_password_command():
     client = Client(base_url="https://demisto.com", api_token="XXX")
     headers = {
-            "x-rate-limit-limit": "1",
-            "x-rate-limit-remaining": "1",
-            "x-rate-limit-reset": "1",
-        }
+        "x-rate-limit-limit": "1",
+        "x-rate-limit-remaining": "1",
+        "x-rate-limit-reset": "1",
+    }
     with requests_mock.Mocker() as m:
         m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{"id": "1234"}], headers=headers)
         m.post("https://demisto.com/api/v1/users/1234", json={"passwordChanged": "2023-03-22T10:15:26.000Z"}, headers=headers)
         m.post(
-            "https://demisto.com/api/v1/users/1234/lifecycle/expire_password?tempPassword=true", json={"tempPassword": "cAn5N3gx"}, headers=headers
+            "https://demisto.com/api/v1/users/1234/lifecycle/expire_password?tempPassword=true",
+            json={"tempPassword": "cAn5N3gx"},
+            headers=headers,
         )
 
         result = set_password_command(client, {"username": "test", "password": "a1b2c3", "temporary_password": "true"})
@@ -980,11 +984,15 @@ def test_get_logs_command_with_limit(mocker, requests_mock, limit, logs_amount):
     client = Client(base_url="https://demisto.com", api_token="XXX")
     mocker.patch.object(Client, "get_paged_results", side_effect=mock_get_paged_results)
     mocker.patch.object(Client, "get_readable_logs", side_effect=mock_get_paged_results)
-    requests_mock.get(f"https://demisto.com/api/v1/logs?limit={limit}", json=LOGS[:limit], headers={
+    requests_mock.get(
+        f"https://demisto.com/api/v1/logs?limit={limit}",
+        json=LOGS[:limit],
+        headers={
             "x-rate-limit-limit": "1",
             "x-rate-limit-remaining": "1",
             "x-rate-limit-reset": "1",
-        })
+        },
+    )
     args = {"limit": limit}
     readable, outputs, raw_response = get_logs_command(client=client, args=args)
     assert len(outputs.get("Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)")) == logs_amount

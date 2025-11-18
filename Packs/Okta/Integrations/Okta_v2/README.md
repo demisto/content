@@ -93,9 +93,9 @@ Unlocks a single user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Metadata.X-Rate-Limit-Limit | Unknown | The Rate Limit limit. |
-| Okta.Metadata.X-Rate-Limit-Remaining | Unknown | The remaining Rate Limit.|
-| Okta.Metadata.X-Rate-Limit-Reset | Unknown | The time to resetting the Rate Limit. |
+| Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
+| Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
+| Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
 
 ##### Command Example
 
@@ -124,9 +124,9 @@ Deactivates a single user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Metadata.X-Rate-Limit-Limit | Unknown | The Rate Limit limit. |
-| Okta.Metadata.X-Rate-Limit-Remaining | Unknown | The remaining Rate Limit.|
-| Okta.Metadata.X-Rate-Limit-Reset | Unknown | The time to resetting the Rate Limit. |
+| Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
+| Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
+| Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
 
 ##### Command Example
 
@@ -155,9 +155,9 @@ Activates a single user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Metadata.X-Rate-Limit-Limit | Unknown | The Rate Limit limit. |
-| Okta.Metadata.X-Rate-Limit-Remaining | Unknown | The remaining Rate Limit.|
-| Okta.Metadata.X-Rate-Limit-Reset | Unknown | The time to resetting the Rate Limit. |
+| Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
+| Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
+| Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
 
 ##### Command Example
 
@@ -186,9 +186,9 @@ Suspends a single user. This operation can only be performed on users with an AC
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Metadata.X-Rate-Limit-Limit | Unknown | The Rate Limit limit. |
-| Okta.Metadata.X-Rate-Limit-Remaining | Unknown | The remaining Rate Limit.|
-| Okta.Metadata.X-Rate-Limit-Reset | Unknown | The time to resetting the Rate Limit. |
+| Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
+| Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
+| Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
 
 ##### Command Example
 
@@ -217,9 +217,9 @@ Returns a single user to ACTIVE status. This operation can only be performed on 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Metadata.X-Rate-Limit-Limit | Unknown | The Rate Limit limit. |
-| Okta.Metadata.X-Rate-Limit-Remaining | Unknown | The remaining Rate Limit.|
-| Okta.Metadata.X-Rate-Limit-Reset | Unknown | The time to resetting the Rate Limit. |
+| Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
+| Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
+| Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
 
 ##### Command Example
 
@@ -255,9 +255,9 @@ Returns all the enrolled factors for the specified user.
 | Account.Factor.Profile | String | Okta account factor profile. |
 | Account.Factor.FactorType | String | Okta account factor type. |
 | Account.Factor.Status | Unknown | Okta account factor status. |
-| Okta.Metadata.X-Rate-Limit-Limit | Unknown | The Rate Limit limit. |
-| Okta.Metadata.X-Rate-Limit-Remaining | Unknown | The remaining Rate Limit.|
-| Okta.Metadata.X-Rate-Limit-Reset | Unknown | The time to resetting the Rate Limit. |
+| Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
+| Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
+| Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
 
 ##### Command Example
 
@@ -332,9 +332,9 @@ Un-enrolls an existing factor for the specified user. This enables the user to e
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Metadata.X-Rate-Limit-Limit | Unknown | The Rate Limit limit. |
-| Okta.Metadata.X-Rate-Limit-Remaining | Unknown | The remaining Rate Limit.|
-| Okta.Metadata.X-Rate-Limit-Reset | Unknown | The time to resetting the Rate Limit. |
+| Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
+| Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
+| Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
 
 ##### Command Example
 
@@ -365,9 +365,9 @@ Sets passwords without validating existing user credentials.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Metadata.X-Rate-Limit-Limit | Unknown | The Rate Limit limit. |
-| Okta.Metadata.X-Rate-Limit-Remaining | Unknown | The remaining Rate Limit.|
-| Okta.Metadata.X-Rate-Limit-Reset | Unknown | The time to resetting the Rate Limit. |
+| Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
+| Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
+| Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
 
 ##### Command Example
 
@@ -399,9 +399,9 @@ Adds a user to a group with OKTA_GROUP type.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Metadata.X-Rate-Limit-Limit | Unknown | The Rate Limit limit. |
-| Okta.Metadata.X-Rate-Limit-Remaining | Unknown | The remaining Rate Limit.|
-| Okta.Metadata.X-Rate-Limit-Reset | Unknown | The time to resetting the Rate Limit. |
+| Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
+| Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
+| Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
 
 ##### Command Example
 
@@ -1005,9 +1005,9 @@ Updates a user with a given login. All fields are optional. Fields which are not
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Metadata.X-Rate-Limit-Limit | Unknown | The Rate Limit limit. |
-| Okta.Metadata.X-Rate-Limit-Remaining | Unknown | The remaining Rate Limit.|
-| Okta.Metadata.X-Rate-Limit-Reset | Unknown | The time to resetting the Rate Limit. |
+| Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
+| Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
+| Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
 
 ##### Command Example
 
@@ -2109,9 +2109,9 @@ Deletes the specified user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Metadata.X-Rate-Limit-Limit | Unknown | The Rate Limit limit. |
-| Okta.Metadata.X-Rate-Limit-Remaining | Unknown | The remaining Rate Limit.|
-| Okta.Metadata.X-Rate-Limit-Reset | Unknown | The time to resetting the Rate Limit. |
+| Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
+| Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
+| Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
 
 ##### Command Example
 
@@ -2142,9 +2142,9 @@ https://developer.okta.com/docs/reference/api/users/#user-sessions
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Metadata.X-Rate-Limit-Limit | Unknown | The Rate Limit limit. |
-| Okta.Metadata.X-Rate-Limit-Remaining | Unknown | The remaining Rate Limit.|
-| Okta.Metadata.X-Rate-Limit-Reset | Unknown | The time to resetting the Rate Limit. |
+| Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
+| Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
+| Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
 
 ##### Command Example
 
@@ -2606,9 +2606,9 @@ Creates a Zone with the specified name.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Metadata.X-Rate-Limit-Limit | Unknown | The Rate Limit limit. |
-| Okta.Metadata.X-Rate-Limit-Remaining | Unknown | The remaining Rate Limit.|
-| Okta.Metadata.X-Rate-Limit-Reset | Unknown | The time to resetting the Rate Limit. |
+| Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
+| Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
+| Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
 
 ### okta-create-group
 
@@ -2680,9 +2680,9 @@ Assign a group to an application.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Okta.Metadata.X-Rate-Limit-Limit | Unknown | The Rate Limit limit. |
-| Okta.Metadata.X-Rate-Limit-Remaining | Unknown | The remaining Rate Limit.|
-| Okta.Metadata.X-Rate-Limit-Reset | Unknown | The time to resetting the Rate Limit. |
+| Okta.Metadata.x-rate-limit-limit | Number | The rate limit ceiling that’s applicable for the current request. |
+| Okta.Metadata.x-rate-limit-remaining | Number | The amount of requests left for the current rate-limit window. |
+| Okta.Metadata.x-rate-limit-reset | Number | The time at which the rate limit resets, specified in UTC epoch time (in seconds). |
 
 #### Command example
 
