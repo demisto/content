@@ -765,8 +765,14 @@ script:
     - description: The user mail to pop the MFA to.
       name: user_mail
       required: true
+    - description: The timeout for the MFA request.
+      name: timeout
+      required: false
+      defaultValue: 60
     description: pops a request to MFA for the given user.
     name: msgraph-user-request-mfa
+  - name: msgraph-user-create-mfa-client-secret
+    description: Issue a new client secret for the MFA app.
   dockerimage: demisto/crypto:1.0.0.4578119
   runonce: false
   script: '-'
