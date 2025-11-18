@@ -592,6 +592,8 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 | Core.IssueRecommendations.remediation | String | Remediation steps and recommendations for the issue. |
 | Core.IssueRecommendations.playbook_suggestions.playbook_id | String | The ID of the suggested playbook. |
 | Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id | String | The ID of the suggestion rule that generated this recommendation. |
+| Core.IssueRecommendations.existing_code_block | String | Original vulnerable code. |
+| Core.IssueRecommendations.suggested_code_block | String | Code block fix suggestion. |
 
 ### core-enable-scanners
 

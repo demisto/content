@@ -5,6 +5,10 @@ from pytest_mock import MockerFixture
 from unittest.mock import call
 import demistomock as demisto
 
+from unittest.mock import Mock, patch
+from CortexPlatformCore import get_issue_recommendations_command, Client
+
+
 MAX_GET_INCIDENTS_LIMIT = 100
 
 
@@ -2856,6 +2860,150 @@ def test_get_issue_recommendations_command_api_calls(mocker):
     assert call_args["table_name"] == "ALERTS_VIEW_TABLE"
     assert call_args["type"] == "grid"
     assert "filter_data" in call_args
+
+
+class TestGetIssueRecommendationsCommand:
+    """Test cases for the AppSec fix suggestion logic in get_issue_recommendations_command"""
+
+    def setup_method(self):
+        """Setup method to initialize common test data"""
+        self.mock_client = Mock(spec=Client)
+        self.issue_id = "test_issue_123"
+        self.base_args = {"issue_id": self.issue_id}
+
+        self.base_issue = {
+            "internal_id": self.issue_id,
+            "alert_name": "Test Security Issue",
+            "severity": "HIGH",
+            "alert_description": "Test description",
+            "remediation": "Base remediation steps",
+        }
+
+        self.base_webapp_response = {"reply": {"DATA": [self.base_issue]}}
+        self.base_playbook_response = {"reply": {"suggested_playbooks": ["Playbook1", "Playbook2"]}}
+
+    @patch("CortexPlatformCore.build_webapp_request_data")
+    def test_appsec_issue_with_fix_suggestion(self, mock_build_request):
+        """Test AppSec issue with successful fix suggestion retrieval"""
+        appsec_issue = self.base_issue.copy()
+        appsec_issue.update({"alert_source": "CAS_CVE_SCANNER", "extended_fields": {"action": "Manual fix instructions"}})
+
+        webapp_response = {"reply": {"DATA": [appsec_issue]}}
+
+        fix_suggestion = {"existingCodeBlock": "vulnerable_code_here()", "suggestedCodeBlock": "secure_code_here()"}
+
+        mock_build_request.return_value = {"mock": "request_data"}
+        self.mock_client.get_webapp_data.return_value = webapp_response
+        self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
+        self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
+
+        result = get_issue_recommendations_command(self.mock_client, self.base_args)
+
+        self.mock_client.get_appsec_suggested_fix.assert_called_once_with(self.issue_id)
+
+        expected_recommendation = {
+            "issue_id": self.issue_id,
+            "issue_name": "Test Security Issue",
+            "severity": "HIGH",
+            "description": "Test description",
+            "remediation": "Manual fix instructions",  # Should use manual_fix
+            "playbook_suggestions": {"suggested_playbooks": ["Playbook1", "Playbook2"]},
+            "existing_code_block": "vulnerable_code_here()",
+            "suggested_code_block": "secure_code_here()",
+        }
+
+        assert result.outputs == expected_recommendation
+        assert "Existing Code Block" in result.readable_output
+        assert "Suggested Code Block" in result.readable_output
+
+    @patch("CortexPlatformCore.build_webapp_request_data")
+    def test_appsec_issue_without_manual_fix(self, mock_build_request):
+        """Test AppSec issue without manual fix, should use base remediation"""
+        appsec_issue = self.base_issue.copy()
+        appsec_issue.update(
+            {
+                "alert_source": "CAS_IAC_SCANNER",
+                "extended_fields": {},  # No manual fix
+            }
+        )
+
+        webapp_response = {"reply": {"DATA": [appsec_issue]}}
+
+        fix_suggestion = {"existingCodeBlock": "terraform_issue_here", "suggestedCodeBlock": "terraform_fix_here"}
+
+        mock_build_request.return_value = {"mock": "request_data"}
+        self.mock_client.get_webapp_data.return_value = webapp_response
+        self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
+        self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
+
+        result = get_issue_recommendations_command(self.mock_client, self.base_args)
+
+        expected_recommendation = {
+            "issue_id": self.issue_id,
+            "issue_name": "Test Security Issue",
+            "severity": "HIGH",
+            "description": "Test description",
+            "remediation": "Base remediation steps",  # Should use base remediation
+            "playbook_suggestions": {"suggested_playbooks": ["Playbook1", "Playbook2"]},
+            "existing_code_block": "terraform_issue_here",
+            "suggested_code_block": "terraform_fix_here",
+        }
+
+        assert result.outputs == expected_recommendation
+
+    @patch("CortexPlatformCore.build_webapp_request_data")
+    def test_appsec_issue_no_fix_suggestion(self, mock_build_request):
+        """Test AppSec issue when fix suggestion API returns None"""
+        appsec_issue = self.base_issue.copy()
+        appsec_issue.update({"alert_source": "CAS_SECRET_SCANNER", "extended_fields": {"action": "Manual secret remediation"}})
+
+        webapp_response = {"reply": {"DATA": [appsec_issue]}}
+
+        mock_build_request.return_value = {"mock": "request_data"}
+        self.mock_client.get_webapp_data.return_value = webapp_response
+        self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
+        self.mock_client.get_appsec_suggested_fix.return_value = None  # No fix suggestion
+        result = get_issue_recommendations_command(self.mock_client, self.base_args)
+
+        self.mock_client.get_appsec_suggested_fix.assert_called_once_with(self.issue_id)
+
+        expected_recommendation = {
+            "issue_id": self.issue_id,
+            "issue_name": "Test Security Issue",
+            "severity": "HIGH",
+            "description": "Test description",
+            "remediation": "Manual secret remediation",
+            "playbook_suggestions": {"suggested_playbooks": ["Playbook1", "Playbook2"]},
+        }
+
+        assert result.outputs == expected_recommendation
+        assert "Existing Code Block" not in result.outputs
+        assert "Suggested Code Block" not in result.outputs
+
+    @patch("CortexPlatformCore.build_webapp_request_data")
+    def test_appsec_sources_coverage(self, mock_build_request):
+        """Test all AppSec sources are handled correctly"""
+        appsec_sources = ["CAS_CVE_SCANNER", "CAS_IAC_SCANNER", "CAS_SECRET_SCANNER"]
+
+        for source in appsec_sources:
+            appsec_issue = self.base_issue.copy()
+            appsec_issue["alert_source"] = source
+
+            webapp_response = {"reply": {"DATA": [appsec_issue]}}
+
+            fix_suggestion = {"existingCodeBlock": f"issue_in_{source}", "suggestedCodeBlock": f"fix_for_{source}"}
+
+            mock_build_request.return_value = {"mock": "request_data"}
+            self.mock_client.get_webapp_data.return_value = webapp_response
+            self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
+            self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
+
+            result = get_issue_recommendations_command(self.mock_client, self.base_args)
+
+            assert result.outputs["existing_code_block"] == f"issue_in_{source}"
+            assert result.outputs["suggested_code_block"] == f"fix_for_{source}"
+
+            self.mock_client.reset_mock()
 
 
 def test_enable_scanners_command_single_repository(mocker: MockerFixture):
