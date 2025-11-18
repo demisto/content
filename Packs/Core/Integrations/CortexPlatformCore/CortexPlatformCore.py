@@ -788,12 +788,12 @@ def update_issue_command(client: Client, args: dict):
         "Resolved - Known Issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
         "Resolved - Duplicate Issue": "STATUS_050_RESOLVED_DUPLICATE",
         "Resolved - False Positive": "STATUS_060_RESOLVED_FALSE_POSITIVE",
-        "Resolved - other" :"STATUS_070_RESOLVED_OTHER",
+        "Resolved - other": "STATUS_070_RESOLVED_OTHER",
         "Resolved - True Positive": "STATUS_090_RESOLVED_TRUE_POSITIVE",
         "Resolved - Security Testing": "STATUS_100_RESOLVED_SECURITY_TESTING",
         "Resolved - Dismissed": "STATUS_240_RESOLVED_DISMISSED",
         "Resolved - Fixed": "STATUS_250_RESOLVED_FIXED",
-        "Resolved - Risk Accepted": "STATUS_130_RESOLVED_RISK_ACCEPTED"
+        "Resolved - Risk Accepted": "STATUS_130_RESOLVED_RISK_ACCEPTED",
     }
     severity_map = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
     severity_value = args.get("severity")
@@ -806,7 +806,7 @@ def update_issue_command(client: Client, args: dict):
         "phase": args.get("phase"),
         "type": args.get("type"),
         "description": args.get("description"),
-        "resolution_status": status_map.get(status) if status else None
+        "resolution_status": status_map.get(status) if status else None,
     }
 
     # Remove None values before sending to API
