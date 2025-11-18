@@ -87,6 +87,16 @@ script:
     description: Unlocks a single user.
     execution: true
     name: okta-unlock-user
+    outputs:
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: Username to deactivate.
       name: username
@@ -95,6 +105,16 @@ script:
     name: okta-deactivate-user
     compliantpolicies:
     - User Hard Remediation
+    outputs:
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - default: true
       description: Username to activate.
@@ -104,6 +124,16 @@ script:
     name: okta-activate-user
     compliantpolicies:
     - User Soft Remediation
+    outputs:
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - default: true
       description: Username to suspend.
@@ -113,6 +143,16 @@ script:
     name: okta-suspend-user
     compliantpolicies:
     - User Hard Remediation
+    outputs:
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - default: true
       description: Username to change the status to ACTIVE.
@@ -120,6 +160,16 @@ script:
       required: true
     description: Returns a single user to ACTIVE status. This operation can only be performed on users that have a SUSPENDED status.
     name: okta-unsuspend-user
+    outputs:
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: Username for which to return all enrolled factors.
       name: username
@@ -155,6 +205,15 @@ script:
     - contextPath: Okta.Metadata.x-rate-limit-reset
       description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
       type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: The user ID.
       name: userId
@@ -165,6 +224,16 @@ script:
       required: true
     description: Un-enrolls an existing factor for the specified user. This enables the user to enroll a new factor.
     name: okta-reset-factor
+    outputs:
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - default: true
       description: Okta username for which to set the password.
@@ -183,6 +252,16 @@ script:
     description: Sets passwords without validating existing user credentials.
     execution: true
     name: okta-set-password
+    outputs:
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: ID of the user to add to the group.
       name: userId
@@ -194,6 +273,16 @@ script:
       name: groupName
     description: Adds a user to a group with OKTA_GROUP type.
     name: okta-add-to-group
+    outputs:
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: ID of the user to remove from the group.
       name: userId
@@ -205,6 +294,16 @@ script:
       name: groupName
     description: Removes a user from a group with OKTA_GROUP type.
     name: okta-remove-from-group
+    outputs:
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - default: true
       description: Username in Okta for which to get the associated groups.
@@ -246,6 +345,15 @@ script:
     - contextPath: Account.Group.Name
       description: Name of the group.
       type: String
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: The ID of the user to enroll and verify.
       name: userId
@@ -253,10 +361,10 @@ script:
     - description: The push factor ID.
       name: factorId
       required: true
-    - description: Time to wait between subsequent polling calls. Value is in seconds. Default time is 5 seconds.
+    - description: Time to wait between subsequent polling calls. Value is in seconds.
       name: polling_time
       defaultValue: 5
-    - description: Maximum number of polling calls. Default value is 10.
+    - description: Maximum number of polling calls.
       name: max_polling_calls
       defaultValue: 10
     description: Enrolls and verifies a push factor for the specified user.
@@ -268,6 +376,15 @@ script:
     - contextPath: Account.VerifyPushResult
       description: Okta user push factor result.
       type: String
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
     compliantpolicies:
     - User Soft Remediation
   - arguments:
@@ -318,6 +435,15 @@ script:
     - contextPath: Account.PasswordChanged
       description: Timestamp for when the user's password was last changed.
       type: Date
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: Okta username for which to get information.
       name: username
@@ -368,6 +494,15 @@ script:
     - contextPath: Account.ManagerEmail
       description: The manager email.
       type: String
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
     - contextPath: Okta.Metadata.x-rate-limit-limit
       description: The rate limit ceiling that’s applicable for the current request.
       type: Number
@@ -428,6 +563,15 @@ script:
     - contextPath: Okta.User.tag
       description: The location of the next item, used with after param.
       type: String
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: First name of the user (givenName).
       name: firstName
@@ -554,6 +698,15 @@ script:
     - contextPath: Account.PasswordChanged
       description: Timestamp for when the user's password was last changed.
       type: Date
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: First name of the user (given name).
       name: firstName
@@ -684,6 +837,15 @@ script:
     - contextPath: Account.PasswordChanged
       description: Timestamp for when the user's password was last changed.
       type: Date
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: Searches the name property of groups for matching values.
       name: query
@@ -719,6 +881,15 @@ script:
     - contextPath: Okta.Group.Description
       description: Description of the group.
       type: String
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z.'
       name: since
@@ -832,6 +1003,15 @@ script:
     - contextPath: Okta.Logs.Events.target.displayName
       description: Display name of a target.
       type: String
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: "Useful for performing structured queries where constraints on LogEvent attribute values can be explicitly targeted.  \nThe following expressions are supported for events with the filter query parameter: eventType eq \" :eventType\" \n-Events that have a specific action; eventType target.id eq \":id\" \n- Events published with a specific target id; actor.id eq \":id\"\n- Events published with a specific actor ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
       name: filter
@@ -950,6 +1130,15 @@ script:
     - contextPath: Okta.Logs.Events.target.displayName
       description: Display name of a target.
       type: String
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: Filters the lower time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
       name: since
@@ -1064,6 +1253,15 @@ script:
     - contextPath: Okta.Logs.Events.target.displayName
       description: Display name of a target.
       type: String
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: Filters the lower time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
       name: since
@@ -1178,6 +1376,15 @@ script:
     - contextPath: Okta.Logs.Events.target.displayName
       description: Display name of a target.
       type: String
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: Filters the lower time bound of the log event in the Internet Date\Time format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
       name: since
@@ -1292,6 +1499,15 @@ script:
     - contextPath: Okta.Logs.Events.target.displayName
       description: Display name of a target.
       type: String
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: Okta User ID.
       name: userId
@@ -1300,6 +1516,16 @@ script:
     description: Deletes the specified user.
     execution: true
     name: okta-delete-user
+    outputs:
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
     compliantpolicies:
     - User Hard Remediation
   - arguments:
@@ -1311,6 +1537,16 @@ script:
       For more information and examples:
       https://developer.okta.com/docs/reference/api/users/#user-sessions
     name: okta-clear-user-sessions
+    outputs:
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
     compliantpolicies:
     - User Soft Remediation
   - arguments:
@@ -1352,6 +1588,15 @@ script:
     - contextPath: Okta.Zone.type
       description: Zone type, e.g., IP.
       type: String
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: Zone ID to update, e.g., nzoqsmcx1qWYJ6wYF0h7.
       name: zoneID
@@ -1408,6 +1653,15 @@ script:
     - contextPath: Okta.Zone.type
       description: Zone type, e.g., IP.
       type: String
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: Zone ID to get, e.g., nzoqsmcx1qWYJ6wYF0h.7.
       name: zoneID
@@ -1448,6 +1702,15 @@ script:
     - contextPath: Okta.Zone.type
       description: Zone type, e.g., IP.
       type: String
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: Zone name.
       name: name
@@ -1458,6 +1721,16 @@ script:
       name: proxies
     description: Creates a Zone with the specified name.
     name: okta-create-zone
+    outputs:
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: Name of the group to add.
       name: name
@@ -1480,6 +1753,15 @@ script:
     - contextPath: OktaGroup.Type
       description: Group type in Okta.
       type: Unknown
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: Name of the group to assign to the app.
       name: groupName
@@ -1489,6 +1771,16 @@ script:
       name: appName
     description: Assign a group to an application.
     name: okta-assign-group-to-app
+    outputs:
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - default: true
       description: Okta username for which to expire the password.
@@ -1549,6 +1841,15 @@ script:
     - contextPath: Account.Username
       description: Okta account usernames returned by the search.
       type: String
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
     compliantpolicies:
     - User Soft Remediation
   - description: Reset OAuth authentication data (authentication process will start from the beginning, and a new token will be generated).
