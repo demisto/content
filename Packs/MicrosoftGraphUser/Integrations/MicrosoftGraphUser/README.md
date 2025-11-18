@@ -62,7 +62,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### msgraph-user-account-disable
 
 ***
-Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables a user,
+Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables the user 
 but does not terminate an existing session. Supported only in a self deployed app flow with the
 Permission: Directory.AccessAsUser.All(Delegated).
 
@@ -74,12 +74,11 @@ Permission: Directory.AccessAsUser.All(Delegated).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User ID or userPrincipalName. | Required |
+| user | User ID or userPrincipalName. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-
 ### msgraph-user-unblock
 
 ***
@@ -669,8 +668,6 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->ok
-
 ### msgraph-user-session-revoke
 
 ***
@@ -686,10 +683,11 @@ Permission required: Directory.AccessAsUser.All (Delegated).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User ID or userPrincipalName. | Required |
+| user | User ID or userPrincipalName. | Required | 
 
 #### Context Output
 
+There is no context output for this command.
 There is no context output for this command.
 
 ### msgraph-user-generate-login-url
@@ -881,4 +879,26 @@ There is no context output for this command.
 
 #### Command example
 
-```!msgraph-user-change-password-on-premise user=123456-abcd-7890-erty-987qwe987 password=123456```
+```!msgraph-user-change-password-on-premise user=123456-abcd-7890-erty-987qwe987 password=123456``` 
+
+### msgraph-user-force-reset-password
+
+***
+Forces a user to reset their password the next time they log in.
+Note that this action does not terminate the user’s current session.
+If you also want to force the user to sign in again, use the msgraph-user-session-revoke command.
+This operation is supported only when using a self-deployed app flow with the Directory.AccessAsUser.All delegated permission.
+
+#### Base Command
+
+`msgraph-user-force-reset-password`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | User ID or userPrincipalName. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
