@@ -29,7 +29,7 @@ call o365_common_fields
 	object_id_file_name = arrayindex(regextract(ObjectId, ".+[\\\/]([^\\\/]+)$"), 0), 
 	object_id_file_path = arrayindex(regextract(ObjectId, "(.+)[\\\/][^\\\/]+$"), 0)
 | alter
-	src_ip = arraystring(arraymap(split(src_ip, "."), to_string(to_integer("@element"))), "."),
+	src_ip = arraystring(arraymap(split(src_ip, "."), to_string(to_integer("@element"))), "."),,
 	src_ipv4_addresses = arraydistinct(regextract(src_ip, "((?:\d{1,3}\.){3}\d{1,3})")),
 	src_ipv6_addresses = arraydistinct(regextract(src_ip, "((?:[:]{2}[fF]{4}:(?:\d{1,3}\.){3}\d{1,3})|(?:(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}))")), // ipv6 could also be an IPv4-mapped IPv6 address 
 	src_interface = arrayindex(regextract(src_ip, "%(\d+)"), 0), // extract interface identifier from the client ip address if such exists 
