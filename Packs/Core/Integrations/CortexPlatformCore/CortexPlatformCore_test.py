@@ -4,6 +4,8 @@ import pytest
 from pytest_mock import MockerFixture
 from unittest.mock import call
 import demistomock as demisto
+from CortexPlatformCore import appsec_remediate_issue_command, Client
+from CommonServerPython import DemistoException, CommandResults
 
 MAX_GET_INCIDENTS_LIMIT = 100
 
@@ -2822,12 +2824,6 @@ def test_get_issue_recommendations_command_api_calls(mocker):
     assert call_args["table_name"] == "ALERTS_VIEW_TABLE"
     assert call_args["type"] == "grid"
     assert "filter_data" in call_args
-
-
-from CortexPlatformCore import appsec_remediate_issue_command, Client
-from CommonServerPython import DemistoException, CommandResults
-
-from pytest_mock import MockerFixture
 
 
 def test_appsec_remediate_issue_command_single_issue_success(mocker: MockerFixture):
