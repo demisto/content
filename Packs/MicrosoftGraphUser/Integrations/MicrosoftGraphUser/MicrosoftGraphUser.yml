@@ -161,7 +161,7 @@ script:
       name: user
       prettyname: User
       prettypredefined:
-        User UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
+        UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
       required: true
     description: |-
       Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables the user 
@@ -659,7 +659,7 @@ script:
       name: user
       prettyname: User
       prettypredefined:
-        User UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
+        UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
       required: true
     description: |-
       Revoke a user session by invalidating all refresh tokens issued to applications for a user.
@@ -676,7 +676,7 @@ script:
         name: user
         prettyname: User
         prettypredefined:
-          User UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
+          UPN: ${issue.original_alert_json.raw_abioc.event.auth_normalized_user.upn}
         required: true
     description: |-
       Forces a user to reset their password the next time they log in.
