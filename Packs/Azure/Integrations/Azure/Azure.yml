@@ -808,8 +808,23 @@ script:
       name: content_type
     - description: Blob MD5 hash value. Can be used by the client to check for content integrity.
       name: content_md5
-    - description: Blob content encoding. Used to specify the compression algorithm of the blob content.
+    - auto: PREDEFINED
+      description: Blob content encoding. Used to specify the compression algorithm of the blob content.
       name: content_encoding
+      predefined:
+      - identity
+      - gzip
+      - deflate
+      - br
+      - compress
+      - zstd
+      - aes128gcm
+      - dcb
+      - dcz
+      - exi
+      - pack200-gzip
+      - x-compress
+      - x-gzip
     - description: Blob content language. Describes the human languages of the blob content.
       name: content_language
     - description: Blob content disposition. Conveys additional information about how to process the response payload, and also can be used to attach additional metadata.
