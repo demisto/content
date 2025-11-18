@@ -316,8 +316,8 @@ GET_ACCESS_TOKEN_RESPONSE = {
     "not_before": "1582789686",
     "resource": "https://manage.office.com",
     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
-                    "eyJ0aWQiOiIxMjM0NTY3ODkwIiwiZXhwIjoxNTgyN"
-                    "zkzNTg2fQ.-p8gaG2vG90SHCvrDSratgPv-Bfti4iF2YTZ9AvIeJY",
+    "eyJ0aWQiOiIxMjM0NTY3ODkwIiwiZXhwIjoxNTgyN"
+    "zkzNTg2fQ.-p8gaG2vG90SHCvrDSratgPv-Bfti4iF2YTZ9AvIeJY",
     "refresh_token": "refresh",
 }
 
@@ -717,9 +717,9 @@ def test_test_module_with_auth_code(mocker):
     mocker.patch.object(demisto, "command", return_value="test-module")
     mocker.patch.object(MicrosoftManagementActivity, "return_results")
     mock_return_error = mocker.patch.object(MicrosoftManagementActivity, "return_error")
-    
+
     main()
-    
+
     expected_error = "Please run the !ms-management-activity-list-subscriptions command"
     assert mock_return_error.called
     error_message = mock_return_error.call_args[0][0]
