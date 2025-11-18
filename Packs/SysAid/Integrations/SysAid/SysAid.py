@@ -636,21 +636,70 @@ def calculate_fetch_start_datetime(last_fetch: str, first_fetch: str):
 
 
 def get_service_record_update_time(service_record: dict[str, Any], use_classic_date_format: bool = False) -> Optional[datetime]:
+    """
+    Parse the update_time from a SysAid service record.
+    
+    SysAid Classic sends dates in non-ISO format which can be ambiguous when day <= 12.
+    For example, "05/11/2025" could be May 11 or November 5.
+    
+    This function uses smart detection based on SysAid's configuration:
+    - American format: MM/DD/YYYY with 12-hour clock (has AM/PM)
+    - European format: DD/MM/YYYY with 24-hour clock (no AM/PM)
+    - ISO format (new SysAid): YYYY-MM-DD (unambiguous)
+    
+    Args:
+        service_record: The service record dictionary from SysAid API
+        use_classic_date_format: Whether to enable SysAid Classic date parsing
+        
+    Returns:
+        datetime object or None if update_time not found
+    """
     for service_record_info in service_record["info"]:
         if service_record_info["key"] == "update_time":
             # We are using 'valueCaption' and not 'value' as they hold different values
             occurred = str(service_record_info["valueCaption"])
             
-            # SysAid Classic uses non-ISO date format causing ambiguous parsing when day <= 12
             if use_classic_date_format:
-                demisto.debug(f"Parsing with SysAid Classic format (DMY): {occurred}")
-                parsed_date = dateparser.parse(occurred, settings={"TIMEZONE": "UTC", "DATE_ORDER": "DMY"})
-                demisto.debug(f"Parsed result: {parsed_date}")
-                return parsed_date
+                demisto.debug(f"SysAid Classic date parsing enabled for: {occurred}")
+                
+                # Detect format based on AM/PM presence (per SysAid documentation)
+                # American: MM/DD/YYYY with 12-hour (e.g., "05/11/2025 01:12:48 PM")
+                # European: DD/MM/YYYY with 24-hour (e.g., "05/11/2025 13:12:48")
+                has_am_pm = 'AM' in occurred.upper() or 'PM' in occurred.upper()
+                
+                if has_am_pm:
+                    date_format = "%m/%d/%Y %I:%M:%S %p"
+                    date_order = "MDY"
+                    format_type = "American (MM/DD with AM/PM)"
+                else:
+                    date_format = "%d/%m/%Y %H:%M:%S"
+                    date_order = "DMY"
+                    format_type = "European (DD/MM 24-hour)"
+                
+                demisto.debug(f"Detected {format_type}")
+                
+                try:
+                    parsed_date = datetime.strptime(occurred, date_format)
+                    demisto.debug(f"Successfully parsed with format '{date_format}': {parsed_date}")
+                    return parsed_date.replace(tzinfo=None)
+                except ValueError as e:
+                    demisto.debug(f"Format '{date_format}' failed: {str(e)}, falling back to dateparser")
+                    # Fallback to dateparser with appropriate date order
+                    parsed_date = dateparser.parse(occurred, settings={"TIMEZONE": "UTC", "DATE_ORDER": date_order})
+                    if parsed_date:
+                        demisto.debug(f"Dateparser succeeded with {date_order} order: {parsed_date}")
+                        return parsed_date
+                    else:
+                        demisto.debug(f"Dateparser also failed for: {occurred}")
+                        return None
             else:
-                demisto.debug(f"Parsing with standard format: {occurred}")
+                # Standard parsing for ISO format (new SysAid) when classic mode disabled
+                demisto.debug(f"Standard ISO format parsing for: {occurred}")
                 parsed_date = dateparser.parse(occurred, settings={"TIMEZONE": "UTC"})
-                demisto.debug(f"Parsed result: {parsed_date}")
+                if parsed_date:
+                    demisto.debug(f"Successfully parsed: {parsed_date}")
+                else:
+                    demisto.debug(f"Failed to parse: {occurred}")
                 return parsed_date
 
     demisto.debug(f'The service record with ID {service_record["id"]} does not have a modify time (update_time).')
