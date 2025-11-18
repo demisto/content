@@ -616,6 +616,100 @@ Enable or disable scanners with the specified configuration.
 | tag_module_blocks | Enable tagging of module blocks. Possible values are: true, false. | Optional |
 | exclude_paths | List of file paths to exclude from scanning. | Optional |
 
+### core-get-asset-coverage-histogram
+
+***
+Calculates the distribution of values (counts and percentages) for specified categorical fields.
+
+#### Base Command
+
+`core-get-asset-coverage-histogram`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | The unique ID of the asset. Accepts a comma-separated list. | Optional |
+| asset_name | The name of the asset. Accepts a comma-separated list. | Optional |
+| business_application_names | Business application names. Accepts a comma-separated list. | Optional |
+| status_coverage | The status coverage. Accepts a comma-separated list. Possible values are: FULLY SCANNED, NOT SCANNED, PARTIALLY SCANNED. | Optional |
+| is_scanned_by_vulnerabilities | Is scanned by vulnerabilities. Accepts a comma-separated list. Possible values are: DISABLED, ENABLED, IRRELEVANT. | Optional |
+| is_scanned_by_code_weakness | Is scanned by code weakness. Accepts a comma-separated list. Possible values are: DISABLED, ENABLED, IRRELEVANT. | Optional |
+| is_scanned_by_secrets | Is scanned by secrets. Accepts a comma-separated list. Possible values are: DISABLED, ENABLED, IRRELEVANT. | Optional |
+| is_scanned_by_iac | Is scanned by IaC. Accepts a comma-separated list. Possible values are: DISABLED, ENABLED, IRRELEVANT. | Optional |
+| is_scanned_by_malware | Is scanned by malware. Accepts a comma-separated list. Possible values are: DISABLED, ENABLED, IRRELEVANT. | Optional |
+| is_scanned_by_cicd | Is scanned by CICD. Accepts a comma-separated list. Possible values are: DISABLED, ENABLED, IRRELEVANT. | Optional |
+| last_scan_status | The last scan status. Accepts a comma-separated list. Possible values are: NOT_SCANNED_YET, ERROR, COMPLETED. | Optional |
+| asset_type | The asset type. Accepts a comma-separated list. Possible values are: CICD PIPELINE, CONTAINER IMAGE REPOSITORY, REPOSITORY. | Optional |
+| asset_provider | The asset provider. Accepts a comma-separated list. Possible values are: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_PIPELINES, AZURE_REPOS, BITBUCKET, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITLAB, GITLAB_CI, HCP_TFC_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI. | Optional |
+| vendor_name | The vendor name. Accepts a comma-separated list. Possible values are: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_REPOS, BITBUCKET, BITBUCKET_DATACENTER, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITHUB_ENTERPRISE, GITLAB, GITLAB_SELF_MANAGED, HCP_TFC_RUN_TASKS, HCP_TFE_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI. | Optional |
+| max_values_per_column | The maximum number of distinct values to return for each column. Default is 100. | Optional |
+| columns | A list of fields for which to generate histograms. Possible values are: asset_name, business_application_names, status_coverage, is_scanned_by_vulnerabilities, is_scanned_by_code_weakness, is_scanned_by_secrets, is_scanned_by_iac, is_scanned_by_malware, is_scanned_by_cicd, last_scan_status, asset_type, asset_provider, vendor_name. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.Coverage.Histogram.column_name | String | The column over which the histogram is generated. |
+| Core.Coverage.Histogram.data.value | String | The distinct value. |
+| Core.Coverage.Histogram.data.count | Number | The number of records with this value after filtering. |
+| Core.Coverage.Histogram.data.percentage | Number | The percentage of filtered records with this value. |
+| Core.Coverage.Histogram.data.pretty_name | String | A user-friendly label for the value. |
+
+### core-get-asset-coverage
+
+***
+Retrieves a list of assets (e.g., Repositories, CI/CD Pipelines, Container Image Repositories) along with their scan coverage status.
+
+#### Base Command
+
+`core-get-asset-coverage`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | The unique ID of the asset. Accepts a comma-separated list. | Optional |
+| asset_name | The name of the asset. Accepts a comma-separated list. | Optional |
+| business_application_names | Business application names. Accepts a comma-separated list. | Optional |
+| status_coverage | The status coverage. Accepts a comma-separated list. Possible values are: FULLY SCANNED, NOT SCANNED, PARTIALLY SCANNED. | Optional |
+| is_scanned_by_vulnerabilities | Is scanned by vulnerabilities. Accepts a comma-separated list. Possible values are: DISABLED, ENABLED, IRRELEVANT. | Optional |
+| is_scanned_by_code_weakness | Is scanned by code weakness. Accepts a comma-separated list. Possible values are: DISABLED, ENABLED, IRRELEVANT. | Optional |
+| is_scanned_by_secrets | Is scanned by secrets. Accepts a comma-separated list. Possible values are: DISABLED, ENABLED, IRRELEVANT. | Optional |
+| is_scanned_by_iac | Is scanned by IaC. Accepts a comma-separated list. Possible values are: DISABLED, ENABLED, IRRELEVANT. | Optional |
+| is_scanned_by_malware | Is scanned by malware. Accepts a comma-separated list. Possible values are: DISABLED, ENABLED, IRRELEVANT. | Optional |
+| is_scanned_by_cicd | Is scanned by CICD. Accepts a comma-separated list. Possible values are: DISABLED, ENABLED, IRRELEVANT. | Optional |
+| last_scan_status | The last scan status. Accepts a comma-separated list. Possible values are: NOT_SCANNED_YET, ERROR, COMPLETED. | Optional |
+| asset_type | The asset type. Accepts a comma-separated list. Possible values are: CICD PIPELINE, CONTAINER IMAGE REPOSITORY, REPOSITORY. | Optional |
+| asset_provider | The asset provider. Accepts a comma-separated list. Possible values are: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_PIPELINES, AZURE_REPOS, BITBUCKET, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITLAB, GITLAB_CI, HCP_TFC_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI. | Optional |
+| vendor_name | The vendor name. Accepts a comma-separated list. Possible values are: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_REPOS, BITBUCKET, BITBUCKET_DATACENTER, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITHUB_ENTERPRISE, GITLAB, GITLAB_SELF_MANAGED, HCP_TFC_RUN_TASKS, HCP_TFE_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI. | Optional |
+| limit | The maximum number of assets to return. Default is 100. | Optional |
+| sort_field | The field by which to sort the results. Possible values are: asset_id, asset_name, business_application_names, status_coverage, is_scanned_by_vulnerabilities, is_scanned_by_code_weakness, is_scanned_by_secrets, is_scanned_by_iac, is_scanned_by_malware, is_scanned_by_cicd, last_scan_status, asset_type, asset_provider, vendor_name. | Optional |
+| sort_order | The order in which to sort the results. Possible values are: DESC, ASC. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.Coverage.Asset.asset_id | String | The unique ID of the asset. Each asset is assigned a unique identifier in the system. |
+| Core.Coverage.Asset.asset_name | String | The name of the asset. Typically corresponds to the repository, container image, or pipeline name. |
+| Core.Coverage.Asset.asset_provider | String | The vendor or source platform of the asset. Indicates where the asset originates from. Possible values: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_REPOS, BITBUCKET, BITBUCKET_DATACENTER, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITHUB_ENTERPRISE, GITLAB, GITLAB_SELF_MANAGED, HCP_TFC_RUN_TASKS, HCP_TFE_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI. |
+| Core.Coverage.Asset.asset_type | String | The type or category of the asset. Determines the nature of the resource being scanned. Possible values: CICD PIPELINE, CONTAINER IMAGE REPOSITORY, REPOSITORY. |
+| Core.Coverage.Asset.business_application_names | Array | A list of business applications associated with the asset. These applications help map the asset to business context or ownership. |
+| Core.Coverage.Asset.is_scanned_by_cicd | String | Indicates whether the asset is scanned within CI/CD pipelines. Possible values: ENABLED, DISABLED, IRRELEVANT. |
+| Core.Coverage.Asset.is_scanned_by_code_weakness | String | Indicates whether code weakness scanning is performed on the asset. Possible values: ENABLED, DISABLED, IRRELEVANT. |
+| Core.Coverage.Asset.is_scanned_by_iac | String | Indicates whether infrastructure-as-code \(IaC\) scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT. |
+| Core.Coverage.Asset.is_scanned_by_malware | String | Indicates whether malware scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT. |
+| Core.Coverage.Asset.is_scanned_by_secrets | String | Indicates whether the asset is scanned for hardcoded secrets or credentials. Possible values: ENABLED, DISABLED, IRRELEVANT. |
+| Core.Coverage.Asset.is_scanned_by_semgrep | Boolean | Boolean flag indicating whether the asset is analyzed using Semgrep for code issues or misconfigurations. Possible values: true, false. |
+| Core.Coverage.Asset.is_scanned_by_sonarqube | Boolean | Boolean flag indicating whether the asset is analyzed using SonarQube for code quality and security issues. Possible values: true, false. |
+| Core.Coverage.Asset.is_scanned_by_veracode | Boolean | Boolean flag indicating whether the asset is scanned using Veracode for security vulnerabilities. Possible values: true, false. |
+| Core.Coverage.Asset.is_scanned_by_vulnerabilities | String | Indicates whether vulnerability scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT. |
+| Core.Coverage.Asset.last_scan_status | String | The status of the most recent scan performed on the asset. Possible values: NOT_SCANNED_YET, ERROR, COMPLETED. |
+| Core.Coverage.Asset.scanners_data | Array | An array containing detailed information from the scanners that evaluated the asset, including scan results, timestamps, and metadata. |
+| Core.Coverage.Asset.status_coverage | String | The overall scan coverage of the asset. Possible values: FULLY SCANNED, PARTIALLY SCANNED, NOT SCANNED. |
+| Core.Coverage.Asset.unified_provider | String | The unified provider name associated with the asset. Standardized across different vendor integrations. Possible values: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_PIPELINES, AZURE_REPOS, BITBUCKET, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITLAB, GITLAB_CI, HCP_TFC_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI. |
+
 ### core-create-appsec-policy
 
 ***
@@ -665,6 +759,32 @@ Creates a new AppSec policy in Cortex Platform with defined conditions, scope, a
 | triggers_cicd_block_cicd                   | Blocks or fails CI/CD pipeline runs when violations occur. Possible values are: true, false.                                                                                                                                                                         | Optional     |
 | triggers_cicd_report_cicd                  | Reports violation details back to the CI/CD system (pipeline logs, dashboards, status checks). Possible values are: true, false.                                                                                                                                     | Optional     |
 | triggers_cicd_override_severity            | Override the default severity level for issues created by CI/CD pipeline detections. Possible values are: Critical, High, Medium, Low.                                                                                                                               | Optional     |
+
+#### Context Output
+
+There is no context output for this command.
+
+### core-update-issue
+
+***
+Updates the properties of an issue. This command does not provide an explicit indication of success.
+
+#### Base Command
+
+`core-update-issue`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Issue ID to update. If empty, updates the current issue ID. | Optional |
+| assigned_user_mail | Email address of the user to assign the issue to. | Optional |
+| severity | Change the severity of an issue. Possible values are: low, medium, high, critical. | Optional |
+| name | Change the issue name. | Optional |
+| occurred | Change the occurred time of an issue. Supports different time formats, for example: 3 days ago, 2017-09-27T10:00:00+03:00. | Optional |
+| phase | Change the phase of an issue. Possible values are: Triage, Investigation, Containment, Response. | Optional |
+| type | Change the type of an issue. | Optional |
+| description | Change the description of an issue. | Optional |
 
 #### Context Output
 

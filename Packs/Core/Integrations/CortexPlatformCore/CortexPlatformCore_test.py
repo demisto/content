@@ -560,6 +560,156 @@ def test_preprocess_get_cases_args_limit_enforced():
     assert out["limit"] == 50
 
 
+def test_get_issue_id_from_args():
+    """
+    GIVEN:
+        Arguments dictionary with issue_id provided.
+    WHEN:
+        The get_issue_id function is called.
+    THEN:
+        The issue_id from args is returned.
+    """
+    from CortexPlatformCore import get_issue_id
+
+    args = {"id": "12345"}
+    result = get_issue_id(args)
+
+    assert result == "12345"
+
+
+def test_get_issue_id_empty_string_in_args(mocker):
+    """
+    GIVEN:
+        Arguments dictionary with empty issue_id and demisto calling context with incident.
+    WHEN:
+        The get_issue_id function is called.
+    THEN:
+        The issue_id from calling context is returned.
+    """
+    from CortexPlatformCore import get_issue_id
+
+    args = {"issue_id": ""}
+    mock_calling_context = {"context": {"Incidents": [{"id": "67890"}]}}
+    mocker.patch.object(demisto, "callingContext", mock_calling_context)
+
+    result = get_issue_id(args)
+
+    assert result == "67890"
+
+
+def test_get_issue_id_missing_from_args(mocker):
+    """
+    GIVEN:
+        Arguments dictionary without issue_id and demisto calling context with incident.
+    WHEN:
+        The get_issue_id function is called.
+    THEN:
+        The issue_id from calling context is returned.
+    """
+    from CortexPlatformCore import get_issue_id
+
+    args = {}
+    mock_calling_context = {"context": {"Incidents": [{"id": "99999"}]}}
+    mocker.patch.object(demisto, "callingContext", mock_calling_context)
+
+    result = get_issue_id(args)
+
+    assert result == "99999"
+
+
+def test_get_issue_id_from_context_multiple_incidents(mocker):
+    """
+    GIVEN:
+        Arguments dictionary without issue_id and calling context with multiple incidents.
+    WHEN:
+        The get_issue_id function is called.
+    THEN:
+        The issue_id from the first incident in calling context is returned.
+    """
+    from CortexPlatformCore import get_issue_id
+
+    args = {}
+    mock_calling_context = {"context": {"Incidents": [{"id": "first_incident"}, {"id": "second_incident"}]}}
+    mocker.patch.object(demisto, "callingContext", mock_calling_context)
+
+    result = get_issue_id(args)
+
+    assert result == "first_incident"
+
+
+def test_create_filter_data_basic():
+    """
+    GIVEN:
+        Issue ID and basic update arguments.
+    WHEN:
+        The create_filter_data function is called.
+    THEN:
+        Correct filter data structure is returned with proper formatting.
+    """
+    from CortexPlatformCore import create_filter_data
+
+    issue_id = "12345"
+    update_args = {"name": "Test Issue", "severity": "HIGH"}
+
+    result = create_filter_data(issue_id, update_args)
+
+    expected = {
+        "filter_data": {"filter": {"AND": [{"SEARCH_FIELD": "internal_id", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "12345"}]}},
+        "filter_type": "static",
+        "update_data": {"name": "Test Issue", "severity": "HIGH"},
+    }
+
+    assert result == expected
+
+
+def test_create_filter_data_empty_update_args():
+    """
+    GIVEN:
+        Issue ID and empty update arguments.
+    WHEN:
+        The create_filter_data function is called.
+    THEN:
+        Filter data structure is returned with empty update_data.
+    """
+    from CortexPlatformCore import create_filter_data
+
+    issue_id = "54321"
+    update_args = {}
+
+    result = create_filter_data(issue_id, update_args)
+
+    assert result["filter_data"]["filter"]["AND"][0]["SEARCH_VALUE"] == "54321"
+    assert result["filter_type"] == "static"
+    assert result["update_data"] == {}
+
+
+def test_create_filter_data_complex_update_args():
+    """
+    GIVEN:
+        Issue ID and complex update arguments with multiple fields.
+    WHEN:
+        The create_filter_data function is called.
+    THEN:
+        Filter data structure contains all update arguments in update_data.
+    """
+    from CortexPlatformCore import create_filter_data
+
+    issue_id = "98765"
+    update_args = {
+        "name": "Complex Issue",
+        "severity": "CRITICAL",
+        "assigned_user": "user@example.com",
+        "type": "security",
+        "phase": "investigation",
+    }
+
+    result = create_filter_data(issue_id, update_args)
+
+    assert result["filter_data"]["filter"]["AND"][0]["SEARCH_VALUE"] == "98765"
+    assert result["update_data"] == update_args
+    assert result["filter_type"] == "static"
+
+
 def test_get_asset_group_ids_from_names_success(mocker):
     """
     GIVEN:
@@ -2239,6 +2389,306 @@ def test_search_asset_groups_command_multiple_values_in_filters(mocker):
     assert "Multi Group 1" in result.readable_output
     assert "Multi Group 2" in result.readable_output
     assert mock_get_webapp_data.call_count == 1
+
+
+def test_update_issue_command_success_all_fields(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with all valid fields.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        Issue is updated with all provided fields and returns "done".
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("CortexPlatformCore.arg_to_number", return_value=2)
+    mocker.patch("CortexPlatformCore.arg_to_timestamp", return_value="2023-01-01T00:00:00Z")
+
+    args = {
+        "id": "12345",
+        "assigned_user_mail": "user@example.com",
+        "severity": "medium",
+        "name": "Test Issue",
+        "occurred": "2023-01-01T00:00:00Z",
+        "phase": "investigation",
+    }
+
+    result = update_issue_command(client, args)
+
+    assert result == "done"
+    mock_update_issue.assert_called_once()
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert update_data["assigned_user"] == "user@example.com"
+    assert update_data["severity"] == "SEV_030_MEDIUM"
+    assert update_data["name"] == "Test Issue"
+    assert update_data["occurred"] == "2023-01-01T00:00:00Z"
+    assert update_data["phase"] == "investigation"
+
+
+def test_update_issue_command_missing_issue_id_no_context(mocker):
+    """
+    GIVEN:
+        Client instance and arguments without issue_id and no calling context.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        DemistoException is raised and update_issue is not called.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+    from CommonServerPython import DemistoException
+    import pytest
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_calling_context = {"context": {}}
+    mocker.patch.object(demisto, "callingContext", mock_calling_context)
+
+    args = {"name": "Test Issue"}
+
+    with pytest.raises(DemistoException, match="Issue ID is required for updating an issue."):
+        update_issue_command(client, args)
+
+    mock_update_issue.assert_not_called()
+
+
+def test_update_issue_command_empty_issue_id_no_context(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with empty issue_id and no calling context.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        DemistoException is raised and update_issue is not called.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+    from CommonServerPython import DemistoException
+    import pytest
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_calling_context = {"context": {}}
+    mocker.patch.object(demisto, "callingContext", mock_calling_context)
+
+    args = {"id": "", "name": "Test Issue"}
+
+    with pytest.raises(DemistoException, match="Issue ID is required for updating an issue."):
+        update_issue_command(client, args)
+
+    mock_update_issue.assert_not_called()
+
+
+def test_update_issue_command_issue_id_from_context(mocker):
+    """
+    GIVEN:
+        Client instance and arguments without issue_id but with calling context containing incident.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        Issue ID is retrieved from context and update succeeds.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+    mock_calling_context = {"context": {"Incidents": [{"id": "context_id_123"}]}}
+    mocker.patch.object(demisto, "callingContext", mock_calling_context)
+
+    args = {"name": "Test Issue"}
+
+    result = update_issue_command(client, args)
+
+    assert result == "done"
+    mock_update_issue.assert_called_once()
+
+    call_args = mock_update_issue.call_args[0][0]
+    filter_data = call_args["filter_data"]["filter"]
+    # Check that context ID was used in filter
+    assert any(field["SEARCH_VALUE"] == "context_id_123" for field in filter_data["AND"])
+
+
+def test_update_issue_command_severity_low(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with severity level 1 (low).
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        Severity is mapped to SEV_020_LOW in update_data.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("CortexPlatformCore.arg_to_number", return_value=1)
+
+    args = {"id": "12345", "severity": "low"}
+
+    update_issue_command(client, args)
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert update_data["severity"] == "SEV_020_LOW"
+
+
+def test_update_issue_command_invalid_severity_mapping(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with invalid severity value.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        Severity is not included in update_data when mapping returns None.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("CortexPlatformCore.arg_to_number", return_value=99)
+
+    args = {"id": "12345", "severity": "99", "name": "Test Issue"}
+
+    update_issue_command(client, args)
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert "severity" not in update_data
+    assert update_data["name"] == "Test Issue"
+
+
+def test_update_issue_command_no_severity(mocker):
+    """
+    GIVEN:
+        Client instance and arguments without severity field.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        Severity is not included in update_data.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("CortexPlatformCore.arg_to_number", return_value=None)
+
+    args = {"id": "12345", "name": "Test Issue"}
+
+    update_issue_command(client, args)
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert "severity" not in update_data
+    assert update_data["name"] == "Test Issue"
+
+
+def test_update_issue_command_partial_fields(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with only some fields provided.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        Only provided fields are included in update_data.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "name": "Updated Issue Name", "phase": "investigation"}
+
+    update_issue_command(client, args)
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert update_data["name"] == "Updated Issue Name"
+    assert update_data["phase"] == "investigation"
+    assert "severity" not in update_data
+    assert "assigned_user" not in update_data
+    assert "occurred" not in update_data
+
+
+def test_update_issue_command_none_values_filtered(mocker):
+    """
+    GIVEN:
+        Client instance and arguments where some fields resolve to None.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        None values are filtered out of update_data.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("CortexPlatformCore.arg_to_timestamp", return_value=None)
+
+    args = {"id": "12345", "name": "Test Issue", "occurred": "invalid-date", "assigned_user_mail": None}
+
+    update_issue_command(client, args)
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert update_data["name"] == "Test Issue"
+    assert "occurred" not in update_data
+    assert "assigned_user" not in update_data
+
+
+def test_update_issue_command_debug_called(mocker):
+    """
+    GIVEN:
+        Client instance and valid arguments.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        demisto.debug is called with filter_data.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_debug = mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "name": "Test Issue"}
+
+    update_issue_command(client, args)
+
+    mock_debug.assert_called_once()
+    mock_update_issue.assert_called_once()
+
+
+def test_update_issue_command_only_issue_id(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with only issue_id.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        update_issue is called with empty update_data.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+    from CommonServerPython import DemistoException
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345"}
+    with pytest.raises(DemistoException, match="Please provide arguments to update the issue."):
+        update_issue_command(client, args)
+
+    mock_update_issue.assert_not_called()
 
 
 def test_get_issue_recommendations_command(mocker):
