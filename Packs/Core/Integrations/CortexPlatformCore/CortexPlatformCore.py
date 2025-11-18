@@ -947,6 +947,8 @@ def appsec_remediate_issue_command(client: Client, args: dict) -> CommandResults
     """
     args = demisto.args()
     issue_ids = argToList(args.get("issue_ids"))
+    if len(issue_ids) > 10:
+        raise DemistoException("Please provide a maximum of 10 issue IDs per request.")
    
     triggered_prs = []
     for issue_id in issue_ids:
