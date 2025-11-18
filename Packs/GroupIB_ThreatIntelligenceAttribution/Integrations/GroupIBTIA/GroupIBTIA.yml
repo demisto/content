@@ -73,31 +73,39 @@ configuration:
   type: 0
 - defaultvalue: "false"
   section: Collect
-  display: Include combolist type in data
-  name: combolist
+  display: Exclude All with Combolist type
+  name: exclude_combolist
   required: false
   type: 8
+  hidden: true
+  additionalinfo: This parameter has been deprecated.
+- display: Include combolist type in data
+  name: combolist
+  section: Collect
+  required: false
+  type: 8
+  defaultvalue: "false"
   additionalinfo: Works only for compromised/account_group. If the parameter is enabled, the response contains combolist data. If you enable “Include unique type in data” with this filter, the response will contain data of both types. If “Include combolist type in data” and “Include unique type in data” are disabled, the response will contain data of both types.
 - display: Include unique type in data
   name: unique
   section: Collect
-  required: false
-  type: 8
   defaultvalue: "false"
+  type: 8
+  required: false
   additionalinfo: Works only for compromised/account_group. If the parameter is enabled, the response contains unique data. If you enable “Include combolist type in data” with this filter, the response will contain data of both types. If “Include combolist type in data” and “Include unique type in data” are disabled, the response will contain data of both types.
 - display: Enable filter "Probable Corporate Access"
   name: enable_probable_corporate_access
   section: Collect
-  defaultvalue: "false"
-  type: 8
   required: false
+  type: 8
+  defaultvalue: "false"
   additionalinfo: Works only for compromised/account_group
 - display: Number of requests per collection
   name: max_fetch
   section: Collect
-  required: false
-  type: 15
   defaultvalue: '3'
+  type: 15
+  required: false
   additionalinfo: A number of requests per collection that integration sends in one fetch iteration (each request picks up to 200 incidents). If you face some runtime errors, lower the value.
   hidden: false
   options:

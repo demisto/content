@@ -344,7 +344,7 @@ def test_validate_collections_valid():
 def _get_date_field_for_collection(collection_name: str) -> str:
     """
     Helper function to get the appropriate date field for a collection.
-    
+
     Returns the first date field from INCIDENT_CREATED_DATES_MAPPING for the given collection.
     """
     date_field = INCIDENT_CREATED_DATES_MAPPING.get(collection_name, "dateFirstSeen")
@@ -565,9 +565,9 @@ def test_fetch_incidents_effective_last_fetch_calculation(mocker, session_fixtur
     # Verify effective_last_fetch is max(last_fetch, sequpdate)
     assert collection_name in next_run["last_fetch"], "Expected collection name in next_run['last_fetch']."
     effective_last_fetch = next_run["last_fetch"][collection_name]
-    assert effective_last_fetch == max(last_fetch_value, sequpdate_value), (
-        f"Expected effective_last_fetch to be max({last_fetch_value}, {sequpdate_value}) = {sequpdate_value}."
-    )
+    assert effective_last_fetch == max(
+        last_fetch_value, sequpdate_value
+    ), f"Expected effective_last_fetch to be max({last_fetch_value}, {sequpdate_value}) = {sequpdate_value}."
 
 
 def test_fetch_incidents_incident_processing_loop(mocker, session_fixture):
