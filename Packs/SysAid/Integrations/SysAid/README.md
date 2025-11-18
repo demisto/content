@@ -17,6 +17,7 @@ This integration was integrated and tested with version 21.4.44 of SysAid.
 | Fetch types | Choose which service record type to fetch - incidents, requests, problems, changes, or all. | False |
 | Included statuses | A comma separated list of statuses to return. Default value includes "open classes". You may add/remove statuses according to your needs. The list of status numbers and their values can be retrieved by running the "sysaid-table-list" command with the "list_id=status" argument. | False |
 | Include Archived |  | False |
+| Use SysAid Classic Date Format | **For SysAid Classic instances only** (older versions that do not return ISO 8601 format timestamps). Enable this option to ensure correct timestamp parsing. The integration automatically detects American format (MM/DD/YYYY with AM/PM) vs European format (DD/MM/YYYY 24-hour). | False |
 
 ## Commands
 

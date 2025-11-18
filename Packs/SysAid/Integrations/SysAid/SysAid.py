@@ -577,7 +577,10 @@ def filter_service_records_by_time(
 
 
 def filter_service_records_by_id(
-    service_records: List[dict[str, Any]], fetch_start_datetime: datetime, last_id_fetched: str, use_classic_date_format: bool = False
+    service_records: List[dict[str, Any]],
+    fetch_start_datetime: datetime,
+    last_id_fetched: str,
+    use_classic_date_format: bool = False,
 ):
     # only for service_records with the same update_time as fetch_start_datetime
     return [
@@ -589,7 +592,11 @@ def filter_service_records_by_id(
 
 
 def reduce_service_records_to_limit(
-    service_records: List[dict[str, Any]], limit: int, last_fetch: datetime, last_id_fetched: str, use_classic_date_format: bool = False
+    service_records: List[dict[str, Any]],
+    limit: int,
+    last_fetch: datetime,
+    last_id_fetched: str,
+    use_classic_date_format: bool = False,
 ) -> tuple[datetime, str, List[dict[str, Any]]]:
     incidents_count = min(limit, len(service_records))
     # limit can't be 0 or less, but there could be no service_records at the wanted time
@@ -602,10 +609,16 @@ def reduce_service_records_to_limit(
 
 
 def parse_service_records(
-    service_records: List[dict[str, Any]], limit: int, fetch_start_datetime: datetime, last_id_fetched: str, use_classic_date_format: bool = False
+    service_records: List[dict[str, Any]],
+    limit: int,
+    fetch_start_datetime: datetime,
+    last_id_fetched: str,
+    use_classic_date_format: bool = False,
 ) -> tuple[datetime, str, List[dict[str, Any]]]:
     service_records = filter_service_records_by_time(service_records, fetch_start_datetime, use_classic_date_format)
-    service_records = filter_service_records_by_id(service_records, fetch_start_datetime, last_id_fetched, use_classic_date_format)
+    service_records = filter_service_records_by_id(
+        service_records, fetch_start_datetime, last_id_fetched, use_classic_date_format
+    )
 
     # sorting service_records by date and then by id
     service_records.sort(
@@ -638,19 +651,19 @@ def calculate_fetch_start_datetime(last_fetch: str, first_fetch: str):
 def get_service_record_update_time(service_record: dict[str, Any], use_classic_date_format: bool = False) -> Optional[datetime]:
     """
     Parse the update_time from a SysAid service record.
-    
+
     SysAid Classic sends dates in non-ISO format which can be ambiguous when day <= 12.
     For example, "05/11/2025" could be May 11 or November 5.
-    
+
     This function uses smart detection based on SysAid's configuration:
     - American format: MM/DD/YYYY with 12-hour clock (has AM/PM)
     - European format: DD/MM/YYYY with 24-hour clock (no AM/PM)
     - ISO format (new SysAid): YYYY-MM-DD (unambiguous)
-    
+
     Args:
         service_record: The service record dictionary from SysAid API
         use_classic_date_format: Whether to enable SysAid Classic date parsing
-        
+
     Returns:
         datetime object or None if update_time not found
     """
@@ -658,15 +671,15 @@ def get_service_record_update_time(service_record: dict[str, Any], use_classic_d
         if service_record_info["key"] == "update_time":
             # We are using 'valueCaption' and not 'value' as they hold different values
             occurred = str(service_record_info["valueCaption"])
-            
+
             if use_classic_date_format:
                 demisto.debug(f"SysAid Classic date parsing enabled for: {occurred}")
-                
+
                 # Detect format based on AM/PM presence (per SysAid documentation)
                 # American: MM/DD/YYYY with 12-hour (e.g., "05/11/2025 01:12:48 PM")
                 # European: DD/MM/YYYY with 24-hour (e.g., "05/11/2025 13:12:48")
-                has_am_pm = 'AM' in occurred.upper() or 'PM' in occurred.upper()
-                
+                has_am_pm = "AM" in occurred.upper() or "PM" in occurred.upper()
+
                 if has_am_pm:
                     date_format = "%m/%d/%Y %I:%M:%S %p"
                     date_order = "MDY"
@@ -675,9 +688,9 @@ def get_service_record_update_time(service_record: dict[str, Any], use_classic_d
                     date_format = "%d/%m/%Y %H:%M:%S"
                     date_order = "DMY"
                     format_type = "European (DD/MM 24-hour)"
-                
+
                 demisto.debug(f"Detected {format_type}")
-                
+
                 try:
                     parsed_date = datetime.strptime(occurred, date_format)
                     demisto.debug(f"Successfully parsed with format '{date_format}': {parsed_date}")
@@ -1237,7 +1250,9 @@ def main() -> None:
             fetch_types = params.get("fetch_types")
             use_classic_date_format = argToBoolean(params.get("use_classic_date_format", False))
 
-            incidents = fetch_incidents(client, first_fetch, limit, included_statuses, include_archived, fetch_types, use_classic_date_format)
+            incidents = fetch_incidents(
+                client, first_fetch, limit, included_statuses, include_archived, fetch_types, use_classic_date_format
+            )
             demisto.incidents(incidents)
 
         elif command == "test-module":
