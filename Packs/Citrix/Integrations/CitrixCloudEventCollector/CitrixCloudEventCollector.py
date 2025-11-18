@@ -152,10 +152,7 @@ def get_events_command(client: Client, args: dict):  # type: ignore
 
 
 def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
-    start_date_time = (
-        last_run.get("LastRun") 
-        or datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.0000Z")
-    )
+    start_date_time = last_run.get("LastRun") or datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.0000Z")
     records, _ = client.get_records_with_pagination(
         limit=max_fetch, start_date_time=start_date_time, last_record_id=last_run.get("RecordId")
     )
