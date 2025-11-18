@@ -24,6 +24,7 @@ name: AppendIfNotEmpty
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
+isllm: false
 tags:
 - transformer
 - entirelist
