@@ -20,6 +20,7 @@ args:
   description: Comma-separated list of keys to sort in descending order. '*' is the special symbol to sort the array given without `keys` in descending order.
   isArray: true
 scripttarget: 0
+isllm: false
 subtype: python3
 dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
