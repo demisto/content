@@ -26,6 +26,7 @@ configuration:
   name: auth_flow
   type: 15
   options:
+    - Not Selected
     - Client Credentials
     - Authorization Code
     - Azure Managed Identities

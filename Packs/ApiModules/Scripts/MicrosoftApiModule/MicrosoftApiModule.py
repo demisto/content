@@ -668,7 +668,7 @@ def get_azure_cloud(params, integration_name):
     return AZURE_CLOUDS.get(AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg), AZURE_WORLDWIDE_CLOUD)  # type: ignore[arg-type]
 
 
-def get_auth_type_flow(auth_flow):
+def get_auth_type_flow(auth_flow: str) -> None | str:
     auth_flow_dict = {
         "Not Selected": None,
         "Azure Managed Identities": None,

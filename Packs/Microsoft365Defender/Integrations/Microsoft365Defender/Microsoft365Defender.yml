@@ -16,15 +16,16 @@ configuration:
   required: true
   type: 0
   section: Connect
-#- defaultvalue: Device Code
-#  display: Authentication Flow
-#  name: auth_flow
-#  type: 15
-#  options:
-#  - Client Credentials
-#  - Device Code
-#  section: Connect
-#  required: false
+- defaultvalue: Not Selected
+  display: Authentication Flow
+  name: auth_flow
+  type: 15
+  options:
+    - Not Selected
+    - Client Credentials
+    - Device Code
+  section: Connect
+  required: false
 - name: creds_client_id
   type: 9
   displaypassword: ID or Client ID
@@ -58,6 +59,7 @@ configuration:
   type: 8
   section: Connect
   required: false
+  hidden: true
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id

@@ -66,6 +66,7 @@ class Client:
         tenant_id: str = None,
         enc_key: str = None,
         client_credentials: bool = False,
+        auth_flow: str = None,
         certificate_thumbprint: Optional[str] = None,
         private_key: Optional[str] = None,
         managed_identities_client_id: Optional[str] = None,
@@ -77,6 +78,8 @@ class Client:
             set_integration_context(integration_context)
 
         self.client_credentials = client_credentials
+        auth_flow = get_auth_type_flow(auth_flow)
+        grant_type = auth_flow if auth_flow else (CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE)
         client_args = assign_params(
             base_url=base_url,
             verify=verify,
@@ -87,7 +90,7 @@ class Client:
             # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
             auth_id=app_id,
-            grant_type=CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
+            grant_type=grant_type,
             # used for device code flow
             resource="https://api.security.microsoft.com" if not client_credentials else None,
             token_retrieval_url="https://login.windows.net/organizations/oauth2/v2.0/token" if not client_credentials else None,
@@ -1134,6 +1137,7 @@ def main() -> None:
     client_credentials = params.get("client_credentials", False)
     enc_key = (params.get("credentials") or {}).get("password") or params.get("enc_key")
     certificate_thumbprint = params.get("creds_certificate", {}).get("identifier", "") or params.get("certificate_thumbprint", "")
+    auth_flow = params.get("auth_flow")
 
     private_key = replace_spaces_in_credential(params.get("creds_certificate", {}).get("password", "")) or params.get(
         "private_key", ""
@@ -1169,6 +1173,7 @@ def main() -> None:
             tenant_id=tenant_id,
             enc_key=enc_key,
             client_credentials=client_credentials,
+            auth_flow=auth_flow,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
