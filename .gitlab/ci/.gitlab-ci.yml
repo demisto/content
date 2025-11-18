@@ -3,5 +3,5 @@ variables:
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: ciac-15174
+    ref: ciac-15174 
     project: "${CI_PROJECT_NAMESPACE}/infra" 
