@@ -7747,7 +7747,10 @@ class CommandResults:
             insight_cache_size_kb = demisto.callingContext.get("context", {}).get("InsightCacheSize", 3072)
             insight_cache_size_bytes = insight_cache_size_kb * 1024
 
-            # First, calculate the size of the full context to determine if we need to use minimum context
+            import timeit
+
+            # Measure performance of to_context() - full context generation
+            start_full = timeit.default_timer()
             temp_outputs = {}
             for indicator in indicators:
                 context_outputs = indicator.to_context()
@@ -7756,13 +7759,17 @@ class CommandResults:
                     if key not in temp_outputs:
                         temp_outputs[key] = []
                     temp_outputs[key].append(value)
+            time_full_context = timeit.default_timer() - start_full
 
-            # Calculate the size of the context in bytes
-            import json
+            # Calculate the size of the serialized JSON string to compare against the cache limit.
+            start_serialize = timeit.default_timer()
             context_size = len(json.dumps(temp_outputs))
+            time_serialize = timeit.default_timer() - start_serialize
 
             # If the context size exceeds the limit, use to_minimum_context() instead
             if context_size > insight_cache_size_bytes:
+                # Measure performance of to_minimum_context() - minimal context generation
+                start_min = timeit.default_timer()
                 for indicator in indicators:
                     context_outputs = indicator.to_minimum_context()
 
@@ -7771,9 +7778,23 @@ class CommandResults:
                             outputs[key] = []
 
                         outputs[key].append(value)
+                time_min_context = timeit.default_timer() - start_min
+
+                demisto.debug(
+                    f"Context size ({context_size} chars) exceeded limit ({insight_cache_size_bytes} bytes). "
+                    f"Performance: to_context()={time_full_context:.6f}s, "
+                    f"serialization={time_serialize:.6f}s, "
+                    f"to_minimum_context()={time_min_context:.6f}s, "
+                    f"total={time_full_context + time_serialize + time_min_context:.6f}s"
+                )
             else:
                 # Use the already calculated full context
                 outputs = temp_outputs
+                demisto.debug(
+                    f"Using full context ({context_size} chars within {insight_cache_size_bytes} bytes limit). "
+                    f"Performance: to_context()={time_full_context:.6f}s, "
+                    f"serialization={time_serialize:.6f}s"
+                )
 
         if self.tags:
             tags = self.tags  # type: ignore[assignment]
