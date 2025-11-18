@@ -56,6 +56,12 @@ class MainTester:
         self.__xql_last_resp = None
         self.__xql_resp_iter = None
 
+        self.__locking_params: dict[str, Any] | None = None
+        args = ent.get("args") or {}
+        templates = args.get("templates")
+        if isinstance(templates, dict) and (template := templates.get(args.get("template_name"))):
+            self.__locking_params = demisto.get(template, "query.locking") or {}
+
         incident = {"id": "1"}
         if is_xsiam := to_bool(demisto.get(ent, "config.is_xsiam", "false")):
             incident.update(ent.get("alert") or {})
@@ -350,6 +356,20 @@ class MainTester:
                 else:
                     raise RuntimeError(f"Invalid data type - {data_type}")
             raise RuntimeError("No List - {list_name}")
+        elif command in ("core-lock-get", "demisto-lock-get"):
+            for k in ["name", "info", "timeout", "using"]:
+                av = args.get(k)
+                lv = self.__locking_params.get(k)
+                if av != lv:
+                    raise ValueError(f"Incorrect locking parameter - {k}: {av} is not {lv}")
+            return []
+        elif command in ("core-lock-release", "demisto-lock-release"):
+            for k in ["name", "using"]:
+                av = args.get(k)
+                lv = self.__locking_params.get(k)
+                if av != lv:
+                    raise ValueError(f"Incorrect locking parameter - {k}: {av} is not {lv}")
+            return []
         else:
             raise RuntimeError(f"Not implemented - {command}")
 
