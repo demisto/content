@@ -729,7 +729,7 @@ def test_get_service_record_update_time():
             True,
             "2025-11-05 13:12:48",  # November 5, 2025 at 1:12:48 PM
         ),
-        # Test ISO format (standard parsing)
+        # Test ISO format (standard parsing) - only valid when use_classic_date_format=False
         (
             {"id": "125", "info": [{"key": "update_time", "valueCaption": "2025-11-05T13:12:48"}]},
             False,
@@ -764,15 +764,15 @@ def test_get_service_record_update_time():
 def test_get_service_record_update_time_classic_format(service_record, use_classic_date_format, expected_datetime):
     """
     Given:
-        - A service record with update_time in various SysAid Classic formats
+        - A service record with update_time in various formats
         - use_classic_date_format parameter set to True or False
     When:
         - get_service_record_update_time function is called
     Then:
         - Ensure the correct datetime is parsed based on format detection:
-          * American format (with AM/PM) parses as MM/DD/YYYY
-          * European format (24-hour) parses as DD/MM/YYYY
-          * ISO format parses correctly regardless of use_classic_date_format
+          * American format (with AM/PM) parses as MM/DD/YYYY when use_classic_date_format=True
+          * European format (24-hour) parses as DD/MM/YYYY when use_classic_date_format=True
+          * ISO format parses correctly when use_classic_date_format=False
     """
     from datetime import datetime
     from SysAid import get_service_record_update_time
