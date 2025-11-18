@@ -18,6 +18,7 @@ tags:
 - transformer
 - string
 timeout: '0'
+isllm: false
 type: python
 subtype: python3
 tests:

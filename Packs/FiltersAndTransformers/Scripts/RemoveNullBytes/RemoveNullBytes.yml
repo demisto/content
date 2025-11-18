@@ -16,6 +16,7 @@ args:
   default: true
   description: The string value to remove null bytes.
 scripttarget: 0
+isllm: false
 runonce: false
 dockerimage: demisto/python3:3.12.11.4284848
 runas: DBotWeakRole
