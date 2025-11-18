@@ -7,7 +7,7 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-CONTEXT_KEY = "CyberArkEPMARR_Context"
+CONTEXT_KEY = "CyberArkEPMSOCResponse_Context"
 RISK_PLAN_ACTION_ADD = "add"
 RISK_PLAN_ACTION_REMOVE = "remove"
 
@@ -169,7 +169,7 @@ def change_risk_plan_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="CyberArkEPMARR",
+        outputs_prefix="CyberArkEPMSOCResponse",
         outputs_key_field="Endpoint_IDs",
         outputs=result_context,
         raw_response=raw_result,

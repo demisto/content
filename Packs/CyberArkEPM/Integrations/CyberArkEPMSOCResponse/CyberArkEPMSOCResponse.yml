@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: CyberArkEPMARR
+  id: CyberArkEPMSOCResponse
   version: -1
 configuration:
 - additionalinfo: 'Example: https://login.epm.cyberark.com'
@@ -28,8 +28,8 @@ configuration:
   required: false
   type: 8
 description: This integration allows you to activate and deactivate CyberArk EPM risk plans for specific endpoints.
-display: CyberArk EPM ARR
-name: CyberArkEPMARR
+display: CyberArk EPM SOC Response
+name: CyberArkEPMSOCResponse
 script:
   commands:
   - arguments:
@@ -51,7 +51,7 @@ script:
     description: Activates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-activate-risk-plan
     outputs:
-    - contextPath: CyberArkEPMARR.Endpoint_IDs
+    - contextPath: CyberArkEPMSOCResponse.Endpoint_IDs
       description: The IDs of the endpoints added to the risk plan.
       type: String
   - arguments:
@@ -73,7 +73,7 @@ script:
     description: Deactivates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-deactivate-risk-plan
     outputs:
-    - contextPath: CyberArkEPMARR.Endpoint_IDs
+    - contextPath: CyberArkEPMSOCResponse.Endpoint_IDs
       description: The IDs of the endpoints removed from risk plan.
       type: String
   isfetch: false

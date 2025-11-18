@@ -1,6 +1,6 @@
 This integration allows you to automate risk plan management in CyberArk Endpoint Privilege Manager (EPM) by adding and removing endpoints from specified risk plans.
 
-## Configure CyberArk EPM Adaptive Risk Reduction (ARR) in Cortex
+## Configure CyberArk EPM SOC Response in Cortex
 
 | **Parameter** | **Description**                                                                                                   | **Required** |
 | --- |-------------------------------------------------------------------------------------------------------------------| --- |
@@ -44,7 +44,7 @@ Activates a CyberArk EPM risk plan for a specified endpoint.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkEPMARR.Endpoint.ID | String | The ID of the endpoint added to the risk plan. |
+| CyberArkEPMSOCResponse.Endpoint.ID | String | The ID of the endpoint added to the risk plan. |
 
 ### cyberarkepm-deactivate-risk-plan
 
@@ -75,4 +75,4 @@ Deactivates a CyberArk EPM risk plan for a specified endpoint.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CyberArkEPMARR.Endpoint.ID | String | The ID of the endpoint removed from the risk plan. |
+| CyberArkEPMSOCResponse.Endpoint.ID | String | The ID of the endpoint removed from the risk plan. |

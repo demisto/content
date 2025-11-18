@@ -1,5 +1,5 @@
 def mocked_client(requests_mock):
-    from CyberArkEPMARR import Client
+    from CyberArkEPMSOCResponse import Client
 
     mock_response_sets = {"Sets": [{"Id": "id1", "Name": "set_name1"}]}
     mock_response_search_endpoints = {
@@ -26,7 +26,7 @@ def mocked_client(requests_mock):
 def test_activate_risk_plan_command(requests_mock, mocker):
     """
     Given:
-        - A CyberArkEPMARR client, a risk plan, an endpoint name, and an external IP.
+        - A CyberArkEPMSOCResponse client, a risk plan, an endpoint name, and an external IP.
 
     When:
         - activate_risk_plan_command function is running.
@@ -34,9 +34,11 @@ def test_activate_risk_plan_command(requests_mock, mocker):
     Then:
         - Validates that the function works as expected.
     """
-    from CyberArkEPMARR import change_risk_plan_command
+    from CyberArkEPMSOCResponse import change_risk_plan_command
 
-    mocker.patch("CyberArkEPMARR.get_integration_context", return_value={"CyberArkEPMARR_Context": {"set_id": "id1"}})
+    mocker.patch(
+        "CyberArkEPMSOCResponse.get_integration_context", return_value={"CyberArkEPMSOCResponse_Context": {"set_id": "id1"}}
+    )
     client = mocked_client(requests_mock)
     args = {"risk_plan": "risk_plan1", "action": "add", "endpoint_name": "endpoint1", "external_ip": "1.1.1.1"}
 
@@ -48,7 +50,7 @@ def test_activate_risk_plan_command(requests_mock, mocker):
 def test_activate_single_endpoint_risk_plan_command(requests_mock, mocker):
     """
     Given:
-        - A CyberArkEPMARR client, a risk plan, an endpoint name, and an external IP.
+        - A CyberArkEPMSOCResponse client, a risk plan, an endpoint name, and an external IP.
 
     When:
         - activate_risk_plan_command function is running.
@@ -56,9 +58,11 @@ def test_activate_single_endpoint_risk_plan_command(requests_mock, mocker):
     Then:
         - Validates that the function works as expected.
     """
-    from CyberArkEPMARR import change_risk_plan_command
+    from CyberArkEPMSOCResponse import change_risk_plan_command
 
-    mocker.patch("CyberArkEPMARR.get_integration_context", return_value={"CyberArkEPMARR_Context": {"set_id": "id1"}})
+    mocker.patch(
+        "CyberArkEPMSOCResponse.get_integration_context", return_value={"CyberArkEPMSOCResponse_Context": {"set_id": "id1"}}
+    )
     client = mocked_client(requests_mock)
     args = {
         "risk_plan": "risk_plan1",
@@ -77,7 +81,7 @@ def test_activate_single_endpoint_risk_plan_command(requests_mock, mocker):
 def test_deactivate_risk_plan_command(requests_mock, mocker):
     """
     Given:
-        - A CyberArkEPMARR client, a risk plan, an endpoint name, and an external IP.
+        - A CyberArkEPMSOCResponse client, a risk plan, an endpoint name, and an external IP.
 
     When:
         - activate_risk_plan_command function is running.
@@ -85,9 +89,11 @@ def test_deactivate_risk_plan_command(requests_mock, mocker):
     Then:
         - Validates that the function works as expected.
     """
-    from CyberArkEPMARR import change_risk_plan_command
+    from CyberArkEPMSOCResponse import change_risk_plan_command
 
-    mocker.patch("CyberArkEPMARR.get_integration_context", return_value={"CyberArkEPMARR_Context": {"set_id": "id1"}})
+    mocker.patch(
+        "CyberArkEPMSOCResponse.get_integration_context", return_value={"CyberArkEPMSOCResponse_Context": {"set_id": "id1"}}
+    )
     client = mocked_client(requests_mock)
     args = {"risk_plan": "risk_plan1", "action": "remove", "endpoint_name": "endpoint1", "external_ip": "1.1.1.1"}
 
