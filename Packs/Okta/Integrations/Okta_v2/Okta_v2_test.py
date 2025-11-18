@@ -744,10 +744,11 @@ def test_get_user_factors_command(mocker, args, expected_context):
     mock_raw_response.json.return_value = expected_context
     mock_raw_response.headers = {"x-rate-limit-limit": "1", "x-rate-limit-remaining": "1", "x-rate-limit-reset": "1"}
     mocker.patch.object(client, "get_user_id", return_value="TestID")
-    mocker.patch.object(client, "get_user_factors", return_value=mock_raw_response)
+    mocker.patch.object(client, "_http_request", return_value=mock_raw_response)
     mocker.patch.object(client, "get_readable_factors", return_value=[expected_context])
 
-    temp1, outputs, temp2 = get_user_factors_command(client, args)
+    result = get_user_factors_command(client, args)
+    readable_output, outputs, raw_response = result
     assert expected_context == outputs.get("Account(val.ID && val.ID === obj.ID)").get("Factor")[0]
     assert outputs.get("Account(val.ID && val.ID === obj.ID)").get("ID") == args.get("userId") or "TestID"
 
