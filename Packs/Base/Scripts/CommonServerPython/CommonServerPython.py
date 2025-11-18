@@ -25,6 +25,7 @@ import signal
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
+import timeit
 from datetime import datetime, timedelta
 from abc import abstractmethod
 
@@ -61,6 +62,7 @@ SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
 NUM_OF_WORKERS = 20
 HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
+JSON_SEPARATORS = (",", ":")  # To get the most compact JSON representation, we should specify (',', ':') to eliminate whitespace.
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -7747,8 +7749,6 @@ class CommandResults:
             insight_cache_size_kb = demisto.callingContext.get("context", {}).get("InsightCacheSize", 3072)
             insight_cache_size_bytes = insight_cache_size_kb * 1024
 
-            import timeit
-
             # Measure performance of to_context() - full context generation
             start_full = timeit.default_timer()
             temp_outputs = {}
@@ -7763,7 +7763,7 @@ class CommandResults:
 
             # Calculate the size of the serialized JSON string to compare against the cache limit.
             start_serialize = timeit.default_timer()
-            context_size = len(json.dumps(temp_outputs))
+            context_size = len(json.dumps(temp_outputs, default=str, separators=JSON_SEPARATORS, ensure_ascii=False))
             time_serialize = timeit.default_timer() - start_serialize
 
             # If the context size exceeds the limit, use to_minimum_context() instead
@@ -7779,6 +7779,8 @@ class CommandResults:
 
                         outputs[key].append(value)
                 time_min_context = timeit.default_timer() - start_min
+
+                human_readable += f"\nNote! some of the context data wasn’t included because it went over the {insight_cache_size_kb}KB limit."
 
                 demisto.debug(
                     f"Context size ({context_size} chars) exceeded limit ({insight_cache_size_bytes} bytes). "
