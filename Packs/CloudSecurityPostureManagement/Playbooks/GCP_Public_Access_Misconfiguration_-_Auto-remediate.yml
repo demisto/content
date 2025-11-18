@@ -46,6 +46,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "Playbook Triggered header"
       id: 882d4fc2-def7-42ec-83a7-5fae15d43824
       iscommand: false
       name: ""
