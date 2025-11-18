@@ -26,9 +26,8 @@ configuration:
 - additionalinfo: Type of authentication - either Authorization Code (recommended) or Client Credentials.
   display: Authentication Type
   name: auth_flow
-  defaultvalue: Not Selected
+  defaultvalue: Client Credentials
   options:
-    - Not Selected
     - Cortex App
     - Authorization Code
     - Client Credentials
