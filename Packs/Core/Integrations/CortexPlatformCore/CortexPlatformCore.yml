@@ -1812,6 +1812,12 @@ script:
         - contextPath: Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id
           description: The ID of the suggestion rule that generated this recommendation.
           type: String
+        - contextPath: Core.IssueRecommendations.existing_code_block
+          description: Original vulnerable code.
+          type: String
+        - contextPath: Core.IssueRecommendations.suggested_code_block
+          description: Code block fix suggestion.
+          type: String
     - arguments:
       - description: A comma-separated list of issue IDs to fix (maximum 10 per request).
         name: issue_ids
