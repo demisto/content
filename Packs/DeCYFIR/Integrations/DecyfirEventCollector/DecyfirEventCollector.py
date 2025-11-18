@@ -256,11 +256,11 @@ def compute_next_fetch_time(events: List[dict[str, Any]], after: int, event_type
     times: List[datetime] = [t for e in events if (t := extract_event_time(e, event_type)) is not None]
 
     if not times:
-        previous_time = datetime.fromtimestamp(after / 1000)
+        previous_time = datetime.fromtimestamp(after / 1000).replace(tzinfo=timezone.utc)
         # Fall back to previous time if no valid timestamps found
         return previous_time.isoformat() if previous_time else None
 
-    next_time: datetime = max(times)
+    next_time: datetime = max(times).replace(tzinfo=timezone.utc)
     return next_time.isoformat()
 
 
