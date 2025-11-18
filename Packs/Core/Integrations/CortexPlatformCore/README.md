@@ -592,32 +592,8 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 | Core.IssueRecommendations.remediation | String | Remediation steps and recommendations for the issue. |
 | Core.IssueRecommendations.playbook_suggestions.playbook_id | String | The ID of the suggested playbook. |
 | Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id | String | The ID of the suggestion rule that generated this recommendation. |
-
-### core-appsec-remediate-issue
-
-***
-Create automated pull requests to fix multiple security issues in a single bulk operation.
-
-#### Base Command
-
-`core-appsec-remediate-issue`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| issue_ids | A comma-separated list of issue IDs to fix (maximum 10 per request). | Required |
-| title | Custom title for the pull request. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Core.TriggerPR.message | String | Operation result message. |
-| Core.TriggerPR.status | String | Overall process status. |
-| Core.TriggerPR.remediationId | String | Unique identifier to track the remediation process. |
-| Core.TriggerPR.triggeredPrs.issueId | String | The issue identifier. |
-| Core.TriggerPR.triggeredPrs.status | String | Either "triggered" or "automated_fix_not_available". |
+| Core.IssueRecommendations.existing_code_block | String | Original vulnerable code. |
+| Core.IssueRecommendations.suggested_code_block | String | Code block fix suggestion. |
 
 ### core-enable-scanners
 
