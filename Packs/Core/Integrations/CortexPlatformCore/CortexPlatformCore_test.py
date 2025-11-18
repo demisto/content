@@ -4142,3 +4142,317 @@ def test_create_policy_command_json_serialization_edge_cases(mocker: MockerFixtu
     assert isinstance(payload["triggers"], dict)
     assert isinstance(payload["conditions"], dict)
     assert isinstance(payload["scope"], dict)
+
+
+
+def test_appsec_remediate_issue_command_single_issue_success(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with a single issue ID and title.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The issue is remediated successfully and appropriate results are returned.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": "Fix security vulnerability"}
+
+    mock_remove_empty = mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={"issueIds": ["issue-123"], "title": "Fix security vulnerability"},
+    )
+
+    mock_appsec_remediate = mocker.patch.object(
+        mock_client,
+        "appsec_remediate_issue",
+        return_value={
+            "triggeredPrs": [{"issueId": "issue-123", "prUrl": "https://github.com/repo/pull/456", "status": "created"}]
+        },
+    )
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    mock_remove_empty.assert_called_once_with({"issueIds": ["issue-123"], "title": "Fix security vulnerability"})
+    mock_appsec_remediate.assert_called_once_with({"issueIds": ["issue-123"], "title": "Fix security vulnerability"})
+    assert result.outputs_prefix == "Core.TriggeredPRs"
+    assert result.outputs_key_field == "issueId"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["issueId"] == "issue-123"
+
+
+def test_appsec_remediate_issue_command_multiple_issues_success(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with multiple issue IDs and title.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        All issues are remediated successfully and appropriate results are returned.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": ["issue-123", "issue-456"], "title": "Fix security vulnerabilities"}
+
+    mock_remove_empty = mocker.patch("CortexPlatformCore.remove_empty_elements")
+    mock_remove_empty.side_effect = [
+        {"issueIds": ["issue-123"], "title": "Fix security vulnerabilities"},
+        {"issueIds": ["issue-456"], "title": "Fix security vulnerabilities"},
+    ]
+
+    mock_responses = [
+        {"triggeredPrs": [{"issueId": "issue-123", "prUrl": "https://github.com/repo/pull/1"}]},
+        {"triggeredPrs": [{"issueId": "issue-456", "prUrl": "https://github.com/repo/pull/2"}]},
+    ]
+    mock_appsec_remediate = mocker.patch.object(mock_client, "appsec_remediate_issue")
+    mock_appsec_remediate.side_effect = mock_responses
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert mock_appsec_remediate.call_count == 2
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["issueId"] == "issue-123"
+    assert result.outputs[1]["issueId"] == "issue-456"
+
+
+def test_appsec_remediate_issue_command_too_many_issues_raises_exception(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with only issue_id.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        update_issue is called with empty update_data.
+    """
+    from CortexPlatformCore import appsec_remediate_issue_command, Client
+    from CommonServerPython import DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {
+        "issue_ids": [f"issue-{i}" for i in range(11)],  # 11 issues
+        "title": "Fix vulnerabilities",
+    }
+
+    args = {"id": "12345"}
+    with pytest.raises(DemistoException, match="Please provide a maximum of 10 issue IDs per request."):
+        appsec_remediate_issue_command(mock_client, args)
+
+
+def test_appsec_remediate_issue_command_empty_triggered_prs(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with issue ID, but API returns empty triggeredPrs.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The command completes successfully with empty outputs.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": "Fix security vulnerability"}
+
+    mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={"issueIds": ["issue-123"], "title": "Fix security vulnerability"},
+    )
+
+    mocker.patch.object(
+        mock_client,
+        "appsec_remediate_issue",
+        return_value={
+            "triggeredPrs": []  # Empty list
+        },
+    )
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 0
+    assert result.raw_response == []
+
+
+def test_appsec_remediate_issue_command_none_response(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with issue ID, but API returns None response.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The command completes successfully with empty outputs.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": "Fix security vulnerability"}
+
+    mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={"issueIds": ["issue-123"], "title": "Fix security vulnerability"},
+    )
+
+    mocker.patch.object(mock_client, "appsec_remediate_issue", return_value=None)
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 0
+
+
+def test_appsec_remediate_issue_command_missing_triggered_prs_key(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with issue ID, but API response lacks triggeredPrs key.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The command completes successfully with empty outputs.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": "Fix security vulnerability"}
+
+    mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={"issueIds": ["issue-123"], "title": "Fix security vulnerability"},
+    )
+
+    mocker.patch.object(
+        mock_client,
+        "appsec_remediate_issue",
+        return_value={
+            "status": "success"  # No triggeredPrs key
+        },
+    )
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 0
+
+
+def test_appsec_remediate_issue_command_non_list_triggered_prs(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with issue ID, but API returns triggeredPrs as non-list.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The command completes successfully with empty outputs.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": "Fix security vulnerability"}
+
+    mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={"issueIds": ["issue-123"], "title": "Fix security vulnerability"},
+    )
+
+    mocker.patch.object(mock_client, "appsec_remediate_issue", return_value={"triggeredPrs": "not a list"})
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 0
+
+
+def test_appsec_remediate_issue_command_mixed_success_failure(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with multiple issue IDs, where some succeed and some fail.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        Only successful remediations are included in the outputs.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": ["issue-123", "issue-456", "issue-789"], "title": "Fix vulnerabilities"}
+
+    mock_remove_empty = mocker.patch("CortexPlatformCore.remove_empty_elements")
+    mock_remove_empty.side_effect = [
+        {"issueIds": ["issue-123"], "title": "Fix vulnerabilities"},
+        {"issueIds": ["issue-456"], "title": "Fix vulnerabilities"},
+        {"issueIds": ["issue-789"], "title": "Fix vulnerabilities"},
+    ]
+
+    mock_responses = [
+        {"triggeredPrs": [{"issueId": "issue-123", "prUrl": "https://github.com/repo/pull/1"}]},
+        {"triggeredPrs": []},  # Failed to trigger PR
+        {"triggeredPrs": [{"issueId": "issue-789", "prUrl": "https://github.com/repo/pull/3"}]},
+    ]
+    mock_appsec_remediate = mocker.patch.object(mock_client, "appsec_remediate_issue")
+    mock_appsec_remediate.side_effect = mock_responses
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 2  # Only successful ones
+    assert result.outputs[0]["issueId"] == "issue-123"
+    assert result.outputs[1]["issueId"] == "issue-789"
+
+
+def test_appsec_remediate_issue_command_none_title_removed(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with issue ID and None title.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        remove_empty_elements is called and None title is handled properly.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": None}
+
+    mock_remove_empty = mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={
+            "issueIds": ["issue-123"]  # title removed
+        },
+    )
+
+    mock_appsec_remediate = mocker.patch.object(
+        mock_client,
+        "appsec_remediate_issue",
+        return_value={"triggeredPrs": [{"issueId": "issue-123", "prUrl": "https://github.com/repo/pull/1"}]},
+    )
+
+    appsec_remediate_issue_command(mock_client, {})
+
+    mock_remove_empty.assert_called_with({"issueIds": ["issue-123"], "title": None})
+    mock_appsec_remediate.assert_called_with({"issueIds": ["issue-123"]})
+
+
+def test_appsec_remediate_issue_command_empty_issue_ids_list(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with empty issue IDs list.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The command completes successfully with empty outputs and no API calls.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": [], "title": "Fix vulnerabilities"}
+
+    mock_appsec_remediate = mocker.patch.object(mock_client, "appsec_remediate_issue")
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 0
+    mock_appsec_remediate.assert_not_called()
