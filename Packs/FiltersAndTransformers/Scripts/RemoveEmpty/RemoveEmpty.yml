@@ -28,6 +28,7 @@ args:
 - name: empty_values
   description: The list of particular tokens to be considerd as empty
 scripttarget: 0
+isllm: false
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:
