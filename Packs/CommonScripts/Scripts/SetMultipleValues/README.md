@@ -18,9 +18,7 @@ Sets multiple key/value pairs to the context under a common parent key.
 | parent | The parent key to which we append all the other keys. | Required |
 | keys | Separated list of keys separated by the specified delimiter (Comma is the default delimiter). | Required |
 | values | Separated list of values separated by the specified delimiter (Comma is the default delimiter). | Required |
-| delimiter | Delimiter by which the content of the values and keys lists are separated.<br/>Eg:  "," , ":", ";". Default is ",". | Optional |
-
-<br/>Eg:  " , " , " : ", " ; ". Default is ",".
+| delimiter | Delimiter by which the content of the values and keys lists are separated.<br/>Eg:  "," , ":", "|||". Default is ",". | Optional |
 
 ## Outputs
 

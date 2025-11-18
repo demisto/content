@@ -25,7 +25,7 @@ args:
   defaultValue: ','
   description: |-
         Delimiter by which the content of the values and keys lists are separated.
-        Eg:  "," , ":", ";".
+        Eg:  "," , ":", "|||".
 scripttarget: 0
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.12.12.5490952
