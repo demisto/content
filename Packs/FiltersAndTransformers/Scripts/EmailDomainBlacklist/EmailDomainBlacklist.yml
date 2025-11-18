@@ -21,6 +21,7 @@ args:
   description: An array of domains to block list.
   isArray: true
 scripttarget: 0
+isllm: false
 dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
 tests:
