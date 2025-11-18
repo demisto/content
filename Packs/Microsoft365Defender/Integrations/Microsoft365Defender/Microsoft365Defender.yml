@@ -24,6 +24,7 @@ configuration:
     - Not Selected
     - Client Credentials
     - Device Code
+    - Azure Managed Identities
   section: Connect
   required: false
 - name: creds_client_id
@@ -75,6 +76,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
+  hidden: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

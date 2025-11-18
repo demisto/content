@@ -6338,7 +6338,7 @@ def main():  # pragma: no cover
     max_alert_to_fetch = arg_to_number(params.get("max_fetch", 50))
     fetch_evidence = argToBoolean(params.get("fetch_evidence", False))
     last_run = demisto.getLastRun()
-    auth_type = params.get("auth_type", "Client Credentials")
+    auth_flow = params.get("auth_flow", "Client Credentials")
     auth_code = params.get("auth_code", {}).get("password", "")
     redirect_uri = params.get("redirect_uri", "")
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
@@ -6388,7 +6388,7 @@ def main():  # pragma: no cover
             max_fetch=max_alert_to_fetch,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
-            auth_type=auth_type,
+            auth_type=auth_flow,
             endpoint_type=endpoint_type,
             auth_code=auth_code,
             redirect_uri=redirect_uri,
@@ -6396,7 +6396,7 @@ def main():  # pragma: no cover
             alert_detectionsource_to_fetch=alert_detectionsource_to_fetch,
         )
         if command == "test-module":
-            if auth_type == "Authorization Code":
+            if auth_flow == "Authorization Code":
                 raise Exception(
                     "Test-module is not available when using Authentication-code auth flow. "
                     "Please use `!microsoft-atp-test` command to test the connection"

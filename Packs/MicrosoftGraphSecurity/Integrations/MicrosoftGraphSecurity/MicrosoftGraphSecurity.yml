@@ -27,6 +27,7 @@ configuration:
   type: 15
   options:
     - Not Selected
+    - Cortex App
     - Client Credentials
     - Authorization Code
     - Azure Managed Identities
@@ -61,6 +62,7 @@ configuration:
   type: 8
   section: Connect
   required: false
+  hidden: true
   additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
   advanced: false
 - display: Application redirect URI (for self-deployed mode)
@@ -81,6 +83,7 @@ configuration:
   type: 8
   section: Connect
   required: false
+  hidden: true
   additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
 - name: managed_identities_client_id
   type: 9

@@ -25,12 +25,14 @@ configuration:
   required: false
 - additionalinfo: Type of authentication - either Authorization Code (recommended) or Client Credentials.
   display: Authentication Type
-  name: auth_type
-  defaultvalue: Client Credentials
+  name: auth_flow
+  defaultvalue: Not Selected
   options:
-  - Authorization Code
-  - Client Credentials
-  - Azure Managed Identities
+    - Not Selected
+    - Cortex App
+    - Authorization Code
+    - Client Credentials
+    - Azure Managed Identities
   type: 15
   section: Connect
   required: false
@@ -59,6 +61,7 @@ configuration:
   section: Connect
   advanced: false
   required: false
+  hidden: true
 - display: Certificate Thumbprint
   name: creds_certificate
   type: 9

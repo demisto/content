@@ -671,12 +671,19 @@ def get_azure_cloud(params, integration_name):
 def get_auth_type_flow(auth_flow: str) -> None | str:
     auth_flow_dict = {
         "Not Selected": None,
+        "Cortex App": None,
         "Azure Managed Identities": None,
         "Client Credentials": CLIENT_CREDENTIALS,
         "Authorization Code": AUTHORIZATION_CODE,
         "Device Code": DEVICE_CODE
     }
     return auth_flow_dict.get(auth_flow, None)
+
+
+def is_self_deployed_flow(auth_flow: str) -> bool:
+    if auth_flow in (AUTHORIZATION_CODE, DEVICE_CODE, CLIENT_CREDENTIALS, "Azure Managed Identities"):
+        return True
+    return False
 
 
 class MicrosoftClient(BaseClient):
