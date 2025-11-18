@@ -114,7 +114,7 @@ configuration:
   section: Collect
 - display: Email address from which to fetch incidents (e.g., "example@mail.com")
   name: mailbox_to_fetch
-  required: true
+  required: false
   type: 0
   section: Collect
   additionalinfo: During authentication, ensure you are logged in to this email address.
@@ -123,7 +123,7 @@ configuration:
   type: 0
   defaultvalue: Inbox
   section: Collect
-  required: true
+  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   defaultvalue: '15 minutes'
