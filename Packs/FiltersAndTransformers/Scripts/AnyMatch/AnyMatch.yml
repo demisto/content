@@ -21,6 +21,7 @@ args:
     isArray: true
     description: Value to check if it is equal to an element or to a substring of an element from the left. Can be a single value or a comma-separated list.
 scripttarget: 0
+isllm: false
 fromversion: 6.9.0
 tests:
 - AnyMatch_Test
