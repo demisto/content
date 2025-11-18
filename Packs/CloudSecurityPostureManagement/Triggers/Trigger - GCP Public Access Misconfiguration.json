@@ -19,15 +19,5 @@
             }
         ]
         }
-    },
-  "supportedModules": [
-        "C1",
-        "C3",
-        "X5",
-        "cloud_runtime_security",
-        "agentix",
-        "cloud_posture",
-        "xsiam",
-        "cloud"
-    ]
+    }
 }
