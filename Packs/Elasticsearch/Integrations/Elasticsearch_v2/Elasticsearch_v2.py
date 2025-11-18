@@ -900,7 +900,7 @@ def fetch_incidents(proxies):
     if RAW_QUERY:
         response = execute_raw_query(es, RAW_QUERY)
     else:
-        query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
+        query = QueryString(query="(" + FETCH_QUERY + ") AND " + TIME_FIELD + ":*")
         # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
         search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
         search = search.sort({TIME_FIELD: {"order": "asc"}})[0:FETCH_SIZE].query(query)
