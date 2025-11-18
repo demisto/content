@@ -3,7 +3,6 @@ from enum import Enum
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
-import urllib3
 from CommonServerPython import *  # noqa: F401
 from MicrosoftApiModule import *  # noqa: E402
 from requests import Response
@@ -12,7 +11,6 @@ from CommonServerUserPython import *
 
 #  disable insecure warnings
 DEFAULT_KEYS_TO_REPLACE = {"createdDateTime": "CreatedDate"}
-urllib3.disable_warnings()
 
 APP_NAME = "ms-graph-security"
 API_V2 = "Alerts v2"
@@ -276,7 +274,7 @@ class MsGraphClient:
             "recipientEmail": recipient_email,
             "expectedAssessment": expected_assessment,
             "category": category,
-            "messageUri": f"https://graph.microsoft.com/v1.0/users/{user_id}/messages/{message_id}",
+            "messageUri": urljoin(self.ms_client._base_url, "users/{user_id}/messages/{message_id}"),
         }
         return self.ms_client.http_request(method="POST", url_suffix=THREAT_ASSESSMENT_URL_PREFIX, json_data=body)
 
@@ -2030,7 +2028,6 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
 def main():
     params: dict = demisto.params()
     args: dict = demisto.args()
-    url = params.get("host", "").rstrip("/") + "/v1.0/"
     tenant = params.get("creds_tenant_id", {}).get("password") or params.get("tenant_id")
     auth_and_token_url = params.get("creds_auth_id", {}).get("password") or params.get("auth_id", "")
     enc_key = params.get("creds_enc_key", {}).get("password") or params.get("enc_key")
@@ -2041,6 +2038,7 @@ def main():
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get("self_deployed", False) or managed_identities_client_id is not None
     api_version: str = params.get("api_version", API_V2)
+    azure_cloud = get_azure_cloud(params, "MicrosoftGraphSecurity")
 
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
@@ -2102,7 +2100,10 @@ def main():
             enc_key=enc_key,
             redirect_uri=redirect_uri,
             app_name=APP_NAME,
-            base_url=url,
+            azure_cloud=azure_cloud,
+            azure_ad_endpoint=azure_cloud.endpoints.active_directory,
+            token_retrieval_url=urljoin(azure_cloud.endpoints.active_directory, f"/{tenant}/oauth2/v2.0/token"),
+            base_url=urljoin(azure_cloud.endpoints.microsoft_graph_resource_id, "/v1.0/"),
             verify=use_ssl,
             proxy=proxy,
             self_deployed=self_deployed,
