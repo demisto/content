@@ -830,7 +830,7 @@ def main():
         "msgraph-user-terminate-session": disable_user_account_command,
         "msgraph-user-account-disable": disable_user_account_command,
         "msgraph-user-update": update_user_command,
-        "msgraph-user-update-quick-action": force_reset_password,
+        "msgraph-user-force-reset-password": force_reset_password,
         "msgraph-user-change-password": change_password_user_saas_command,
         "msgraph-user-change-password-on-premise": change_password_user_on_premise_command,
         "msgraph-user-delete": delete_user_command,
