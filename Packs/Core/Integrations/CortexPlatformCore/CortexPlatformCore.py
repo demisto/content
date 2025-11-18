@@ -1153,7 +1153,7 @@ def get_asset_coverage_histogram_command(client: Client, args: dict):
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Histogram",
         outputs=outputs,
->>>>>>> origin
+        raw_response=response,
     )
 
 
