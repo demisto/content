@@ -130,7 +130,7 @@ filter _raw_log ~= "(?:UDP|TCP):\s*query:\s*(?:\S+\s+){3}response:"
 /**************/
 // DHCP Events /
 /*************/
-filter _raw_log ~= "(?:dhcpd|omshell|dhcrelay|dhclient)\[\d+\]" or _raw_log ~= "DHCP\w+"
+filter _raw_log ~= "(?:dhcpd|omshell|dhcrelay|dhclient)\[\d+\]" or (_raw_log ~= "DHCP\w+" and _raw_log !~= "(?:UDP|TCP):\s*query:\s*(?:\S+\s+){3}response:")
 | alter // Extract syslog headers & syslog message 
     syslog_process_id = arrayindex(regextract(_raw_log, "\s\w+\[(\d+)\]"), 0),
     syslog_process_name = arrayindex(regextract(_raw_log, "\s(\w+)\[\d+\]"), 0),

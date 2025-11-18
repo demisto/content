@@ -67,6 +67,125 @@ def test_get_access_token(mocker):
         assert "Could not create an access token" in e.args[0]
 
 
+def test_get_access_token_with_automatic_retry(mocker):
+    """
+    Given:
+    - A client using OAuth authorization with username and password stored
+    - Integration context with an expired access token and refresh token
+    - First attempt to get access token fails with an error (simulating expired refresh token)
+
+    When:
+    - Calling the get_access_token function while using OAuth 2.0 authorization
+
+    Then:
+    - Ensure the login method is called automatically to regenerate the refresh token
+    - Ensure get_access_token is called recursively with retry_attempted=True
+    - Ensure a new access token is returned after the automatic retry
+    - Ensure debug logging indicates the automatic retry
+    """
+    from requests.models import Response
+
+    expired_access_token = {"access_token": "previous_token", "refresh_token": "expired_refresh_token", "expiry_time": -1}
+
+    # First response: error indicating refresh token issue
+    error_response = Response()
+    error_response._content = b'{"error": "invalid_grant", "error_description": "Refresh token expired"}'
+    error_response.status_code = 200
+
+    # Second response: successful token after login
+    success_response = Response()
+    success_response._content = (
+        b'{"access_token": "new_token_after_retry", "refresh_token": "new_refresh_token", "expires_in": 3600}'
+    )
+    success_response.status_code = 200
+
+    mocker.patch("ServiceNowApiModule.date_to_timestamp", return_value=0)
+
+    client = ServiceNowClient(
+        credentials=PARAMS.get("credentials", {}),
+        use_oauth=True,
+        client_id=PARAMS.get("client_id", ""),
+        client_secret=PARAMS.get("client_secret", ""),
+        url=PARAMS.get("url", ""),
+        verify=PARAMS.get("insecure", False),
+        proxy=PARAMS.get("proxy", False),
+        headers=PARAMS.get("headers", ""),
+    )
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=expired_access_token)
+    mock_login = mocker.patch.object(client, "login")
+    mock_debug = mocker.patch.object(demisto, "debug")
+    mock_http_request = mocker.patch.object(BaseClient, "_http_request", side_effect=[error_response, success_response])
+
+    result = client.get_access_token()
+
+    # Validate that login was called once to regenerate refresh token
+    mock_login.assert_called_once_with(client.username, client.password)
+
+    # Validate debug message was logged
+    assert mock_debug.call_count == 2
+    debug_calls = [call[0][0] for call in mock_debug.call_args_list]
+    assert "Refresh token may have expired, automatically generating new refresh token via login" in debug_calls
+    assert "Setting integration context" in debug_calls
+
+    # Validate that _http_request was called twice (first attempt + retry)
+    assert mock_http_request.call_count == 2
+
+    # Validate that the new token is returned
+    assert result == "new_token_after_retry"
+
+
+def test_get_access_token_retry_only_once(mocker):
+    """
+    Given:
+    - A client using OAuth authorization with username and password stored
+    - Integration context with an expired access token
+    - Both first and second attempts to get access token fail with errors
+
+    When:
+    - Calling the get_access_token function while using OAuth 2.0 authorization
+
+    Then:
+    - Ensure the login method is called once
+    - Ensure that after the retry fails, an error is raised (not infinite loop)
+    - Ensure that retry_attempted flag prevents multiple retry attempts
+    """
+    from requests.models import Response
+
+    expired_access_token = {"access_token": "previous_token", "refresh_token": "expired_refresh_token", "expiry_time": -1}
+
+    # Both responses return errors
+    error_response = Response()
+    error_response._content = b'{"error": "invalid_grant", "error_description": "Refresh token expired"}'
+    error_response.status_code = 200
+
+    mocker.patch("ServiceNowApiModule.date_to_timestamp", return_value=0)
+    mocker.patch("ServiceNowApiModule.return_error", side_effect=Exception("Error occurred while creating an access token"))
+
+    client = ServiceNowClient(
+        credentials=PARAMS.get("credentials", {}),
+        use_oauth=True,
+        client_id=PARAMS.get("client_id", ""),
+        client_secret=PARAMS.get("client_secret", ""),
+        url=PARAMS.get("url", ""),
+        verify=PARAMS.get("insecure", False),
+        proxy=PARAMS.get("proxy", False),
+        headers=PARAMS.get("headers", ""),
+    )
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=expired_access_token)
+    mock_login = mocker.patch.object(client, "login")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(BaseClient, "_http_request", return_value=error_response)
+
+    # Call get_access_token - should retry once then raise error
+    with pytest.raises(Exception, match="Error occurred while creating an access token"):
+        client.get_access_token()
+
+    # Validate that login was called exactly once (no infinite loop)
+    mock_login.assert_called_once_with(client.username, client.password)
+
+
 def test_separate_client_id_and_refresh_token():
     """Unit test
     Given
