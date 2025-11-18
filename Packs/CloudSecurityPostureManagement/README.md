@@ -13,41 +13,49 @@ This content pack helps fix common cloud misconfigurations automatically with an
 
 ### AWS Remediation Playbooks
 
-1. **AWS EC2 Instance Misconfiguration Remediation**
-   - Ensures EC2 instances are configured with Instance Metadata Service v2 (IMDSv2).
-   - Offers analyst-in-the-loop or fully automated remediation.
-   - Integrates with AWS and Cortex Core IR.
+#### AWS EC2 Instance Misconfiguration Remediation
 
-2. **AWS IAM Password Policy Remediation**
-   - Remediates 9 different insecure IAM password policy configurations, such as:
-     - Password reuse
-     - Minimum password length
-     - Lack of complexity requirements (uppercase, symbols, etc.)
-     - No expiration policy
-   - Supports both automated and analyst approval flows.
+- Ensures EC2 instances are configured with Instance Metadata Service v2 (IMDSv2).
+- Offers analyst-in-the-loop or fully automated remediation.
+- Integrates with AWS and Cortex Core IR.
 
-3. **AWS S3 Bucket Public Access Remediation**
-   - Detects and remediates publicly accessible S3 buckets (read or write access).
-   - Ensures S3 compliance with cloud security policies.
+#### AWS IAM Password Policy Remediation
 
-4. **AWS Public Access Misconfiguration - Auto-remediate**
-    - Automatically disables public access settings for RDS Database instances, EBS Snapshots and S3 buckets.
-    - Option to notify stakeholders about the remediation via Email, Slack or MS Teams.
-        - Set enableNotifications to 'yes' and configure inputs for the Notify Stakeholders playbook to send issue, asset and remediation details.
+- Remediates 9 different insecure IAM password policy configurations, such as:
+
+  - Password reuse
+  - Minimum password length
+  - Lack of complexity requirements (uppercase, symbols, etc.)
+  - No expiration policy
+
+- Supports both automated and analyst approval flows.
+
+#### AWS S3 Bucket Public Access Remediation
+
+- Detects and remediates publicly accessible S3 buckets (read or write access).
+- Ensures S3 compliance with cloud security policies.
+
+#### AWS Public Access Misconfiguration - Auto-remediate
+
+- Automatically disables public access settings for RDS Database instances, EBS Snapshots and S3 buckets.
+- Option to notify stakeholders about the remediation via Email, Slack or MS Teams.
+  - Set enableNotifications to 'yes' and configure inputs for the Notify Stakeholders playbook to send issue, asset and remediation details.
 
 ### Azure Remediation Playbooks
 
-1. **Azure Public Access Misconfiguration - Auto-remediate**
-    - Automatically remediates the misconfiguration issues for publicly accessible Azure blob containers, overly permissive Azure VM Disks or default Allow network access to Azure Storage Accounts.
-    - Option to notify stakeholders about the remediation via Email, Slack or MS Teams.
-        - Set enableNotifications to 'yes' and configure inputs for the Notify Stakeholders playbook to send issue, asset and remediation details.
+#### Azure Public Access Misconfiguration - Auto-remediate
+
+- Automatically remediates the misconfiguration issues for publicly accessible Azure blob containers, overly permissive Azure VM Disks or default Allow network access to Azure Storage Accounts.
+- Option to notify stakeholders about the remediation via Email, Slack or MS Teams.
+  - Set enableNotifications to 'yes' and configure inputs for the Notify Stakeholders playbook to send issue, asset and remediation details.
 
 ### GCP Remediation Playbooks
 
-1. **GCP Public Access Misconfiguration - Auto-remediate**
-    - Automatically secure the publicly exposed GCP bucket by updating policies to block public access immediately.
-    - Option to notify stakeholders about the remediation via Email, Slack or MS Teams.
-        - Set enableNotifications to 'yes' and configure inputs for the Notify Stakeholders playbook to send issue, asset and remediation details.
+#### GCP Public Access Misconfiguration - Auto-remediate
+
+- Automatically secure the publicly exposed GCP bucket by updating policies to block public access immediately.
+- Option to notify stakeholders about the remediation via Email, Slack or MS Teams.
+  - Set enableNotifications to 'yes' and configure inputs for the Notify Stakeholders playbook to send issue, asset and remediation details.
 
 All remediation playbooks leverage:
 
@@ -57,17 +65,19 @@ All remediation playbooks leverage:
 
 ### Generic Utility Playbook
 
-1. **Create Ticket and Notify**
-   - Creates or updates incident tickets using Jira V3 or ServiceNow v2.
-   - Notifies stakeholders via Slack, Microsoft Teams, or email.
-   - Customizable behavior: ticket-only, notification-only, or both.
-   - Detects available integrations and adapts accordingly.
+#### Create Ticket and Notify
 
-2. **Notify Stakeholders**
-    - This is a sub-playbook that is used in the Public Access Misconfiguration remediation playbooks for AWS, Azure, and GCP.
-    - It is used to send issue and asset details along with the remediation action taken, in a well formatted notification message via Email, Slack or MS Teams, depending on the configured and enabled integrations.
-    - Configure recipients for email, slack or MS Teams notification in the Playbook Triggered header of this playbook
-    - If no inputs are pre-configured and enableNotifications is set to 'yes' in the remediation playbook, execution will pause to request at least one recipient.
+- Creates or updates incident tickets using Jira V3 or ServiceNow v2.
+- Notifies stakeholders via Slack, Microsoft Teams, or email.
+- Customizable behavior: ticket-only, notification-only, or both.
+- Detects available integrations and adapts accordingly.
+
+#### Notify Stakeholders
+
+- This is a sub-playbook that is used in the Public Access Misconfiguration remediation playbooks for AWS, Azure, and GCP.
+- It is used to send issue and asset details along with the remediation action taken, in a well formatted notification message via Email, Slack or MS Teams, depending on the configured and enabled integrations.
+- Configure recipients for email, slack or MS Teams notification in the Playbook Triggered header of this playbook
+- If no inputs are pre-configured and enableNotifications is set to 'yes' in the remediation playbook, execution will pause to request at least one recipient.
 
 ## Dependencies
 
