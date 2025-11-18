@@ -1245,7 +1245,7 @@ def get_drilldown_searches(notable_data):
             return parse_drilldown_searches([drilldown_search])
 
     fill_null_value = None
-    fetch_query = demisto.params().get("fetchQuery",'')
+    fetch_query = demisto.params().get("fetchQuery", "")
 
     # --- Extract fillnull value if present ---
     # Matches patterns like: fillnull value=0, fillnull value="N/A", fillnull value='unknown'
