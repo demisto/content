@@ -15,7 +15,7 @@ call o365_common_fields
 	SourceWorkload = to_integer(SourceWorkload), 
 	Scope = to_integer(Scope), 
 	FileSize = to_integer(FileSize),
-	src_ip = coalesce(ClientIP, UserIp, SenderIp),
+	src_ip = coalesce(ClientIP, UserIp, SenderIp)
 | alter
 	src_ip = arraystring(arraymap(split(src_ip, "."), to_string(to_integer("@element"))), "."),
 	platform_lowercase = lowercase(to_string(Platform)),
