@@ -1,14 +1,4 @@
 adopted: true
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: 6.10.0
-    isoverridable: false
-    itemVersion: 2.0.0
-    packID: ""
-    packName: Cloud Security Posture Management Playbooks
-    prevname: ""
-    supportedModules: []
-    toServerVersion: ""
 description: |-
   Automatically remediates 9 AWS public access misconfigurations: 1 RDS database, 1 EBS snapshot, and 7 S3 bucket issues:
   1. AWS RDS database instance is publicly accessible

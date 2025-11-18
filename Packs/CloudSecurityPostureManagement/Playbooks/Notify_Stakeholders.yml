@@ -1,14 +1,4 @@
 adopted: true
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: 6.10.0
-    isoverridable: false
-    itemVersion: 2.0.0
-    packID: ""
-    packName: Cloud Security Posture Management Playbooks
-    prevname: ""
-    supportedModules: []
-    toServerVersion: ""
 description: This playbook automates notifying stakeholders via Slack v3, Microsoft
   Teams, or email. You have the flexibility to notify other teams via Slack, Microsoft
   Teams or Email by configuring the necessary integration. This playbook requires

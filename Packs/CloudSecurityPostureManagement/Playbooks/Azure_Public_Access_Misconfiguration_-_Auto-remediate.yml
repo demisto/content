@@ -1,14 +1,4 @@
 adopted: true
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    isoverridable: false
-    itemVersion: 2.0.0
-    packID: ""
-    packName: Cloud Security Posture Management Playbooks
-    prevname: ""
-    supportedModules: []
-    toServerVersion: ""
 description: |-
   Automatically remediates 3 Azure public access misconfigurations: 
   1. Azure storage account has a blob container with public access

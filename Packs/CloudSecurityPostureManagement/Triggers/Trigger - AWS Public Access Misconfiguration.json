@@ -64,5 +64,6 @@
         "cloud_posture",
         "xsiam",
         "cloud"
-    ]
+    ],
+"fromversion": "8.10.0"
 }
