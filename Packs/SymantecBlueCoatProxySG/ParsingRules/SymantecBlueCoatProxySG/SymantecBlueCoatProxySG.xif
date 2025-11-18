@@ -1,11 +1,10 @@
 [INGEST:vendor="symantec", product="bluecoatproxysg", target_dataset="symantec_bluecoatproxysg_raw", no_hit=keep]
-//Timestamp parsing
 alter _raw_log = replex(_raw_log, "\r", "")
 | alter parsed_fields = regexcapture(
-  _raw_log, "^(?P<date>\d{4}-\d{2}-\d{2}) (?P<time>\d{2}:\d{2}:\d{2}) (?P<time_taken>\d+) (?P<c_ip>\d{1,3}(?:\.\d{1,3}){3}) (?P<sc_status>\d{3}) (?P<s_action>\S+) (?P<sc_bytes>\d+) (?P<cs_bytes>\d+) (?P<cs_method>\S+) (?P<cs_uri_scheme>\S+) (?P<cs_host>\S+) (?P<cs_uri_port>\d+) (?P<cs_uri_path>\S+) (?P<cs_uri_query>\S+) (?P<cs_username>\S+) (?P<cs_auth_group>\S+) (?P<s_supplier_name>\S+) (?P<rs_content_type>\S+) (?P<cs_referer>\S+) (?P<cs_user_agent>.+?) (?P<sc_filter_result>\S+) (?P<cs_categories>.+?) (?P<x_virus_id>\S+) (?P<s_ip>\d{1,3}(?:\.\d{1,3}){3})(?:\\r)?$"
+  _raw_log, "^(?P<date>\d{4}-\d{2}-\d{2}) (?P<time>\d{2}:\d{2}:\d{2}) (?P<time_taken>\S+) (?P<c_ip>\S+) (?P<sc_status>\S+) (?P<s_action>\S+) (?P<sc_bytes>\S+) (?P<cs_bytes>\S+) (?P<cs_method>\S+) (?P<cs_uri_scheme>\S+) (?P<cs_host>\S+) (?P<cs_uri_port>\S+) (?P<cs_uri_path>\S+) (?P<cs_uri_query>\S+) (?P<cs_username>\S+) (?P<cs_auth_group>\S+) (?P<s_supplier_name>\S+) (?P<rs_content_type>\S+) (?P<cs_referer>\S+) (?P<cs_user_agent>.*?\"|[-]) (?P<sc_filter_result>\S+) (?P<cs_categories>.*?\"|[-]) (?P<x_virus_id>\S+) (?P<s_ip>\S+)(?: (?P<r_ip>\S+))?(?:\\r)?$"
   )
 | alter
     tmp_timestamp_extract = parse_timestamp("%F %T", arrayindex(regextract(_raw_log, "^(\d{4}\-\d{2}\-\d{2}\s+\d{2}\:\d{2}\:\d{2})\s"), 0))
 | alter
     _time = tmp_timestamp_extract
-| fields - tmp*;
+| fields - tmp*;  
