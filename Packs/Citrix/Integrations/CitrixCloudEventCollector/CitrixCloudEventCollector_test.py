@@ -1,7 +1,7 @@
 import pytest
 from CommonServerPython import *
 from unittest.mock import MagicMock
-
+from freezegun import freeze_time
 from CitrixCloudEventCollector import Client, get_events_command, fetch_events_command, test_module_command
 
 
@@ -149,7 +149,7 @@ def test_get_events_command_returns_results(mocker):
     assert isinstance(results, CommandResults)
     assert results.outputs[0]["recordId"] == "r1"
 
-
+@freeze_time("2025-01-14T00:00:00Z")
 def test_fetch_events_command_first_run(mocker):
     """
     Given:
@@ -158,9 +158,10 @@ def test_fetch_events_command_first_run(mocker):
         - Running `fetch_events_command` for the first time to retrieve events.
     Then:
         - The function should return events and set a new LastRun value with the timestamp and record id of te first event in the list(descending order).
+        - The function get_records_with_pagination start_date_time argument value is datetime.utcnow.
     """
     client = Client("url", "cust", "id", "secret", False, True)
-    mocker.patch.object(
+    get_records_mocker = mocker.patch.object(
         client,
         "get_records_with_pagination",
         return_value=(
@@ -175,6 +176,7 @@ def test_fetch_events_command_first_run(mocker):
     assert "LastRun" in last_run
     assert last_run["LastRun"] == "2025-01-01T00:00:00Z"
     assert last_run["RecordId"] == "id2"
+    assert get_records_mocker.call_args.kwargs["start_date_time"] == '2025-01-14T00:00:00.0000Z'
 
 
 def test_fetch_events_command_sets_last_run(mocker):
