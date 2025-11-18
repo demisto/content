@@ -34,6 +34,7 @@ APPSEC_SOURCES = [
     "CAS_CI_CD_RISK_SCANNER",
     "CAS_DRIFT_SCANNER",
 ]
+
 WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
     "core-search-asset-groups",
