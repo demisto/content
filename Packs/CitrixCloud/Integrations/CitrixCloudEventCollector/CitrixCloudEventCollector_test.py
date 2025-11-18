@@ -158,7 +158,8 @@ def test_fetch_events_command_first_run(mocker):
     When:
         - Running `fetch_events_command` for the first time to retrieve events.
     Then:
-        - The function should return events and set a new LastRun value with the timestamp and record id of te first event in the list(descending order).
+        - The function should return events and set a new LastRun value with the timestamp and record id of
+            the first event in the list(descending order).
         - The function get_records_with_pagination start_date_time argument value is datetime.utcnow.
     """
     client = Client("url", "cust", "id", "secret", False, True)
