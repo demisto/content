@@ -58,7 +58,8 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
 
      | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Host URL | The host URL. | True |
+    | Azure Cloud | When selecting the Custom option, the Host URL parameter must be filled. More information about National clouds can be found [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud). | False |
+    | Host URL | The host URL. When using this parameter, select the Custom option for the Azure Cloud. More information about National clouds can be found [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud). | False |
     | MS graph security version | MS graph security API version. | True |
     | Application ID or Client ID | The app registration ID. | True |
     | Token or Tenant ID | The tenant ID. | True |
