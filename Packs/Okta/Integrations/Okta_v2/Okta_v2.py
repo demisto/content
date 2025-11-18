@@ -523,7 +523,9 @@ def module_test(client, args):
 def unlock_user_command(client, args):
     user_id = client.get_user_id(args.get("username"))
     raw_response = client.unlock_user(user_id)
-    outputs = {"Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Metadata(true)": client.request_metadata,
+    }
 
     readable_output = f"### {args.get('username')} unlocked"
 
@@ -537,7 +539,9 @@ def unlock_user_command(client, args):
 def activate_user_command(client, args):
     user_id = client.get_user_id(args.get("username"))
     raw_response = client.activate_user(user_id)
-    outputs = {"Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Metadata(true)": client.request_metadata,
+    }
 
     readable_output = f"### {args.get('username')} is active now"
     return (readable_output, outputs, raw_response)
@@ -546,7 +550,9 @@ def activate_user_command(client, args):
 def deactivate_user_command(client, args):
     user_id = client.get_user_id(args.get("username"))
     raw_response = client.deactivate_user(user_id)
-    outputs = {"Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Metadata(true)": client.request_metadata,
+    }
 
     readable_output = f"### User {args.get('username')} deactivated"
 
@@ -560,7 +566,9 @@ def deactivate_user_command(client, args):
 def suspend_user_command(client, args):
     user_id = client.get_user_id(args.get("username"))
     raw_response = client.suspend_user(user_id)
-    outputs = {"Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Metadata(true)": client.request_metadata,
+    }
 
     readable_output = f"### {args.get('username')} status is Suspended"
     return (readable_output, outputs, raw_response)
@@ -569,7 +577,9 @@ def suspend_user_command(client, args):
 def unsuspend_user_command(client, args):
     user_id = client.get_user_id(args.get("username"))
     raw_response = client.unsuspend_user(user_id)
-    outputs = {"Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Metadata(true)": client.request_metadata,
+    }
 
     readable_output = f"### {args.get('username')} is no longer SUSPENDED"
     return (readable_output, outputs, raw_response)
@@ -590,8 +600,10 @@ def get_user_factors_command(client, args):
 
     factors = client.get_readable_factors(raw_response)
     context = createContext(factors, removeNull=True)
-    outputs = {"Account(val.ID && val.ID === obj.ID)": {"Factor": context, "ID": user_id},
-               "Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Account(val.ID && val.ID === obj.ID)": {"Factor": context, "ID": user_id},
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     readable_output = f"Factors for user: {user_id}\n {tableToMarkdown('Factors', factors)}"
     return (readable_output, outputs, raw_response)
 
@@ -607,7 +619,9 @@ def reset_factor_command(client, args):
         user_id = client.get_user_id(args.get("username"))
 
     raw_response = client.reset_factor(user_id, factor_id)
-    outputs = {"Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     readable_output = f"Factor: {factor_id} deleted"
     return (readable_output, outputs, raw_response)
 
@@ -617,7 +631,9 @@ def set_password_command(client, args):
     password = args.get("password")
 
     raw_response = client.set_password(user_id, password)
-    outputs = {"Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     readable_output = f"{args.get('username')} password was last changed on {raw_response.get('passwordChanged')}"
 
     if argToBoolean(args.get("temporary_password", False)):
@@ -625,7 +641,7 @@ def set_password_command(client, args):
         expire_password_readable_output = tableToMarkdown("Okta Temporary Password", expire_password_response, removeNull=True)
         readable_output = f"{readable_output}\n{expire_password_readable_output}"
 
-    return (readable_output, outputs, raw_response)
+    return readable_output, outputs, raw_response
 
 
 def expire_password_command(client, args):
@@ -644,8 +660,10 @@ def expire_password_command(client, args):
     user_context = client.get_users_context(raw_response)
 
     readable_output = tableToMarkdown("Okta Expired Password", raw_response, removeNull=True)
-    outputs = {"Account(val.ID && val.ID === obj.ID)": createContext(user_context, removeNull=True),
-               "Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Account(val.ID && val.ID === obj.ID)": createContext(user_context, removeNull=True),
+        "Okta.Metadata(true)": client.request_metadata,
+    }
 
     return (readable_output, outputs, raw_response)
 
@@ -661,7 +679,9 @@ def add_user_to_group_command(client, args):
     if not group_id:
         group_id = client.get_group_id(args.get("groupName"))
     raw_response = client.add_user_to_group(user_id, group_id)
-    outputs = {"Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     readable_output = f"User: {user_id} added to group: {args.get('groupName')} successfully"
     return (readable_output, outputs, raw_response)
 
@@ -677,7 +697,9 @@ def remove_from_group_command(client, args):
     if not group_id:
         group_id = client.get_group_id(args.get("groupName"))
     raw_response = client.remove_user_from_group(user_id, group_id)
-    outputs = {"Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     readable_output = f"User: {user_id} was removed from group: {args.get('groupName')} successfully"
     return (readable_output, outputs, raw_response)
 
@@ -688,8 +710,10 @@ def get_groups_for_user_command(client, args):
     groups = client.get_readable_groups(raw_response)
 
     context = createContext(groups, removeNull=True)
-    outputs = {"Account(val.ID && val.ID === obj.ID)": {"Group": context, "ID": user_id, "Type": "Okta"},
-               "Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Account(val.ID && val.ID === obj.ID)": {"Group": context, "ID": user_id, "Type": "Okta"},
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     readable_output = f"Okta groups for user: {args.get('username')}\n {tableToMarkdown('Groups', groups)}"
 
     return (readable_output, outputs, raw_response)
@@ -705,9 +729,10 @@ def verify_push_factor_command(client, args):
         raise Exception("No poll link for the push factor challenge")
     poll_response = client.poll_verify_push(poll_link.get("href"))
 
-    outputs = {"Account(val.ID && val.ID === obj.ID)": {"ID": user_id, "VerifyPushResult": poll_response.get("factorResult")},
-               "Okta.Metadata(true)": client.request_metadata,
-               }
+    outputs = {
+        "Account(val.ID && val.ID === obj.ID)": {"ID": user_id, "VerifyPushResult": poll_response.get("factorResult")},
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     readable_output = f"Verify push factor result for user {user_id}: {poll_response.get('factorResult')}"
     return (readable_output, outputs, raw_response)
 
@@ -725,14 +750,18 @@ def search_command(client, args):
         users_context = client.get_users_context(raw_response)
         users_readable = client.get_readable_users(raw_response, verbose)
         context = createContext(users_context, removeNull=True)
-        outputs = {"Account(val.ID && val.ID === obj.ID)": context,
-                   "Okta.Metadata(true)": client.request_metadata,}
+        outputs = {
+            "Account(val.ID && val.ID === obj.ID)": context,
+            "Okta.Metadata(true)": client.request_metadata,
+        }
         if verbose == "true":
             readable_output = f"### Okta users found:\n {users_readable}"
         else:
             readable_output = f"### Okta users found:\n {tableToMarkdown('Users:', users_readable)} "
         return (readable_output, outputs, raw_response)
-    outputs = {"Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     return "No users found in Okta", outputs, raw_response
 
 
@@ -752,16 +781,19 @@ def get_user_command(client: Client, args: dict):
                 raise e
 
     if not raw_response:
-        outputs = {"Okta.Metadata(true)": client.request_metadata,}
+        outputs = {
+            "Okta.Metadata(true)": client.request_metadata,
+        }
         return (f"User {user_term!r} was not found.", outputs, {})
 
     verbose = args.get("verbose")
 
     user_context = client.get_users_context(raw_response)
     user_readable = client.get_readable_users(raw_response, verbose)
-    outputs = {"Account(val.ID && val.ID === obj.ID)": createContext(user_context),
-               "Okta.Metadata(true)": client.request_metadata,
-               }
+    outputs = {
+        "Account(val.ID && val.ID === obj.ID)": createContext(user_context),
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     readable_output = user_readable if verbose == "true" else f"{tableToMarkdown(f'User:{user_term}', user_readable)} "
     return (readable_output, outputs, raw_response)
 
@@ -775,8 +807,10 @@ def create_user_command(client, args):
     activate = "true" if args.get("activate") == "true" else "false"
     raw_response = client.create_user(cred, profile, group_ids, activate)
     user_context = client.get_users_context(raw_response)
-    outputs = {"Account(val.ID && val.ID === obj.ID)": createContext(user_context),
-               "Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Account(val.ID && val.ID === obj.ID)": createContext(user_context),
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     readable_output = tableToMarkdown(f"Okta User Created: {args.get('login')}:", client.get_readable_users(raw_response))
     return (readable_output, outputs, raw_response)
 
@@ -787,7 +821,9 @@ def update_user_command(client, args):
     profile = client.build_profile(args)
     profile["login"] = args.get("username")
     raw_response = client.update_user(user_id, profile, cred)
-    outputs = {"Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     readable_output = tableToMarkdown(f"Okta user: {args.get('username')} Updated:", raw_response.get("profile"))
     return (readable_output, outputs, raw_response)
 
@@ -801,8 +837,10 @@ def get_group_members_command(client, args):
     users_context = client.get_users_context(raw_members)
     users_readable = client.get_readable_users(raw_members, args.get("verbose"))
     context = createContext(users_context, removeNull=True)
-    outputs = {"Account(val.ID && val.ID === obj.ID)": context,
-               "Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Account(val.ID && val.ID === obj.ID)": context,
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     if args.get("verbose") == "true":
         return (f"### Users for group: {args.get('groupName') or group_id}:\n {users_readable}", outputs, raw_members)
     return (tableToMarkdown(f"Users for group: {args.get('groupName') or group_id}", users_readable), outputs, raw_members)
@@ -820,8 +858,11 @@ def list_users_command(client, args):
         readable_output = f"### Okta users found:\n {tableToMarkdown('Users', users)} "
     if after_tag:
         readable_output += f"\n### tag: {after_tag}"
-    outputs = {"Account(val.ID && val.ID == obj.ID)": context, "Okta.User(val.tag)": {"tag": after_tag},
-               "Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Account(val.ID && val.ID == obj.ID)": context,
+        "Okta.User(val.tag)": {"tag": after_tag},
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     return (readable_output, outputs, raw_response)
 
 
@@ -829,8 +870,10 @@ def list_groups_command(client, args):
     raw_response = client.list_groups(args)
     groups = client.get_readable_groups(raw_response)
     context = createContext(groups, removeNull=True)
-    outputs = {"Okta.Group(val.ID && val.ID === obj.ID)": context,
-               "Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Group(val.ID && val.ID === obj.ID)": context,
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     readable_output = tableToMarkdown("Groups", groups)
 
     return (readable_output, outputs, raw_response)
@@ -839,13 +882,17 @@ def list_groups_command(client, args):
 def get_logs_command(client, args):
     raw_response = client.get_logs(args)
     if not raw_response:
-        outputs = {"Okta.Metadata(true)": client.request_metadata,}
+        outputs = {
+            "Okta.Metadata(true)": client.request_metadata,
+        }
         return "No logs found", outputs, raw_response
 
     logs = client.get_readable_logs(raw_response)
     readable_output = tableToMarkdown("Okta Events", logs)
-    outputs = {"Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)": createContext(raw_response),
-               "Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)": createContext(raw_response),
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     return (readable_output, outputs, raw_response)
 
 
@@ -853,12 +900,16 @@ def get_failed_login_command(client, args):
     args["filter"] = 'eventType eq "user.session.start" and outcome.result eq "FAILURE"'
     raw_response = client.get_logs(args)
     if not raw_response:
-        outputs = {"Okta.Metadata(true)": client.request_metadata,}
+        outputs = {
+            "Okta.Metadata(true)": client.request_metadata,
+        }
         return "No logs found", outputs, raw_response
     logs = client.get_readable_logs(raw_response)
     readable_output = tableToMarkdown("Failed Login Events", logs)
-    outputs = {"Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)": createContext(raw_response),
-               "Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)": createContext(raw_response),
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     return (readable_output, outputs, raw_response)
 
 
@@ -866,12 +917,16 @@ def get_group_assignments_command(client, args):
     args["filter"] = 'eventType eq "group.user_membership.add"'
     raw_response = client.get_logs(args)
     if not raw_response:
-        outputs = {"Okta.Metadata(true)": client.request_metadata,}
+        outputs = {
+            "Okta.Metadata(true)": client.request_metadata,
+        }
         return "No logs found", outputs, raw_response
     logs = client.get_readable_logs(raw_response)
     readable_output = tableToMarkdown("Group Assignment Events", logs)
-    outputs = {"Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)": createContext(raw_response),
-               "Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)": createContext(raw_response),
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     return (readable_output, outputs, raw_response)
 
 
@@ -879,12 +934,16 @@ def get_application_assignments_command(client, args):
     args["filter"] = 'eventType eq "application.user_membership.add"'
     raw_response = client.get_logs(args)
     if not raw_response:
-        outputs = {"Okta.Metadata(true)": client.request_metadata,}
+        outputs = {
+            "Okta.Metadata(true)": client.request_metadata,
+        }
         return "No logs found", outputs, raw_response
     logs = client.get_readable_logs(raw_response)
     readable_output = tableToMarkdown("Application Assignment Events", logs)
-    outputs = {"Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)": createContext(raw_response),
-               "Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)": createContext(raw_response),
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     return (readable_output, outputs, raw_response)
 
 
@@ -892,12 +951,16 @@ def get_application_authentication_command(client, args):
     args["filter"] = 'eventType eq "user.authentication.sso"'
     raw_response = client.get_logs(args)
     if not raw_response:
-        outputs = {"Okta.Metadata(true)": client.request_metadata,}
+        outputs = {
+            "Okta.Metadata(true)": client.request_metadata,
+        }
         return "No logs found", outputs, raw_response
     logs = client.get_readable_logs(raw_response)
     readable_output = tableToMarkdown("Application Authentication Events", logs)
-    outputs = {"Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)": createContext(raw_response),
-               "Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)": createContext(raw_response),
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     return (readable_output, outputs, raw_response)
 
 
@@ -912,7 +975,9 @@ def delete_user_command(client, args):
     if user.get("status") != "DEPROVISIONED":
         client.deactivate_user(args.get("userId") or client.get_user_id(args.get("username")))
     raw_response = client.delete_user(user_term)
-    outputs = {"Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     readable_output = f"User: {user_term} was Deleted successfully"
     return (readable_output, outputs, raw_response)
 
@@ -920,7 +985,9 @@ def delete_user_command(client, args):
 def clear_user_sessions_command(client, args):
     user_id = args.get("userId")
     raw_response = client.clear_user_sessions(user_id)
-    outputs = {"Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     readable_output = f"### User session was cleared for: {user_id}"
 
     return readable_output, outputs, raw_response
@@ -929,26 +996,34 @@ def clear_user_sessions_command(client, args):
 def get_zone_command(client, args):
     raw_response = client.get_zone(args.get("zoneID", ""))
     if not raw_response:
-        outputs = {"Okta.Metadata(true)": client.request_metadata,}
+        outputs = {
+            "Okta.Metadata(true)": client.request_metadata,
+        }
         return "No zones found.", outputs, raw_response
     readable_output = tableToMarkdown(
         "Okta Zones", raw_response, headers=["name", "id", "gateways", "status", "system", "lastUpdated", "created"]
     )
-    outputs = {"Okta.Zone(val.id && val.id === obj.id)": createContext(raw_response),
-               "Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Zone(val.id && val.id === obj.id)": createContext(raw_response),
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     return (readable_output, outputs, raw_response)
 
 
 def list_zones_command(client, args):
     raw_response = client.list_zones(args.get("limit"))
     if not raw_response:
-        outputs = {"Okta.Metadata(true)": client.request_metadata,}
+        outputs = {
+            "Okta.Metadata(true)": client.request_metadata,
+        }
         return "No zones found.", outputs, raw_response
     readable_output = tableToMarkdown(
         "Okta Zones", raw_response, headers=["name", "id", "gateways", "status", "system", "lastUpdated", "created"]
     )
-    outputs = {"Okta.Zone(val.id && val.id === obj.id)": createContext(raw_response),
-               "Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Zone(val.id && val.id === obj.id)": createContext(raw_response),
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     return (readable_output, outputs, raw_response)
 
 
@@ -1003,13 +1078,17 @@ def create_zone_command(client, args):
 
     raw_response = client.create_zone(zoneObject)
     if not raw_response:
-        outputs = {"Okta.Metadata(true)": client.request_metadata,}
+        outputs = {
+            "Okta.Metadata(true)": client.request_metadata,
+        }
         return "Zone not created.", outputs, raw_response
     readable_output = tableToMarkdown(
         "Okta Zones", raw_response, headers=["name", "id", "gateways", "status", "system", "lastUpdated", "created"]
     )
-    outputs = {"Okta.Zone(val.id && val.id === obj.id)": createContext(raw_response),
-               "Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "Okta.Zone(val.id && val.id === obj.id)": createContext(raw_response),
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     return (readable_output, outputs, raw_response)
 
 
@@ -1027,14 +1106,18 @@ def update_zone_command(client, args):
 
         raw_response = client.update_zone(zoneObject)
         if not raw_response:
-            outputs = {"Okta.Metadata(true)": client.request_metadata,}
+            outputs = {
+                "Okta.Metadata(true)": client.request_metadata,
+            }
             return "Got empty response.", outputs, raw_response
 
         readable_output = tableToMarkdown(
             "Okta Zones", raw_response, headers=["name", "id", "gateways", "status", "system", "lastUpdated", "created"]
         )
-        outputs = {"Okta.Zone(val.id && val.id === obj.id)": createContext(raw_response),
-                   "Okta.Metadata(true)": client.request_metadata,}
+        outputs = {
+            "Okta.Zone(val.id && val.id === obj.id)": createContext(raw_response),
+            "Okta.Metadata(true)": client.request_metadata,
+        }
         return (readable_output, outputs, raw_response)
     else:
         return "No zone found in Okta with this ID.", {}, {}
@@ -1057,8 +1140,10 @@ def create_group_command(client, args):
     profile = client.build_group_profile(args)
     raw_response = client.create_group(profile)
     group_context = client.get_groups_context(raw_response)
-    outputs = {"OktaGroup(val.ID && val.ID === obj.ID)": createContext(group_context),
-               "Okta.Metadata(true)": client.request_metadata,}
+    outputs = {
+        "OktaGroup(val.ID && val.ID === obj.ID)": createContext(group_context),
+        "Okta.Metadata(true)": client.request_metadata,
+    }
     readable_output = f"Group Created: [GroupID:{raw_response['id']}, GroupName: {raw_response['profile']['name']}]"
     return (readable_output, outputs, raw_response)
 

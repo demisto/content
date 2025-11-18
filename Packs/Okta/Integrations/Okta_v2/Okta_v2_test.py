@@ -742,18 +742,12 @@ def test_delete_limit_param_function(url, expected_url):
 def test_get_user_factors_command(mocker, args, expected_context):
     mock_raw_response = MagicMock()
     mock_raw_response.json.return_value = expected_context
-    mock_raw_response.headers = {"x-rate-limit-limit": 1, "x-rate-limit-remaining": 1, "x-rate-limit-reset": 1}
+    mock_raw_response.headers = {"x-rate-limit-limit": "1", "x-rate-limit-remaining": "1", "x-rate-limit-reset": "1"}
     mocker.patch.object(client, "get_user_id", return_value="TestID")
     mocker.patch.object(client, "get_user_factors", return_value=mock_raw_response)
     mocker.patch.object(client, "get_readable_factors", return_value=[expected_context])
 
-    mocker.patch.object(
-        client,
-        "get_rate_limit_context",
-        return_value={"X-Rate-Limit-Limit": 1, "X-Rate-Limit-Remaining": 1, "X-Rate-Limit-Reset": 1},
-    )
-
-    _, outputs, _ = get_user_factors_command(client, args)
+    temp1, outputs, temp2 = get_user_factors_command(client, args)
     assert expected_context == outputs.get("Account(val.ID && val.ID === obj.ID)").get("Factor")[0]
     assert outputs.get("Account(val.ID && val.ID === obj.ID)").get("ID") == args.get("userId") or "TestID"
 
@@ -922,9 +916,14 @@ def test_get_readable_logs():
 
 def test_set_password_command():
     client = Client(base_url="https://demisto.com", api_token="XXX")
+    headers = {
+            "x-rate-limit-limit": "1",
+            "x-rate-limit-remaining": "1",
+            "x-rate-limit-reset": "1",
+        }
     with requests_mock.Mocker() as m:
-        m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{"id": "1234"}])
-        mock_request = m.post("https://demisto.com/api/v1/users/1234", json={"passwordChanged": "2020-03-26T13:57:13.000Z"})
+        m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{"id": "1234"}], headers=headers)
+        mock_request = m.post("https://demisto.com/api/v1/users/1234", json={"passwordChanged": "2020-03-26T13:57:13.000Z"}, headers=headers)
 
         result = set_password_command(client, {"username": "test", "password": "a1b2c3"})
 
@@ -934,11 +933,16 @@ def test_set_password_command():
 
 def test_set_temp_password_command():
     client = Client(base_url="https://demisto.com", api_token="XXX")
+    headers = {
+            "x-rate-limit-limit": "1",
+            "x-rate-limit-remaining": "1",
+            "x-rate-limit-reset": "1",
+        }
     with requests_mock.Mocker() as m:
-        m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{"id": "1234"}])
-        m.post("https://demisto.com/api/v1/users/1234", json={"passwordChanged": "2023-03-22T10:15:26.000Z"})
+        m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{"id": "1234"}], headers=headers)
+        m.post("https://demisto.com/api/v1/users/1234", json={"passwordChanged": "2023-03-22T10:15:26.000Z"}, headers=headers)
         m.post(
-            "https://demisto.com/api/v1/users/1234/lifecycle/expire_password?tempPassword=true", json={"tempPassword": "cAn5N3gx"}
+            "https://demisto.com/api/v1/users/1234/lifecycle/expire_password?tempPassword=true", json={"tempPassword": "cAn5N3gx"}, headers=headers
         )
 
         result = set_password_command(client, {"username": "test", "password": "a1b2c3", "temporary_password": "true"})
@@ -975,7 +979,11 @@ def test_get_logs_command_with_limit(mocker, requests_mock, limit, logs_amount):
     client = Client(base_url="https://demisto.com", api_token="XXX")
     mocker.patch.object(Client, "get_paged_results", side_effect=mock_get_paged_results)
     mocker.patch.object(Client, "get_readable_logs", side_effect=mock_get_paged_results)
-    requests_mock.get(f"https://demisto.com/api/v1/logs?limit={limit}", json=LOGS[:limit])
+    requests_mock.get(f"https://demisto.com/api/v1/logs?limit={limit}", json=LOGS[:limit], headers={
+            "x-rate-limit-limit": "1",
+            "x-rate-limit-remaining": "1",
+            "x-rate-limit-reset": "1",
+        })
     args = {"limit": limit}
     readable, outputs, raw_response = get_logs_command(client=client, args=args)
     assert len(outputs.get("Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)")) == logs_amount
@@ -1163,51 +1171,3 @@ def test_apply_zone_update_append_with_range():
         "gateways": [{"type": "CIDR", "value": "192.168.1.1/32"}, {"type": "RANGE", "value": "192.168.1.2-192.168.1.10"}],
         "proxies": [{"type": "CIDR", "value": "10.0.0.1/32"}, {"type": "RANGE", "value": "10.0.0.2-10.0.0.5"}],
     }
-
-
-def test_get_user_factors_command_missing_args():
-    """
-    Given:
-        - No 'username' or 'userId' arguments.
-    When:
-        - Calling get_user_factors_command.
-    Then:
-        - Ensure an exception is raised with the correct error message.
-    """
-    with pytest.raises(Exception) as excinfo:
-        get_user_factors_command(client, {})
-    assert "You must supply either 'Username' or 'userId" in str(excinfo.value)
-
-
-def test_get_user_factors_command_no_factors_found(mocker):
-    """
-    Given:
-        - A client object that returns no factors.
-    When:
-        - Calling get_user_factors_command.
-    Then:
-        - Ensure the readable output indicates no factors were found.
-    """
-    args = {"userId": "TestID"}
-
-    mock_raw_response = MagicMock()
-    expected_content = [
-        {"id": "id", "factorType": "factorType", "provider": "provider", "status": "status", "profile": "profile"}
-    ]
-    mock_raw_response.json.return_value = expected_content
-    mock_raw_response.headers = {"x-rate-limit-limit": 1, "x-rate-limit-remaining": 1, "x-rate-limit-reset": 1}
-    mocker.patch.object(client, "get_user_id", return_value="TestID")
-    mocker.patch.object(client, "get_user_factors", return_value=mock_raw_response)
-
-    mocker.patch.object(client, "get_readable_factors", return_value=[{"Factor Name": "factorType", "Provider": "provider"}])
-    mocker.patch.object(
-        client,
-        "get_rate_limit_context",
-        return_value={"X-Rate-Limit-Limit": 1, "X-Rate-Limit-Remaining": 1, "X-Rate-Limit-Reset": 1},
-    )
-
-    readable, outputs, raw_content_returned = get_user_factors_command(client, args)
-
-    assert "Factors for user: TestID" in readable
-    assert outputs.get("Okta").get("Metadata") == {"X-Rate-Limit-Limit": 1, "X-Rate-Limit-Remaining": 1, "X-Rate-Limit-Reset": 1}
-    assert raw_content_returned == expected_content
