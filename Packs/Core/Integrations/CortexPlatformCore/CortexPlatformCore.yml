@@ -1553,6 +1553,22 @@ script:
       - name: description
         description: Change the description of an issue.
         type: string
+      - name: status
+        description: Change the status of an issue.
+        type: string
+        auto: PREDEFINED
+        predefined:
+        - New
+        - In Progress
+        - Resolved - Known Issue
+        - Resolved - Duplicate Issue
+        - Resolved - False Positive
+        - Resolved - other
+        - Resolved - True Positive
+        - Resolved - Security Testing
+        - Resolved - Dismissed
+        - Resolved - Fixed
+        - Resolved - Risk Accepted
       name: core-update-issue
       description: Updates the properties of an issue. This command does not provide an explicit indication of success.
     - arguments:
