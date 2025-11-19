@@ -977,12 +977,7 @@ def test_search_events_outbound_http_log(mocker):
 
     mock_http_request = mocker.patch.object(client.sn_client, "http_request", return_value={"result": []})
 
-    client.search_events(
-        from_time="2023-01-01 00:00:00",
-        log_type=LogType.OUTBOUND_HTTP_LOG,
-        limit=10,
-        offset=0
-    )
+    client.search_events(from_time="2023-01-01 00:00:00", log_type=LogType.OUTBOUND_HTTP_LOG, limit=10, offset=0)
 
     called_kwargs = mock_http_request.call_args.kwargs
     assert called_kwargs["params"]["sysparm_query"] == "ORDERBYDESCsys_created_on^sys_created_on>2023-01-01 00:00:00"
@@ -1024,7 +1019,7 @@ def test_get_from_date_without_existing_timestamp_in_last_run():
 
     result = get_from_date(last_run, LogType.AUDIT)
     expected_time = (datetime.utcnow() - timedelta(minutes=1)).strftime(LOGS_DATE_FORMAT)
-    
+
     assert abs(datetime.strptime(result, LOGS_DATE_FORMAT) - datetime.strptime(expected_time, LOGS_DATE_FORMAT)) < timedelta(
         seconds=5
     )

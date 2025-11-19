@@ -247,12 +247,12 @@ def enrich_events(events: List[Dict[str, Any]], log_type: LogType) -> List[Dict[
     for event in events:
         event["_time"] = datetime.strptime(event["sys_created_on"], LOGS_DATE_FORMAT).strftime(DATE_FORMAT)
         event["source_log_type"] = log_type.type_string
-        
+
         # Special handling for OUTBOUND_HTTP_LOG to add _ENTRY_STATUS
         if log_type == LogType.OUTBOUND_HTTP_LOG:
             sys_created = event.get("sys_created_on")
             sys_updated = event.get("sys_updated_on")
-            
+
             if sys_created and sys_updated:
                 if sys_created == sys_updated:
                     event["_ENTRY_STATUS"] = "new"
