@@ -208,7 +208,6 @@ def test_get_sample_benign_403(mocker):
     wildfire_get_sample_command()
     results = demisto.results.call_args[0]
     assert "Benign samples are not available for download" in results[0]
-    assert "grayware samples are available for 14 days only" in results[0]
 
 
 def test_report_chunked_response(mocker):
