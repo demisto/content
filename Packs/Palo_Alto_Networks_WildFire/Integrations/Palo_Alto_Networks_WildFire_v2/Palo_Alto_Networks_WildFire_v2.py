@@ -1488,7 +1488,7 @@ def wildfire_get_sample_command():
     for element in inputs:
         try:
             result = wildfire_get_sample(element)
-            
+
             # Check if we got a 403 status code (benign sample)
             if result.status_code == 403:
                 demisto.results(
