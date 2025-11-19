@@ -5773,7 +5773,7 @@ script:
     prettyname: Set Postgres Log Retention
     hidden: true
     quickaction: true
-    description: 'Sets the log retention period for the PostgreSQL server to 4 days. NOTE: Recommended Log retention days value can be in 4-7 inclusive range.'
+    description: 'Sets the log retention period for the PostgreSQL server to 4 days. NOTE: The recommended log retention period can be any value from 4 to 7 days.'
     outputs: [] # have no outputs for these command by response
   - arguments:
     - name: subscription_id
