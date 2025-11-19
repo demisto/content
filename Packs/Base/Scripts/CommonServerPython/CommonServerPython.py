@@ -9676,18 +9676,6 @@ if 'requests' in sys.modules:
                 ):  # The `quote_via` parameter is supported only in python3.
                     params = urllib.parse.urlencode(params, quote_via=params_parser)
 
-                # if retries:
-                #     self._implement_retry(
-                #         retries,
-                #         status_list_to_retry,
-                #         backoff_factor,
-                #         backoff_jitter,
-                #         raise_on_redirect,
-                #         raise_on_status,
-                #     )
-                # if not timeout:
-                #     timeout = self.timeout
-
                 # Execute
                 res = self._session.request(
                     method,
