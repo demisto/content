@@ -156,7 +156,6 @@ There is no context output for this command.
 >| 2024-01-28T13:21:43Z | new | HTTP Request | https://api.example.com | 200 | 2024-01-28 13:21:43 | abc123 | 2024-01-28 13:21:43 | outbound_http_log |
 >| 2024-01-28T13:22:15Z | modified | HTTP Request | https://api.example.com | 200 | 2024-01-28 13:21:43 | abc123 | 2024-01-28 13:22:15 | outbound_http_log |
 
-
 ### service-now-oauth-login
 
 ***
