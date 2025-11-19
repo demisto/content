@@ -1178,21 +1178,25 @@ def list_watchlist_items_command(client, args):
     """
 
     # prepare the request
-    limit = arg_to_number(args.get('limit', 0))
+    limit = arg_to_number(args.get('limit',50))
+    should_limit_result = not argToBoolean(args.get('all_results', False))
+
     alias = args.get("watchlist_alias", "")
     url_suffix = f"watchlists/{alias}/watchlistItems"
     item_id = args.get("watchlist_item_id")
     if item_id:
         url_suffix += f"/{item_id}"
 
+
     raw_items = []
     next_link = True
     while next_link:
-        full_url = next_link if isinstance(next_link, str) else None
+        full_url = next_link.replace("%20", " ") if isinstance(next_link, str) else None
         result = client.http_request("GET", url_suffix, full_url=full_url)
         raw_items += [result] if item_id else result.get("value", [])
         next_link = result.get("nextLink")
-        if limit and len(raw_items) >= limit:
+        if should_limit_result and len(raw_items) >= limit:
+            raw_items = raw_items[:limit]
             next_link = False
 
     items = [{"WatchlistAlias": alias, **watchlist_item_data_to_xsoar_format(item)} for item in raw_items]
