@@ -1,8 +1,8 @@
 # Authentication
 You can use the following methods to authenticate Microsoft Graph Security:
-- Cortex XSOAR app
-- Authorization Code Flow
+- Cortex XSOAR App
 - Client Credentials Flow
+- Authorization Code Flow
 - Azure Managed Identities
 
 Choose the desired flow under the "Authentication Flow" parameter.
@@ -21,18 +21,6 @@ If you previously had an API V1 configured based on the credentials obtained fro
 
 For more information, refer to this [documentation](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application).
 
-### Authentication Using Authorization Code Flow
-
-Use the [authorization code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows:~:text=then%20click%20%22Test%22.-,Authorization%20Code%20flow%23,-Some%20Cortex%20XSOAR)
-to link Microsoft Graph Security with Cortex XSOAR/XSIAM.
-
-For this flow you must use a self-deployed application. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
-For more details, follow [Self Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application:~:text=Self%20Deployed%20Application%23).
-
-After creating your application with the required permissions (see below),
-create an instance of Microsoft Graph Secuirty in your XSOAR/XSIAM environment.
-Then follow the steps under the Authorization Code Flow section [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows:~:text=then%20click%20%22Test%22.-,Authorization%20Code%20flow%23,-Some%20Cortex%20XSOAR).
-
 
 ### Authentication Using Client Credentials Flow
 
@@ -45,6 +33,19 @@ For more details, follow [Self Deployed Application](https://xsoar.pan.dev/docs/
 After creating your application with the required permissions (see below),
 create an instance of Microsoft Defender XDR in your XSOAR/XSIAM environment.
 Then follow the steps under the Client Credentials Flow section [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows:~:text=then%20click%20%22Test%22.-,Authorization%20Code%20flow%23,-Some%20Cortex%20XSOAR).
+
+
+### Authentication Using Authorization Code Flow
+
+Use the [authorization code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows:~:text=then%20click%20%22Test%22.-,Authorization%20Code%20flow%23,-Some%20Cortex%20XSOAR)
+to link Microsoft Graph Security with Cortex XSOAR/XSIAM.
+
+For this flow you must use a self-deployed application. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
+For more details, follow [Self Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application:~:text=Self%20Deployed%20Application%23).
+
+After creating your application with the required permissions (see below),
+create an instance of Microsoft Graph Secuirty in your XSOAR/XSIAM environment.
+Then follow the steps under the Authorization Code Flow section [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows:~:text=then%20click%20%22Test%22.-,Authorization%20Code%20flow%23,-Some%20Cortex%20XSOAR).
 
 
 ### Azure Managed Identities Authentication
