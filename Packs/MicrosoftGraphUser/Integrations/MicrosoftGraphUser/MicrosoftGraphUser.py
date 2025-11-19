@@ -17,6 +17,8 @@ NO_OUTPUTS: dict = {}
 APP_NAME = "ms-graph-user"
 INVALID_USER_CHARS_REGEX = re.compile(r"[%&*+/=?`{|}]")
 API_VERSION: str = "v1.0"
+MFA_APP_ID = '981f26a1-7f43-403b-a875-f8b09b8cd720'  # MFA app ID (not a secret, same app ID for all azure tenants)
+MAX_TIMEOUT_LIMIT = 60
 
 
 def camel_case_to_readable(text):
@@ -326,6 +328,218 @@ class MsGraphClient:
         """
         url_suffix = f"users/{quote(user_id)}/authentication/temporaryAccessPassMethods/{quote(policy_id)}"
         self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="text")
+        
+        
+    def request_mfa_app_secret(self) -> str:
+        """
+        The function utilizes the MFA application ID (981f26a1-7f43-403b-a875-f8b09b8cd720) to retrieve the service principal ID.
+        Which then uses the service principal ID to retrieve the client secret.
+        The client secret has an expiration of 2 years and therefore the generation will occur only once and then retrieved from the integration context.
+        TODO: add a mechanism for renewal of the client secret if expired.
+        
+        Args:
+            None.
+
+        Returns:
+            (str): the MFA application client secret.
+        """
+        
+        # if not exist, generate a new client secret.
+        # Search for the service principal with the MFA application ID.
+        sp_endpoint_url_suffix = f'servicePrincipals?$filter=appId eq \'{MFA_APP_ID}\'&$select=id'
+        demisto.debug(f"Searching for Service Principal with appId: {MFA_APP_ID}...")
+        sp_data = self.ms_client.http_request(method="GET", url_suffix=sp_endpoint_url_suffix)
+
+        if not sp_data.get('value'):
+            raise DemistoException(f"Error: Service Principal with appId {MFA_APP_ID} not found.")
+
+        # Extract the Service Principal Object ID
+        service_principal_id = sp_data['value'][0]['id']
+        demisto.debug(f"Service Principal ID (Object ID) found: {service_principal_id}")
+
+        # Send request for new client secret.
+        SECRET_DISPLAY_NAME = "MFA App Secret"
+        
+        # Endpoint to add a password credential to the service principal
+        secret_genertion_endpoint_url_suffix = f'servicePrincipals/{service_principal_id}/addPassword'
+
+        # Request body for adding the secret
+        secret_body = {
+            "passwordCredential": {
+                "displayName": SECRET_DISPLAY_NAME  # The display name for the secret, not mandatory
+            }
+        }
+
+        demisto.debug(f"Adding new client secret with display name '{SECRET_DISPLAY_NAME}'")
+        secret_result = self.ms_client.http_request(method="POST",
+                                                    url_suffix=secret_genertion_endpoint_url_suffix,
+                                                    data=json.dumps(secret_body))
+
+        # The 'secretText' is the actual secret value, which is only returned *once* on creation.
+        new_secret_value = secret_result.get('secretText')
+
+        demisto.debug(f"A new client secret with the name {secret_result.get('displayName')} was created successfully. the"
+            f"secret is valid until {secret_result.get('endDateTime')}")
+
+        return new_secret_value
+    
+    def get_mfa_app_client_token(self) -> str:
+        ctx = get_integration_context()
+        demisto.debug(ctx)
+        if (not (mfa_access_token := ctx.get("mfa_access_token"))) or (not (int(mfa_access_token.get("valid_until", 0)) > self.ms_client.epoch_seconds())):
+            demisto.debug("Creating new MFA access token.")
+            if not (client_secret := ctx.get("mfa_app_client_secret")):
+                raise DemistoException("There's no MFA app client secret, please run msgraph-user-create-mfa-client-secret command and retry.")
+                
+            # Hardcoded endpoints
+            RESOURCE = 'https://adnotifications.windowsazure.com/StrongAuthenticationService.svc/Connector'
+            AUTH_ENDPOINT = f'https://login.microsoftonline.com/{self.ms_client.tenant_id}/oauth2/token'
+            
+            # Generating MFA app access token.
+            demisto.debug("Getting MFA Client Access Token...")
+
+            token_body = {
+                'resource': RESOURCE,
+                'client_id': MFA_APP_ID,
+                'client_secret': client_secret,
+                'grant_type': "client_credentials",
+                'scope': "openid"
+            }
+
+
+            try:
+                token_response = requests.post(AUTH_ENDPOINT, data=token_body)
+                token_response.raise_for_status()
+                res = token_response.json()
+                demisto.debug("Access token obtained successfully.")
+                access_token = res.get('access_token')
+                valid_until = res.get("expires_on")
+                mfa_access_token = {"valid_until": valid_until, "access_token": access_token}
+                ctx["mfa_access_token"] = mfa_access_token
+                set_integration_context(context=ctx)
+                demisto.debug("Access token successfully saved to context.")
+                return access_token
+
+            except requests.exceptions.HTTPError as e:
+                raise DemistoException(f"Error obtaining access token: {e}\nResponse: {token_response.text}")
+        else:
+            return mfa_access_token.get("access_token")
+        
+
+    def push_mfa_notification(self, user_principal_name: str, timeout: int):
+        """
+        Attempt to generate access token the MFA app using the given client secret.
+        Then send MFA push notification to the user with the given UPN.
+        If user Approve - return None, otherwise raise an error.
+        Args:
+            client_secret (str): The client secret of the MFA app.
+            user_principal_name (str): The user principal name of the user to send the MFA notification to.
+
+        Returns:
+            None.
+        """
+        import requests
+        import xml.etree.ElementTree as ET
+        import uuid
+
+        # Hardcoded endpoints
+        MFA_SERVICE_URI = 'https://strongauthenticationservice.auth.microsoft.com/StrongAuthenticationService.svc/Connector//BeginTwoWayAuthentication'
+
+        demisto.debug("\nSending MFA challenge to the user...")
+
+        # Generate a unique GUID for ContextId
+        context_id = str(uuid.uuid4())
+
+        # Define the XML payload
+        # The ContextId is dynamically replaced with a new GUID
+        # The UPN is the user principal name of the user to send the MFA notification to.
+        xml_payload = f"""
+        <BeginTwoWayAuthenticationRequest>
+            <Version>1.0</Version>
+            <UserPrincipalName>{user_principal_name}</UserPrincipalName>
+            <Lcid>en-us</Lcid>
+            <AuthenticationMethodProperties xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+                <a:KeyValueOfstringstring>
+                    <a:Key>OverrideVoiceOtp</a:Key>
+                    <a:Value>false</a:Value>
+                </a:KeyValueOfstringstring>
+            </AuthenticationMethodProperties>
+            <ContextId>{context_id}</ContextId>
+            <SyncCall>true</SyncCall>
+            <RequireUserMatch>true</RequireUserMatch>
+            <CallerName>radius</CallerName>
+            <CallerIP>UNKNOWN:</CallerIP>
+        </BeginTwoWayAuthenticationRequest>
+        """
+        mfa_client_token = self.get_mfa_app_client_token()
+        headers = {
+            "Authorization": f"Bearer {mfa_client_token}",
+            "Content-Type": "application/xml"
+        }
+
+        try:
+            # Send the request to the strong authentication service
+            mfa_result = requests.post(
+                MFA_SERVICE_URI,
+                headers=headers,
+                data=xml_payload.strip().encode('utf-8'),
+                timeout=timeout
+            )
+            mfa_result.raise_for_status()
+
+            demisto.debug("MFA Challenge Request Sent. Waiting for response...")
+
+            # PARSE THE XML RESPONSE AND OUTPUT RESULTS
+            
+            # 1. Parse the XML string into an ElementTree root object
+            root = ET.fromstring(mfa_result.text)
+            
+            # 2. Extract crucial nodes directly from the root element
+            result_node = root.find('./Result')
+            auth_result_node = root.find('./AuthenticationResult')
+
+            # Ensure the core nodes exist before accessing their text
+            if result_node is not None and auth_result_node is not None:
+                
+                # Get the core values
+                result_value = result_node.find('./Value').text
+                # AuthenticationResult is a string "true" or "false"
+                mfa_challenge_received = auth_result_node.text.lower() == 'true'
+
+                # Get message, correctly handling the XML schema 'nil' attribute
+                message_node = result_node.find('./Message')
+                is_nil = message_node is not None and message_node.get('{http://www.w3.org/2001/XMLSchema-instance}nil') == 'true'
+                result_message = message_node.text if message_node is not None and not is_nil else "No specific message"
+
+                # Determine final status
+                mfa_challenge_approved = (result_value == "Success")
+                mfa_challenge_denied = (result_value == "PhoneAppDenied")
+                mfa_challenge_timeout = (result_value == "PhoneAppNoResponse")
+
+                demisto.debug("--- MFA CHALLENGE RESULT ---")
+                demisto.debug(f"Raw Result Value: {result_value}")
+                demisto.debug(f"Message: {result_message}")
+
+                if mfa_challenge_approved and mfa_challenge_received:
+                    return "Status: User Approved MFA Request 🎉"
+                elif mfa_challenge_denied:
+                    raise DemistoException("Status: User Denied Request ❌")
+                elif mfa_challenge_timeout:
+                    raise DemistoException("Status: MFA Request Timed Out ⏳")
+                else:
+                    # Covers "NoDefaultAuthenticationMethodIsConfigured" or other failures
+                    raise DemistoException("Status: MFA Request Failed. Check user setup or raw XML for details.")
+            
+            else:
+                # Fallback if XML structure is unexpected or empty
+                raise DemistoException(f"Error: Could not find core <Result> or <AuthenticationResult> elements in XML.\nRaw Response:\n{mfa_result.text}")
+
+        except requests.exceptions.HTTPError as e:
+            raise DemistoException(f"Error sending MFA challenge: {e}\n Response: {mfa_result.text}")
+        except ET.ParseError as e:
+            raise DemistoException(f"FATAL XML PARSE ERROR (Structure): {e}\nRaw Response: {mfa_result.text}")
+        except Exception as e:
+            raise DemistoException(f"An unexpected error occurred: {e}")
 
 
 def suppress_errors_with_404_code(func):
@@ -731,6 +945,38 @@ def delete_tap_policy_command(client: MsGraphClient, args: dict) -> CommandResul
     return CommandResults(readable_output=human_readable)
 
 
+def create_client_secret_command(client: MsGraphClient, args: dict) -> CommandResults:
+        ctx = get_integration_context()
+        if ctx.get('mfa_app_client_secret'):
+            return CommandResults(readable_output="Client secret already exist, skipping creating a new one.")
+        else:
+            mfa_app_secret = client.request_mfa_app_secret()
+            ctx["mfa_app_client_secret"] = mfa_app_secret
+            set_integration_context(context=ctx)
+            return CommandResults(readable_output="A new client secret has been added, you might need to wait 30-60 seconds before the secret will be activated.")
+    
+    
+def request_mfa_command(client: MsGraphClient, args: dict) -> None:
+    """
+    Pops a request to MFA for the given user.
+
+    Args:
+        client (MsGraphClient): The Microsoft Graph client used to make the API request.
+        args (dict): A dictionary of arguments, which must include:
+            - user_mail (str): The mail of the user to pop the MFA to.
+
+    Returns:
+        CommandResults: Pops a request to MFA for the given user.
+    """
+    user_mail = args.get("user_mail", "")
+    timeout = min(MAX_TIMEOUT_LIMIT, arg_to_number(args.get("timeout", MAX_ALLOWED_ENTRY_SIZE)))
+    try:
+        client.push_mfa_notification(user_mail, timeout)
+    except Exception as e:
+        raise DemistoException(f"Failed to pop MFA request for user {user_mail}: {e}")
+    
+    return CommandResults(readable_output=f"MFA request was successfully popped for user {user_mail}")
+
 def create_zip_with_password(generated_tap_password: str, zip_password: str):
     """
     Creates a password-protected zip file containing the TAP policy password.
@@ -834,6 +1080,8 @@ def main():
         "msgraph-user-tap-policy-list": list_tap_policy_command,
         "msgraph-user-tap-policy-create": create_tap_policy_command,
         "msgraph-user-tap-policy-delete": delete_tap_policy_command,
+        "msgraph-user-request-mfa": request_mfa_command,
+        "msgraph-user-create-mfa-client-secret": create_client_secret_command,
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")
