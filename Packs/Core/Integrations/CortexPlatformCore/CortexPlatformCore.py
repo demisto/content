@@ -44,7 +44,8 @@ WEBAPP_COMMANDS = [
     "core-create-appsec-policy",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
-APPSEC_COMMANDS = ["core-enable-scanners"]
+APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
+
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
@@ -440,6 +441,14 @@ class Client(CoreClient):
 
         return reply
 
+    def appsec_remediate_issue(self, request_body):
+        return self._http_request(
+            method="POST",
+            data=request_body,
+            headers={**self._headers, "content-type": "application/json"},
+            url_suffix="/v1/issues/fix/trigger_fix_pull_request",
+        )
+
     def get_appsec_suggested_fix(self, issue_id: str) -> dict | None:
         reply = self._http_request(
             method="GET",
@@ -829,16 +838,31 @@ def update_issue_command(client: Client, args: dict):
     if not issue_id:
         raise DemistoException("Issue ID is required for updating an issue.")
 
+    status_map = {
+        "New": "STATUS_010_NEW",
+        "In Progress": "STATUS_020_UNDER_INVESTIGATION",
+        "Resolved - Known Issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
+        "Resolved - Duplicate Issue": "STATUS_050_RESOLVED_DUPLICATE",
+        "Resolved - False Positive": "STATUS_060_RESOLVED_FALSE_POSITIVE",
+        "Resolved - other": "STATUS_070_RESOLVED_OTHER",
+        "Resolved - True Positive": "STATUS_090_RESOLVED_TRUE_POSITIVE",
+        "Resolved - Security Testing": "STATUS_100_RESOLVED_SECURITY_TESTING",
+        "Resolved - Dismissed": "STATUS_240_RESOLVED_DISMISSED",
+        "Resolved - Fixed": "STATUS_250_RESOLVED_FIXED",
+        "Resolved - Risk Accepted": "STATUS_130_RESOLVED_RISK_ACCEPTED",
+    }
     severity_map = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
     severity_value = args.get("severity")
+    status = args.get("status")
     update_args = {
         "assigned_user": args.get("assigned_user_mail"),
-        "severity": severity_map.get(severity_value) if severity_value is not None else None,
+        "severity": severity_map.get(severity_value) if severity_value else None,
         "name": args.get("name"),
         "occurred": arg_to_timestamp(args.get("occurred"), ""),
         "phase": args.get("phase"),
         "type": args.get("type"),
         "description": args.get("description"),
+        "resolution_status": status_map.get(status) if status else None,
     }
 
     # Remove None values before sending to API
@@ -1071,6 +1095,45 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
         raise DemistoException(f"Failed to fetch asset group IDs for {missing_groups}. Ensure the asset group names are valid.")
 
     return group_ids
+
+
+def appsec_remediate_issue_command(client: Client, args: dict) -> CommandResults:
+    """
+    Create automated pull requests to fix multiple security issues in a single bulk operation.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - issueIds (str): List of issue IDs to fix.
+                         - title (str): Title of the PR triggered.
+
+    Returns:
+        CommandResults: Object containing the formatted extra data,
+                        raw response, and outputs for integration context.
+    """
+    args = demisto.args()
+    issue_ids = argToList(args.get("issue_ids"))
+    if len(issue_ids) > 10:
+        raise DemistoException("Please provide a maximum of 10 issue IDs per request.")
+
+    triggered_prs = []
+    for issue_id in issue_ids:
+        request_body = {"issueIds": [issue_id], "title": args.get("title")}
+        request_body = remove_empty_elements(request_body)
+        current_response = client.appsec_remediate_issue(request_body)
+        if current_response and isinstance(current_response, dict):
+            current_triggered_prs = current_response.get("triggeredPrs")
+            if isinstance(current_triggered_prs, list) and len(current_triggered_prs) > 0:
+                triggered_prs.append(current_triggered_prs[0])
+
+    return CommandResults(
+        readable_output=tableToMarkdown(name="Triggered PRs", t=triggered_prs),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.TriggeredPRs",
+        outputs=triggered_prs,
+        outputs_key_field="issueId",
+        raw_response=triggered_prs,
+    )
 
 
 def build_asset_coverage_filter(args: dict) -> FilterBuilder:
@@ -1554,8 +1617,12 @@ def main():  # pragma: no cover
 
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
+
         elif command == "core-enable-scanners":
             return_results(enable_scanners_command(client, args))
+
+        elif command == "core-appsec-remediate-issue":
+            return_results(appsec_remediate_issue_command(client, args))
 
         elif command == "core-get-asset-coverage":
             return_results(get_asset_coverage_command(client, args))
