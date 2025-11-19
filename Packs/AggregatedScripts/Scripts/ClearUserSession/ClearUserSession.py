@@ -475,9 +475,7 @@ def run_command(
         brand=brand,
     )
     if clear_user_sessions_command.is_valid_args():
-        demisto.debug(f"running command for with {brand=}, {user_id=}, {user_name}")
         readable_outputs, _, error_message = clear_user_sessions(clear_user_sessions_command)
-        demisto.debug(f"execution ended with {readable_outputs[0].readable_output=}, {error_message=}")
         results_for_verbose.extend(readable_outputs)
         if not error_message:
             clear_session_results.append((brand, "Success", f"User session was cleared for {user_name or user_id}"))
