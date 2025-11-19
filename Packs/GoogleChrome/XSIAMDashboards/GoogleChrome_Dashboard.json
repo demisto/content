@@ -610,7 +610,8 @@
                 }
             ],
             "default_dashboard_id": 1,
-            "global_id": "06d48444d70f4cba8aaa343e518e484a"
+            "global_id": "06d48444d70f4cba8aaa343e518e484a",
+            "id": "06d48444d70f4cba8aaa343e518e484a"
         }
     ],
     "widgets_data": [
