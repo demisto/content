@@ -179,6 +179,38 @@ def test_get_sample(mocker):
     assert results[0]["File"] == filename
 
 
+def test_get_sample_benign_403(mocker):
+    """
+    Given:
+     - SHA-256 hash of a benign sample.
+
+    When:
+     - Running get-sample command on a benign sample.
+
+    Then:
+     - Verify that a 403 status code is handled correctly.
+     - Verify the correct message is displayed indicating benign samples are not available.
+    """
+    mocker.patch.object(demisto, "results")
+    get_sample_response = Response()
+    get_sample_response.status_code = 403
+    get_sample_response.headers = {
+        "Server": "nginx",
+        "Date": "Thu, 28 May 2020 15:03:35 GMT",
+        "Content-Type": "text/html",
+        "Connection": "keep-alive",
+    }
+    get_sample_response._content = b"Forbidden"
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.wildfire_get_sample", return_value=get_sample_response)
+    mocker.patch.object(
+        demisto, "args", return_value={"sha256": "8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51"}
+    )
+    wildfire_get_sample_command()
+    results = demisto.results.call_args[0]
+    assert "Benign samples are not available for download" in results[0]
+    assert "grayware samples are available for 14 days only" in results[0]
+
+
 def test_report_chunked_response(mocker):
     """
     Given:
