@@ -331,8 +331,7 @@ alter
         and not incidr("@element", "192.168.0.0/16") 
         and not incidr("@element", "127.0.0.0/8") 
         and not incidr("@element", "169.254.0.0/16") 
-        and not incidr("@element", "100.64.0.0/10") 
-    ),
+        and not incidr("@element", "100.64.0.0/10")),
   xdm.event.id = id,
   xdm.event.outcome = if(result = "success", XDM_CONST.OUTCOME_SUCCESS, result = "failure", XDM_CONST.OUTCOME_FAILED, result = "unknownFutureValue", XDM_CONST.OUTCOME_UNKNOWN, result = "timeout", XDM_CONST.OUTCOME_PARTIAL),
   xdm.event.original_event_type = category,
