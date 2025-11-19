@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from collections import defaultdict
-
+import re
 from typing import Any
 
 
@@ -144,8 +144,8 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> tuple[list[d
     entry_context_list = []
     for entry in res:
         entry_context_list.append(entry.get("EntryContext", {}))
-        if is_error(entry):
-            errors_command_results.extend(prepare_human_readable(command_name, args, get_error(entry), is_error=True))
+        if is_error_enhanced(entry):
+            errors_command_results.extend(prepare_human_readable(command_name, args, get_error_enhanced(entry), is_error=True))
         else:
             human_readable_list.append(entry.get("HumanReadable") or "")
     human_readable = "\n".join(human_readable_list)
@@ -328,6 +328,140 @@ def create_readable_output(outputs: list):
     return readable_output
 
 
+def is_content_error(entry: dict) -> bool:
+    """
+    Check if an entry contains error indicators in its Content field using pattern matching.
+
+    This function examines the Content field of an entry to identify potential error conditions
+    that might not be captured by the standard Type field check. Uses regular expressions
+    to match error patterns with dynamic content.
+
+    Args:
+        entry (dict): The entry dictionary to check for error content.
+
+    Returns:
+        bool: True if the entry content indicates an error, False otherwise.
+    """
+    content = entry.get("Contents", "") or entry.get("Content", "")
+
+    if not content or not isinstance(content, str):
+        return False
+
+    # Convert to lowercase for case-insensitive matching
+    content_lower = content.lower()
+
+    # Error patterns using regular expressions to handle dynamic content
+    error_patterns = [
+        r"user\s+.*?\s+does\s+not\s+exist",           # "User <id> does not exist"
+        r"user\s+.*?\s+not\s+found",                  # "User <id> not found"
+        r"user\s+.*?\s+is\s+invalid",                 # "User <id> is invalid"
+        r"could\s+not\s+find\s+user\s+.*",            # "Could not find user <id>"
+        r"no\s+user\s+found\s+.*",                    # "No user found with id <id>"
+        r"invalid\s+user\s+.*",                       # "Invalid user <id>"
+        r"user\s+.*?\s+lookup\s+failed",              # "User <id> lookup failed"
+        r"username\s+.*?\s+not\s+found",              # "Username <name> not found"
+        r"user\s+id\s+.*?\s+not\s+found",             # "User ID <id> not found"
+        r"access\s+denied\s+.*",                      # "Access denied for user <id>"
+        r"permission\s+denied\s+.*",                  # "Permission denied for <user>"
+        r"unauthorized\s+.*",                         # "Unauthorized access for <user>"
+        r"authentication\s+failed\s+.*",              # "Authentication failed for <user>"
+        r"forbidden\s+.*",                            # "Forbidden access for <user>"
+        r"bad\s+request\s+.*",                        # "Bad request for user <id>"
+        r"invalid\s+request\s+.*",                    # "Invalid request for <user>"
+        r"invalid\s+credentials\s+.*",                # "Invalid credentials for <user>"
+        r"failed\s+to\s+.*\s+user",                   # "Failed to find user", "Failed to authenticate user"
+        r"error\s*:\s*.*user.*",                      # "Error: user related message"
+        r"exception\s*:\s*.*user.*",                  # "Exception: user related message"
+        r"unable\s+to\s+.*\s+user",                   # "Unable to find user", "Unable to authenticate user"
+        r"session\s+.*\s+not\s+found",                # "Session <id> not found"
+        r"session\s+.*\s+expired",                    # "Session <id> expired"
+        r"session\s+.*\s+invalid",                    # "Session <id> invalid"
+        r".*\s+does\s+not\s+have\s+.*\s+permission", # "<user> does not have <action> permission"
+        r"account\s+.*\s+disabled",                   # "Account <id> disabled"
+        r"account\s+.*\s+suspended",                  # "Account <id> suspended"
+        r"account\s+.*\s+not\s+found",                # "Account <id> not found"
+    ]
+
+    # Simple string patterns (no regex needed)
+    simple_error_indicators = [
+        "error:",
+        "failed:",
+        "exception:",
+        "access denied",
+        "permission denied",
+        "unauthorized",
+        "authentication failed",
+        "forbidden",
+        "bad request",
+        "invalid request",
+        "invalid credentials",
+        "user does not exist",
+        "user not found",
+        "invalid user",
+        "could not find user",
+        "no user found",
+        "user lookup failed",
+        "username not found",
+        "user id not found"
+    ]
+
+    # Check regex patterns
+    for pattern in error_patterns:
+        if re.search(pattern, content_lower):
+            return True
+
+    # Check simple string patterns
+    for indicator in simple_error_indicators:
+        if indicator in content_lower:
+            return True
+
+    return False
+
+def is_error_enhanced(entry: dict) -> bool:
+    """
+    Enhanced error detection that checks both the Type field and Content field.
+
+    Args:
+        entry (dict): The entry dictionary to check for errors.
+
+    Returns:
+        bool: True if the entry indicates an error, False otherwise.
+    """
+    # First check using the standard is_error function
+    if is_error(entry):
+        return True
+
+    # Then check the content for error indicators
+    return is_content_error(entry)
+
+def get_error_enhanced(entry: dict) -> str:
+    """
+    Enhanced error message extraction that tries the standard get_error function first,
+    then falls back to extracting error information from the Content field.
+
+    Args:
+        entry (dict): The entry dictionary to extract error message from.
+
+    Returns:
+        str: The error message from the entry.
+
+    Raises:
+        ValueError: If no error is detected in the entry.
+    """
+    try:
+        # First try the standard get_error function
+        return get_error(entry)
+    except ValueError:
+        # If standard get_error fails, check if we can extract error from content
+        if is_content_error(entry):
+            content = entry.get("Contents", "") or entry.get("Content", "")
+            if not content:
+                return "Unknown error occurred"
+            return content.strip()
+        else:
+            # If no error is detected, raise the original ValueError
+            raise ValueError("execute_command_result has no error entry. before using get_error_enhanced use is_error_enhanced")
+
 def run_command(
     user_id: str,
     results_for_verbose: list[CommandResults],
@@ -341,7 +475,9 @@ def run_command(
         brand=brand,
     )
     if clear_user_sessions_command.is_valid_args():
+        demisto.debug(f"running command for with {brand=}, {user_id=}, {user_name}")
         readable_outputs, _, error_message = clear_user_sessions(clear_user_sessions_command)
+        demisto.debug(f"execution ended with {readable_outputs[0].readable_output=}, {error_message=}")
         results_for_verbose.extend(readable_outputs)
         if not error_message:
             clear_session_results.append((brand, "Success", f"User session was cleared for {user_name or user_id}"))
