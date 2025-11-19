@@ -31,7 +31,7 @@ For this flow you must use a self-deployed application. To use a self-configured
 For more details, follow [Self Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application:~:text=Self%20Deployed%20Application%23).
 
 After creating your application with the required permissions (see below),
-create an instance of Microsoft Defender XDR in your XSOAR/XSIAM environment.
+create an instance of Microsoft Graph Security in your XSOAR/XSIAM environment.
 Then follow the steps under the Client Credentials Flow section [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows:~:text=then%20click%20%22Test%22.-,Authorization%20Code%20flow%23,-Some%20Cortex%20XSOAR).
 
 
@@ -44,7 +44,7 @@ For this flow you must use a self-deployed application. To use a self-configured
 For more details, follow [Self Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application:~:text=Self%20Deployed%20Application%23).
 
 After creating your application with the required permissions (see below),
-create an instance of Microsoft Graph Secuirty in your XSOAR/XSIAM environment.
+create an instance of Microsoft Graph Security in your XSOAR/XSIAM environment.
 Then follow the steps under the Authorization Code Flow section [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows:~:text=then%20click%20%22Test%22.-,Authorization%20Code%20flow%23,-Some%20Cortex%20XSOAR).
 
 
