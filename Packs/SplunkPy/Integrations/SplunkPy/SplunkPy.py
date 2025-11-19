@@ -23,7 +23,6 @@ OUTPUT_MODE_JSON = "json"  # type of response from splunk-sdk query (json/csv/xm
 # Define utf8 as default encoding
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
-DAYLIGHT_SAVING_TIME_HOURS_DELTA = timedelta(hours=1)
 DEFAULT_ASSET_ENRICH_TABLES = "asset_lookup_by_str,asset_lookup_by_cidr"
 DEFAULT_IDENTITY_ENRICH_TABLE = "identity_lookup_expanded"
 VERIFY_CERTIFICATE = not bool(params.get("unsecure"))
@@ -338,7 +337,7 @@ def remove_irrelevant_incident_ids(
             # Last fetched IDs hold the occurred time that they were seen, which is basically the end time of the fetch window
             # they were fetched in, and will be deleted from the last fetched IDs once they pass the fetch window
             incident_window_end_datetime = datetime.strptime(incident_occurred_time.get("occurred_time", ""), SPLUNK_TIME_FORMAT)
-            if incident_window_end_datetime >= window_start_datetime - DAYLIGHT_SAVING_TIME_HOURS_DELTA:
+            if incident_window_end_datetime >= window_start_datetime:
                 # We keep the incident, since it is still in the fetch window
                 extensive_log(
                     f"[SplunkPy] Keeping {incident_id} as part of the last fetched IDs. {incident_window_end_datetime=}"
