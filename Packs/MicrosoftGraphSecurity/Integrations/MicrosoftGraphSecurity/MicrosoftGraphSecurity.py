@@ -2029,7 +2029,7 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
 
 
 def test_module(client: MsGraphClient, args):
-    client.ms_client.main_test_module('msg-')
+    client.ms_client.main_test_module("msg-")
     return "ok"
 
 
@@ -2046,7 +2046,9 @@ def main():
     private_key = replace_spaces_in_credential(params.get("creds_certificate", {}).get("password")) or params.get("private_key")
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     auth_flow = get_auth_type_flow(params.get("auth_flow"))
-    self_deployed: bool = (is_self_deployed_flow(auth_flow)) or (params.get("self_deployed", False)) or (managed_identities_client_id is not None)
+    self_deployed: bool = (
+        (is_self_deployed_flow(auth_flow)) or (params.get("self_deployed", False)) or (managed_identities_client_id is not None)
+    )
     api_version: str = params.get("api_version", API_V2)
 
     if not managed_identities_client_id:
@@ -2100,11 +2102,7 @@ def main():
     try:
         auth_code = params.get("auth_code", {}).get("password")
         redirect_uri = params.get("redirect_uri")
-        grant_type = (
-            auth_flow if auth_flow
-            else AUTHORIZATION_CODE if auth_code and redirect_uri
-            else CLIENT_CREDENTIALS
-        )
+        grant_type = auth_flow if auth_flow else AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
         client: MsGraphClient = MsGraphClient(
             tenant_id=tenant,
             auth_code=auth_code,

@@ -675,7 +675,7 @@ def get_auth_type_flow(auth_flow: str) -> None | str:
         "Azure Managed Identities": None,
         "Client Credentials": CLIENT_CREDENTIALS,
         "Authorization Code": AUTHORIZATION_CODE,
-        "Device Code": DEVICE_CODE
+        "Device Code": DEVICE_CODE,
     }
     return auth_flow_dict.get(auth_flow, None)
 
@@ -933,8 +933,9 @@ class MicrosoftClient(BaseClient):
                     raise DemistoException(f"{message_prefix} enter your {field.replace('_', ' ').title()}.")
 
         if flow == CLIENT_CREDENTIALS:
-            require_fields(fields=["tenant_id", "client_secret", "client_id"],
-                           message_prefix="When using client credentials flow you must")
+            require_fields(
+                fields=["tenant_id", "client_secret", "client_id"], message_prefix="When using client credentials flow you must"
+            )
             self.get_access_token()
             return "ok"
 
@@ -948,8 +949,9 @@ class MicrosoftClient(BaseClient):
             )
 
         elif flow == AUTHORIZATION_CODE:
-            require_fields(["tenant_id", "client_secret", "client_id", "redirect_uri"],
-                           "When using authorization code flow you must")
+            require_fields(
+                ["tenant_id", "client_secret", "client_id", "redirect_uri"], "When using authorization code flow you must"
+            )
             raise DemistoException(
                 f"The *Test* button is not available for the Authorization Code Flow. "
                 f"Please use the !{integration_command_prefix}-generate-login-url command. "
@@ -1193,9 +1195,11 @@ class MicrosoftClient(BaseClient):
                 )
             response_json = response.json()
         except Exception as e:
-            return_error(f"Error in Microsoft authorization."
-                         f" If you are using a self-deployed app, make sure the checkbox of self-deployed is selected if exists."
-                         f" Error: {e!s}")
+            return_error(
+                f"Error in Microsoft authorization."
+                f" If you are using a self-deployed app, make sure the checkbox of self-deployed is selected if exists."
+                f" Error: {e!s}"
+            )
 
         access_token = response_json.get("access_token", "")
         expires_in = int(response_json.get("expires_in", 3595))
@@ -1247,9 +1251,11 @@ class MicrosoftClient(BaseClient):
                 )
             response_json = response.json()
         except Exception as e:
-            return_error(f"Error in Microsoft authorization."
-                         f" If you are using a self-deployed app, make sure the checkbox of self-deployed is selected if exists."
-                         f" Error: {e!s}")
+            return_error(
+                f"Error in Microsoft authorization."
+                f" If you are using a self-deployed app, make sure the checkbox of self-deployed is selected if exists."
+                f" Error: {e!s}"
+            )
 
         access_token = response_json.get("access_token", "")
         expires_in = int(response_json.get("expires_in", 3595))
@@ -1315,9 +1321,11 @@ class MicrosoftClient(BaseClient):
                 )
             response_json = response.json()
         except Exception as e:
-            return_error(f"Error in Microsoft authorization."
-                         f" If you are using a self-deployed app, make sure the checkbox of self-deployed is selected if exists."
-                         f" Error: {e!s}")
+            return_error(
+                f"Error in Microsoft authorization."
+                f" If you are using a self-deployed app, make sure the checkbox of self-deployed is selected if exists."
+                f" Error: {e!s}"
+            )
 
         access_token = response_json.get("access_token", "")
         expires_in = int(response_json.get("expires_in", 3595))

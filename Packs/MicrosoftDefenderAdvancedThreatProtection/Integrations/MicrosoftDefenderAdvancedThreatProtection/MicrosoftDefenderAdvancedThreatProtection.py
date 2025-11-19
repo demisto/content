@@ -1244,8 +1244,9 @@ class MsClient:
         grant_type = get_auth_type_flow(auth_type)
         demisto.debug(f"Using flow {grant_type}")
         token_retrieval_url = (
-            urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS.get(endpoint_type),
-                    "/organizations/oauth2/v2.0/token")
+            urljoin(
+                MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS.get(endpoint_type), "/organizations/oauth2/v2.0/token"
+            )
             if auth_type == "Authorization Code"
             else None
         )

@@ -315,7 +315,7 @@ def test_module(client: Client) -> str | CommandResults:
     # This  should validate all the inputs given in the integration configuration panel,
     # either manually or by using an API that uses them.
 
-    client.ms_client.main_test_module('microsoft-365-defender')
+    client.ms_client.main_test_module("microsoft-365-defender")
     # if client.client_credentials:
     #     client.ms_client.get_access_token()
     #     return "ok"
