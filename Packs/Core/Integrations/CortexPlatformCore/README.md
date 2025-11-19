@@ -792,7 +792,6 @@ Updates the properties of an issue. This command does not provide an explicit in
 #### Context Output
 
 There is no context output for this command.
-
 ### core-appsec-remediate-issue
 
 ***
