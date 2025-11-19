@@ -352,34 +352,34 @@ def is_content_error(entry: dict) -> bool:
 
     # Error patterns using regular expressions to handle dynamic content
     error_patterns = [
-        r"user\s+.*?\s+does\s+not\s+exist",           # "User <id> does not exist"
-        r"user\s+.*?\s+not\s+found",                  # "User <id> not found"
-        r"user\s+.*?\s+is\s+invalid",                 # "User <id> is invalid"
-        r"could\s+not\s+find\s+user\s+.*",            # "Could not find user <id>"
-        r"no\s+user\s+found\s+.*",                    # "No user found with id <id>"
-        r"invalid\s+user\s+.*",                       # "Invalid user <id>"
-        r"user\s+.*?\s+lookup\s+failed",              # "User <id> lookup failed"
-        r"username\s+.*?\s+not\s+found",              # "Username <name> not found"
-        r"user\s+id\s+.*?\s+not\s+found",             # "User ID <id> not found"
-        r"access\s+denied\s+.*",                      # "Access denied for user <id>"
-        r"permission\s+denied\s+.*",                  # "Permission denied for <user>"
-        r"unauthorized\s+.*",                         # "Unauthorized access for <user>"
-        r"authentication\s+failed\s+.*",              # "Authentication failed for <user>"
-        r"forbidden\s+.*",                            # "Forbidden access for <user>"
-        r"bad\s+request\s+.*",                        # "Bad request for user <id>"
-        r"invalid\s+request\s+.*",                    # "Invalid request for <user>"
-        r"invalid\s+credentials\s+.*",                # "Invalid credentials for <user>"
-        r"failed\s+to\s+.*\s+user",                   # "Failed to find user", "Failed to authenticate user"
-        r"error\s*:\s*.*user.*",                      # "Error: user related message"
-        r"exception\s*:\s*.*user.*",                  # "Exception: user related message"
-        r"unable\s+to\s+.*\s+user",                   # "Unable to find user", "Unable to authenticate user"
-        r"session\s+.*\s+not\s+found",                # "Session <id> not found"
-        r"session\s+.*\s+expired",                    # "Session <id> expired"
-        r"session\s+.*\s+invalid",                    # "Session <id> invalid"
-        r".*\s+does\s+not\s+have\s+.*\s+permission", # "<user> does not have <action> permission"
-        r"account\s+.*\s+disabled",                   # "Account <id> disabled"
-        r"account\s+.*\s+suspended",                  # "Account <id> suspended"
-        r"account\s+.*\s+not\s+found",                # "Account <id> not found"
+        r"user\s+.*?\s+does\s+not\s+exist",  # "User <id> does not exist"
+        r"user\s+.*?\s+not\s+found",  # "User <id> not found"
+        r"user\s+.*?\s+is\s+invalid",  # "User <id> is invalid"
+        r"could\s+not\s+find\s+user\s+.*",  # "Could not find user <id>"
+        r"no\s+user\s+found\s+.*",  # "No user found with id <id>"
+        r"invalid\s+user\s+.*",  # "Invalid user <id>"
+        r"user\s+.*?\s+lookup\s+failed",  # "User <id> lookup failed"
+        r"username\s+.*?\s+not\s+found",  # "Username <name> not found"
+        r"user\s+id\s+.*?\s+not\s+found",  # "User ID <id> not found"
+        r"access\s+denied\s+.*",  # "Access denied for user <id>"
+        r"permission\s+denied\s+.*",  # "Permission denied for <user>"
+        r"unauthorized\s+.*",  # "Unauthorized access for <user>"
+        r"authentication\s+failed\s+.*",  # "Authentication failed for <user>"
+        r"forbidden\s+.*",  # "Forbidden access for <user>"
+        r"bad\s+request\s+.*",  # "Bad request for user <id>"
+        r"invalid\s+request\s+.*",  # "Invalid request for <user>"
+        r"invalid\s+credentials\s+.*",  # "Invalid credentials for <user>"
+        r"failed\s+to\s+.*\s+user",  # "Failed to find user", "Failed to authenticate user"
+        r"error\s*:\s*.*user.*",  # "Error: user related message"
+        r"exception\s*:\s*.*user.*",  # "Exception: user related message"
+        r"unable\s+to\s+.*\s+user",  # "Unable to find user", "Unable to authenticate user"
+        r"session\s+.*\s+not\s+found",  # "Session <id> not found"
+        r"session\s+.*\s+expired",  # "Session <id> expired"
+        r"session\s+.*\s+invalid",  # "Session <id> invalid"
+        r".*\s+does\s+not\s+have\s+.*\s+permission",  # "<user> does not have <action> permission"
+        r"account\s+.*\s+disabled",  # "Account <id> disabled"
+        r"account\s+.*\s+suspended",  # "Account <id> suspended"
+        r"account\s+.*\s+not\s+found",  # "Account <id> not found"
     ]
 
     # Simple string patterns (no regex needed)
@@ -402,7 +402,7 @@ def is_content_error(entry: dict) -> bool:
         "no user found",
         "user lookup failed",
         "username not found",
-        "user id not found"
+        "user id not found",
     ]
 
     # Check regex patterns
@@ -416,6 +416,7 @@ def is_content_error(entry: dict) -> bool:
             return True
 
     return False
+
 
 def is_error_enhanced(entry: dict) -> bool:
     """
@@ -433,6 +434,7 @@ def is_error_enhanced(entry: dict) -> bool:
 
     # Then check the content for error indicators
     return is_content_error(entry)
+
 
 def get_error_enhanced(entry: dict) -> str:
     """
@@ -461,6 +463,7 @@ def get_error_enhanced(entry: dict) -> str:
         else:
             # If no error is detected, raise the original ValueError
             raise ValueError("execute_command_result has no error entry. before using get_error_enhanced use is_error_enhanced")
+
 
 def run_command(
     user_id: str,
