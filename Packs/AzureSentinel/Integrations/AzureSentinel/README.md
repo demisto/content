@@ -32,35 +32,26 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
 2. Search for Azure Sentinel.
 3. Click **Add instance** to create and configure a new integration instance.
 
-
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| Azure Cloud | When selecting the Custom option, the Server URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication\#using-national-cloud | False |
-| Maximum number of incidents per fetch. |  | False |
-| Tenant ID |  | False |
-| Client ID |  | False |
-| Password |  | False |
-| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
-| Private Key |  | False |
-| Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
-| Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
-| Default Subscription ID | The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail. | True |
-| Default Resource Group Name | The parameter can be saved as 000-000 and added as an argument to each command, but the Test button will fail. | True |
-| Workspace Name |  | True |
-| Fetch incidents |  | False |
-| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-| The minimum severity of incidents to fetch |  | False |
-| Incident type |  | False |
-| Server URL | Use this option when required to customize the URL to the Azure management endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication\#using-national-cloud | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
-| Additional info to fetch | Choose what additional info to fetch for each incident.<br/>Note that this will increase the number of API calls.<br/> | False |
-| Mirroring Direction |  | False |
-| Close Mirrored XSOAR Incident | When selected, closing the Microsoft Sentinel ticket is mirrored in Cortex XSOAR. | False |
-| Close Mirrored Microsoft Sentinel Ticket | When selected, closing the Cortex XSOAR incident is mirrored in Microsoft Sentinel. | False |
-| Incident Statuses to Fetch | The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. | False |
-| Incidents Fetch Interval |  | False |
-
+    | **Parameter**                                                                    | **Required** |
+    |----------------------------------------------------------------------------------|--------------|
+    | Azure Cloud                                                                      | False        |
+    | Tenant ID                                                                        | False        |
+    | Client ID                                                                        | False        |
+    | Azure Managed Identities Client ID                                               | False        |
+    | Subscription ID                                                                  | True         |
+    | Resource Group Name                                                              | True         |
+    | Workspace Name                                                                   | True         |
+    | Fetch incidents                                                                  | False        |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False        |
+    | The minimum severity of incidents to fetch                                       | False        |
+    | Incident type                                                                    | False        |
+    | Trust any certificate (not secure)                                               | False        |
+    | Use system proxy settings                                                        | False        |
+    | Additional info to fetch                                                         | False        |
+    | Mirroring Direction                                                              | False        |
+    | Close Mirrored XSOAR Incident                                                    | False        |
+    | Close Mirrored Microsoft Sentinel Ticket                                         | False        |
+    | Server URL, see note below regarding Azure cloud options.                        | False        |
 
 4. Azure cloud options
 
@@ -1121,23 +1112,49 @@ Gets a list of an incident's related entities from Azure Sentinel.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The incident ID. | Required | 
-| limit | The maximum number of related entities to return. Default is 50. | Optional | 
-| next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional | 
-| entity_kinds | A comma-separated list of entity kinds to filter by. By default, the results won't be filtered by kind.<br/>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. Possible values are: . | Optional | 
-| filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter. | Optional | 
-| subscription_id | The subscription ID. | Optional | 
-| resource_group_name | The resource group name. | Optional | 
+| incident_id | The incident ID. | Required |
+| limit | The maximum number of related entities to return. Default is 50. | Optional |
+| next_link | A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments. | Optional |
+| entity_kinds | A comma-separated list of entity kinds to filter by. By default, the results won't be filtered by kind.<br/>The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark. | Optional |
+| filter | Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: <https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter>. | Optional |
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSentinel.IncidentRelatedResource.ID | String | The ID of the incident's related resource. | 
-| AzureSentinel.IncidentRelatedResource.Kind | String | The kind of the incident's related resource. | 
-| AzureSentinel.NextLink.Description | String | The description about NextLink. | 
-| AzureSentinel.NextLink.URL | String | Used if an operation returns a partial result. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. | 
-| AzureSentinel.IncidentRelatedResource.IncidentID | String | The incident ID. | 
+| AzureSentinel.IncidentRelatedResource.ID | String | The ID of the incident's related resource. |
+| AzureSentinel.IncidentRelatedResource.Kind | String | The kind of the incident's related resource. |
+| AzureSentinel.NextLink.Description | String | The description about NextLink. |
+| AzureSentinel.NextLink.URL | String | Used if an operation returns a partial result. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls. |
+| AzureSentinel.IncidentRelatedResource.IncidentID | String | The incident ID. |
+
+#### Command Example
+
+```!azure-sentinel-list-incident-relations incident_id=8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742```
+
+#### Context Example
+
+```json
+{
+    "AzureSentinel": {
+        "IncidentRelatedResource": {
+            "ID": "bfb02efc-12b7-4147-a8e8-961338b1b834",
+            "IncidentID": "8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742",
+            "Kind": "SecurityAlert"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Incident 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 Relations (1 results)
+>
+>|ID|Incident ID|Kind|
+>|---|---|---|
+>| bfb02efc-12b7-4147-a8e8-961338b1b834 | 8a44b7bb-c8ae-4941-9fa0-3aecc8ef1742 | SecurityAlert |
 
 ### azure-sentinel-list-incident-entities
 
@@ -1327,36 +1344,85 @@ Get a single watchlist item or list of watchlist items.
 | AzureSentinel.WatchlistItem.ID | String | The ID \(GUID\) of the watchlist item. |
 | AzureSentinel.WatchlistItem.Created | Date | The time the watchlist item was created. |
 | AzureSentinel.WatchlistItem.Updated | Date | The last time the watchlist item was updated. |
-### azure-sentinel-list-watchlist-items
+| AzureSentinel.WatchlistItem.CreatedBy | String | The name of the user. |
+| AzureSentinel.WatchlistItem.UpdatedBy | String | The user who updated this item. |
+| AzureSentinel.WatchlistItem.ItemsKeyValue | Unknown | Key-value pairs for a watchlist item. |
+
+#### Command Example
+
+```!azure-sentinel-list-watchlist-items watchlist_alias=test_4```
+
+#### Context Example
+
+```json
+{
+    "AzureSentinel": {
+        "WatchlistItem": [
+            {
+                "Created": "2021-08-23T13:30:53Z",
+                "CreatedBy": "78e658fe-3ff0-4785-80e7-ef089a3d6bdd",
+                "ID": "28bd8f55-131b-42e6-bd5d-33d30f2d1291",
+                "ItemsKeyValue": {
+                    "IP": "1.2.3.4",
+                    "name": "test1"
+                },
+                "Name": "28bd8f55-131b-42e6-bd5d-33d30f2d1291",
+                "Updated": "2021-08-23T13:30:53Z",
+                "UpdatedBy": "78e658fe-3ff0-4785-80e7-ef089a3d6bdd",
+                "WatchlistAlias": "test_4"
+            },
+            {
+                "Created": "2021-08-23T13:30:53Z",
+                "CreatedBy": "78e658fe-3ff0-4785-80e7-ef089a3d6bdd",
+                "ID": "510d8f80-99ad-441d-87f3-88341cc8b439",
+                "ItemsKeyValue": {
+                    "IP": "1.2.3.5",
+                    "name": "test2"
+                },
+                "Name": "510d8f80-99ad-441d-87f3-88341cc8b439",
+                "Updated": "2021-08-23T13:30:53Z",
+                "UpdatedBy": "78e658fe-3ff0-4785-80e7-ef089a3d6bdd",
+                "WatchlistAlias": "test_4"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Watchlist items results
+>
+>|ID|Items Key Value|
+>|---|---|
+>| 28bd8f55-131b-42e6-bd5d-33d30f2d1291 | name: test1<br/>IP: 1.2.3.4 |
+>| 510d8f80-99ad-441d-87f3-88341cc8b439 | name: test2<br/>IP: 1.2.3.5 |
+
+### azure-sentinel-delete-watchlist-item
 
 ***
-Get a single watchlist item or list of watchlist items.
+Delete a watchlist item.
 
 #### Base Command
 
-`azure-sentinel-list-watchlist-items`
+`azure-sentinel-delete-watchlist-item`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| watchlist_alias | The alias of the watchlist. | Required | 
-| watchlist_item_id | The ID of the single watchlist item. | Optional | 
-| subscription_id | The subscription ID. | Optional | 
-| resource_group_name | The resource group name. | Optional | 
-| limit | The maximum number of items to return. The default is ALL items. | Optional | 
+| watchlist_alias | The watchlist alias. | Required |
+| watchlist_item_id | The watchlist item ID to be deleted. | Required |
+| subscription_id | The subscription ID. | Optional |
+| resource_group_name | The resource group name. | Optional |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSentinel.WatchlistItem.WatchlistAlias | String | The alias of the watchlist. | 
-| AzureSentinel.WatchlistItem.ID | String | The ID \(GUID\) of the watchlist item. | 
-| AzureSentinel.WatchlistItem.Created | Date | The time the watchlist item was created. | 
-| AzureSentinel.WatchlistItem.Updated | Date | The last time the watchlist item was updated. | 
-| AzureSentinel.WatchlistItem.CreatedBy | String | The name of the user. | 
-| AzureSentinel.WatchlistItem.UpdatedBy | String | The user who updated this item. | 
-| AzureSentinel.WatchlistItem.ItemsKeyValue | Unknown | Key-value pairs for a watchlist item. | 
+There is no context output for this command.
+
+#### Command Example
+
+```!azure-sentinel-delete-watchlist-item watchlist_alias=test_2 watchlist_item_id=96c326c6-2dea-403c-94bd-6a005921c3c1```
 
 #### Human Readable Output
 
@@ -2436,49 +2502,6 @@ There are no input arguments for this command.
 
 ***
 Lists all resource groups.
-### azure-sentinel-subscriptions-list
-
-***
-Lists all subscriptions.
-
-#### Base Command
-
-`azure-sentinel-subscriptions-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AzureSentinel.SubscriptionId | String | Fully qualified resource ID for the resource. | 
-| AzureSentinel.Subscription.displayName | String | The name of the resource. | 
-| AzureSentinel.Subscription.authorizationSource | String | The authorization source of the resource. | 
-| AzureSentinel.Subscription.managedByTenants | String | The subscriptions that are managed by tenants of the resource. | 
-| AzureSentinel.Subscription.tenetId | String | The tenet ID of the resource. | 
-| AzureSentinel.Subscription.state | String | The state of the resource. | 
-| AzureSentinel.Subscription.subscriptionPolicies | String | The subscription policies of the resource. | 
-
-Run this command if for some reason you need to rerun the authentication process.
-
-#### Base Command
-
-`azure-sentinel-auth-reset`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-### azure-sentinel-resource-group-list
-
-***
-List all resource groups for a subscription.
 
 #### Base Command
 
@@ -2488,20 +2511,65 @@ List all resource groups for a subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. Note: The integration default Subscription ID will be used unless this argument is provided. | Optional | 
-| tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
-| limit | The maximum number of resource groups to return. Default is 50. | Optional | 
+| subscription_id | The subscription ID. Note: The integration default Subscription ID will be used unless this argument is provided. | Optional |
+| tag | The tag name. Input should be `{“Tag Name:Tag Value”}``. Operator is “equals”. | Optional |
+| limit | The maximum number of items to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSentinel.ResourceGroup.id | String | Fully qualified resource ID for the resource. | 
-| AzureSentinel.ResourceGroup.name | String | The name of the resource. | 
-| AzureSentinel.ResourceGroup.type | String | The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". | 
-| AzureSentinel.ResourceGroup.location | String | The location of the resource group. | 
-| AzureSentinel.ResourceGroup.tags | Dictionary | The tags of the resource group. | 
-| AzureSentinel.ResourceGroup.properties | dictionary | The properties of the resource group. | 
+| AzureSentinel.ResourceGroup.id | String | Fully qualified resource ID for the resource. |
+| AzureSentinel.ResourceGroup.name | String | The name of the resource. |
+| AzureSentinel.ResourceGroup.type | String | The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts" |
+| AzureSentinel.ResourceGroup.location | String | The location of the resource group. |
+| AzureSentinel.ResourceGroup.tags | Dictionary | The tags of the resource group. |
+| AzureSentinel.ResourceGroup.properties | dictionary | The properties of the resource group. |
+
+#### Command example
+
+```!azure-sentinel-resource-group-list```
+
+#### Context Example
+
+```json
+{
+    "AzureSentinel": {
+        "ResourceGroup": [
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-/resourceGroups/cloud-shell",
+                "location": "eastus",
+                "name": "cloud-shell-storage-eastus",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/0f907ea4/resourceGroups/demi",
+                "location": "centralus",
+                "name": "demi",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "Owner": "Demi"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+    ]}
+}
+```
+
+#### Human Readable Output
+
+>### Azure Sentinel Resource Groups
+
+>|Name|Location|Tags|
+>|---|---|---|
+>| cloud-shell | eastus |  |
+>| demi | centralus | Owner: Demi |
+
 ### azure-sentinel-auth-reset
 
 ***
@@ -2513,8 +2581,7 @@ Run this command if for some reason you need to rerun the authentication process
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
