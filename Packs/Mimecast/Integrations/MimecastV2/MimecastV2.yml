@@ -1981,7 +1981,8 @@ script:
       - subject
       - sender
       - recipient
-      - reason_code
+      - reasonCode
+      - senderIP
     - name: page_size
       description: Number of results per page to display.
       defaultValue: ""
