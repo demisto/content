@@ -7354,7 +7354,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: Fetches IOC Domain matches in the specified time interval. If configured, overrides the start_time argument.
+      description: Fetches IOC Domain matches in the specified time interval. If configured, overrides the start_time and end_time arguments.
       name: preset_time_range
       predefined:
       - Last 1 day

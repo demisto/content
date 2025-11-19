@@ -107,7 +107,7 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| preset_time_range | Fetches IOC Domain matches in the specified time interval. If configured, overrides the start_time argument. Possible values are: Last 1 day, Last 7 days, Last 15 days, Last 30 days. | Optional |
+| preset_time_range | Fetches IOC Domain matches in the specified time interval. If configured, overrides the start_time and end_time arguments. Possible values are: Last 1 day, Last 7 days, Last 15 days, Last 30 days. | Optional |
 | start_time | The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun. | Optional |
 | end_time | The value of the end time for your request, in RFC 3339 format (e.g. 2025-11-01T15:00:00Z) or relative time. If not supplied, the default is the current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2025-11-01T00:00:00Z, 2025-11-01, 2 days, 5 hours, 01 Nov 2025, 01 Nov 2025 04:45:33, 15 Oct. | Optional |
 | page_size | The maximum number of IOCs to return. You can specify between 1 and 10000. Default is 10000. | Optional |
