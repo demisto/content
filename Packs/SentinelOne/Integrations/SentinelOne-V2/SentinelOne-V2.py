@@ -892,6 +892,9 @@ class Client(BaseClient):
     def download_threat_file_request(self, endpoint_url):
         return self._http_request(method="GET", url_suffix=endpoint_url, resp_type="content")
 
+    def download_threat_cloud_file(self, url):
+        return self._http_request(method="GET", full_url=url, resp_type="content", headers={"Accept": "application/json"})
+
     def get_installed_applications_request(self, query_params):
         endpoint_url = "agents/applications"
         response = self._http_request(method="GET", url_suffix=endpoint_url, params=query_params)
@@ -1063,6 +1066,23 @@ class Client(BaseClient):
         """
         # Returning updated dictionary with non-empty fields
         return {key: value for key, value in json_payload.items() if str(value)}
+
+    def threat_download_from_cloud_request(self, threat_id: str) -> dict[str, str]:
+        """
+        Returns Information to download the file for the given threat_id from the cloud
+
+        Parameters:
+        - threat_id (str): The threat_id to download the file for.
+
+        Returns:
+        - dict: A new JSON object containing information to download the file or a message, if it isn't available
+        """
+        endpoint_url = f"threats/{threat_id}/download-from-cloud"
+        response = self._http_request(method="GET", url_suffix=endpoint_url)
+        data: dict = response.get("data", {})
+        if "errors" in response:
+            data["message"] = response.get("errors", [{}])[0].get("detail", "An Unknown Error occurred")
+        return data
 
 
 """ COMMANDS + REQUESTS FUNCTIONS """
@@ -2317,6 +2337,36 @@ def fetch_threat_file(client: Client, args: dict) -> list[CommandResults]:
             outputs_key_field="ID",
             outputs=context_entries,
             raw_response=downloaded_files,
+        ),
+        *files,
+    ]
+
+
+def threat_download_from_cloud(client: Client, args: dict) -> list[CommandResults | list]:
+    """
+    Downloads the threat file uploaded to the cloud (Binary
+    """
+    threat_id: str = str(args.get("threat_id"))
+    response = client.threat_download_from_cloud_request(threat_id)
+    downloadable = False
+    files = []
+    if "downloadUrl" in response:
+        file_download_url = response["downloadUrl"]
+        try:
+            zip_file_data = client.download_threat_cloud_file(file_download_url)
+            zipped_file = fileResult(filename=response["fileName"], data=zip_file_data, file_type=EntryType.ENTRY_INFO_FILE)
+            files.append(zipped_file)
+            downloadable = True
+        except Exception:
+            zipped_file = "File not available for Download from BinaryVault"
+    context_entry = {"Downloadable": downloadable, "ID": threat_id, "ZippedFile": zipped_file}
+    return [
+        CommandResults(
+            readable_output=tableToMarkdown("Sentinel One - Download From Cloud", context_entry, removeNull=False),
+            outputs_prefix="SentinelOne.Threat",
+            outputs_key_field="ID",
+            outputs=context_entry,
+            raw_response=zipped_file,
         ),
         *files,
     ]
@@ -4614,6 +4664,7 @@ def main():
             "sentinelone-get-power-query-results": get_power_query_results,
             "sentinelone-list-installed-singularity-marketplace-applications": list_installed_singu_mark_apps_command,
             "sentinelone-get-service-users": get_service_users_command,
+            "sentinelone-threat-download-from-cloud": threat_download_from_cloud,
         },
         "commands_with_params": {
             "get-remote-data": get_remote_data_command,
