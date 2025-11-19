@@ -2419,6 +2419,7 @@ def test_update_issue_command_success_all_fields(mocker):
         "name": "Test Issue",
         "occurred": "2023-01-01T00:00:00Z",
         "phase": "investigation",
+        "status": "New",
     }
 
     result = update_issue_command(client, args)
@@ -2433,6 +2434,7 @@ def test_update_issue_command_success_all_fields(mocker):
     assert update_data["name"] == "Test Issue"
     assert update_data["occurred"] == "2023-01-01T00:00:00Z"
     assert update_data["phase"] == "investigation"
+    assert update_data["resolution_status"] == "STATUS_010_NEW"
 
 
 def test_update_issue_command_missing_issue_id_no_context(mocker):
@@ -2565,6 +2567,32 @@ def test_update_issue_command_invalid_severity_mapping(mocker):
     call_args = mock_update_issue.call_args[0][0]
     update_data = call_args["update_data"]
     assert "severity" not in update_data
+    assert update_data["name"] == "Test Issue"
+
+
+def test_update_issue_command_invalid_status_mapping(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with invalid status value.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        Status is not included in update_data when mapping returns None.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("CortexPlatformCore.arg_to_number", return_value=99)
+
+    args = {"id": "12345", "status": "FAKE", "name": "Test Issue"}
+
+    update_issue_command(client, args)
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert "resolution_status" not in update_data
     assert update_data["name"] == "Test Issue"
 
 
