@@ -36,6 +36,7 @@ PERMISSIONS_TO_COMMANDS = {
         "azure-nsg-security-rule-update",
         "azure-nsg-security-rule-create",
         "azure-nsg-security-rule-update-quick-action",
+        "azure-nsg-security-rules-list"
     ],
     "Microsoft.Network/networkSecurityGroups/securityRules/write": [
         "azure-nsg-security-rule-update",
@@ -224,6 +225,7 @@ API_FUNCTION_TO_PERMISSIONS = {
     "get_network_interface_request": ["Microsoft.Network/networkInterfaces/read"],
     "get_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
     "get_all_public_ip_details_request": ["Microsoft.Network/publicIPAddresses/read"],
+    "list_security_rules": ["Microsoft.Network/networkSecurityGroups/securityRules/read"]
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
@@ -289,6 +291,7 @@ SQL_DB_API_VERSION = "2021-11-01"
 COSMOS_DB_API_VERSION = "2024-11-15"
 PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
+NSG_API_VERSION = "2025-01-01"
 
 """ CLIENT CLASS """
 
@@ -492,6 +495,37 @@ class AzureClient:
                 resource_name=f"{security_group}/{rule_name}",
                 resource_type="Security Rule",
                 api_function_name="get_rule",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
+
+    def list_security_rules(self, subscription_id: str, resource_group_name: str, network_security_group_name: str):
+        """
+        Gets all security rules in a network security group.
+
+        Args:
+            subscription_id(str) : Azure subscription ID
+            resource_group_name(str) : Resource group name
+            network_security_group_name(str): The name of the network security group
+
+        Returns:
+            A list of dictionary containing the security rules information
+
+        Raises:
+            DemistoException: If there are permission or other API errors
+        """
+        try:
+            demisto.debug("Retrieving security rules list.")
+            return self.http_request(
+                "GET",
+                full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups/{network_security_group_name}/securityRules?{NSG_API_VERSION}",
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{network_security_group_name}/security-rules-list",
+                resource_type="Security Rules",
+                api_function_name="list_security_rules",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -3069,6 +3103,49 @@ def nsg_security_rule_get_command(client: AzureClient, params: dict[str, Any], a
     return CommandResults(outputs_prefix="Azure.NSGRule", outputs_key_field="id", outputs=rule, readable_output=hr)
 
 
+def nsg_security_rules_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Gets all security rules in a network security group.
+    Args:
+        client: The AzureClient
+        params: configuration parameters
+        args: args dictionary (subscription_id, resource_group_name, network_security_group_name).
+    Returns:
+        CommandResults: The list of security rules.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    network_security_group_name = args.get("network_security_group_name", "")
+
+    if not resource_group_name and not network_security_group_name:
+        return_error("Please provide security_group_name and security_rule_name.")
+
+    response = client.list_security_rules(subscription_id, resource_group_name, network_security_group_name)
+    security_rules = response.get("value", [])
+    demisto.debug(f"{security_rules=}")
+    hr_data = []
+    for rule in security_rules:
+        hr_data.append({
+            "name": rule.get("name"),
+            "id": rule.get("id"),
+            "direction": rule.get("properties", {}).get("direction"),
+        })
+
+    hr = tableToMarkdown(
+        name="Security Groups list",
+        t=hr_data,
+        removeNull=True,
+        headers=["name", "id", "direction"],
+        headerTransform=pascalToSpace,
+    )
+
+    outputs = {
+        "Azure.NSGRule(val.id && val.id == obj.id)": security_rules
+    }
+
+    return CommandResults(outputs=outputs, readable_output=hr, raw_response=security_rules)
+
+
 def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
     This command will create a rule in a security group.
@@ -4017,6 +4094,7 @@ def main():  # pragma: no cover
             "azure-cosmos-db-update": cosmosdb_update_command,
             "azure-nsg-security-groups-list": nsg_security_groups_list_command,
             "azure-nsg-security-rule-get": nsg_security_rule_get_command,
+            "azure-nsg-security-rules-list": nsg_security_rules_list_command,
             "azure-nsg-security-rule-create": nsg_security_rule_create_command,
             "azure-nsg-security-rule-delete": nsg_security_rule_delete_command,
             "azure-nsg-resource-group-list": nsg_resource_group_list_command,

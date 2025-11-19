@@ -1936,6 +1936,21 @@ script:
       - description: The name of the rule to get.
         name: security_rule_name
         required: true
+  - name: azure-nsg-security-rules-list
+    description: Get a specific rule.
+    arguments:
+      - description: The subscription ID.
+        name: subscription_id
+        type: String
+        required: true
+      - description: Resource group name.
+        name: resource_group_name
+        type: String
+        required: true
+      - description: The name of the network security group.
+        name: network_security_group_name
+        type: String
+        required: true
   - name: azure-nsg-security-rule-create
     description: Create a security rule.
     outputs:
