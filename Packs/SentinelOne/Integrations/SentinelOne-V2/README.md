@@ -21,10 +21,9 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Define which Threats should be fetched. |  | False |
 | Fetch limit: The maximum number of threats or alerts to fetch |  | False |
 | Site IDs | Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites. | False |
-| Block Site IDs | Comma-separated string of site IDs where the hash should be blocked. If left blank and no other scopes are provided in the sentinelone-add-hash-to-blocklist command, the hash will be blocked globally. If filled, the hash will be blocked only within the specified site scopes. When used with sentinelone-add-hash-to-blocklist, these IDs are combined with any site_ids passed as command arguments to define the final scope. |  | False |
+| Block Site IDs | Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| API Token (Deprecated) | Use the "API Token \(Recommended\)" parameter instead. | False |
 | Incidents Fetch Interval |  | False |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from SentinelOne to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to SentinelOne\), or Incoming and Outgoing \(from/to Cortex XSOAR and SentinelOne\). | False |
 | Close Mirrored XSOAR Incident | When selected, closing the SentinelOne ticket is mirrored in Cortex XSOAR. | False |
@@ -2105,3 +2104,135 @@ Download a file associated with the threat from the Cloud (BinaryVault).
 | SentinelOne.Threat.ID | String | The threat ID. |
 | SentinelOne.Threat.Downloadable | Boolean | Whether the file is downloadable. |
 | SentinelOne.Threat.ZippedFile | String | Details of the zipped folder. |
+
+### sentinelone-create-bulk-ioc
+
+***
+Adds a bulk list of IoCs to the Threat Intelligence database. To use this command, the user must upload a JSON file containing a list of IoC objects(each object represents a single IoC to be created) with the required attributes specified in the sentinelone-create-ioc command.  Relevant for API version 2.1.
+
+#### Base Command
+
+`sentinelone-create-bulk-ioc`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry_id | Entry ID of uploaded IOCs JSON file. | Required |
+| account_ids | List of account IDs to filter by. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.IOC.UUID | String | The IOC UUID. |
+| SentinelOne.IOC.Name | String | Threat Intelligence indicator name. |
+| SentinelOne.IOC.Source | String | The source of the identified Threat Intelligence indicator. |
+| SentinelOne.IOC.Type | String | The type of the Threat Intelligence indicator. |
+| SentinelOne.IOC.BatchId | String | The IOC batch ID. |
+| SentinelOne.IOC.Creator | String | The IOC creator. |
+| SentinelOne.IOC.Scope | String | The IOC scope. |
+| SentinelOne.IOC.ScopeId | String | The IOC scope ID. |
+| SentinelOne.IOC.ValidUntil | String | Expiration date for the Threat Intelligence indicator. |
+| SentinelOne.IOC.Description | String | Description of the Threat Intelligence indicator. |
+| SentinelOne.IOC.ExternalId | String | The unique identifier of the indicator as provided by the Threat Intelligence source. |
+
+### sentinelone-run-powerquery
+
+***
+Run a PowerQuery, where you can pipe one or many search expressions into a set of commands to transform, manipulate, group, and summarize your data.
+
+#### Base Command
+
+`sentinelone-run-powerquery`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| singularity_xdr_url | Singularity Data Lake XDR URL. | Required |
+| singularity_xdr_api_key | A Log Read Access API key. | Required |
+| query | The query, in PowerQuery syntax. | Required |
+| startTime | Start time for your query. | Optional |
+| endTime | End time for your query. | Optional |
+| priority | Query execution priority (defaults to "low"). Default is low. | Optional |
+| recurring | Optional (defaults to false). When set to true, a materialized view of your query is created. Possible values are: true, false. Default is false. | Optional |
+| teamEmails | Comma-separated list of account emails to query, enabling Cross Team Search. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.PowerQuery.Results.status | String | The status of the PowerQuery execution. |
+| SentinelOne.PowerQuery.Results.matchingEvents | Number | Number of events that match the query's initial filter. |
+| SentinelOne.PowerQuery.Results.omittedEvents | Number | Number of events omitted from the final result due to memory limits. |
+| SentinelOne.PowerQuery.Results.results | List | A list of result rows returned by the PowerQuery, where each object represents one row \(column:value pairs\). |
+
+### sentinelone-abort-endpoint-scan
+
+***
+Abort the endpoint virus scan on provided agent IDs.
+
+#### Base Command
+
+`sentinelone-abort-endpoint-scan`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| agent_ids | A comma-separated list of Agent IDs. Example: 14629133470822878,14627455454652878. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Agent.AgentID | String | The Agent ID. |
+| SentinelOne.Agent.Aborted | Boolean | Whether the scan was aborted. |
+
+### sentinelone-threat-analysis
+
+***
+Returns threat analysis. Can only be used with API V2.1.
+
+#### Base Command
+
+`sentinelone-threat-analysis`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| threat_id | Threat ID to get the analysis, for example: "2341398296147451190". | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Threat.AgentDetectionInfo | 18 | Agent detection time information. |
+| SentinelOne.Threat.AgentRealtimeInfo | 18 | Agent realtime information. |
+| SentinelOne.Threat.ThreatInfo | 18 | Threat information. |
+
+### sentinelone-endpoint-fetch-logs
+
+***
+Get the Agent and Endpoint logs from Agents for provided agent IDs
+
+#### Base Command
+
+`sentinelone-endpoint-fetch-logs`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| agent_ids | A comma-separated list of Agent IDs. Example: 14629133470822878,14627455454652878. | Required |
+| agents_logs | Fetch Agent logs. Possible values are: true, false. Default is true. | Required |
+| customer_facing_logs | Fetch customer-facing logs. Possible values are: true, false. Default is false. | Required |
+| platform_logs | Actively fetch logs from the relevant platform (Windows, macOS, or Linux). Possible values are: true, false. Default is false. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Agent.Affected | String | Number of affected endpoints. |
