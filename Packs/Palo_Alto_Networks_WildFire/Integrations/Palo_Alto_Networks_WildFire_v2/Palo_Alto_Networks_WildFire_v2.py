@@ -1492,8 +1492,7 @@ def wildfire_get_sample_command():
             # Check if we got a 403 status code (benign sample)
             if result.status_code == 403:
                 demisto.results(
-                    "Benign samples are not available for download. "
-                    "For more info contact your WildFire representative."
+                    "Benign samples are not available for download. For more info contact your WildFire representative."
                 )
             else:
                 # filename will be found under the Content-Disposition header in the format
