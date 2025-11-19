@@ -240,7 +240,7 @@ def update_fetched_event_ids(
     demisto.debug(f"Updated fetched_event_ids for {event_type}. Count: {len(filtered_ids)}")
 
 
-def compute_next_fetch_time(events: List[dict[str, Any]], after: int, event_type: str) -> Optional[str]:
+def compute_next_fetch_time(events: List[dict[str, Any]], after: int, event_type: str) -> str:
     """
     Determine next fetch time based on the latest event timestamp.
 
@@ -250,17 +250,18 @@ def compute_next_fetch_time(events: List[dict[str, Any]], after: int, event_type
         event_type (str): Type of event.
 
     Returns:
-        Optional[str]: ISO formatted datetime for the next fetch cycle.
+        str: ISO formatted datetime for the next fetch cycle.
     """
     # Extract valid datetimes only (filter out None explicitly)
     times: List[datetime] = [t for e in events if (t := extract_event_time(e, event_type)) is not None]
 
-    if not times:
-        previous_time = datetime.fromtimestamp(after / 1000).replace(tzinfo=timezone.utc)
-        # Fall back to previous time if no valid timestamps found
-        return previous_time.isoformat() if previous_time else None
+    if times:
+        next_time: datetime = max(times).replace(tzinfo=timezone.utc)
 
-    next_time: datetime = max(times).replace(tzinfo=timezone.utc)
+    else:
+        # Fall back to previous time if no valid timestamps found
+        next_time = datetime.fromtimestamp(after / 1000).replace(tzinfo=timezone.utc)
+
     return next_time.isoformat()
 
 
