@@ -9,11 +9,13 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "Prisma Cloud Compute Compliance v2"
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Prisma Cloud Compute Compliance v2"
         }
       ]
     }
-  }
+  },
+  "id": "173b1006c083c0e051ad8317486e1e1f",
+  "name": "Prisma Cloud Compute - Compliance Alert v2 Trigger"
 }

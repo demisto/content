@@ -2,6 +2,7 @@
     "templates_data": [
         {
             "report_name": "All Veeam four-eyes authorization events for the last 24h",
+            "name": "All Veeam four-eyes authorization events for the last 24h",
             "report_description": "Provides an overview of Veeam Backup & Replication four-eyes authorization events created for the last 24 hours.",
             "layout": [
                 {
@@ -131,6 +132,7 @@
                 "relativeTime": 86400000
             },
             "global_id": "96bfe2191cd64b818682ecbf6c94b55b",
+            "id": "96bfe2191cd64b818682ecbf6c94b55b",
             "time_offset": 10800,
             "metadata": "{\"params\": []}"
         }

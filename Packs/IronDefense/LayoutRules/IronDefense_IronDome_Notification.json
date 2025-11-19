@@ -1,8 +1,10 @@
 {
   "rule_id": "IronDome_Notification_layout_rule",
+  "id": "IronDome_Notification_layout_rule",
   "layout_id": "IronDefense IronDome Notification",
   "description": "",
   "rule_name": "IronDome Notification Layout Rule",
+  "name": "IronDome Notification Layout Rule",
   "alerts_filter": {
     "filter": {
       "AND": [

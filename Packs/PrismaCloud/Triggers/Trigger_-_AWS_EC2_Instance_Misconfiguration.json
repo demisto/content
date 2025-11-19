@@ -8,11 +8,13 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "AWS EC2 Instance Misconfiguration"
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "AWS EC2 Instance Misconfiguration"
         }
       ]
     }
-  }
+  },
+  "id": "44e61bd26eec45c3264a384324567e90",
+  "name": "AWS EC2 Instance Misconfiguration"
 }

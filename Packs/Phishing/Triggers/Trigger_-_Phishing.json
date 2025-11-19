@@ -8,11 +8,13 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "Phishing"
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Phishing"
         }
       ]
     }
-  }
+  },
+  "id": "7cf55ecbe5a8f69de931ce236cef5973",
+  "name": "Phishing Playbook Trigger"
 }

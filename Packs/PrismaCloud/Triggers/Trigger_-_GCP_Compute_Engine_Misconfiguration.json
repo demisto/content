@@ -8,11 +8,13 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "GCP Compute Engine Misconfiguration"
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "GCP Compute Engine Misconfiguration"
         }
       ]
     }
-  }
+  },
+  "id": "d150d0519b334c040b1fcc0f34a3ded9",
+  "name": "GCP Compute Engine Misconfiguration"
 }

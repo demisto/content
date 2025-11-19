@@ -8,11 +8,13 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "Azure AKS Misconfiguration"
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Azure AKS Misconfiguration"
         }
       ]
     }
-  }
+  },
+  "id": "82719687c5d2aee11e490084dbe15fd8",
+  "name": "Azure AKS Misconfiguration"
 }

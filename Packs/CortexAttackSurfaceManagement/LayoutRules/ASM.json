@@ -1,8 +1,10 @@
 {
     "rule_id": "Asm_layout_rule",
+    "id": "Asm_layout_rule",
     "layout_id": "ASM Alert Layout",
     "description": "Rule for applying ASM Alert Layout to ASM alert source",
     "rule_name": "ASM Layout Rule",
+    "name": "ASM Layout Rule",
     "alerts_filter": {
         "filter": {
             "AND": [

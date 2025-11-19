@@ -2,6 +2,7 @@
     "templates_data": [
         {
             "report_name": "All Veeam failed multi-factor authentication events for the last 24h",
+            "name": "All Veeam failed multi-factor authentication events for the last 24h",
             "report_description": "Provides an overview of failed Veeam Backup & Replication multi-factor authentication events created for the last 24 hours.",
             "layout": [
                 {
@@ -93,6 +94,7 @@
                 "relativeTime": 86400000
             },
             "global_id": "c5e709240d634a42ad404f34a972f6bb",
+            "id": "c5e709240d634a42ad404f34a972f6bb",
             "time_offset": 10800,
             "metadata": "{\"params\": []}"
         }

@@ -8,11 +8,13 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "Azure Storage Misconfiguration"
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Azure Storage Misconfiguration"
         }
       ]
     }
-  }
+  },
+  "id": "f9e54dc16b690386b07866af8464e368",
+  "name": "Azure Storage Misconfiguration"
 }

@@ -4,5 +4,6 @@
     "name": "LinuxEventsCollection",
     "content_global_id": "LinuxEventsCollection",
     "from_xdr_version": "3.5.0",
-    "yaml_template": ""
+    "yaml_template": "",
+    "id": "LinuxEventsCollection"
 }

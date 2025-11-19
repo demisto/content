@@ -8,11 +8,13 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "Azure SQL Misconfiguration"
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Azure SQL Misconfiguration"
         }
       ]
     }
-  }
+  },
+  "id": "29cdd6d019dcaaea2d1ca79371f9f7cb",
+  "name": "Azure SQL Misconfiguration"
 }

@@ -1,8 +1,10 @@
 {
   "rule_id": "Indicator_Feed_layout_rule",
+  "id": "Indicator_Feed_layout_rule",
   "layout_id": "Indicator Feed",
   "description": "",
   "rule_name": "Indicator Feed Layout Rule",
+  "name": "Indicator Feed Layout Rule",
   "alerts_filter": {
     "filter": {
       "AND": [

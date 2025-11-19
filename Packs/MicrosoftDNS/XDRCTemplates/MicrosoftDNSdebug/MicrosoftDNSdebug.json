@@ -4,5 +4,6 @@
     "name": "MicrosoftDNSdebug",
     "content_global_id": "MicrosoftDNSdebug",
     "from_xdr_version": "3.5.0",
-    "yaml_template": ""
+    "yaml_template": "",
+    "id": "MicrosoftDNSdebug"
 }

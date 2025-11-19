@@ -1,8 +1,10 @@
 {
   "rule_id": "Access_layout_rule",
+  "id": "Access_layout_rule",
   "layout_id": "Access",
   "description": "",
   "rule_name": "Access Layout Rule",
+  "name": "Access Layout Rule",
   "alerts_filter": {
     "filter": {
       "AND": [

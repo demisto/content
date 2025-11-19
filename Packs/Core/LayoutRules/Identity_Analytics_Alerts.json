@@ -1,7 +1,9 @@
 {
     "rule_id": "Identity_Analytics_Alerts_layout_rule",
+    "id": "Identity_Analytics_Alerts_layout_rule",
     "layout_id": "Identity Analytics Alerts",
     "rule_name": "Identity Analytics Alerts Layout Rule",
+    "name": "Identity Analytics Alerts Layout Rule",
     "alerts_filter": {
         "filter": {
             "AND": [

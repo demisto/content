@@ -8,11 +8,13 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "AWS CloudTrail Misconfiguration"
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "AWS CloudTrail Misconfiguration"
         }
       ]
     }
-  }
+  },
+  "id": "fc37d4039563569b21b5bebec0a92500",
+  "name": "AWS CloudTrail Misconfiguration"
 }

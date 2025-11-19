@@ -8,11 +8,13 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "AWS IAM Policy Misconfiguration"
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "AWS IAM Policy Misconfiguration"
         }
       ]
     }
-  }
+  },
+  "id": "3abc6225418901f71303bdaf73df7ae9",
+  "name": "AWS IAM Policy Misconfiguration"
 }

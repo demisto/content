@@ -16,23 +16,25 @@
               "SEARCH_VALUE": "network"
             },
             {
-                "SEARCH_FIELD": "policy_type",
-                "SEARCH_TYPE": "EQ",
-                "SEARCH_VALUE": "api"
+              "SEARCH_FIELD": "policy_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "api"
             },
             {
-                "SEARCH_FIELD": "policy_type",
-                "SEARCH_TYPE": "EQ",
-                "SEARCH_VALUE": "anomaly"
+              "SEARCH_FIELD": "policy_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "anomaly"
             }
           ]
         },
         {
-            "SEARCH_FIELD": "category",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "Incident"
+          "SEARCH_FIELD": "category",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Incident"
         }
       ]
     }
-  }
+  },
+  "id": "c8a93aad286ff93763120c0e47696f82",
+  "name": "Prisma Cloud Network API and Anomaly alerts"
 }

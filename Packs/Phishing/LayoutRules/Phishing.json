@@ -1,8 +1,10 @@
 {
   "rule_id": "Phishing_Layout_Rule",
+  "id": "Phishing_Layout_Rule",
   "layout_id": "Phishing Layout",
   "description": "Default display for phishing alerts.",
   "rule_name": "Phishing Layout Rule",
+  "name": "Phishing Layout Rule",
   "alerts_filter": {
     "filter": {
       "AND": [

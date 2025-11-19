@@ -9,11 +9,13 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "Prisma Cloud Compute Audit v3"
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Prisma Cloud Compute Audit v3"
         }
       ]
     }
-  }
+  },
+  "id": "e3826de65301631f979be7d6c49d9671",
+  "name": "Prisma Cloud Compute - Audit Alert v3 Trigger"
 }

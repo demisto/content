@@ -14,5 +14,7 @@
         }
       ]
     }
-  }
+  },
+  "id": "7106713a54ef8482181fe37bbf7fda29",
+  "name": "GCP Kubernetes Engine Misconfiguration"
 }

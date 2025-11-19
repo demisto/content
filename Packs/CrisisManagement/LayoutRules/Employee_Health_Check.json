@@ -1,8 +1,10 @@
 {
   "rule_id": "Employee_Health_Check_layout_rule",
+  "id": "Employee_Health_Check_layout_rule",
   "layout_id": "Employee Health Check",
   "description": "",
   "rule_name": "Employee Health Check Layout Rule",
+  "name": "Employee Health Check Layout Rule",
   "alerts_filter": {
     "filter": {
       "AND": [

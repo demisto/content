@@ -1,8 +1,10 @@
 {
   "rule_id": "IronDefense_Alert_Notification_layout_rule",
+  "id": "IronDefense_Alert_Notification_layout_rule",
   "layout_id": "IronDefense Alert Notification",
   "description": "",
   "rule_name": "IronDefense Alert Notification Layout Rule",
+  "name": "IronDefense Alert Notification Layout Rule",
   "alerts_filter": {
     "filter": {
       "AND": [

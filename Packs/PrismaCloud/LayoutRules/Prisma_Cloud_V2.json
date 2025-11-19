@@ -1,8 +1,10 @@
 {
   "rule_id": "Prisma_Cloud_V2_Layout_Rule",
+  "id": "Prisma_Cloud_V2_Layout_Rule",
   "layout_id": "Prisma Cloud V2",
   "description": "display for Prisma Cloud alerts.",
   "rule_name": "Prisma Cloud V2 Layout Rule",
+  "name": "Prisma Cloud V2 Layout Rule",
   "alerts_filter": {
     "filter": {
       "AND": [

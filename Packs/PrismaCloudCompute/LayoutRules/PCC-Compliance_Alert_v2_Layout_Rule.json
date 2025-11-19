@@ -1,8 +1,10 @@
 {
   "rule_id": "Prisma_Cloud_Compute_Compliance_Alert_v2_Layout_Rule",
+  "id": "Prisma_Cloud_Compute_Compliance_Alert_v2_Layout_Rule",
   "layout_id": "Prisma Cloud Compute Compliance Incident v2",
   "description": "Layout for Prisma Cloud Compute - Compliance Alert v2 incidents.",
   "rule_name": "Prisma Cloud Compute - Compliance Alert v2 Layout Rule",
+  "name": "Prisma Cloud Compute - Compliance Alert v2 Layout Rule",
   "alerts_filter": {
     "filter": {
       "AND": [
