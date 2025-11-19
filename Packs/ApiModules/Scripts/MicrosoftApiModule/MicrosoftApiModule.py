@@ -1,16 +1,15 @@
-from CommonServerPython import *  # noqa: F401
-import demistomock as demisto  # noqa: F401
+import base64
 import re
 
 # pylint: disable=E9010, E9011
 import traceback
 
-
+import demistomock as demisto  # noqa: F401
 import requests
-
+from CommonServerPython import *  # noqa: F401
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-
+from CommonServerUserPython import *
 
 
 class Scopes:
