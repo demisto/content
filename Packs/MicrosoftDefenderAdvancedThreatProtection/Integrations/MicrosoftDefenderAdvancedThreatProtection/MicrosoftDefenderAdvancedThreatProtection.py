@@ -6328,7 +6328,7 @@ def main():  # pragma: no cover
     enc_key = (params.get("credentials") or {}).get("password") or params.get("enc_key")
     use_ssl: bool = not params.get("insecure", False)
     proxy: bool = params.get("proxy", False)
-    auth_type = params.get("auth_type", "Client Credentials")
+    auth_type = params.get("auth_flow", "Client Credentials")
     grant_type = get_auth_type_flow(auth_type)
     self_deployed: bool = is_self_deployed_flow(auth_type) or params.get("self_deployed", False)
     demisto.debug(f"{self_deployed=}")
