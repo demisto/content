@@ -787,6 +787,7 @@ Updates the properties of an issue. This command does not provide an explicit in
 | phase | Change the phase of an issue. Possible values are: Triage, Investigation, Containment, Response. | Optional |
 | type | Change the type of an issue. | Optional |
 | description | Change the description of an issue. | Optional |
+| status | Change the status of an issue. Possible values are: New, In Progress, Resolved - Known Issue, Resolved - Duplicate Issue, Resolved - False Positive, Resolved - other, Resolved - True Positive, Resolved - Security Testing, Resolved - Dismissed, Resolved - Fixed, Resolved - Risk Accepted. | Optional |
 
 #### Context Output
 
