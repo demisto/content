@@ -790,6 +790,16 @@ script:
     description: Updates a user with a given login. All fields are optional. Fields which are not set, will not be overwritten.
     execution: true
     name: okta-update-user
+    outputs:
+    - contextPath: Okta.Metadata.x-rate-limit-limit
+      description: The rate limit ceiling that’s applicable for the current request.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-remaining
+      description: The amount of requests left for the current rate-limit window.
+      type: Number
+    - contextPath: Okta.Metadata.x-rate-limit-reset
+      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
+      type: Number
   - arguments:
     - description: ID of the group.
       name: groupId
