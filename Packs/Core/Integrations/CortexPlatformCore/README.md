@@ -592,6 +592,8 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 | Core.IssueRecommendations.remediation | String | Remediation steps and recommendations for the issue. |
 | Core.IssueRecommendations.playbook_suggestions.playbook_id | String | The ID of the suggested playbook. |
 | Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id | String | The ID of the suggestion rule that generated this recommendation. |
+| Core.IssueRecommendations.existing_code_block | String | Original vulnerable code. |
+| Core.IssueRecommendations.suggested_code_block | String | Code block fix suggestion. |
 
 ### core-enable-scanners
 
@@ -785,7 +787,31 @@ Updates the properties of an issue. This command does not provide an explicit in
 | phase | Change the phase of an issue. Possible values are: Triage, Investigation, Containment, Response. | Optional |
 | type | Change the type of an issue. | Optional |
 | description | Change the description of an issue. | Optional |
+| status | Change the status of an issue. Possible values are: New, In Progress, Resolved - Known Issue, Resolved - Duplicate Issue, Resolved - False Positive, Resolved - other, Resolved - True Positive, Resolved - Security Testing, Resolved - Dismissed, Resolved - Fixed, Resolved - Risk Accepted. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
+### core-appsec-remediate-issue
+
+***
+Create automated pull requests to fix multiple security issues in a single bulk operation.
+
+#### Base Command
+
+`core-appsec-remediate-issue`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_ids | A comma-separated list of issue IDs to fix (maximum 10 per request). | Required |
+| title | Custom title for the pull request. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.TriggeredPRs.issueId | String | The issue identifier. |
+| Core.TriggeredPRs.status | String | Either "triggered" or "automated_fix_not_available". |
