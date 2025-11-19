@@ -321,15 +321,18 @@ alter
   check_initiatedBy_ipAddress_v4 = if(get_initiatedBy_ipAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", get_initiatedBy_ipAddress),
   check_initiatedBy_ipAddress_v6 = if(get_initiatedBy_ipAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", get_initiatedBy_ipAddress)
 | alter
-  xdm.source.host.ipv4_addresses = arraycreate(check_parsed_fields_ipaddr_v4, check_initiatedBy_ipAddress_v4),
+  source_ipv4 = arraydistinct(arrayconcat(arrayfilter(split(check_initiatedBy_ipAddress_v4, ", "), is_ipv4("@element")), arrayfilter(arraycreate(check_parsed_fields_ipaddr_v4), is_ipv4("@element"))))
+| alter
+  xdm.source.host.ipv4_addresses = source_ipv4,
   xdm.source.host.ipv6_addresses = arraycreate(check_parsed_fields_ipaddr_v6, check_initiatedBy_ipAddress_v6),
-  xdm.source.host.ipv4_public_addresses = arrayfilter(arraycreate(check_parsed_fields_ipaddr_v4, check_initiatedBy_ipAddress_v4), 
-                                            not incidr("@element", "10.0.0.0/8") 
-                                            and not incidr("@element", "172.16.0.0/12") 
-                                            and not incidr("@element", "192.168.0.0/16") 
-                                            and not incidr("@element", "127.0.0.0/8") 
-                                            and not incidr("@element", "169.254.0.0/16") 
-                                            and not incidr("@element", "100.64.0.0/10")),
+  xdm.source.host.ipv4_public_addresses = arrayfilter(source_ipv4, 
+        not incidr("@element", "10.0.0.0/8") 
+        and not incidr("@element", "172.16.0.0/12") 
+        and not incidr("@element", "192.168.0.0/16") 
+        and not incidr("@element", "127.0.0.0/8") 
+        and not incidr("@element", "169.254.0.0/16") 
+        and not incidr("@element", "100.64.0.0/10") 
+    ),
   xdm.event.id = id,
   xdm.event.outcome = if(result = "success", XDM_CONST.OUTCOME_SUCCESS, result = "failure", XDM_CONST.OUTCOME_FAILED, result = "unknownFutureValue", XDM_CONST.OUTCOME_UNKNOWN, result = "timeout", XDM_CONST.OUTCOME_PARTIAL),
   xdm.event.original_event_type = category,
