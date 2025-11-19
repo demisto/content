@@ -58,7 +58,7 @@ def file_enrichment_script(
         CommandResults: The result of the command.
     """
     demisto.debug("Extracting indicators")
-    file_list = extract_indicators(file_list, "file")
+    file_list,hr = extract_indicators(file_list, "file")
 
     file_indicator = Indicator(
         type="file",
@@ -116,7 +116,10 @@ def file_enrichment_script(
         data=file_list,
         indicator=file_indicator,
     )
-    return file_reputation.run()
+    command_result = file_reputation.run()
+    if verbose:
+        command_result.readable_output += hr
+    return command_result
 
 
 """ MAIN FUNCTION """

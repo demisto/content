@@ -432,7 +432,8 @@ class ContextBuilder:
             current_indicator: dict[str, Any] = {"Value": indicator_value}
             if tim_indicator := [indicator for indicator in tim_context_result if indicator.get("Brand") == "TIM"]:
                 if self.indicator.type == "file":
-                    current_indicator.update({"Hashes": self.indicator.get_all_values_from(tim_indicator[0])})
+                    hashes_dict = self.indicator.get_all_values_from(tim_indicator[0]) or build_hash_dict(indicator_value)
+                    current_indicator.update({"Hashes": hashes_dict})
                 current_indicator.update(
                     {
                         "Status": pop_dict_value(tim_indicator[0], "Status"),
@@ -841,7 +842,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             }
         )
         if self.indicator.type == "file":
-            value = map_back_to_input(self.data, self.indicator.get_all_values_from(mapped_indicator))
+            value = map_back_to_input(self.data, self.indicator.get_all_values_from(mapped_indicator)) or ioc.get("value")
         else:
             value = ioc.get("value", "")
         mapped_indicator.update({"Value": value})
@@ -1104,6 +1105,20 @@ class ReputationAggregatedCommand(AggregatedCommand):
 """HELPER FUNCTIONS"""
 
 
+def build_hash_dict(value: str) -> dict[str, str]:
+    """
+    Constructs a dictionary mapping the hash type to the hash value.
+
+    Args:
+        value (str): The hash string to process.
+
+    Returns:
+        dict[str, str]: A dictionary where the key is the uppercase hash type 
+                        (e.g., "MD5") and the value is the original hash string.
+    """
+    return {get_hash_type(value).upper(): value}
+        
+
 def map_back_to_input(values: list[str], mapping: dict[str, str]) -> str:
     """
     Find the original input value that matches one of the mapped hash values.
@@ -1126,11 +1141,16 @@ def map_back_to_input(values: list[str], mapping: dict[str, str]) -> str:
     return ""
 
 
-def extract_indicators(data: list[str], type: str):
+def extract_indicators(data: list[str], type: str) -> tuple[list[str],str]:
     """
-    Validate the provided `self.data` list to ensure all items are valid indicators
-    of the configured `self.indicator.type`.
-    Use `extractIndicators` command to validate the input.
+    Extract indicators from the provided `self.data` list from the relevant type.
+    Use `extractIndicators` command to extract the input.
+    args:
+        data (list[str]): List of the indicators
+        type (str): The type of the indicator
+    Returns:
+        list[str]: list of extracted indicators.
+        str: human readable of the command.
     Raises:
         DemistoException | ValueError
     """
@@ -1153,7 +1173,8 @@ def extract_indicators(data: list[str], type: str):
     )
     if not extracted_indicators:
         raise ValueError("No valid indicators found in the input data.")
-    return list(extracted_indicators)
+    hr = f"\n\n#### Result for name=extractIndicators args='text': {data}\n\n"
+    return list(extracted_indicators), hr +  tableToMarkdown(name="Extracted Indicators: ", t=result_context)
 
 
 def deep_merge_in_place(dst: dict, src: dict) -> None:

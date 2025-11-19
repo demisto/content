@@ -24,7 +24,7 @@ def url_enrichment_script(
         CommandResult: The result of the command.
     """
     demisto.debug("Extracting indicators")
-    url_list = extract_indicators(url_list, "url")
+    url_list,hr = extract_indicators(url_list, "url")
 
     indicator_mapping = {
         "Data": "Data",
@@ -80,7 +80,10 @@ def url_enrichment_script(
         data=url_list,
         indicator=url_indicator,
     )
-    return url_reputation.run()
+    command_result = url_reputation.run()
+    if verbose:
+        command_result.readable_output += hr
+    return command_result
 
 
 """ MAIN FUNCTION """

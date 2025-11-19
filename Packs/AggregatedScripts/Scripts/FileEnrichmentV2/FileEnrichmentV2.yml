@@ -15,7 +15,7 @@ args:
   defaultValue: 'false'
   required: false
 - name: verbose
-  description: Retrieve a human-readable entry for each command; if false, only the final result is summarized and errors are suppressed.
+  description: Retrieve a human-readable entry for each command; if false, only the final result is summarized.
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -153,10 +153,10 @@ outputs:
 - contextPath: FileEnrichment.Results.AdditionalFields.Actor
   description: The threat actor associated with the file, if applicable.
   type: String
-- contextPath: FileEnrichment.Results.AdditionalFields.Behavior.details
+- contextPath: FileEnrichment.Results.AdditionalFields.behavior.details
   description: A brief description of the behavior exhibited by the file.
   type: String
-- contextPath: FileEnrichment.Results.AdditionalFields.Behavior.title
+- contextPath: FileEnrichment.Results.AdditionalFields.behavior.title
   description: A brief description of the behavior exhibited by the file.
   type: String
 - contextPath: FileEnrichment.Results.AdditionalFields.Campaign
@@ -201,9 +201,18 @@ outputs:
 - contextPath: FileEnrichment.Results.AdditionalFields.Malicious.Vendor
   description: Specifies the vendor that identified the file as malicious.
   type: String
-- contextPath: FileEnrichment.Results.AdditionalFields.Malicious.Vendor
-  description: Provides details on why the file was deemed malicious.
-  type: String
+- contextPath: FileEnrichment.Results.AdditionalFields.Malicious.Description
+  description: For malicious files, the reason that the vendor made the decision.
+- contextPath: FileEnrichment.Results.AdditionalFields.Malicious.Detections
+  description: For malicious files, the total number of detections.
+- contextPath: FileEnrichment.Results.AdditionalFields.Malicious.TotalEngines
+  description: For malicious files, the total number of engines that checked the file hash.
+- contextPath: FileEnrichment.Results.AdditionalFields.VTVendors.EngineDetections
+  description: Number of VT vendors that flagged the file as malicious.
+- contextPath: FileEnrichment.Results.AdditionalFields.VTVendors.EngineVendors
+  description: VT vendors who flagged the file as malicious.
+- contextPath: FileEnrichment.Results.AdditionalFields.VTVendors.EngineDetectionNames
+  description: VT detection names that flagged the file as malicious.
 - contextPath: FileEnrichment.Results.AdditionalFields.MalwareFamily
   description: Names the malware family associated with the file, if known.
   type: String

@@ -36,7 +36,7 @@ def ip_enrichment_script(
           - passthrough results (e.g., Core endpoint data, prevalence)
     """
     demisto.debug("Extracting indicators")
-    ip_list = extract_indicators(ip_list, "ip")
+    ip_list,hr = extract_indicators(ip_list, "ip")
 
     indicator_mapping = {
         "Address": "Address",
@@ -121,7 +121,10 @@ def ip_enrichment_script(
         data=ip_list,
         indicator=ip_indicator,
     )
-    return ip_enrichment.run()
+    command_result = ip_enrichment.run()
+    if verbose:
+        command_result.readable_output += hr
+    return command_result
 
 
 """ MAIN FUNCTION """
