@@ -14,12 +14,13 @@ call o365_common_fields
 	EnforcementMode = to_integer(EnforcementMode), 
 	SourceWorkload = to_integer(SourceWorkload), 
 	Scope = to_integer(Scope), 
-	FileSize = to_integer(FileSize)	
+	FileSize = to_integer(FileSize),
+	src_ip = coalesce(ClientIP, UserIp, SenderIp)
 | alter
+	src_ip = arraystring(arraymap(split(src_ip, "."), to_string(to_integer("@element"))), "."),
 	platform_lowercase = lowercase(to_string(Platform)),
 	user_type_string = to_string(UserType),
 	translate_EnforcementMode = if(EnforcementMode = 1, "Audit", EnforcementMode = 2, "Warn (Block with override)", EnforcementMode = 3, "Warn and bypass", EnforcementMode = 4, "Block", EnforcementMode = 5, "Allow (Audit without alerts)"),
-	src_ip = coalesce(ClientIP, UserIp, SenderIp),
 	filename_name = if(FileName ~= "\.", FileName, null),
 	filename_extension = arrayindex(regextract(FileName, "\.([^.]+)$"), 0), // extract trailing suffix after last period 
 	members_upn = arraystring(arraymap(Members -> [], "@element" -> UPN), ","),
