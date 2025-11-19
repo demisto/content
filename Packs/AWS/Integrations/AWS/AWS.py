@@ -362,6 +362,7 @@ class AWSServices(str, Enum):
     LAMBDA = "lambda"
     CloudTrail = "cloudtrail"
     ECS = "ecs"
+    ACM = "acm"
     KMS = "kms"
     ELB = "elb"
     CostExplorer = "ce"
@@ -3725,6 +3726,43 @@ class Lambda:
         )
 
 
+class ACM:
+    service = AWSServices.ACM
+
+    @staticmethod
+    def update_certificate_options_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Updates Certificate Transparency (CT) logging preference for an ACM certificate.
+        Args:
+            client: The AWS ACM boto3 client used to perform the update request.
+            args (dict): A dictionary containing the certificate ARN and the desired
+                transparency logging preference ("ENABLED" or "DISABLED").
+
+        Returns:
+            CommandResults: An object containing a human-readable summary of the change,
+                the raw AWS API response, and related metadata.
+        """
+        arn = args.get("certificate_arn")
+        pref = args.get("transparency_logging_preference")
+        kwargs = {"CertificateArn": arn, "Options": {"CertificateTransparencyLoggingPreference": pref}}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"UpdateCertificateOptions params: {kwargs}")
+
+        try:
+            resp = client.update_certificate_options(**kwargs)
+            status = resp.get("ResponseMetadata", {}).get("HTTPStatusCode")
+            if status in (HTTPStatus.OK, HTTPStatus.NO_CONTENT):
+                hr = f"Updated Certificate Transparency (CT) logging to '{pref}' for certificate '{arn}'."
+                return CommandResults(readable_output=hr, raw_response=resp)
+            return AWSErrorHandler.handle_response_error(resp)
+
+        except ClientError as e:
+            return AWSErrorHandler.handle_client_error(e)
+
+        except Exception as e:
+            raise DemistoException(f"Error updating certificate options for '{arn}': {str(e)}")
+
+
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
     return filepath_result
@@ -3766,8 +3804,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
     "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
     "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
-    "aws-ec2-create-snapshot": EC2.create_snapshot_command,
-    "aws-ec2-modify-snapshot-permission": EC2.modify_snapshot_permission_command,
+    "aws-ec2-snapshot-create": EC2.create_snapshot_command,
+    "aws-ec2-snapshot-permission-modify": EC2.modify_snapshot_permission_command,
     "aws-ec2-subnet-attribute-modify": EC2.modify_subnet_attribute_command,
     "aws-ec2-vpcs-describe": EC2.describe_vpcs_command,
     "aws-ec2-subnets-describe": EC2.describe_subnets_command,
@@ -3778,8 +3816,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-network-acl-create": EC2.create_network_acl_command,
     "aws-ec2-ipam-discovered-public-addresses-get": EC2.get_ipam_discovered_public_addresses_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
-    "aws-eks-describe-cluster": EKS.describe_cluster_command,
-    "aws-eks-associate-access-policy": EKS.associate_access_policy_command,
+    "aws-eks-cluster-describe": EKS.describe_cluster_command,
+    "aws-eks-access-policy-associate": EKS.associate_access_policy_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-enable-iam-auth-quick-action": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-enable-deletion-protection-quick-action": RDS.modify_db_cluster_command,
@@ -3811,13 +3849,14 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-bucket-encryption-get": S3.get_bucket_encryption_command,
     "aws-s3-bucket-policy-get": S3.get_bucket_policy_command,
     "aws-cloudtrail-trails-describe": CloudTrail.describe_trails_command,
-    "aws-ecs-update-cluster-settings": ECS.update_cluster_settings_command,
+    "aws-acm-certificate-options-update": ACM.update_certificate_options_command,
+    "aws-ecs-cluster-settings-update": ECS.update_cluster_settings_command,
     "aws-lambda-function-configuration-get": Lambda.get_function_configuration_command,
     "aws-lambda-function-url-config-get": Lambda.get_function_url_configuration_command,
     "aws-lambda-policy-get": Lambda.get_policy_command,
     "aws-lambda-invoke": Lambda.invoke_command,
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
-    "aws-kms-key-enable-rotation": KMS.enable_key_rotation_command,
+    "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
 }
 

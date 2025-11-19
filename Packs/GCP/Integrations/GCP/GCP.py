@@ -2070,7 +2070,7 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
     """
     project_id = args.get("project_id")
     zone = extract_zone_name(args.get("zone"))
-    limit = (arg_to_number(args.get("limit")) or 500) if args.get("limit", "500") != "0" else 0
+    limit = (arg_to_number(args.get("limit")) or 50) if args.get("limit", "50") != "0" else 0
     filters = args.get("filters")
     order_by = args.get("order_by")
     page_token = args.get("page_token")
@@ -2091,7 +2091,7 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
         if next_page_token
         else None
     )
-    if limit < 500:
+    if limit != 50:
         metadata = f"{metadata} {limit=}"
 
     if next_page_token:

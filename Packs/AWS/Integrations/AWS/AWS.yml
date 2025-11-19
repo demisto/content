@@ -1170,7 +1170,7 @@ script:
       description: "A JSON representation of the VPC configuration used by the cluster control plane. For example \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
       required: false
 
-  - name: aws-eks-describe-cluster
+  - name: aws-eks-cluster-describe
     description: Describes an Amazon EKS cluster.
     arguments:
     - name: account_id
@@ -1329,7 +1329,7 @@ script:
       description: The current authentication mode of the cluster.
       type: String
 
-  - name: aws-eks-associate-access-policy
+  - name: aws-eks-access-policy-associate
     description: Associates an access policy and its scope to an access entry.
     arguments:
     - name: account_id
@@ -2639,7 +2639,7 @@ script:
       - 'disabled'
       - 'enabled'
 
-  - name: aws-ec2-create-snapshot
+  - name: aws-ec2-snapshot-create
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -2739,7 +2739,7 @@ script:
       description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
 
-  - name: aws-ec2-modify-snapshot-permission
+  - name: aws-ec2-snapshot-permission-modify
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -2836,7 +2836,7 @@ script:
         defaultValue: 'all'
         hidden: true
 
-  - name: aws-ecs-update-cluster-settings
+  - name: aws-ecs-cluster-settings-update
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -6467,11 +6467,12 @@ script:
     - contextPath: AWS.Billing.NotificationNextToken
       description: Next page token for pagination.
       type: string
-  - name: aws-kms-key-enable-rotation
+  - name: aws-kms-key-rotation-enable
     description: Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores.
     arguments:
     - name: account_id
       description: The AWS account ID.
+      required: true
     - name: key_id
       description: The key ARN to enable rotation for.
       required: true
@@ -6612,6 +6613,62 @@ script:
     - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.AdditionalAttributes
       description: Additional attributes returned by the API.
       type: unknown
+
+  - name: aws-acm-certificate-options-update
+    description: Updates Certificate Transparency (CT) logging for an AWS Certificate Manager (ACM) certificate (ENABLED or DISABLED).
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: certificate_arn
+      description: The ARN of the ACM certificate to update.
+      required: true
+    - name: transparency_logging_preference
+      description: Whether the certificate is recorded in public CT logs.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ENABLED
+      - DISABLED
+    outputs: []
+    
   isfetch: false
   runonce: false
   script: '-'

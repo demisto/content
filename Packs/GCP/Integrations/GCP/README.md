@@ -438,7 +438,7 @@ Retrieves the list of instances in the specified zone.
 | project_id | GCP project ID. | Required |
 | zone | The name of the zone for this request. | Required |
 | filters | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance. | Optional |
-| limit | The maximum number of results per page that should be returned. Acceptable values are 0 to 500, inclusive. (Default: 500). Default is 500. | Optional |
+| limit | The maximum number of results per page that should be returned. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
 | order_by | Sorts list results in a specific order. By default, results are returned in alphanumerical order based on the resource name.  You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". | Optional |
 | page_token | Specifies a page token. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
 

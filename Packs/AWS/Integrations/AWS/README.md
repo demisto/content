@@ -781,14 +781,14 @@ Deletes the bucket policy from an Amazon S3 bucket. This operation removes all p
 
 There is no context output for this command.
 
-### aws-ecs-update-cluster-settings
+### aws-ecs-cluster-settings-update
 
 ***
 Updates the containerInsights setting of an ECS cluster.
 
 #### Base Command
 
-`aws-ecs-update-cluster-settings`
+`aws-ecs-cluster-settings-update`
 
 #### Input
 
@@ -1139,14 +1139,14 @@ Starts an Amazon EBS-backed instance that was previously stopped.
 
 There is no context output for this command.
 
-### aws-ec2-create-snapshot
+### aws-ec2-snapshot-create
 
 ***
 Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance.
 
 #### Base Command
 
-`aws-ec2-create-snapshot`
+`aws-ec2-snapshot-create`
 
 #### Input
 
@@ -1355,14 +1355,14 @@ Modifies an existing RDS event notification subscription.
 | AWS.RDS.EventSubscription.Status | string | The status of the RDS event notification subscription. |
 | AWS.RDS.EventSubscription.SubscriptionCreationTime | string | The time the RDS event notification subscription was created. |
 
-### aws-ec2-modify-snapshot-permission
+### aws-ec2-snapshot-permission-modify
 
 ***
 Adds or removes permission settings for the specified snapshot.
 
 #### Base Command
 
-`aws-ec2-modify-snapshot-permission`
+`aws-ec2-snapshot-permission-modify`
 
 #### Input
 
@@ -1423,14 +1423,14 @@ Creates or modifies OwnershipControls for an Amazon S3 bucket.
 
 There is no context output for this command.
 
-### aws-eks-describe-cluster
+### aws-eks-cluster-describe
 
 ***
 Describes an Amazon EKS cluster.
 
 #### Base Command
 
-`aws-eks-describe-cluster`
+`aws-eks-cluster-describe`
 
 #### Input
 
@@ -1482,14 +1482,14 @@ Describes an Amazon EKS cluster.
 | AWS.EKS.Cluster.accessConfig.bootstrapClusterCreatorAdminPermissions | Boolean | Specifies whether or not the cluster creator IAM principal was set as a cluster admin access entry during cluster creation time. |
 | AWS.EKS.Cluster.accessConfig.authenticationMode | String | The current authentication mode of the cluster. |
 
-### aws-eks-associate-access-policy
+### aws-eks-access-policy-associate
 
 ***
 Associates an access policy and its scope to an access entry.
 
 #### Base Command
 
-`aws-eks-associate-access-policy`
+`aws-eks-access-policy-associate`
 
 #### Input
 
@@ -1924,14 +1924,14 @@ Updates the configuration for a Lambda function URL.
 | AWS.Lambda.FunctionURLConfig.LastModifiedTime | String | When the function URL configuration was last updated. |
 | AWS.Lambda.FunctionURLConfig.InvokeMode | String | BUFFERED or RESPONSE_STREAM. |
 
-### aws-kms-key-enable-rotation
+### aws-kms-key-rotation-enable
 
 ***
 Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores.
 
 #### Base Command
 
-`aws-kms-key-enable-rotation`
+`aws-kms-key-rotation-enable`
 
 #### Input
 
@@ -2337,3 +2337,25 @@ Return the access control list (ACL) of a bucket.
 | --- | --- | --- |
 | AWS.S3-Buckets.BucketAcl.Grants | Array | A list of grants. |
 | AWS.S3-Buckets.BucketAcl.Owner | Object | Container for the bucket owner's display name and ID. |
+
+### aws-acm-certificate-options-update
+
+***
+Updates Certificate Transparency (CT) logging for an AWS Certificate Manager (ACM) certificate (ENABLED or DISABLED).
+
+#### Base Command
+
+`aws-acm-certificate-options-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| certificate_arn | The ARN of the ACM certificate to update. | Required |
+| transparency_logging_preference | Whether the certificate is recorded in public CT logs. Possible values are: ENABLED, DISABLED. | Required |
+
+#### Context Output
+
+There is no context outputs for this command.
