@@ -1250,6 +1250,7 @@ def get_drilldown_searches(notable_data):
             raw_value = raw_value[1:-1]
 
         fill_null_value = raw_value
+        demisto.info(f"Found fillnull command in drilldown search with value: {fill_null_value}")
 
     drilldown_search = notable_data.get("drilldown_search")
     if drilldown_search and drilldown_search != fill_null_value:
