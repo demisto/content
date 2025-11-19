@@ -2,6 +2,7 @@
     "templates_data": [
         {
             "report_name": "All Veeam finished jobs for the last 24h",
+            "name": "All Veeam finished jobs for the last 24h",
             "report_description": "Provides an overview of Veeam Backup & Replication jobs finished for the last 24 hours.",
             "layout": [
                 {
@@ -115,6 +116,7 @@
                 "relativeTime": 86400000
             },
             "global_id": "94d08a79708c489b9ded64d9e9b4546e",
+            "id": "94d08a79708c489b9ded64d9e9b4546e",
             "time_offset": 10800,
             "metadata": "{\"params\": []}"
         }
