@@ -24,7 +24,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: Region
+- display: Data residency
   name: region
   type: 15
   required: true
