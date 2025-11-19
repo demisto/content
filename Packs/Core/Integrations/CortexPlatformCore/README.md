@@ -814,4 +814,3 @@ Create automated pull requests to fix multiple security issues in a single bulk 
 | --- | --- | --- |
 | Core.TriggeredPRs.issueId | String | The issue identifier. |
 | Core.TriggeredPRs.status | String | Either "triggered" or "automated_fix_not_available". |
-
