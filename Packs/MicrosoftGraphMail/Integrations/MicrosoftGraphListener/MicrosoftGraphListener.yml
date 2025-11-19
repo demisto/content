@@ -122,7 +122,7 @@ configuration:
   name: folder_to_fetch
   type: 0
   defaultvalue: Inbox
-  section: Connect
+  section: Collect
   required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
