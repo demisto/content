@@ -28,6 +28,14 @@ class LogType(Enum):
         "previous_run_ids_syslog",
     )
     CASE = ("case", "Case", "/api/sn_customerservice/", "case", "last_fetch_time_case", "previous_run_ids_case")
+    OUTBOUND_HTTP_LOG = (
+        "outbound_http_log",
+        "Outbound HTTP Log",
+        "/api/now/",
+        "table/sys_outbound_http_log",
+        "last_fetch_time_outbound_http",
+        "previous_run_ids_outbound_http",
+    )
 
     def __init__(
         self, type_string: str, title: str, api_base: str, api_endpoint: str, last_fetch_time_key: str, previous_ids_key: str
@@ -54,6 +62,7 @@ class Client:
         fetch_limit_audit,
         fetch_limit_syslog,
         fetch_limit_case,
+        fetch_limit_outbound_http=10000,
     ):
         self.sn_client = ServiceNowClient(
             credentials=credentials,
@@ -71,6 +80,7 @@ class Client:
             LogType.AUDIT: fetch_limit_audit,
             LogType.SYSLOG_TRANSACTIONS: fetch_limit_syslog,
             LogType.CASE: fetch_limit_case,
+            LogType.OUTBOUND_HTTP_LOG: fetch_limit_outbound_http,
         }
 
     def _get_api_url(self, log_type: LogType) -> str:
@@ -116,11 +126,22 @@ class Client:
         if limit is None:
             limit = self.fetch_limits.get(log_type)
 
-        api_query_params = {
-            "sysparm_limit": limit,
-            "sysparm_offset": offset,
-            "sysparm_query": f"sys_created_on>{from_time}",
-        }
+        # Special handling for OUTBOUND_HTTP_LOG
+        if log_type == LogType.OUTBOUND_HTTP_LOG:
+            api_query_params = {
+                "sysparm_display_value": "false",
+                "sysparm_limit": limit,
+                "sysparm_offset": offset,
+                # Use timestamp-based query with ordering
+                "sysparm_query": f"ORDERBYDESCsys_created_on^sys_created_on>{from_time}",
+            }
+        else:
+            # Standard query for other log types
+            api_query_params = {
+                "sysparm_limit": limit,
+                "sysparm_offset": offset,
+                "sysparm_query": f"sys_created_on>{from_time}",
+            }
 
         full_url = self._get_api_url(log_type)
 
@@ -214,6 +235,7 @@ def get_from_date(last_run: dict[str, Any], log_type: LogType) -> str:
 def enrich_events(events: List[Dict[str, Any]], log_type: LogType) -> List[Dict[str, Any]]:
     """
     Enriches a list of events with the '_time' and 'source_log_type' fields.
+    For OUTBOUND_HTTP_LOG, also adds '_ENTRY_STATUS' field.
 
     Args:
         events: A list of event dictionaries to enrich.
@@ -225,6 +247,26 @@ def enrich_events(events: List[Dict[str, Any]], log_type: LogType) -> List[Dict[
     for event in events:
         event["_time"] = datetime.strptime(event["sys_created_on"], LOGS_DATE_FORMAT).strftime(DATE_FORMAT)
         event["source_log_type"] = log_type.type_string
+        
+        # Special handling for OUTBOUND_HTTP_LOG to add _ENTRY_STATUS
+        if log_type == LogType.OUTBOUND_HTTP_LOG:
+            sys_created = event.get("sys_created_on")
+            sys_updated = event.get("sys_updated_on")
+            
+            if sys_created and sys_updated:
+                if sys_created == sys_updated:
+                    event["_ENTRY_STATUS"] = "new"
+                else:
+                    # Parse timestamps to compare them properly
+                    created_dt = datetime.strptime(sys_created, LOGS_DATE_FORMAT)
+                    updated_dt = datetime.strptime(sys_updated, LOGS_DATE_FORMAT)
+                    if updated_dt > created_dt:
+                        event["_ENTRY_STATUS"] = "modified"
+                    else:
+                        event["_ENTRY_STATUS"] = "new"
+            else:
+                # Default to "new" if timestamps are missing
+                event["_ENTRY_STATUS"] = "new"
 
     return events
 
@@ -449,6 +491,7 @@ def main() -> None:  # pragma: no cover
     max_fetch_audit = arg_to_number(params.get("max_fetch")) or 10000
     max_fetch_syslog = arg_to_number(params.get("max_fetch_syslog_transactions")) or 10000
     max_fetch_case = arg_to_number(params.get("max_fetch_case")) or 10000
+    max_fetch_outbound_http = arg_to_number(params.get("max_fetch_outbound_http")) or 10000
     event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Audit"]))
     log_types_to_fetch = get_log_types_from_titles(event_types_to_fetch)
 
@@ -467,6 +510,7 @@ def main() -> None:  # pragma: no cover
             fetch_limit_audit=max_fetch_audit,
             fetch_limit_syslog=max_fetch_syslog,
             fetch_limit_case=max_fetch_case,
+            fetch_limit_outbound_http=max_fetch_outbound_http,
         )
         last_run = demisto.getLastRun()
         if client.sn_client.use_oauth and not get_integration_context().get("refresh_token", None):
@@ -476,6 +520,7 @@ def main() -> None:  # pragma: no cover
             "service-now-get-audit-logs": LogType.AUDIT,
             "service-now-get-syslog-transactions": LogType.SYSLOG_TRANSACTIONS,
             "service-now-get-case-logs": LogType.CASE,
+            "service-now-get-outbound-http-logs": LogType.OUTBOUND_HTTP_LOG,
         }
 
         if command == "test-module":

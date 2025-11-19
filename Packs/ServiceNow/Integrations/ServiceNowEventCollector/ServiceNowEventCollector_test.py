@@ -43,6 +43,7 @@ class TestFetchActivity:
             fetch_limit_audit=10,
             fetch_limit_syslog=10,
             fetch_limit_case=10,
+            fetch_limit_outbound_http=10,
         )
 
     @staticmethod
@@ -452,6 +453,7 @@ class TestFetchActivity:
             (LogType.AUDIT, 50),
             (LogType.SYSLOG_TRANSACTIONS, 60),
             (LogType.CASE, 70),
+            (LogType.OUTBOUND_HTTP_LOG, 80),
         ],
     )
     def test_search_events_uses_client_default_limit_when_limit_is_none(self, mocker, log_type, expected_default_limit):
@@ -470,6 +472,7 @@ class TestFetchActivity:
             LogType.AUDIT: 50,
             LogType.SYSLOG_TRANSACTIONS: 60,
             LogType.CASE: 70,
+            LogType.OUTBOUND_HTTP_LOG: 80,
         }
         mock_http_request = mocker.patch.object(self.client.sn_client, "http_request", return_value={"result": []})
 
@@ -494,6 +497,7 @@ class TestFetchActivity:
             LogType.AUDIT: 50,
             LogType.SYSLOG_TRANSACTIONS: 60,
             LogType.CASE: 70,
+            LogType.OUTBOUND_HTTP_LOG: 80,
         }
 
         # Act: Call the method under test with limit=None to test the fallback logic
@@ -517,9 +521,11 @@ class TestFetchActivity:
             (LogType.AUDIT, None, "https://test.com/api/now/table/sys_audit"),
             (LogType.SYSLOG_TRANSACTIONS, None, "https://test.com/api/now/table/syslog_transaction"),
             (LogType.CASE, None, "https://test.com/api/sn_customerservice/case"),
+            (LogType.OUTBOUND_HTTP_LOG, None, "https://test.com/api/now/table/sys_outbound_http_log"),
             (LogType.AUDIT, "v2", "https://test.com/api/now/v2/table/sys_audit"),
             (LogType.SYSLOG_TRANSACTIONS, "v1", "https://test.com/api/now/v1/table/syslog_transaction"),
             (LogType.CASE, "v_custom", "https://test.com/api/sn_customerservice/v_custom/case"),
+            (LogType.OUTBOUND_HTTP_LOG, "v2", "https://test.com/api/now/v2/table/sys_outbound_http_log"),
         ],
     )
     def test_get_api_url_returns_right_url_per_log_type_and_version(self, log_type, api_version, expected_url):
@@ -698,6 +704,7 @@ def test_get_limit_uses_arg_limit_when_provided():
         fetch_limit_audit=300,
         fetch_limit_syslog=400,
         fetch_limit_case=250,
+        fetch_limit_outbound_http=10,
     )
     limit = get_limit(args, client, LogType.AUDIT)
 
@@ -727,6 +734,7 @@ def test_get_limit_no_arg_given_uses_client_default():
         fetch_limit_audit=300,
         fetch_limit_syslog=400,
         fetch_limit_case=250,
+        fetch_limit_outbound_http=10,
     )
     limit = get_limit(args, client, LogType.CASE)
 
@@ -760,6 +768,7 @@ def test_get_limit_with_no_args_or_client_default_uses_fall_back():
         fetch_limit_audit=100,
         fetch_limit_syslog=None,
         fetch_limit_case=250,
+        fetch_limit_outbound_http=10,
     )
     limit = get_limit(args, client, LogType.SYSLOG_TRANSACTIONS)
 
@@ -862,6 +871,124 @@ def test_enrich_events_no_sys_created_on_field():
         enrich_events(events, LogType.AUDIT)
 
 
+def test_enrich_events_outbound_http_log_new_status():
+    """
+    Test enrich_events for OUTBOUND_HTTP_LOG when sys_created_on equals sys_updated_on.
+
+    Given:
+        - An OUTBOUND_HTTP_LOG event where sys_created_on equals sys_updated_on.
+    When:
+        - Calling enrich_events.
+    Then:
+        - The event should have _ENTRY_STATUS set to "new".
+    """
+    events = [
+        {
+            "sys_id": "1",
+            "sys_created_on": "2023-01-01 12:00:00",
+            "sys_updated_on": "2023-01-01 12:00:00",
+            "endpoint": "https://api.example.com",
+        }
+    ]
+
+    result = enrich_events(events, LogType.OUTBOUND_HTTP_LOG)
+
+    assert result[0]["_ENTRY_STATUS"] == "new"
+    assert result[0]["source_log_type"] == "outbound_http_log"
+
+
+def test_enrich_events_outbound_http_log_modified_status():
+    """
+    Test enrich_events for OUTBOUND_HTTP_LOG when sys_updated_on is after sys_created_on.
+
+    Given:
+        - An OUTBOUND_HTTP_LOG event where sys_updated_on is after sys_created_on.
+    When:
+        - Calling enrich_events.
+    Then:
+        - The event should have _ENTRY_STATUS set to "modified".
+    """
+    events = [
+        {
+            "sys_id": "1",
+            "sys_created_on": "2023-01-01 12:00:00",
+            "sys_updated_on": "2023-01-01 13:00:00",
+            "endpoint": "https://api.example.com",
+        }
+    ]
+
+    result = enrich_events(events, LogType.OUTBOUND_HTTP_LOG)
+
+    assert result[0]["_ENTRY_STATUS"] == "modified"
+    assert result[0]["source_log_type"] == "outbound_http_log"
+
+
+def test_enrich_events_outbound_http_log_missing_timestamps():
+    """
+    Test enrich_events for OUTBOUND_HTTP_LOG when sys_updated_on is missing.
+
+    Given:
+        - An OUTBOUND_HTTP_LOG event missing sys_updated_on.
+    When:
+        - Calling enrich_events.
+    Then:
+        - The event should have _ENTRY_STATUS set to "new" as default.
+    """
+    events = [
+        {
+            "sys_id": "1",
+            "sys_created_on": "2023-01-01 12:00:00",
+            "endpoint": "https://api.example.com",
+        }
+    ]
+
+    result = enrich_events(events, LogType.OUTBOUND_HTTP_LOG)
+
+    assert result[0]["_ENTRY_STATUS"] == "new"
+    assert result[0]["source_log_type"] == "outbound_http_log"
+
+
+def test_search_events_outbound_http_log(mocker):
+    """
+    Test search_events for OUTBOUND_HTTP_LOG.
+
+    Given:
+        - OUTBOUND_HTTP_LOG log type.
+    When:
+        - Calling search_events.
+    Then:
+        - The query should use timestamp-based format with ordering.
+        - The sysparm_display_value should be set to false.
+    """
+    client = Client(
+        use_oauth=False,
+        credentials={"username": "test", "password": "test"},
+        client_id="",
+        client_secret="",
+        server_url="https://test.com",
+        verify=False,
+        proxy=False,
+        api_version=None,
+        fetch_limit_audit=10,
+        fetch_limit_syslog=10,
+        fetch_limit_case=10,
+        fetch_limit_outbound_http=10,
+    )
+
+    mock_http_request = mocker.patch.object(client.sn_client, "http_request", return_value={"result": []})
+
+    client.search_events(
+        from_time="2023-01-01 00:00:00",
+        log_type=LogType.OUTBOUND_HTTP_LOG,
+        limit=10,
+        offset=0
+    )
+
+    called_kwargs = mock_http_request.call_args.kwargs
+    assert called_kwargs["params"]["sysparm_query"] == "ORDERBYDESCsys_created_on^sys_created_on>2023-01-01 00:00:00"
+    assert called_kwargs["params"]["sysparm_display_value"] == "false"
+
+
 # ------------------ Test get_from_date ----------------------- #
 def test_get_from_date_with_existing_timestamp():
     """
@@ -897,7 +1024,7 @@ def test_get_from_date_without_existing_timestamp_in_last_run():
 
     result = get_from_date(last_run, LogType.AUDIT)
     expected_time = (datetime.utcnow() - timedelta(minutes=1)).strftime(LOGS_DATE_FORMAT)
-
+    
     assert abs(datetime.strptime(result, LOGS_DATE_FORMAT) - datetime.strptime(expected_time, LOGS_DATE_FORMAT)) < timedelta(
         seconds=5
     )
@@ -1044,9 +1171,9 @@ def test_get_log_types_from_titles_valid_titles_expected_order():
         - Returns a list of corresponding LogType Enum members in the expected order.
     """
     # Arrange
-    event_types_to_fetch = ["Audit", "Syslog Transactions", "Case"]
+    event_types_to_fetch = ["Audit", "Syslog Transactions", "Case", "Outbound HTTP Log"]
     # Assert: Use the actual Enum members for the expected result
-    expected_log_types = [LogType.AUDIT, LogType.SYSLOG_TRANSACTIONS, LogType.CASE]
+    expected_log_types = [LogType.AUDIT, LogType.SYSLOG_TRANSACTIONS, LogType.CASE, LogType.OUTBOUND_HTTP_LOG]
 
     # Act & Assert
     assert get_log_types_from_titles(event_types_to_fetch) == expected_log_types
@@ -1136,6 +1263,7 @@ def test_module_of_testing_success_and_failure(mocker):
         fetch_limit_audit=10,
         fetch_limit_syslog=10,
         fetch_limit_case=10,
+        fetch_limit_outbound_http=10,
     )
 
     mocker.patch("ServiceNowEventCollector.fetch_events_command", return_value=([], {}))
@@ -1221,6 +1349,7 @@ def test_login_command_failure(mocker):
         ("service-now-get-audit-logs", LogType.AUDIT),
         ("service-now-get-syslog-transactions", LogType.SYSLOG_TRANSACTIONS),
         ("service-now-get-case-logs", LogType.CASE),
+        ("service-now-get-outbound-http-logs", LogType.OUTBOUND_HTTP_LOG),
     ],
 )
 def test_main_for_get_events_commands(mocker, command, expected_log_type):
