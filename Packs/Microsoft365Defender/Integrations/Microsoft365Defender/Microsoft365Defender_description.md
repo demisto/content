@@ -1,9 +1,11 @@
 ## Methods to Authenticate Microsoft Defender XDR
 You can use the following methods to authenticate Microsoft Defender XDR.
 - Device Code Flow
-- Device Code Flow using Cortex XSOAR app
+- Cortex XSOAR App (Using Device Code Flow)
 - Client Credentials Flow
 - Azure Managed Identities
+
+Choose the desired flow under the "Authentication Flow" parameter.
 
 ### Device Code Flow 
 ___
@@ -16,14 +18,9 @@ In order to use the Cortex XSOAR application, use the default application ID:
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
 For more details, follow [Self Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application:~:text=Self%20Deployed%20Application%23).
 
-To connect to the Microsoft Defender XDR:
-1. Fill in the Client ID parameter of your application under the ID/Client ID parameter.
-2. Run the ***!microsoft-365-defender-auth-start*** command. 
-3. Follow the instructions that appear.
-4. Run the ***!microsoft-365-defender-auth-complete*** command, you are supposed to get a message "authorization completed successfully".
-5. You can run the ***!microsoft-365-defender-auth-test** command to test the connection.
-
-At the end of the process you'll see a message that you've logged in successfully.
+After creating your application with the required permissions (see below),
+create an instance of Microsoft Defender XDR in your XSOAR/XSIAM environment.
+Then follow the steps under the Device Code Flow section [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows:~:text=XSOAR/XSIAM%20CLI.-,Device%20Code%20Flow%23,-Some%20Cortex%20XSOAR).
 
 
 #### Required Permissions
@@ -56,13 +53,10 @@ to link Microsoft Defender XDR with Cortex XSOAR/XSIAM.
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
 For more details, follow [Self Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application:~:text=Self%20Deployed%20Application%23).
 
-Follow these steps:
+After creating your application with the required permissions (see below),
+create an instance of Microsoft Defender XDR in your XSOAR/XSIAM environment.
+Then follow the steps under the Client Credentials Flow section [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authentication-flows:~:text=then%20click%20%22Test%22.-,Authorization%20Code%20flow%23,-Some%20Cortex%20XSOAR).
 
-1. In the instance configuration, select the ***Use Client Credentials Authorization Flow*** checkbox.
-2. Enter your Client/Application ID in the ***Application ID*** parameter. 
-3. Enter your Client Secret in the ***Client Secret*** parameter.
-4. Enter your Tenant ID in the ***Tenant ID*** parameter.
-5. Click on the "Test" button.
 
 #### Required Permissions
  * AdvancedHunting.Read.All - Application
