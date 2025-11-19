@@ -92,7 +92,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: Use this integration to fetch audits, syslog transactions and cases from ServiceNow as Cortex XSIAM events.
+description: Use this integration to fetch audits, syslog transactions, cases, and outbound HTTP logs from ServiceNow as Cortex XSIAM events.
 display: ServiceNow Event Collector
 name: ServiceNow Event Collector
 script:

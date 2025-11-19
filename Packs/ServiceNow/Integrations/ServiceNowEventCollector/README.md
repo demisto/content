@@ -1,4 +1,4 @@
-Use this integration to fetch audit, case and syslog transactions logs from ServiceNow as Cortex XSIAM events.
+Use this integration to fetch audit, case, syslog transactions, and outbound HTTP logs from ServiceNow as Cortex XSIAM events.
 This integration was integrated and tested with Vancouver version of ServiceNow API.
 
 ## Configure ServiceNow Event Collector in Cortex
@@ -16,6 +16,7 @@ This integration was integrated and tested with Vancouver version of ServiceNow 
 | Maximum audit events to fetch                                 | Maximum number of audit events per fetch.                          | False |
 | Maximum syslog transactions events to fetch                   | Maximum number of syslog transactions events per fetch.            | False |
 | Maximum case events to fetch                                  | Maximum number of case events per fetch.                           | False |
+| Maximum outbound HTTP log events to fetch                     | Maximum number of outbound HTTP log events per fetch.              | False |
 | Events Fetch Interval                                         |                                                                    | False |
 | Trust any certificate (not secure)                            |                                                                    | False |
 | Use system proxy settings                                     |                                                                    | False |
@@ -123,6 +124,38 @@ There is no context output for this command.
 >| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | test_table |
 >| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | test_table |
 >| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | test_table |
+
+### service-now-get-outbound-http-logs
+
+***
+Returns outbound HTTP log events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
+
+#### Base Command
+
+`service-now-get-outbound-http-logs`
+
+#### Input
+
+| **Argument Name**  | **Description**                                                                                                                                               | **Required** |
+|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False.        | Required |
+| limit              | Maximum outbound HTTP log events to fetch. Default is 1000.                                                                                                   | Optional |
+| from_date          | The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM. | Optional |
+| offset             | Starting record index from which to begin retrieving records.                                                                                                 | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### Human Readable
+
+>### Outbound HTTP Log Events
+>
+>|_time|_ENTRY_STATUS|name|request_url|response_status_code|sys_created_on|sys_id|sys_updated_on|source_log_type|
+>|---|---|---|---|---|---|---|---|---|
+>| 2024-01-28T13:21:43Z | new | HTTP Request | https://api.example.com | 200 | 2024-01-28 13:21:43 | abc123 | 2024-01-28 13:21:43 | outbound_http_log |
+>| 2024-01-28T13:22:15Z | modified | HTTP Request | https://api.example.com | 200 | 2024-01-28 13:21:43 | abc123 | 2024-01-28 13:22:15 | outbound_http_log |
+
 
 ### service-now-oauth-login
 
