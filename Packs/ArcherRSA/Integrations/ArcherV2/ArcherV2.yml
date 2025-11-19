@@ -1,5 +1,5 @@
 category: Case Management
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -456,7 +456,7 @@ script:
   - arguments: []
     description: Prints the Archer's integration cache.
     name: archer-print-cache
-  dockerimage: demisto/python3-deb:3.12.10.3561556
+  dockerimage: demisto/python3-deb:3.12.12.5735221
   isfetch: true
   script: ''
   subtype: python3

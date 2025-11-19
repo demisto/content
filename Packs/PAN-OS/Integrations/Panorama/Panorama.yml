@@ -1910,11 +1910,29 @@ script:
     deprecated: true
     name: panorama-delete-rule
     outputs:
-    - contextPath: Panorama.SecurityRule.Name
+    - contextPath: Panorama.CleanedUpRules.Category
+      description: The rule category.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.RuleName
       description: The rule name.
       type: string
-    - contextPath: Panorama.SecurityRule.DeviceGroup
-      description: The device group for the rule (Panorama instances).
+    - contextPath: Panorama.CleanedUpRules.Rulebase
+      description: The rule rulebase.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.PrePost
+      description: The rule prepost.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.DeviceGroup
+      description: The rule device group.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Target
+      description: The rule target.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Vsys
+      description: The rule vsys.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.AppliedAction
+      description: The rule applied action.
       type: string
   - arguments:
     - auto: PREDEFINED
@@ -3721,6 +3739,8 @@ script:
       - complete
       - show
       - get
+    - description: The object's new name, used when action=rename. If no value is provided, the name defaults to 'newname'.
+      name: newname
     - description: The category parameter. For example, when exporting a configuration file, use "category=configuration".
       name: category
     - description: Specifies the XML structure that defines the command. Used for operation commands (op type command). Can be retrieved from the PAN-OS web UI debugger or enabling debugging via the CLI using `debug cli on`.
@@ -5431,8 +5451,25 @@ script:
       predefined:
       - pre-rulebase
       - post-rulebase
-    - description: The device group for which to return addresses for the rule (Panorama instances).
+    - description: The device group where the rule is configured (Panorama instances).
       name: device-group
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
+      name: target
+    - auto: PREDEFINED
+      defaultValue: security
+      description: The rulebase from which to delete the rule.
+      name: rulebase
+      required: false
+      predefined:
+      - security
+      - application-override
+      - authentication
+      - decryption
+      - nat
+      - pbf
+    - defaultValue: vsys1
+      description: The Firewall VSYS to delete the rule from. Use for deleting local rules from a firewall via Panorama or to specify a different VSYS than set in Integration parameters.
+      name: vsys
     description: Deletes a policy rule.
     name: pan-os-delete-rule
     outputs:
@@ -5441,6 +5478,153 @@ script:
       type: string
     - contextPath: Panorama.SecurityRule.DeviceGroup
       description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.NAT.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.NAT.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.SSLRule.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.SSLRule.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.PBF.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.PBF.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.AuthRule.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.AuthRule.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.AppOverride.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.AppOverride.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Category
+      description: The category of rule that was cleaned up (Local or Panorama).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.AppliedAction
+      description: The applied cleanup action (Disabled or Deleted).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.DeviceGroup
+      description: The device group that the rule was cleaned up from (Panorama instances).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.PrePost
+      description: The location where the rule was cleaned up from (Panorama instances).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.RuleName
+      description: The name of the rule.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Rulebase
+      description: The rulebase where the rule was cleaned up from (for example, 'security', 'nat').
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Target
+      description: The target firewall serial number, if provided.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Vsys
+      description: The VSYS where the rule was cleaned up from.
+      type: string
+    execution: true
+  - arguments:
+    - description: The name of the rule to disable.
+      name: rulename
+      required: true
+    - description: The pre-rule or post-rule (Panorama instances).
+      name: pre_post
+      auto: PREDEFINED
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - description: The device group where the rule is configured (Panorama instances).
+      name: device-group
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
+      name: target
+    - description: The rulebase from which to disable the rule.
+      auto: PREDEFINED
+      name: rulebase
+      predefined:
+      - security
+      - application-override
+      - authentication
+      - decryption
+      - nat
+      - pbf
+      defaultValue: security
+      required: true
+    - description: The Firewall VSYS to disable the rule on. Use for disabling local rules on a firewall via Panorama or to specify a different VSYS than set in Integration parameters.
+      name: vsys
+      defaultValue: vsys1
+    description: Disables a policy rule.
+    name: pan-os-disable-rule
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.SecurityRule.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.NAT.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.NAT.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.SSLRule.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.SSLRule.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.PBF.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.PBF.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.AuthRule.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.AuthRule.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.AppOverride.Name
+      description: The rule name.
+      type: string
+    - contextPath: Panorama.AppOverride.DeviceGroup
+      description: The device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Category
+      description: The category of rule cleaned up (Local or Panorama).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.AppliedAction
+      description: The applied cleanup action (Disabled or Deleted).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.DeviceGroup
+      description: The device group where the rule was cleaned up from (Panorama instances).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.PrePost
+      description: The location where the rule was cleaned up from (Panorama instances).
+      type: string
+    - contextPath: Panorama.CleanedUpRules.RuleName
+      description: The name of the rule.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Rulebase
+      description: The rulebase where the rule was cleaned up from (e.g. 'security', 'nat').
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Target
+      description: The target firewall serial number, if provided.
+      type: string
+    - contextPath: Panorama.CleanedUpRules.Vsys
+      description: The VSYS where the rule was cleaned up from.
       type: string
     execution: true
   - arguments:
@@ -6686,7 +6870,7 @@ script:
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
-    description: Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content.
+    description: Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content. When running from a Panorama instance, the 'target' argument must be specified.
     name: pan-os-check-dynamic-updates-status
     outputs:
     - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.app-version
@@ -7065,7 +7249,7 @@ script:
       description: Version of the dynamic update package.
       type: String
   - arguments:
-    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
+    - description: Serial number of the firewall on which to run the command. Mandatory for Panorama instances.
       name: target
     - description: Job ID for a running download process. Used for status polling.
       name: job_id
@@ -7073,8 +7257,8 @@ script:
     - description: When set to false, the function will not use polling and will immediately return the ID of the download job.
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
       defaultValue: false
       name: polling
     description: Downloads the latest app/threat dynamic update.
@@ -7175,8 +7359,8 @@ script:
     - description: When set to false, the function will not use polling and will immediately return the ID of the install job.
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
       defaultValue: false
       name: polling
     description: Installs the latest app/threat dynamic update.
@@ -10281,6 +10465,94 @@ script:
     - contextPath: Panorama.Spyware.Exception.packet-capture
       description: The exception packet capture.
       type: String
+  - arguments:
+    - description: The string by which to filter the results to only show specific hostnames or serial numbers.
+      name: device_filter_string
+    - description: The target number of the firewall. Used only on a Panorama instance.
+      name: target
+    - auto: PREDEFINED
+      defaultValue: security
+      description: The firewall rulebase to check.
+      name: rulebase
+      predefined:
+      - application-override
+      - authentication
+      - decryption
+      - dos
+      - nat
+      - network-packet-broker
+      - pbf
+      - qos
+      - sdwan
+      - security
+      - tunnel-inspect
+    - defaultValue: all
+      description: The firewall VSYS name to check.  Returns results for all VSYSs if left blank.
+      name: vsys
+    - defaultValue: all
+      description: Comma-separated list of rule names to check.  Returns results for all rules if left blank.
+      isArray: true
+      name: rules
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If set to true, only returns rules with a hit count of 0.
+      name: unused_only
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Shows rules that have had hits, but not after the date provided (in the format YYYY/MM/DD HH:MM:SS).
+      name: no_new_hits_since
+    description: Gets rule hit counts from the firewall.  When connected to Panorama this command can be run on any firewall managed by it.
+    name: pan-os-get-rule-hitcounts
+    outputs:
+    - contextPath: PANOS.RuleHitCount.first_hit_timestamp
+      description: Timestamp when the rule was first hit.
+      type: Date
+    - contextPath: PANOS.RuleHitCount.from_dg_name
+      description: Name of the device group the rule is inherited from.
+      type: String
+    - contextPath: PANOS.RuleHitCount.hit_count
+      description: Number of hits for the rule.
+      type: Number
+    - contextPath: PANOS.RuleHitCount.hostid
+      description: Serial number of the firewall the entry was fetched from.
+      type: String
+    - contextPath: PANOS.RuleHitCount.instanceName
+      description: Name of the PAN-OS Integration Instance used to fetch the entry.
+      type: String
+    - contextPath: PANOS.RuleHitCount.instanceType
+      description: The type of the PAN-OS Integration Instance running the command (Panorama or firewall).
+      type: String
+    - contextPath: PANOS.RuleHitCount.is_from_panorama
+      description: Indicates if the rule was pushed from Panorama (true) or is local to the firewall (false).
+      type: Boolean
+    - contextPath: PANOS.RuleHitCount.last_hit_timestamp
+      description: Timestamp when the rule was most recently hit.
+      type: Date
+    - contextPath: PANOS.RuleHitCount.last_reset_timestamp
+      description: Timestamp when hit count data was last reset.
+      type: Date
+    - contextPath: PANOS.RuleHitCount.latest
+      description: Value of the `latest` property returned by the API.
+      type: String
+    - contextPath: PANOS.RuleHitCount.name
+      description: Name of the rule.
+      type: String
+    - contextPath: PANOS.RuleHitCount.position
+      description: Indicates the position of the rule pushed from Panorama (pre_rulebase or post_rulebase).
+      type: String
+    - contextPath: PANOS.RuleHitCount.rule_creation_timestamp
+      description: Timestamp when the rule was created.
+      type: Date
+    - contextPath: PANOS.RuleHitCount.rule_modification_timestamp
+      description: Timestamp when the rule was most recently modified.
+      type: Date
+    - contextPath: PANOS.RuleHitCount.rulebase
+      description: The rulebase of the rule (security, nat, and so on).
+      type: String
+    - contextPath: PANOS.RuleHitCount.vsys
+      description: The name of the firewall VSYS.
+      type: String
   - name: pan-os-get-master-key-details
     description: Show the details of the default master key that encrypts all the private keys and passwords in the configuration.
     outputs:
@@ -10388,7 +10660,7 @@ script:
     - contextPath: Panorama.Certificate.devices_using_certificate
       type: Unknown
       description: List of devices using this certificate if it was pushed from Panorama.
-  dockerimage: demisto/pan-os-python:1.0.0.3545654
+  dockerimage: demisto/pan-os-python:1.0.0.4889421
   isfetch: true
   runonce: false
   script: ''

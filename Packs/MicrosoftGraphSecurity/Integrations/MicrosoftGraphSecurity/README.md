@@ -13,6 +13,7 @@ When using the `Authorization Code flow` for this integration, you should log in
 - Due to API limitations, the ***message-search-alerts*** command does not filter Office 365 provider alerts.\
 For more information, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
 - When using Alerts V2, only the following properties are supported as filters for the *Fetched incidents filter* parameter and *filter* arguments: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
+- The header *include-unknown-enum-members* is used in the fetch-incidents functionality. It ensures that fields with unknown values are correctly mapped to the appropriate service. [Learn More](https://learn.microsoft.com/en-us/graph/api/resources/security-alert?view=graph-rest-1.0#:~:text=microsoftThreatIntelligence.%20Use%20the%20Prefer%3A-,include%2Dunknown%2Denum%2Dmembers,-request%20header%20to%20get%20the).
 - As of July 2023, Microsoft Graph API does **not support** a solution to search for and delete emails. To do this, refer to the [Security & Compliance](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance) integration.
 - When using Threat Assessment, only the following properties are supported as filters for *filter* parameter: expectedAssessment, ContentType ,status and requestSource.
 - When using Threat Assessment, for information protection, The following limits apply to any request on /informationProtection:
@@ -57,7 +58,8 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
 
      | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Host URL | The host URL. | True |
+    | Azure Cloud | When selecting the Custom option, the Host URL parameter must be filled. More information about National clouds can be found [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud). | False |
+    | Host URL | The host URL. When using this parameter, select the Custom option for the Azure Cloud. More information about National clouds can be found [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud). | False |
     | MS graph security version | MS graph security API version. | True |
     | Application ID or Client ID | The app registration ID. | True |
     | Token or Tenant ID | The tenant ID. | True |

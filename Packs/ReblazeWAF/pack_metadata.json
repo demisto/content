@@ -1,0 +1,36 @@
+{
+    "name": "Reblaze WAF",
+    "description": "Reblaze WAF is a fully managed, cloud-native security solution that protects web applications and APIs from modern cyber threats, bots, and DDoS attacks.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM",
+        "Network Security"
+    ],
+    "tags": [
+        "Network",
+        "Security"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "Web Application Firewall",
+        "API"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
+    ]
+}

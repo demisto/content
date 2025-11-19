@@ -1,5 +1,5 @@
 category: Email
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -40,6 +40,12 @@ configuration:
   type: 0
   section: Collect
   required: false
+- display: Collect all events
+  name: collect_all_events
+  type: 8
+  section: Collect
+  required: false
+  additionalinfo: Fetch all events instead of only open events.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -74,7 +80,7 @@ script:
       required: true
     description: Gets events from Ironscales.
     name: ironscales-get-events
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4417419
   isfetchevents: true
   script: ''
   subtype: python3

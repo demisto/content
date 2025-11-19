@@ -2,7 +2,7 @@
     "name": "Edgescan",
     "description": "Cloud-based continuous vulnerability management and penetration testing solution.",
     "support": "community",
-    "currentVersion": "1.0.13",
+    "currentVersion": "1.0.15",
     "author": "Maciej Drobniuch",
     "url": "",
     "email": "",
@@ -26,6 +26,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

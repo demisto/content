@@ -1,17 +1,34 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
   id: Microsoft Graph
   version: -1
 configuration:
-- defaultvalue: https://graph.microsoft.com
-  display: Host URL
+- defaultvalue: Worldwide
+  display: Azure Cloud
+  name: azure_cloud
+  required: false
+  type: 15
+  options:
+  - Worldwide
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Germany
+  - China
+  - Custom
+  additionalinfo: When selecting the Custom option, the Host URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  section: Connect
+  advanced: true
+- display: Host URL
   name: host
-  required: true
+  required: false
   type: 0
   section: Connect
+  advanced: true
+  additionalinfo: The host URL. When using this parameter, select the Custom option for the Azure Cloud. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - defaultvalue: Alerts v2
   display: MS graph security alert API Version
   name: api_version
@@ -745,7 +762,7 @@ script:
       description: The comment's creation time.
       type: Date
   - deprecated: true
-    description: Deprecated. Use the Azure Active Directory Users integration instead.
+    description: Deprecated. Use the Entra ID Users integration instead.
     name: msg-get-users
     outputs:
     - contextPath: MsGraph.User.Email
@@ -766,7 +783,7 @@ script:
       name: user_id
       required: true
     deprecated: true
-    description: Deprecated. Use the Azure Active Directory Users integration instead.
+    description: Deprecated. Use the Entra ID Users integration instead.
     name: msg-get-user
     outputs:
     - contextPath: MsGraph.User.Email
@@ -2256,7 +2273,7 @@ script:
     - contextPath: MsGraph.Incident.systemTags
       description: The system tags associated with the incident.
       type: String collection
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.4834757
   isfetch: true
   runonce: false
   script: '-'

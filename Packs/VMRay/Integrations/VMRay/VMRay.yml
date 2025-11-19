@@ -1,3 +1,6 @@
+sectionorder:
+  - Connect
+  - Collect
 category: Forensics & Malware Analysis
 commonfields:
   id: vmray
@@ -17,35 +20,42 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
+  section: Collect
 - defaultvalue: https://cloud.vmray.com
   display: Server URL (e.g., https://cloud.vmray.com)
   name: server
   required: true
   type: 0
+  section: Connect
 - displaypassword: API Key (Recommended)
   name: credentials
   hiddenusername: true
   type: 9
   required: false
   display: ''
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Retry requests when API is rate limited
   name: retry_on_rate_limit
   type: 8
   defaultvalue: 'true'
   required: false
+  section: Collect
 - display: API Key (Deprecated)
   additionalinfo: Use the "API Key (Recommended)" parameter instead.
   name: api_key
   type: 4
   required: false
+  section: Connect
 description: Malware analysis sandboxing.
 display: VMRay
 name: vmray
@@ -373,6 +383,9 @@ script:
     - contextPath: VMRay.Sample.ParentSampleIDs
       description: List of parent sample IDs.
       type: Number
+    - contextPath: VMRay.Sample.URL
+      description: The sample URL.
+      type: String
   - arguments:
     - description: MD5, SHA1 or SHA256 hash of the sample.
       name: hash
@@ -1119,6 +1132,25 @@ script:
     deprecated: true
     description: This command performs a function similar to the 'vmray-get-job-by-sample' command.
     name: get_job_sample
+  - arguments:
+    - description: ID of the sample from which to retrieve the PDF report.
+      name: sample_id
+      required: true
+    description: Retrieves the PDF report for a specific sample.
+    name: vmray-get-pdf-report
+    outputs:
+    - contextPath: InfoFile.Name
+      description: Filename.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the PDF report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: The file size of the PDF report.
+      type: number
+    - contextPath: InfoFile.Info
+      description: MIME type of the PDF report.
+      type: string
   - deprecated: true
     description: similar to vmray-get-sample.
     name: get_results
@@ -1162,7 +1194,7 @@ script:
       description: Percentages used.
       type: Number
     arguments: []
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.11.4181428
   runonce: false
   script: ''
   subtype: python3

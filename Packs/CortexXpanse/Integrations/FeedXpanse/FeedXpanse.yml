@@ -2,7 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Xpanse Feed
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -119,12 +119,12 @@ configuration:
 - display: Indicator types to fetch
   name: indicatorTypes
   type: 16
-  required: true
+  required: false
   options:
   - IP
   - Domain
   - Certificate
-  additionalinfo: 'Indicator types to fetch.'
+  additionalinfo: 'Indicator types to fetch.  Default is to fetch all.'
   section: Collect
 description: Use this feed to retrieve the discovered IPs/domains/certificates from the Cortex Xpanse asset database.
 display: 'Xpanse Feed'
@@ -160,7 +160,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

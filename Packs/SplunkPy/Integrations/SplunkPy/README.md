@@ -4,7 +4,7 @@ Use the SplunkPy integration to:
 - Push events from Cortex XSOAR to SplunkPy
 - Fetch SplunkPy ES notable events as Cortex XSOAR incidents.
 
-This integration was integrated and tested with Splunk Enterprise v9.0.4 and Enterprise Security v7.2.0.
+This integration was integrated and tested with Splunk Enterprise v9.4.3 and Enterprise Security v8.1.0.
 
 ## Use Cases
 
@@ -184,7 +184,10 @@ where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** fro
 When fetching incidents from Splunk to Cortex XSOAR and when mirroring incidents between Splunk and Cortex XSOAR, the Splunk Owner Name (user) associated with an incident needs to be mapped to the relevant Cortex XSOAR Owner Name (user).  
 You can use Splunk to define a user lookup table and then configure the SplunkPy integration instance to enable the user mapping. Alternatively, you can map the users with a script or a transformer.  
 
-**note:** Owner field in Cortex XSOAR incident can only be uses for mirroring-out and cannot be changed according to Splunk values. Mirroring-in will be available via the *Assigned User* incident field.
+**Note:**
+
+- When mapping users, the specified Cortex XSOAR user must be a valid user in the system.
+- The Cortex XSOAR `Owner` incident field can only be used for mirroring changes out to Splunk, you cannot use it to update Cortex XSOAR incidents based on values from Splunk. To mirror changes in from Splunk, use the `Assigned User` incident field.
 
 **Configure User Mapping Using Splunk**  
 
@@ -236,12 +239,17 @@ Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism w
 
 - As the enrichment process is asynchronous, fetching enriched incidents takes longer. The integration was tested with 20+ notables simultaneously that were fetched and enriched after approximately ~4min.
 - If you wish to configure a mapper, wait for the integration to perform the first fetch successfully. This is to make the fetch mechanism logic stable.
-- The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)  
+- The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)
+- **Splunk ES 8+ Upgrade Limitations**: After upgrading to Splunk Enterprise Security version 8 and later, the following comment handling limitations apply:
+  1. **Comment Updates/Deletions** - Editing or deleting existing comments will NOT trigger mirroring to XSOAR. Changes will only appear in the Splunk Comments field when another notable field (status, owner, etc.) is modified.
+  2. **Pre-Migration Comments** - Splunk comments created before migration will NO LONGER appear in the Splunk Comments field in the incident layout. However, these comments can still be viewed in the War Room using the `notes` filter or more specifically using the `tags` filter with the unique tag for comments reflected from Splunk (default: "FROM SPLUNK").
+  3. **XSOAR-Originated Comments** - War Room notes updated in Splunk as comments via mirror-out and comments added to a notable from `splunk-notable-event-edit` command will appear in Splunk UI but will NOT reflect in XSOAR Splunk Comments field. These comments can be viewed in the War Room using the `notes` filter.  
 
 ### Incident Mirroring
 
 **Important Notes***
 
+- Mirroring-in is not supported when multiple Splunk integration instances are connected to the same Splunk server.
 - This feature is available from Cortex XSOAR version 6.0.0.
 - This feature is supported by Splunk Enterprise Security only.
 - In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
@@ -1271,6 +1279,15 @@ Click on Global settings (in the HTTP Event Collector page)
 The default port is 8088.
 
 ## Troubleshooting
+
+### Index Validation Issues
+
+In some cases, the Splunk API may not return a complete list of all available indexes. If you try to submit an event to an index that you know exists but the integration reports that it cannot be found, it may be due to this Splunk issue. The integration will log an error message specifying which indexes could not be verified.
+
+**Recommended Action:**
+
+1. Verify that the index name is spelled correctly in your request.
+2. If the index exists and is accessible in Splunk but is not found by the integration, please contact Splunk support for assistance, as this is a known limitation with the Splunk API.
 
 ### HTTP Errors
 

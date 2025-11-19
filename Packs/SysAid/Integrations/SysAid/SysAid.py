@@ -525,7 +525,7 @@ def create_paging_header(page_size: Union[str, int] = None, page_number: Union[s
 
 def set_returned_fields(fields: str = None) -> Optional[str]:
     """
-    We made the 'fields' argument mandatory, so the context data won’t be filled with unneeded data.
+    We made the 'fields' argument mandatory, so the context data won't be filled with unneeded data.
     It is not mandatory by SysAid, and when it is not sent- all fields will be returned in the response.
     To enable this behavior, we added an option to send 'fields=all'. In that case, we will not send a value to SysAid in the
     fields parameter.

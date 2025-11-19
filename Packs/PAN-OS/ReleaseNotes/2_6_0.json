@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The 'pan-os-delete-rule' command now includes a new 'rulebase' argument to support deleting rules from multiple policy types (application-override, authentication, decryption, nat, pbf) in addition to the previously supported security policy rules. While this argument is required, it defaults to 'security' to maintain backward compatibility with existing playbooks and scripts."
+}

@@ -173,6 +173,16 @@ HR
 IDP
 LSS
 TCP
+Appends
+deduplication
+Deprecation
+UDP
+AAAA-AA-AA01
+B
+PM
+DQ
+tagname
+Autoblock
 
 # GR103 is temporary, see CIAC-11656
 [file:layoutscontainer-Chronicle_User_Alert_Incident.json]

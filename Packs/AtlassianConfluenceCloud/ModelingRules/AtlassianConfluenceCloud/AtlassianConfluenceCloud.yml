@@ -1,0 +1,6 @@
+fromversion: 8.4.0  # Will be updated with XSIAM version updates
+id: Atlassian_Confluence_ModelingRule
+name: Atlassian Confluence Modeling Rule
+rules: ''
+schema: ''
+tags: ''

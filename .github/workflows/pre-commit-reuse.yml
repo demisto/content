@@ -5,7 +5,7 @@ on:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       checks: write
       pull-requests: write
@@ -30,6 +30,20 @@ jobs:
     
     - name: Install dependencies
       run: poetry install
+
+    - name: Cleanup Disk
+      run: |
+        USAGE=$(df / | tail -1 | awk '{print $5}' | sed 's/%//')
+        df -h
+        echo "Disk usage: ${USAGE}%"
+        if [ "$USAGE" -gt 75 ]; then
+          echo "Cleaning old Docker images"
+          docker image prune -af --filter "until=24h" || true
+          echo "Disk usage after cleanup:"
+          df -h
+        else
+          echo "Disk usage below threshold, skipping cleanup."
+        fi
 
     - name: Cache Pre commit
       id: cache-pre-commit
@@ -94,7 +108,7 @@ jobs:
         github.event.pull_request.head.repo.fork == false
 
     - name: Upload junit & pack-wise pytest report
-      uses: PaloAltoNetworks/upload-secure-artifact@v1.0.5
+      uses: PaloAltoNetworks/upload-secure-artifact@v1.0.6
       if: |
         always() && 
         steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 

@@ -2,6 +2,7 @@ import demistomock as demisto
 import pytest
 from ServiceDeskPlus import (
     Client,
+    OAUTH_URL,
     add_resolution_command,
     args_to_query,
     assign_request_command,
@@ -165,7 +166,15 @@ REFRESH_TOKEN_COMMAND_CLOUD = [
 @pytest.mark.parametrize("command, args, response, expected_result", COMMANDS_LIST_WITH_CONTEXT)
 def test_commands_cloud(command, args, response, expected_result, mocker):
     mocker.patch("ServiceDeskPlus.Client.get_access_token")
-    client = Client("server_url", "use_ssl", "use_proxy", "client_id", "client_secret", "refresh_token")
+    client = Client(
+        "server_url",
+        "https://accounts.zoho.com/oauth/v2/token",
+        "use_ssl",
+        "use_proxy",
+        "client_id",
+        "client_secret",
+        "refresh_token",
+    )
     mocker.patch.object(client, "http_request", return_value=response)
     result = command(client, args)
     assert expected_result == result[1]
@@ -174,7 +183,14 @@ def test_commands_cloud(command, args, response, expected_result, mocker):
 # test commands with context:
 @pytest.mark.parametrize("command, args, response, expected_result", COMMANDS_LIST_WITH_CONTEXT)
 def test_commands_on_premise(command, args, response, expected_result, mocker):
-    client = Client("server_url", "use_ssl", "use_proxy", technician_key="technician_key", on_premise=True)
+    client = Client(
+        "server_url",
+        "https://accounts.zoho.com/oauth/v2/token",
+        "use_ssl",
+        "use_proxy",
+        technician_key="technician_key",
+        on_premise=True,
+    )
     mocker.patch.object(client, "http_request", return_value=response)
     result = command(client, args)
     assert expected_result == result[1]
@@ -184,7 +200,15 @@ def test_commands_on_premise(command, args, response, expected_result, mocker):
 @pytest.mark.parametrize("command, args, response, expected_result", COMMANDS_LIST_WITHOUT_CONTEXT)
 def test_command_hr_cloud(command, args, response, expected_result, mocker):
     mocker.patch("ServiceDeskPlus.Client.get_access_token")
-    client = Client("server_url", "use_ssl", "use_proxy", "client_id", "client_secret", "refresh_token")
+    client = Client(
+        "server_url",
+        "https://accounts.zoho.com/oauth/v2/token",
+        "use_ssl",
+        "use_proxy",
+        "client_id",
+        "client_secret",
+        "refresh_token",
+    )
     mocker.patch.object(client, "http_request", return_value=response)
     result = command(client, args)
     assert expected_result == result[0]
@@ -193,7 +217,14 @@ def test_command_hr_cloud(command, args, response, expected_result, mocker):
 # test commands without context:
 @pytest.mark.parametrize("command, args, response, expected_result", COMMANDS_LIST_WITHOUT_CONTEXT)
 def test_command_hr_on_premise(command, args, response, expected_result, mocker):
-    client = Client("server_url", "use_ssl", "use_proxy", technician_key="technician_key", on_premise=True)
+    client = Client(
+        "server_url",
+        "https://accounts.zoho.com/oauth/v2/token",
+        "use_ssl",
+        "use_proxy",
+        technician_key="technician_key",
+        on_premise=True,
+    )
     mocker.patch.object(client, "http_request", return_value=response)
     result = command(client, args)
     assert expected_result == result[0]
@@ -202,7 +233,15 @@ def test_command_hr_on_premise(command, args, response, expected_result, mocker)
 @pytest.mark.parametrize("command, args, response, expected_result", REFRESH_TOKEN_COMMAND_CLOUD)
 def test_refresh_token_command_cloud(command, args, response, expected_result, mocker):
     mocker.patch("ServiceDeskPlus.Client.get_access_token")
-    client = Client("server_url", "use_ssl", "use_proxy", "client_id", "client_secret", "refresh_token")
+    client = Client(
+        "server_url",
+        "https://accounts.zoho.com/oauth/v2/token",
+        "use_ssl",
+        "use_proxy",
+        "client_id",
+        "client_secret",
+        "refresh_token",
+    )
     mocker.patch.object(client, "http_request", return_value=response)
     result = command(client, args)
     assert expected_result == result[0]
@@ -221,7 +260,7 @@ def test_refresh_token_command_on_premise(mocker):
 
     """
     mocker.patch("ServiceDeskPlus.Client.get_access_token")
-    client = Client("server_url", "use_ssl", "use_proxy", technician_key="technician_key", on_premise=True)
+    client = Client("server_url", "dummy_oauth_url", "use_ssl", "use_proxy", technician_key="technician_key", on_premise=True)
     mocker.patch.object(demisto, "results")
     with pytest.raises(SystemExit) as err:
         generate_refresh_token(client, "args")
@@ -540,6 +579,7 @@ def test_fetch_incidents_on_premise(mocker):
 
     client = Client(
         "server_url",
+        "dummy_oauth_url",
         "use_ssl",
         "use_proxy",
         technician_key="technician_key",
@@ -554,6 +594,7 @@ def test_fetch_incidents_on_premise(mocker):
 
     client = Client(
         "server_url",
+        "dummy_oauth_url",
         "use_ssl",
         "use_proxy",
         technician_key="technician_key",
@@ -568,6 +609,7 @@ def test_fetch_incidents_on_premise(mocker):
 
     client = Client(
         "server_url",
+        "dummy_oauth_url",
         "use_ssl",
         "use_proxy",
         technician_key="technician_key",
@@ -583,6 +625,7 @@ def test_fetch_incidents_on_premise(mocker):
 
     client = Client(
         "server_url",
+        "dummy_oauth_url",
         "use_ssl",
         "use_proxy",
         technician_key="technician_key",
@@ -635,9 +678,98 @@ def test_test_module_on_premise(mocker):
     """
     from ServiceDeskPlus import test_module as module
 
-    client = Client("server_url", "use_ssl", "use_proxy", technician_key="technician_key", on_premise=True)
+    client = Client("server_url", "dummy_oauth_url", "use_ssl", "use_proxy", technician_key="technician_key", on_premise=True)
 
     mocker.patch("ServiceDeskPlus.parse_date_range", return_value=("2020-06-23 04:18:00", "never mind"))
     mocker.patch.object(client, "http_request", return_value=RESPONSE_FETCH_INCIDENTS)
     result = module(client)
     assert result == "ok"
+
+
+@pytest.mark.parametrize(
+    "region,expected_oauth_url",
+    [
+        ("United States", "https://accounts.zoho.com/oauth/v2/token"),
+        ("Europe", "https://accounts.zoho.eu/oauth/v2/token"),
+        ("India", "https://accounts.zoho.in/oauth/v2/token"),
+        ("China", "https://accounts.zoho.cn/oauth/v2/token"),
+        ("Australia", "https://accounts.zoho.au/oauth/v2/token"),
+    ],
+)
+def test_get_access_token_with_regional_oauth_url(mocker, region, expected_oauth_url):
+    """
+    Given
+    - Client with regional OAuth URL
+    When
+    - calling get_access_token method
+    Then
+    - validate that the correct regional OAuth URL is used for token request
+    """
+    oauth_url = OAUTH_URL[region]
+
+    mocker.patch("ServiceDeskPlus.demisto.getIntegrationContext", return_value={})
+    mocker.patch("ServiceDeskPlus.demisto.setIntegrationContext")
+    mocker.patch("ServiceDeskPlus.date_to_timestamp", return_value=1234567890)
+
+    mock_response = {"access_token": "test_access_token", "expires_in": 3600}
+    mock_http_request = mocker.patch("ServiceDeskPlus.Client.http_request", return_value=mock_response)
+
+    Client(
+        url="https://test.com/api/v3/",
+        outh_url=oauth_url,
+        use_ssl=True,
+        use_proxy=False,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+        refresh_token="test_refresh_token",
+    )
+
+    mock_http_request.assert_called_once()
+    call_args = mock_http_request.call_args
+    assert call_args[1]["full_url"] == expected_oauth_url
+    assert call_args[0][0] == "POST"
+    assert call_args[1]["url_suffix"] == ""
+
+
+@pytest.mark.parametrize(
+    "region,expected_oauth_url",
+    [
+        ("United States", "https://accounts.zoho.com/oauth/v2/token"),
+        ("Europe", "https://accounts.zoho.eu/oauth/v2/token"),
+        ("India", "https://accounts.zoho.in/oauth/v2/token"),
+        ("China", "https://accounts.zoho.cn/oauth/v2/token"),
+        ("Australia", "https://accounts.zoho.au/oauth/v2/token"),
+    ],
+)
+def test_generate_refresh_token_with_regional_oauth_url(mocker, region, expected_oauth_url):
+    """
+    Given
+    - generate_refresh_token command with regional OAuth URL
+    When
+    - calling generate_refresh_token with different regional clients
+    Then
+    - validate that the correct regional OAuth URL is used
+    """
+    oauth_url = OAUTH_URL[region]
+    client = Client(
+        url="https://test.com/api/v3/",
+        outh_url=oauth_url,
+        use_ssl=True,
+        use_proxy=False,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+    )
+
+    mock_response = {"refresh_token": "new_refresh_token"}
+    mock_http_request = mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    args = {"code": "test_authorization_code"}
+    result = generate_refresh_token(client, args)
+
+    mock_http_request.assert_called_once()
+    call_args = mock_http_request.call_args
+    assert call_args[1]["full_url"] == expected_oauth_url
+    assert call_args[0][0] == "POST"
+    assert call_args[1]["url_suffix"] == ""
+
+    assert "new_refresh_token" in result[0]

@@ -15,12 +15,19 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 API_VERSION = "/api/v3/"
-OAUTH = "https://accounts.zoho.com/oauth/v2/token"
+OAUTH_URL = {
+    "United States": "https://accounts.zoho.com/oauth/v2/token",
+    "Europe": "https://accounts.zoho.eu/oauth/v2/token",
+    "India": "https://accounts.zoho.in/oauth/v2/token",
+    "China": "https://accounts.zoho.cn/oauth/v2/token",
+    "Australia": "https://accounts.zoho.au/oauth/v2/token",
+}
 
 REQUEST_FIELDS = [
     "subject",
     "description",
     "request_type",
+    "impact_details",
     "impact",
     "status",
     "mode",
@@ -92,6 +99,7 @@ class Client(BaseClient):
     def __init__(
         self,
         url: str,
+        outh_url: str,
         use_ssl: bool,
         use_proxy: bool,
         client_id: str = None,
@@ -107,6 +115,7 @@ class Client(BaseClient):
         if fetch_status is None:
             fetch_status = []
         self.client_id = client_id
+        self.outh_url = outh_url
         self.client_secret = client_secret
         self.refresh_token = refresh_token
         self.technician_key = technician_key
@@ -142,7 +151,7 @@ class Client(BaseClient):
                 "client_secret": self.client_secret,
             }
             try:
-                res = self.http_request("POST", url_suffix="", full_url=OAUTH, params=params)
+                res = self.http_request("POST", url_suffix="", full_url=self.outh_url, params=params)
                 if "error" in res:
                     return_error(
                         f"Error occurred while creating an access token. Please check the Client ID, Client Secret "
@@ -819,7 +828,7 @@ def generate_refresh_token(client: Client, args: dict) -> tuple[str, dict, Any]:
         "client_id": client.client_id,
         "client_secret": client.client_secret,
     }
-    res = client.http_request("POST", url_suffix="", full_url=OAUTH, params=params)
+    res = client.http_request("POST", url_suffix="", full_url=client.outh_url, params=params)
     if res.get("refresh_token"):
         hr = (
             f'### Refresh Token: {res.get("refresh_token")}\n Please paste the Refresh Token in the instance '
@@ -834,14 +843,15 @@ def generate_refresh_token(client: Client, args: dict) -> tuple[str, dict, Any]:
 
 def main():
     params = demisto.params()
-    server_url = params.get("server_url")
+    region = params.get("server_url")
     technician_key = params.get("credentials_technician_key", {}).get("password") or params.get("technician_key")
     client_id = params.get("credentials_client", {}).get("identifier") or params.get("client_id")
     client_secret = params.get("credentials_client", {}).get("password") or params.get("client_secret")
     refresh_token = params.get("credentials_refresh_token", {}).get("password") or params.get("refresh_token")
-    if server_url == "On-Premise":
+    if region == "On-Premise":
         client = Client(
             url=params.get("server_url_on_premise") + API_VERSION,
+            outh_url=OAUTH_URL["United States"],
             use_ssl=not params.get("insecure", False),
             use_proxy=params.get("proxy", False),
             technician_key=technician_key,
@@ -852,9 +862,10 @@ def main():
             on_premise=True,
         )
     else:
-        server_url = SERVER_URL[params.get("server_url")]
+        server_url = SERVER_URL[region]
         client = Client(
             url=server_url + API_VERSION,
+            outh_url=OAUTH_URL[region],
             use_ssl=not params.get("insecure", False),
             use_proxy=params.get("proxy", False),
             client_id=client_id,

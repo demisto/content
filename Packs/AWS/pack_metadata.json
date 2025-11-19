@@ -2,7 +2,7 @@
     "name": "AWS",
     "description": "Amazon Web Services",
     "support": "xsoar",
-    "currentVersion": "2.0.2",
+    "currentVersion": "2.0.8",
     "author": "Cortex",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -16,7 +16,12 @@
         "C1",
         "C3",
         "X5",
-        "agentix"
+        "agentix",
+        "cloud_posture",
+        "cloud",
+        "cloud_runtime_security",
+        "xsiam",
+        "edr"
     ],
     "marketplaces": [
         "platform"

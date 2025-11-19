@@ -1,5 +1,5 @@
 category: Email
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -930,7 +930,145 @@ script:
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.3539024
+  - arguments:
+    - description: A comma-separated list of email addresses for the 'to' field.
+      isArray: true
+      name: to
+      prettyname: To
+    - description: A comma-separated list of email addresses for the 'cc' field.
+      isArray: true
+      name: cc
+      prettyname: CC
+    - description: A comma-separated list of email addresses for the 'bcc' field.
+      isArray: true
+      name: bcc
+      prettyname: BCC
+      required: true
+      prettypredefined:
+        Email Recipients: ${issue.xdmemailrecipients}
+    - description: The subject of the email.
+      name: subject
+      prettyname: Subject
+      defaultValue: '[Security Alert] Malicious Email Removed From Your Mailbox'
+    - description: The contents (body) of the email.
+      name: body
+      prettyname: Body
+    - description: The content in html format (htmlBody) of the email.
+      name: htmlBody
+      prettyname: HTML Body
+      defaultValue: |
+        <p>Dear recipient</p>
+        <p>Our security team has identified and removed a potentially malicious email that was previously delivered to your inbox.</p>
+        <p><strong>Email Details:</strong><br>
+        - Delivery Time: ${issue.timestamp}<br>
+        - Sender: ${issue.xdmemailsender}</p>
+        <p>This message was deemed suspicious or malicious and has been automatically deleted to protect your account and our organization.</p>
+        <p><strong>Important:</strong><br>
+        Please do not attempt to reopen retrieve or interact with the email if you have it cached or archived in any personal folders or devices.</p>
+        <p>If you clicked any links or downloaded attachments from the original message or if you experience any suspicious system behavior. Please notify the Security Team immediately.</p>
+        <p>Thank you for your cooperation in keeping our environment secure.</p>
+        <p>—<br>Security Operations Team</p>
+    - auto: PREDEFINED
+      description: 'The body type of the email. Can be: "text", or "HTML".'
+      name: body_type
+      prettyname: Body Type
+      predefined:
+      - text
+      - HTML
+    - description: Indicates whether to render the email body.
+      name: renderBody
+      prettyname: Render Body
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: notFlagged
+      description: The flag value that indicates the status for the email.
+      name: flag
+      prettyname: Rate Limit Retry Flag
+      predefined:
+      - notFlagged
+      - complete
+      - flagged
+    - description: The importance of the email.
+      name: importance
+      prettyname: Importance
+      auto: PREDEFINED
+      defaultValue: Low
+      predefined:
+      - Low
+      - Normal
+      - High
+    - description: 'A comma-separated list of additional headers in the format: headerName:headerValue. For example: "headerName1:headerValue1,headerName2:headerValue2".'
+      isArray: true
+      name: headers
+      prettyname: Headers
+    - description: A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
+      isArray: true
+      name: attach_ids
+      hidden: true
+    - description: A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attachIDs.
+      isArray: true
+      name: attach_names
+      hidden: true
+    - description: A comma-separated list of CIDs to embed attachments within the actual email.
+      name: attach_cids
+      isArray: true
+      hidden: true
+    - description: A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
+      isArray: true
+      name: attachIDs
+    - description: A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attachIDs.
+      name: attachNames
+      isArray: true
+    - description: A comma-separated list of CIDs to embed attachments within the actual email.
+      name: attachCIDs
+      isArray: true
+    - description: Email addresses that need to be used to reply to the message. Supports comma-separated values.
+      isArray: true
+      name: replyTo
+    - deprecated: true
+      description: Flag for rate limit retry.
+      name: ran_once_flag
+    description: Sends an email using Microsoft Graph.
+    name: msgraph-email-security-send-email-to-recipients-office-365-quick-action
+    prettyname: "[Email Security] Send Email to Recipients - Office 365"
+    quickaction: true
+    hidden: true
+    outputs:
+    - contextPath: MicrosoftGraph.Email.internetMessageHeaders
+      description: The email headers.
+      type: String
+    - contextPath: MicrosoftGraph.Email.body
+      description: The body of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.bodyPreview
+      description: The body preview of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.subject
+      description: The subject of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.flag
+      description: The flag status of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.importance
+      description: The importance status of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.toRecipients
+      description: The 'to' recipients of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.ccRecipients
+      description: The CC recipients of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.bccRecipients
+      description: The BCC recipients of the email.
+      type: String
+    - contextPath: MicrosoftGraph.Email.replyTo
+      description: The replyTo recipients of the email.
+      type: String
+    polling: true
+  dockerimage: demisto/crypto:1.0.0.4834757
   isfetch: true
   script: ''
   type: python
@@ -940,3 +1078,4 @@ tests:
 defaultclassifier: Microsoft Graph Mail Single User
 defaultmapperin: Microsoft Graph Mail Single User-mapper
 fromversion: 5.0.0
+supportsquickactions: true

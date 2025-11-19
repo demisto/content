@@ -119,6 +119,24 @@
           ]
         }
       },
+      "imphash": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Imphash",
+          "transformers": [
+            {
+              "operator": "toUpperCase",
+              "args": {}
+            },
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
       "md5": {
         "simple": "",
         "complex": {

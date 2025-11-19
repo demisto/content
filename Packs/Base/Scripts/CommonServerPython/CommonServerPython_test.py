@@ -2,6 +2,7 @@
 import copy
 import gzip
 import json
+import time
 import os
 import re
 import sys
@@ -37,12 +38,12 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 aws_table_to_markdown, is_demisto_version_ge, appendContext, auto_detect_indicator_type,
                                 handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, url_to_clickable_markdown,
                                 WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, remove_duplicates_from_list_arg,
-                                DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics,
+                                DBotScoreType, DBotScoreReliability, Common, ExecutionMetrics,
                                 response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
-                                censor_request_logs, censor_request_logs, safe_sleep, get_server_config, b64_decode,
+                                censor_request_logs, safe_sleep, get_server_config, b64_decode,
                                 get_engine_base_url, is_integration_instance_running_on_engine, find_and_remove_sensitive_text, stringEscapeMD,
-                                execute_polling_command, QuickActionPreview, MirrorObject, get_pack_version,
+                                execute_polling_command, QuickActionPreview, MirrorObject, get_pack_version, ExecutionTimeout, is_ip_address_internal
                                 )
 
 EVENTS_LOG_ERROR = \
@@ -310,6 +311,24 @@ COMPLEX_DATA_WITH_URLS = [(
           }
          }
     ])]
+
+
+@pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
+def test_is_ip_address_internal():
+    """
+    Given:
+        - A set of valid IP addresses including both private and public IPs.
+    When:
+        - Calling is_ip_address_internal on each IP address.
+    Then:
+        - Assert that the function returns True for private/internal IPs.
+        - Assert that the function returns False for public/external IPs.
+    """
+    assert is_ip_address_internal('10.0.0.1') == True
+    assert is_ip_address_internal('127.0.0.1') == True
+    assert is_ip_address_internal('8.8.8.8') == False # Google DNS
+    assert is_ip_address_internal('1.1.1.1') == False # Cloudflare DNS
+
 
 
 class TestTableToMarkdown:
@@ -1001,7 +1020,7 @@ class TestTableToMarkdown:
         Then:
             Validate that the script ran successfully.
         """
-        data = {'key': 'value', 'listtest': [1, 2, 3, 4]} 
+        data = {'key': 'value', 'listtest': [1, 2, 3, 4]}
         table = tableToMarkdown("tableToMarkdown test", data, sort_headers=False, is_auto_json_transform=True)
         assert table
 
@@ -3551,6 +3570,22 @@ def test_http_client_debug_int_logger_sensitive_query_params(mocker):
             assert 'apikey=<XX_REPLACED>' in arg[0][0]
 
 
+def test_safe_strptime():
+    """
+    Given: A string and a format that is missing the milliseconds
+    When: Calling safe_strptime
+    Then: Verify the result is as expected
+    """
+    from CommonServerPython import safe_strptime
+    
+    assert safe_strptime("2024-01-15 17:00:00Z", "%Y-%m-%d %H:%M:%S.%fZ") == datetime(2024, 1, 15, 17, 0, 0)
+    assert safe_strptime("2024-01-15 17:00:00", "%Y-%m-%d %H:%M:%S") == datetime(2024, 1, 15, 17, 0, 0)
+    assert safe_strptime("2024-01-15 17:00:00", "%Y-%m-%d %H:%M:%S", strptime=time.strptime) == time.strptime("2024-01-15 17:00:00", "%Y-%m-%d %H:%M:%S")
+    
+    with pytest.raises(ValueError):
+        safe_strptime("2024-01-15 17:00:00", "%Y-%m-%dT%H:%M:%S")
+
+
 class TestParseDateRange:
     @staticmethod
     @freeze_time("2024-01-15 17:00:00 UTC")
@@ -3753,15 +3788,37 @@ class TestReturnOutputs:
         assert 'text' == results['ContentsFormat']
 
 
-def test_argToBoolean():
-    assert argToBoolean('true') is True
-    assert argToBoolean('yes') is True
-    assert argToBoolean('TrUe') is True
-    assert argToBoolean(True) is True
+@pytest.mark.parametrize(
+    "input_value,expected_result",
+    [
+        # True values
+        pytest.param('true', True, id='string_true_lowercase'),
+        pytest.param('yes', True, id='string_yes_lowercase'),
+        pytest.param('TrUe', True, id='string_true_mixed_case'),
+        pytest.param(True, True, id='boolean_true'),
+        pytest.param('y', True, id='string_y_lowercase'),
+        pytest.param('Y', True, id='string_y_uppercase'),
+        pytest.param('t', True, id='string_t_lowercase'),
+        pytest.param('T', True, id='string_t_uppercase'),
+        pytest.param('on', True, id='string_on_lowercase'),
+        pytest.param('ON', True, id='string_on_uppercase'),
+        pytest.param('1', True, id='string_one'),
 
-    assert argToBoolean('false') is False
-    assert argToBoolean('no') is False
-    assert argToBoolean(False) is False
+        # False values
+        pytest.param('false', False, id='string_false_lowercase'),
+        pytest.param('no', False, id='string_no_lowercase'),
+        pytest.param(False, False, id='boolean_false'),
+        pytest.param('n', False, id='string_n_lowercase'),
+        pytest.param('N', False, id='string_n_uppercase'),
+        pytest.param('f', False, id='string_f_lowercase'),
+        pytest.param('F', False, id='string_f_uppercase'),
+        pytest.param('off', False, id='string_off_lowercase'),
+        pytest.param('OFF', False, id='string_off_uppercase'),
+        pytest.param('0', False, id='string_zero'),
+    ]
+)
+def test_argToBoolean(input_value, expected_result):
+    assert argToBoolean(input_value) is expected_result
 
 
 batch_params = [
@@ -8653,6 +8710,23 @@ class TestFetchWithLookBack:
         assert calculate_new_offset(1, 2, 3) == 0
         assert calculate_new_offset(1, 2, None) == 3
 
+    def test_remove_old_incidents_ids(self):
+        """
+        Test that the remove_old_incidents_ids function removes old incident IDs from the last run object.
+        Given:
+            A last run object with incident IDs and their addition times.
+        When:
+            Calling remove_old_incidents_ids with the last run object and a look back period.
+        Then:
+            Make sure that the old incident IDs are removed from the last run object and the latest incident IDs is returned.
+        """
+        from CommonServerPython import remove_old_incidents_ids
+
+        assert remove_old_incidents_ids(
+            {"inc1": 1, "inc2": 2, "inc3": 3}, 1000, 1) == {"inc3": 3}
+        assert remove_old_incidents_ids(
+            {"inc1": 1, "inc2": 2, "inc3": 2}, 1000, 1) == {"inc2": 2, "inc3": 2}
+
 
 class TestTracebackLineNumberAdgustment:
     @staticmethod
@@ -9732,12 +9806,12 @@ def test_censor_request_logs(request_log, expected_output):
         case 3: A request log with a sensitive data under the 'Authorization' header, but with no 'Bearer' prefix.
         case 4: A request log with a sensitive data under the 'Authorization' header, but with no 'send b' prefix at the beginning.
         case 5: A request log with no sensitive data.
-        case 6: A request log with a sensitive data under the 'Authorization' header, with a "LOG" prefix (which used in cases 
+        case 6: A request log with a sensitive data under the 'Authorization' header, with a "LOG" prefix (which used in cases
                 like HMAC signature authentication).
     When:
         Running censor_request_logs function.
     Then:
-        Assert the function returns the exactly same log with the sensitive data masked. 
+        Assert the function returns the exactly same log with the sensitive data masked.
     """
     assert censor_request_logs(request_log) == expected_output
 
@@ -9912,18 +9986,18 @@ def test_get_server_config_fail(mocker):
                               "Test-instanec-without-xsoar-engine-configures"
                          ])
 def test_is_integration_instance_running_on_engine(mocker, instance_name, expected_result):
-    """ Tests the 'is_integration_instance_running_on_engine' function's logic. 
+    """ Tests the 'is_integration_instance_running_on_engine' function's logic.
 
-        Given:  
+        Given:
                 1. A name of an instance that has an engine configured (and relevant mocked responses).
                 2. A name of an instance that doesn't have an engine configured (and relevant mocked responses).
 
-        When:  
-            - Running the 'is_integration_instance_running_on_engine' funcution. 
+        When:
+            - Running the 'is_integration_instance_running_on_engine' funcution.
 
         Then:
-            - Verify that: 
-                1. The result is the engine's id. 
+            - Verify that:
+                1. The result is the engine's id.
                 2. The result is an empty string.
     """
     mock_response = {
@@ -9939,14 +10013,14 @@ def test_is_integration_instance_running_on_engine(mocker, instance_name, expect
 
 
 def test_get_engine_base_url(mocker):
-    """ Tests the 'get_engine_base_url' function's logic. 
+    """ Tests the 'get_engine_base_url' function's logic.
 
-        Given:  
+        Given:
             - Mocked response of the internalHttpRequest call for the '/engines' endpoint, including 2 engines.
-            - An id of an engine. 
+            - An id of an engine.
 
-        When:  
-            - Running the 'is_integration_instance_running_on_engine' funcution. 
+        When:
+            - Running the 'is_integration_instance_running_on_engine' funcution.
 
         Then:
             - Verify that base url of the given engine id was returened.
@@ -10559,3 +10633,64 @@ def test_get_pack_version():
     exec(code, globals())
     version = get_pack_version()
     assert version == '1.0.0'
+
+
+
+# The unit test below will fail if run on Windows systems due to limited signal handling capabilities compared to Unix systems
+@pytest.mark.parametrize(
+    "sleep_time, expected_is_finished",
+    [
+        pytest.param(3, False, id="Slow execution"),
+        pytest.param(0, True, id="Fast execution"),
+    ],
+)
+def test_execution_timeout_context_manager(sleep_time, expected_is_finished):
+    """
+    Given:
+        - An execution timeout value of 2 seconds.
+
+    When:
+        - When using `ExecutionTimeout` context manager with a simulated "slow" and "fast" executions.
+
+    Assert:
+        - Case A (Slow): Ensure `is_finished` is False since `time.sleep` timed out (`sleep_time` > `execution_timeout`).
+        - Case B (Fast): Ensure `is_finished` is True since `time.sleep` finished in time (`sleep_time` < `execution_timeout`).
+    """
+    execution_timeout = 2  # Slow: Sleep one second more than timeout. Fast: Don't sleep.
+
+    is_finished = False
+    with ExecutionTimeout(seconds=execution_timeout):
+        time.sleep(sleep_time)
+        is_finished = True  # Slow: This line will not be reached. Fast: Line reached, variable updated.
+
+    assert is_finished == expected_is_finished
+
+
+# The unit test below will fail if run on Windows systems due to limited signal handling capabilities compared to Unix systems
+@pytest.mark.parametrize(
+    "sleep_time, expected_return_value",
+    [
+        pytest.param(3, "I TIMED OUT", id="Slow execution"),
+        pytest.param(0, "I AM DONE", id="Fast execution"),
+    ],
+)
+def test_execution_timeout_decorator(sleep_time, expected_return_value):
+    """
+    Given:
+        - An execution timeout value of 2 seconds.
+
+    When:
+        - When using `ExecutionTimeout.limit_time` decorator with a simulated "slow" and "fast" executions.
+
+    Assert:
+        - Case A (Slow): Ensure return value is "I TIMED OUT" since `do_logic` timed out (`sleep_time` > `execution_timeout`).
+        - Case B (Fast): Ensure return value is "I AM DONE" since `do_logic` finished in time (`sleep_time` < `execution_timeout`).
+    """
+    execution_timeout = 2  # Slow: Sleep one second more than timeout. Fast: Don't sleep.
+
+    @ExecutionTimeout.limit_time(execution_timeout, default_return_value="I TIMED OUT")
+    def do_logic():
+        time.sleep(sleep_time)
+        return "I AM DONE"
+
+    assert do_logic() == expected_return_value

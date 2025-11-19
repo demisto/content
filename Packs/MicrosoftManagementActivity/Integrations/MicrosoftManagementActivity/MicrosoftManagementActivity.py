@@ -439,10 +439,10 @@ def get_content_types_to_fetch(client):
 
 
 def get_fetch_end_time_based_on_start_time(fetch_start_datetime):
-    is_fetch_start_time_over_10_minutes_ago = datetime.now() - timedelta(minutes=10) >= fetch_start_datetime
-    if is_fetch_start_time_over_10_minutes_ago:
+    is_fetch_start_time_over_24_hours_ago = datetime.now() - timedelta(hours=24) >= fetch_start_datetime
+    if is_fetch_start_time_over_24_hours_ago:
         # Start and end time can't be over 24, so the fetch will end 24  hours after it's start.
-        fetch_end_datetime = fetch_start_datetime + timedelta(minutes=10)
+        fetch_end_datetime = fetch_start_datetime + timedelta(hours=24)
     else:
         fetch_end_datetime = datetime.now()
     return fetch_end_datetime

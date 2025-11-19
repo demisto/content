@@ -1,7 +1,7 @@
 commonfields:
   id: Forcepoint
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 name: Forcepoint
 display: Forcepoint Web Security
@@ -27,6 +27,11 @@ configuration:
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Forcepoint version 8.5.5 or later
+  name: versionCheck
   type: 8
   required: false
   section: Connect

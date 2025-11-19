@@ -2,7 +2,7 @@
     "name": "Check Point Infinity NDR",
     "description": "Collect network security events from Check Point Infinity NDR for your secured SaaS periodically",
     "support": "partner",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.3",
     "author": "Check Point",
     "url": "https://supportcenter.checkpoint.com/",
     "email": "ndr@checkpoint.com",
@@ -40,6 +40,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

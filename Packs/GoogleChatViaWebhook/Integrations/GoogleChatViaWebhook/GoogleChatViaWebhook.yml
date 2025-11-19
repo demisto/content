@@ -1,5 +1,5 @@
 category: Messaging and Conferencing
-sectionOrder:
+sectionorder:
 - Connect
 commonfields:
   id: Google Chat via Webhook
@@ -107,7 +107,7 @@ script:
       description: Google Chat thread name.
     - contextPath: GoogleChatWebhook.CustomCard.SenderDisplayName
       description: Google Chat custom card sender display name.
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: ''
   subtype: python3

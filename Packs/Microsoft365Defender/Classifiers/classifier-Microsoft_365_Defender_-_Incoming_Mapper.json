@@ -411,6 +411,10 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam",
+        "edr",
+        "cloud",
+        "cloud_runtime_security"
     ]
 }

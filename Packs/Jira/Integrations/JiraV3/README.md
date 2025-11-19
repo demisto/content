@@ -473,6 +473,7 @@ Scope: `read:jira-work`
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| Jira.Query.nextPageToken | String | A token for fetching the next page of the query if such exists. |
 | Ticket.Id | String | The ticket ID. |
 | Ticket.Key | String | The ticket key. |
 | Ticket.Assignee | String | The user assigned to the ticket. |

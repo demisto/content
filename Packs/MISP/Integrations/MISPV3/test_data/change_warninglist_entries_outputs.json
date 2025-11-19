@@ -1,0 +1,28 @@
+{
+    "ID": 1,
+    "Name": "Hello, this world has changed!",
+    "Type": "string",
+    "Description": "The entries in this list have been changed",
+    "Version": 42,
+    "Enabled": false,
+    "Default": false,
+    "Category": "false_positive",
+    "Attributes": [
+        "ip-src",
+        "ip-dst"
+    ],
+    "Entries": [
+        {
+            "Comment": null,
+            "ID": null,
+            "Value": "8.8.8.8",
+            "WarninglistID": null
+        },
+        {
+            "Comment": null,
+            "ID": null,
+            "Value": "9.9.9.9",
+            "WarninglistID": null
+        }
+    ]
+}

@@ -1650,3 +1650,35 @@ def test_fetch_incidents_for_incident_severities(
 
     # Validate response
     assert len(incidents) == 3
+
+
+def test_license_info_get_command(requests_mock, mock_client):
+    """
+    Scenario:
+    -   Get license information of tenant via API.
+    When:
+    -    cisco-amp-license-get is called.
+    Then:
+    -   Ensure outputs_prefix is correct.
+    """
+    arg: dict[str, Any] = {}
+
+    mock_response = load_mock_response("license_get_response.json")
+    requests_mock.get(f"{BASE_URL}/license_summaries", json=mock_response)
+
+    from AMPv2 import license_info_get_command
+
+    response = license_info_get_command(mock_client, arg)
+
+    recent_connectors = "number_of_connectors_seen_in_the_last_30_days"
+
+    assert response.outputs_prefix == "CiscoAMP.LicenseInformation"
+    assert mock_response["data"]["number_of_connectors_registered"] == response.outputs["number_of_connectors_registered"]
+    assert mock_response["data"][recent_connectors] == response.outputs[recent_connectors]
+    assert (
+        mock_response["data"]["license_summaries"][0]["licensed_seats_count"]
+        == response.outputs["license_summaries"][0]["licensed_seats_count"]
+    )
+    assert mock_response["data"]["license_summaries"][0]["start_date"] == response.outputs["license_summaries"][0]["start_date"]
+    assert mock_response["data"]["license_summaries"][0]["end_date"] == response.outputs["license_summaries"][0]["end_date"]
+    assert mock_response["data"]["license_summaries"][0]["tier"] == response.outputs["license_summaries"][0]["tier"]

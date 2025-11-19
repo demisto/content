@@ -3,7 +3,6 @@ from enum import Enum
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
-import urllib3
 from CommonServerPython import *  # noqa: F401
 from MicrosoftApiModule import *  # noqa: E402
 from requests import Response
@@ -12,7 +11,6 @@ from CommonServerUserPython import *
 
 #  disable insecure warnings
 DEFAULT_KEYS_TO_REPLACE = {"createdDateTime": "CreatedDate"}
-urllib3.disable_warnings()
 
 APP_NAME = "ms-graph-security"
 API_V2 = "Alerts v2"
@@ -108,8 +106,11 @@ class MsGraphClient:
 
     def search_alerts(self, params):
         cmd_url = CMD_URL
-        demisto.debug(f"Fetching MS Graph Security incidents with params: {params}")
-        response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
+        headers = {"Prefer": "include-unknown-enum-members"}
+        # This header maps unknownFutureValue value to the appropriate service resource.
+        # https://learn.microsoft.com/en-us/graph/api/resources/security-alert?view=graph-rest-1.0#:~:text=microsoftThreatIntelligence.%20Use%20the%20Prefer%3A-,include%2Dunknown%2Denum%2Dmembers,-request%20header%20to%20get%20the
+        demisto.debug(f"Fetching MS Graph Security incidents with params: {params} and header: {headers}")
+        response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params, headers=headers)
         return response
 
     def get_alert_details(self, alert_id):
@@ -273,7 +274,7 @@ class MsGraphClient:
             "recipientEmail": recipient_email,
             "expectedAssessment": expected_assessment,
             "category": category,
-            "messageUri": f"https://graph.microsoft.com/v1.0/users/{user_id}/messages/{message_id}",
+            "messageUri": urljoin(self.ms_client._base_url, "users/{user_id}/messages/{message_id}"),
         }
         return self.ms_client.http_request(method="POST", url_suffix=THREAT_ASSESSMENT_URL_PREFIX, json_data=body)
 
@@ -628,11 +629,13 @@ def create_filter_query(filter_param: str, providers_param: str, service_sources
                 providers_query.append(f"vendorInformation/provider eq '{provider}'")
             filter_query = " or ".join(providers_query)
         elif API_VER == API_V2 and service_sources_param:
-            service_sources_query = []
-            service_sources_lst = service_sources_param.split(",")
-            for service_source in service_sources_lst:
-                service_sources_query.append(f"serviceSource eq '{service_source}'")
-            filter_query = " or ".join(service_sources_query)
+            demisto.debug("In API V2 and service sources param")
+            service_sources_lst = [source.strip() for source in service_sources_param.split(",")]
+            # This creates a string like: "serviceSource in ('source1','source2')"
+            # see docs supporting this operation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http
+            quoted_sources = [f"'{source}'" for source in service_sources_lst]
+            filter_query = f"serviceSource in ({','.join(quoted_sources)})"
+    demisto.debug("filter query: " + str(filter_query))
     return filter_query
 
 
@@ -1523,7 +1526,11 @@ def purge_ediscovery_data_command(client: MsGraphClient, args):
 
 def create_ediscovery_search_command(client: MsGraphClient, args):
     resp = client.create_ediscovery_search(
-        args.get("case_id"), args.get("display_name"), args.get("description"), args.get("query"), args.get("data_source_scopes")
+        args.get("case_id"),
+        args.get("display_name"),
+        args.get("description"),
+        args.get("content_query"),
+        args.get("data_source_scopes"),
     )
 
     return to_ediscovery_search_command_results(resp)
@@ -2021,7 +2028,6 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
 def main():
     params: dict = demisto.params()
     args: dict = demisto.args()
-    url = params.get("host", "").rstrip("/") + "/v1.0/"
     tenant = params.get("creds_tenant_id", {}).get("password") or params.get("tenant_id")
     auth_and_token_url = params.get("creds_auth_id", {}).get("password") or params.get("auth_id", "")
     enc_key = params.get("creds_enc_key", {}).get("password") or params.get("enc_key")
@@ -2032,6 +2038,7 @@ def main():
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get("self_deployed", False) or managed_identities_client_id is not None
     api_version: str = params.get("api_version", API_V2)
+    azure_cloud = get_azure_cloud(params, "MicrosoftGraphSecurity")
 
     if not managed_identities_client_id:
         if not self_deployed and not enc_key:
@@ -2081,7 +2088,6 @@ def main():
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")
-
     try:
         auth_code = params.get("auth_code", {}).get("password")
         redirect_uri = params.get("redirect_uri")
@@ -2094,7 +2100,10 @@ def main():
             enc_key=enc_key,
             redirect_uri=redirect_uri,
             app_name=APP_NAME,
-            base_url=url,
+            azure_cloud=azure_cloud,
+            azure_ad_endpoint=azure_cloud.endpoints.active_directory,
+            token_retrieval_url=urljoin(azure_cloud.endpoints.active_directory, f"/{tenant}/oauth2/v2.0/token"),
+            base_url=urljoin(azure_cloud.endpoints.microsoft_graph_resource_id, "/v1.0/"),
             verify=use_ssl,
             proxy=proxy,
             self_deployed=self_deployed,

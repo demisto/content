@@ -44,9 +44,11 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, base_url, api_key):
+    def __init__(self, base_url, api_key, user_api_key=None):
         super().__init__(base_url)
         self._headers = {"accept": "application/json", "x-api-key": api_key}
+        if user_api_key:
+            self._headers["x-user-api-key"] = user_api_key
 
     def get_alert(self, id: str, entity: str) -> dict[str, str]:
         """Return the alert's details when provided the Alert ID or Entity as input
@@ -666,6 +668,7 @@ def get_mapping_fields_command(client: Client, args: dict[str, Any]) -> GetMappi
 def main() -> None:
     """Main function, parses params and runs command functions."""
     api_key = demisto.params().get("credentials", {}).get("password")
+    user_api_key = demisto.params().get("user_credentials", {}).get("password")
 
     # Get the service API URL
     base_url = urljoin(demisto.params()["url"], "/v1")
@@ -691,7 +694,7 @@ def main() -> None:
     demisto.info(f"Command being called is {current_command}")
 
     try:
-        client = Client(base_url=base_url, api_key=api_key)
+        client = Client(base_url=base_url, api_key=api_key, user_api_key=user_api_key)
 
         if current_command in supported_commands_test_module:
             # Calls test_module(client) without args

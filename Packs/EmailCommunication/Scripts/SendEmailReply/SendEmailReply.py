@@ -105,7 +105,7 @@ def ensure_markdown_tables_have_spacing(md: str) -> str:
             new_lines.append(line)
         else:
             if in_table:
-                # Table just ended. Add blank line *only if there’s more non-empty content ahead*.
+                # Table just ended. Add blank line *only if there's more non-empty content ahead*.
                 remaining_lines = lines[i:]
                 if any(rl.strip() for rl in remaining_lines) and line.strip() != "":
                     new_lines.append("")
@@ -123,24 +123,41 @@ def replace_atlassian_tags(md: str) -> str:
     return md
 
 
-def append_email_signature(html_body):
+def append_email_signature(html_body: str) -> str:
     """
-        Retrieve the user defined email signature to include on new messages, if present.
+    Retrieve the user defined email signature to include on new messages, if present.
     Args: (string) html_body
     Returns: (string) Original HTML body with HTML formatted email signature appended
     """
-    demisto.debug("append_email_signature")
-    is_succeed, email_signature = execute_command(
-        "getList", {"listName": "XSOAR - Email Communication Signature"}, extract_contents=False, fail_on_error=False
+    demisto.debug("Starting to append email signature.")
+
+    # 1. Load the signature list
+    list_name = "XSOAR - Email Communication Signature"
+    demisto.debug(f"Trying to load the `{list_name}` list.")
+    is_succeed, email_signature_result = execute_command(
+        "getList", {"listName": list_name}, extract_contents=False, fail_on_error=False
     )
-    if is_succeed:
-        # Find the position of the closing </html> tag and insert the signature there
-        if re.search("(?i)</body>", html_body):
-            html_body = re.sub("(?i)</body>", f"\r\n{email_signature[0]['Contents']}\r\n</body>", html_body)
-    else:
+    if not is_succeed:
+        # If not is_succeed, email_signature_result is an error message
+        error_message = email_signature_result
         demisto.debug(
-            "Error occurred while trying to load the `XSOAR - Email Communication Signature` list. No signature added to email"
+            f"Error occurred while trying to load the `{list_name}` list. No signature added to email. Error: {error_message}."
         )
+        return html_body
+
+    # 2. Append signature
+    demisto.debug(f"Successfully loaded the `{list_name}` list.")
+    email_signature_contents = f"\r\n{email_signature_result[0]['Contents']}\r\n"
+    demisto.debug(f"Found signature of length {len(email_signature_contents)} chars.")
+
+    # Find the position of the closing </body> tag and insert the signature before closing tag
+    if re.search("(?i)</body>", html_body):
+        demisto.debug("Appending signature before HTML body closing tag.")
+        html_body = re.sub("(?i)</body>", f"{email_signature_contents}</body>", html_body)
+    # Otherwise, if no closing </body> tag, concatenate the signature to the end of the string
+    else:
+        demisto.debug("Appending signature to the end of the text string.")
+        html_body += email_signature_contents
 
     return html_body
 
@@ -416,6 +433,7 @@ def send_new_email(
     """
     # Get the custom email signature, if set, and append it to the message to be sent
     email_html_body = append_email_signature(email_html_body)
+    context_html_body = append_email_signature(context_html_body)
 
     send_new_mail_request(
         incident_id,
@@ -576,14 +594,23 @@ def get_entry_id_list(incident_id, attachments, new_email_attachments, files):
             attachment_name = attachment.get("name", "")
             file_data = create_file_data_json(attachment, field_name)
             demisto.debug(f"Removing attachment {attachment} from incident {incident_id}")
-            is_succeed, _ = execute_command(
-                "core-api-post",
-                {"uri": f"/incident/remove/{incident_id}", "body": file_data},
-                extract_contents=False,
-                fail_on_error=False,
-            )
-            if not is_succeed:
-                demisto.debug("Failed to remove attachment")
+
+            max_retries = 4
+            for attempt in range(max_retries):
+                is_succeed, res_body = execute_command(
+                    "core-api-post",
+                    {"uri": f"/incident/remove/{incident_id}", "body": file_data},
+                    extract_contents=False,
+                    fail_on_error=False,
+                )
+
+                if is_succeed:
+                    break
+
+                status = "retrying..." if attempt < max_retries - 1 else "giving up."
+                demisto.debug(
+                    f"Attempt {attempt + 1}/{max_retries} failed to remove attachment, {status} API response body: {res_body}"
+                )
 
             if not isinstance(files, list):
                 files = [files]
@@ -974,6 +1001,10 @@ def format_body(new_email_body):
         new_email_body (str): Email body text with or without Markdown formatting included
     Returns: (str) HTML email body
     """
+    use_raw_body = argToBoolean(demisto.incident().get("CustomFields").get("sendbodyasrawnomarkdown", False))
+    if use_raw_body:  # it true, will send the body as is and won't use markdown
+        return new_email_body, new_email_body
+
     # 1. Apply your direction tags first
     md_with_direction = process_directions(new_email_body)
 
@@ -1061,6 +1092,12 @@ def single_thread_reply(
         final_email_cc = get_email_cc(email_cc, add_cc)
         reply_body, context_html_body, reply_html_body = get_reply_body(notes, incident_id, attachments, reputation_calc_async)
         entry_id_list = get_entry_id_list(incident_id, attachments, [], files)
+
+        # Get the custom email signature, if set, append signature to email body and context body
+        reply_html_body = append_email_signature(reply_html_body)
+        context_html_body = append_email_signature(context_html_body)
+
+        # Send the email reply
         result = validate_email_sent(
             incident_id,
             email_subject,
@@ -1424,6 +1461,10 @@ def multi_thread_reply(
             # Trim "Re:" and "RE:" from subject since the reply-mail command in both EWS and Gmail adds it again
             reply_subject = reply_subject.removeprefix("Re: ").removeprefix("RE: ")
 
+            # Get the custom email signature, if set, append signature to email body and context body
+            reply_html_body = append_email_signature(reply_html_body)
+            context_html_body = append_email_signature(context_html_body)
+
             # Send the email reply
             result = validate_email_sent(
                 incident_id,
@@ -1452,7 +1493,6 @@ def multi_thread_reply(
                 subject_with_id = reply_subject
 
             # Store message details in context entry
-            context_html_body = append_email_signature(context_html_body)
             create_thread_context(
                 reply_code,
                 final_email_cc,

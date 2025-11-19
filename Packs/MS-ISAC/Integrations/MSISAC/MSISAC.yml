@@ -1,5 +1,5 @@
 category: Utilities
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -61,11 +61,12 @@ display: MS-ISAC
 name: MS-ISAC
 script:
   commands:
-  - arguments:
+  - name: msisac-get-event
+    deprecated: true
+    arguments:
     - description: The ID of the MS-ISAC event.
       name: event_id
     description: Retrieve alert data by its ID.
-    name: msisac-get-event
     outputs:
     - contextPath: MSISAC.Event.EventID
       description: The event ID for this specific retrieval.
@@ -158,7 +159,9 @@ script:
       type: string
     - contextPath: MSISAC.Event.Stream.event_type
       description: The type of event submitted from MS-ISAC.
-  - arguments:
+  - name: msisac-retrieve-events
+    deprecated: true
+    arguments:
     - defaultValue: '1'
       description: The number of days worth of events to return. Must be one or greater.
       name: days
@@ -166,7 +169,6 @@ script:
     - description: If you want to search the list of events for a specific event, specify this optional command to return just those results.
       name: event_id
     description: Retrieves a list of MS-ISAC events for a given number of days (one or greater).
-    name: msisac-retrieve-events
     outputs:
     - contextPath: MSISAC.RetrievedEvents.event_id
       description: ID for the retrieved MS-ISAC event.
@@ -209,6 +211,106 @@ script:
       type: string
     - contextPath: MSISAC.RetrievedEvents.severity
       description: The severity assigned to the MS-ISAC alert.
+      type: string
+  - name: msisac-get-alert
+    arguments:
+    - description: The ID of the MS-ISAC alert.
+      name: alert_id
+    description: Retrieve alert data by its ID.
+    outputs:
+    - contextPath: MSISAC.Alert.alertId
+      description: The id for this alert.
+      type: string
+    - contextPath: MSISAC.Alert.affectedIp
+      description: The internal IP that is associated with the traffic.
+      type: string
+    - contextPath: MSISAC.Alert.alertedAt
+      description: The timestamp when the alert happened.
+      type: string
+    - contextPath: MSISAC.Alert.applicationProtocol
+      description: The protocol associated with the traffic.
+      type: string
+    - contextPath: MSISAC.Alert.category
+      description: The category of the alert.
+      type: string
+    - contextPath: MSISAC.Alert.createdAt
+      description: The timestamp when the alert was created.
+      type: string
+    - contextPath: MSISAC.Alert.destinationIp
+      description: The destination IP of the traffic.
+      type: string
+    - contextPath: MSISAC.Alert.destinationPort
+      description: The destination port number of the traffic.
+      type: number
+    - contextPath: MSISAC.Alert.encodedPayload
+      description: The encoded payload of the traffic.
+      type: string
+    - contextPath: MSISAC.Alert.httpHostname
+      description: The HTTP hostname of the traffic.
+      type: string
+    - contextPath: MSISAC.Alert.httpMethod
+      description: The HTTP method of the traffic.
+      type: string
+    - contextPath: MSISAC.Alert.httpStatus
+      description: The HTTP status code of the traffic.
+      type: number
+    - contextPath: MSISAC.Alert.httpUrl
+      description: The HTTP url of the traffic.
+      type: string
+    - contextPath: MSISAC.Alert.logicalSensor
+      description: The name for the sensor that triggered the event.
+      type: string
+    - contextPath: MSISAC.Alert.mitreTactic
+      description: The mitre tactic associated with the traffic.
+      type: string
+    - contextPath: MSISAC.Alert.mitreTechnique
+      description: The mitre technique associated with the traffic.
+      type: string
+    - contextPath: MSISAC.Alert.signatureDirection
+      description: The direction of the traffic flow.
+      type: string
+    - contextPath: MSISAC.Alert.signatureId
+      description: The signature id of the traffic.
+      type: number
+    - contextPath: MSISAC.Alert.signatureName
+      description: The signature name of the traffic.
+      type: string
+    - contextPath: MSISAC.Alert.sourceIp
+      description: The source IP of the traffic.
+      type: string
+    - contextPath: MSISAC.Alert.sourcePort
+      description: The source port number of the traffic.
+      type: number
+    - contextPath: MSISAC.Alert.transportProtocol
+      description: The transport protocol of the traffic.
+      type: string
+  - name: msisac-retrieve-cases
+    arguments:
+    - name: timestamp
+      description: Needs to be in "2025-07-01T00:00:00" format, in UTC. If no timestamp is given, command will return cases from the last 72 hours.
+      required: false
+    description: Retrieves a list of MS-ISAC cases since the given timestamp. If no timestamp is given, command will return cases from the last 72 hours.
+    outputs:
+    - contextPath: MSISAC.RetrievedCases.caseId
+      description: ID for the retrieved MS-ISAC case.
+      type: string
+    - contextPath: MSISAC.RetrievedCases.affectedIp
+      description: The internal IP that is associated with the traffic.
+      type: string
+    - contextPath: MSISAC.RetrievedCases.alertIds
+      description: The MSISAC alert ids associated with the case.
+      type: list
+    - contextPath: MSISAC.RetrievedCases.createdAt
+      description: The timestamp when the case was created. This is associated with the timestamp input parameter.
+      type: string
+    - contextPath: MSISAC.RetrievedCases.logicalSensorName
+      description: The name for the sensor that triggered the event.
+      type: string
+    - contextPath: MSISAC.RetrievedCases.modifiedAt
+      description: The timestamp for when the case was last modified.
+      type: string
+    - contextPath: MSISAC.RetrievedCases.severity
+      description: The severity of the case.
       type: string
   dockerimage: demisto/python3:3.12.8.3720084
   isfetch: true

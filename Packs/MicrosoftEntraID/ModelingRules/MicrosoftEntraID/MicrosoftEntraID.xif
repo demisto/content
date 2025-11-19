@@ -312,9 +312,9 @@ alter
 [MODEL:dataset = "msft_azure_ad_audit_raw"]
 alter
   get_parsed_fields_ipaddr = parsed_fields -> ipaddr,
-  get_parsed_fields_userType = parsed_fields -> userType,
+  get_parsed_fields_userType = parsed_fields -> UserType,
   get_parsed_fields_DeviceOSType = lowercase(parsed_fields -> DeviceOSType),
-  get_initiatedBy_ipAddress = initiatedBy -> ipAddress
+  get_initiatedBy_ipAddress = initiatedBy -> user.ipAddress
 | alter
   check_parsed_fields_ipaddr_v4 = if(get_parsed_fields_ipaddr ~= "(?:\d{1,3}\.){3}\d{1,3}", get_parsed_fields_ipaddr),
   check_parsed_fields_ipaddr_v6 = if(get_parsed_fields_ipaddr ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", get_parsed_fields_ipaddr),
@@ -333,9 +333,9 @@ alter
   xdm.event.id = id,
   xdm.event.outcome = if(result = "success", XDM_CONST.OUTCOME_SUCCESS, result = "failure", XDM_CONST.OUTCOME_FAILED, result = "unknownFutureValue", XDM_CONST.OUTCOME_UNKNOWN, result = "timeout", XDM_CONST.OUTCOME_PARTIAL),
   xdm.event.original_event_type = category,
-  xdm.source.user.username = initiatedBy -> user,
+  xdm.source.user.username = initiatedBy -> user.displayName,
   xdm.source.application.name = coalesce(initiatedBy -> app.displayName, initiatedBy -> app.servicePrincipalName),
-  xdm.source.user.upn = initiatedBy -> userPrincipalName,
+  xdm.source.user.upn = initiatedBy -> user.userPrincipalName,
   xdm.event.outcome_reason = resultReason,
   xdm.session_context_id = correlationId,
   xdm.observer.action = operationType,
@@ -346,7 +346,7 @@ alter
   xdm.event.type = parsed_fields -> EventName,
   xdm.auth.privilege_level = if(get_parsed_fields_userType = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, get_parsed_fields_userType = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, get_parsed_fields_userType = null, null, to_string(get_parsed_fields_userType)),
   xdm.source.host.device_id = coalesce(initiatedBy -> homeTenantId, parsed_fields -> DeviceId),
-  xdm.source.host.hostname = initiatedBy -> homeTenantName,
+  xdm.source.host.hostname = initiatedBy -> user.homeTenantName,
   xdm.source.host.os = get_parsed_fields_DeviceOSType,
   xdm.source.host.os_family = if(get_parsed_fields_DeviceOSType ~= "win|ms|microsoft", XDM_CONST.OS_FAMILY_WINDOWS,
                                   get_parsed_fields_DeviceOSType ~= "mac", XDM_CONST.OS_FAMILY_MACOS,

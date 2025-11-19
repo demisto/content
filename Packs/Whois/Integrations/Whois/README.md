@@ -1093,8 +1093,13 @@ Provides data enrichment for ips.
 ## Troubleshooting
 
 - The error message *Bad Gateway* (502) might occur when using a firewall/proxy. To fix the issue, make sure the whois TLD provider exists in your allowlist.
--
 
 ## Known limitations
 
 - The IP lookup has a rate limit of 1 lookup per second.
+
+## Rate-Limiting or IP Blocking Issues
+
+**Problem:** You may encounter errors or be unable to retrieve Whois information due to rate-limiting or blocking of your IP address. This often happens when multiple users or systems are making requests from the same IP address.
+
+**Solution:** To resolve this, it is recommended to use a dedicated engine or a proxy service for your Whois queries. This will provide a unique IP address for the client, preventing it from being blocked due to shared usage.

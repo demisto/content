@@ -3,16 +3,15 @@ from typing import Any
 
 """ IMPORTS """
 import requests
-from datetime import datetime, timedelta
 import pytz
 import urllib3
 import dateparser
 import json
 from collections.abc import Sequence
-
+from datetime import datetime, timedelta
+import concurrent.futures
 from dateutil.parser import parse as parse_date
 
-import concurrent.futures
 
 UTC = pytz.UTC
 
@@ -21,10 +20,10 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-MAX_ALERTS = 50
+MAX_ALERTS = None
 LIMIT_EVENT_ITEMS = 200
 MAX_RETRIES = 3
-MAX_THREADS = 5
+MAX_THREADS = 1
 MIN_MINUTES_TO_FETCH = 10
 DEFAULT_REQUEST_TIMEOUT = 600
 DEFAULT_TAKE_LIMIT = 5
@@ -104,7 +103,7 @@ def get_alert_payload(service, input_params: dict[str, Any], is_update=False):
 
         return {
             "filters": {
-                "service": service if isinstance(service, list) else [service],
+                "service": [service],
                 timestamp_field: {  # Use dynamic field based on `is_update`
                     "gte": ensure_aware(datetime.fromisoformat(input_params["gte"])).strftime("%Y-%m-%dT%H:%M:%S+00:00"),
                     "lte": ensure_aware(datetime.fromisoformat(input_params["lte"])).strftime("%Y-%m-%dT%H:%M:%S+00:00"),
@@ -308,8 +307,8 @@ class Client(BaseClient):
 
         if not url or not alerts_api_key:
             raise ValueError("Missing required URL or API key in input_params.")
-
         try:
+            demisto.debug(f"[get_data] final payload is: {payload_json}")
             response = self.make_request(url, alerts_api_key, "POST", payload_json)
             demisto.debug(f"[get_data] Response status code: {response.status_code}")
 
@@ -338,7 +337,9 @@ class Client(BaseClient):
         """
         try:
             url = url + "/services"
+            demisto.debug(f"[get_all_services] url: {url}")
             response = self.make_request(url, api_key)
+            demisto.debug(f"[get_all_services] status code: {response.status_code}")
             if response.status_code != 200:
                 raise Exception(f"Wrong status code: {response.status_code}")
             response = response.json()
@@ -361,7 +362,7 @@ class Client(BaseClient):
         including the API key, base URL, skip, take, and time range
         :return: The latest created time of the data inserted
         """
-        latest_created_time = datetime.utcnow()
+        latest_created_time = datetime.utcnow().astimezone(pytz.UTC)
         input_params.update({"skip": 0, "take": int(input_params["limit"])})
         all_incidents = []
 
@@ -430,25 +431,24 @@ class Client(BaseClient):
 
     def get_data_with_retry(self, service, input_params, is_update=False):
         """
-        Recursively splits time ranges and fetches data, inserting it into Cortex.
+        Splits time range into 1-day chunks and fetches data, inserting it into Cortex.
         Returns a tuple of (alerts, latest_created_time).
         """
+
         gte = parse_date(input_params["gte"])
         lte = parse_date(input_params["lte"])
-        demisto.debug(f"[get_data_with_retry] Time range: gte={gte}, lte={lte}")
+        demisto.debug(f"[get_data_with_retry] Full time range: gte={gte}, lte={lte}")
 
-        que = [[gte, lte]]
         latest_created_time = None
         all_alerts = []
 
-        while que:
-            current_gte, current_lte = que.pop(0)
-            demisto.debug(f"[get_data_with_retry] Processing time range: {current_gte} to {current_lte}")
+        current_start = gte
+        while current_start <= lte:
+            current_end = min(current_start + timedelta(days=1), lte)
 
-            current_params = input_params.copy()
-            current_params["gte"] = current_gte.isoformat()
-            current_params["lte"] = current_lte.isoformat()
+            demisto.debug(f"[get_data_with_retry] Processing 1-day chunk: {current_start} to {current_end}")
 
+            current_params = {**input_params, "gte": current_start.isoformat(), "lte": current_end.isoformat()}
             response = self.get_data(service, current_params, is_update=is_update)
 
             if "data" in response:
@@ -461,17 +461,10 @@ class Client(BaseClient):
                     latest_created_time = curr_time
                 else:
                     latest_created_time = max(latest_created_time, curr_time)
-
-            elif time_diff_in_mins(current_gte, current_lte) >= MIN_MINUTES_TO_FETCH:
-                mid_datetime = current_gte + (current_lte - current_gte) / 2
-                que.extend([[current_gte, mid_datetime], [mid_datetime + timedelta(microseconds=1), current_lte]])
-                demisto.debug(
-                    "[get_data_with_retry] Splitting time range further: "
-                    f"{current_gte} to {mid_datetime}, "
-                    f"{mid_datetime + timedelta(microseconds=1)} to {current_lte}"
-                )
             else:
-                demisto.debug(f"[get_data_with_retry] Unable to fetch data for time range: {current_gte} to {current_lte}")
+                demisto.debug(f"[get_data_with_retry] No data returned for chunk: {current_start} to {current_end}")
+
+            current_start = current_end + timedelta(microseconds=1)
 
         if latest_created_time is None:
             latest_created_time = datetime.utcnow()
@@ -706,23 +699,29 @@ def fetch_subscribed_services_alert(client, method, base_url, token):
         return_error(f"Failed to fetch subscribed services: {str(e)}")
 
 
-def test_response(client, method, base_url, token):
+def check_response(client, method, url, token):
     """
-    Test the integration state
+    check the integration state
     """
     try:
-        # The test mocks this specific endpoint
-        url_suffix = "/apollo/api/v1/y/services"
-        headers = {"Authorization": f"Bearer {token}"}
+        headers = {"Authorization": f"Bearer {token}", "Accept": "application/json"}
 
-        response = client._http_request(method=method, url_suffix=url_suffix, headers=headers)
+        demisto.debug(f"[check_response] Calling: {url} with method {method}")
 
+        # Make direct GET request to the service endpoint
+        response = client._http_request(method=method, full_url=url, headers=headers)
+
+        demisto.debug(f"[check_response] Raw response: {json.dumps(response, indent=2)}")
+
+        # If we got any valid JSON back, assume the connection is successful
         if response:
             return "ok"
         else:
+            demisto.debug("[check_response] Empty or invalid response received.")
             raise Exception("failed to connect")
+
     except Exception as e:
-        demisto.error(f"Failed to connect: {e}")
+        demisto.error(f"[check_response] Failed to connect: {str(e)}")
         raise Exception("failed to connect")
 
 
@@ -866,6 +865,67 @@ def get_alert_by_id(client, alert_id, token, url):
         raise DemistoException(f"[get_alert_by_id] Error during HTTP request: {str(e)}")
 
 
+def cyble_vision_update_alerts_command(client: Client, url: str, token: str, args: Dict[str, Any]) -> CommandResults:
+    """
+    Update alert data (status/severity) on Cyble Vision platform for one or more alerts.
+    """
+    demisto.debug(f"[cyble-vision-update-alerts] Raw args: {args}")
+
+    ids = argToList(args.get("ids"))
+    statuses = argToList(args.get("status", ""))
+    severities = argToList(args.get("severity", ""))
+
+    demisto.debug(f"[cyble-vision-update-alerts] Parsed ids: {ids}")
+    demisto.debug(f"[cyble-vision-update-alerts] Parsed statuses: {statuses}")
+    demisto.debug(f"[cyble-vision-update-alerts] Parsed severities: {severities}")
+
+    if not statuses and not severities:
+        raise DemistoException("At least one of 'status' or 'severity' must be provided.")
+
+    if statuses and len(statuses) not in [1, len(ids)]:
+        raise DemistoException("Number of statuses must be 1 or equal to the number of ids.")
+    if severities and len(severities) not in [1, len(ids)]:
+        raise DemistoException("Number of severities must be 1 or equal to the number of ids.")
+
+    alerts_payload = []
+
+    for idx, alert_id in enumerate(ids):
+        demisto.debug(f"[cyble-vision-update-alerts] Processing alert ID: {alert_id}")
+
+        alert = get_alert_by_id(client, alert_id, token, url)
+        if not alert:
+            demisto.debug(f"Alert ID {alert_id} not found. Skipping.")
+            continue
+
+        alert_payload = {"id": alert_id, "service": alert.get("service")}
+
+        if statuses:
+            alert_payload["status"] = statuses[0] if len(statuses) == 1 else statuses[idx]
+        if severities:
+            alert_payload["user_severity"] = severities[0] if len(severities) == 1 else severities[idx]
+
+        demisto.debug(f"[cyble-vision-update-alerts] Payload for alert ID {alert_id}: {alert_payload}")
+
+        alerts_payload.append(alert_payload)
+
+    if not alerts_payload:
+        raise DemistoException("No valid alerts found to update.")
+
+    payload = {"alerts": alerts_payload}
+    update_url = url + "/y/tpi/cortex/alerts"
+
+    demisto.debug(f"[cyble-vision-update-alerts] Final Payload: {payload}")
+
+    client.update_alert(payload, update_url, token)
+
+    return CommandResults(
+        readable_output=f"✅ Updated {len(alerts_payload)} alert(s) successfully.",
+        outputs_prefix="CybleEvents.AlertUpdate",
+        outputs_key_field="id",
+        outputs=alerts_payload,
+    )
+
+
 def get_fetch_severities(incident_severity):
     """
     Determines the list of severities to fetch based on provided incident severities.
@@ -887,6 +947,11 @@ def get_fetch_severities(incident_severity):
     return fetch_severities
 
 
+def get_gte_limit(curr_gte: str) -> str:
+    server_gte = datetime.utcnow() - timedelta(hours=3)
+    return max(curr_gte, server_gte.astimezone(pytz.UTC).isoformat())
+
+
 def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, incident_collections, incident_severity, skip=True):
     """
     Entry point for fetching alerts from Cyble Vision.
@@ -903,15 +968,15 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
 
     initial_interval = demisto.params().get("first_fetch_timestamp", 1)
     if "event_pull_start_date" not in last_run:
-        event_pull_start_date = datetime.utcnow() - timedelta(days=int(initial_interval))
-        input_params["gte"] = event_pull_start_date.astimezone().isoformat()
+        event_pull_start_date = datetime.utcnow().astimezone(pytz.UTC) - timedelta(hours=int(initial_interval))
+        input_params["gte"] = get_gte_limit(event_pull_start_date.isoformat())
         demisto.debug(f"[cyble_events] event_pull_start_date not in last_run, setting to: {event_pull_start_date.isoformat()}")
 
     else:
-        input_params["gte"] = last_run["event_pull_start_date"]
+        input_params["gte"] = get_gte_limit(last_run["event_pull_start_date"])
         demisto.debug(f"[cyble_events] event_pull_start_date found in last_run: {input_params['gte']}")
 
-    input_params["lte"] = datetime.utcnow().astimezone().isoformat()
+    input_params["lte"] = datetime.utcnow().astimezone(pytz.UTC).isoformat()
 
     fetch_services = get_fetch_service_list(client, incident_collections, url, token)
 
@@ -919,6 +984,9 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
 
     fetch_severities = get_fetch_severities(incident_severity)
     demisto.debug(f"[cyble_events] Retrieved fetch_severities: {fetch_severities}")
+
+    demisto.debug(f"[cyble_events] gte: {input_params.get('gte')}")
+    demisto.debug(f"[cyble_events] lte: {input_params.get('lte')}")
 
     input_params.update(
         {
@@ -1327,10 +1395,12 @@ def main():
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     hide_cvv_expiry = params.get("hide_data", False)
-    demisto.debug(f"Command being called is {params}")
-    mirror = params.get("mirror", False)
+    demisto.debug(f"params are: {params}")
     incident_collections = params.get("incident_collections", [])
     incident_severity = params.get("incident_severity", [])
+
+    global MAX_ALERTS
+    MAX_ALERTS = int(params.get("max_fetch", "300"))
 
     try:
         client = Client(base_url=params.get("base_url"), verify=verify_certificate, proxy=proxy)
@@ -1338,11 +1408,10 @@ def main():
 
         if demisto.command() == "test-module":
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
-            return_results(test_response(client, "GET", url, token))
+            return_results(check_response(client, "GET", url, token))
 
         elif demisto.command() == "fetch-incidents":
             last_run = demisto.getLastRun()
-
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
             data, next_run = cyble_events(
                 client, "POST", token, url, args, last_run, hide_cvv_expiry, incident_collections, incident_severity, False
@@ -1351,11 +1420,8 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(data)
 
-        elif demisto.command() == "update-remote-system":
-            if mirror:
-                url = base_url + str(ROUTES[COMMAND[demisto.command()]])
-                return_results(update_remote_system(client, "PUT", token, args, url))
-            return
+        elif demisto.command() == "cyble-vision-update-alerts":
+            return_results(cyble_vision_update_alerts_command(client, base_url, token, args))
 
         elif demisto.command() == "get-mapping-fields":
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])

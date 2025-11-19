@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
 
 import json
-import math
+import re
 
 import urllib3
 
@@ -18,7 +18,8 @@ urllib3.disable_warnings()
 API_ROUTE = "/api/v1"
 MSISAC_FETCH_WINDOW_DEFAULT = 1
 XSOAR_INCIDENT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-MSISAC_S_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+MSISAC_CREATED_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
+ALERT_ID_REGEX = "^(?:alert-)?\\d+$"
 
 
 """ CLIENT CLASS """
@@ -38,7 +39,6 @@ class Client(BaseClient):
         :type response: ``requests.Response``
         :param response: Response from API after the request for which to check the status.
         """
-
         err_msg = f"Error in API call [{res.status_code}] - {res.reason}"
         demisto.debug(
             f"""
@@ -55,6 +55,7 @@ class Client(BaseClient):
     def get_event(self, event_id: str) -> Dict[str, Any]:
         """
         Returns the details of an MS-ISAC event
+        This is a legacy endpoint that only returns results prior to 6/30/25
 
         :type event_id: ``str``
         :param event_id: id of the event
@@ -71,6 +72,7 @@ class Client(BaseClient):
     def retrieve_events(self, days: int) -> Dict[str, Any]:
         """
         Returns a list of MS-ISAC events in a given amount of days
+        This is a legacy endpoint that only returns results prior to 6/30/25
 
         :type days: ``str``
         :param days: The number of days to search. This will be one or greater
@@ -78,35 +80,41 @@ class Client(BaseClient):
         :return: dict containing the alert as returned from the API
         :rtype: ``Dict[str, Any]``
         """
-
         return self._http_request(method="GET", url_suffix=f"/albert/{days}", timeout=100, error_handler=self.error_handler)
+
+    def get_alert(self, alert_id: str) -> Dict[str, Any]:
+        """
+        Returns the details of an MS-ISAC alert
+        This will only return results after 7/1/2025
+
+        :type alert_id: ``str``
+        :param alert_id: id of the event
+
+        :return: dict containing the alert as returned from the API
+        :rtype: ``Dict[str, Any]``
+        """
+        # We are using retries and status_list_to_retry to get around MSISAC API rate limiting.
+        # This is necessary for fetching, or bulk alert searching operations.
+        return self._http_request(
+            method="GET", url_suffix=f"/alert/{alert_id}", timeout=100, retries=5, status_list_to_retry=[503]
+        )
+
+    def retrieve_cases(self, timestamp: str) -> list[dict[str, Any]]:
+        """
+        Returns a list of MS-ISAC cases since the given timestamp
+        This will only return results after 7/1/2025
+
+        :type timestamp: ``str``
+        :param timestamp: Return cases since the timestamp given. API docs shows formatting as "2025-07-01T00:00:00".
+                          If this parameter is not given, will default to searching back 72 hours
+
+        :return: list containing the cases as returned from the API
+        :rtype: ``list[dict[str, any]]``
+        """
+        return self._http_request(method="GET", url_suffix=f"/cases/{timestamp}", timeout=100)
 
 
 """ HELPER FUNCTIONS """
-
-
-@logger
-def calculate_lookback_days(start_time: datetime, end_time: datetime) -> int:
-    """Calculates the lookback period in days between two datetimes.
-
-    Args:
-        start_time: The start datetime.
-        end_time: The end datetime.
-
-    Returns:
-        The number of days to look back, rounded according to round_down flag, with a minimum of 1.
-    """
-
-    if not (start_time or end_time):
-        return MSISAC_FETCH_WINDOW_DEFAULT
-
-    time_diff = end_time - start_time
-    diff_in_days = time_diff.total_seconds() / (24 * 60 * 60)  # Calculate difference in days
-
-    rounded_days = math.ceil(diff_in_days)
-
-    days_param = max(MSISAC_FETCH_WINDOW_DEFAULT, rounded_days)
-    return days_param
 
 
 @logger
@@ -164,7 +172,7 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    client.retrieve_events(days=1)
+    client.retrieve_cases(timestamp="")
     return "ok"
 
 
@@ -279,6 +287,75 @@ def retrieve_events_command(client: Client, args: Dict[str, Any]):
     )
 
 
+def get_alert_command(client: Client, args: Dict[str, Any]):
+    """msisac-get-event command: Returns an MS-ISAC event with detailed stream information
+
+    :type client: ``Client``
+    :param Client: Client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['event_id']`` alert ID to return
+
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``
+
+    :rtype: ``CommandResults``
+    """
+
+    alert_id = args.get("alert_id", None)
+
+    # error handling since API only returns 500 errors.
+    if not alert_id:
+        raise ValueError("alert_id not specified")
+    elif not re.match(ALERT_ID_REGEX, alert_id):
+        raise DemistoException('alert_id format invalid. Please use "alert-12345" or "12345"')
+
+    # alert is our raw response
+    alert = client.get_alert(alert_id=alert_id)
+
+    return CommandResults(
+        readable_output=tableToMarkdown(f"MS-ISAC Alert Details for {alert_id}", alert),
+        raw_response=alert,
+        outputs_prefix="MSISAC.Alert",
+        outputs_key_field="alertId",
+        outputs=alert,
+    )
+
+
+def retrieve_cases_command(client: Client, args: Dict[str, Any]):
+    """msisac-retrieve-events command: Returns a list of MS-ISAC events in a give span of days
+
+    :type client: ``Client``
+    :param Client: Client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['days']`` The number of days to return alerts
+
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``
+
+    :rtype: ``CommandResults``
+    """
+
+    timestamp = args.get("timestamp", "")
+
+    case_list = client.retrieve_cases(timestamp=timestamp)
+
+    readable_output = tableToMarkdown(f'MS-ISAC Case List Fetched since: {timestamp or "last 72 hours"}', case_list)
+
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=case_list,
+        outputs_prefix="MSISAC.RetrievedCases",
+        outputs_key_field="case_Id",
+        outputs=case_list,
+    )
+
+
 @logger
 def fetch_incidents(client: Client, first_fetch: datetime, last_run: Dict) -> tuple[List[dict[str, Any]], Dict]:
     """Uses to fetch events into XSIAM
@@ -293,56 +370,58 @@ def fetch_incidents(client: Client, first_fetch: datetime, last_run: Dict) -> tu
     fetch_time: datetime
 
     if not last_run.get("lastRun"):
-        fetch_time = first_fetch
+        fetch_time = first_fetch.astimezone(timezone.utc)
     else:
-        fetch_time = datetime.strptime(last_run.get("lastRun", ""), XSOAR_INCIDENT_DATE_FORMAT)
+        last_run_time = datetime.strptime(last_run.get("lastRun", ""), XSOAR_INCIDENT_DATE_FORMAT)
+        fetch_time = last_run_time.astimezone(timezone.utc)
 
-    fetch_time_lookback_days: int = calculate_lookback_days(fetch_time, datetime.now())
+    retrieve_cases_data: list = client.retrieve_cases(timestamp=fetch_time.strftime(XSOAR_INCIDENT_DATE_FORMAT))
 
-    retrieve_events_data: dict = client.retrieve_events(days=fetch_time_lookback_days).get("data", [])
+    cases_to_fetch: list[dict] = []
+    latest_case_created_time: datetime = fetch_time
+    latest_fetched_case: str = last_run.get("lastFetchedCase", "")
 
-    events_to_fetch: list[dict] = []
-    latest_event_s_time: datetime = fetch_time
+    case_id = latest_fetched_case
+    for case in retrieve_cases_data:
+        case_created_time = datetime.strptime(case.get("createdAt"), MSISAC_CREATED_TIME_FORMAT)
+        case_id = case.get("caseId", "")
 
-    # API returns a list if there is albert event data. data key is a string if there is no data.
-    if isinstance(retrieve_events_data, list):
-        for event in retrieve_events_data:
-            event_s_time = datetime.strptime(event.get("stime"), MSISAC_S_TIME_FORMAT)
-            event_id = event.get("event_id", "")
+        # Make sure case was created after last fetch and was not previously fetched.
+        if case_created_time > fetch_time and case_id != latest_fetched_case:
+            case["alertData"] = []
+            affected_ip = case.get("affectedIp")
 
-            if event_s_time > fetch_time:  # Make sure event happened after last fetch
-                event_description = event.get("description", "")
-                # Populating stream data for each ingested event.
-                get_event_data = client.get_event(event_id=event_id)
-                event["stream"] = format_stream_data(get_event_data)
-                events_to_fetch.append(
-                    {
-                        "name": f"{event_id} - {event_description}",
-                        "occurred": event_s_time.strftime(XSOAR_INCIDENT_DATE_FORMAT),
-                        "rawJSON": json.dumps(event),
-                        # We are not using mirroring.
-                        # This will show ingested event numbers in fetch history modal.
-                        "dbotMirrorId": f"{event_id}",
-                    }
-                )
-                demisto.debug(f"Albert Event: {event_id} has been fetched.")
-                if event_s_time > latest_event_s_time:
-                    latest_event_s_time = event_s_time
+            for alert_id in case.get("alertIds", []):
+                # Populating alert data for each ingested case.
+                get_alert_data = client.get_alert(alert_id=alert_id)
 
-            else:
-                demisto.debug(f"""
-                    Albert Event: {event_id} was not fetched.
-                    Event S_Time: {event_s_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
-                    Fetch Start Time: {fetch_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
-                    Fetch End Time: {datetime.now().strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
-                    """)
+                case["alertData"].append(get_alert_data)
 
-    else:
-        demisto.debug(f"Here is the event data that was returned: {retrieve_events_data}")
+            cases_to_fetch.append(
+                {
+                    "name": f"MS-ISAC Case: {case_id} - Affected IP: {affected_ip}",
+                    "occurred": case_created_time.strftime(XSOAR_INCIDENT_DATE_FORMAT),
+                    "rawJSON": json.dumps(case),
+                    # We are not using mirroring.
+                    # This will show ingested event numbers in fetch history modal.
+                    "dbotMirrorId": f"{case_id}",
+                }
+            )
+            demisto.debug(f"Albert Event: {case_id} has been fetched.")
+            if case_created_time > latest_case_created_time:
+                latest_case_created_time = case_created_time
+                latest_fetched_case = case_id
 
-    next_run_dict = {"lastRun": latest_event_s_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}
+        else:
+            demisto.debug(f"""
+                Albert Case: {case_id} was not fetched.
+                Case Created Time: {case_created_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
+                Fetch Start Time: {fetch_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}.
+                """)
 
-    return events_to_fetch, next_run_dict
+    next_run_dict = {"lastRun": latest_case_created_time.strftime(XSOAR_INCIDENT_DATE_FORMAT), "lastFetchedCase": case_id}
+
+    return cases_to_fetch, next_run_dict
 
 
 """ MAIN FUNCTION """
@@ -369,12 +448,20 @@ def main():
             result = test_module(client)
             return_results(result)
 
-        elif command == "msisac-get-event":
+        elif command == "msisac-get-event":  # deprecated
             result = get_event_command(client, args)
             return_results(result)
 
-        elif command == "msisac-retrieve-events":
+        elif command == "msisac-retrieve-events":  # deprecated
             result = retrieve_events_command(client, args)
+            return_results(result)
+
+        elif command == "msisac-get-alert":
+            result = get_alert_command(client, args)
+            return_results(result)
+
+        elif command == "msisac-retrieve-cases":
+            result = retrieve_cases_command(client, args)
             return_results(result)
 
         elif command == "fetch-incidents":

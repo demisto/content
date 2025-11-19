@@ -1,5 +1,5 @@
 category: Endpoint
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -1649,9 +1649,13 @@ script:
     - defaultValue: "1000"
       description: The maximum number of records to return.
       name: limit
-    - description: Hash to search for in the blocklist.
+    - description: SHA1 or SHA256 hash to search for in the blocklist.
       name: hash
-    description: Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `global` flag is `true`, then group_ids, site_ids, and account_ids are ignored.
+    - description: SHA1 hash to search for in the blocklist.
+      name: sha1
+    - description: SHA256 hash to search for in the blocklist.
+      name: sha256Value
+    description: Retrieve the blocklist ("blacklist" in SentinelOne). You can filter by SHA1 or SHA256 hash. If the `global` flag is `true`, then group_ids, site_ids, and account_ids are ignored.
     name: sentinelone-get-blocklist
     outputs:
     - contextPath: SentinelOne.Blocklist.UserId
@@ -1661,7 +1665,7 @@ script:
       description: When entry was most recently updated.
       type: String
     - contextPath: SentinelOne.Blocklist.Value
-      description: File hash.
+      description: File hash (SHA1 or SHA256).
       type: String
     - contextPath: SentinelOne.Blocklist.ScopePath
       description: SentinelOne list scope.
@@ -1688,8 +1692,10 @@ script:
       description: Name of the blocklist scope.
       type: String
   - arguments:
-    - description: SHA1 hash to add to the global blocklist.
+    - description: SHA1 hash to add to the blocklist.
       name: sha1
+    - description: SHA256 hash to add to the blocklist.
+      name: sha256Value
     - defaultValue: XSOAR
       description: String describing the source of the block.
       name: source
@@ -1704,8 +1710,14 @@ script:
     - defaultValue: Blocked from XSOAR
       description: Note stored in SentinelOne about the block.
       name: description
-    description: Add a hash to the global blocklist in SentinelOne.
+    - description: Comma-separated string of site IDs to scope the blocklist.
+      name: site_ids
+    - description: Comma-separated string of group IDs to scope the blocklist.
+      name: group_ids
+    - description: Comma-separated string of account IDs to scope the blocklist.
+      name: account_ids
     name: sentinelone-add-hash-to-blocklist
+    description: Add a hash to the blocklist in SentinelOne. Supports scoping by site, group, or account. If Scope not provided, the block will be global.
     outputs:
     - contextPath: SentinelOne.AddHashToBlocklist.hash
       description: Hash of the file.
@@ -1714,6 +1726,8 @@ script:
   - arguments:
     - description: SHA1 hash to remove from the global blocklist.
       name: sha1
+    - description: SHA256 hash to remove from the global blocklist.
+      name: sha256Value
     - auto: PREDEFINED
       description: Optional operating system type. If not supplied, will remove the SHA1 hash across all platforms.
       name: os_type
@@ -1721,6 +1735,12 @@ script:
       - windows
       - macos
       - linux
+    - description: Comma-separated string of site IDs to scope the blocklist.
+      name: site_ids
+    - description: Comma-separated string of group IDs to scope the blocklist.
+      name: group_ids
+    - description: Comma-separated string of account IDs to scope the blocklist.
+      name: account_ids
     description: Remove a hash from the global blocklist in SentinelOne.
     name: sentinelone-remove-hash-from-blocklist
     outputs:
@@ -2831,7 +2851,23 @@ script:
     - contextPath: SentinelOne.Notes.UpdatedAt
       description: The note updated time.
       type: string
-  dockerimage: demisto/python3:3.12.8.3296088
+  - arguments:
+    - name: threat_id
+      required: true
+      description: "Please provide the Valid Threat ID. Example: 14629133470822878."
+    name: sentinelone-threat-download-from-cloud
+    description: Download a file associated with the threat from the Cloud (BinaryVault).
+    outputs:
+    - contextPath: SentinelOne.Threat.ID
+      description: The threat ID.
+      type: String
+    - contextPath: SentinelOne.Threat.Downloadable
+      description: Whether the file is downloadable.
+      type: Boolean
+    - contextPath: SentinelOne.Threat.ZippedFile
+      description: Details of the zipped folder.
+      type: String
+  dockerimage: demisto/python3:3.12.11.4819260
   isfetch: true
   ismappable: true
   isremotesyncin: true
