@@ -88,6 +88,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "Done"
       id: 7531e2bc-565f-4be2-8bb9-5715a477f073
       iscommand: false
       name: Done
