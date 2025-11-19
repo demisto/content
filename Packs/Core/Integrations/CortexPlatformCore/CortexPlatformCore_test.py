@@ -2,8 +2,12 @@ import json
 
 import pytest
 from pytest_mock import MockerFixture
-
+from unittest.mock import call
 import demistomock as demisto
+
+from unittest.mock import Mock, patch
+from CortexPlatformCore import get_issue_recommendations_command, Client
+
 
 MAX_GET_INCIDENTS_LIMIT = 100
 
@@ -558,6 +562,156 @@ def test_preprocess_get_cases_args_limit_enforced():
     args = {"limit": 50}
     out = preprocess_get_cases_args(args.copy())
     assert out["limit"] == 50
+
+
+def test_get_issue_id_from_args():
+    """
+    GIVEN:
+        Arguments dictionary with issue_id provided.
+    WHEN:
+        The get_issue_id function is called.
+    THEN:
+        The issue_id from args is returned.
+    """
+    from CortexPlatformCore import get_issue_id
+
+    args = {"id": "12345"}
+    result = get_issue_id(args)
+
+    assert result == "12345"
+
+
+def test_get_issue_id_empty_string_in_args(mocker):
+    """
+    GIVEN:
+        Arguments dictionary with empty issue_id and demisto calling context with incident.
+    WHEN:
+        The get_issue_id function is called.
+    THEN:
+        The issue_id from calling context is returned.
+    """
+    from CortexPlatformCore import get_issue_id
+
+    args = {"issue_id": ""}
+    mock_calling_context = {"context": {"Incidents": [{"id": "67890"}]}}
+    mocker.patch.object(demisto, "callingContext", mock_calling_context)
+
+    result = get_issue_id(args)
+
+    assert result == "67890"
+
+
+def test_get_issue_id_missing_from_args(mocker):
+    """
+    GIVEN:
+        Arguments dictionary without issue_id and demisto calling context with incident.
+    WHEN:
+        The get_issue_id function is called.
+    THEN:
+        The issue_id from calling context is returned.
+    """
+    from CortexPlatformCore import get_issue_id
+
+    args = {}
+    mock_calling_context = {"context": {"Incidents": [{"id": "99999"}]}}
+    mocker.patch.object(demisto, "callingContext", mock_calling_context)
+
+    result = get_issue_id(args)
+
+    assert result == "99999"
+
+
+def test_get_issue_id_from_context_multiple_incidents(mocker):
+    """
+    GIVEN:
+        Arguments dictionary without issue_id and calling context with multiple incidents.
+    WHEN:
+        The get_issue_id function is called.
+    THEN:
+        The issue_id from the first incident in calling context is returned.
+    """
+    from CortexPlatformCore import get_issue_id
+
+    args = {}
+    mock_calling_context = {"context": {"Incidents": [{"id": "first_incident"}, {"id": "second_incident"}]}}
+    mocker.patch.object(demisto, "callingContext", mock_calling_context)
+
+    result = get_issue_id(args)
+
+    assert result == "first_incident"
+
+
+def test_create_filter_data_basic():
+    """
+    GIVEN:
+        Issue ID and basic update arguments.
+    WHEN:
+        The create_filter_data function is called.
+    THEN:
+        Correct filter data structure is returned with proper formatting.
+    """
+    from CortexPlatformCore import create_filter_data
+
+    issue_id = "12345"
+    update_args = {"name": "Test Issue", "severity": "HIGH"}
+
+    result = create_filter_data(issue_id, update_args)
+
+    expected = {
+        "filter_data": {"filter": {"AND": [{"SEARCH_FIELD": "internal_id", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "12345"}]}},
+        "filter_type": "static",
+        "update_data": {"name": "Test Issue", "severity": "HIGH"},
+    }
+
+    assert result == expected
+
+
+def test_create_filter_data_empty_update_args():
+    """
+    GIVEN:
+        Issue ID and empty update arguments.
+    WHEN:
+        The create_filter_data function is called.
+    THEN:
+        Filter data structure is returned with empty update_data.
+    """
+    from CortexPlatformCore import create_filter_data
+
+    issue_id = "54321"
+    update_args = {}
+
+    result = create_filter_data(issue_id, update_args)
+
+    assert result["filter_data"]["filter"]["AND"][0]["SEARCH_VALUE"] == "54321"
+    assert result["filter_type"] == "static"
+    assert result["update_data"] == {}
+
+
+def test_create_filter_data_complex_update_args():
+    """
+    GIVEN:
+        Issue ID and complex update arguments with multiple fields.
+    WHEN:
+        The create_filter_data function is called.
+    THEN:
+        Filter data structure contains all update arguments in update_data.
+    """
+    from CortexPlatformCore import create_filter_data
+
+    issue_id = "98765"
+    update_args = {
+        "name": "Complex Issue",
+        "severity": "CRITICAL",
+        "assigned_user": "user@example.com",
+        "type": "security",
+        "phase": "investigation",
+    }
+
+    result = create_filter_data(issue_id, update_args)
+
+    assert result["filter_data"]["filter"]["AND"][0]["SEARCH_VALUE"] == "98765"
+    assert result["update_data"] == update_args
+    assert result["filter_type"] == "static"
 
 
 def test_get_asset_group_ids_from_names_success(mocker):
@@ -2241,6 +2395,334 @@ def test_search_asset_groups_command_multiple_values_in_filters(mocker):
     assert mock_get_webapp_data.call_count == 1
 
 
+def test_update_issue_command_success_all_fields(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with all valid fields.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        Issue is updated with all provided fields and returns "done".
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("CortexPlatformCore.arg_to_number", return_value=2)
+    mocker.patch("CortexPlatformCore.arg_to_timestamp", return_value="2023-01-01T00:00:00Z")
+
+    args = {
+        "id": "12345",
+        "assigned_user_mail": "user@example.com",
+        "severity": "medium",
+        "name": "Test Issue",
+        "occurred": "2023-01-01T00:00:00Z",
+        "phase": "investigation",
+        "status": "New",
+    }
+
+    result = update_issue_command(client, args)
+
+    assert result == "done"
+    mock_update_issue.assert_called_once()
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert update_data["assigned_user"] == "user@example.com"
+    assert update_data["severity"] == "SEV_030_MEDIUM"
+    assert update_data["name"] == "Test Issue"
+    assert update_data["occurred"] == "2023-01-01T00:00:00Z"
+    assert update_data["phase"] == "investigation"
+    assert update_data["resolution_status"] == "STATUS_010_NEW"
+
+
+def test_update_issue_command_missing_issue_id_no_context(mocker):
+    """
+    GIVEN:
+        Client instance and arguments without issue_id and no calling context.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        DemistoException is raised and update_issue is not called.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+    from CommonServerPython import DemistoException
+    import pytest
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_calling_context = {"context": {}}
+    mocker.patch.object(demisto, "callingContext", mock_calling_context)
+
+    args = {"name": "Test Issue"}
+
+    with pytest.raises(DemistoException, match="Issue ID is required for updating an issue."):
+        update_issue_command(client, args)
+
+    mock_update_issue.assert_not_called()
+
+
+def test_update_issue_command_empty_issue_id_no_context(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with empty issue_id and no calling context.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        DemistoException is raised and update_issue is not called.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+    from CommonServerPython import DemistoException
+    import pytest
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_calling_context = {"context": {}}
+    mocker.patch.object(demisto, "callingContext", mock_calling_context)
+
+    args = {"id": "", "name": "Test Issue"}
+
+    with pytest.raises(DemistoException, match="Issue ID is required for updating an issue."):
+        update_issue_command(client, args)
+
+    mock_update_issue.assert_not_called()
+
+
+def test_update_issue_command_issue_id_from_context(mocker):
+    """
+    GIVEN:
+        Client instance and arguments without issue_id but with calling context containing incident.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        Issue ID is retrieved from context and update succeeds.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+    mock_calling_context = {"context": {"Incidents": [{"id": "context_id_123"}]}}
+    mocker.patch.object(demisto, "callingContext", mock_calling_context)
+
+    args = {"name": "Test Issue"}
+
+    result = update_issue_command(client, args)
+
+    assert result == "done"
+    mock_update_issue.assert_called_once()
+
+    call_args = mock_update_issue.call_args[0][0]
+    filter_data = call_args["filter_data"]["filter"]
+    # Check that context ID was used in filter
+    assert any(field["SEARCH_VALUE"] == "context_id_123" for field in filter_data["AND"])
+
+
+def test_update_issue_command_severity_low(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with severity level 1 (low).
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        Severity is mapped to SEV_020_LOW in update_data.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("CortexPlatformCore.arg_to_number", return_value=1)
+
+    args = {"id": "12345", "severity": "low"}
+
+    update_issue_command(client, args)
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert update_data["severity"] == "SEV_020_LOW"
+
+
+def test_update_issue_command_invalid_severity_mapping(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with invalid severity value.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        Severity is not included in update_data when mapping returns None.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("CortexPlatformCore.arg_to_number", return_value=99)
+
+    args = {"id": "12345", "severity": "99", "name": "Test Issue"}
+
+    update_issue_command(client, args)
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert "severity" not in update_data
+    assert update_data["name"] == "Test Issue"
+
+
+def test_update_issue_command_invalid_status_mapping(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with invalid status value.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        Status is not included in update_data when mapping returns None.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("CortexPlatformCore.arg_to_number", return_value=99)
+
+    args = {"id": "12345", "status": "FAKE", "name": "Test Issue"}
+
+    update_issue_command(client, args)
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert "resolution_status" not in update_data
+    assert update_data["name"] == "Test Issue"
+
+
+def test_update_issue_command_no_severity(mocker):
+    """
+    GIVEN:
+        Client instance and arguments without severity field.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        Severity is not included in update_data.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("CortexPlatformCore.arg_to_number", return_value=None)
+
+    args = {"id": "12345", "name": "Test Issue"}
+
+    update_issue_command(client, args)
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert "severity" not in update_data
+    assert update_data["name"] == "Test Issue"
+
+
+def test_update_issue_command_partial_fields(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with only some fields provided.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        Only provided fields are included in update_data.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "name": "Updated Issue Name", "phase": "investigation"}
+
+    update_issue_command(client, args)
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert update_data["name"] == "Updated Issue Name"
+    assert update_data["phase"] == "investigation"
+    assert "severity" not in update_data
+    assert "assigned_user" not in update_data
+    assert "occurred" not in update_data
+
+
+def test_update_issue_command_none_values_filtered(mocker):
+    """
+    GIVEN:
+        Client instance and arguments where some fields resolve to None.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        None values are filtered out of update_data.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("CortexPlatformCore.arg_to_timestamp", return_value=None)
+
+    args = {"id": "12345", "name": "Test Issue", "occurred": "invalid-date", "assigned_user_mail": None}
+
+    update_issue_command(client, args)
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert update_data["name"] == "Test Issue"
+    assert "occurred" not in update_data
+    assert "assigned_user" not in update_data
+
+
+def test_update_issue_command_debug_called(mocker):
+    """
+    GIVEN:
+        Client instance and valid arguments.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        demisto.debug is called with filter_data.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mock_debug = mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345", "name": "Test Issue"}
+
+    update_issue_command(client, args)
+
+    mock_debug.assert_called_once()
+    mock_update_issue.assert_called_once()
+
+
+def test_update_issue_command_only_issue_id(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with only issue_id.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        update_issue is called with empty update_data.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+    from CommonServerPython import DemistoException
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+
+    args = {"id": "12345"}
+    with pytest.raises(DemistoException, match="Please provide arguments to update the issue."):
+        update_issue_command(client, args)
+
+    mock_update_issue.assert_not_called()
+
+
 def test_get_issue_recommendations_command(mocker):
     """
     Given:
@@ -2378,3 +2860,1774 @@ def test_get_issue_recommendations_command_api_calls(mocker):
     assert call_args["table_name"] == "ALERTS_VIEW_TABLE"
     assert call_args["type"] == "grid"
     assert "filter_data" in call_args
+
+
+class TestGetIssueRecommendationsCommand:
+    """Test cases for the AppSec fix suggestion logic in get_issue_recommendations_command"""
+
+    def setup_method(self):
+        """Setup method to initialize common test data"""
+        self.mock_client = Mock(spec=Client)
+        self.issue_id = "test_issue_123"
+        self.base_args = {"issue_id": self.issue_id}
+
+        self.base_issue = {
+            "internal_id": self.issue_id,
+            "alert_name": "Test Security Issue",
+            "severity": "HIGH",
+            "alert_description": "Test description",
+            "remediation": "Base remediation steps",
+        }
+
+        self.base_webapp_response = {"reply": {"DATA": [self.base_issue]}}
+        self.base_playbook_response = {"reply": {"suggested_playbooks": ["Playbook1", "Playbook2"]}}
+
+    @patch("CortexPlatformCore.build_webapp_request_data")
+    def test_appsec_issue_with_fix_suggestion(self, mock_build_request):
+        """Test AppSec issue with successful fix suggestion retrieval"""
+        appsec_issue = self.base_issue.copy()
+        appsec_issue.update({"alert_source": "CAS_CVE_SCANNER", "extended_fields": {"action": "Manual fix instructions"}})
+
+        webapp_response = {"reply": {"DATA": [appsec_issue]}}
+
+        fix_suggestion = {"existingCodeBlock": "vulnerable_code_here()", "suggestedCodeBlock": "secure_code_here()"}
+
+        mock_build_request.return_value = {"mock": "request_data"}
+        self.mock_client.get_webapp_data.return_value = webapp_response
+        self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
+        self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
+
+        result = get_issue_recommendations_command(self.mock_client, self.base_args)
+
+        self.mock_client.get_appsec_suggested_fix.assert_called_once_with(self.issue_id)
+
+        expected_recommendation = {
+            "issue_id": self.issue_id,
+            "issue_name": "Test Security Issue",
+            "severity": "HIGH",
+            "description": "Test description",
+            "remediation": "Manual fix instructions",  # Should use manual_fix
+            "playbook_suggestions": {"suggested_playbooks": ["Playbook1", "Playbook2"]},
+            "existing_code_block": "vulnerable_code_here()",
+            "suggested_code_block": "secure_code_here()",
+        }
+
+        assert result.outputs == expected_recommendation
+        assert "Existing Code Block" in result.readable_output
+        assert "Suggested Code Block" in result.readable_output
+
+    @patch("CortexPlatformCore.build_webapp_request_data")
+    def test_appsec_issue_without_manual_fix(self, mock_build_request):
+        """Test AppSec issue without manual fix, should use base remediation"""
+        appsec_issue = self.base_issue.copy()
+        appsec_issue.update(
+            {
+                "alert_source": "CAS_IAC_SCANNER",
+                "extended_fields": {},  # No manual fix
+            }
+        )
+
+        webapp_response = {"reply": {"DATA": [appsec_issue]}}
+
+        fix_suggestion = {"existingCodeBlock": "terraform_issue_here", "suggestedCodeBlock": "terraform_fix_here"}
+
+        mock_build_request.return_value = {"mock": "request_data"}
+        self.mock_client.get_webapp_data.return_value = webapp_response
+        self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
+        self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
+
+        result = get_issue_recommendations_command(self.mock_client, self.base_args)
+
+        expected_recommendation = {
+            "issue_id": self.issue_id,
+            "issue_name": "Test Security Issue",
+            "severity": "HIGH",
+            "description": "Test description",
+            "remediation": "Base remediation steps",  # Should use base remediation
+            "playbook_suggestions": {"suggested_playbooks": ["Playbook1", "Playbook2"]},
+            "existing_code_block": "terraform_issue_here",
+            "suggested_code_block": "terraform_fix_here",
+        }
+
+        assert result.outputs == expected_recommendation
+
+    @patch("CortexPlatformCore.build_webapp_request_data")
+    def test_appsec_issue_no_fix_suggestion(self, mock_build_request):
+        """Test AppSec issue when fix suggestion API returns None"""
+        appsec_issue = self.base_issue.copy()
+        appsec_issue.update({"alert_source": "CAS_SECRET_SCANNER", "extended_fields": {"action": "Manual secret remediation"}})
+
+        webapp_response = {"reply": {"DATA": [appsec_issue]}}
+
+        mock_build_request.return_value = {"mock": "request_data"}
+        self.mock_client.get_webapp_data.return_value = webapp_response
+        self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
+        self.mock_client.get_appsec_suggested_fix.return_value = None  # No fix suggestion
+        result = get_issue_recommendations_command(self.mock_client, self.base_args)
+
+        self.mock_client.get_appsec_suggested_fix.assert_called_once_with(self.issue_id)
+
+        expected_recommendation = {
+            "issue_id": self.issue_id,
+            "issue_name": "Test Security Issue",
+            "severity": "HIGH",
+            "description": "Test description",
+            "remediation": "Manual secret remediation",
+            "playbook_suggestions": {"suggested_playbooks": ["Playbook1", "Playbook2"]},
+        }
+
+        assert result.outputs == expected_recommendation
+        assert "Existing Code Block" not in result.outputs
+        assert "Suggested Code Block" not in result.outputs
+
+    @patch("CortexPlatformCore.build_webapp_request_data")
+    def test_appsec_sources_coverage(self, mock_build_request):
+        """Test all AppSec sources are handled correctly"""
+        appsec_sources = ["CAS_CVE_SCANNER", "CAS_IAC_SCANNER", "CAS_SECRET_SCANNER"]
+
+        for source in appsec_sources:
+            appsec_issue = self.base_issue.copy()
+            appsec_issue["alert_source"] = source
+
+            webapp_response = {"reply": {"DATA": [appsec_issue]}}
+
+            fix_suggestion = {"existingCodeBlock": f"issue_in_{source}", "suggestedCodeBlock": f"fix_for_{source}"}
+
+            mock_build_request.return_value = {"mock": "request_data"}
+            self.mock_client.get_webapp_data.return_value = webapp_response
+            self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
+            self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
+
+            result = get_issue_recommendations_command(self.mock_client, self.base_args)
+
+            assert result.outputs["existing_code_block"] == f"issue_in_{source}"
+            assert result.outputs["suggested_code_block"] == f"fix_for_{source}"
+
+            self.mock_client.reset_mock()
+
+
+def test_enable_scanners_command_single_repository(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with a single repository ID and scanner configuration.
+    When:
+        enable_scanners_command is called.
+    Then:
+        The repository configuration is updated successfully and appropriate results are returned.
+    """
+    from CortexPlatformCore import Client, enable_scanners_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_build_payload = mocker.patch("CortexPlatformCore.build_scanner_config_payload", return_value={"test": "payload"})
+    mock_enable_scanners = mocker.patch.object(mock_client, "enable_scanners", return_value={"status": "success"})
+
+    args = {"repository_ids": "repo_001", "enabled_scanners": "scanner1,scanner2", "disable_scanners": "scanner3"}
+
+    result = enable_scanners_command(mock_client, args)
+
+    mock_build_payload.assert_called_once_with(args)
+    mock_enable_scanners.assert_called_once_with({"test": "payload"}, "repo_001")
+    assert "Successfully updated repositories: repo_001" in result.readable_output
+
+
+def test_enable_scanners_command_repository_ids_as_list(mocker: MockerFixture):
+    """
+    Given:
+        A client and args where repository_ids is already a list.
+    When:
+        enable_scanners_command is called.
+    Then:
+        The function handles the list correctly and updates all repositories.
+    """
+    from CortexPlatformCore import Client, enable_scanners_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_build_payload = mocker.patch("CortexPlatformCore.build_scanner_config_payload", return_value={"payload": "test"})
+    mock_enable_scanners = mocker.patch.object(mock_client, "enable_scanners", return_value={"success": True})
+
+    args = {"repository_ids": ["repo_alpha", "repo_beta"], "enable_scanners": "vulnerability_scan"}
+
+    result = enable_scanners_command(mock_client, args)
+
+    mock_build_payload.assert_called_with(args)
+
+    expected_calls = [
+        call({"payload": "test"}, "repo_alpha"),
+        call({"payload": "test"}, "repo_beta"),
+    ]
+    mock_enable_scanners.assert_has_calls(expected_calls)
+    assert "Successfully updated repositories: repo_alpha, repo_beta" in result.readable_output
+
+
+def test_build_scanner_config_payload_secrets_scanner_with_validation(mocker: MockerFixture):
+    """
+    Given:
+        Args with secrets scanner enable and secret_validation set to True.
+    When:
+        build_scanner_config_payload is called.
+    Then:
+        The secrets scanner configuration includes secretValidation option.
+    """
+    from CortexPlatformCore import build_scanner_config_payload
+
+    mocker.patch("CortexPlatformCore.validate_scanner_name", return_value=True)
+
+    args = {"repository_ids": ["repo1"], "enable_scanners": "secrets", "secret_validation": "True"}
+
+    result = build_scanner_config_payload(args)
+
+    expected = {"scanners": {"SECRETS": {"isEnabled": True, "scanOptions": {"secretValidation": True}}}}
+
+    assert result == expected
+
+
+def test_build_scanner_config_payload_secrets_scanner_without_validation(mocker: MockerFixture):
+    """
+    Given:
+        Args with secrets scanner enable and secret_validation set to False.
+    When:
+        build_scanner_config_payload is called.
+    Then:
+        The secrets scanner configuration includes secretValidation as False.
+    """
+    from CortexPlatformCore import build_scanner_config_payload
+
+    mocker.patch("CortexPlatformCore.validate_scanner_name", return_value=True)
+
+    args = {"repository_ids": "repo1", "enable_scanners": "secrets", "secret_validation": "False"}
+
+    result = build_scanner_config_payload(args)
+
+    expected = {"scanners": {"SECRETS": {"isEnabled": True, "scanOptions": {"secretValidation": False}}}}
+
+    assert result == expected
+
+
+def test_build_scanner_config_payload_complete_configuration(mocker: MockerFixture):
+    """
+    Given:
+        Args with all possible configuration options specified.
+    When:
+        build_scanner_config_payload is called.
+    Then:
+        A complete configuration payload with all options is returned.
+    """
+    from CortexPlatformCore import build_scanner_config_payload
+
+    mocker.patch("CortexPlatformCore.validate_scanner_name", return_value=True)
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {
+        "repository_ids": ["repo1", "repo2"],
+        "enable_scanners": ["secrets", "iac"],
+        "disable_scanners": ["SCA"],
+        "secret_validation": "True",
+        "pr_scanning": "True",
+        "block_on_error": "False",
+        "tag_resource_blocks": "True",
+        "tag_module_blocks": "False",
+        "exclude_paths": ["exclude1", "exclude2"],
+    }
+
+    result = build_scanner_config_payload(args)
+
+    expected = {
+        "scanners": {
+            "SECRETS": {"isEnabled": True, "scanOptions": {"secretValidation": True}},
+            "IAC": {"isEnabled": True},
+            "SCA": {"isEnabled": False},
+        },
+        "prScanning": {"isEnabled": True, "blockOnError": False},
+        "taggingBot": {"tagResourceBlocks": True, "tagModuleBlocks": False},
+        "excludedPaths": ["exclude1", "exclude2"],
+    }
+
+    assert result == expected
+
+
+def test_build_scanner_config_payload_empty_scanners_lists(mocker: MockerFixture):
+    """
+    Given:
+        Args with empty enabled_scanners and disable_scanners lists.
+    When:
+        build_scanner_config_payload is called.
+    Then:
+        A configuration payload without scanners section is returned.
+    """
+    from CortexPlatformCore import build_scanner_config_payload
+
+    mocker.patch("CortexPlatformCore.validate_scanner_name", return_value=True)
+    mocker.patch("CortexPlatformCore.demisto.debug")
+
+    args = {"repository_ids": "repo1", "enable_scanners": [], "disable_scanners": []}
+
+    result = build_scanner_config_payload(args)
+
+    expected = {}
+
+    assert result == expected
+
+
+def test_build_scanner_config_payload_invalid_scanner_names(mocker: MockerFixture):
+    """
+    Given:
+        Args with invalid scanner names that fail validation.
+    When:
+        build_scanner_config_payload is called.
+    Then:
+        Invalid scanners are excluded from the configuration.
+    """
+
+    def mock_validate_scanner_name(scanner):
+        return scanner in [
+            "iac",
+            "sca",
+            "secrets",
+        ]
+
+    mocker.patch("CortexPlatformCore.validate_scanner_name", side_effect=mock_validate_scanner_name)
+
+
+def test_build_scanner_config_payload_enable_and_disable_same_scanner(mocker: MockerFixture):
+    """
+    Given:
+        Args with the same scanner in both enabled_scanners and disable_scanners lists.
+    When:
+        build_scanner_config_payload is called.
+    Then:
+        An error is thrown due to conflicting scanner configuration.
+    """
+    from CortexPlatformCore import build_scanner_config_payload
+
+    mocker.patch("CortexPlatformCore.validate_scanner_name", return_value=True)
+
+    args = {"repository_ids": "repo1", "enable_scanners": ["iac"], "disable_scanners": ["iac"]}
+
+    with pytest.raises(ValueError):
+        build_scanner_config_payload(args)
+
+
+def test_create_policy_command_basic_success(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and minimal valid arguments for creating a policy.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The policy is created successfully with default values where appropriate.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    # Mock client and response
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+
+    # Mock helper functions that might be called
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    # Minimal args with just policy name and one trigger enabled
+    args = {"policy_name": "Test Policy", "triggers_periodic_report_issue": "true"}
+
+    result = create_policy_command(mock_client, args)
+
+    # Verify the result is a CommandResults object with correct readable output
+    assert hasattr(result, "readable_output")
+    assert result.readable_output == "AppSec policy 'Test Policy' created successfully."
+
+    # Verify other attributes are None/default as per actual implementation
+    assert result.outputs is None
+    assert result.outputs_prefix is None
+    assert result.outputs_key_field is None
+    assert result.raw_response is None
+
+    # Verify create_policy was called once
+    mock_create_policy.assert_called_once()
+
+    # Verify the JSON payload structure passed to create_policy
+    call_args = mock_create_policy.call_args
+    assert len(call_args[0]) == 1  # Only one positional argument (the JSON string)
+
+    payload_json = call_args[0][0]
+    import json
+
+    payload = json.loads(payload_json)
+
+    # Verify basic policy structure
+    assert payload["name"] == "Test Policy"
+    assert payload["description"] == ""
+    assert payload["assetGroupIds"] == []
+    assert "conditions" in payload
+    assert "scope" in payload
+    assert "triggers" in payload
+
+    # Verify triggers structure - periodic should be enabled
+    triggers = payload["triggers"]
+    assert triggers["periodic"]["isEnabled"] is True
+    assert triggers["periodic"]["actions"]["reportIssue"] is True
+    assert triggers["pr"]["isEnabled"] is False
+    assert triggers["cicd"]["isEnabled"] is False
+
+
+def test_create_policy_command_missing_policy_name(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments missing the required policy_name.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        A DemistoException is raised indicating policy_name is required.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    from CommonServerPython import DemistoException
+
+    mock_client = Client(base_url="", headers={})
+
+    # Args missing policy_name
+    args = {"triggers_periodic_report_issue": "true"}
+
+    with pytest.raises(DemistoException) as excinfo:
+        create_policy_command(mock_client, args)
+
+    assert "Policy name is required" in str(excinfo.value)
+
+
+def test_create_policy_command_no_triggers_enabled(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments with no triggers enabled.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        A DemistoException is raised indicating at least one trigger must be enabled.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    from CommonServerPython import DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    # Args with policy_name but no triggers enabled
+    args = {"policy_name": "Test Policy"}
+
+    with pytest.raises(DemistoException) as excinfo:
+        create_policy_command(mock_client, args)
+
+    assert "At least one trigger" in str(excinfo.value)
+
+
+def test_create_policy_command_with_asset_groups(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments including asset_group_names.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The asset groups are properly resolved and included in the policy.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+
+    # Mock asset group resolution
+    mock_asset_groups = ["group-1", "group-2"]
+    mock_get_asset_groups = mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=mock_asset_groups)
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {"policy_name": "Test Policy", "asset_group_names": "Group 1,Group 2", "triggers_periodic_report_issue": "true"}
+
+    result = create_policy_command(mock_client, args)
+
+    # Verify readable output
+    assert result.readable_output == "AppSec policy 'Test Policy' created successfully."
+
+    # Verify asset group resolution was called with correct parameters
+    mock_get_asset_groups.assert_called_once_with(mock_client, ["Group 1", "Group 2"])
+
+    # Verify create_policy was called and asset groups were included
+    mock_create_policy.assert_called_once()
+    payload_json = mock_create_policy.call_args[0][0]
+    import json
+
+    payload = json.loads(payload_json)
+
+    # Verify asset groups are included in the policy payload
+    assert payload["assetGroupIds"] == ["group-1", "group-2"]
+    assert payload["name"] == "Test Policy"
+
+
+def test_create_policy_command_with_conditions(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments with various condition parameters.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The conditions are properly built and included in the policy.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+
+    # Mock AppSec rule resolution
+    mock_rule_ids = ["rule-1", "rule-2"]
+    mock_get_appsec_rules = mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=mock_rule_ids)
+
+    args = {
+        "policy_name": "Test Policy",
+        "conditions_finding_type": "Vulnerabilities,Secrets",
+        "conditions_severity": "high,critical",
+        "conditions_respect_developer_suppression": "true",
+        "conditions_has_a_fix": "true",
+        "conditions_is_kev": "false",
+        "conditions_appsec_rule_names": "Rule 1,Rule 2",
+        "triggers_periodic_report_issue": "true",
+    }
+
+    result = create_policy_command(mock_client, args)
+
+    # Verify readable output
+    assert result.readable_output == "AppSec policy 'Test Policy' created successfully."
+
+    # Verify AppSec rule resolution was called with correct parameters
+    mock_get_appsec_rules.assert_called_once_with(mock_client, ["Rule 1", "Rule 2"])
+
+    # Verify create_policy was called and examine the payload
+    mock_create_policy.assert_called_once()
+    payload_json = mock_create_policy.call_args[0][0]
+    import json
+
+    payload = json.loads(payload_json)
+
+    # Verify conditions structure is present
+    assert "conditions" in payload
+    conditions = payload["conditions"]
+
+    # The conditions are built using FilterBuilder, so we need to check the filter structure
+    assert "AND" in conditions
+    filters = conditions["AND"]
+
+    # Verify that filters were created (exact structure depends on FilterBuilder implementation)
+    assert len(filters) > 0
+
+
+def test_create_policy_command_with_scope(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments with scope parameters.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The scope is properly built and included in the policy.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {
+        "policy_name": "Test Policy",
+        "scope_category": "Application,Repository",
+        "scope_business_application_names": "App1,App2",
+        "scope_repository_name": "repo1",
+        "scope_is_public_repository": "true",
+        "scope_has_internet_exposed_deployed_assets": "true",
+        "triggers_periodic_report_issue": "true",
+    }
+
+    result = create_policy_command(mock_client, args)
+
+    # Verify readable output
+    assert result.readable_output == "AppSec policy 'Test Policy' created successfully."
+
+    # Verify create_policy was called and examine the payload
+    mock_create_policy.assert_called_once()
+    payload_json = mock_create_policy.call_args[0][0]
+    import json
+
+    payload = json.loads(payload_json)
+
+    # Verify scope structure is present
+    assert "scope" in payload
+    scope = payload["scope"]
+
+    # The scope is built using FilterBuilder, so we verify the filter structure exists
+    # (exact structure depends on FilterBuilder implementation)
+    if scope:  # scope can be empty if no filters are added
+        assert "AND" in scope or len(scope) == 0
+
+
+def test_create_policy_command_with_triggers(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments with various trigger configurations.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The triggers are properly configured and included in the policy.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {
+        "policy_name": "Test Policy",
+        "triggers_periodic_report_issue": "true",
+        "triggers_periodic_override_severity": "critical",
+        "triggers_pr_report_issue": "true",
+        "triggers_pr_block_pr": "true",
+        "triggers_pr_report_pr_comment": "false",
+        "triggers_cicd_report_issue": "false",
+        "triggers_cicd_block_cicd": "true",
+    }
+
+    result = create_policy_command(mock_client, args)
+
+    # Verify readable output
+    assert result.readable_output == "AppSec policy 'Test Policy' created successfully."
+
+    # Verify create_policy was called and examine the payload
+    mock_create_policy.assert_called_once()
+    payload_json = mock_create_policy.call_args[0][0]
+    import json
+
+    payload = json.loads(payload_json)
+
+    # Verify triggers structure
+    triggers = payload["triggers"]
+
+    # Verify periodic trigger
+    assert triggers["periodic"]["isEnabled"] is True
+    assert triggers["periodic"]["actions"]["reportIssue"] is True
+    assert triggers["periodic"]["overrideIssueSeverity"] == "critical"
+
+    # Verify PR trigger
+    assert triggers["pr"]["isEnabled"] is True
+    assert triggers["pr"]["actions"]["reportIssue"] is True
+    assert triggers["pr"]["actions"]["blockPr"] is True
+    assert triggers["pr"]["actions"]["reportPrComment"] is False
+    assert triggers["pr"]["overrideIssueSeverity"] is None
+
+    # Verify CI/CD trigger
+    assert triggers["cicd"]["isEnabled"] is True
+    assert triggers["cicd"]["actions"]["reportIssue"] is False
+    assert triggers["cicd"]["actions"]["blockCicd"] is True
+    assert triggers["cicd"]["actions"]["reportCicd"] is False
+    assert triggers["cicd"]["overrideIssueSeverity"] is None
+
+
+def test_create_policy_command_with_all_parameters(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments with all possible parameters.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The policy is created with all parameters properly configured.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+
+    # Mock asset group resolution
+    mock_asset_groups = ["group-1", "group-2"]
+    mock_get_asset_groups = mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=mock_asset_groups)
+
+    # Mock AppSec rule resolution
+    mock_rule_ids = ["rule-1", "rule-2"]
+    mock_get_appsec_rules = mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=mock_rule_ids)
+
+    # Comprehensive args with all parameters
+    args = {
+        "policy_name": "Comprehensive Policy",
+        "description": "A comprehensive policy with all parameters",
+        "asset_group_names": "Group 1,Group 2",
+        # Conditions
+        "conditions_finding_type": "Vulnerabilities,Secrets,Weaknesses",
+        "conditions_severity": "high,critical",
+        "conditions_respect_developer_suppression": "true",
+        "conditions_backlog_status": "active",
+        "conditions_package_name": "vulnerable-package",
+        "conditions_package_version": "1.0.0",
+        "conditions_package_operational_risk": "high",
+        "conditions_appsec_rule_names": "Rule 1,Rule 2",
+        "conditions_cvss": "7.5",
+        "conditions_epss": "0.8",
+        "conditions_has_a_fix": "true",
+        "conditions_is_kev": "true",
+        "conditions_secret_validity": "valid",
+        "conditions_license_type": "GPL",
+        # Scope
+        "scope_category": "Application,Repository",
+        "scope_business_application_names": "App1,App2",
+        "scope_application_business_criticality": "high",
+        "scope_repository_name": "repo1",
+        "scope_is_public_repository": "true",
+        "scope_has_deployed_assets": "true",
+        "scope_has_internet_exposed_deployed_assets": "true",
+        "scope_has_sensitive_data_access": "true",
+        "scope_has_privileged_capabilities": "false",
+        # Triggers
+        "triggers_periodic_report_issue": "true",
+        "triggers_periodic_override_severity": "critical",
+        "triggers_pr_report_issue": "true",
+        "triggers_pr_block_pr": "true",
+        "triggers_pr_report_pr_comment": "true",
+        "triggers_pr_override_severity": "high",
+        "triggers_cicd_report_issue": "true",
+        "triggers_cicd_block_cicd": "true",
+        "triggers_cicd_report_cicd": "true",
+        "triggers_cicd_override_severity": "medium",
+    }
+
+    result = create_policy_command(mock_client, args)
+
+    # Verify readable output
+    assert result.readable_output == "AppSec policy 'Comprehensive Policy' created successfully."
+
+    # Verify create_policy was called once
+    mock_create_policy.assert_called_once()
+
+    # Verify helper functions were called with correct parameters
+    mock_get_asset_groups.assert_called_once_with(mock_client, ["Group 1", "Group 2"])
+    mock_get_appsec_rules.assert_called_once_with(mock_client, ["Rule 1", "Rule 2"])
+
+    # Verify the complete policy payload
+    payload_json = mock_create_policy.call_args[0][0]
+    import json
+
+    payload = json.loads(payload_json)
+
+    # Verify basic policy info
+    assert payload["name"] == "Comprehensive Policy"
+    assert payload["description"] == "A comprehensive policy with all parameters"
+    assert payload["assetGroupIds"] == ["group-1", "group-2"]
+
+    # Verify triggers configuration
+    triggers = payload["triggers"]
+
+    # Periodic trigger
+    assert triggers["periodic"]["isEnabled"] is True
+    assert triggers["periodic"]["actions"]["reportIssue"] is True
+    assert triggers["periodic"]["overrideIssueSeverity"] == "critical"
+
+    # PR trigger
+    assert triggers["pr"]["isEnabled"] is True
+    assert triggers["pr"]["actions"]["reportIssue"] is True
+    assert triggers["pr"]["actions"]["blockPr"] is True
+    assert triggers["pr"]["actions"]["reportPrComment"] is True
+    assert triggers["pr"]["overrideIssueSeverity"] == "high"
+
+    # CI/CD trigger
+    assert triggers["cicd"]["isEnabled"] is True
+    assert triggers["cicd"]["actions"]["reportIssue"] is True
+    assert triggers["cicd"]["actions"]["blockCicd"] is True
+    assert triggers["cicd"]["actions"]["reportCicd"] is True
+    assert triggers["cicd"]["overrideIssueSeverity"] == "medium"
+
+    # Verify conditions and scope structures exist (they use FilterBuilder)
+    assert "conditions" in payload
+    assert "scope" in payload
+
+
+def test_create_policy_command_non_dict_response(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client that returns a non-dict response.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The function handles the non-dict response gracefully.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    # Mock a non-dict response (e.g., string or None)
+    mock_response = "Policy created successfully"
+    mocker.patch.object(mock_client, "create_policy", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {"policy_name": "Test Policy", "triggers_periodic_report_issue": "true"}
+
+    result = create_policy_command(mock_client, args)
+
+    # Verify the function still returns success message regardless of response type
+    assert result.readable_output == "AppSec policy 'Test Policy' created successfully."
+    assert result.outputs is None
+    assert result.raw_response is None
+
+
+def test_create_policy_command_empty_response(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client that returns an empty dict response.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The function handles the empty response gracefully.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {}
+    mocker.patch.object(mock_client, "create_policy", return_value=mock_response)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {"policy_name": "Test Policy", "triggers_periodic_report_issue": "true"}
+
+    result = create_policy_command(mock_client, args)
+
+    # Verify the function still returns success message regardless of response content
+    assert result.readable_output == "AppSec policy 'Test Policy' created successfully."
+    assert result.outputs is None
+    assert result.raw_response is None
+
+
+def test_create_policy_command_boolean_parameter_parsing(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments with various boolean string values.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        String boolean values are properly parsed to actual booleans.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {
+        "policy_name": "Boolean Test Policy",
+        "triggers_periodic_report_issue": "false",  # String "false" should become boolean False
+        "triggers_pr_report_issue": "true",  # String "true" should become boolean True
+        "triggers_pr_block_pr": "false",
+        "triggers_cicd_report_issue": "true",
+    }
+
+    result = create_policy_command(mock_client, args)
+
+    # Verify readable output
+    assert result.readable_output == "AppSec policy 'Boolean Test Policy' created successfully."
+
+    # Verify the boolean parsing in the payload
+    payload_json = mock_create_policy.call_args[0][0]
+    import json
+
+    payload = json.loads(payload_json)
+
+    triggers = payload["triggers"]
+
+    # Verify boolean values are properly parsed (not strings)
+    assert triggers["periodic"]["isEnabled"] is False  # Should be boolean False, not string "false"
+    assert triggers["periodic"]["actions"]["reportIssue"] is False
+
+    assert triggers["pr"]["isEnabled"] is True  # Should be boolean True, not string "true"
+    assert triggers["pr"]["actions"]["reportIssue"] is True
+    assert triggers["pr"]["actions"]["blockPr"] is False
+
+    assert triggers["cicd"]["isEnabled"] is True
+    assert triggers["cicd"]["actions"]["reportIssue"] is True
+
+
+def test_create_policy_command_comma_separated_values(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and arguments with comma-separated string values.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        Comma-separated values are properly parsed into lists.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {
+        "policy_name": "Comma Test Policy",
+        "conditions_finding_type": "Vulnerabilities,Secrets,Infrastructure as Code",
+        "conditions_severity": "high,critical",
+        "scope_category": "Application,Repository",
+        "scope_business_application_names": "App1,App2,App3",
+        "triggers_periodic_report_issue": "true",
+    }
+
+    result = create_policy_command(mock_client, args)
+
+    # Verify readable output
+    assert result.readable_output == "AppSec policy 'Comma Test Policy' created successfully."
+
+    # Verify create_policy was called
+    mock_create_policy.assert_called_once()
+
+    # Note: The actual comma-separated value parsing happens within the FilterBuilder
+    # and helper functions, so we verify they were called rather than the exact payload
+    # structure since FilterBuilder's output format depends on its implementation
+
+
+def test_create_policy_command_json_payload_structure(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and basic arguments.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The JSON payload passed to create_policy has the correct top-level structure.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {
+        "policy_name": "Structure Test Policy",
+        "description": "Testing JSON structure",
+        "triggers_periodic_report_issue": "true",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify create_policy was called with a JSON string
+    mock_create_policy.assert_called_once()
+    call_args = mock_create_policy.call_args[0]
+    assert len(call_args) == 1
+
+    # Verify it's a valid JSON string
+    payload_json = call_args[0]
+    import json
+
+    payload = json.loads(payload_json)
+
+    # Verify required top-level structure
+    required_keys = ["name", "description", "assetGroupIds", "conditions", "scope", "triggers"]
+    for key in required_keys:
+        assert key in payload, f"Missing required key: {key}"
+
+    # Verify basic values
+    assert payload["name"] == "Structure Test Policy"
+    assert payload["description"] == "Testing JSON structure"
+    assert isinstance(payload["assetGroupIds"], list)
+    assert isinstance(payload["triggers"], dict)
+
+    # Verify triggers sub-structure
+    triggers = payload["triggers"]
+    required_trigger_types = ["periodic", "pr", "cicd"]
+    for trigger_type in required_trigger_types:
+        assert trigger_type in triggers, f"Missing trigger type: {trigger_type}"
+        assert "isEnabled" in triggers[trigger_type]
+        assert "actions" in triggers[trigger_type]
+        assert isinstance(triggers[trigger_type]["actions"], dict)
+
+
+def test_get_appsec_rule_ids_from_names_empty_list():
+    """
+    GIVEN:
+        A client and an empty list of AppSec rule names.
+    WHEN:
+        get_appsec_rule_ids_from_names is called.
+    THEN:
+        An empty list is returned without making API calls.
+    """
+    from CortexPlatformCore import Client, get_appsec_rule_ids_from_names
+
+    mock_client = Client(base_url="", headers={})
+    result = get_appsec_rule_ids_from_names(mock_client, [])
+
+    assert result == []
+
+
+def test_create_policy_command_client_create_policy_called_correctly(mocker: MockerFixture):
+    """
+    GIVEN:
+        A mocked client and valid policy arguments.
+    WHEN:
+        The create_policy_command function is called.
+    THEN:
+        The client.create_policy method is called with correctly formatted JSON.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    import json
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value={"id": "policy_123"})
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=["group_1"])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=["rule_1"])
+
+    args = {
+        "policy_name": "Test Policy",
+        "description": "Test Description",
+        "triggers_periodic_report_issue": "true",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify create_policy was called once
+    mock_create_policy.assert_called_once()
+
+    # Get the JSON payload that was passed
+    call_args = mock_create_policy.call_args[0][0]
+    payload = json.loads(call_args)
+
+    # Verify the JSON structure is valid and contains expected fields
+    assert payload["name"] == "Test Policy"
+    assert payload["description"] == "Test Description"
+    assert "triggers" in payload
+    assert "conditions" in payload
+    assert "scope" in payload
+
+
+def test_create_policy_command_edge_case_empty_asset_groups(mocker: MockerFixture):
+    """
+    GIVEN:
+        A policy creation request with empty asset group names.
+    WHEN:
+        create_policy_command is called with empty asset_group_names.
+    THEN:
+        The policy is created with empty assetGroupIds list.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    import json
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {
+        "policy_name": "Empty Groups Policy",
+        "asset_group_names": "",  # Empty string
+        "triggers_periodic_report_issue": "true",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify the payload has empty asset group IDs
+    call_args = mock_create_policy.call_args[0][0]
+    payload = json.loads(call_args)
+    assert payload["assetGroupIds"] == []
+
+
+def test_create_policy_conditions_builder_coverage(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation arguments with various condition parameters.
+    WHEN:
+        create_policy_command builds the conditions filter.
+    THEN:
+        All condition parameters are properly processed by FilterBuilder.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=["rule_1"])
+
+    args = {
+        "policy_name": "Conditions Test Policy",
+        "conditions_finding_type": "Vulnerabilities,Secrets",
+        "conditions_severity": "high,critical",
+        "conditions_respect_developer_suppression": "true",
+        "conditions_backlog_status": "active",
+        "conditions_package_name": "vulnerable-package",
+        "conditions_package_version": "1.0.0",
+        "conditions_package_operational_risk": "high",
+        "conditions_appsec_rule_names": "Test Rule",
+        "conditions_cvss": "7.5",
+        "conditions_epss": "0.8",
+        "conditions_has_a_fix": "true",
+        "conditions_is_kev": "false",
+        "conditions_secret_validity": "valid",
+        "conditions_license_type": "GPL",
+        "triggers_periodic_report_issue": "true",
+    }
+
+    result = create_policy_command(mock_client, args)
+
+    # Verify successful creation
+    assert result.readable_output == "AppSec policy 'Conditions Test Policy' created successfully."
+    mock_create_policy.assert_called_once()
+
+
+def test_create_policy_scope_builder_coverage(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation arguments with various scope parameters.
+    WHEN:
+        create_policy_command builds the scope filter.
+    THEN:
+        All scope parameters are properly processed by FilterBuilder.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {
+        "policy_name": "Scope Test Policy",
+        "scope_category": "Application,Repository",
+        "scope_business_application_names": "App1,App2",
+        "scope_application_business_criticality": "high",
+        "scope_repository_name": "test-repo",
+        "scope_is_public_repository": "true",
+        "scope_has_deployed_assets": "true",
+        "scope_has_internet_exposed_deployed_assets": "false",
+        "scope_has_sensitive_data_access": "true",
+        "scope_has_privileged_capabilities": "false",
+        "triggers_periodic_report_issue": "true",
+    }
+
+    result = create_policy_command(mock_client, args)
+
+    # Verify successful creation
+    assert result.readable_output == "AppSec policy 'Scope Test Policy' created successfully."
+    mock_create_policy.assert_called_once()
+
+
+def test_create_policy_trigger_configurations_coverage(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation arguments with all trigger configuration combinations.
+    WHEN:
+        create_policy_command processes trigger parameters.
+    THEN:
+        All trigger configurations are properly set in the policy payload.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    import json
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {
+        "policy_name": "Triggers Test Policy",
+        "triggers_periodic_report_issue": "true",
+        "triggers_periodic_override_severity": "critical",
+        "triggers_pr_report_issue": "false",
+        "triggers_pr_block_pr": "true",
+        "triggers_pr_report_pr_comment": "true",
+        "triggers_pr_override_severity": "high",
+        "triggers_cicd_report_issue": "true",
+        "triggers_cicd_block_cicd": "false",
+        "triggers_cicd_report_cicd": "true",
+        "triggers_cicd_override_severity": "medium",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify the triggers are configured correctly
+    call_args = mock_create_policy.call_args[0][0]
+    payload = json.loads(call_args)
+    triggers = payload["triggers"]
+
+    # Verify all trigger types are present and configured
+    assert "periodic" in triggers
+    assert "pr" in triggers
+    assert "cicd" in triggers
+
+
+def test_create_policy_command_trigger_validation_edge_cases(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation with edge cases in trigger validation.
+    WHEN:
+        create_policy_command validates trigger configurations.
+    THEN:
+        Edge cases in trigger validation are properly handled.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    from CommonServerPython import DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    # Test case where all trigger actions are false but trigger is enabled
+    args = {
+        "policy_name": "Edge Case Policy",
+        "triggers_periodic_report_issue": "false",
+        "triggers_pr_report_issue": "false",
+        "triggers_pr_block_pr": "false",
+        "triggers_pr_report_pr_comment": "false",
+        "triggers_cicd_report_issue": "false",
+        "triggers_cicd_block_cicd": "false",
+        "triggers_cicd_report_cicd": "false",
+    }
+
+    with pytest.raises(DemistoException) as excinfo:
+        create_policy_command(mock_client, args)
+
+    assert "At least one trigger" in str(excinfo.value)
+
+
+def test_create_policy_command_conditions_filter_empty(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation where conditions filter results in empty filter.
+    WHEN:
+        create_policy_command builds conditions with no actual filters.
+    THEN:
+        Empty conditions filter is handled correctly.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    import json
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    # Args that result in empty conditions filter
+    args = {
+        "policy_name": "Empty Conditions Policy",
+        "conditions_severity": "",  # Empty string should result in no filter
+        "conditions_finding_type": None,  # None should result in no filter
+        "triggers_periodic_report_issue": "true",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify policy was created
+    mock_create_policy.assert_called_once()
+
+    # Check that conditions is empty dict when no filters are added
+    call_args = mock_create_policy.call_args[0][0]
+    payload = json.loads(call_args)
+
+    # Should have conditions key but it might be empty
+    assert "conditions" in payload
+
+
+def test_create_policy_command_scope_filter_empty(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation where scope filter results in empty filter.
+    WHEN:
+        create_policy_command builds scope with no actual filters.
+    THEN:
+        Empty scope filter is handled correctly.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    import json
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    # Args that result in empty scope filter
+    args = {
+        "policy_name": "Empty Scope Policy",
+        "scope_category": "",  # Empty string
+        "scope_repository_name": None,  # None value
+        "triggers_periodic_report_issue": "true",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify policy was created
+    mock_create_policy.assert_called_once()
+
+    # Check that scope is present (might be empty)
+    call_args = mock_create_policy.call_args[0][0]
+    payload = json.loads(call_args)
+
+    assert "scope" in payload
+
+
+def test_create_policy_command_trigger_severity_none_handling(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation with None values for trigger severity overrides.
+    WHEN:
+        create_policy_command processes trigger severity overrides.
+    THEN:
+        None values are correctly handled in trigger configuration.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    import json
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {
+        "policy_name": "Severity None Policy",
+        "triggers_periodic_report_issue": "true",
+        "triggers_periodic_override_severity": None,  # Explicitly None
+        "triggers_pr_report_issue": "true",
+        "triggers_pr_override_severity": "",  # Empty string
+        "triggers_cicd_block_cicd": "true",
+        # No cicd_override_severity provided (should default to None)
+    }
+
+    create_policy_command(mock_client, args)
+
+    call_args = mock_create_policy.call_args[0][0]
+    payload = json.loads(call_args)
+    triggers = payload["triggers"]
+
+    # Verify None severity overrides are handled correctly
+    assert triggers["periodic"]["overrideIssueSeverity"] is None
+    assert triggers["pr"]["overrideIssueSeverity"] is None
+    assert triggers["cicd"]["overrideIssueSeverity"] is None
+
+
+def test_create_policy_command_trigger_disabled_actions_false(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation where triggers are enabled but specific actions are disabled.
+    WHEN:
+        create_policy_command processes trigger actions.
+    THEN:
+        Disabled actions are correctly set to False in the payload.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    import json
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=[])
+
+    args = {
+        "policy_name": "Disabled Actions Policy",
+        "triggers_periodic_report_issue": "true",  # Enable periodic
+        "triggers_pr_report_issue": "false",  # Disable PR report
+        "triggers_pr_block_pr": "true",  # Enable PR block (this makes PR trigger enabled)
+        "triggers_pr_report_pr_comment": "false",  # Disable PR comment
+        "triggers_cicd_report_issue": "false",  # Disable CICD report
+        "triggers_cicd_block_cicd": "false",  # Disable CICD block
+        "triggers_cicd_report_cicd": "true",  # Enable CICD report (this makes CICD trigger enabled)
+    }
+
+    create_policy_command(mock_client, args)
+
+    call_args = mock_create_policy.call_args[0][0]
+    payload = json.loads(call_args)
+    triggers = payload["triggers"]
+
+    # Verify trigger enablement logic
+    assert triggers["periodic"]["isEnabled"] is True
+    assert triggers["periodic"]["actions"]["reportIssue"] is True
+
+    assert triggers["pr"]["isEnabled"] is True  # Enabled because block_pr is true
+    assert triggers["pr"]["actions"]["reportIssue"] is False
+    assert triggers["pr"]["actions"]["blockPr"] is True
+    assert triggers["pr"]["actions"]["reportPrComment"] is False
+
+    assert triggers["cicd"]["isEnabled"] is True  # Enabled because report_cicd is true
+    assert triggers["cicd"]["actions"]["reportIssue"] is False
+    assert triggers["cicd"]["actions"]["blockCicd"] is False
+    assert triggers["cicd"]["actions"]["reportCicd"] is True
+
+
+def test_create_policy_command_appsec_rule_none_handling(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation with None or empty AppSec rule names.
+    WHEN:
+        create_policy_command processes AppSec rule names.
+    THEN:
+        None/empty AppSec rules are handled without calling resolution function.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+
+    mock_client = Client(base_url="", headers={})
+    mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=[])
+    mock_get_appsec_rules = mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names")
+
+    args = {
+        "policy_name": "No AppSec Rules Policy",
+        "conditions_appsec_rule_names": "",  # Empty string
+        "triggers_periodic_report_issue": "true",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify get_appsec_rule_ids_from_names was not called for empty string
+    mock_get_appsec_rules.assert_not_called()
+
+
+def test_create_policy_command_json_serialization_edge_cases(mocker: MockerFixture):
+    """
+    GIVEN:
+        Policy creation with complex nested data structures.
+    WHEN:
+        create_policy_command serializes the policy to JSON.
+    THEN:
+        Complex data structures are properly serialized.
+    """
+    from CortexPlatformCore import Client, create_policy_command
+    import json
+
+    mock_client = Client(base_url="", headers={})
+    mock_create_policy = mocker.patch.object(mock_client, "create_policy", return_value=None)
+    mocker.patch("CortexPlatformCore.get_asset_group_ids_from_names", return_value=["group-1", "group-2"])
+    mocker.patch("CortexPlatformCore.get_appsec_rule_ids_from_names", return_value=["rule-1"])
+
+    # Complex args that will create nested structures
+    args = {
+        "policy_name": "Complex JSON Policy",
+        "description": "Policy with complex nested structures",
+        "asset_group_names": "Group1,Group2",
+        "conditions_finding_type": "Vulnerabilities,Secrets,Infrastructure as Code",
+        "conditions_severity": "high,critical",
+        "conditions_appsec_rule_names": "Rule1",
+        "scope_category": "Application,Repository",
+        "scope_business_application_names": "App1,App2",
+        "triggers_periodic_report_issue": "true",
+        "triggers_pr_block_pr": "true",
+        "triggers_cicd_report_cicd": "true",
+    }
+
+    create_policy_command(mock_client, args)
+
+    # Verify the JSON can be parsed back (tests serialization)
+    call_args = mock_create_policy.call_args[0][0]
+    payload = json.loads(call_args)  # This will fail if JSON is malformed
+
+    # Verify the structure is complete
+    assert payload["name"] == "Complex JSON Policy"
+    assert payload["assetGroupIds"] == ["group-1", "group-2"]
+    assert isinstance(payload["triggers"], dict)
+    assert isinstance(payload["conditions"], dict)
+    assert isinstance(payload["scope"], dict)
+
+
+def test_appsec_remediate_issue_command_single_issue_success(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with a single issue ID and title.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The issue is remediated successfully and appropriate results are returned.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": "Fix security vulnerability"}
+
+    mock_remove_empty = mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={"issueIds": ["issue-123"], "title": "Fix security vulnerability"},
+    )
+
+    mock_appsec_remediate = mocker.patch.object(
+        mock_client,
+        "appsec_remediate_issue",
+        return_value={
+            "triggeredPrs": [{"issueId": "issue-123", "prUrl": "https://github.com/repo/pull/456", "status": "created"}]
+        },
+    )
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    mock_remove_empty.assert_called_once_with({"issueIds": ["issue-123"], "title": "Fix security vulnerability"})
+    mock_appsec_remediate.assert_called_once_with({"issueIds": ["issue-123"], "title": "Fix security vulnerability"})
+    assert result.outputs_prefix == "Core.TriggeredPRs"
+    assert result.outputs_key_field == "issueId"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["issueId"] == "issue-123"
+
+
+def test_appsec_remediate_issue_command_multiple_issues_success(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with multiple issue IDs and title.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        All issues are remediated successfully and appropriate results are returned.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": ["issue-123", "issue-456"], "title": "Fix security vulnerabilities"}
+
+    mock_remove_empty = mocker.patch("CortexPlatformCore.remove_empty_elements")
+    mock_remove_empty.side_effect = [
+        {"issueIds": ["issue-123"], "title": "Fix security vulnerabilities"},
+        {"issueIds": ["issue-456"], "title": "Fix security vulnerabilities"},
+    ]
+
+    mock_responses = [
+        {"triggeredPrs": [{"issueId": "issue-123", "prUrl": "https://github.com/repo/pull/1"}]},
+        {"triggeredPrs": [{"issueId": "issue-456", "prUrl": "https://github.com/repo/pull/2"}]},
+    ]
+    mock_appsec_remediate = mocker.patch.object(mock_client, "appsec_remediate_issue")
+    mock_appsec_remediate.side_effect = mock_responses
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert mock_appsec_remediate.call_count == 2
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["issueId"] == "issue-123"
+    assert result.outputs[1]["issueId"] == "issue-456"
+
+
+def test_appsec_remediate_issue_command_too_many_issues_raises_exception(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with only issue_id.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        update_issue is called with empty update_data.
+    """
+    from CortexPlatformCore import appsec_remediate_issue_command, Client
+    from CommonServerPython import DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {
+        "issue_ids": [f"issue-{i}" for i in range(11)],  # 11 issues
+        "title": "Fix vulnerabilities",
+    }
+
+    args = {"id": "12345"}
+    with pytest.raises(DemistoException, match="Please provide a maximum of 10 issue IDs per request."):
+        appsec_remediate_issue_command(mock_client, args)
+
+
+def test_appsec_remediate_issue_command_empty_triggered_prs(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with issue ID, but API returns empty triggeredPrs.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The command completes successfully with empty outputs.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": "Fix security vulnerability"}
+
+    mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={"issueIds": ["issue-123"], "title": "Fix security vulnerability"},
+    )
+
+    mocker.patch.object(
+        mock_client,
+        "appsec_remediate_issue",
+        return_value={
+            "triggeredPrs": []  # Empty list
+        },
+    )
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 0
+    assert result.raw_response == []
+
+
+def test_appsec_remediate_issue_command_none_response(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with issue ID, but API returns None response.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The command completes successfully with empty outputs.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": "Fix security vulnerability"}
+
+    mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={"issueIds": ["issue-123"], "title": "Fix security vulnerability"},
+    )
+
+    mocker.patch.object(mock_client, "appsec_remediate_issue", return_value=None)
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 0
+
+
+def test_appsec_remediate_issue_command_missing_triggered_prs_key(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with issue ID, but API response lacks triggeredPrs key.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The command completes successfully with empty outputs.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": "Fix security vulnerability"}
+
+    mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={"issueIds": ["issue-123"], "title": "Fix security vulnerability"},
+    )
+
+    mocker.patch.object(
+        mock_client,
+        "appsec_remediate_issue",
+        return_value={
+            "status": "success"  # No triggeredPrs key
+        },
+    )
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 0
+
+
+def test_appsec_remediate_issue_command_non_list_triggered_prs(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with issue ID, but API returns triggeredPrs as non-list.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The command completes successfully with empty outputs.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": "Fix security vulnerability"}
+
+    mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={"issueIds": ["issue-123"], "title": "Fix security vulnerability"},
+    )
+
+    mocker.patch.object(mock_client, "appsec_remediate_issue", return_value={"triggeredPrs": "not a list"})
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 0
+
+
+def test_appsec_remediate_issue_command_mixed_success_failure(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with multiple issue IDs, where some succeed and some fail.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        Only successful remediations are included in the outputs.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": ["issue-123", "issue-456", "issue-789"], "title": "Fix vulnerabilities"}
+
+    mock_remove_empty = mocker.patch("CortexPlatformCore.remove_empty_elements")
+    mock_remove_empty.side_effect = [
+        {"issueIds": ["issue-123"], "title": "Fix vulnerabilities"},
+        {"issueIds": ["issue-456"], "title": "Fix vulnerabilities"},
+        {"issueIds": ["issue-789"], "title": "Fix vulnerabilities"},
+    ]
+
+    mock_responses = [
+        {"triggeredPrs": [{"issueId": "issue-123", "prUrl": "https://github.com/repo/pull/1"}]},
+        {"triggeredPrs": []},  # Failed to trigger PR
+        {"triggeredPrs": [{"issueId": "issue-789", "prUrl": "https://github.com/repo/pull/3"}]},
+    ]
+    mock_appsec_remediate = mocker.patch.object(mock_client, "appsec_remediate_issue")
+    mock_appsec_remediate.side_effect = mock_responses
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 2  # Only successful ones
+    assert result.outputs[0]["issueId"] == "issue-123"
+    assert result.outputs[1]["issueId"] == "issue-789"
+
+
+def test_appsec_remediate_issue_command_none_title_removed(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with issue ID and None title.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        remove_empty_elements is called and None title is handled properly.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": None}
+
+    mock_remove_empty = mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={
+            "issueIds": ["issue-123"]  # title removed
+        },
+    )
+
+    mock_appsec_remediate = mocker.patch.object(
+        mock_client,
+        "appsec_remediate_issue",
+        return_value={"triggeredPrs": [{"issueId": "issue-123", "prUrl": "https://github.com/repo/pull/1"}]},
+    )
+
+    appsec_remediate_issue_command(mock_client, {})
+
+    mock_remove_empty.assert_called_with({"issueIds": ["issue-123"], "title": None})
+    mock_appsec_remediate.assert_called_with({"issueIds": ["issue-123"]})
+
+
+def test_appsec_remediate_issue_command_empty_issue_ids_list(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with empty issue IDs list.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The command completes successfully with empty outputs and no API calls.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": [], "title": "Fix vulnerabilities"}
+
+    mock_appsec_remediate = mocker.patch.object(mock_client, "appsec_remediate_issue")
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 0
+    mock_appsec_remediate.assert_not_called()

@@ -2482,6 +2482,26 @@ class TestIncidentFetch:
         for incident in incidents:
             assert '"incident_type": "incident"' in incident.get("rawJSON", "")
 
+    def test_last_run_uses_param(self, mocker: MockerFixture):
+        """
+        Given:
+            Old getLastRun which holds `limit`.
+        When:
+            A new lastRun is created.
+        Then:
+            The new limit should be based on the parameters and mot the old limit.
+        """
+        from CrowdStrikeFalcon import fetch_detections_by_product_type
+
+        mocker.patch("CrowdStrikeFalcon.INCIDENTS_PER_FETCH", 20)
+        mocker.patch("CrowdStrikeFalcon.get_fetch_run_time_range", return_value=(None,) * 2)
+        mocker.patch("CrowdStrikeFalcon.get_detections_ids", return_value={})
+        mock_func = mocker.patch("CrowdStrikeFalcon.update_last_run_object")
+
+        fetch_detections_by_product_type({"limit": 10}, 0, "", "", "", "", "")
+
+        assert mock_func.call_args.kwargs["fetch_limit"] == 20
+
 
 def get_fetch_data():
     with open("./test_data/test_data.json") as f:
