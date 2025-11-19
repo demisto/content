@@ -80,5 +80,5 @@ There are no outputs for this playbook.
 ## Playbook Image
 
 ---
-![Health Check - Collect Log Bundle](./../doc_files/HealthCheck-CollectLogBundle-pb.png)
+![Health Check - Collect Log Bundle](./../doc_files/Health_Check_-_Collect_Log_Bundle.png)
 /Users/tzimmer/Documents/GitHub/content/Packs/HealthCheck/doc_files/HealthCheck-CollectLogBundle-pb.png
