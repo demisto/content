@@ -259,7 +259,7 @@ class OktaClient(BaseClient):
             return response
         except ValueError as exception:
             raise DemistoException(
-                "Failed to parse {} object from response: {}".format(resp_type, response.content),  # type: ignore[str-bytes-safe]
+                f"Failed to parse {resp_type} object from response: {response.content}",  # type: ignore[str-bytes-safe]
                 exception,
                 response,
             )
