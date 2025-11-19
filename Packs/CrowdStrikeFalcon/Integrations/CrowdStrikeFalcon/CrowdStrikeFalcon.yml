@@ -150,6 +150,13 @@ configuration:
   required: false
   advanced: true
   additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
+- display: CNAPP Detection fetch query
+  name: cnapp_detection_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -245,6 +252,7 @@ configuration:
   - OFP Detection
   - Third Party Detection
   - NGSIEM Detection
+  - CNAPP Detection
   hidden:
   - marketplacev2
   - platform
@@ -263,6 +271,7 @@ configuration:
   - Mobile Detection
   - On-Demand Scans Detection
   - OFP Detection
+  - CNAPP Detection
   hidden:
   - xsoar
   - xpanse

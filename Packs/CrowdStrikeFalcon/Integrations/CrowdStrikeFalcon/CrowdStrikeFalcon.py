@@ -29,6 +29,7 @@ IDP_DETECTION = "IDP detection"
 MOBILE_DETECTION = "MOBILE detection"
 ON_DEMAND_SCANS_DETECTION = "On-Demand Scans detection"
 OFP_DETECTION = "OFP detection"
+CNAPP_DETECTION = "CNAPP detection"
 NGSIEM_DETECTION = "ngsiem_detection"
 THIRD_PARTY_DETECTION = "thirdparty_detection"
 
@@ -39,6 +40,7 @@ IDP_DETECTION_FETCH_TYPE = "IDP Detection"
 MOBILE_DETECTION_FETCH_TYPE = "Mobile Detection"
 ON_DEMAND_SCANS_DETECTION_TYPE = "On-Demand Scans Detection"
 OFP_DETECTION_TYPE = "OFP Detection"
+CNAPP_DETECTION_TYPE = "CNAPP detection"
 IOM_FETCH_TYPE = "Indicator of Misconfiguration"
 IOA_FETCH_TYPE = "Indicator of Attack"
 NGSIEM_DETECTION_FETCH_TYPE = "NGSIEM Detection"
@@ -389,8 +391,8 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
     "monthly": 30,
 }
 
-TOTAL_FETCH_TYPE_XSOAR = 10  # Matches the total number of fetch types for XSOAR in the LastRunIndex class
-TOTAL_FETCH_TYPE_XSIAM = 6  # Matches the total number of fetch types for XSIAM in the LastRunIndex class
+TOTAL_FETCH_TYPE_XSOAR = 11  # Matches the total number of fetch types for XSOAR in the LastRunIndex class
+TOTAL_FETCH_TYPE_XSIAM = 7  # Matches the total number of fetch types for XSIAM in the LastRunIndex class
 
 
 class LastRunIndex(IntEnum):
@@ -409,6 +411,7 @@ class LastRunIndex(IntEnum):
     MOBILE_DETECTIONS = 3
     ON_DEMAND_DETECTIONS = 4
     OFP_DETECTION = 5
+    CNAPP_DETECTION = 10
 
     # Fetch types only for fetch-incidents
     IOM = 6
@@ -427,6 +430,7 @@ class IncidentType(Enum):
     OFP = "ofp"
     NGSIEM = ":ngsiem:"
     THIRD_PARTY = ":thirdparty:"
+    CNAPP = "cnapp"
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get("mirror_direction"))
@@ -3301,6 +3305,81 @@ def fetch_iom_incidents(iom_last_run):
     return iom_incidents, iom_last_run
 
 
+def fetch_cnapp_incidents(cnapp_last_run):
+
+        # look_back=look_back,
+        # detections_type=CNAPP_DETECTION,
+        # product_type="cnapp",
+        # detection_name_prefix=CNAPP_DETECTION_TYPE,
+        # start_time_key="created_timestamp",
+        # is_fetch_events=is_fetch_events,
+    demisto.debug("Fetching CNAPP detection")
+    demisto.debug(f"{cnapp_last_run=}")
+    fetch_query = demisto.params().get("cnapp_detection_fetch_query", "")
+    validate_cnapp_fetch_query(cnapp_fetch_query=fetch_query)
+    
+    if not cnapp_last_run:
+        last_seen = reformat_timestamp(
+        time=FETCH_TIME, date_format=DATE_FORMAT, dateparser_settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True}
+    )
+    else:
+        # TODO: implement logic for extracting last_seen
+        pass
+    # params = {"sort": "last_seen.asc", "offset": offset, "filter": filter_arg}
+    params = {"sort": "last_seen.asc"}
+    # if limit:
+    #     params["limit"] = limit
+    endpoint_url = "/container-security/combined/container-alerts/v1"
+    # # in the new version we need to add the product type to the filter to the url as encoded string
+
+    response = http_request("GET", endpoint_url, params)
+    demisto.info(f"[test] {response}")
+    # demisto.debug(f"CrowdStrikeFalconMsg: Getting {product_type} detections from {endpoint_url} with {params=}. {response=}.\
+    #     {LEGACY_VERSION=}")
+
+    # return response
+
+    # last_resource_ids, cnapp_next_token, last_scan_time, first_fetch_timestamp = get_current_fetch_data(
+    #     last_run_object=cnapp_last_run,
+    #     date_format=IOM_DATE_FORMAT,
+    #     last_date_key="last_seen",
+    #     next_token_key="cnapp_next_token",
+    #     last_fetched_ids_key="last_resource_ids",
+    # )
+    # filter = create_cnapp_filter(
+    #     is_paginating=bool(cnapp_next_token),
+    #     last_fetch_filter=cnapp_last_run.get("last_fetch_filter", ""),
+    #     last_scan_time=last_scan_time,
+    #     first_fetch_timestamp=first_fetch_timestamp,
+    #     configured_fetch_query=fetch_query,
+    # )
+    # demisto.debug(f"IOM {filter=}")
+    # iom_resource_ids, iom_new_next_token = iom_ids_pagination(
+    #     filter=filter, iom_next_token=cnapp_next_token, fetch_limit=INCIDENTS_PER_FETCH, api_limit=500
+    # )
+    # demisto.debug(f'Fetched the following CNAPP resource IDS: {", ".join(iom_resource_ids)}')
+    # iom_incidents, fetched_resource_ids, new_scan_time = parse_ioa_iom_incidents(
+    #     fetched_data=get_iom_resources(iom_resource_ids=iom_resource_ids),
+    #     last_date=last_scan_time,
+    #     last_fetched_ids=last_resource_ids,
+    #     date_key="scan_time",
+    #     id_key="id",
+    #     date_format=IOM_DATE_FORMAT,
+    #     is_paginating=bool(iom_new_next_token or iom_next_token),
+    #     to_incident_context=iom_resource_to_incident,
+    #     incident_type="iom_configurations",
+    # )
+
+    iom_last_run = {
+        "iom_next_token": iom_new_next_token,
+        "last_scan_time": new_scan_time,
+        "last_fetch_filter": filter,
+        "last_resource_ids": fetched_resource_ids or last_resource_ids,
+    }
+
+    return iom_incidents, iom_last_run
+
+
 def fetch_ioa_incidents(ioa_last_run):
     demisto.debug("Fetching Indicator of Attack incidents")
     demisto.debug(f"{ioa_last_run=}")
@@ -3429,6 +3508,7 @@ def fetch_items(command="fetch-incidents"):
     mobile_detections_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.MOBILE_DETECTIONS)
     on_demand_detections_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.ON_DEMAND_DETECTIONS)
     ofp_detection_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.OFP_DETECTION)
+    cnapp_detection_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.CNAPP_DETECTION)
 
     # last_run objects - fetch types only for fetch-incidents
     iom_last_run: dict[str, Any] = {}
@@ -3542,6 +3622,19 @@ def fetch_items(command="fetch-incidents"):
         )
         items.extend(fetched_ofp_detections)
 
+    # Fetch CNAPP Detections
+    if CNAPP_DETECTION_TYPE in fetch_incidents_or_detections:
+        demisto.debug("CrowdStrikeFalconMsg: Start fetch CNAPP Detection")
+        demisto.debug(f"CrowdStrikeFalconMsg: Current CNAPP Detection last_run object: {cnapp_detection_last_run}")
+
+        if LEGACY_VERSION:
+            raise DemistoException(f"{CNAPP_DETECTION_TYPE} is not supported in legacy version.")
+
+        fetched_cnapp_detections, cnapp_detection_last_run = fetch_cnapp_incidents(
+            cnapp_detection_last_run
+        )
+        items.extend(fetched_cnapp_detections)
+
     # Fetch Indicators of Misconfiguration (IOM) - supported for fetch-incidents command only.
     if not is_fetch_events and IOM_FETCH_TYPE in fetch_incidents_or_detections:
         demisto.debug("CrowdStrikeFalconMsg: Start fetch IOM")
@@ -3610,6 +3703,9 @@ def fetch_items(command="fetch-incidents"):
     )
     set_last_run_per_type(
         last_run, index=LastRunIndex.OFP_DETECTION, data=ofp_detection_last_run, is_fetch_events=is_fetch_events
+    )
+    set_last_run_per_type(
+        last_run, index=LastRunIndex.CNAPP_DETECTION, data=cnapp_detection_last_run, is_fetch_events=is_fetch_events
     )
 
     if not is_fetch_events:
@@ -3856,9 +3952,58 @@ def create_iom_filter(
     return filter
 
 
+def create_cnapp_filter(
+    is_paginating: bool, last_fetch_filter: str, last_scan_time: str, first_fetch_timestamp: str, configured_fetch_query: str
+) -> str:
+    """Retrieve the IOM filter that will be used in the current fetch round.
+
+    Args:
+        is_paginating (bool): Whether we are doing pagination or not.
+        last_fetch_filter (str): The last fetch filter that was used in the previous round.
+        last_scan_time (str): The last scan time.
+        first_fetch_timestamp (str): The first fetch timestamp.
+        configured_fetch_query (str): The fetched query configured by the user.
+
+    Raises:
+        DemistoException: If paginating and last filter is an empty string.
+
+    Returns:
+        str: The IOM filter that will be used in the current fetch.
+    """
+    filter = "scan_time:"
+    if is_paginating:
+        if not last_fetch_filter:
+            raise DemistoException("Last fetch filter must not be empty when doing pagination")
+        # Doing pagination, we need to use the same fetch query as the previous round
+        filter = last_fetch_filter
+        demisto.debug(f"Doing pagination, using the same query as the previous round. Filter is {filter}")
+    else:
+        # If entered here, that means we aren't doing pagination
+        if last_scan_time == first_fetch_timestamp:
+            # First fetch, we want to include resources with a scan time
+            # EQUAL or GREATER than the first fetch timestamp
+            filter = f"{filter} >='{last_scan_time}'"
+            demisto.debug(f"First fetch, looking for scan time >= {last_scan_time=}. Filter is {filter}")
+        else:
+            # Not first fetch, we only want to include resources with a scan time
+            # GREATER than the last configured scan time, to prevent duplicates.
+            filter = f"{filter} >'{last_scan_time}'"
+            demisto.debug(f"Not first fetch, only looking for scan time > {last_scan_time=}. Filter is {filter}")
+    if configured_fetch_query and not is_paginating:
+        # If the user entered a fetch query, then append it to the filter
+        demisto.debug("User entered fetch query, appending to filter")
+        filter = f"{filter}+{configured_fetch_query}"
+    return filter
+
+
 def validate_iom_fetch_query(iom_fetch_query: str) -> None:
     if "scan_time" in iom_fetch_query:
         raise DemistoException("scan_time is not allowed as part of the IOM fetch query.")
+
+
+def validate_cnapp_fetch_query(cnapp_fetch_query: str) -> None:
+    if "last_seen" in cnapp_fetch_query:
+        raise DemistoException("last_seen is not allowed as part of the CNAPP fetch query.")
 
 
 def add_seconds_to_date(date: str, seconds_to_add: int, date_format: str) -> str:
