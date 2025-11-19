@@ -313,7 +313,7 @@ def prepare_and_validate_fetch_findings_args(client, args):
     if severity:
         severity = severity.lower()
     grade_list = args.get("findings_grade", None)
-    grade = ",".join(grade_list)
+    grade = ",".join(grade_list) if grade_list else None
     asset_category = args.get("findings_min_asset_category", None)
     if asset_category:
         asset_category = asset_category.lower()
