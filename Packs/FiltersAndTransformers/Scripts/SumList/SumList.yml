@@ -16,6 +16,7 @@ tags:
 - number
 - entirelist
 timeout: '0'
+isllm: false
 type: python
 runas: DBotWeakRole
 subtype: python3
