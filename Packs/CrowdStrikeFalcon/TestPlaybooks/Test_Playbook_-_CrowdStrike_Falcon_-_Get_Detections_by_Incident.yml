@@ -176,7 +176,7 @@ tasks:
                 iscontext: true
           accessor: incident_id
           transformers:
-          - operator: LastArrayElement
+          - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     loop:

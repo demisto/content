@@ -24,7 +24,16 @@ ASSET_FIELDS = {
     "asset_group_ids": "xdm.asset.group_ids",
     "asset_categories": "xdm.asset.type.category",
 }
-
+APPSEC_SOURCES = [
+    "CAS_CVE_SCANNER",
+    "CAS_IAC_SCANNER",
+    "CAS_SECRET_SCANNER",
+    "CAS_LICENSE_SCANNER",
+    "CAS_SAST_SCANNER",
+    "CAS_OPERATIONAL_RISK_SCANNER",
+    "CAS_CI_CD_RISK_SCANNER",
+    "CAS_DRIFT_SCANNER",
+]
 WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
     "core-search-asset-groups",
@@ -35,7 +44,8 @@ WEBAPP_COMMANDS = [
     "core-create-appsec-policy",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
-APPSEC_COMMANDS = ["core-enable-scanners"]
+APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
+
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
@@ -431,6 +441,22 @@ class Client(CoreClient):
 
         return reply
 
+    def appsec_remediate_issue(self, request_body):
+        return self._http_request(
+            method="POST",
+            data=request_body,
+            headers={**self._headers, "content-type": "application/json"},
+            url_suffix="/v1/issues/fix/trigger_fix_pull_request",
+        )
+
+    def get_appsec_suggested_fix(self, issue_id: str) -> dict | None:
+        reply = self._http_request(
+            method="GET",
+            headers=self._headers,
+            full_url=f"/api/webapp/public_api/appsec/v1/issues/fix/{issue_id}/fix_suggestion",
+        )
+        return reply
+
     def create_policy(self, policy_payload: str) -> dict:
         """
         Creates a new policy in Cortex XDR.
@@ -448,6 +474,39 @@ class Client(CoreClient):
         )
 
 
+def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommendation: dict, issue_id: str) -> tuple[list, dict]:
+    """
+    Append Application Security - related suggestions to the recommendation data.
+
+    Args:
+        client (Client): Client instance used to send the request.
+        headers (list): Headers for the readable output.
+        issue (dict): Details of the issue.
+        recommendation (dict): The base remediation recommendation.
+        issue_id (str): The issue ID.
+
+    Returns:
+        tuple[list, dict]: Updated headers and recommendation including AppSec additions.
+    """
+    manual_fix = issue.get("extended_fields", {}).get("action")
+    recommendation["remediation"] = manual_fix if manual_fix else recommendation.get("remediation")
+    fix_suggestion = client.get_appsec_suggested_fix(issue_id)
+    demisto.debug(f"AppSec fix suggestion: {fix_suggestion}")
+
+    # Avoid situations where existingCodeBlock is dirty, leaving suggestedCodeBlock empty.
+    if fix_suggestion and fix_suggestion.get("suggestedCodeBlock"):
+        recommendation.update(
+            {
+                "existing_code_block": fix_suggestion.get("existingCodeBlock", ""),
+                "suggested_code_block": fix_suggestion.get("suggestedCodeBlock", ""),
+            }
+        )
+        headers.append("existing_code_block")
+        headers.append("suggested_code_block")
+
+    return headers, recommendation
+
+
 def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
     """
     Get comprehensive recommendations for an issue, including remediation steps and playbook suggestions.
@@ -458,7 +517,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         raise DemistoException("issue_id is required.")
 
     filter_builder = FilterBuilder()
-    filter_builder.add_field("internal_id", FilterType.CONTAINS, issue_id)
+    filter_builder.add_field("internal_id", FilterType.EQ, issue_id)
 
     request_data = build_webapp_request_data(
         table_name="ALERTS_VIEW_TABLE",
@@ -493,13 +552,10 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         "playbook_suggestions": playbook_suggestions,
     }
 
-    headers = [
-        "issue_id",
-        "issue_name",
-        "severity",
-        "description",
-        "remediation",
-    ]
+    headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
+
+    if issue.get("alert_source") in APPSEC_SOURCES:
+        headers, recommendation = get_appsec_suggestion(client, headers, issue, recommendation, issue_id)
 
     readable_output = tableToMarkdown(
         f"Issue Recommendations for {issue_id}",
@@ -1026,6 +1082,45 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
     return group_ids
 
 
+def appsec_remediate_issue_command(client: Client, args: dict) -> CommandResults:
+    """
+    Create automated pull requests to fix multiple security issues in a single bulk operation.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - issueIds (str): List of issue IDs to fix.
+                         - title (str): Title of the PR triggered.
+
+    Returns:
+        CommandResults: Object containing the formatted extra data,
+                        raw response, and outputs for integration context.
+    """
+    args = demisto.args()
+    issue_ids = argToList(args.get("issue_ids"))
+    if len(issue_ids) > 10:
+        raise DemistoException("Please provide a maximum of 10 issue IDs per request.")
+
+    triggered_prs = []
+    for issue_id in issue_ids:
+        request_body = {"issueIds": [issue_id], "title": args.get("title")}
+        request_body = remove_empty_elements(request_body)
+        current_response = client.appsec_remediate_issue(request_body)
+        if current_response and isinstance(current_response, dict):
+            current_triggered_prs = current_response.get("triggeredPrs")
+            if isinstance(current_triggered_prs, list) and len(current_triggered_prs) > 0:
+                triggered_prs.append(current_triggered_prs[0])
+
+    return CommandResults(
+        readable_output=tableToMarkdown(name="Triggered PRs", t=triggered_prs),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.TriggeredPRs",
+        outputs=triggered_prs,
+        outputs_key_field="issueId",
+        raw_response=triggered_prs,
+    )
+
+
 def build_asset_coverage_filter(args: dict) -> FilterBuilder:
     filter_builder = FilterBuilder()
     filter_builder.add_field("asset_id", FilterType.CONTAINS, argToList(args.get("asset_id")))
@@ -1507,8 +1602,12 @@ def main():  # pragma: no cover
 
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
+
         elif command == "core-enable-scanners":
             return_results(enable_scanners_command(client, args))
+
+        elif command == "core-appsec-remediate-issue":
+            return_results(appsec_remediate_issue_command(client, args))
 
         elif command == "core-get-asset-coverage":
             return_results(get_asset_coverage_command(client, args))
