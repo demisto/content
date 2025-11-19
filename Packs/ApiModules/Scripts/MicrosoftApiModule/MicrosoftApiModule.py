@@ -681,7 +681,9 @@ def get_auth_type_flow(auth_flow: str) -> None | str:
 
 
 def is_self_deployed_flow(auth_flow: str) -> bool:
-    if auth_flow in (AUTHORIZATION_CODE, DEVICE_CODE, CLIENT_CREDENTIALS, "Azure Managed Identities"):
+    if auth_flow in ("Device Code", "Authorization Code", "Client Credentials", "Azure Managed Identities"):
+        return True
+    if auth_flow in (DEVICE_CODE, AUTHORIZATION_CODE, CLIENT_CREDENTIALS):
         return True
     return False
 
@@ -924,7 +926,7 @@ class MicrosoftClient(BaseClient):
         """
         Checks all necessary fields for the specific authentication flow.
         """
-        flow = self.grant_type1
+        flow = self.grant_type
         demisto.debug(f"Testing flow {flow}")
 
         def require_fields(fields: list[str], message_prefix: str):
@@ -936,7 +938,7 @@ class MicrosoftClient(BaseClient):
         if flow == CLIENT_CREDENTIALS:
             require_fields(
                 fields=["tenant_id", "client_secret", "client_id"],
-                message_prefix="When using Client Credentials flow you must"
+                message_prefix="When using Client Credentials flow you must "
             )
             self.get_access_token()
             return "ok"
@@ -944,24 +946,24 @@ class MicrosoftClient(BaseClient):
         elif flow == DEVICE_CODE:
             require_fields(
                 fields=["client_id"],
-                message_prefix="When using Device Code flow you must"
+                message_prefix="When using Device Code flow you must "
             )
             raise DemistoException(
                 f"The *Test* button is not available for the Device Code Flow. "
                 f"Please run !{self.command_prefix}-auth-start and then "
-                f"{self.command_prefix}-auth-complete. Then you can check the connection using the"
+                f"{self.command_prefix}-auth-complete. Then you can check the connection using the "
                 f"!{self.command_prefix}-auth-test command."
             )
 
         elif flow == AUTHORIZATION_CODE:
             require_fields(
                 fields=["tenant_id", "client_secret", "client_id", "redirect_uri"],
-                message_prefix="When using Authorization Code flow you must"
+                message_prefix="When using Authorization Code flow you must "
             )
             raise DemistoException(
                 f"The *Test* button is not available for the Authorization Code Flow. "
-                f"Please use the !{self.command_prefix}-generate-login-url command. "
-                f"Then you can check the connection using the"
+                f"Please use the !{self.command_prefix}-generate-login-url command in order to generate the Auth Code. "
+                f"Then you can check the connection using the "
                 f"!{self.command_prefix}-auth-test command."
             )
 

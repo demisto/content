@@ -189,7 +189,6 @@ configuration:
   required: false
 # Hidden Parameters
 - additionalinfo: The API key to use to connect.
-  defaultvalue: 9093c354-630a-47f1-b087-6768eb9427e6
   display: Application ID
   name: _app_id
   type: 0

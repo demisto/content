@@ -1227,6 +1227,7 @@ class MsClient:
         verify,
         proxy,
         self_deployed,
+        grant_type,
         alert_severities_to_fetch,
         alert_status_to_fetch,
         alert_time_to_fetch,
@@ -1241,8 +1242,6 @@ class MsClient:
         alert_detectionsource_to_fetch: str | None = None,
     ):
         self.endpoint_type = endpoint_type
-        grant_type = get_auth_type_flow(auth_type)
-        demisto.debug(f"Using flow {grant_type}")
         token_retrieval_url = (
             urljoin(
                 MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS.get(endpoint_type), "/organizations/oauth2/v2.0/token"
@@ -6329,8 +6328,10 @@ def main():  # pragma: no cover
     enc_key = (params.get("credentials") or {}).get("password") or params.get("enc_key")
     use_ssl: bool = not params.get("insecure", False)
     proxy: bool = params.get("proxy", False)
-    auth_flow = params.get("auth_flow", "Client Credentials")
-    self_deployed: bool = is_self_deployed_flow(auth_flow) or params.get("self_deployed", False)
+    auth_type = params.get("auth_type", "Client Credentials")
+    grant_type = get_auth_type_flow(auth_type)
+    self_deployed: bool = is_self_deployed_flow(auth_type) or params.get("self_deployed", False)
+    demisto.debug(f"{self_deployed=}")
     certificate_thumbprint = params.get("creds_certificate", {}).get("identifier") or params.get("certificate_thumbprint")
     private_key = replace_spaces_in_credential(params.get("creds_certificate", {}).get("password")) or params.get("private_key")
     alert_detectionsource_to_fetch = params.get("fetch_detectionsource")
@@ -6383,13 +6384,14 @@ def main():  # pragma: no cover
             verify=use_ssl,
             proxy=proxy,
             self_deployed=self_deployed,
+            grant_type=grant_type,
             alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch,
             alert_time_to_fetch=alert_time_to_fetch,
             max_fetch=max_alert_to_fetch,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
-            auth_type=auth_flow,
+            auth_type=auth_type,
             endpoint_type=endpoint_type,
             auth_code=auth_code,
             redirect_uri=redirect_uri,
@@ -6397,11 +6399,6 @@ def main():  # pragma: no cover
             alert_detectionsource_to_fetch=alert_detectionsource_to_fetch,
         )
         if command == "test-module":
-            # if auth_flow == "Authorization Code":
-            #     raise Exception(
-            #         "Test-module is not available when using Authentication-code auth flow. "
-            #         "Please use `!microsoft-atp-test` command to test the connection"
-            #     )
             test_module(client)
             demisto.results("ok")
 
