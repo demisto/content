@@ -565,7 +565,7 @@ def filter_service_records_by_time(
 
     :param service_records: Service records as given form SysAid.
     :param fetch_start_datetime: The datetime to start fetching service records from.
-    :param use_classic_date_format: Whether to use SysAid Classic date format (DD-MM-YYYY).
+    :param use_classic_date_format: Whether to use SysAid Classic (Legacy) date format (DD-MM-YYYY).
     """
     filtered_service_records = []
     for service_record in service_records:
@@ -680,14 +680,9 @@ def get_service_record_update_time(service_record: dict[str, Any], use_classic_d
                 # European: DD/MM/YYYY with 24-hour (e.g., "05/11/2025 13:12:48")
                 has_am_pm = "AM" in occurred.upper() or "PM" in occurred.upper()
 
-                if has_am_pm:
-                    date_format = "%m/%d/%Y %I:%M:%S %p"
-                    date_order = "MDY"
-                    format_type = "American (MM/DD with AM/PM)"
-                else:
-                    date_format = "%d/%m/%Y %H:%M:%S"
-                    date_order = "DMY"
-                    format_type = "European (DD/MM 24-hour)"
+                date_format = "%m/%d/%Y %I:%M:%S %p" if has_am_pm else "%d/%m/%Y %H:%M:%S"
+                date_order = "MDY" if has_am_pm else "DMY"
+                format_type = "American (MM/DD with AM/PM)" if has_am_pm else "European (DD/MM 24-hour)"
 
                 demisto.debug(f"Detected {format_type}")
 

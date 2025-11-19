@@ -80,13 +80,14 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: Select this option for SysAid Classic instances (older versions that do not return ISO 8601 format timestamps) to ensure correct timestamp parsing.
-  display: Use SysAid Classic Date Format
+- display: Use SysAid Classic Date Format
+  additionalinfo: Select this option for SysAid Classic instances (older versions that do not return ISO 8601 format timestamps) to ensure correct timestamp parsing.
   name: use_classic_date_format
   type: 8
   section: Collect
   advanced: true
   required: false
+  defaultvalue: false
 description: SysAid is a robust IT management system designed to meet all of the needs of an IT department.
 display: SysAid
 name: SysAid
