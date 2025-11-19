@@ -2851,6 +2851,22 @@ script:
     - contextPath: SentinelOne.Notes.UpdatedAt
       description: The note updated time.
       type: string
+  - arguments:
+    - name: threat_id
+      required: true
+      description: "Please provide the Valid Threat ID. Example: 14629133470822878."
+    name: sentinelone-threat-download-from-cloud
+    description: Download a file associated with the threat from the Cloud (BinaryVault).
+    outputs:
+    - contextPath: SentinelOne.Threat.ID
+      description: The threat ID.
+      type: String
+    - contextPath: SentinelOne.Threat.Downloadable
+      description: Whether the file is downloadable.
+      type: Boolean
+    - contextPath: SentinelOne.Threat.ZippedFile
+      description: Details of the zipped folder.
+      type: String
   dockerimage: demisto/python3:3.12.11.4819260
   isfetch: true
   ismappable: true
