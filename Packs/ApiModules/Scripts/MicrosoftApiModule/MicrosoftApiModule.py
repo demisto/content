@@ -748,6 +748,7 @@ class MicrosoftClient(BaseClient):
         """
         self.command_prefix = command_prefix
         demisto.debug(f"Initializing MicrosoftClient with: {endpoint=} | {azure_cloud.abbreviation}")
+        demisto.debug(f"{grant_type=}")
         if endpoint != "__NA__":
             # Backward compatible.
             self.azure_cloud = AZURE_CLOUDS.get(endpoint, AZURE_WORLDWIDE_CLOUD)
@@ -919,44 +920,49 @@ class MicrosoftClient(BaseClient):
         except ValueError as exception:
             raise DemistoException(f"Failed to parse json object from response: {response.content}", exception)
 
-    def main_test_module(self, integration_command_prefix: str):
+    def main_test_module(self):
         """
         Checks all necessary fields for the specific authentication flow.
         """
-        flow = self.grant_type
+        flow = self.grant_type1
         demisto.debug(f"Testing flow {flow}")
 
         def require_fields(fields: list[str], message_prefix: str):
             """Helper to validate required fields."""
             for field in fields:
                 if not getattr(self, field):
-                    raise DemistoException(f"{message_prefix} enter your {field.replace('_', ' ').title()}.")
+                    raise DemistoException(f"{message_prefix} enter {field.replace('_', ' ').title()}.")
 
         if flow == CLIENT_CREDENTIALS:
             require_fields(
-                fields=["tenant_id", "client_secret", "client_id"], message_prefix="When using client credentials flow you must"
+                fields=["tenant_id", "client_secret", "client_id"],
+                message_prefix="When using Client Credentials flow you must"
             )
             self.get_access_token()
             return "ok"
 
         elif flow == DEVICE_CODE:
-            require_fields(["client_id"], "When using device code flow you must")
+            require_fields(
+                fields=["client_id"],
+                message_prefix="When using Device Code flow you must"
+            )
             raise DemistoException(
                 f"The *Test* button is not available for the Device Code Flow. "
-                f"Please run !{integration_command_prefix}-auth-start and then "
-                f"{integration_command_prefix}-auth-complete. Then you can check the connection using the"
-                f"!{integration_command_prefix}-auth-test command."
+                f"Please run !{self.command_prefix}-auth-start and then "
+                f"{self.command_prefix}-auth-complete. Then you can check the connection using the"
+                f"!{self.command_prefix}-auth-test command."
             )
 
         elif flow == AUTHORIZATION_CODE:
             require_fields(
-                ["tenant_id", "client_secret", "client_id", "redirect_uri"], "When using authorization code flow you must"
+                fields=["tenant_id", "client_secret", "client_id", "redirect_uri"],
+                message_prefix="When using Authorization Code flow you must"
             )
             raise DemistoException(
                 f"The *Test* button is not available for the Authorization Code Flow. "
-                f"Please use the !{integration_command_prefix}-generate-login-url command. "
+                f"Please use the !{self.command_prefix}-generate-login-url command. "
                 f"Then you can check the connection using the"
-                f"!{integration_command_prefix}-auth-test command."
+                f"!{self.command_prefix}-auth-test command."
             )
 
         else:

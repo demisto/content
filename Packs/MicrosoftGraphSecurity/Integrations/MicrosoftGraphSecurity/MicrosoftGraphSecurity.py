@@ -96,7 +96,7 @@ class MsGraphClient:
             proxy=proxy,
             certificate_thumbprint=certificate_thumbprint,
             managed_identities_resource_uri=Resources.graph,
-            command_prefix=APP_NAME,
+            command_prefix="msg",
             **kwargs,
         )
         if api_version == API_V1:
@@ -2029,7 +2029,7 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
 
 
 def test_module(client: MsGraphClient, args):
-    client.ms_client.main_test_module("msg-")
+    client.ms_client.main_test_module()
     return "ok"
 
 

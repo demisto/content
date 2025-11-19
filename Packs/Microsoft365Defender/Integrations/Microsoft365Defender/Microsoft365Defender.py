@@ -312,17 +312,7 @@ def test_module(client: Client) -> str | CommandResults:
     :return: 'ok' if test passed.
     :rtype: ``str``
     """
-    # This  should validate all the inputs given in the integration configuration panel,
-    # either manually or by using an API that uses them.
-
-    client.ms_client.main_test_module("microsoft-365-defender")
-    # if client.client_credentials:
-    #     client.ms_client.get_access_token()
-    #     return "ok"
-    #
-    # else:  # in case its device code flow or azure identities
-    #     test_connection(client)
-
+    client.ms_client.main_test_module()
     return "ok"
 
 

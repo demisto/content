@@ -5191,7 +5191,7 @@ def test_connection(client: MsClient):
 
 
 def test_module(client: MsClient):
-    client.ms_client.main_test_module("microsoft-atp")
+    client.ms_client.main_test_module()
 
 
 def get_dbot_indicator(dbot_type, dbot_score, value):
@@ -6358,7 +6358,7 @@ def main():  # pragma: no cover
         elif not enc_key and (not certificate_thumbprint or not private_key):
             raise DemistoException("Key or Certificate Thumbprint and Private Key must be provided.")
         if not auth_id:
-            raise Exception("Authentication ID must be provided.")
+            raise Exception("ID must be provided.")
         if not tenant_id:
             raise Exception("Tenant ID must be provided.")
         if auth_code:
@@ -6397,11 +6397,11 @@ def main():  # pragma: no cover
             alert_detectionsource_to_fetch=alert_detectionsource_to_fetch,
         )
         if command == "test-module":
-            if auth_flow == "Authorization Code":
-                raise Exception(
-                    "Test-module is not available when using Authentication-code auth flow. "
-                    "Please use `!microsoft-atp-test` command to test the connection"
-                )
+            # if auth_flow == "Authorization Code":
+            #     raise Exception(
+            #         "Test-module is not available when using Authentication-code auth flow. "
+            #         "Please use `!microsoft-atp-test` command to test the connection"
+            #     )
             test_module(client)
             demisto.results("ok")
 
