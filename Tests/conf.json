@@ -2277,11 +2277,6 @@
         },
         {
             "integrations": "Microsoft Graph",
-            "playbookID": "Microsoft Graph Security Test self deployed",
-            "instance_names": "ms_graph_security_client_cred"
-        },
-        {
-            "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test dev v2",
             "instance_names": "ms_graph_security_dev_v2"
         },
