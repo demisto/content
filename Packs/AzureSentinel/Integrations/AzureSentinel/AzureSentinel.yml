@@ -884,6 +884,7 @@ script:
     - defaultValue: 'false'
       description: Whether to retrieve all results. If true, the "limit" argument will be ignored.
       name: all_results
+    description: Get a single watchlist item or list of watchlist items.
     name: azure-sentinel-list-watchlist-items
     outputs:
     - contextPath: AzureSentinel.WatchlistItem.WatchlistAlias
