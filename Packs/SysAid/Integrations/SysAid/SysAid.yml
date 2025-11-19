@@ -87,7 +87,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  defaultvalue: false
+  defaultvalue: 'false'
 description: SysAid is a robust IT management system designed to meet all of the needs of an IT department.
 display: SysAid
 name: SysAid
