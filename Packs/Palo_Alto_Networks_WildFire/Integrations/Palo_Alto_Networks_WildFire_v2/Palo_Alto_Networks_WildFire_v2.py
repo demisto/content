@@ -1493,7 +1493,6 @@ def wildfire_get_sample_command():
             if result.status_code == 403:
                 demisto.results(
                     "Benign samples are not available for download. "
-                    "Please note that grayware samples are available for 14 days only. "
                     "For more info contact your WildFire representative."
                 )
             else:
