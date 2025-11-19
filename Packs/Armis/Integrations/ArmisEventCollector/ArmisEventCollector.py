@@ -193,13 +193,12 @@ class Client(BaseClient):
         with self._context_manager.acquire_token_refresh_lock():
             # Double-check: another thread might have refreshed while we were waiting
             current_token = self._context_manager.get_access_token()
-            if current_token and current_token != self._access_token:
-                # Token was updated by another thread, validate it
-                if self.is_valid_access_token(current_token):
-                    demisto.debug(
-                        f"Thread {threading.current_thread().name}: Token was refreshed by another thread, using updated token"
-                    )
-                    return current_token
+            if current_token and current_token != self._access_token and self.is_valid_access_token(current_token):
+                # Token was updated by another thread and is valid
+                demisto.debug(
+                    f"Thread {threading.current_thread().name}: Token was refreshed by another thread, using updated token"
+                )
+                return current_token
 
             # This thread needs to perform the refresh
             demisto.debug(f"Thread {threading.current_thread().name}: Refreshing access token")
@@ -811,7 +810,8 @@ def fetch_events(
                     next_run.update(thread_next_run)
 
                     demisto.debug(
-                        f"[Worker:{event_type_name}] Completed ({completed_count}/{len(submitted_tasks)}) - {events_merged} events merged"
+                        f"[Worker:{event_type_name}] Completed ({completed_count}/{len(submitted_tasks)}) - "
+                        f"{events_merged} events merged"
                     )
 
                 except Exception as e:

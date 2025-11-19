@@ -784,10 +784,9 @@ class TestMultithreading:
         results = []
 
         def update_token(token_value):
-            with patch("demistomock.getLastRun", return_value={}):
-                with patch("demistomock.setLastRun") as mock_set:
-                    context_manager.save_access_token_to_context(token_value)
-                    results.append(token_value)
+            with patch("demistomock.getLastRun", return_value={}), patch("demistomock.setLastRun"):
+                context_manager.save_access_token_to_context(token_value)
+                results.append(token_value)
 
         # Simulate concurrent updates
         threads = []
