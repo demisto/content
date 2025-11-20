@@ -1,4 +1,3 @@
-adopted: true
 description: |-
   Automatically remediates 3 Azure public access misconfigurations: 
   1. Azure storage account has a blob container with public access

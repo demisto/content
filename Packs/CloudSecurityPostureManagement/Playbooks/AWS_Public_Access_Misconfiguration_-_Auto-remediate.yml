@@ -1,4 +1,3 @@
-adopted: true
 description: |-
   Automatically remediates 9 AWS public access misconfigurations: 1 RDS database, 1 EBS snapshot, and 7 S3 bucket issues:
   1. AWS RDS database instance is publicly accessible
