@@ -362,6 +362,7 @@ class AWSServices(str, Enum):
     LAMBDA = "lambda"
     CloudTrail = "cloudtrail"
     ECS = "ecs"
+    ACM = "acm"
     KMS = "kms"
     ELB = "elb"
     CostExplorer = "ce"
@@ -817,6 +818,92 @@ class S3:
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
         return CommandResults(readable_output="Failed to upload file")
+
+    @staticmethod
+    def get_bucket_website_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves the website configuration for a specified Amazon S3 bucket.
+        The function calls the AWS S3 'get_bucket_website' API to check if the bucket
+        is configured for static website hosting and, if so, what its configuration is.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args: A dictionary containing arguments, expected to include 'bucket'
+                  (the name of the S3 bucket).
+
+        Returns:
+            CommandResults: An object containing the raw website configuration as outputs,
+                            and a md table summarizing the configuration details
+                            (IndexDocument, ErrorDocument, RedirectAllRequestsTo, RoutingRules).
+        """
+        kwargs = {"Bucket": args.get("bucket")}
+
+        response = client.get_bucket_website(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response["WebsiteConfiguration"] = {
+            "ErrorDocument": response.get("ErrorDocument"),
+            "IndexDocument": response.get("IndexDocument"),
+            "RedirectAllRequestsTo": response.get("RedirectAllRequestsTo"),
+            "RoutingRules": response.get("RoutingRules"),
+        }
+
+        readable_output = tableToMarkdown(
+            name="Bucket Website Configuration",
+            t=response.get("WebsiteConfiguration", {}),
+            removeNull=True,
+            headers=["ErrorDocument", "IndexDocument", "RedirectAllRequestsTo", "RoutingRules"],
+            headerTransform=pascalToSpace,
+        )
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="AWS.S3-Buckets.BucketWebsite",
+            outputs=response.get("WebsiteConfiguration", {}),
+            raw_response=response.get("WebsiteConfiguration", {}),
+        )
+
+    @staticmethod
+    def get_bucket_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves the Access Control List (ACL) of a specified Amazon S3 bucket.
+
+        The function calls the AWS S3 'get_bucket_acl' API to determine the permissions
+        granted to specific users or groups on the bucket.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args: A dictionary containing arguments, expected to include 'bucket'
+                  (the name of the S3 bucket).
+
+        Returns:
+            CommandResults: An object containing the raw Access Control Policy details as
+                            outputs, and a md table summarizing the ACL configuration
+                            (Grants and Owner).
+        """
+        kwargs = {"Bucket": args.get("bucket")}
+
+        response = client.get_bucket_acl(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response["AccessControlPolicy"] = {
+            "Grants": response.get("Grants"),
+            "Owner": response.get("Owner"),
+        }
+        readable_output = tableToMarkdown(
+            name="Bucket Acl",
+            t=response.get("AccessControlPolicy", {}),
+            removeNull=True,
+            headers=["Grants", "Owner"],
+            headerTransform=pascalToSpace,
+        )
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="AWS.S3-Buckets.BucketAcl",
+            outputs=response.get("AccessControlPolicy", {}),
+            raw_response=response.get("AccessControlPolicy", {}),
+        )
 
 
 class IAM:
@@ -2031,6 +2118,205 @@ class EC2:
             readable_output=human_readable,
         )
         return command_results
+
+    @staticmethod
+    def get_latest_ami_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves information about the latest Amazon Machine Image (AMI) based on provided filters.
+        The function calls the AWS EC2 'describe_images' API, sorts the results by
+        'CreationDate' in descending order, and returns the first image in the list.
+        Args:
+            client (BotoClient): The initialized Boto3 EC2 client.
+            args (Dict[str, Any]): Command arguments, typically containing:
+                  Expected keys include 'executable_by', 'filters', 'owners', 'image_id',
+                  'include_deprecated', and 'include_disabled'.
+
+        Returns:
+            CommandResults: An object containing the raw image details as outputs,
+                            and a md table with a concise summary of the latest AMI.
+        """
+        kwargs = {
+            "ExecutableUsers": parse_resource_ids(args.get("executable_users")) if args.get("executable_users") else None,
+            "Filters": parse_filter_field(args.get("filters")),
+            "Owners": parse_resource_ids(args.get("owners")) if args.get("owners") else None,
+            "ImageIds": parse_resource_ids(args.get("image_ids")) if args.get("image_ids") else None,
+            "IncludeDeprecated": arg_to_bool_or_none(args.get("include_deprecated")),
+            "IncludeDisabled": arg_to_bool_or_none(args.get("include_disabled")),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        response = client.describe_images(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        amis = response.get("Images", [])
+        iterates = 1
+
+        while response.get("nextToken"):
+            demisto.info(f"iterate #{iterates}")
+            kwargs["NextToken"] = response.get("nextToken")
+            response = client.describe_images(**kwargs)
+            if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            amis.extend(response.get("Images", []))
+            iterates += 1
+
+        # return CommandResults(readable_output=f"Fetched {len(amis)} AMIs")
+        demisto.info(f"Fetched {len(amis)} AMIs")
+        if not amis:
+            return CommandResults(readable_output="No AMIs found.")
+
+        sorted_amis = sorted(amis, key=lambda x: x["CreationDate"], reverse=True)
+        image = sorted_amis[0]
+        data = {
+            "CreationDate": image.get("CreationDate"),
+            "ImageId": image.get("ImageId"),
+            "Public": image.get("Public"),
+            "Name": image.get("Name"),
+            "State": image.get("State"),
+            "Region": args.get("region"),
+            "Description": image.get("Description"),
+        }
+        data.update({tag["Key"]: tag["Value"] for tag in image["Tags"]}) if "Tags" in image else None
+        remove_nulls_from_dictionary(data)
+
+        return CommandResults(
+            outputs=image,
+            outputs_prefix="AWS.EC2.Images",
+            readable_output=tableToMarkdown("AWS EC2 latest Image", data, headerTransform=pascalToSpace, removeNull=True),
+            outputs_key_field="ImageId",
+        )
+
+    @staticmethod
+    def create_network_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates a Network Access Control List (Network ACL) for the specified VPC.
+        The function calls the AWS EC2 'create_network_acl' API. It requires the ID
+        of the VPC where the Network ACL will be created.
+
+        Args:
+           client (BotoClient): The initialized Boto3 EC2 client.
+            args: A dictionary containing arguments for creating the Network ACL.
+                  Expected keys include 'vpc_id' (required), 'client_token', and
+                  'tag_specification'.
+
+        Returns:
+            CommandResults: An object containing the raw Network ACL details as outputs,
+                            and a md table with a summary of the created Network ACL
+                            and its default entries.
+        """
+        kwargs = {
+            "VpcId": args.get("vpc_id"),
+            "ClientToken": args.get("client_token"),
+            "TagSpecifications": parse_tag_field(args.get("tag_specifications")),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        if tag_specifications := kwargs.get("TagSpecifications"):
+            kwargs["TagSpecifications"] = [{"ResourceType": "network-acl", "Tags": tag_specifications}]
+
+        response = client.create_network_acl(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        network_acl = response.get("NetworkAcl")
+        readable_data = {
+            "Associations": network_acl.get("Associations"),
+            "IsDefault": network_acl.get("IsDefault"),
+            "NetworkAclId": network_acl.get("NetworkAclId"),
+            "Tags": network_acl.get("Tags"),
+            "VpcId": network_acl.get("VpcId"),
+        }
+        return CommandResults(
+            outputs=network_acl,
+            outputs_prefix="AWS.EC2.VpcId.NetworkAcl",
+            outputs_key_field="VpcId",
+            readable_output=(
+                tableToMarkdown(
+                    "The AWS EC2 Instance ACL",
+                    readable_data,
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                )
+                + tableToMarkdown(
+                    f"The Entries of AWS EC2 ACL {network_acl.get('NetworkAclId')}",
+                    [entry for entry in network_acl.get("Entries")],  # noqa: C416
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                )
+            ),
+        )
+
+    @staticmethod
+    def get_ipam_discovered_public_addresses_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        aws-ec2-get-ipam-discovered-public-addresses: Gets the public IP addresses that have been discovered by IPAM.
+
+        Args:
+            client (BotoClient): The initialized Boto3 EC2 client.
+            args (dict): all command arguments, usually passed from ``demisto.args()``.
+
+        Returns:
+            CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+             that contains public IP addresses that have been discovered by IPAM.
+        """
+        kwargs = {
+            "IpamResourceDiscoveryId": args.get("ipam_resource_discovery_id"),
+            "AddressRegion": args.get("address_region"),
+            "Filters": parse_filter_field(args.get("filters")),
+            "MaxResults": arg_to_number(args.get("limit", 1000)),
+            "NextToken": args.get("next_token"),
+        }
+
+        remove_nulls_from_dictionary(kwargs)
+        response = client.get_ipam_discovered_public_addresses(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        if not response.get("IpamDiscoveredPublicAddresses"):
+            return CommandResults(readable_output="No Ipam Discovered Public Addresses were found.")
+
+        output = json.loads(json.dumps(response, cls=DatetimeEncoder))
+        human_readable = tableToMarkdown(
+            "Ipam Discovered Public Addresses",
+            output.get("IpamDiscoveredPublicAddresses"),
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+        return CommandResults(
+            outputs_prefix="AWS.EC2.IpamDiscoveredPublicAddresses",
+            outputs_key_field="Address",
+            outputs=output.get("IpamDiscoveredPublicAddresses"),
+            raw_response=output,
+            readable_output=human_readable,
+        )
+
+    @staticmethod
+    def create_tags_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Adds or overwrites one or more tags for the specified AWS resources.
+
+        The function calls the AWS EC2 'create_tags' API. It requires a list of resource IDs
+        to tag and a list of key-value pairs representing the tags to apply.
+
+        Args:
+            client (BotoClient): The initialized Boto3 EC2 client.
+            args: A dictionary containing arguments for creating the tags.
+                  Expected keys are 'resources' (list of resource IDs) and 'tags'
+                  (list of key-value tag dictionaries).
+
+        Returns:
+            CommandResults: An object confirming the successful tagging operation via a
+                            readable output message. The command has no explicit outputs.
+        """
+        kwargs = {
+            "Resources": parse_resource_ids(args.get("resources")),
+            "Tags": parse_tag_field(args.get("tags")),
+        }
+
+        response = client.create_tags(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(readable_output="The resources where tagged successfully")
 
 
 class EKS:
@@ -3440,6 +3726,43 @@ class Lambda:
         )
 
 
+class ACM:
+    service = AWSServices.ACM
+
+    @staticmethod
+    def update_certificate_options_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Updates Certificate Transparency (CT) logging preference for an ACM certificate.
+        Args:
+            client: The AWS ACM boto3 client used to perform the update request.
+            args (dict): A dictionary containing the certificate ARN and the desired
+                transparency logging preference ("ENABLED" or "DISABLED").
+
+        Returns:
+            CommandResults: An object containing a human-readable summary of the change,
+                the raw AWS API response, and related metadata.
+        """
+        arn = args.get("certificate_arn")
+        pref = args.get("transparency_logging_preference")
+        kwargs = {"CertificateArn": arn, "Options": {"CertificateTransparencyLoggingPreference": pref}}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"UpdateCertificateOptions params: {kwargs}")
+
+        try:
+            resp = client.update_certificate_options(**kwargs)
+            status = resp.get("ResponseMetadata", {}).get("HTTPStatusCode")
+            if status in (HTTPStatus.OK, HTTPStatus.NO_CONTENT):
+                hr = f"Updated Certificate Transparency (CT) logging to '{pref}' for certificate '{arn}'."
+                return CommandResults(readable_output=hr, raw_response=resp)
+            return AWSErrorHandler.handle_response_error(resp)
+
+        except ClientError as e:
+            return AWSErrorHandler.handle_client_error(e)
+
+        except Exception as e:
+            raise DemistoException(f"Error updating certificate options for '{arn}': {str(e)}")
+
+
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
     return filepath_result
@@ -3463,6 +3786,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-s3-bucket-ownership-controls-put": S3.put_bucket_ownership_controls_command,
     "aws-s3-file-upload": S3.file_upload_command,
     "aws-s3-file-download": S3.file_download_command,
+    "aws-s3-bucket-website-get": S3.get_bucket_website_command,
+    "aws-s3-bucket-acl-get": S3.get_bucket_acl_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-iam-role-policy-put": IAM.put_role_policy_command,
@@ -3479,19 +3804,22 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
     "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
     "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
-    "aws-ec2-create-snapshot": EC2.create_snapshot_command,
-    "aws-ec2-modify-snapshot-permission": EC2.modify_snapshot_permission_command,
+    "aws-ec2-snapshot-create": EC2.create_snapshot_command,
+    "aws-ec2-snapshot-permission-modify": EC2.modify_snapshot_permission_command,
     "aws-ec2-subnet-attribute-modify": EC2.modify_subnet_attribute_command,
     "aws-ec2-vpcs-describe": EC2.describe_vpcs_command,
     "aws-ec2-subnets-describe": EC2.describe_subnets_command,
     "aws-ec2-ipam-resource-discoveries-describe": EC2.describe_ipam_resource_discoveries_command,
     "aws-ec2-ipam-resource-discovery-associations-describe": EC2.describe_ipam_resource_discovery_associations_command,
     "aws-ec2-set-snapshot-to-private-quick-action": EC2.modify_snapshot_permission_command,
+    "aws-ec2-latest-ami-get": EC2.get_latest_ami_command,
+    "aws-ec2-network-acl-create": EC2.create_network_acl_command,
+    "aws-ec2-ipam-discovered-public-addresses-get": EC2.get_ipam_discovered_public_addresses_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
-    "aws-eks-enable-control-plane-logging-quick-action": EKS.update_cluster_config_command,
+    "aws-eks-cluster-describe": EKS.describe_cluster_command,
+    "aws-eks-access-policy-associate": EKS.associate_access_policy_command,
+        "aws-eks-enable-control-plane-logging-quick-action": EKS.update_cluster_config_command,
     "aws-eks-disable-public-access-quick-action": EKS.update_cluster_config_command,
-    "aws-eks-describe-cluster": EKS.describe_cluster_command,
-    "aws-eks-associate-access-policy": EKS.associate_access_policy_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-enable-iam-auth-quick-action": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-enable-deletion-protection-quick-action": RDS.modify_db_cluster_command,
@@ -3517,18 +3845,20 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-instances-stop": EC2.stop_instances_command,
     "aws-ec2-instances-terminate": EC2.terminate_instances_command,
     "aws-ec2-instances-run": EC2.run_instances_command,
+    "aws-ec2-tags-create": EC2.create_tags_command,
     "aws-s3-bucket-policy-delete": S3.delete_bucket_policy_command,
     "aws-s3-public-access-block-get": S3.get_public_access_block_command,
     "aws-s3-bucket-encryption-get": S3.get_bucket_encryption_command,
     "aws-s3-bucket-policy-get": S3.get_bucket_policy_command,
     "aws-cloudtrail-trails-describe": CloudTrail.describe_trails_command,
-    "aws-ecs-update-cluster-settings": ECS.update_cluster_settings_command,
+    "aws-acm-certificate-options-update": ACM.update_certificate_options_command,
+    "aws-ecs-cluster-settings-update": ECS.update_cluster_settings_command,
     "aws-lambda-function-configuration-get": Lambda.get_function_configuration_command,
     "aws-lambda-function-url-config-get": Lambda.get_function_url_configuration_command,
     "aws-lambda-policy-get": Lambda.get_policy_command,
     "aws-lambda-invoke": Lambda.invoke_command,
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
-    "aws-kms-key-enable-rotation": KMS.enable_key_rotation_command,
+    "aws-kms-key-rotation-enable": KMS.enable_key_rotation_command,
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
 }
 
@@ -3564,9 +3894,12 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:DescribeSubnets",
     "ec2:DescribeIpamResourceDiscoveries",
     "ec2:DescribeIpamResourceDiscoveryAssociations",
+    "ec2:DescribeImages",
     "eks:DescribeCluster",
     "eks:AssociateAccessPolicy",
     "ec2:CreateSecurityGroup",
+    "ec2:CreateNetworkAcl",
+    "ec2:GetIpamDiscoveredPublicAddresses",
     "ec2:CreateTags",
     "ec2:DeleteSecurityGroup",
     "ec2:DescribeInstances",
@@ -3590,6 +3923,8 @@ REQUIRED_ACTIONS: list[str] = [
     "iam:GetAccountAuthorizationDetails",
     "ecs:UpdateClusterSettings",
     "s3:GetBucketPolicy",
+    "s3:GetBucketWebsite",
+    "s3:GetBucketAcl",
     "s3:GetBucketPublicAccessBlock",
     "s3:GetEncryptionConfiguration",
     "s3:DeleteBucketPolicy",

@@ -141,7 +141,441 @@ script:
     - contextPath: GCP.Compute.Operations.kind
       description: Type of the resource. Always compute#operation for Operation resources.
       type: string
-
+  - name: gcp-compute-firewall-insert
+    description: Creates a new firewall rule in the specified project.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: resource_name
+      required: true
+      description: Name of the firewall rule to create.
+    - name: description
+      description: An optional description for the firewall rule.
+    - name: network
+      description: URL of the network, e.g., global/networks/default.
+    - name: priority
+      description: Priority 0-65535. Default 1000.
+    - name: direction
+      description: Direction of traffic to which this firewall applies. Default INGRESS.
+      auto: PREDEFINED
+      predefined:
+      - "INGRESS"
+      - "EGRESS"
+      defaultValue: "INGRESS"
+    - name: allowed
+      description: 'ALLOW rules in tuples, e.g., ipprotocol=tcp,ports=443;ipprotocol=tcp,ports=80.'
+    - name: denied
+      description: 'DENY rules in tuples, e.g., ipprotocol=tcp,ports=22,443.'
+    - name: source_ranges
+      description: Comma-separated CIDRs for INGRESS.
+    - name: destination_ranges
+      description: Comma-separated CIDRs for EGRESS.
+    - name: source_tags
+      description: Comma-separated instance tags to match as source.
+    - name: target_tags
+      description: Comma-separated tags to apply this rule to.
+    - name: source_service_accounts
+      description: Comma-separated service accounts for source.
+    - name: target_service_accounts
+      description: Comma-separated service accounts to target.
+    - name: log_config_enable
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Enable firewall logging.
+    - name: disabled
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether this firewall rule is disabled.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: Unique identifier for the operation resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource, for example compute#operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: Type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: Current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: Progress of the operation as a percentage between 0 and 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.targetId
+      description: Unique target ID of the resource affected by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: URL of the target resource modified by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time when the operation resource was created.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time when the operation started running.
+      type: Date
+    - contextPath: GCP.Compute.Operations.user
+      description: The user account that performed the operation.
+      type: String
+  - name: gcp-compute-firewall-list
+    description: Lists firewall rules in the specified project.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: limit
+      defaultValue: '50'
+      description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive."
+    - name: page_token
+      description: Token for pagination.
+      required: false
+    - name: filter
+      description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.\nFor more options and details, see:\nhttps://cloud.google.com/compute/docs/reference/rest/v1/firewalls/list#:~:text=page%20of%20results.-,filter,-string."
+    outputs:
+    - contextPath: GCP.Compute.Firewall.id
+      description: Unique identifier for the firewall rule.
+      type: String
+    - contextPath: GCP.Compute.Firewall.name
+      description: Name of the firewall rule.
+      type: String
+    - contextPath: GCP.Compute.Firewall.kind
+      description: Type of the resource (for example, compute#firewall).
+      type: String
+    - contextPath: GCP.Compute.Firewall.description
+      description: Description of the firewall rule.
+      type: String
+    - contextPath: GCP.Compute.Firewall.direction
+      description: Direction of traffic for the rule (INGRESS or EGRESS).
+      type: String
+    - contextPath: GCP.Compute.Firewall.disabled
+      description: Indicates whether the firewall rule is disabled.
+      type: Boolean
+    - contextPath: GCP.Compute.Firewall.priority
+      description: Priority value of the firewall rule.
+      type: Number
+    - contextPath: GCP.Compute.Firewall.network
+      description: The network URL this firewall rule applies to.
+      type: String
+    - contextPath: GCP.Compute.Firewall.selfLink
+      description: Server-defined URL for the resource.
+      type: String
+    - contextPath: GCP.Compute.Firewall.creationTimestamp
+      description: The creation timestamp of the firewall rule.
+      type: Date
+    - contextPath: GCP.Compute.Firewall.logConfig.enable
+      description: Indicates whether logging is enabled for the firewall rule.
+      type: Boolean
+    - contextPath: GCP.Compute.Firewall.sourceRanges
+      description: List of source IP ranges that the rule applies to.
+      type: Unknown
+    - contextPath: GCP.Compute.Firewall.targetTags
+      description: List of target instance tags to which the rule applies.
+      type: Unknown
+    - contextPath: GCP.Compute.FirewallNextToken
+      description: Next page token for pagination.
+      type: String
+  - name: gcp-compute-firewall-get
+    description: Retrieves a specific firewall rule by name.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: resource_name
+      required: true
+      description: Firewall rule name.
+    outputs:
+    - contextPath: GCP.Compute.Firewall.name
+      description: Firewall rule name.
+      type: string
+    - contextPath: GCP.Compute.Firewall.network
+      description: Network URL for the firewall rule.
+      type: string
+    - contextPath: GCP.Compute.Firewall.direction
+      description: Direction of traffic (INGRESS/EGRESS).
+      type: string
+    - contextPath: GCP.Compute.Firewall.priority
+      description: Priority of the rule.
+      type: number
+    - contextPath: GCP.Compute.Firewall.allowed
+      description: Allowed tuples.
+      type: Unknown
+    - contextPath: GCP.Compute.Firewall.denied
+      description: Denied tuples.
+      type: Unknown
+    - contextPath: GCP.Compute.Firewall.targetTags
+      description: Target instance tags.
+      type: Unknown
+  - name: gcp-compute-snapshots-list
+    description: Lists snapshots in the specified project.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: limit
+      defaultValue: '50'
+      description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive."
+    - name: page_token
+      description: Token for pagination.
+    - name: filter
+      description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.\nFor more options and details, see:\nhttps://cloud.google.com/compute/docs/reference/rest/v1/snapshots/list#:~:text=page%20of%20results.-,filter,-string."
+    outputs:
+    - contextPath: GCP.Compute.Snapshot.id
+      description: Unique identifier for the snapshot resource.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.name
+      description: Name of the snapshot resource.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.kind
+      description: Type of the resource, for example compute#snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.status
+      description: Current status of the snapshot, such as READY or FAILED.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.autoCreated
+      description: Indicates whether the snapshot was automatically created.
+      type: Boolean
+    - contextPath: GCP.Compute.Snapshot.architecture
+      description: CPU architecture of the source disk, for example X86_64.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.creationTimestamp
+      description: The time when the snapshot was created.
+      type: Date
+    - contextPath: GCP.Compute.Snapshot.creationSizeBytes
+      description: Total size of the snapshot in bytes at creation time.
+      type: Number
+    - contextPath: GCP.Compute.Snapshot.diskSizeGb
+      description: Size of the snapshot in gigabytes.
+      type: Number
+    - contextPath: GCP.Compute.Snapshot.downloadBytes
+      description: Total bytes downloaded to create the snapshot.
+      type: Number
+    - contextPath: GCP.Compute.Snapshot.enableConfidentialCompute
+      description: Indicates if confidential compute is enabled for this snapshot.
+      type: Boolean
+    - contextPath: GCP.Compute.Snapshot.labelFingerprint
+      description: Fingerprint for the labels applied to the snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.licenseCodes
+      description: List of license code identifiers attached to the snapshot.
+      type: Unknown
+    - contextPath: GCP.Compute.Snapshot.licenses
+      description: List of license URLs associated with the snapshot.
+      type: Unknown
+    - contextPath: GCP.Compute.Snapshot.selfLink
+      description: Server-defined URL for the snapshot resource.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.sourceDisk
+      description: URL of the source disk used to create the snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.sourceDiskId
+      description: Unique ID of the source disk used to create the snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy
+      description: URL of the snapshot schedule policy used to create this snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId
+      description: Unique ID of the snapshot schedule policy used to create this snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.storageBytes
+      description: Total storage size of the snapshot in bytes.
+      type: Number
+    - contextPath: GCP.Compute.Snapshot.storageBytesStatus
+      description: Status of the storage bytes usage, for example UP_TO_DATE.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.storageLocations
+      description: List of storage locations for the snapshot.
+      type: Unknown
+    - contextPath: GCP.Compute.SnapshotNextToken
+      description: Next page token for pagination.
+      type: String
+  - name: gcp-compute-snapshot-get
+    description: Retrieves details for a specific snapshot.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: resource_name
+      required: true
+      description: Snapshot name.
+    outputs:
+    - contextPath: GCP.Compute.Snapshot.id
+      description: Unique identifier for the snapshot resource.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.name
+      description: Name of the snapshot resource.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.kind
+      description: Type of the resource, for example compute#snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.status
+      description: Current status of the snapshot, such as READY or FAILED.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.autoCreated
+      description: Indicates whether the snapshot was automatically created.
+      type: Boolean
+    - contextPath: GCP.Compute.Snapshot.architecture
+      description: CPU architecture of the source disk, for example X86_64.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.creationTimestamp
+      description: The time when the snapshot was created.
+      type: Date
+    - contextPath: GCP.Compute.Snapshot.creationSizeBytes
+      description: Total size of the snapshot in bytes at creation time.
+      type: Number
+    - contextPath: GCP.Compute.Snapshot.diskSizeGb
+      description: Size of the snapshot in gigabytes.
+      type: Number
+    - contextPath: GCP.Compute.Snapshot.downloadBytes
+      description: Total bytes downloaded to create the snapshot.
+      type: Number
+    - contextPath: GCP.Compute.Snapshot.enableConfidentialCompute
+      description: Indicates if confidential compute is enabled for this snapshot.
+      type: Boolean
+    - contextPath: GCP.Compute.Snapshot.labelFingerprint
+      description: Fingerprint for the labels applied to the snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.licenseCodes
+      description: List of license code identifiers attached to the snapshot.
+      type: Unknown
+    - contextPath: GCP.Compute.Snapshot.licenses
+      description: List of license URLs associated with the snapshot.
+      type: Unknown
+    - contextPath: GCP.Compute.Snapshot.selfLink
+      description: Server-defined URL for the snapshot resource.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.sourceDisk
+      description: URL of the source disk used to create the snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.sourceDiskId
+      description: Unique ID of the source disk used to create the snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy
+      description: URL of the snapshot schedule policy used to create this snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId
+      description: Unique ID of the snapshot schedule policy used to create this snapshot.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.storageBytes
+      description: Total storage size of the snapshot in bytes.
+      type: Number
+    - contextPath: GCP.Compute.Snapshot.storageBytesStatus
+      description: Status of the storage bytes usage, for example UP_TO_DATE.
+      type: String
+    - contextPath: GCP.Compute.Snapshot.storageLocations
+      description: List of storage locations for the snapshot.
+      type: Unknown
+  - name: gcp-compute-instances-aggregated-list-by-ip
+    description: Aggregated list of instances across all zones; can be filtered by internal or external IP.
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: ip_address
+      required: true
+      description: The IP address to search for.
+    - name: match_external
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, match against external NAT IPs; otherwise internal NIC IPs.
+    - name: limit
+      defaultValue: '50'
+      description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive."
+    - name: page_token
+      description: Token for pagination.
+    outputs:
+    - contextPath: GCP.Compute.Instance.name
+      description: Instance name.
+      type: string
+    - contextPath: GCP.Compute.Instance.id
+      description: Instance ID.
+      type: string
+    - contextPath: GCP.Compute.Instance.zone
+      description: Instance zone URL.
+      type: string
+    - contextPath: GCP.Compute.Instance.status
+      description: Instance status.
+      type: string
+    - contextPath: GCP.Compute.Instance.networkInterfaces
+      description: Network interfaces of the instance.
+      type: Unknown
+  - name: gcp-compute-network-tag-set
+    description: Adds a network tag to a VM instance (merges with existing tags).
+    arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - name: zone
+      required: true
+      description: Zone of the VM (e.g., us-central1-a).
+    - name: resource_name
+      required: true
+      description: Instance name.
+    - name: tag
+      required: true
+      description: Tag to add.
+    - name: tags_fingerprint
+      description: Fingerprint of the previous set of tags for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change tags. To retrieve the fingerprint use the command gcp-compute-instance-get.
+      required: true
+    - name: add_tag
+      defaultValue: "true"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If true, adds the tag to the existing tags; otherwise, overrides them. The default is true.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: Operation ID.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: Operation name.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: Current operation status (e.g., RUNNING, DONE).
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: Type of operation being performed.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: Operation progress percentage (0-100).
+      type: number
+    - contextPath: GCP.Compute.Operations.user
+      description: User or service account that initiated the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: Full URL of the target resource for this operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: Target resource ID.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: Zone where the operation is performed.
+      type: string
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: Time when the operation was inserted.
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: Time when the operation started.
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: URL for this operation resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource (e.g., compute#operation).
+      type: string
   - name: gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action
     description: Disables default GCP firewall rule which is overly permissive (except HTTP and HTTPS).
     prettyname: Disable GCP Firewall Rule
@@ -458,7 +892,7 @@ script:
 
   - name: gcp-compute-subnet-update-enable-private-access-quick-action
     description: Enables Private Google Access on a GCP subnet.
-    prettyname: Enable GCP Subnet Private Access
+    prettyname: Enable Private IP Access on Subnet
     quickaction: true
     hidden: true
     arguments:
@@ -1861,8 +2295,8 @@ script:
       required: true
     - description: A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.
       name: filters
-    - defaultValue: '500'
-      description: 'The maximum number of results per page that should be returned. Acceptable values are 0 to 500, inclusive. (Default: 500).'
+    - defaultValue: '50'
+      description: 'The maximum number of results per page that should be returned. Acceptable values are 0 to 500, inclusive.'
       name: limit
     - description: Sorts list results in a specific order. By default, results are returned in alphanumerical order based on the resource name.  You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc".
       name: order_by
