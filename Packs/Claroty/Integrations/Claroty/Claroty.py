@@ -38,6 +38,7 @@ ALERT_CTD_FIELD_TO_DEMISTO_FIELD = {
     "alert_indicators": "Indicator",
     "category__": "Category",
     "timestamp": "Timestamp",
+    "initial_arr_flow_completed": "InitialArrFlowCompleted",
 }
 ASSET_CTD_FIELD_TO_DEMISTO_FIELD = {
     "id": "AssetID",
@@ -70,6 +71,7 @@ DEFAULT_ALERT_FIELD_LIST = [
     "alert_indicators",
     "actionable_assets",
     "category",
+    "initial_arr_flow_completed",
 ]
 DEFAULT_ASSET_FIELD_LIST = [
     "id",
@@ -153,6 +155,9 @@ class Client(BaseClient):
 
         if bool(demisto.params().get("exclude_resolved_alerts", False)):
             extra_filters_list = _add_exclude_resolved_alerts_filters(extra_filters_list)
+
+        if bool(demisto.params().get("include_only_arr_completed_alerts", False)):
+            extra_filters_list = _add_include_only_arr_completed_alerts_filters(extra_filters_list)
 
         return self.get_alerts(fields=fields, sort_by=sort_by, filters=extra_filters_list, page_number=page_number)
 
@@ -335,6 +340,9 @@ def query_alerts_command(client: Client, args: dict) -> tuple:
     if argToBoolean(args.get("exclude_resolved_alerts", "False")):
         filters = _add_exclude_resolved_alerts_filters(filters)
 
+    if argToBoolean(args.get("include_only_arr_completed_alerts", "False")):
+        filters = _add_include_only_arr_completed_alerts_filters(filters)
+
     site_id = demisto.params().get("site_id", None)
     if site_id:
         filters.append(Filter("site_id", site_id, "exact"))
@@ -356,6 +364,14 @@ def _add_exclude_resolved_alerts_filters(filters: list[Filter]):
         return [Filter("resolved", "false", "exact")]
 
     filters += [Filter("resolved", "false", "exact")]
+    return filters
+
+
+def _add_include_only_arr_completed_alerts_filters(filters: list[Filter]):
+    if not filters:
+        return [Filter("initial_arr_flow_completed", "true", "exact")]
+
+    filters += [Filter("initial_arr_flow_completed", "true", "exact")]
     return filters
 
 
