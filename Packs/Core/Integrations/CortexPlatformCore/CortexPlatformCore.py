@@ -60,7 +60,12 @@ APPSEC_SOURCES = [
     "CAS_CI_CD_RISK_SCANNER",
     "CAS_DRIFT_SCANNER",
 ]
-WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations", "core-get-cases", "core-update-issue",
+WEBAPP_COMMANDS = [
+    "core-get-vulnerabilities",
+    "core-search-asset-groups",
+    "core-get-issue-recommendations",
+    "core-get-cases",
+    "core-update-issue",
     "core-get-asset-coverage",
     "core-get-asset-coverage-histogram",
     "core-create-appsec-policy",
@@ -887,8 +892,6 @@ def get_cases_command(client, args):
     """
     page = arg_to_number(args.get("page")) or 0
     limit = arg_to_number(args.get("limit")) or MAX_GET_CASES_LIMIT
-    # if limit > MAX_GET_CASES_LIMIT:
-    #     limit = MAX_GET_CASES_LIMIT
 
     limit = page * MAX_GET_CASES_LIMIT + limit
     page = page * MAX_GET_CASES_LIMIT
@@ -944,25 +947,26 @@ def get_cases_command(client, args):
 
     filter_count = int(reply.get("FILTER_COUNT", "0"))
     returned_count = min(int(filter_count), limit)
-    
+
     command_results = []
-    
+
     command_results.append(
         CommandResults(
-        readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
-        outputs_key_field="case_id",
-        outputs=data,
-        raw_response=data,
-    ))
-    
+            readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+            outputs_key_field="case_id",
+            outputs=data,
+            raw_response=data,
+        )
+    )
+
     command_results.append(
         CommandResults(
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CasesMetadata",
             outputs={"filter_count": filter_count, "returned_count": returned_count},
         )
     )
-    
+
     return command_results
 
 
@@ -980,6 +984,7 @@ def get_cases_sort_order(sort_by_creation_time, sort_by_modification_time):
         sort_field = "LAST_UPDATE_TIME"
         sort_order = "DESC"
     return sort_field, sort_order
+
 
 def get_issue_id(args) -> str:
     """Retrieve the issue ID from either provided arguments or calling context.
