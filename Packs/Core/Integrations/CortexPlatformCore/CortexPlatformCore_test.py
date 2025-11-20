@@ -383,8 +383,8 @@ def test_get_cases_command_case_id_as_int(mocker: MockerFixture):
 
     args = {"case_id_list": 1}
     result = get_cases_command(client, args)
-    assert result.outputs[0].get("case_id") == "1"
-    assert result.readable_output.startswith("table")
+    assert result[0].outputs[0].get("case_id") == "1"
+    assert result[0].readable_output.startswith("table")
 
 
 def test_replace_substring_string():

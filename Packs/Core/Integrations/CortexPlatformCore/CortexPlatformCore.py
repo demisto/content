@@ -900,7 +900,7 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def get_asset_details_command(client: Client, args: dict) -> List[CommandResults]:
+def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves details of a specific asset by its ID and formats the response.
 
