@@ -123,6 +123,29 @@ configuration:
   type: 0
   advanced: true
   required: false
+- section: Collect
+  display: Microsoft Entra ID Protection risk level
+  name: override_issue_severity
+  type: 8
+  defaultvalue: 'false'
+  additionalinfo: By default, Microsoft Entra ID Protection risk level is used as Cortex XSOAR/XSIAM issue severity. Select this option to override original risk level reported by Microsoft Entra ID Protection.
+  advanced: true
+  required: false
+- section: Collect
+  display: Issue severity
+  name: issue_severity
+  options:
+    - critical
+    - high
+    - medium
+    - low
+  defaultvalue: medium
+  type: 15
+  additionalinfo: "Severity of the Cortex XSOAR/XSIAM issue to be created if Microsoft Entra ID Protection risk level override has been selected.
+    Severity will be the same for all Microsoft Entra ID Protection alerts."
+  advanced: true
+  hidden: false
+  required: false
 description: Use the Entra ID Identity And Access integration to manage roles and members (formerly Azure Active Directory Identity And Access).
 display: Entra ID Identity And Access v2
 name: MicrosoftGraphIdentityandAccessV2
