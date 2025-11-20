@@ -351,6 +351,24 @@ script:
     - contextPath: InfoFile.Type
       description: The type of the image/pdf file.
       type: string
+  - arguments:
+    - default: true
+      description: The URL to extract HTML content from. Must be the full URL, including the http prefix.
+      name: url
+      required: true
+    - description: Maximum time to wait for a page to load (in seconds).
+      name: max_page_load_time
+    - description: Time in seconds to wait before extracting content.
+      name: wait_time
+    description: Extracts readable text content from a URL after JavaScript rendering, similar to Tavily's extract functionality. Works with both static and dynamic JavaScript-heavy pages.
+    name: rasterize-extract
+    outputs:
+    - contextPath: Rasterize.URL
+      description: The URL from which the content was extracted.
+      type: string
+    - contextPath: Rasterize.Content
+      description: The extracted text content from the URL (plain text for HTML pages, raw content for JSON).
+      type: string
   dockerimage: demisto/chromium:141.0.7390.5492271
   runonce: false
   script: "-"

@@ -25,6 +25,7 @@ from PyPDF2 import PdfReader
 from functools import lru_cache
 from urllib.parse import urlparse
 import ipaddress
+import re
 # region constants and configurations
 
 pypdf_logger = logging.getLogger("PyPDF2")
@@ -120,21 +121,14 @@ class RasterizeType(Enum):
     PDF = "pdf"
     JSON = "json"
 
-
-# endregion
-
-# region utility classes
-
-
 def excepthook_recv_loop(args: threading.ExceptHookArgs) -> None:
     """
-    Suppressing exceptions that might happen after the tab was closed.
+    Suppressing exceptions that might happen after the tab was closed or during network event handling.
     """
     demisto.debug(f"excepthook_recv_loop, {args.exc_type=}")
     exc_value = args.exc_value
     if args.exc_type in [json.decoder.JSONDecodeError, websocket._exceptions.WebSocketConnectionClosedException]:
-        # Suppress
-        demisto.debug(f"Suppressed Exception in _recv_loop: {args.exc_type=}")
+        demisto.debug(f"Suppressed Exception in _recv_loop: {args.exc_type=}, {exc_value=}")
     else:
         demisto.info(f"Unsuppressed Exception in _recv_loop: {args.exc_type=}")
         if exc_value:
@@ -357,20 +351,27 @@ class PychromeEventHandler:
 
     def network_request_will_be_sent(self, documentURL: str, **kwargs):
         """Triggered when a request is sent by the browser, catches mailto URLs."""
-        demisto.debug(f"PychromeEventHandler.network_request_will_be_sent, {documentURL=}, {self.tab.id=}, {self.path=}")
-        self.document_url = documentURL
-        self.is_mailto = documentURL.lower().startswith("mailto:")
-        self.is_private_network_url = is_private_network(documentURL)
-        demisto.debug(f"Private network URL check for {documentURL=}: {self.is_private_network_url}")
-        demisto.debug(f"mailto URL check for {documentURL=}: {self.is_mailto}")
-        request_url = kwargs.get("request", {}).get("url", "")
-
-        if any(value in request_url for value in BLOCKED_URLS):
-            demisto.info(
-                f"The following URL is blocked. Consider updating the 'List of domains to block' parameter:{request_url}"
+        try:
+            demisto.debug(
+                f"PychromeEventHandler.network_request_will_be_sent, documentURL={documentURL}, "
+                f"tab_id={self.tab.id}, path={self.path}"
             )
-            self.tab.Fetch.enable()
-            demisto.debug(f"Fetch events enabled. {self.tab.id=}, {self.path=}")
+            self.document_url = documentURL
+            self.is_mailto = documentURL.lower().startswith("mailto:")
+            self.is_private_network_url = is_private_network(documentURL)
+            demisto.debug(f"Private network URL check for documentURL={documentURL}: {self.is_private_network_url}")
+            demisto.debug(f"mailto URL check for documentURL={documentURL}: {self.is_mailto}")
+            request_url = kwargs.get("request", {}).get("url", "")
+
+            if any(value in request_url for value in BLOCKED_URLS):
+                demisto.info(
+                    f"The following URL is blocked. Consider updating the 'List of domains to block' parameter:{request_url}"
+                )
+                self.tab.Fetch.enable()
+                demisto.debug(f"Fetch events enabled. tab_id={self.tab.id}, path={self.path}")
+        except Exception as ex:
+            # Suppress any exceptions in this callback to prevent breaking the event loop
+            demisto.debug(f"Exception in network_request_will_be_sent: {ex}")
 
     def handle_request_paused(self, **kwargs):
         request_id = kwargs.get("requestId")
@@ -795,10 +796,20 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
     try:
         demisto.info(f"Starting tab navigation to given path: {path} on {tab.id=}")
 
-        allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
-        demisto.debug(f"allTimeSamplingProfile before navigation {allTimeSamplingProfile=} on {tab.id=}, {path=}")
-        heapUsage = tab.Runtime.getHeapUsage()
-        demisto.debug(f"heapUsage before navigation {heapUsage=} on {tab.id=}, {path=}")
+        try:
+            allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
+            demisto.debug(
+                f"allTimeSamplingProfile before navigation allTimeSamplingProfile={allTimeSamplingProfile} "
+                f"on tab.id={tab.id}, path={path}"
+            )
+        except Exception as ex:
+            demisto.debug(f"Failed to get allTimeSamplingProfile: {ex}")
+        
+        try:
+            heapUsage = tab.Runtime.getHeapUsage()
+            demisto.debug(f"heapUsage before navigation heapUsage={heapUsage} on tab.id={tab.id}, path={path}")
+        except Exception as ex:
+            demisto.debug(f"Failed to get heapUsage: {ex}")
 
         if navigation_timeout > 0:
             tab.Page.navigate(url=path, _timeout=navigation_timeout)
@@ -822,10 +833,19 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
         time.sleep(wait_time)  # pylint: disable=E9003
         demisto.debug(f"Navigated to {path=} on {tab.id=}")
 
-        allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
-        demisto.debug(f"allTimeSamplingProfile after navigation {allTimeSamplingProfile=} on {tab.id=}")
-        heapUsage = tab.Runtime.getHeapUsage()
-        demisto.debug(f"heapUsage after navigation {heapUsage=} on {tab.id=}")
+        try:
+            allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
+            demisto.debug(
+                f"allTimeSamplingProfile after navigation allTimeSamplingProfile={allTimeSamplingProfile} on tab.id={tab.id}"
+            )
+        except Exception as ex:
+            demisto.debug(f"Failed to get allTimeSamplingProfile after navigation: {ex}")
+        
+        try:
+            heapUsage = tab.Runtime.getHeapUsage()
+            demisto.debug(f"heapUsage after navigation heapUsage={heapUsage} on tab.id={tab.id}")
+        except Exception as ex:
+            demisto.debug(f"Failed to get heapUsage after navigation: {ex}")
 
     except pychrome.exceptions.TimeoutException as ex:
         return_error(f"Navigation timeout: {ex} thrown while trying to navigate to {path}, {tab.id=}")
@@ -943,9 +963,12 @@ def screenshot_image(
         demisto.info(f"Screenshot image of {path=} on {tab.id=}, not available after {operation_time} seconds.")
 
     allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
-    demisto.debug(f"allTimeSamplingProfile after screenshot {allTimeSamplingProfile=} on {tab.id=}, {path=}")
+    demisto.debug(
+        f"allTimeSamplingProfile after screenshot allTimeSamplingProfile={allTimeSamplingProfile} "
+        f"on tab.id={tab.id}, path={path}"
+    )
     heapUsage = tab.Runtime.getHeapUsage()
-    demisto.debug(f"heapUsage after screenshot {heapUsage=} on {tab.id=}, {path=}")
+    demisto.debug(f"heapUsage after screenshot heapUsage={heapUsage} on tab.id={tab.id}, path={path}")
 
     captured_image = base64.b64decode(screenshot_data)
     if not captured_image:
@@ -1613,6 +1636,239 @@ def rasterize_command():  # pragma: no cover
             demisto.results(res)
 
 
+def _extract_html_content(tab: pychrome.Tab) -> str:
+    """
+    Extract HTML content preserving structure and hierarchy.
+    Filters out navigation elements (nav, header, footer, sidebar) to focus on main content.
+    Preserves links in markdown format [text](url).
+    
+    Args:
+        tab: The Chrome tab
+        
+    Returns:
+        str: Clean content with structure preserved, navigation filtered out
+    """
+    js_code = r"""
+(function() {
+    function shouldSkipElement(element) {
+        // Skip navigation, headers, footers, sidebars, and other non-content elements
+        const tag = element.tagName.toLowerCase();
+        const role = element.getAttribute('role');
+        
+        // Skip by tag name - these are always non-content
+        if (['nav', 'header', 'footer', 'aside', 'script', 'style', 'noscript'].includes(tag)) {
+            return true;
+        }
+        
+        // Skip by ARIA role - these are semantic navigation markers
+        if (['navigation', 'banner', 'contentinfo', 'complementary'].includes(role)) {
+            return true;
+        }
+        
+        // Don't skip by class/id - too aggressive and filters out main content
+        // Many sites use navigation-related words in content container classes
+        
+        return false;
+    }
+    
+    function extractText(element, depth = 0) {
+        let text = '';
+        
+        // Skip navigation and other non-content elements
+        if (shouldSkipElement(element)) {
+            return '';
+        }
+        
+        for (let node of element.childNodes) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                let content = node.textContent.trim();
+                if (content) text += content + ' ';
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                // Skip this element if it's navigation
+                if (shouldSkipElement(node)) {
+                    continue;
+                }
+                
+                let tag = node.tagName.toLowerCase();
+                
+                // Handle links - convert to markdown format
+                if (tag === 'a') {
+                    let href = node.getAttribute('href');
+                    let linkText = node.textContent.trim();
+                    if (href && linkText) {
+                        // Make relative URLs absolute
+                        if (href.startsWith('/') && !href.startsWith('//')) {
+                            href = window.location.origin + href;
+                        } else if (href.startsWith('./')) {
+                            href = window.location.origin + window.location.pathname.replace(/[^/]*$/, '') + href.substring(2);
+                        } else if (!href.startsWith('http') && !href.startsWith('mailto:') && !href.startsWith('#')) {
+                            href = window.location.origin + '/' + href;
+                        }
+                        
+                        text += '[' + linkText + '](' + href + ') ';
+                    } else if (linkText) {
+                        text += linkText + ' ';
+                    }
+                }
+                // Handle headings - preserve hierarchy
+                else if (tag.match(/^h[1-6]$/)) {
+                    let level = parseInt(tag[1]);
+                    let heading = node.textContent.trim();
+                    if (heading) {
+                        text += '\n\n' + '#'.repeat(level) + ' ' + heading + '\n\n';
+                    }
+                }
+                // Handle paragraphs
+                else if (tag === 'p') {
+                    let para = extractText(node, depth + 1).trim();
+                    if (para) text += para + '\n\n';
+                }
+                // Handle lists
+                else if (tag === 'li') {
+                    let item = extractText(node, depth + 1).trim();
+                    if (item) text += '* ' + item + '\n';
+                }
+                else if (tag === 'ul' || tag === 'ol') {
+                    text += '\n' + extractText(node, depth + 1) + '\n';
+                }
+                // Handle line breaks
+                else if (tag === 'br') {
+                    text += '\n';
+                }
+                // Handle horizontal rules
+                else if (tag === 'hr') {
+                    text += '\n---\n';
+                }
+                // Handle main content containers
+                else if (['div', 'section', 'article', 'main'].includes(tag)) {
+                    let content = extractText(node, depth + 1).trim();
+                    if (content) text += content + '\n';
+                }
+                // Recursively process other elements
+                else {
+                    text += extractText(node, depth + 1);
+                }
+            }
+        }
+        
+        return text;
+    }
+    
+    let content = extractText(document.body || document.documentElement);
+    // Clean up excessive whitespace
+    content = content.replace(/ +/g, ' ').replace(/\n\n\n+/g, '\n\n').trim();
+    return content;
+})();
+"""
+    result = tab.Runtime.evaluate(expression=js_code, returnByValue=True)
+    return result.get("result", {}).get("value", "").strip()
+
+
+def rasterize_extract_command():  # pragma: no cover
+    """
+    Extract rendered content from a URL.
+    
+    Uses different extraction methods based on content type:
+    - JSON URLs: Simple innerText (avoids parsing issues)
+    - HTML URLs: Advanced extraction with markdown links (like Tavily)
+    
+    Command Arguments:
+        url: The URL to extract content from
+        wait_time: Time to wait before extraction (default: DEFAULT_WAIT_TIME)
+        max_page_load_time: Maximum page load timeout (default: DEFAULT_PAGE_LOAD_TIME)
+    
+    Returns:
+        CommandResults with extracted content
+    """
+    # Parse and validate arguments
+    url = demisto.args().get("url")
+    if not url:
+        return_err_or_warn("URL parameter is required")
+        return
+    
+    wait_time = int(demisto.args().get("wait_time", DEFAULT_WAIT_TIME))
+    max_page_load_time = int(demisto.args().get("max_page_load_time", DEFAULT_PAGE_LOAD_TIME))
+    
+    # Normalize URL - add protocol if missing
+    if not url.startswith(("http://", "https://", "file://")):
+        protocol = "https" if IS_HTTPS else "http"
+        url = f"{protocol}://{url}"
+    
+    # Get Chrome browser instance
+    browser, chrome_port = chrome_manager_one_port()
+    if not browser:
+        return_err_or_warn("Could not connect to Chrome browser")
+        return
+    
+    try:
+        with TabLifecycleManager(browser, chrome_port, offline_mode=False) as tab:
+            # Navigate to the URL
+            tab_event_handler = navigate_to_path(browser, tab, url, wait_time, max_page_load_time)
+            
+            # Check for mailto URLs
+            if tab_event_handler.is_mailto:
+                error_msg = f'URLs that start with "mailto:" cannot be extracted.\nURL: {url}'
+                demisto.error(error_msg)
+                return_err_or_warn(error_msg)
+                return
+            
+            # Check for private network URLs
+            if tab_event_handler.is_private_network_url:
+                error_msg = (
+                    'URLs that belong to the "This" Network (0.0.0.0/8), or '
+                    f'the Loopback Network (127.0.0.0/8) cannot be extracted.\nURL: {url}'
+                )
+                demisto.error(error_msg)
+                return_err_or_warn(error_msg)
+                return
+            
+            # Choose extraction method based on URL type
+            is_json_url = url.lower().endswith(".json") or "/json" in url.lower()
+            
+            if is_json_url:
+                # For JSON: Use simple innerText (works reliably)
+                # Chrome already formats JSON nicely, so just get the text
+                result = tab.Runtime.evaluate(expression="document.body.innerText", returnByValue=True)
+                content = result.get("result", {}).get("value", "")
+                
+                if not content:
+                    raise DemistoException(f"No content extracted from JSON URL: {url}")
+                
+                # Format JSON for readability if it's valid JSON
+                try:
+                    parsed_json = json.loads(content)
+                    content = json.dumps(parsed_json, indent=2)
+                except (json.JSONDecodeError, ValueError):
+                    # If not valid JSON, keep the raw content
+                    demisto.debug(f"Content from {url} is not valid JSON, keeping as-is")
+            else:
+                # For HTML: Use advanced extraction with markdown links
+                content = _extract_html_content(tab)
+            
+            if not content:
+                raise DemistoException(f"No content extracted from: {url}")
+            
+            # Update usage counter
+            increase_counter_chrome_instances_file(chrome_port=chrome_port)
+            
+            # Return using CommandResults
+            return_results(
+                CommandResults(
+                    outputs_prefix="Rasterize",
+                    outputs_key_field="URL",
+                    outputs={"URL": url, "Content": content},
+                    readable_output=f"Successfully extracted {len(content)} characters from {url}"
+                )
+            )
+    
+    except DemistoException as e:
+        demisto.error(f"rasterize-extract failed for {url}: {str(e)}")
+        return_err_or_warn(str(e))
+    except Exception as e:
+        demisto.error(f"rasterize-extract unexpected error for {url}: {str(e)}\n{traceback.format_exc()}")
+        return_err_or_warn(f"Failed to extract content from {url}: {str(e)}")
+
+
 # endregion
 
 
@@ -1659,6 +1915,9 @@ def main():  # pragma: no cover
 
         elif demisto.command() == "rasterize":
             rasterize_command()
+
+        elif demisto.command() == "rasterize-extract":
+            rasterize_extract_command()
 
         else:
             raise NotImplementedError(f"command {command} is not supported")
