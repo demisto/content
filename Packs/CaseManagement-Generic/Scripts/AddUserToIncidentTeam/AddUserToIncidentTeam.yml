@@ -1,5 +1,5 @@
 args:
-- description: The username of the person to add to the Incident
+- description: The username of the person to add to the Incident.
   name: user
   required: true
 comment: Adds an XSOAR User to the Incident, this automation can be used as part of a playbook task.
@@ -9,7 +9,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.5490952
 enabled: true
 name: AddUserToIncidentTeam
 runas: DBotWeakRole
