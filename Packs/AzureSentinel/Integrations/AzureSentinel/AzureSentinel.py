@@ -1179,33 +1179,53 @@ def list_watchlist_items_command(client, args):
 
     # prepare the request
     limit = arg_to_number(args.get('limit',50))
-    should_limit_result = not argToBoolean(args.get('all_results', False))
+    all_results = argToBoolean(args.get('all_results', False))
 
     alias = args.get("watchlist_alias", "")
     url_suffix = f"watchlists/{alias}/watchlistItems"
     item_id = args.get("watchlist_item_id")
+    next_link = args.get("next_link","").replace("%20", " ")
+
     if item_id:
         url_suffix += f"/{item_id}"
 
+    result = client.http_request("GET", url_suffix, full_url=next_link)
+    raw_items = [result] if item_id else result.get("value", [])
+    next_link = result.get("nextLink")
 
-    raw_items = []
-    next_link = True
-    while next_link:
+    while next_link and (all_results or len(raw_items) < limit):
         full_url = next_link.replace("%20", " ") if isinstance(next_link, str) else None
         result = client.http_request("GET", url_suffix, full_url=full_url)
         raw_items += [result] if item_id else result.get("value", [])
         next_link = result.get("nextLink")
-        if should_limit_result and len(raw_items) >= limit:
-            raw_items = raw_items[:limit]
-            next_link = False
+
+    if not all_results and len(raw_items) >= limit:
+        raw_items = raw_items[:limit]
 
     items = [{"WatchlistAlias": alias, **watchlist_item_data_to_xsoar_format(item)} for item in raw_items]
+
     readable_output = tableToMarkdown(
         "Watchlist items results",
         items,
         headers=["ID", "ItemsKeyValue"],
         headerTransform=pascalToSpace,
         removeNull=True,
+    )
+    result = {"WatchlistItem":items}
+    if next_link:
+        next_link_item = {
+            "Description": NEXT_LINK_DESCRIPTION,
+            "URL": next_link,
+        }
+        result["NextLink"] = next_link_item
+
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="AzureSentinel",
+        outputs=result,
+        outputs_key_field="ID",
+        raw_response=result,
     )
 
     return CommandResults(
