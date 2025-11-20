@@ -12,7 +12,7 @@ jobs:
     if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == false && github.actor != 'dependabot[bot]' && github.event.action == 'closed' && github.event.pull_request.merged == true && startsWith(github.head_ref, 'contrib/') == false
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
