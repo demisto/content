@@ -109,7 +109,7 @@ class Client(BaseClient):
     def get_incidents(self, incident_id: str = None, status: str = None, risk_level: str = None,
                       limit: int = 20, source: str = None, next_anchor: str = None):
         """Get EDR incidents (Broad Context Detections)."""
-        params = {"limit": limit, "archived": "false"}
+        params: dict[str, Any] = {"limit": limit, "archived": "false"}
         if incident_id:
             params["incidentId"] = incident_id
         if status:
@@ -165,7 +165,7 @@ class Client(BaseClient):
 
     def get_incident_detections(self, incident_id: str, limit: int = 100, next_anchor: str = None):
         """Get detections for a specific incident."""
-        params = {"incidentId": incident_id, "limit": limit}
+        params: dict[str, Any] = {"incidentId": incident_id, "limit": limit}
         if next_anchor:
             params["anchor"] = next_anchor
         headers = {
@@ -183,7 +183,7 @@ class Client(BaseClient):
                     state: str = None, online: str = None, protection_status: str = None,
                     limit: int = 50, next_anchor: str = None):
         """Get devices from WithSecure."""
-        params = {"limit": limit}
+        params: dict[str, Any] = {"limit": limit}
         if device_id:
             params["deviceId"] = device_id
         if name:
@@ -212,7 +212,7 @@ class Client(BaseClient):
 
     def isolate_endpoint(self, device_ids: list[str], message: str = None):
         """Isolate endpoints from network."""
-        data = {"operation": "isolateFromNetwork", "targets": device_ids}
+        data: dict[str, Any] = {"operation": "isolateFromNetwork", "targets": device_ids}
         if message:
             data["parameters"] = {"message": message}
         headers = {
@@ -259,7 +259,7 @@ class Client(BaseClient):
 
     def get_device_operations(self, device_id: str):
         """Get operations for a specific device."""
-        params = {"deviceId": device_id}
+        params: dict[str, Any] = {"deviceId": device_id}
         headers = {
             **self.default_headers,
             "Authorization": f"Bearer {self.get_access_token()}",
@@ -528,7 +528,7 @@ def fetch_events_command(client: Client, first_fetch: str, limit: int) -> tuple[
     This function retrieves new alerts every interval (default is 1 minute).
     It has to implement the logic of making sure that events are fetched only once and no events are missed.
     By default it's invoked by XSIAM every minute. It will use last_run to save the timestamp of the last event it
-    processed. If last_run is not provided, it should use the integration parameter first_fetch_time to determine when
+    processed. If last_run is not provided, it should use the integration parameter first_fetch to determine when
     to start fetching the first time.
 
     Args:
@@ -595,7 +595,7 @@ def get_incidents_command(client: Client, args: dict) -> CommandResults:
     incident_id = args.get("incident_id")
     status = args.get("status")
     risk_level = args.get("risk_level")
-    limit = arg_to_number(args.get("limit", 20))
+    limit = arg_to_number(args.get("limit", 20)) or 20
     source = args.get("source")
 
     result = client.get_incidents(incident_id, status, risk_level, limit, source)
@@ -633,6 +633,9 @@ def update_incident_status_command(client: Client, args: dict) -> CommandResults
     status = args.get("status")
     resolution = args.get("resolution")
 
+    if not incident_id or not status:
+        raise DemistoException("incident_id and status are required.")
+
     if status == "closed" and not resolution:
         raise DemistoException("Resolution is required when closing an incident.")
 
@@ -652,6 +655,9 @@ def add_incident_comment_command(client: Client, args: dict) -> CommandResults:
     incident_ids = argToList(args.get("incident_ids"))
     comment = args.get("comment")
 
+    if not comment:
+        raise DemistoException("comment is required.")
+
     if len(incident_ids) > 10:
         raise DemistoException("Maximum 10 incidents can be commented at once.")
 
@@ -668,7 +674,10 @@ def add_incident_comment_command(client: Client, args: dict) -> CommandResults:
 def get_incident_detections_command(client: Client, args: dict) -> CommandResults:
     """Get detections for a specific incident."""
     incident_id = args.get("incident_id")
-    limit = arg_to_number(args.get("limit", 100))
+    limit = arg_to_number(args.get("limit", 100)) or 100
+
+    if not incident_id:
+        raise DemistoException("incident_id is required.")
 
     result = client.get_incident_detections(incident_id, limit)
     detections = result.get("items", [])
@@ -707,7 +716,7 @@ def get_devices_command(client: Client, args: dict) -> CommandResults:
     state = args.get("state")
     online = args.get("online")
     protection_status = args.get("protection_status")
-    limit = arg_to_number(args.get("limit", 50))
+    limit = arg_to_number(args.get("limit", 50)) or 50
 
     result = client.get_devices(device_id, name, device_type, state, online, protection_status, limit)
     devices = result.get("items", [])
@@ -829,6 +838,9 @@ def get_device_operations_command(client: Client, args: dict) -> CommandResults:
     """Get operations for a specific device."""
     device_id = args.get("device_id")
 
+    if not device_id:
+        raise DemistoException("device_id is required.")
+
     result = client.get_device_operations(device_id)
     operations = result.get("items", [])
 
@@ -870,9 +882,9 @@ def main() -> None:
     client_id = params.get("credentials", {}).get("identifier")
     client_secret = params.get("credentials", {}).get("password")
 
-    first_fetch_param = params.get("first_fetch_time", "3 days")
+    first_fetch_param = params.get("first_fetch", "3 days")
     first_fetch = parse_date(first_fetch_param)
-    event_fetch_limit = arg_to_number(params.get("limit", MAX_FETCH_LIMIT)) or MAX_FETCH_LIMIT
+    event_fetch_limit = arg_to_number(params.get("max_fetch", MAX_FETCH_LIMIT)) or MAX_FETCH_LIMIT
     event_fetch_limit = min(MAX_FETCH_LIMIT, max(1, event_fetch_limit))
 
     incidents_max_fetch = arg_to_number(params.get("incidents_max_fetch", 20)) or 20
