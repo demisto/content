@@ -26,6 +26,7 @@ from functools import lru_cache
 from urllib.parse import urlparse
 import ipaddress
 import re
+
 # region constants and configurations
 
 pypdf_logger = logging.getLogger("PyPDF2")
@@ -120,6 +121,7 @@ class RasterizeType(Enum):
     PNG = "png"
     PDF = "pdf"
     JSON = "json"
+
 
 def excepthook_recv_loop(args: threading.ExceptHookArgs) -> None:
     """
@@ -794,7 +796,7 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
     tab_event_handler, tab_ready_event = setup_tab_event(browser, tab, path, navigation_timeout)
 
     try:
-        demisto.info(f"Starting tab navigation to given path: {path} on {tab.id=}")
+        demisto.info(f"Starting tab navigation to given path: {path} on tab_id={str(tab.id)}")
 
         try:
             allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
@@ -802,13 +804,13 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
                 f"allTimeSamplingProfile before navigation allTimeSamplingProfile={allTimeSamplingProfile} "
                 f"on tab.id={tab.id}, path={path}"
             )
-        except Exception as ex:
+        except (json.JSONDecodeError, Exception) as ex:
             demisto.debug(f"Failed to get allTimeSamplingProfile: {ex}")
-        
+
         try:
             heapUsage = tab.Runtime.getHeapUsage()
             demisto.debug(f"heapUsage before navigation heapUsage={heapUsage} on tab.id={tab.id}, path={path}")
-        except Exception as ex:
+        except (json.JSONDecodeError, Exception) as ex:
             demisto.debug(f"Failed to get heapUsage: {ex}")
 
         if navigation_timeout > 0:
@@ -816,7 +818,7 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
         else:
             tab.Page.navigate(url=path)
 
-        demisto.debug(f"Waiting for tab_ready_event on {tab.id=}, {path=}")
+        demisto.debug(f"Waiting for tab_ready_event on tab_id={str(tab.id)}, {path=}")
 
         if not tab_ready_event.wait(navigation_timeout):
             return_warning(
@@ -824,27 +826,27 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
                 f" some content might be missing .\n{path=}"
             )
 
-        demisto.debug(f"After waiting for tab_ready_event on {tab.id=}, {path=}")
+        demisto.debug(f"After waiting for tab_ready_event on tab_id={str(tab.id)}, {path=}")
 
         if wait_time > 0:
-            demisto.info(f"Sleeping before capturing screenshot, {wait_time=}, {tab.id=}, {path=}")
+            demisto.info(f"Sleeping before capturing screenshot, {wait_time=}, tab_id={str(tab.id)}, {path=}")
         else:
-            demisto.debug(f"Not sleeping before capturing screenshot, {wait_time=}. {tab.id=}, {path=}")
+            demisto.debug(f"Not sleeping before capturing screenshot, {wait_time=}. tab_id={str(tab.id)}, {path=}")
         time.sleep(wait_time)  # pylint: disable=E9003
-        demisto.debug(f"Navigated to {path=} on {tab.id=}")
+        demisto.debug(f"Navigated to {path=} on tab_id={str(tab.id)}")
 
         try:
             allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
             demisto.debug(
                 f"allTimeSamplingProfile after navigation allTimeSamplingProfile={allTimeSamplingProfile} on tab.id={tab.id}"
             )
-        except Exception as ex:
+        except (json.JSONDecodeError, Exception) as ex:
             demisto.debug(f"Failed to get allTimeSamplingProfile after navigation: {ex}")
-        
+
         try:
             heapUsage = tab.Runtime.getHeapUsage()
             demisto.debug(f"heapUsage after navigation heapUsage={heapUsage} on tab.id={tab.id}")
-        except Exception as ex:
+        except (json.JSONDecodeError, Exception) as ex:
             demisto.debug(f"Failed to get heapUsage after navigation: {ex}")
 
     except pychrome.exceptions.TimeoutException as ex:
@@ -962,13 +964,20 @@ def screenshot_image(
     else:
         demisto.info(f"Screenshot image of {path=} on {tab.id=}, not available after {operation_time} seconds.")
 
-    allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
-    demisto.debug(
-        f"allTimeSamplingProfile after screenshot allTimeSamplingProfile={allTimeSamplingProfile} "
-        f"on tab.id={tab.id}, path={path}"
-    )
-    heapUsage = tab.Runtime.getHeapUsage()
-    demisto.debug(f"heapUsage after screenshot heapUsage={heapUsage} on tab.id={tab.id}, path={path}")
+    try:
+        allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
+        demisto.debug(
+            f"allTimeSamplingProfile after screenshot allTimeSamplingProfile={allTimeSamplingProfile} "
+            f"on tab.id={tab.id}, path={path}"
+        )
+    except (json.JSONDecodeError, Exception) as ex:
+        demisto.debug(f"Failed to get allTimeSamplingProfile after screenshot: {ex}")
+    
+    try:
+        heapUsage = tab.Runtime.getHeapUsage()
+        demisto.debug(f"heapUsage after screenshot heapUsage={heapUsage} on tab.id={tab.id}, path={path}")
+    except (json.JSONDecodeError, Exception) as ex:
+        demisto.debug(f"Failed to get heapUsage after screenshot: {ex}")
 
     captured_image = base64.b64decode(screenshot_data)
     if not captured_image:
@@ -1641,10 +1650,10 @@ def _extract_html_content(tab: pychrome.Tab) -> str:
     Extract HTML content preserving structure and hierarchy.
     Filters out navigation elements (nav, header, footer, sidebar) to focus on main content.
     Preserves links in markdown format [text](url).
-    
+
     Args:
         tab: The Chrome tab
-        
+
     Returns:
         str: Clean content with structure preserved, navigation filtered out
     """
@@ -1654,31 +1663,31 @@ def _extract_html_content(tab: pychrome.Tab) -> str:
         // Skip navigation, headers, footers, sidebars, and other non-content elements
         const tag = element.tagName.toLowerCase();
         const role = element.getAttribute('role');
-        
+
         // Skip by tag name - these are always non-content
         if (['nav', 'header', 'footer', 'aside', 'script', 'style', 'noscript'].includes(tag)) {
             return true;
         }
-        
+
         // Skip by ARIA role - these are semantic navigation markers
         if (['navigation', 'banner', 'contentinfo', 'complementary'].includes(role)) {
             return true;
         }
-        
+
         // Don't skip by class/id - too aggressive and filters out main content
         // Many sites use navigation-related words in content container classes
-        
+
         return false;
     }
-    
+
     function extractText(element, depth = 0) {
         let text = '';
-        
+
         // Skip navigation and other non-content elements
         if (shouldSkipElement(element)) {
             return '';
         }
-        
+
         for (let node of element.childNodes) {
             if (node.nodeType === Node.TEXT_NODE) {
                 let content = node.textContent.trim();
@@ -1688,9 +1697,9 @@ def _extract_html_content(tab: pychrome.Tab) -> str:
                 if (shouldSkipElement(node)) {
                     continue;
                 }
-                
+
                 let tag = node.tagName.toLowerCase();
-                
+
                 // Handle links - convert to markdown format
                 if (tag === 'a') {
                     let href = node.getAttribute('href');
@@ -1704,7 +1713,7 @@ def _extract_html_content(tab: pychrome.Tab) -> str:
                         } else if (!href.startsWith('http') && !href.startsWith('mailto:') && !href.startsWith('#')) {
                             href = window.location.origin + '/' + href;
                         }
-                        
+
                         text += '[' + linkText + '](' + href + ') ';
                     } else if (linkText) {
                         text += linkText + ' ';
@@ -1750,10 +1759,10 @@ def _extract_html_content(tab: pychrome.Tab) -> str:
                 }
             }
         }
-        
+
         return text;
     }
-    
+
     let content = extractText(document.body || document.documentElement);
     // Clean up excessive whitespace
     content = content.replace(/ +/g, ' ').replace(/\n\n\n+/g, '\n\n').trim();
@@ -1767,16 +1776,16 @@ def _extract_html_content(tab: pychrome.Tab) -> str:
 def rasterize_extract_command():  # pragma: no cover
     """
     Extract rendered content from a URL.
-    
+
     Uses different extraction methods based on content type:
     - JSON URLs: Simple innerText (avoids parsing issues)
     - HTML URLs: Advanced extraction with markdown links (like Tavily)
-    
+
     Command Arguments:
         url: The URL to extract content from
-        wait_time: Time to wait before extraction (default: DEFAULT_WAIT_TIME)
+        wait_time: Time to wait before extraction (default: 5 seconds to allow dynamic content to load)
         max_page_load_time: Maximum page load timeout (default: DEFAULT_PAGE_LOAD_TIME)
-    
+
     Returns:
         CommandResults with extracted content
     """
@@ -1785,33 +1794,33 @@ def rasterize_extract_command():  # pragma: no cover
     if not url:
         return_err_or_warn("URL parameter is required")
         return
-    
-    wait_time = int(demisto.args().get("wait_time", DEFAULT_WAIT_TIME))
+
+    wait_time = int(demisto.args().get("wait_time", 5))
     max_page_load_time = int(demisto.args().get("max_page_load_time", DEFAULT_PAGE_LOAD_TIME))
-    
+
     # Normalize URL - add protocol if missing
     if not url.startswith(("http://", "https://", "file://")):
         protocol = "https" if IS_HTTPS else "http"
         url = f"{protocol}://{url}"
-    
+
     # Get Chrome browser instance
     browser, chrome_port = chrome_manager_one_port()
     if not browser:
         return_err_or_warn("Could not connect to Chrome browser")
         return
-    
+
     try:
         with TabLifecycleManager(browser, chrome_port, offline_mode=False) as tab:
             # Navigate to the URL
             tab_event_handler = navigate_to_path(browser, tab, url, wait_time, max_page_load_time)
-            
+
             # Check for mailto URLs
             if tab_event_handler.is_mailto:
                 error_msg = f'URLs that start with "mailto:" cannot be extracted.\nURL: {url}'
                 demisto.error(error_msg)
                 return_err_or_warn(error_msg)
                 return
-            
+
             # Check for private network URLs
             if tab_event_handler.is_private_network_url:
                 error_msg = (
@@ -1821,19 +1830,19 @@ def rasterize_extract_command():  # pragma: no cover
                 demisto.error(error_msg)
                 return_err_or_warn(error_msg)
                 return
-            
+
             # Choose extraction method based on URL type
             is_json_url = url.lower().endswith(".json") or "/json" in url.lower()
-            
+
             if is_json_url:
                 # For JSON: Use simple innerText (works reliably)
                 # Chrome already formats JSON nicely, so just get the text
                 result = tab.Runtime.evaluate(expression="document.body.innerText", returnByValue=True)
                 content = result.get("result", {}).get("value", "")
-                
+
                 if not content:
                     raise DemistoException(f"No content extracted from JSON URL: {url}")
-                
+
                 # Format JSON for readability if it's valid JSON
                 try:
                     parsed_json = json.loads(content)
@@ -1844,23 +1853,27 @@ def rasterize_extract_command():  # pragma: no cover
             else:
                 # For HTML: Use advanced extraction with markdown links
                 content = _extract_html_content(tab)
-            
+
             if not content:
                 raise DemistoException(f"No content extracted from: {url}")
-            
+
             # Update usage counter
             increase_counter_chrome_instances_file(chrome_port=chrome_port)
+
+            output = {
+                "URL": url,
+                "Content": content
+            }
             
-            # Return using CommandResults
             return_results(
                 CommandResults(
+                    outputs=output,
+                    readable_output=f"Successfully extracted the content from {url}",
                     outputs_prefix="Rasterize",
-                    outputs_key_field="URL",
-                    outputs={"URL": url, "Content": content},
-                    readable_output=f"Successfully extracted {len(content)} characters from {url}"
+                    outputs_key_field="URL"
                 )
             )
-    
+
     except DemistoException as e:
         demisto.error(f"rasterize-extract failed for {url}: {str(e)}")
         return_err_or_warn(str(e))
