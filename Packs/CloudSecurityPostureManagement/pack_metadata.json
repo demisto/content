@@ -3,7 +3,6 @@
     "description": "This pack provides the remediation playbooks for Cortex Cloud Issues and Cases.",
     "support": "xsoar",
     "currentVersion": "1.5.0",
-    "serverMinVersion": "8.11.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
