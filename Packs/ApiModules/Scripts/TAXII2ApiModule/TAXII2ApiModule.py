@@ -530,9 +530,6 @@ class XSOAR2STIXParser:
         for ioc in indicator_searcher:
             found_indicators = ioc.get("iocs") or []
             total = ioc.get("total")
-
-            demisto.info(f"create_indicators Found {len(found_indicators)} {total=}")
-
             for xsoar_indicator in found_indicators:
                 xsoar_type = xsoar_indicator.get("indicator_type")
                 if is_manifest:
@@ -774,7 +771,7 @@ class XSOAR2STIXParser:
         else:
             indicator_pattern_value = json.dumps(indicator_value)
 
-        object_type = stix_object.get("type")
+        object_type = stix_object["type"]
         stix_type = "indicator"
 
         pattern = ""
@@ -790,7 +787,7 @@ class XSOAR2STIXParser:
             type=stix_type,
             id=self.create_sdo_stix_uuid(xsoar_indicator, stix_type, self.namespace_uuid),
             pattern=pattern,
-            valid_from=stix_object.get("created"),
+            valid_from=stix_object["created"],
             valid_until=expiration_parsed,
             description=(xsoar_indicator.get("CustomFields") or {}).get("description", ""),
             pattern_type="stix",

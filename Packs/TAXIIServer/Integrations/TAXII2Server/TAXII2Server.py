@@ -55,193 +55,7 @@ TAXII_V20_REQUIRED_FILTER_FIELDS = {"tags", "identity_class"}
 TAXII_V21_REQUIRED_FILTER_FIELDS = {"ismalwarefamily", "published"}
 SEARCH_AFTER_KEY_NAME = "search_after_cache"
 RELATIONSHIPS_THRESHOLD = 0.9
-
-# PAGE_SIZE = 1000
 PAGE_SIZE = int(int(demisto.params().get("res_size",2000)) * RELATIONSHIPS_THRESHOLD)
-
-
-
-
-
-
-
-class IndicatorsSearcher:
-    """Used in order to search indicators by the paging or serachAfter param
-    :type page: ``int``
-    :param page: the number of page from which we start search indicators from.
-
-    :type filter_fields: ``Optional[str]``
-    :param filter_fields: comma separated fields to filter (e.g. "value,type")
-
-    :type from_date: ``Optional[str]``
-    :param from_date: the start date to search from.
-
-    :type query: ``Optional[str]``
-    :param query: indicator search query
-
-    :type to_date: ``Optional[str]``
-    :param to_date: the end date to search until to.
-
-    :type value: ``str``
-    :param value: the indicator value to search.
-
-    :type limit: ``Optional[int]``
-    :param limit: the current upper limit of the search (can be updated after init)
-
-    :type sort: ``List[Dict]``
-    :param sort: An array of sort params ordered by importance. Item structure: {"field": string, "asc": boolean}
-
-    :return: No data returned
-    :rtype: ``None``
-    """
-    SEARCH_AFTER_TITLE = 'searchAfter'
-
-    def __init__(self,
-                 page=0,
-                 filter_fields=None,
-                 from_date=None,
-                 query=None,
-                 size=100,
-                 to_date=None,
-                 value='',
-                 limit=None,
-                 sort=None,
-                 search_after=None
-                 ):
-        # searchAfter is available in searchIndicators from version 6.1.0
-        self._can_use_search_after = True
-        # populateFields merged in https://github.com/demisto/server/pull/18398
-        self._can_use_filter_fields = True
-        self._search_after_param = search_after
-        self._page = page
-        self._filter_fields = filter_fields
-        self._total = None
-        self._from_date = from_date
-        self._query = query
-        self._size = size
-        self._to_date = to_date
-        self._value = value
-        self._limit = limit
-        self._total_iocs_fetched = 0
-        self._sort = sort
-
-    def __iter__(self):
-        return self
-
-    # python2
-    def next(self):
-        return self.__next__()
-
-    def __next__(self):
-        if self.is_search_done():
-            raise StopIteration
-        res = self.search_indicators_by_version(from_date=self._from_date,
-                                                query=self._query,
-                                                size=self._size,
-                                                to_date=self._to_date,
-                                                value=self._value)
-        fetched_len = len(res.get('iocs') or [])
-        demisto.info(f"IndicatorsSearcher Fetched {fetched_len} indicators")
-        if fetched_len == 0:
-            raise StopIteration
-        self._total_iocs_fetched += fetched_len
-        return res
-
-    @property
-    def page(self):
-        return self._page
-
-    @property
-    def total(self):
-        return self._total
-
-    @property
-    def limit(self):
-        return self._limit
-
-    @limit.setter
-    def limit(self, value):
-        self._limit = value
-
-    def is_search_done(self):
-        """
-        Return True if one of these conditions is met (else False):
-        1. self.limit is set, and it's updated to be less or equal to zero - return True
-        2. for search_after if self.total was populated by a previous search, but no self._search_after_param
-        3. for page if self.total was populated by a previous search, but page is too large
-        """
-        reached_limit = self.limit is not None and self.limit <= self._total_iocs_fetched
-        if reached_limit:
-            demisto.info("IndicatorsSearcher has reached its limit: {} _search_after_param: {} _total_iocs_fetched: {}".format(self.limit, self._search_after_param, self._total_iocs_fetched))
-            # update limit to match _total_iocs_fetched value
-            if self._total_iocs_fetched > self.limit:
-                self.limit = self._total_iocs_fetched
-            return True
-        else:
-            if self.total is None:
-                return False
-            no_more_indicators = self.total and self._search_after_param is None
-            if no_more_indicators:
-                demisto.info("IndicatorsSearcher can not fetch anymore indicators")
-            return no_more_indicators
-
-    def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
-        """There are 2 cases depends on the sever version:
-        1. Search indicators using paging, raise the page number in each call.
-        2. Search indicators using searchAfter param, update the _search_after_param in each call.
-
-        :type from_date: ``Optional[str]``
-        :param from_date: the start date to search from.
-
-        :type query: ``Optional[str]``
-        :param query: indicator search query
-
-        :type size: ``int``
-        :param size: limit the number of returned results.
-
-        :type to_date: ``Optional[str]``
-        :param to_date: the end date to search until to.
-
-        :type value: ``str``
-        :param value: the indicator value to search.
-
-        :return: object contains the search results
-        :rtype: ``dict``
-        """
-        search_args = assign_params(
-            fromDate=from_date,
-            toDate=to_date,
-            query=query,
-            size=size,
-            value=value,
-            searchAfter=self._search_after_param,
-            populateFields=self._filter_fields,
-        )
-        if is_demisto_version_ge('6.6.0'):
-            search_args['sort'] = self._sort
-        demisto.info('IndicatorsSearcher: page {}, search_args: {}'.format(self._page, search_args))
-        res = demisto.searchIndicators(**search_args)
-
-
-        self._total = res.get('total')
-        demisto.info('IndicatorsSearcher: page {}, result size: {}'.format(self._page, self._total))
-        # when total is None, there is a problem with the server for returning indicators, hence need to restart the container,
-        # see XSUP-26699
-        if self._total is None:
-            raise SystemExit(
-                "Encountered issue when trying to fetch indicators for integration in instance {integration}. "
-                "Restarting container and trying again.".format(integration=get_integration_instance_name())
-            )
-        if isinstance(self._page, int):
-            self._page += 1  # advance pages
-        self._search_after_param = res.get(self.SEARCH_AFTER_TITLE)
-        return res
-
-
-
-
-
-
 
 """ TAXII2 Server """
 
@@ -478,11 +292,11 @@ class TAXII2Server:
         """
         found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get("query")
-        demisto.info(f"T2S: calling find_indicators with {query=} {types=} {added_after=} {limit=} {offset=}")
+        demisto.debug(f"T2S: calling find_indicators with {query=} {types=} {added_after=} {limit=} {offset=}")
         iocs, extensions, total, use_search_after = find_indicators(
             query=query, types=types, added_after=added_after, limit=limit, offset=offset, collection_id=collection_id
         )
-        demisto.info(f"T2S: after find_indicators len: {len(iocs)}")
+
 
         first_added = None
         last_added = None
@@ -501,8 +315,6 @@ class TAXII2Server:
         if len(objects) < len(iocs):
             demisto.info(f"T2S: WARNING: number of IOCs is higher than limit {len(objects)=} {len(iocs)=}")
 
-
-        demisto.info(f"T2S: in get_objects {objects=}")
 
         if SERVER.has_extension:
             limited_extensions = get_limited_extensions(limited_iocs, extensions)
@@ -526,7 +338,7 @@ class TAXII2Server:
                 response["next"] = str(limit + offset)
 
         content_range = f"items {offset}-{len(limited_iocs)}/{total}"
-        demisto.info(f"T2S: {len(objects)=}")
+        demisto.debug(f"T2S: {len(objects)=}")
         return response, first_added, last_added, content_range
 
 
@@ -840,14 +652,9 @@ def find_indicators(
     search_after_offset = int(offset * RELATIONSHIPS_THRESHOLD)
     if integration_context.get(SEARCH_AFTER_KEY_NAME, {}).get(collection_id, {}).get(str(search_after_offset)):
         search_after = integration_context[SEARCH_AFTER_KEY_NAME][collection_id][str(search_after_offset)]
-        demisto.info(f"found search_after_cache for {search_after_offset=}: {search_after}")
-        demisto.info(
-            f"{INTEGRATION_NAME}: search indicators parameters is {field_filters=}, {new_query=}, {limit=}, {search_after=}"
-        )
         indicator_searcher = search_indicators(field_filters, new_query, limit, search_after["search_after"])
         use_search_after = True
     else:
-        demisto.info(f"could not found search_after_cache for {search_after_offset}")
         demisto.info(f"{INTEGRATION_NAME}: search indicators parameters is {field_filters=}, {new_query=}, {new_limit=}")
         indicator_searcher = search_indicators(field_filters, new_query, new_limit)
 
@@ -861,9 +668,6 @@ def find_indicators(
 
 
     if indicator_searcher._search_after_param:
-        demisto.info(
-            f"search_after_param returns from the search: {indicator_searcher._search_after_param=} {indicator_searcher._total_iocs_fetched=} {offset=}"
-        )
 
         if SEARCH_AFTER_KEY_NAME not in integration_context:
             integration_context[SEARCH_AFTER_KEY_NAME] = {}
@@ -888,7 +692,7 @@ def remove_old_cache(integration_context: dict) -> None:
     """Remove expired entries from cache['search_after_cache'] if older than 24 hours."""
     now = datetime.now(timezone.utc)
     expiry_time = timedelta(hours=48)
-    # expiry_time = timedelta(minutes=10)
+
 
     search_cache = integration_context.get(SEARCH_AFTER_KEY_NAME)
     if not isinstance(search_cache, dict):
@@ -907,7 +711,7 @@ def remove_old_cache(integration_context: dict) -> None:
 
             if now - last_updated > expiry_time:
                 del time_dict[offset]
-                demisto.info(f"remove_old_cache removed {collection_id=} {offset=} {data} from cache")
+                demisto.debug(f"remove_old_cache removed {collection_id=} {offset=} {data} from cache")
 
         # Clean up empty nested dicts
         if not time_dict:
