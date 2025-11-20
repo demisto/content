@@ -38,7 +38,10 @@ from VectraDetect import (
     fetch_incidents,
     get_modified_remote_data_command,
     get_remote_data_command,
+    markall_detections_asclosed_command,
     markall_detections_asfixed_command,
+    mark_detections_asclosed_command,
+    mark_detections_asopen_command,
     update_remote_system_command,
     vectra_group_assign_command,
     vectra_group_list_command,
@@ -71,7 +74,22 @@ def load_test_data(json_path):
 def client():
     from VectraDetect import Client
 
-    return Client(base_url=f"{API_URL}", headers={})
+    # Call the functionbals
+    return Client(base_url=f"{API_URL}", verify=True, proxy=False, use_oauth=False, api_token="test_api_token")
+
+
+@pytest.fixture
+def oauth_client():
+    from VectraDetect import Client
+
+    return Client(
+        base_url=f"{API_URL}",
+        verify=True,
+        proxy=False,
+        use_oauth=True,
+        client_id="test_client_id",
+        client_secret="test_client_secret",
+    )
 
 
 #####
@@ -596,11 +614,11 @@ def test_convert_outcome_category_text2raw(input_category, expected):
     ],
 )
 # @freeze_time("2022-07-01 11:00:00 GMT")
-def test_test_module(requests_mock, integration_params, expected):
+def test_test_module(requests_mock, client, integration_params, expected):
     """
     Tests test_module command function.
     """
-    from VectraDetect import Client, test_module
+    from VectraDetect import test_module
 
     account_data = load_test_data("single_account.json")
     account_response = {"count": 1, "results": [account_data]}
@@ -623,8 +641,6 @@ def test_test_module(requests_mock, integration_params, expected):
 
     group_res = load_test_data("group_list_response.json")
     requests_mock.get(f"{API_URL}{API_ENDPOINT_GROUPS}", json=group_res)
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     assert test_module(client=client, integration_params=integration_params) == expected
 
@@ -682,6 +698,7 @@ def test_fetch_incidents(mocker, client, requests_mock):
         "max_fetch": "201",
         "fetch_entity_types": ["Accounts", "Hosts", "Detections"],
         "tags": "hello,world",
+        "fetch_escalated_accounts_and_hosts": True,
     }
     new_last_run, incidents = fetch_incidents(client, params)
     new_last_run_expected = load_test_data("fetch_incidents_new_last_run.json")
@@ -711,7 +728,7 @@ def test_fetch_incidents(mocker, client, requests_mock):
         ),
     ],
 )
-def test_vectra_search_accounts_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+def test_vectra_search_accounts_command(requests_mock, client, query_args, expected_outputs, expected_readable, exception):
     """
     Tests vectra_search_accounts_command command function.
     """
@@ -722,7 +739,7 @@ def test_vectra_search_accounts_command(requests_mock, query_args, expected_outp
 
     VectraDetect.global_UI_URL = SERVER_URL
 
-    from VectraDetect import Client, vectra_search_accounts_command
+    from VectraDetect import vectra_search_accounts_command
 
     # Default answer
     # Not implemented yet
@@ -742,8 +759,6 @@ def test_vectra_search_accounts_command(requests_mock, query_args, expected_outp
         complete_qs=True,
         json={"count": 1},
     )
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     with exception:
         result = vectra_search_accounts_command(client=client, **query_args)
@@ -772,7 +787,7 @@ def test_vectra_search_accounts_command(requests_mock, query_args, expected_outp
         ),
     ],
 )
-def test_vectra_search_detections_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+def test_vectra_search_detections_command(requests_mock, client, query_args, expected_outputs, expected_readable, exception):
     """
     Tests vectra_search_detections_command command function.
     """
@@ -783,16 +798,14 @@ def test_vectra_search_detections_command(requests_mock, query_args, expected_ou
 
     VectraDetect.global_UI_URL = SERVER_URL
 
-    from VectraDetect import Client, vectra_search_detections_command
+    from VectraDetect import vectra_search_detections_command
 
     # Default answer
     # Not implemented yet
 
     # Specific answers
     requests_mock.get(
-        f"{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}"
-        f"?page=1&order_field=last_timestamp&page_size=200"
-        f"&query_string=no-count",
+        f"{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}?page=1&order_field=last_timestamp&page_size=200&query_string=no-count",
         complete_qs=True,
         json={"results": []},
     )
@@ -803,8 +816,6 @@ def test_vectra_search_detections_command(requests_mock, query_args, expected_ou
         complete_qs=True,
         json={"count": 1},
     )
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     with exception:
         result = vectra_search_detections_command(client=client, **query_args)
@@ -833,7 +844,7 @@ def test_vectra_search_detections_command(requests_mock, query_args, expected_ou
         ),
     ],
 )
-def test_vectra_search_hosts_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+def test_vectra_search_hosts_command(requests_mock, client, query_args, expected_outputs, expected_readable, exception):
     """
     Tests vectra_search_hosts_command command function.
     """
@@ -844,16 +855,14 @@ def test_vectra_search_hosts_command(requests_mock, query_args, expected_outputs
 
     VectraDetect.global_UI_URL = SERVER_URL
 
-    from VectraDetect import Client, vectra_search_hosts_command
+    from VectraDetect import vectra_search_hosts_command
 
     # Default answer
     # Not implemented yet
 
     # Specific answers
     requests_mock.get(
-        f"{API_URL}{API_SEARCH_ENDPOINT_HOSTS}"
-        f"?page=1&order_field=last_detection_timestamp&page_size=200"
-        f"&query_string=no-count",
+        f"{API_URL}{API_SEARCH_ENDPOINT_HOSTS}?page=1&order_field=last_detection_timestamp&page_size=200&query_string=no-count",
         complete_qs=True,
         json={"results": []},
     )
@@ -864,8 +873,6 @@ def test_vectra_search_hosts_command(requests_mock, query_args, expected_outputs
         complete_qs=True,
         json={"count": 1},
     )
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     with exception:
         result = vectra_search_hosts_command(client=client, **query_args)
@@ -878,11 +885,11 @@ def test_vectra_search_hosts_command(requests_mock, query_args, expected_outputs
     "query_args,expected_outputs,expected_readable,exception",
     [pytest.param({}, [load_test_data("single_assignment_extracted.json")], None, does_not_raise(), id="full-pull")],
 )
-def test_vectra_search_assignments_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+def test_vectra_search_assignments_command(requests_mock, client, query_args, expected_outputs, expected_readable, exception):
     """
     Tests vectra_search_assignments_command command function.
     """
-    from VectraDetect import Client, vectra_search_assignments_command
+    from VectraDetect import vectra_search_assignments_command
 
     # Specific answers
     requests_mock.get(
@@ -891,8 +898,6 @@ def test_vectra_search_assignments_command(requests_mock, query_args, expected_o
         json={"count": 1, "results": [load_test_data("single_assignment.json")]},
     )
 
-    client = Client(base_url=f"{API_URL}", headers={})
-
     with exception:
         result = vectra_search_assignments_command(client=client, **query_args)
         assert result.outputs == expected_outputs
@@ -900,15 +905,256 @@ def test_vectra_search_assignments_command(requests_mock, query_args, expected_o
             assert result.readable_output == expected_readable
 
 
+# Authentication Tests
+
+
+def test_generate_tokens(oauth_client, requests_mock):
+    """
+    Given:
+    - Mocked response for generating access tokens.
+    - VectraDetect Client instance.
+
+    When:
+    - Calling the `_generate_tokens` method.
+
+    Then:
+    - Ensure the generated access token matches the expected access token.
+    """
+
+    # Set up
+    access_token = "test_access_token"
+    response_data = {"access_token": access_token, "token_type": "Bearer"}
+    requests_mock.post(f"{API_URL}/oauth2/token", json=response_data, status_code=200)
+
+    token = oauth_client._generate_tokens()
+    assert token == access_token
+
+
+def test_generate_tokens_failure(oauth_client, requests_mock, mocker):
+    """
+    Given:
+    - Mocked failed response for generating access tokens.
+    - VectraDetect Client instance.
+
+    When:
+    - Calling the `_generate_tokens` method.
+
+    Then:
+    - Ensure the method raises an exception.
+    """
+    mocker.patch("VectraDetect.get_integration_context", return_value={})
+    response_data = {"message": "Invalid payload"}
+    requests_mock.post(f"{API_URL}/oauth2/token", json=response_data, status_code=401)
+
+    with pytest.raises(DemistoException) as e:
+        oauth_client._generate_tokens()
+
+    assert ERRORS["GENERAL_AUTH_ERROR"].format("401") in str(e.value)
+
+
+@pytest.mark.parametrize(
+    "resp_type,response_data,error_message",
+    [
+        ("json", {"message": "Invalid payload"}, "Failed to generate OAuth access token - no access_token in response"),
+        ("text", "Invalid Response", "Failed to parse json object from response: b'Invalid Response'"),
+    ],
+)
+def test_generate_tokens_ivalid_response(oauth_client, requests_mock, mocker, resp_type, response_data, error_message):
+    """
+    Given:
+    - Mocked failed response for generating access tokens.
+    - VectraDetect Client instance.
+
+    When:
+    - Calling the `_generate_tokens` method.
+
+    Then:
+    - Ensure the method raises an exception.
+    """
+    mocker.patch("VectraDetect.get_integration_context", return_value={})
+    if resp_type == "json":
+        requests_mock.post(f"{API_URL}/oauth2/token", json=response_data, status_code=200)
+    else:
+        requests_mock.post(f"{API_URL}/oauth2/token", text=response_data, status_code=200)
+
+    with pytest.raises(DemistoException) as e:
+        oauth_client._generate_tokens()
+
+    assert error_message in str(e.value)
+
+
+@pytest.mark.parametrize(
+    "use_oauth,expected_auth_header",
+    [
+        (False, "token test_api_token"),
+        (True, "Bearer test_access_token"),
+    ],
+)
+def test_get_auth_headers(client, oauth_client, use_oauth, expected_auth_header):
+    """
+    Given:
+    - Client configured with different authentication methods.
+
+    When:
+    - Calling _get_auth_headers method.
+
+    Then:
+    - Ensure correct authorization header is returned for each auth type.
+    """
+    headers = oauth_client._get_auth_headers() if use_oauth else client._get_auth_headers()
+
+    assert "Authorization" in headers
+    assert headers["Authorization"] == expected_auth_header
+    assert "User-Agent" in headers
+
+
+def test_http_request_oauth_token_refresh_on_401(oauth_client, mocker, requests_mock):
+    """
+    Given:
+    - Client configured with OAuth authentication.
+    - HTTP request that returns 401 (token expired).
+
+    When:
+    - Making an HTTP request that triggers token refresh.
+
+    Then:
+    - Ensure token is refreshed and request is retried successfully.
+    """
+    # Mock integration context with expired token
+    mocker.patch(
+        "VectraDetect.get_integration_context",
+        return_value={
+            "oauth_token": {"access_token": "expired_token", "expire": 0}  # Already expired
+        },
+    )
+    mock_set_context = mocker.patch("VectraDetect.set_integration_context")
+
+    # Mock first request returning 401, then success on retry
+    requests_mock.get(
+        f"{API_URL}/test",
+        [
+            {"status_code": 401, "json": {"detail": "Incorrect authentication credentials."}},
+            {"status_code": 200, "json": {"success": True}},
+        ],
+    )
+
+    # Mock token refresh endpoint with expires_in field
+    requests_mock.post(
+        f"{API_URL}/oauth2/token", json={"access_token": "refreshed_token", "token_type": "Bearer", "expires_in": 21600}
+    )
+
+    # Make request that should trigger token refresh
+    result = oauth_client.http_request("GET", "/test", resp_type="response")
+
+    # Verify token refresh was called and context was updated
+    mock_set_context.assert_called()
+    # Check that the context was updated with oauth_token structure
+    call_args = mock_set_context.call_args[0][0]
+    assert "oauth_token" in call_args
+    assert call_args["oauth_token"]["access_token"] == "refreshed_token"
+    assert "expire" in call_args["oauth_token"]
+
+    assert result.status_code == 200
+
+    # Verify that the OAuth token refresh endpoint was called
+    token_requests = [req for req in requests_mock.request_history if req.method == "POST" and "/oauth2/token" in req.url]
+    assert len(token_requests) >= 1
+    assert token_requests[0].method == "POST"
+    assert f"{API_URL}/oauth2/token" in token_requests[0].url
+
+
+def test_http_request_oauth_token_refresh_on_401_all_retries_failed(oauth_client, mocker, requests_mock):
+    """
+    Given:
+    - Client configured with OAuth authentication.
+    - HTTP request that returns 401 (token expired) for every API call.
+
+    When:
+    - Making an HTTP request that triggers token refresh.
+
+    Then:
+    - Ensure token is refreshed and request is retried successfully.
+    """
+    # Mock integration context with expired token
+    mocker.patch(
+        "VectraDetect.get_integration_context",
+        return_value={
+            "oauth_token": {"access_token": "expired_token", "expire": 0}  # Already expired
+        },
+    )
+    invalid_response = {"detail": "Incorrect authentication credentials."}
+    requests_mock.get(f"{API_URL}/test", json=invalid_response, status_code=401)
+
+    requests_mock.post(
+        f"{API_URL}/oauth2/token", json={"access_token": "refreshed_token", "token_type": "Bearer", "expires_in": 21600}
+    )
+
+    with pytest.raises(DemistoException) as err:
+        oauth_client.http_request("GET", "/test")
+
+    assert ERRORS["UNAUTHORIZED_REQUEST"].format(401, invalid_response) in str(err.value)
+
+
+@pytest.mark.parametrize(
+    "integration_params,expected_error",
+    [
+        pytest.param({}, "Missing integration setting : 'Server FQDN'"),
+        pytest.param(
+            {"server_fqdn": "test.vectra.com", "authentication_type": "API Token", "credentials": {"password": "  "}},
+            "Missing integration setting : 'Credentials password' or 'API token'",
+        ),
+        pytest.param(
+            {"server_fqdn": "test.vectra.com", "authentication_type": "OAuth 2.0", "oauth_credentials": None},
+            "Missing integration setting : 'OAuth 2.0 Credentials' are required for OAuth 2.0 authentication",
+        ),
+        pytest.param(
+            {
+                "server_fqdn": "test.vectra.com",
+                "authentication_type": "OAuth 2.0",
+                "oauth_credentials": {"identifier": "client_id", "password": "  "},
+            },
+            "Missing integration setting : 'Client ID' and 'Client Secret' are required for OAuth 2.0 authentication",
+        ),
+        pytest.param(
+            {
+                "server_fqdn": "test.vectra.com",
+                "authentication_type": "OAuth 2.0",
+                "oauth_credentials": {"identifier": "      ", "password": "client_secret"},
+            },
+            "Missing integration setting : 'Client ID' and 'Client Secret' are required for OAuth 2.0 authentication",
+        ),
+    ],
+)
+def test_main_function_authentication_invalid_params(mocker, integration_params, expected_error):
+    """
+    Given:
+    - Various integration parameter configurations.
+
+    When:
+    - Calling the main function with different authentication setups.
+
+    Then:
+    - Ensure proper authentication validation and client creation.
+    """
+    from VectraDetect import main
+
+    # Mock demisto functions
+    mocker.patch.object(demisto, "params", return_value=integration_params)
+    with pytest.raises(DemistoException) as e:
+        main()
+
+    assert expected_error in str(e.value)
+
+
 @pytest.mark.parametrize(
     "query_args,expected_outputs,expected_readable,exception",
     [pytest.param({}, [load_test_data("single_outcome_extracted.json")], None, does_not_raise(), id="full-pull")],
 )
-def test_vectra_search_outcomes_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+def test_vectra_search_outcomes_command(requests_mock, client, query_args, expected_outputs, expected_readable, exception):
     """
     Tests vectra_search_outcomes_command command function.
     """
-    from VectraDetect import Client, vectra_search_outcomes_command
+    from VectraDetect import vectra_search_outcomes_command
 
     # Specific answers
     requests_mock.get(
@@ -916,8 +1162,6 @@ def test_vectra_search_outcomes_command(requests_mock, query_args, expected_outp
         complete_qs=True,
         json={"count": 1, "results": [load_test_data("single_outcome.json")]},
     )
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     with exception:
         result = vectra_search_outcomes_command(client=client, **query_args)
@@ -930,18 +1174,16 @@ def test_vectra_search_outcomes_command(requests_mock, query_args, expected_outp
     "query_args,expected_outputs,expected_readable,exception",
     [pytest.param({}, [load_test_data("single_user_extracted.json")], None, does_not_raise(), id="full-pull")],
 )
-def test_vectra_search_users_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+def test_vectra_search_users_command(requests_mock, client, query_args, expected_outputs, expected_readable, exception):
     """
     Tests vectra_search_users_command command function.
     """
-    from VectraDetect import Client, vectra_search_users_command
+    from VectraDetect import vectra_search_users_command
 
     # Specific answers
     requests_mock.get(
         f"{API_URL}{API_ENDPOINT_USERS}", complete_qs=True, json={"count": 1, "results": [load_test_data("single_user.json")]}
     )
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     with exception:
         result = vectra_search_users_command(client=client, **query_args)
@@ -985,7 +1227,7 @@ def test_vectra_search_users_command(requests_mock, query_args, expected_outputs
         ),
     ],
 )
-def test_vectra_get_account_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+def test_vectra_get_account_by_id_command(requests_mock, client, id, expected_outputs, expected_readable, exception):
     """
     Tests vectra_get_account_by_id_command command function.
     """
@@ -996,7 +1238,7 @@ def test_vectra_get_account_by_id_command(requests_mock, id, expected_outputs, e
 
     VectraDetect.global_UI_URL = SERVER_URL
 
-    from VectraDetect import Client, vectra_get_account_by_id_command
+    from VectraDetect import vectra_get_account_by_id_command
 
     # Default answer
     requests_mock.get(f"{API_URL}{API_SEARCH_ENDPOINT_ACCOUNTS}", json={"count": 0, "results": []})
@@ -1029,8 +1271,6 @@ def test_vectra_get_account_by_id_command(requests_mock, id, expected_outputs, e
         complete_qs=True,
         json={"count": 1, "results": [load_test_data("single_account.json")]},
     )
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     with exception:
         result = vectra_get_account_by_id_command(client=client, id=id)
@@ -1074,7 +1314,7 @@ def test_vectra_get_account_by_id_command(requests_mock, id, expected_outputs, e
         ),
     ],
 )
-def test_vectra_get_detection_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+def test_vectra_get_detection_by_id_command(requests_mock, client, id, expected_outputs, expected_readable, exception):
     """
     Tests vectra_get_detection_by_id_command command function.
     """
@@ -1085,7 +1325,7 @@ def test_vectra_get_detection_by_id_command(requests_mock, id, expected_outputs,
 
     VectraDetect.global_UI_URL = SERVER_URL
 
-    from VectraDetect import Client, vectra_get_detection_by_id_command
+    from VectraDetect import vectra_get_detection_by_id_command
 
     # Default answer
     requests_mock.get(f"{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}", json={"count": 0, "results": []})
@@ -1112,14 +1352,10 @@ def test_vectra_get_detection_by_id_command(requests_mock, id, expected_outputs,
         json={"count": 2, "results": []},
     )
     requests_mock.get(
-        f"{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}"
-        f"?page=1&order_field=last_timestamp&page_size=200"
-        f"&query_string=detection.id:14",
+        f"{API_URL}{API_SEARCH_ENDPOINT_DETECTIONS}?page=1&order_field=last_timestamp&page_size=200&query_string=detection.id:14",
         complete_qs=True,
         json={"count": 1, "results": [load_test_data("single_detection.json")]},
     )
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     with exception:
         result = vectra_get_detection_by_id_command(client=client, id=id)
@@ -1163,7 +1399,7 @@ def test_vectra_get_detection_by_id_command(requests_mock, id, expected_outputs,
         ),
     ],
 )
-def test_vectra_get_host_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+def test_vectra_get_host_by_id_command(requests_mock, client, id, expected_outputs, expected_readable, exception):
     """
     Tests vectra_get_host_by_id_command command function.
     """
@@ -1174,7 +1410,7 @@ def test_vectra_get_host_by_id_command(requests_mock, id, expected_outputs, expe
 
     VectraDetect.global_UI_URL = SERVER_URL
 
-    from VectraDetect import Client, vectra_get_host_by_id_command
+    from VectraDetect import vectra_get_host_by_id_command
 
     # Default answer
     requests_mock.get(f"{API_URL}{API_SEARCH_ENDPOINT_HOSTS}", json={"count": 0, "results": []})
@@ -1208,8 +1444,6 @@ def test_vectra_get_host_by_id_command(requests_mock, id, expected_outputs, expe
         json={"count": 1, "results": [load_test_data("single_host.json")]},
     )
 
-    client = Client(base_url=f"{API_URL}", headers={})
-
     with exception:
         result = vectra_get_host_by_id_command(client=client, id=id)
         assert result.outputs == expected_outputs
@@ -1225,11 +1459,11 @@ def test_vectra_get_host_by_id_command(requests_mock, id, expected_outputs, expe
         pytest.param("15", None, pytest.raises(DemistoException, match="Error in API call"), id="no-pcap_exception"),
     ],
 )
-def test_get_detection_pcap_file_command(requests_mock, id, expected, exception):
+def test_get_detection_pcap_file_command(requests_mock, client, id, expected, exception):
     """
     Tests get_detection_pcap_file_command command function.
     """
-    from VectraDetect import Client, get_detection_pcap_file_command
+    from VectraDetect import get_detection_pcap_file_command
 
     requests_mock.get(f"{API_URL}{API_ENDPOINT_DETECTIONS}/10/pcap", complete_qs=True, content=b"0000")
     requests_mock.get(
@@ -1238,8 +1472,6 @@ def test_get_detection_pcap_file_command(requests_mock, id, expected, exception)
         status_code=404,
         json={"status": 404, "reason": "File Not Found"},
     )
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     with exception:
         assert get_detection_pcap_file_command(client=client, id=id) == expected
@@ -1263,19 +1495,17 @@ def test_get_detection_pcap_file_command(requests_mock, id, expected, exception)
         ),
     ],
 )
-def test_mark_detection_as_fixed_command(requests_mock, id, fixed, expected_outputs, expected_readable, exception):
+def test_mark_detection_as_fixed_command(requests_mock, client, id, fixed, expected_outputs, expected_readable, exception):
     """
     Tests mark_detection_as_fixed_command command function.
     """
-    from VectraDetect import Client, mark_detection_as_fixed_command
+    from VectraDetect import mark_detection_as_fixed_command
 
     requests_mock.patch(
         f"{API_URL}{API_ENDPOINT_DETECTIONS}",
         complete_qs=True,
         json={"_meta": {"level": "Success", "message": "Successfully marked detections"}},
     )
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     with exception:
         result = mark_detection_as_fixed_command(client=client, id=id, fixed=fixed)
@@ -1293,11 +1523,11 @@ def test_mark_detection_as_fixed_command(requests_mock, id, fixed, expected_outp
         ),
     ],
 )
-def test_vectra_get_assignment_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+def test_vectra_get_assignment_by_id_command(requests_mock, client, id, expected_outputs, expected_readable, exception):
     """
     Tests vectra_get_assignment_by_id_command command function.
     """
-    from VectraDetect import Client, vectra_get_assignment_by_id_command
+    from VectraDetect import vectra_get_assignment_by_id_command
 
     # Default answer
     requests_mock.get(f"{API_URL}{API_ENDPOINT_ASSIGNMENTS}", json={})
@@ -1307,8 +1537,6 @@ def test_vectra_get_assignment_by_id_command(requests_mock, id, expected_outputs
         complete_qs=True,
         json={"assignment": load_test_data("single_assignment.json")},
     )
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     with exception:
         result = vectra_get_assignment_by_id_command(client=client, id=id)
@@ -1427,12 +1655,12 @@ def test_vectra_get_assignment_by_id_command(requests_mock, id, expected_outputs
     ],
 )
 def test_vectra_assignment_assign_command(
-    requests_mock, assignee_id, account_id, host_id, assignment_id, expected_outputs, expected_readable, exception
+    requests_mock, client, assignee_id, account_id, host_id, assignment_id, expected_outputs, expected_readable, exception
 ):
     """
     Tests vectra_assignment_assign_command command function.
     """
-    from VectraDetect import Client, vectra_assignment_assign_command
+    from VectraDetect import vectra_assignment_assign_command
 
     # Test answer, useless to check XSOAR inner exceptions (none API call raised)
     # Need to create inner checks based on post query body to have a better coverage
@@ -1441,8 +1669,6 @@ def test_vectra_assignment_assign_command(
         complete_qs=True,
         json={"assignment": load_test_data("single_assignment.json")},
     )
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     with exception:
         result = vectra_assignment_assign_command(
@@ -1558,6 +1784,7 @@ def test_vectra_assignment_assign_command(
 )
 def test_vectra_assignment_resolve_command(
     requests_mock,
+    client,
     assignment_id,
     outcome_id,
     note,
@@ -1571,7 +1798,7 @@ def test_vectra_assignment_resolve_command(
     """
     Tests vectra_assignment_resolve_command command function.
     """
-    from VectraDetect import Client, vectra_assignment_resolve_command
+    from VectraDetect import vectra_assignment_resolve_command
 
     # Default answer, useless to check XSOAR inner exceptions (none API call raised)
     # Need to create inner checks based on post query body to have a better coverage
@@ -1580,8 +1807,6 @@ def test_vectra_assignment_resolve_command(
         complete_qs=True,
         json={"assignment": load_test_data("single_assignment.json")},
     )
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     with exception:
         result = vectra_assignment_resolve_command(
@@ -1605,11 +1830,11 @@ def test_vectra_assignment_resolve_command(
         pytest.param("4", load_test_data("single_outcome_extracted.json"), None, does_not_raise(), id="valid-id_no-exception"),
     ],
 )
-def test_vectra_get_outcome_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+def test_vectra_get_outcome_by_id_command(requests_mock, client, id, expected_outputs, expected_readable, exception):
     """
     Tests vectra_get_outcome_by_id_command command function.
     """
-    from VectraDetect import Client, vectra_get_outcome_by_id_command
+    from VectraDetect import vectra_get_outcome_by_id_command
 
     # Default answer
     requests_mock.get(f"{API_URL}{API_ENDPOINT_OUTCOMES}", json={})
@@ -1619,8 +1844,6 @@ def test_vectra_get_outcome_by_id_command(requests_mock, id, expected_outputs, e
         complete_qs=True,
         json=load_test_data("single_outcome.json"),
     )
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     with exception:
         result = vectra_get_outcome_by_id_command(client=client, id=id)
@@ -1682,16 +1905,14 @@ def test_vectra_get_outcome_by_id_command(requests_mock, id, expected_outputs, e
         ),
     ],
 )
-def test_vectra_outcome_create_command(requests_mock, category, title, expected_outputs, expected_readable, exception):
+def test_vectra_outcome_create_command(requests_mock, client, category, title, expected_outputs, expected_readable, exception):
     """
     Tests vectra_outcome_create_command command function.
     """
-    from VectraDetect import Client, vectra_outcome_create_command
+    from VectraDetect import vectra_outcome_create_command
 
     # Test post
     requests_mock.post(f"{API_URL}{API_ENDPOINT_OUTCOMES}", json=load_test_data("single_outcome.json"))
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     with exception:
         result = vectra_outcome_create_command(client=client, category=category, title=title)
@@ -1707,18 +1928,16 @@ def test_vectra_outcome_create_command(requests_mock, category, title, expected_
         pytest.param("123", load_test_data("single_user_extracted.json"), None, does_not_raise(), id="valid-id_no-exception"),
     ],
 )
-def test_vectra_get_user_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+def test_vectra_get_user_by_id_command(requests_mock, client, id, expected_outputs, expected_readable, exception):
     """
     Tests vectra_get_user_by_id_command command function.
     """
-    from VectraDetect import Client, vectra_get_user_by_id_command
+    from VectraDetect import vectra_get_user_by_id_command
 
     # Default answer
     requests_mock.get(f"{API_URL}{API_ENDPOINT_USERS}", json={})
     # Specific answers
     requests_mock.get(f"{API_URL}{API_ENDPOINT_USERS}/123", complete_qs=True, json=load_test_data("single_user.json"))
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     with exception:
         result = vectra_get_user_by_id_command(client=client, id=id)
@@ -1765,16 +1984,14 @@ def test_vectra_get_user_by_id_command(requests_mock, id, expected_outputs, expe
         ),
     ],
 )
-def test_add_tags_command(requests_mock, type, id, tags, expected_outputs, expected_readable, exception):
+def test_add_tags_command(requests_mock, client, type, id, tags, expected_outputs, expected_readable, exception):
     """
     Tests add_tags_command command function.
     """
-    from VectraDetect import Client, add_tags_command
+    from VectraDetect import add_tags_command
 
     requests_mock.get(f"{API_URL}{API_TAGGING}/{type}/{id}", complete_qs=True, json={"tags": ["vectra"]})
     requests_mock.patch(f"{API_URL}{API_TAGGING}/{type}/{id}", complete_qs=True, json={"tags": ["vectra"]})
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     with exception:
         result = add_tags_command(client=client, type=type, id=id, tags=tags)
@@ -1821,16 +2038,14 @@ def test_add_tags_command(requests_mock, type, id, tags, expected_outputs, expec
         ),
     ],
 )
-def test_del_tags_command(requests_mock, type, id, tags, expected_outputs, expected_readable, exception):
+def test_del_tags_command(requests_mock, client, type, id, tags, expected_outputs, expected_readable, exception):
     """
     Tests del_tags_command command function.
     """
-    from VectraDetect import Client, del_tags_command
+    from VectraDetect import del_tags_command
 
     requests_mock.get(f"{API_URL}{API_TAGGING}/{type}/{id}", complete_qs=True, json={"tags": ["vectra"]})
     requests_mock.patch(f"{API_URL}{API_TAGGING}/{type}/{id}", complete_qs=True, json={"tags": ["vectra"]})
-
-    client = Client(base_url=f"{API_URL}", headers={})
 
     with exception:
         result = del_tags_command(client=client, type=type, id=id, tags=tags)
@@ -2490,7 +2705,7 @@ def test_account_note_add_command_valid_arguments(client, requests_mock):
 
     notes_res = util_load_json("test_data/account_note_add_response.json")
     context_data = util_load_json("test_data/account_note_add_context.json")
-    requests_mock.post(f'{API_URL}{ENDPOINTS["ADD_AND_LIST_ACCOUNT_NOTE_ENDPOINT"].format(2)}', json=notes_res)
+    requests_mock.post(f"{API_URL}{ENDPOINTS['ADD_AND_LIST_ACCOUNT_NOTE_ENDPOINT'].format(2)}", json=notes_res)
     with open("test_data/account_note_add_hr.md") as f:
         result_hr = f.read()
 
@@ -2529,7 +2744,7 @@ def test_host_note_add_command_valid_arguments(client, requests_mock):
 
     notes_res = util_load_json("test_data/host_note_add_response.json")
     context_data = util_load_json("test_data/host_note_add_context.json")
-    requests_mock.post(f'{API_URL}{ENDPOINTS["ADD_AND_LIST_HOST_NOTE_ENDPOINT"].format(7)}', json=notes_res)
+    requests_mock.post(f"{API_URL}{ENDPOINTS['ADD_AND_LIST_HOST_NOTE_ENDPOINT'].format(7)}", json=notes_res)
     with open("test_data/host_note_add_hr.md") as f:
         result_hr = f.read()
 
@@ -2567,7 +2782,7 @@ def test_detection_note_add_command_valid_arguments(client, requests_mock):
 
     notes_res = util_load_json("test_data/detection_note_add_response.json")
     context_data = util_load_json("test_data/detection_note_add_context.json")
-    requests_mock.post(f'{API_URL}{ENDPOINTS["ADD_AND_LIST_DETECTION_NOTE_ENDPOINT"].format(9)}', json=notes_res)
+    requests_mock.post(f"{API_URL}{ENDPOINTS['ADD_AND_LIST_DETECTION_NOTE_ENDPOINT'].format(9)}", json=notes_res)
     with open("test_data/detection_note_add_hr.md") as f:
         result_hr = f.read()
 
@@ -2639,7 +2854,7 @@ def test_account_note_update_command_valid_arguments(client, requests_mock):
 
     notes_res = util_load_json("test_data/account_note_update_response.json")
     context_data = util_load_json("test_data/account_note_update_context.json")
-    requests_mock.patch(f'{API_URL}{ENDPOINTS["UPDATE_AND_REMOVE_ACCOUNT_NOTE_ENDPOINT"].format(2, 1959)}', json=notes_res)
+    requests_mock.patch(f"{API_URL}{ENDPOINTS['UPDATE_AND_REMOVE_ACCOUNT_NOTE_ENDPOINT'].format(2, 1959)}", json=notes_res)
     with open("test_data/account_note_update_hr.md") as f:
         result_hr = f.read()
 
@@ -2679,7 +2894,7 @@ def test_host_note_update_command_valid_arguments(client, requests_mock):
 
     notes_res = util_load_json("test_data/host_note_update_response.json")
     context_data = util_load_json("test_data/host_note_update_context.json")
-    requests_mock.patch(f'{API_URL}{ENDPOINTS["UPDATE_AND_REMOVE_HOST_NOTE_ENDPOINT"].format(7, 1960)}', json=notes_res)
+    requests_mock.patch(f"{API_URL}{ENDPOINTS['UPDATE_AND_REMOVE_HOST_NOTE_ENDPOINT'].format(7, 1960)}", json=notes_res)
     with open("test_data/host_note_update_hr.md") as f:
         result_hr = f.read()
 
@@ -2719,7 +2934,7 @@ def test_detection_note_update_command_valid_arguments(client, requests_mock):
 
     notes_res = util_load_json("test_data/detection_note_update_response.json")
     context_data = util_load_json("test_data/detection_note_update_context.json")
-    requests_mock.patch(f'{API_URL}{ENDPOINTS["UPDATE_AND_REMOVE_DETECTION_NOTE_ENDPOINT"].format(9, 1961)}', json=notes_res)
+    requests_mock.patch(f"{API_URL}{ENDPOINTS['UPDATE_AND_REMOVE_DETECTION_NOTE_ENDPOINT'].format(9, 1961)}", json=notes_res)
     with open("test_data/detection_note_update_hr.md") as f:
         result_hr = f.read()
 
@@ -2787,7 +3002,7 @@ def test_vectra_account_note_remove_valid_arguments(client, requests_mock):
 
     args = {"account_id": "2", "note_id": "1959"}
 
-    requests_mock.delete(f'{API_URL}{ENDPOINTS["UPDATE_AND_REMOVE_ACCOUNT_NOTE_ENDPOINT"].format(2, 1959)}', status_code=204)
+    requests_mock.delete(f"{API_URL}{ENDPOINTS['UPDATE_AND_REMOVE_ACCOUNT_NOTE_ENDPOINT'].format(2, 1959)}", status_code=204)
 
     # Call the function
     result = note_remove_command(client, entity_type="account", args=args)
@@ -2814,7 +3029,7 @@ def test_vectra_host_note_remove_valid_arguments(client, requests_mock):
 
     args = {"host_id": "7", "note_id": "1960"}
 
-    requests_mock.delete(f'{API_URL}{ENDPOINTS["UPDATE_AND_REMOVE_HOST_NOTE_ENDPOINT"].format(7, 1960)}', status_code=204)
+    requests_mock.delete(f"{API_URL}{ENDPOINTS['UPDATE_AND_REMOVE_HOST_NOTE_ENDPOINT'].format(7, 1960)}", status_code=204)
 
     # Call the function
     result = note_remove_command(client, entity_type="host", args=args)
@@ -2841,7 +3056,7 @@ def test_vectra_detection_note_remove_valid_arguments(client, requests_mock):
 
     args = {"detection_id": "9", "note_id": "1961"}
 
-    requests_mock.delete(f'{API_URL}{ENDPOINTS["UPDATE_AND_REMOVE_DETECTION_NOTE_ENDPOINT"].format(9, 1961)}', status_code=204)
+    requests_mock.delete(f"{API_URL}{ENDPOINTS['UPDATE_AND_REMOVE_DETECTION_NOTE_ENDPOINT'].format(9, 1961)}", status_code=204)
     result = note_remove_command(client, entity_type="detection", args=args)
 
     # Assert the result
@@ -2867,7 +3082,7 @@ def test_vectra_note_remove_invalid_status_code(client, requests_mock):
     args = {"host_id": "7", "note_id": "1980"}
 
     requests_mock.delete(
-        f'{API_URL}{ENDPOINTS["UPDATE_AND_REMOVE_HOST_NOTE_ENDPOINT"].format(7, 1980)}', status_code=200, text="test fail"
+        f"{API_URL}{ENDPOINTS['UPDATE_AND_REMOVE_HOST_NOTE_ENDPOINT'].format(7, 1980)}", status_code=200, text="test fail"
     )
 
     # Call the function
@@ -2938,7 +3153,7 @@ def test_vectra_account_note_list_valid_arguments(client, requests_mock):
     with open("test_data/account_note_list_hr.md") as f:
         result_hr = f.read()
 
-    requests_mock.get(f'{API_URL}{ENDPOINTS["ADD_AND_LIST_ACCOUNT_NOTE_ENDPOINT"].format(2)}', json=notes_res)
+    requests_mock.get(f"{API_URL}{ENDPOINTS['ADD_AND_LIST_ACCOUNT_NOTE_ENDPOINT'].format(2)}", json=notes_res)
 
     result = note_list_command(client=client, entity_type="account", args=args)
 
@@ -2976,7 +3191,7 @@ def test_vectra_host_note_list_valid_arguments(client, requests_mock):
     with open("test_data/host_note_list_hr.md") as f:
         result_hr = f.read()
 
-    requests_mock.get(f'{API_URL}{ENDPOINTS["ADD_AND_LIST_HOST_NOTE_ENDPOINT"].format(7)}', json=notes_res)
+    requests_mock.get(f"{API_URL}{ENDPOINTS['ADD_AND_LIST_HOST_NOTE_ENDPOINT'].format(7)}", json=notes_res)
 
     result = note_list_command(client=client, entity_type="host", args=args)
     result_context = result.to_context()
@@ -3013,7 +3228,7 @@ def test_vectra_detection_note_list_valid_arguments(client, requests_mock):
     with open("test_data/detection_note_list_hr.md") as f:
         result_hr = f.read()
 
-    requests_mock.get(f'{API_URL}{ENDPOINTS["ADD_AND_LIST_DETECTION_NOTE_ENDPOINT"].format(9)}', json=notes_res)
+    requests_mock.get(f"{API_URL}{ENDPOINTS['ADD_AND_LIST_DETECTION_NOTE_ENDPOINT'].format(9)}", json=notes_res)
 
     result = note_list_command(client=client, entity_type="detection", args=args)
     result_context = result.to_context()
@@ -3071,7 +3286,7 @@ def test_vectra_account_note_list_when_note_response_is_empty(client, requests_m
 
     args = {"account_id": "5"}
 
-    requests_mock.get(f'{API_URL}{ENDPOINTS["ADD_AND_LIST_ACCOUNT_NOTE_ENDPOINT"].format(5)}', json=[])
+    requests_mock.get(f"{API_URL}{ENDPOINTS['ADD_AND_LIST_ACCOUNT_NOTE_ENDPOINT'].format(5)}", json=[])
 
     result = note_list_command(client=client, entity_type="account", args=args)
     result_context = result.to_context()
@@ -3570,3 +3785,419 @@ def test_vectra_group_unassign_invalid_args(client, args, error_msg):
         vectra_group_unassign_command(client, args)
 
     assert str(exception.value) == error_msg
+
+
+@pytest.mark.parametrize(
+    "integration_context, expected_incidents",
+    [
+        ({"Accounts": {"refetch_ids": ["Accounts_36", "Accounts_1017"]}, "Hosts": {"refetch_ids": ["Hosts_472"]}}, 2),
+        ({"Accounts": {"refetch_ids": []}, "Hosts": {"refetch_ids": []}}, 0),
+        ({}, 0),
+    ],
+)
+def test_fetch_incidents_with_refetch_ids_scenarios(mocker, client, integration_context, expected_incidents):
+    """
+    Test fetch_incidents with different integration context scenarios.
+    Given:
+    - A client object.
+    - A mocked 'getLastRun' method that returns a dictionary with already_fetched IDs.
+    - Different integration context scenarios (with refetch_ids, empty refetch_ids, no refetch_ids).
+    When:
+    - Fetching incidents with different integration context states.
+    Then:
+    - Assert that the integration context is updated correctly.
+    - Assert that already_fetched is handled correctly based on the scenario.
+    - Assert that incidents are processed correctly.
+    """
+    # Setup test data
+    last_run = {
+        "Accounts": {"last_timestamp": "2023-05-15T09:39:09Z", "id": "", "last_created_events": ["Accounts_36"]},
+        "Hosts": {"last_timestamp": "2023-05-15T09:39:09Z", "id": "", "last_created_events": ["Hosts_472"]},
+    }
+
+    # Mock the API responses
+    account_data = load_test_data("single_account.json")
+    account_response = {"count": 1, "results": [account_data]}
+    mocker.patch.object(client, "search_accounts", return_value=account_response)
+    host_data = load_test_data("single_host.json")
+    host_response = {"count": 1, "results": [host_data]}
+    mocker.patch.object(client, "search_hosts", return_value=host_response)
+
+    mocker.patch.object(client, "search_detections", return_value={"count": 0, "results": []})
+    mocker.patch.object(client, "list_detections_by_host_id", return_value={"count": 0, "results": []})
+    mocker.patch.object(client, "list_group_request", return_value={"count": 0, "results": []})
+    mocker.patch.object(client, "list_assignments_request", return_value={"count": 0, "results": []})
+
+    # Setup mocks
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "debug")
+
+    # Mock the integration context functions
+    mocker.patch.object(VectraDetect, "get_integration_context", return_value=integration_context)
+    set_integration_context_mock = mocker.patch.object(VectraDetect, "set_integration_context")
+
+    params = {"isFetch": True, "first_fetch": "1 hour", "max_fetch": "200", "fetch_entity_types": ["Accounts", "Hosts"]}
+
+    # Call the function
+    new_last_run, incidents = fetch_incidents(client, params)
+    if set_integration_context_mock.called:
+        updated_context = set_integration_context_mock.call_args[0][0]
+        # Each entity type should have refetch_ids set to empty list
+        for entity_type in ["Accounts", "Hosts"]:
+            assert entity_type in updated_context
+            assert updated_context[entity_type]["refetch_ids"] == []
+
+    # Verify incidents were processed
+    assert len(incidents) == expected_incidents
+    assert isinstance(incidents, list)
+    assert isinstance(new_last_run, dict)
+
+
+def test_update_remote_system_closing_notes_refetch(client, mocker):
+    """
+    Given:
+    - A client object.
+    - A mocker for patching client functions.
+    - Mocked arguments with JSON data from a test file, including closing notes and related data.
+    - refetch_closed_incidents is True
+    When:
+    - Calling the 'update_remote_system_command' function with arguments indicating the closure of an incident.
+    Then:
+    - Assert that the remote incident ID returned matches the expected value.
+    - Assert that the {entity ID}-{entity Type} is added to refetch_ids in integration context.
+    """
+    mock_args = util_load_json("test_data/update_remote_system_args.json")
+
+    mock_args["data"]["closeNotes"] = "Closing notes"
+    mock_args["data"]["closeReason"] = "Closed due to testing"
+    mock_args["delta"]["closingUserId"] = "user2"
+    mock_args["data"]["vectraxdrentityid"] = "123"
+    mock_args["data"]["vectraxdrentitytype"] = "host"
+
+    # Mock integration context
+    mocker.patch.object(VectraDetect, "get_integration_context", return_value={"Hosts": {"refetch_ids": []}})
+    set_integration_context = mocker.patch.object(VectraDetect, "set_integration_context")
+
+    mocker.patch.object(client, "update_entity_tags_request", return_value={})
+    mocker.patch.object(client, "list_entity_tags_request", return_value={})
+    mocker.patch.object(client, "add_note_request", return_value={})
+
+    params = {"refetch_closed_incidents": "true"}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value=mock_args)
+    remote_incident_id = update_remote_system_command(client)
+    assert remote_incident_id == "123-host"
+
+    # Verify entity ID was added to refetch_ids
+    expected_refetch_id = f"Hosts_{mock_args['data']['vectraxdrentityid']}"
+    set_integration_context.assert_called_once_with({"Hosts": {"refetch_ids": [expected_refetch_id]}})
+
+
+def test_update_remote_system_closing_notes_refetch_invalid_id(client, mocker):
+    """
+    Given:
+    - A client object.
+    - A mocker for patching client functions.
+    - Mocked arguments with JSON data from a test file, including closing notes and related data.
+    - refetch_closed_incidents is True
+    When:
+    - Calling the 'update_remote_system_command' function with arguments indicating the closure of an incident.
+    Then:
+    - Assert that the function raises a ValueError.
+    - Assert that the raised error message matches the expected error message.
+    """
+    mock_args = util_load_json("test_data/update_remote_system_args.json")
+
+    mock_args["remoteId"] = "123-"
+    mock_args["data"]["closeNotes"] = "Closing notes"
+    mock_args["data"]["closeReason"] = "Closed due to testing"
+    mock_args["delta"]["closingUserId"] = "user2"
+
+    mocker.patch.object(client, "update_entity_tags_request", return_value={})
+    mocker.patch.object(client, "list_entity_tags_request", return_value={})
+    mocker.patch.object(client, "add_note_request", return_value={})
+
+    params = {"refetch_closed_incidents": "true"}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value=mock_args)
+
+    with pytest.raises(ValueError) as exception:
+        update_remote_system_command(client)
+
+    assert str(exception.value) == "Both 'entity_id' and 'entity_type' arguments are required."
+
+
+@pytest.mark.parametrize("refetch_closed_incidents", ["invalid", ""])
+def test_update_remote_system_closing_notes_refetch_invalid(client, mocker, refetch_closed_incidents):
+    """
+    Given:
+    - A client object.
+    - A mocker for patching client functions.
+    - Mocked arguments with JSON data from a test file, including closing notes and related data.
+    - refetch_closed_incidents is invalid or empty
+    When:
+    - Calling the 'update_remote_system_command' function with arguments indicating the closure of an incident.
+    Then:
+    - Assert that the function raises a ValueError.
+    - Assert that the raised error message matches the expected error message.
+    """
+    mock_args = util_load_json("test_data/update_remote_system_args.json")
+
+    mock_args["data"]["closeNotes"] = "Closing notes"
+    mock_args["data"]["closeReason"] = "Closed due to testing"
+    mock_args["delta"]["closingUserId"] = "user2"
+
+    mocker.patch.object(client, "update_entity_tags_request", return_value={})
+    mocker.patch.object(client, "list_entity_tags_request", return_value={})
+    mocker.patch.object(client, "add_note_request", return_value={})
+
+    params = {"refetch_closed_incidents": refetch_closed_incidents}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value=mock_args)
+
+    with pytest.raises(ValueError) as exception:
+        update_remote_system_command(client)
+
+    assert str(exception.value) == "Argument does not contain a valid boolean-like value"
+
+
+@pytest.mark.parametrize("close_reason", ["benign", "remediated"])
+def test_markall_detections_asclosed_command_for_account_when_success(client, requests_mock, close_reason):
+    """
+    Tests markall_detections_asclosed_command command function when success with host.
+    """
+    account_id = "36"
+    args = {"account_id": account_id, "close_reason": close_reason}
+
+    account_data = load_test_data("single_account.json")
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_ACCOUNT}/{account_id}", json=account_data, status_code=200)
+
+    response = {"_meta": {"level": "Success", "message": f"Successfully closed detections as {close_reason}"}}
+    requests_mock.patch(f"{API_URL}{API_ENDPOINT_DETECTIONS}/close", json=response, status_code=200)
+
+    result = markall_detections_asclosed_command(client=client, entity_type="account", args=args)
+
+    assert (
+        result.readable_output
+        == f"##### The active detections of the provided account have been successfully closed as {close_reason}."
+    )
+    assert result.raw_response == response
+
+
+def test_markall_detections_asclosed_command_for_account_when_no_detection(client, requests_mock):
+    """
+    Tests markall_detections_asclosed_command command function when no detection in account.
+    """
+    account_id = "36"
+    close_reason = "benign"
+    args = {"account_id": account_id, "close_reason": close_reason}
+
+    account_data = load_test_data("single_account.json")
+    account_data["detection_summaries"] = []
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_ACCOUNT}/{account_id}", json=account_data, status_code=200)
+
+    result = markall_detections_asclosed_command(client=client, entity_type="account", args=args)
+
+    assert result.readable_output == "##### There are no active detections present."
+    assert result.raw_response == {}
+
+
+@pytest.mark.parametrize("close_reason", ["benign", "remediated"])
+def test_markall_detections_asclosed_command_for_host_when_success(client, requests_mock, close_reason):
+    """
+    Tests markall_detections_asclosed_command command function when success with host.
+    """
+    host_id = "472"
+    args = {"host_id": host_id, "close_reason": close_reason}
+
+    host_data = load_test_data("single_host.json")
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_HOST}/{host_id}", json=host_data, status_code=200)
+
+    response = {"_meta": {"level": "Success", "message": f"Successfully closed detections as {close_reason}"}}
+    requests_mock.patch(f"{API_URL}{API_ENDPOINT_DETECTIONS}/close", json=response, status_code=200)
+
+    result = markall_detections_asclosed_command(client=client, entity_type="host", args=args)
+
+    assert (
+        result.readable_output
+        == f"##### The active detections of the provided host have been successfully closed as {close_reason}."
+    )
+    assert result.raw_response == response
+
+
+def test_markall_detections_asclosed_command_for_host_when_no_detection(client, requests_mock):
+    """
+    Tests markall_detections_asclosed_command command function when no detection in host.
+    """
+    host_id = "472"
+    close_reason = "benign"
+    args = {"host_id": host_id, "close_reason": close_reason}
+
+    host_data = load_test_data("single_host.json")
+    host_data["detection_summaries"] = []
+    requests_mock.get(f"{API_URL}{API_ENDPOINT_HOST}/{host_id}", json=host_data, status_code=200)
+
+    result = markall_detections_asclosed_command(client=client, entity_type="host", args=args)
+
+    assert result.readable_output == "##### There are no active detections present."
+    assert result.raw_response == {}
+
+
+@pytest.mark.parametrize(
+    "args,type,expected_error",
+    [
+        pytest.param(
+            {"close_reason": "benign", "account_id": ""},
+            "account",
+            ERRORS["REQUIRED_ARGUMENT"].format("account_id"),
+        ),
+        pytest.param(
+            {"account_id": "-1", "close_reason": "benign"},
+            "account",
+            ERRORS["INVALID_INTEGER_VALUE"].format("account_id"),
+        ),
+        pytest.param(
+            {"account_id": "36"},
+            "account",
+            ERRORS["REQUIRED_ARGUMENT"].format("close_reason"),
+        ),
+        pytest.param(
+            {"host_id": "-1", "close_reason": "benign"},
+            "host",
+            ERRORS["INVALID_INTEGER_VALUE"].format("host_id"),
+        ),
+        pytest.param(
+            {"host_id": "36"},
+            "host",
+            ERRORS["REQUIRED_ARGUMENT"].format("close_reason"),
+        ),
+        pytest.param(
+            {"host_id": "36", "close_reason": "invalid"},
+            "host",
+            'Invalid close_reason. Must be "benign" or "remediated".',
+        ),
+        pytest.param(
+            {"host_id": "36", "close_reason": ""},
+            "host",
+            ERRORS["REQUIRED_ARGUMENT"].format("close_reason"),
+        ),
+    ],
+)
+def test_markall_detections_asclosed_command_invalid_args(client, args, type, expected_error):
+    """
+    Tests markall_detections_asclosed_command command function error validation cases.
+    """
+    with pytest.raises(ValueError) as err:
+        markall_detections_asclosed_command(client=client, entity_type=type, args=args)
+
+    assert str(err.value) == expected_error
+
+
+@pytest.mark.parametrize("close_reason", ["benign", "remediated"])
+def test_mark_detections_asclosed_command_valid_close(requests_mock, client, close_reason):
+    """
+    Tests mark_detection_as_closed_command with valid close reason.
+    """
+
+    response = {"_meta": {"level": "success", "message": f"Successfully closed detection as {close_reason}"}}
+    requests_mock.patch(f"{API_URL}{API_ENDPOINT_DETECTIONS}/close", json=response)
+
+    args = {"detection_ids": "123,234", "close_reason": close_reason}
+    result = mark_detections_asclosed_command(client=client, args=args)
+
+    assert result.outputs is None
+    assert result.readable_output == f"##### The provided detection IDs have been successfully closed as {close_reason}."
+    assert result.raw_response == response
+
+
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        pytest.param({}, ERRORS["REQUIRED_ARGUMENT"].format("detection_ids")),
+        pytest.param({"detection_ids": "abc"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+        pytest.param({"detection_ids": "0"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+        pytest.param({"detection_ids": "-5"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+        pytest.param({"detection_ids": "123,abc,456"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+        pytest.param({"detection_ids": "123"}, ERRORS["REQUIRED_ARGUMENT"].format("close_reason")),
+        pytest.param(
+            {"detection_ids": "123", "close_reason": "invalid"},
+            "Invalid close_reason. Must be 'benign' or 'remediated'.",
+        ),
+    ],
+)
+def test_mark_detections_asclosed_command_invalid_args(args, client, error_msg):
+    """
+    Tests mark_detections_asclosed_command with invalid arguments.
+    """
+
+    with pytest.raises(ValueError) as err:
+        mark_detections_asclosed_command(client=client, args=args)
+
+    assert str(err.value) == error_msg
+
+
+def test_mark_detections_asopen_command_valid(requests_mock, client):
+    """
+    Tests mark_detections_asopen_command with valid open detection.
+    """
+    response = {"_meta": {"level": "success", "message": "Successfully re-opened detections."}}
+    requests_mock.patch(f"{API_URL}{API_ENDPOINT_DETECTIONS}/open", json=response)
+
+    args = {"detection_ids": "123,234"}
+    result = mark_detections_asopen_command(client=client, args=args)
+
+    assert result.outputs is None
+    assert result.readable_output == "##### The provided detection IDs have been successfully re-opened."
+    assert result.raw_response == response
+
+
+@pytest.mark.parametrize(
+    "args,error_msg",
+    [
+        pytest.param({}, ERRORS["REQUIRED_ARGUMENT"].format("detection_ids")),
+        pytest.param({"detection_ids": "abc"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+        pytest.param({"detection_ids": "0"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+        pytest.param({"detection_ids": "-5"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+        pytest.param({"detection_ids": "123,abc,456"}, ERRORS["INVALID_INTEGER_VALUE"].format("detection_ids")),
+    ],
+)
+def test_mark_detections_asopen_command_invalid_args(args, client, error_msg):
+    """
+    Tests mark_detections_asopen_command with invalid arguments.
+    """
+    with pytest.raises(ValueError) as err:
+        mark_detections_asopen_command(client=client, args=args)
+
+    assert str(err.value) == error_msg
+
+
+def test_mark_detections_asopen_command_api_error(requests_mock, client):
+    """
+    Tests mark_detections_asopen_command when API returns error.
+    """
+    response = {"_meta": {"level": "error", "message": "Failed to open detections"}}
+    requests_mock.patch(f"{API_URL}{API_ENDPOINT_DETECTIONS}/open", json=response)
+
+    args = {"detection_ids": "123"}
+
+    with pytest.raises(DemistoException) as err:
+        mark_detections_asopen_command(client=client, args=args)
+
+    assert str(err.value) == "Something went wrong. Message: Failed to open detections."
+
+
+def test_mark_detections_asclosed_command_api_error(requests_mock, client):
+    """
+    Tests mark_detections_asclosed_commandwhen API returns error.
+    """
+
+    response = {"_meta": {"level": "error", "message": "Failed to close detections"}}
+    requests_mock.patch(f"{API_URL}{API_ENDPOINT_DETECTIONS}/close", json=response)
+
+    args = {"detection_ids": "123", "close_reason": "benign"}
+
+    with pytest.raises(DemistoException) as err:
+        mark_detections_asclosed_command(client=client, args=args)
+
+    assert str(err.value) == "Something went wrong. Message: Failed to close detections."
