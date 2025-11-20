@@ -477,6 +477,16 @@ script:
     - contextPath: MSGraph.identityProtection.RiskyUserHistory.id
       description: Unique ID of the risky user.
       type: string
+  - description: Retrieve Entra ID sign-in event details
+    name: msgraph-identity-audit-signin-event-get
+    arguments:
+    - name: request_id
+      description: RequestID property of the sign-in event.
+      required: true
+    outputs:
+    - contextPath: MSGraph.AuditLog.signIn
+      description: User sign-in event.
+      type: array
   - description: Delete an ip named location by id.
     name: msgraph-identity-protection-risky-user-confirm-compromised
     arguments:
