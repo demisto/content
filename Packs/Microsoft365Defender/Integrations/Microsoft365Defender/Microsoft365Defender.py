@@ -1169,7 +1169,6 @@ def main() -> None:
             managed_identities_client_id=managed_identities_client_id,
         )
         if demisto.command() == "test-module":
-            # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
 
         elif command == "microsoft-365-defender-auth-start":

@@ -927,7 +927,7 @@ class MicrosoftClient(BaseClient):
         Checks all necessary fields for the specific authentication flow.
         """
         flow = self.grant_type
-        demisto.debug(f"Testing flow {flow}")
+        demisto.debug(f"{self.redirect_uri=}")
 
         def require_fields(fields: list[str], message_prefix: str):
             """Helper to validate required fields."""
@@ -956,6 +956,10 @@ class MicrosoftClient(BaseClient):
             )
 
         elif flow == AUTHORIZATION_CODE:
+            if not demisto.params().get("redirect_uri"):  # this is taken from demisto.params because we have a default
+            # value for this parameter in MicrosoftClient class
+                raise DemistoException(f"A redirect URI is required. Please enter the redirect URI that you configured"
+                                       f" in your self-deployed application.")
             require_fields(
                 fields=["tenant_id", "client_secret", "client_id", "redirect_uri"],
                 message_prefix="When using Authorization Code flow you must "
