@@ -1,4 +1,3 @@
-adopted: true
 description: This playbook automates notifying stakeholders via Slack v3, Microsoft
   Teams, or email. You have the flexibility to notify other teams via Slack, Microsoft
   Teams or Email by configuring the necessary integration. This playbook requires
