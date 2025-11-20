@@ -545,6 +545,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "Checks if notifications are enabled based on the playbook inputs."
       id: 586d87f0-567d-4c4d-8aec-f90dfd2e2a1f
       iscommand: false
       name: Is notification enabled?

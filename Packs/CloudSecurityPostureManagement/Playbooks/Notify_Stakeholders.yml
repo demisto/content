@@ -155,6 +155,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "Checks if MS Teams is enabled and a channel is specified."
       id: 5f3a26fe-960a-4391-8beb-c2d9a8b2ee6c
       iscommand: false
       name: Is Microsoft Teams enabled and channel name provided?
@@ -398,6 +399,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "Checks if the mail sender or Gmail integration is enabled and an email address is provided."
       id: 1056d6df-2489-4c98-8403-e731fdbcc495
       iscommand: false
       name: Is an Email integration enabled and address provided?
@@ -464,6 +466,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "Checks if the SlackV3 integration is enabled and a channel name is provided."
       id: ed7488d3-91ba-4835-8df2-510f68f3d10f
       iscommand: false
       name: Is Slack enabled and channel name provided?
@@ -516,6 +519,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "Checks if at least one notification recipient is provided."
       id: 1256d5ee-c20b-4397-8ee6-5552a0046bf8
       iscommand: false
       name: Is at least one notification recipient provided?
@@ -666,6 +670,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "Checks if at least one notification recipient is provided."
       id: 0efa90f7-f71d-4644-8e63-bcd3934cf750
       iscommand: false
       name: Is at least one notification recipient provided?
@@ -920,6 +925,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "Section header"
       id: d70077ee-7ba4-4b04-820b-f8c89f966738
       iscommand: false
       name: Send Notification with Details
