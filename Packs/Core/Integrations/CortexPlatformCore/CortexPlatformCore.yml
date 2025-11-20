@@ -20,6 +20,423 @@ name: Cortex Core - Platform
 script:
   commands:
     - arguments:
+        - description: The unique ID of the asset. Accepts a comma-separated list.
+          name: asset_id
+          isArray: true
+        - description: The name of the asset. Accepts a comma-separated list.
+          name: asset_name
+          isArray: true
+        - description: Business application names. Accepts a comma-separated list.
+          name: business_application_names
+          isArray: true
+        - auto: PREDEFINED
+          description: The status coverage. Accepts a comma-separated list.
+          isArray: true
+          name: status_coverage
+          predefined:
+            - FULLY SCANNED
+            - NOT SCANNED
+            - PARTIALLY SCANNED
+        - auto: PREDEFINED
+          description: Is scanned by vulnerabilities. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_vulnerabilities
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by code weakness. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_code_weakness
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by secrets. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_secrets
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by IaC. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_iac
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by malware. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_malware
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by CICD. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_cicd
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: The last scan status. Accepts a comma-separated list.
+          isArray: true
+          name: last_scan_status
+          predefined:
+            - NOT_SCANNED_YET
+            - ERROR
+            - COMPLETED
+        - auto: PREDEFINED
+          description: The asset type. Accepts a comma-separated list.
+          isArray: true
+          name: asset_type
+          predefined:
+            - CICD PIPELINE
+            - CONTAINER IMAGE REPOSITORY
+            - REPOSITORY
+        - auto: PREDEFINED
+          description: The asset provider. Accepts a comma-separated list.
+          isArray: true
+          name: asset_provider
+          predefined:
+            - AWS
+            - AWS_CODE_BUILD
+            - AWS_CODE_COMMIT
+            - AZURE
+            - AZURE_PIPELINES
+            - AZURE_REPOS
+            - BITBUCKET
+            - CIRCLE_CI
+            - DOCKER
+            - GCP
+            - GITHUB
+            - GITHUB_ACTIONS
+            - GITLAB
+            - GITLAB_CI
+            - HCP_TFC_RUN_TASKS
+            - JENKINS
+            - JFROG_ARTIFACTORY
+            - OCI
+        - auto: PREDEFINED
+          description: The vendor name. Accepts a comma-separated list.
+          isArray: true
+          name: vendor_name
+          predefined:
+            - AWS
+            - AWS_CODE_BUILD
+            - AWS_CODE_COMMIT
+            - AZURE
+            - AZURE_REPOS
+            - BITBUCKET
+            - BITBUCKET_DATACENTER
+            - CIRCLE_CI
+            - DOCKER
+            - GCP
+            - GITHUB
+            - GITHUB_ACTIONS
+            - GITHUB_ENTERPRISE
+            - GITLAB
+            - GITLAB_SELF_MANAGED
+            - HCP_TFC_RUN_TASKS
+            - HCP_TFE_RUN_TASKS
+            - JENKINS
+            - JFROG_ARTIFACTORY
+            - OCI
+        - name: max_values_per_column
+          description: "The maximum number of distinct values to return for each column."
+          defaultValue: "100"
+        - name: columns
+          description: A list of fields for which to generate histograms.
+          isArray: true
+          required: true
+          predefined:
+            - asset_name
+            - business_application_names
+            - status_coverage
+            - is_scanned_by_vulnerabilities
+            - is_scanned_by_code_weakness
+            - is_scanned_by_secrets
+            - is_scanned_by_iac
+            - is_scanned_by_malware
+            - is_scanned_by_cicd
+            - last_scan_status
+            - asset_type
+            - asset_provider
+            - vendor_name
+      name: core-get-asset-coverage-histogram
+      description: "Calculates the distribution of values (counts and percentages) for specified categorical fields."
+      outputs:
+        - contextPath: Core.Coverage.Histogram.column_name
+          description: The column over which the histogram is generated.
+          type: String
+
+        - contextPath: Core.Coverage.Histogram.data.value
+          description: The distinct value.
+          type: String
+
+        - contextPath: Core.Coverage.Histogram.data.count
+          description: The number of records with this value after filtering.
+          type: Number
+
+        - contextPath: Core.Coverage.Histogram.data.percentage
+          description: The percentage of filtered records with this value.
+          type: Number
+
+        - contextPath: Core.Coverage.Histogram.data.pretty_name
+          description: A user-friendly label for the value.
+          type: String
+    - arguments:
+        - description: The unique ID of the asset. Accepts a comma-separated list.
+          name: asset_id
+          isArray: true
+        - description: The name of the asset. Accepts a comma-separated list.
+          name: asset_name
+          isArray: true
+        - description: Business application names. Accepts a comma-separated list.
+          name: business_application_names
+          isArray: true
+        - auto: PREDEFINED
+          description: The status coverage. Accepts a comma-separated list.
+          isArray: true
+          name: status_coverage
+          predefined:
+            - FULLY SCANNED
+            - NOT SCANNED
+            - PARTIALLY SCANNED
+        - auto: PREDEFINED
+          description: Is scanned by vulnerabilities. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_vulnerabilities
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by code weakness. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_code_weakness
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by secrets. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_secrets
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by IaC. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_iac
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by malware. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_malware
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by CICD. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_cicd
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: The last scan status. Accepts a comma-separated list.
+          isArray: true
+          name: last_scan_status
+          predefined:
+            - NOT_SCANNED_YET
+            - ERROR
+            - COMPLETED
+        - auto: PREDEFINED
+          description: The asset type. Accepts a comma-separated list.
+          isArray: true
+          name: asset_type
+          predefined:
+            - CICD PIPELINE
+            - CONTAINER IMAGE REPOSITORY
+            - REPOSITORY
+        - auto: PREDEFINED
+          description: The asset provider. Accepts a comma-separated list.
+          isArray: true
+          name: asset_provider
+          predefined:
+            - AWS
+            - AWS_CODE_BUILD
+            - AWS_CODE_COMMIT
+            - AZURE
+            - AZURE_PIPELINES
+            - AZURE_REPOS
+            - BITBUCKET
+            - CIRCLE_CI
+            - DOCKER
+            - GCP
+            - GITHUB
+            - GITHUB_ACTIONS
+            - GITLAB
+            - GITLAB_CI
+            - HCP_TFC_RUN_TASKS
+            - JENKINS
+            - JFROG_ARTIFACTORY
+            - OCI
+        - auto: PREDEFINED
+          description: The vendor name. Accepts a comma-separated list.
+          isArray: true
+          name: vendor_name
+          predefined:
+            - AWS
+            - AWS_CODE_BUILD
+            - AWS_CODE_COMMIT
+            - AZURE
+            - AZURE_REPOS
+            - BITBUCKET
+            - BITBUCKET_DATACENTER
+            - CIRCLE_CI
+            - DOCKER
+            - GCP
+            - GITHUB
+            - GITHUB_ACTIONS
+            - GITHUB_ENTERPRISE
+            - GITLAB
+            - GITLAB_SELF_MANAGED
+            - HCP_TFC_RUN_TASKS
+            - HCP_TFE_RUN_TASKS
+            - JENKINS
+            - JFROG_ARTIFACTORY
+            - OCI
+        - name: limit
+          description: "The maximum number of assets to return."
+          defaultValue: "100"
+        - name: sort_field
+          description: The field by which to sort the results.
+          predefined:
+            - asset_id
+            - asset_name
+            - business_application_names
+            - status_coverage
+            - is_scanned_by_vulnerabilities
+            - is_scanned_by_code_weakness
+            - is_scanned_by_secrets
+            - is_scanned_by_iac
+            - is_scanned_by_malware
+            - is_scanned_by_cicd
+            - last_scan_status
+            - asset_type
+            - asset_provider
+            - vendor_name
+        - auto: PREDEFINED
+          description: The order in which to sort the results.
+          name: sort_order
+          predefined:
+            - DESC
+            - ASC
+      name: core-get-asset-coverage
+      description: "Retrieves a list of assets (e.g., Repositories, CI/CD Pipelines, Container Image Repositories) along with their scan coverage status."
+      outputs:
+        - contextPath: Core.Coverage.Asset.asset_id
+          description: The unique ID of the asset. Each asset is assigned a unique identifier in the system.
+          type: String
+
+        - contextPath: Core.Coverage.Asset.asset_name
+          description: The name of the asset. Typically corresponds to the repository, container image, or pipeline name.
+          type: String
+
+        - contextPath: Core.Coverage.Asset.asset_provider
+          description:
+            "The vendor or source platform of the asset. Indicates where the asset originates from. Possible values: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_REPOS, BITBUCKET, BITBUCKET_DATACENTER, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITHUB_ENTERPRISE, GITLAB, GITLAB_SELF_MANAGED, HCP_TFC_RUN_TASKS, HCP_TFE_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.asset_type
+          description:
+            "The type or category of the asset. Determines the nature of the resource being scanned. Possible values: CICD PIPELINE, CONTAINER IMAGE REPOSITORY, REPOSITORY."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.business_application_names
+          description: A list of business applications associated with the asset. These applications help map the asset to business context or ownership.
+          type: Array
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_cicd
+          description:
+            "Indicates whether the asset is scanned within CI/CD pipelines. Possible values: ENABLED, DISABLED, IRRELEVANT."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_code_weakness
+          description:
+            "Indicates whether code weakness scanning is performed on the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_iac
+          description:
+            "Indicates whether infrastructure-as-code (IaC) scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_malware
+          description:
+            "Indicates whether malware scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_secrets
+          description:
+            "Indicates whether the asset is scanned for hardcoded secrets or credentials. Possible values: ENABLED, DISABLED, IRRELEVANT."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_semgrep
+          description:
+            "Boolean flag indicating whether the asset is analyzed using Semgrep for code issues or misconfigurations. Possible values: true, false."
+          type: Boolean
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_sonarqube
+          description:
+            "Boolean flag indicating whether the asset is analyzed using SonarQube for code quality and security issues. Possible values: true, false."
+          type: Boolean
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_veracode
+          description:
+            "Boolean flag indicating whether the asset is scanned using Veracode for security vulnerabilities. Possible values: true, false."
+          type: Boolean
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_vulnerabilities
+          description:
+            "Indicates whether vulnerability scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.last_scan_status
+          description:
+            "The status of the most recent scan performed on the asset. Possible values: NOT_SCANNED_YET, ERROR, COMPLETED."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.scanners_data
+          description: An array containing detailed information from the scanners that evaluated the asset, including scan results, timestamps, and metadata.
+          type: Array
+
+        - contextPath: Core.Coverage.Asset.status_coverage
+          description:
+            "The overall scan coverage of the asset. Possible values: FULLY SCANNED, PARTIALLY SCANNED, NOT SCANNED."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.unified_provider
+          description:
+            "The unified provider name associated with the asset. Standardized across different vendor integrations. Possible values: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_PIPELINES, AZURE_REPOS, BITBUCKET, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITLAB, GITLAB_CI, HCP_TFC_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI."
+          type: String
+    - arguments:
         - description: The unique ID of the issue. Accepts a comma-separated list.
           name: issue_id
           isArray: true
@@ -1136,6 +1553,22 @@ script:
       - name: description
         description: Change the description of an issue.
         type: string
+      - name: status
+        description: Change the status of an issue.
+        type: string
+        auto: PREDEFINED
+        predefined:
+        - New
+        - In Progress
+        - Resolved - Known Issue
+        - Resolved - Duplicate Issue
+        - Resolved - False Positive
+        - Resolved - other
+        - Resolved - True Positive
+        - Resolved - Security Testing
+        - Resolved - Dismissed
+        - Resolved - Fixed
+        - Resolved - Risk Accepted
       name: core-update-issue
       description: Updates the properties of an issue. This command does not provide an explicit indication of success.
     - arguments:
@@ -1395,6 +1828,28 @@ script:
         - contextPath: Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id
           description: The ID of the suggestion rule that generated this recommendation.
           type: String
+        - contextPath: Core.IssueRecommendations.existing_code_block
+          description: Original vulnerable code.
+          type: String
+        - contextPath: Core.IssueRecommendations.suggested_code_block
+          description: Code block fix suggestion.
+          type: String
+    - arguments:
+      - description: A comma-separated list of issue IDs to fix (maximum 10 per request).
+        name: issue_ids
+        required: true
+        isArray: true
+      - description: Custom title for the pull request.
+        name: title
+      name: core-appsec-remediate-issue
+      description: Create automated pull requests to fix multiple security issues in a single bulk operation.
+      outputs:
+      - contextPath: Core.TriggeredPRs.issueId
+        description: The issue identifier.
+        type: String
+      - contextPath: Core.TriggeredPRs.status
+        description: Either "triggered" or "automated_fix_not_available".
+        type: String
     - arguments:
         - description: List of repository asset IDs to configure scanners for.
           name: repository_ids

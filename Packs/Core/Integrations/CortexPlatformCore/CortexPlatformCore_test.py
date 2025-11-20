@@ -5,6 +5,10 @@ from pytest_mock import MockerFixture
 from unittest.mock import call
 import demistomock as demisto
 
+from unittest.mock import Mock, patch
+from CortexPlatformCore import get_issue_recommendations_command, Client
+
+
 MAX_GET_INCIDENTS_LIMIT = 100
 
 
@@ -2415,6 +2419,7 @@ def test_update_issue_command_success_all_fields(mocker):
         "name": "Test Issue",
         "occurred": "2023-01-01T00:00:00Z",
         "phase": "investigation",
+        "status": "New",
     }
 
     result = update_issue_command(client, args)
@@ -2429,6 +2434,7 @@ def test_update_issue_command_success_all_fields(mocker):
     assert update_data["name"] == "Test Issue"
     assert update_data["occurred"] == "2023-01-01T00:00:00Z"
     assert update_data["phase"] == "investigation"
+    assert update_data["resolution_status"] == "STATUS_010_NEW"
 
 
 def test_update_issue_command_missing_issue_id_no_context(mocker):
@@ -2561,6 +2567,32 @@ def test_update_issue_command_invalid_severity_mapping(mocker):
     call_args = mock_update_issue.call_args[0][0]
     update_data = call_args["update_data"]
     assert "severity" not in update_data
+    assert update_data["name"] == "Test Issue"
+
+
+def test_update_issue_command_invalid_status_mapping(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with invalid status value.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        Status is not included in update_data when mapping returns None.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("CortexPlatformCore.arg_to_number", return_value=99)
+
+    args = {"id": "12345", "status": "FAKE", "name": "Test Issue"}
+
+    update_issue_command(client, args)
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert "resolution_status" not in update_data
     assert update_data["name"] == "Test Issue"
 
 
@@ -2828,6 +2860,150 @@ def test_get_issue_recommendations_command_api_calls(mocker):
     assert call_args["table_name"] == "ALERTS_VIEW_TABLE"
     assert call_args["type"] == "grid"
     assert "filter_data" in call_args
+
+
+class TestGetIssueRecommendationsCommand:
+    """Test cases for the AppSec fix suggestion logic in get_issue_recommendations_command"""
+
+    def setup_method(self):
+        """Setup method to initialize common test data"""
+        self.mock_client = Mock(spec=Client)
+        self.issue_id = "test_issue_123"
+        self.base_args = {"issue_id": self.issue_id}
+
+        self.base_issue = {
+            "internal_id": self.issue_id,
+            "alert_name": "Test Security Issue",
+            "severity": "HIGH",
+            "alert_description": "Test description",
+            "remediation": "Base remediation steps",
+        }
+
+        self.base_webapp_response = {"reply": {"DATA": [self.base_issue]}}
+        self.base_playbook_response = {"reply": {"suggested_playbooks": ["Playbook1", "Playbook2"]}}
+
+    @patch("CortexPlatformCore.build_webapp_request_data")
+    def test_appsec_issue_with_fix_suggestion(self, mock_build_request):
+        """Test AppSec issue with successful fix suggestion retrieval"""
+        appsec_issue = self.base_issue.copy()
+        appsec_issue.update({"alert_source": "CAS_CVE_SCANNER", "extended_fields": {"action": "Manual fix instructions"}})
+
+        webapp_response = {"reply": {"DATA": [appsec_issue]}}
+
+        fix_suggestion = {"existingCodeBlock": "vulnerable_code_here()", "suggestedCodeBlock": "secure_code_here()"}
+
+        mock_build_request.return_value = {"mock": "request_data"}
+        self.mock_client.get_webapp_data.return_value = webapp_response
+        self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
+        self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
+
+        result = get_issue_recommendations_command(self.mock_client, self.base_args)
+
+        self.mock_client.get_appsec_suggested_fix.assert_called_once_with(self.issue_id)
+
+        expected_recommendation = {
+            "issue_id": self.issue_id,
+            "issue_name": "Test Security Issue",
+            "severity": "HIGH",
+            "description": "Test description",
+            "remediation": "Manual fix instructions",  # Should use manual_fix
+            "playbook_suggestions": {"suggested_playbooks": ["Playbook1", "Playbook2"]},
+            "existing_code_block": "vulnerable_code_here()",
+            "suggested_code_block": "secure_code_here()",
+        }
+
+        assert result.outputs == expected_recommendation
+        assert "Existing Code Block" in result.readable_output
+        assert "Suggested Code Block" in result.readable_output
+
+    @patch("CortexPlatformCore.build_webapp_request_data")
+    def test_appsec_issue_without_manual_fix(self, mock_build_request):
+        """Test AppSec issue without manual fix, should use base remediation"""
+        appsec_issue = self.base_issue.copy()
+        appsec_issue.update(
+            {
+                "alert_source": "CAS_IAC_SCANNER",
+                "extended_fields": {},  # No manual fix
+            }
+        )
+
+        webapp_response = {"reply": {"DATA": [appsec_issue]}}
+
+        fix_suggestion = {"existingCodeBlock": "terraform_issue_here", "suggestedCodeBlock": "terraform_fix_here"}
+
+        mock_build_request.return_value = {"mock": "request_data"}
+        self.mock_client.get_webapp_data.return_value = webapp_response
+        self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
+        self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
+
+        result = get_issue_recommendations_command(self.mock_client, self.base_args)
+
+        expected_recommendation = {
+            "issue_id": self.issue_id,
+            "issue_name": "Test Security Issue",
+            "severity": "HIGH",
+            "description": "Test description",
+            "remediation": "Base remediation steps",  # Should use base remediation
+            "playbook_suggestions": {"suggested_playbooks": ["Playbook1", "Playbook2"]},
+            "existing_code_block": "terraform_issue_here",
+            "suggested_code_block": "terraform_fix_here",
+        }
+
+        assert result.outputs == expected_recommendation
+
+    @patch("CortexPlatformCore.build_webapp_request_data")
+    def test_appsec_issue_no_fix_suggestion(self, mock_build_request):
+        """Test AppSec issue when fix suggestion API returns None"""
+        appsec_issue = self.base_issue.copy()
+        appsec_issue.update({"alert_source": "CAS_SECRET_SCANNER", "extended_fields": {"action": "Manual secret remediation"}})
+
+        webapp_response = {"reply": {"DATA": [appsec_issue]}}
+
+        mock_build_request.return_value = {"mock": "request_data"}
+        self.mock_client.get_webapp_data.return_value = webapp_response
+        self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
+        self.mock_client.get_appsec_suggested_fix.return_value = None  # No fix suggestion
+        result = get_issue_recommendations_command(self.mock_client, self.base_args)
+
+        self.mock_client.get_appsec_suggested_fix.assert_called_once_with(self.issue_id)
+
+        expected_recommendation = {
+            "issue_id": self.issue_id,
+            "issue_name": "Test Security Issue",
+            "severity": "HIGH",
+            "description": "Test description",
+            "remediation": "Manual secret remediation",
+            "playbook_suggestions": {"suggested_playbooks": ["Playbook1", "Playbook2"]},
+        }
+
+        assert result.outputs == expected_recommendation
+        assert "Existing Code Block" not in result.outputs
+        assert "Suggested Code Block" not in result.outputs
+
+    @patch("CortexPlatformCore.build_webapp_request_data")
+    def test_appsec_sources_coverage(self, mock_build_request):
+        """Test all AppSec sources are handled correctly"""
+        appsec_sources = ["CAS_CVE_SCANNER", "CAS_IAC_SCANNER", "CAS_SECRET_SCANNER"]
+
+        for source in appsec_sources:
+            appsec_issue = self.base_issue.copy()
+            appsec_issue["alert_source"] = source
+
+            webapp_response = {"reply": {"DATA": [appsec_issue]}}
+
+            fix_suggestion = {"existingCodeBlock": f"issue_in_{source}", "suggestedCodeBlock": f"fix_for_{source}"}
+
+            mock_build_request.return_value = {"mock": "request_data"}
+            self.mock_client.get_webapp_data.return_value = webapp_response
+            self.mock_client.get_playbook_suggestion_by_issue.return_value = self.base_playbook_response
+            self.mock_client.get_appsec_suggested_fix.return_value = fix_suggestion
+
+            result = get_issue_recommendations_command(self.mock_client, self.base_args)
+
+            assert result.outputs["existing_code_block"] == f"issue_in_{source}"
+            assert result.outputs["suggested_code_block"] == f"fix_for_{source}"
+
+            self.mock_client.reset_mock()
 
 
 def test_enable_scanners_command_single_repository(mocker: MockerFixture):
@@ -4142,6 +4318,319 @@ def test_create_policy_command_json_serialization_edge_cases(mocker: MockerFixtu
     assert isinstance(payload["triggers"], dict)
     assert isinstance(payload["conditions"], dict)
     assert isinstance(payload["scope"], dict)
+
+
+def test_appsec_remediate_issue_command_single_issue_success(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with a single issue ID and title.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The issue is remediated successfully and appropriate results are returned.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": "Fix security vulnerability"}
+
+    mock_remove_empty = mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={"issueIds": ["issue-123"], "title": "Fix security vulnerability"},
+    )
+
+    mock_appsec_remediate = mocker.patch.object(
+        mock_client,
+        "appsec_remediate_issue",
+        return_value={
+            "triggeredPrs": [{"issueId": "issue-123", "prUrl": "https://github.com/repo/pull/456", "status": "created"}]
+        },
+    )
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    mock_remove_empty.assert_called_once_with({"issueIds": ["issue-123"], "title": "Fix security vulnerability"})
+    mock_appsec_remediate.assert_called_once_with({"issueIds": ["issue-123"], "title": "Fix security vulnerability"})
+    assert result.outputs_prefix == "Core.TriggeredPRs"
+    assert result.outputs_key_field == "issueId"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["issueId"] == "issue-123"
+
+
+def test_appsec_remediate_issue_command_multiple_issues_success(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with multiple issue IDs and title.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        All issues are remediated successfully and appropriate results are returned.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": ["issue-123", "issue-456"], "title": "Fix security vulnerabilities"}
+
+    mock_remove_empty = mocker.patch("CortexPlatformCore.remove_empty_elements")
+    mock_remove_empty.side_effect = [
+        {"issueIds": ["issue-123"], "title": "Fix security vulnerabilities"},
+        {"issueIds": ["issue-456"], "title": "Fix security vulnerabilities"},
+    ]
+
+    mock_responses = [
+        {"triggeredPrs": [{"issueId": "issue-123", "prUrl": "https://github.com/repo/pull/1"}]},
+        {"triggeredPrs": [{"issueId": "issue-456", "prUrl": "https://github.com/repo/pull/2"}]},
+    ]
+    mock_appsec_remediate = mocker.patch.object(mock_client, "appsec_remediate_issue")
+    mock_appsec_remediate.side_effect = mock_responses
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert mock_appsec_remediate.call_count == 2
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["issueId"] == "issue-123"
+    assert result.outputs[1]["issueId"] == "issue-456"
+
+
+def test_appsec_remediate_issue_command_too_many_issues_raises_exception(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with only issue_id.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        update_issue is called with empty update_data.
+    """
+    from CortexPlatformCore import appsec_remediate_issue_command, Client
+    from CommonServerPython import DemistoException
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {
+        "issue_ids": [f"issue-{i}" for i in range(11)],  # 11 issues
+        "title": "Fix vulnerabilities",
+    }
+
+    args = {"id": "12345"}
+    with pytest.raises(DemistoException, match="Please provide a maximum of 10 issue IDs per request."):
+        appsec_remediate_issue_command(mock_client, args)
+
+
+def test_appsec_remediate_issue_command_empty_triggered_prs(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with issue ID, but API returns empty triggeredPrs.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The command completes successfully with empty outputs.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": "Fix security vulnerability"}
+
+    mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={"issueIds": ["issue-123"], "title": "Fix security vulnerability"},
+    )
+
+    mocker.patch.object(
+        mock_client,
+        "appsec_remediate_issue",
+        return_value={
+            "triggeredPrs": []  # Empty list
+        },
+    )
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 0
+    assert result.raw_response == []
+
+
+def test_appsec_remediate_issue_command_none_response(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with issue ID, but API returns None response.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The command completes successfully with empty outputs.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": "Fix security vulnerability"}
+
+    mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={"issueIds": ["issue-123"], "title": "Fix security vulnerability"},
+    )
+
+    mocker.patch.object(mock_client, "appsec_remediate_issue", return_value=None)
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 0
+
+
+def test_appsec_remediate_issue_command_missing_triggered_prs_key(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with issue ID, but API response lacks triggeredPrs key.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The command completes successfully with empty outputs.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": "Fix security vulnerability"}
+
+    mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={"issueIds": ["issue-123"], "title": "Fix security vulnerability"},
+    )
+
+    mocker.patch.object(
+        mock_client,
+        "appsec_remediate_issue",
+        return_value={
+            "status": "success"  # No triggeredPrs key
+        },
+    )
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 0
+
+
+def test_appsec_remediate_issue_command_non_list_triggered_prs(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with issue ID, but API returns triggeredPrs as non-list.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The command completes successfully with empty outputs.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": "Fix security vulnerability"}
+
+    mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={"issueIds": ["issue-123"], "title": "Fix security vulnerability"},
+    )
+
+    mocker.patch.object(mock_client, "appsec_remediate_issue", return_value={"triggeredPrs": "not a list"})
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 0
+
+
+def test_appsec_remediate_issue_command_mixed_success_failure(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with multiple issue IDs, where some succeed and some fail.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        Only successful remediations are included in the outputs.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": ["issue-123", "issue-456", "issue-789"], "title": "Fix vulnerabilities"}
+
+    mock_remove_empty = mocker.patch("CortexPlatformCore.remove_empty_elements")
+    mock_remove_empty.side_effect = [
+        {"issueIds": ["issue-123"], "title": "Fix vulnerabilities"},
+        {"issueIds": ["issue-456"], "title": "Fix vulnerabilities"},
+        {"issueIds": ["issue-789"], "title": "Fix vulnerabilities"},
+    ]
+
+    mock_responses = [
+        {"triggeredPrs": [{"issueId": "issue-123", "prUrl": "https://github.com/repo/pull/1"}]},
+        {"triggeredPrs": []},  # Failed to trigger PR
+        {"triggeredPrs": [{"issueId": "issue-789", "prUrl": "https://github.com/repo/pull/3"}]},
+    ]
+    mock_appsec_remediate = mocker.patch.object(mock_client, "appsec_remediate_issue")
+    mock_appsec_remediate.side_effect = mock_responses
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 2  # Only successful ones
+    assert result.outputs[0]["issueId"] == "issue-123"
+    assert result.outputs[1]["issueId"] == "issue-789"
+
+
+def test_appsec_remediate_issue_command_none_title_removed(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with issue ID and None title.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        remove_empty_elements is called and None title is handled properly.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": "issue-123", "title": None}
+
+    mock_remove_empty = mocker.patch(
+        "CortexPlatformCore.remove_empty_elements",
+        return_value={
+            "issueIds": ["issue-123"]  # title removed
+        },
+    )
+
+    mock_appsec_remediate = mocker.patch.object(
+        mock_client,
+        "appsec_remediate_issue",
+        return_value={"triggeredPrs": [{"issueId": "issue-123", "prUrl": "https://github.com/repo/pull/1"}]},
+    )
+
+    appsec_remediate_issue_command(mock_client, {})
+
+    mock_remove_empty.assert_called_with({"issueIds": ["issue-123"], "title": None})
+    mock_appsec_remediate.assert_called_with({"issueIds": ["issue-123"]})
+
+
+def test_appsec_remediate_issue_command_empty_issue_ids_list(mocker: MockerFixture):
+    """
+    Given:
+        A client and args with empty issue IDs list.
+    When:
+        appsec_remediate_issue_command is called.
+    Then:
+        The command completes successfully with empty outputs and no API calls.
+    """
+    from CortexPlatformCore import Client, appsec_remediate_issue_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_demisto = mocker.patch("CortexPlatformCore.demisto")
+    mock_demisto.args.return_value = {"issue_ids": [], "title": "Fix vulnerabilities"}
+
+    mock_appsec_remediate = mocker.patch.object(mock_client, "appsec_remediate_issue")
+
+    result = appsec_remediate_issue_command(mock_client, {})
+
+    assert len(result.outputs) == 0
+    mock_appsec_remediate.assert_not_called()
 
 
 def test_get_appsec_issues_command_success(mocker: MockerFixture):
