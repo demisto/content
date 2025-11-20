@@ -129,10 +129,10 @@ def get_events_command(client: Client, args: dict):  # type: ignore
     limit = int(args.get("limit", "10"))
 
     end_date_time = args.get("end_date_time")
-    end_date_time = dateparser.parse(end_date_time).strftime(DATE_FORMAT) if end_date_time else None
+    end_date_time = dateparser.parse(end_date_time).strftime(DATE_FORMAT) if end_date_time else None  # type: ignore[union-attr]
 
     start_date_time = args.get("start_date_time")
-    start_date_time = dateparser.parse(start_date_time).strftime(DATE_FORMAT) if start_date_time else None
+    start_date_time = dateparser.parse(start_date_time).strftime(DATE_FORMAT) if start_date_time else None  # type: ignore[union-attr]
 
     should_push_events = argToBoolean(args.get("should_push_events", False))
 
