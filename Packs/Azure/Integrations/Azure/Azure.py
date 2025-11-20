@@ -304,7 +304,7 @@ PERMISSIONS_VERSION = "2022-04-01"
 VM_API_VERSION = "2023-03-01"
 
 
-class TokenScope:  # List taken from the be3 repo
+class TokenScope:
     STORAGE = "STORAGE"
     GRAPH = "GRAPH"
     NETWORK = "NETWORK"
@@ -842,7 +842,7 @@ class AzureClient:
         self.http_request(method="DELETE", full_url=full_url, params=params, resp_type="response")
 
     def storage_container_create_blob_request(
-        self, container_name: str, account_name: str, file_entry_id: str, blob_name: str, xsoar_system_file_path: str
+        self, container_name: str, account_name: str, file_entry_id: str, blob_name: str, system_file_path: str
     ) -> requests.Response | dict[str, Any]:  # noqa: E501
         """
         Create or update Blob under the specified Container.
@@ -850,7 +850,7 @@ class AzureClient:
         Args:
             container_name (str): Container name.
             file_entry_id (str): File War room Entry ID.
-            file_name (str): File name. Default is XSOAR file name.
+            file_name (str): File name. Default is file name.
 
         Returns:
             Response: API response from Azure.
@@ -860,15 +860,15 @@ class AzureClient:
         full_url = f"https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}"
 
         try:
-            with open(xsoar_system_file_path, "rb") as file_data:
-                file_size = os.path.getsize(xsoar_file_data["path"])
+            with open(system_file_path, "rb") as file_data:
+                file_size = os.path.getsize(system_file_path)
                 headers = {
                     "x-ms-blob-type": "BlockBlob",  # for standard blob upload
                     "Content-Length": str(file_size),
                 }
                 self.storage_container_set_headers(headers)
 
-                response = self.http_request(method="PUT", full_url=full_url, data=file_data, resp_type="response") # type: ignore
+                response = self.http_request(method="PUT", full_url=full_url, data=file_data, resp_type="response")  # type: ignore
 
                 return response
         except Exception as e:
@@ -2781,10 +2781,10 @@ def storage_container_create_command(client: AzureClient, params: dict, args: di
 
     Args:
         client (Client): Azure Blob Storage API client.
-        args (dict): Command arguments from XSOAR.
+        args (dict): Command arguments.
 
     Returns:
-        CommandResults: outputs, readable outputs and raw response for XSOAR.
+        CommandResults: outputs, readable outputs and raw response.
 
     """
     container_name = args["container_name"]
@@ -2810,10 +2810,10 @@ def storage_container_delete_command(client: AzureClient, params: dict, args: di
 
     Args:
         client (Client): Azure Blob Storage API client.
-        args (dict): Command arguments from XSOAR.
+        args (dict): Command arguments
 
     Returns:
-        CommandResults: outputs, readable outputs and raw response for XSOAR.
+        CommandResults: outputs, readable outputs and raw response.
 
     """
     container_name = args["container_name"]
@@ -2832,22 +2832,24 @@ def storage_container_blob_create_command(client: AzureClient, params: dict, arg
 
     Args:
         client (Client): Azure Blob Storage API client.
-        args (dict): Command arguments from XSOAR.
+        args (dict): Command arguments.
 
     Returns:
-        CommandResults: outputs, readable outputs and raw response for XSOAR.
+        CommandResults: outputs, readable outputs and raw response.
 
     """
     container_name = args["container_name"]
     account_name = args.get("account_name", "")
     file_entry_id = args["file_entry_id"]
     blob_name = args.get("blob_name", "")
-    
-    xsoar_file_data = demisto.getFilePath(file_entry_id)  # Retrieve XSOAR system file path and name, given file entry ID.
-    xsoar_system_file_path = xsoar_file_data["path"]
-    file_name = blob_name if blob_name else xsoar_file_data["name"]
 
-    response = client.storage_container_create_blob_request(container_name, account_name, file_entry_id, file_name, xsoar_system_file_path)  # noqa: E501
+    file_data = demisto.getFilePath(file_entry_id)  # Retrieve system file path and name, given file entry ID.
+    system_file_path = file_data["path"]
+    file_name = blob_name if blob_name else file_data["name"]
+
+    response = client.storage_container_create_blob_request(
+        container_name, account_name, file_entry_id, file_name, system_file_path
+    )  # noqa: E501
 
     command_results = CommandResults(readable_output=f"Blob {blob_name} successfully created.", raw_response=response)
 
@@ -2860,10 +2862,10 @@ def storage_container_blob_get_command(client: AzureClient, params: dict, args: 
 
     Args:
         client (Client): Azure Blob Storage API client.
-        args (dict): Command arguments from XSOAR.
+        args (dict): Command arguments.
 
     Returns:
-        fileResult: XSOAR File Result.
+        fileResult: File Result.
 
     """
     container_name = args["container_name"]
@@ -2949,10 +2951,10 @@ def storage_container_blob_tag_set_command(client: AzureClient, params: dict, ar
 
     Args:
         client (Client): Azure Blob Storage API client.
-        args (dict): Command arguments from XSOAR.
+        args (dict): Command arguments.
 
     Returns:
-        CommandResults: outputs, readable outputs and raw response for XSOAR.
+        CommandResults: outputs, readable outputs and raw response
 
     """
     account_name = args.get("account_name", "")
@@ -3003,10 +3005,10 @@ def storage_container_blob_property_get_command(client: AzureClient, params: dic
 
     Args:
         client (Client): Azure Blob Storage API client.
-        args (dict): Command arguments from XSOAR.
+        args (dict): Command arguments.
 
     Returns:
-        CommandResults: outputs, readable outputs and raw response for XSOAR.
+        CommandResults: outputs, readable outputs and raw response.
 
     """
     container_name = args["container_name"]
@@ -3053,10 +3055,10 @@ def storage_container_blob_property_set_command(client: AzureClient, params: dic
 
     Args:
         client (Client): Azure Blob Storage API client.
-        args (dict): Command arguments from XSOAR.
+        args (dict): Command arguments.
 
     Returns:
-        CommandResults: outputs, readable outputs and raw response for XSOAR.
+        CommandResults: outputs, readable outputs and raw response.
 
     """
     container_name = args["container_name"]
@@ -3100,10 +3102,10 @@ def storage_container_block_public_access_command(client: AzureClient, params: d
 
     Args:
         client (Client): Azure Blob Storage API client.
-        args (dict): Command arguments from XSOAR.
+        args (dict): Command arguments
 
     Returns:
-        CommandResults: outputs and raw response for XSOAR.
+        CommandResults: outputs and raw response.
 
     """
 
@@ -3120,7 +3122,7 @@ def storage_container_block_public_access_command(client: AzureClient, params: d
 
 def transform_response_to_context_format(data: dict, keys: list) -> dict:
     """
-    Transform API response data to suitable XSOAR context data.
+    Transform API response data to suitable context data.
     Remove 'x-ms' prefix and replace '-' to '_' for more readable and conventional variables.
     Args:
         data (dict): Data to exchange.

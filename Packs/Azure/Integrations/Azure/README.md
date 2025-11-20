@@ -1,4 +1,6 @@
-Cloud integrations are installed from the **Data Sources** page. To configure a cloud integration, go to Settings > Data Sources and click "Add Data Source", select Azure, then in Advanced Settings > Security Capabilities, enable "Automation".
+Cloud integrations are installed from the Data Sources page.
+To configure a cloud integration, go to **Settings** > **Data Sources**, click **Add Data Source**, and select **Microsoft Azure**.
+Click Connect, then click Show advanced settings, and under Additional Security Capabilities, enable Automation.
 
 ## Configure Azure in Cortex
 
@@ -2708,8 +2710,8 @@ Retrieve Blob from Container.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | container_name | The name of the Blob Container. | Required |
-| file_entry_id | The entry ID of the file to upload as a new blob. Available from XSOAR war room while the context data contains file output. | Required |
-| blob_name | The name of the Blob to create. Default is XSOAR file name. | Optional |
+| file_entry_id | The entry ID of the file to upload as a new blob. Available from the war room while the context data contains file output. | Required |
+| blob_name | The name of the Blob to create. Default is the file name | Optional |
 | subscription_id | The subscription ID. | Required |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
