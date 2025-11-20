@@ -31,7 +31,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/faker3:1.0.0.110560
+dockerimage: demisto/faker3:1.0.0.5597549
 enabled: true
 engineinfo: {}
 name: GenerateRandomJSON
