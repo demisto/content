@@ -612,6 +612,6 @@ script:
 tests:
 - No tests
 defaultclassifier: Cyberint - Classifier
-defaultmapperin: CyberInt Incoming (mapper)
+defaultmapperin: abcd-5678
 defaultmapperout: CyberInt Outgoing (mapper)
 fromversion: 5.0.0
