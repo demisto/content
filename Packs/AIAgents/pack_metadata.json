@@ -1,6 +1,6 @@
 {
-    "name": "Agents",
-    "description": "Agentix Agents",
+    "name": "AI Agents",
+    "description": "AI Agents",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "serverMinVersion": "8.13",
