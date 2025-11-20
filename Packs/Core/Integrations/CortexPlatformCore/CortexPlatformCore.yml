@@ -1933,14 +1933,14 @@ script:
           description: Sorts returned cases by the date/time that the case was created ("asc" - ascending, "desc" - descending).
           name: sort_by_creation_time
           predefined:
-            - asc
-            - desc
+            - ASC
+            - DESC
         - auto: PREDEFINED
           description: Sorts returned cases by the date/time that the case was modified ("asc" - ascending, "desc" - descending).
           name: sort_by_modification_time
           predefined:
-            - asc
-            - desc
+            - ASC
+            - DESC
         - defaultValue: '0'
           description: Page number (for pagination). The default is 0 (the first page).
           name: page
@@ -2111,6 +2111,11 @@ script:
         - contextPath: Core.Case.custom_fields
           description: Custom fields for the case with standardized lowercase, whitespace-free names.
           type: Unknown
+        - contextPath: Core.CasesMetadata.returned_count
+          description: The actual number of cases that match all filter criteria and returned in this specific response.
+          type: String
+        - contextPath: Core.CasesMetadata.filtered_count
+          description: The total number of cases in the system that match all filter criteria.
   runonce: false
   script: "-"
   subtype: python3

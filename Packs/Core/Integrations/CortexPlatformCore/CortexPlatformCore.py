@@ -24,7 +24,6 @@ CASE_FIELDS = {
     "creation_time": "CREATION_TIME",
     "asset_ids": "UAI_ASSET_IDS",
     "asset_groups": "UAI_ASSET_GROUP_IDS",
-    "tags": "CURRENT_TAGS",
     "assignee": "ASSIGNED_USER_PRETTY",
     "name": "CONTAINS",
     "description": "DESCRIPTION",
@@ -61,7 +60,7 @@ APPSEC_SOURCES = [
     "CAS_CI_CD_RISK_SCANNER",
     "CAS_DRIFT_SCANNER",
 ]
-WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations", "core-get-cases"    "core-update-issue",
+WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations", "core-get-cases", "core-update-issue",
     "core-get-asset-coverage",
     "core-get-asset-coverage-histogram",
     "core-create-appsec-policy",
@@ -774,7 +773,7 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def get_asset_details_command(client: Client, args: dict) -> CommandResults:
+def get_asset_details_command(client: Client, args: dict) -> List[CommandResults]:
     """
     Retrieves details of a specific asset by its ID and formats the response.
 
@@ -925,7 +924,6 @@ def get_cases_command(client, args):
     filter_builder.add_field(CASE_FIELDS["asset_ids"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_ids")))
     filter_builder.add_field(CASE_FIELDS["asset_groups"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_groups")))
     filter_builder.add_field(CASE_FIELDS["hosts"], FilterType.EQ, argToList(args.get("hosts")))
-    filter_builder.add_field(CASE_FIELDS["tags"], FilterType.EQ, argToList(args.get("tags")))
     filter_builder.add_field(CASE_FIELDS["assignee"], FilterType.CONTAINS, argToList(args.get("assignee")))
 
     request_data = build_webapp_request_data(
@@ -944,13 +942,28 @@ def get_cases_command(client, args):
     data = map_case_format(data)
     demisto.debug(f"Case data after mapping and formatting: {data}")
 
-    return CommandResults(
+    filter_count = int(reply.get("FILTER_COUNT", "0"))
+    returned_count = min(int(filter_count), limit)
+    
+    command_results = []
+    
+    command_results.append(
+        CommandResults(
         readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
-        outputs_prefix="Core.Case",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
         outputs_key_field="case_id",
         outputs=data,
         raw_response=data,
+    ))
+    
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CasesMetadata",
+            outputs={"filter_count": filter_count, "returned_count": returned_count},
+        )
     )
+    
+    return command_results
 
 
 def get_cases_sort_order(sort_by_creation_time, sort_by_modification_time):
