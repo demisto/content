@@ -2,7 +2,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import DemistoException, entryTypes, Common
 from AggregatedCommandApiModule import *
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, timezone
 
 
 # =================================================================================================
@@ -1481,7 +1481,7 @@ def test_get_indicator_status_from_ioc_various(module_factory, has_manual, modif
         - Else STALE (including invalid/no modifiedTime).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
 
     def iso(dt: datetime) -> str:
         # Code under test accepts 'Z' or '+00:00'; it replaces Z → +00:00, so we emit 'Z' here.
@@ -1515,7 +1515,7 @@ def test_get_indicator_status_from_ioc_boundary_freshness_window(module_factory)
         - Returns FRESH at the boundary (minus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     boundary_time = now - STATUS_FRESHNESS_WINDOW + timedelta(hours=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
@@ -1532,7 +1532,7 @@ def test_get_indicator_status_from_ioc_boundary_stale(module_factory):
         - Returns STALE at the boundary (plus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     boundary_time = now - STATUS_FRESHNESS_WINDOW - timedelta(seconds=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
@@ -1592,10 +1592,10 @@ def test_summarize_command_results_appends_unsupported_enrichment_row(module_fac
     When:
         - summarize_command_results is called.
     Then:
-        - The HR table includes a row for the unsupported brands.
+        - The HR table includes a row for each unsupported brand.
     """
     mod = module_factory(brands=["X", "Y"])
-    # Make the property return our list
+    # Make the property return our list via BrandManager
     mod.brand_manager.unsupported_external = lambda _commands: ["X", "Y"]
 
     tbl = mocker.patch("AggregatedCommandApiModule.tableToMarkdown", return_value="TBL")
@@ -1607,12 +1607,13 @@ def test_summarize_command_results_appends_unsupported_enrichment_row(module_fac
     # Inspect the table rows passed to tableToMarkdown
     args, kwargs = tbl.call_args
     table_rows = kwargs.get("t", args[1] if len(args) > 1 else None)
-    assert any(
-        row.get("Brand") == "X,Y"
-        and row.get("Status") == Status.FAILURE.value
-        and "Unsupported Command" in (row.get("Message") or "")
-        for row in table_rows
-    )
+
+    # There should be separate rows for X and Y, each marked as failure with the unsupported message
+    for brand in ("X", "Y"):
+        row = next(r for r in table_rows if r.get("Brand") == brand)
+        assert row.get("Status") == Status.FAILURE.value
+        assert "Unsupported Command" in (row.get("Message") or "")
+
 
 
 # -- Context Mapping --
