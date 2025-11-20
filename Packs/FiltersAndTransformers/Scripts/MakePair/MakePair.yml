@@ -46,6 +46,7 @@ args:
   - array2<array1
   description: When each element is given in a dictionary, specify the array it will be merged into (Choose from array1, array2, array1<array2, or array2<array1).
 scripttarget: 0
+isllm: false
 subtype: python3
 dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
