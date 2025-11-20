@@ -425,7 +425,7 @@ def test_test_module_is_fetch_enabled_and_invalid_threshold_value_of_urgency_sco
         "max_fetch": "200",
         "entity_type": "account",
         "is_prioritized": "Yes",
-        "tags": "tag1,tag2",
+        "tags": "tag1,tag2,test&tags",
         "entity_importance": "High",
         "urgency_score_high_threshold": "10",
         "urgency_score_medium_threshold": "20",
@@ -4323,3 +4323,24 @@ def test_vectra_detection_tag_remove_when_remove_tag_response_is_invalid(request
         vectra_detection_tag_remove_command(client, args)
 
     assert str(exception.value) == f"Something went wrong. Message: {remove_tags_res.get('message')}."
+
+
+def test_vectra_entity_detection_list_passes_entity_id_and_type(mocker, client):
+    """
+    Ensure entity_id and entity_type are passed correctly to list_detections_request.
+    """
+    entity_id = 42
+    entity_type = "host"
+    # Mock entity response with detection_set
+    entity_data = {"detection_set": ["https://api/v3.3/detections/123"]}
+    mocker.patch.object(client, "get_entity_request", return_value=entity_data)
+    # Use realistic detection data with 'url' key
+    detections_data = util_load_json(f"{TEST_DATA_DIR}/entity_detection_list_response.json")
+    mock_list = mocker.patch.object(client, "list_detections_request", return_value=detections_data)
+    args = {"entity_id": str(entity_id), "entity_type": entity_type}
+    vectra_entity_detection_list_command(client, args)
+    # Assert correct values are passed
+    mock_list.assert_called_once()
+    call_kwargs = mock_list.call_args.kwargs
+    assert call_kwargs["entity_id"] == entity_id
+    assert call_kwargs["entity_type"] == entity_type

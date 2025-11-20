@@ -102,6 +102,8 @@ ENTITY_IMPORTANCE = {"low": 0, "medium": 1, "high": 2}
 ENTITY_IMPORTANCE_LABEL = {0: "Low", 1: "Medium", 2: "High"}
 SEVERITY = {"low": 1, "medium": 2, "high": 3, "critical": 4}
 MIRROR_DIRECTION = {"Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
+TAGS_REGEX = re.compile(r"^[\w:._ -]+$", re.U)
+
 
 """ CLIENT CLASS """
 
@@ -354,6 +356,7 @@ class VectraClient(BaseClient):
         detection_category: str = None,
         detection_type: str = None,
         entity_id: int = None,
+        entity_type: str = None,
         page: int = None,
         page_size: int = None,
         last_timestamp: Optional[datetime] = None,
@@ -369,6 +372,7 @@ class VectraClient(BaseClient):
             detection_category (str, optional): Filter by detection category.
             detection_type (str, optional): Filter by detection type.
             entity_id (int, optional): Filter by entity ID.
+            entity_type (str, optional): Filter by entity type.
             page (int, optional): Page number of the results.
             page_size (int, optional): Number of results per page.
             last_timestamp (str, optional): Filter by last timestamp greater than or equal to the provided value.
@@ -384,6 +388,7 @@ class VectraClient(BaseClient):
             detection_category=detection_category,
             detection_type=detection_type,
             entity_id=entity_id,
+            type=entity_type,
             page=page,
             page_size=page_size,
             last_timestamp_gte=last_timestamp,
@@ -2126,6 +2131,25 @@ def validate_detection_tag_add_command_args(args: dict[Any, Any]):
         raise ValueError(ERRORS["REQUIRED_ARGUMENT"].format("tags"))
 
 
+def get_valid_and_dropped_tags(tags: list[str]) -> tuple[list[str], list[str]]:
+    """
+    Return (valid_tags, dropped_tags) using TAG_REGEX.fullmatch().
+
+    Note: does not strip/mutate inputs. If you want trimming, do it before calling.
+    """
+    valid: list[str] = []
+    invalid: list[str] = []
+    for t in tags:
+        if TAGS_REGEX.fullmatch(t):
+            valid.append(t)
+        else:
+            invalid.append(t)
+    if invalid:
+        demisto.debug(f"Dropping invalid tags which contains invalid characters: {invalid}")
+    demisto.debug(f"Provided Valid tags(s): {valid}")
+    return valid, invalid
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -2276,10 +2300,13 @@ def fetch_incidents(client: VectraClient, params: dict[str, Any]) -> List:
 
             # Check if the entity has detections
             if len(detection_set) != 0:
-                detections_ids = ",".join([url.split("/")[-1] for url in detection_set])
                 # Fetch detections data using detections API call
+                # Used entity_id and entity_type to list detections
                 detections_data = client.list_detections_request(
-                    detection_type=detection_type, detection_category=detection_category, ids=detections_ids
+                    detection_type=detection_type,
+                    detection_category=detection_category,
+                    entity_id=entity_id,
+                    entity_type=entity_type,
                 )
                 detections = detections_data.get("results", [])
                 # Add detection details to the entity
@@ -2521,9 +2548,8 @@ def vectra_entity_detection_list_command(client: VectraClient, args: dict[str, A
             readable_output="##### Couldn't find any matching detections for provided entity ID and type.",
             raw_response={},
         )
-    # Call Vectra API to retrieve entities
+    # Used entity_id and entity_type to list detections
     response = client.list_detections_request(
-        ids=detections_ids,
         page=page,
         page_size=page_size,
         detection_category=detection_category,
@@ -2532,6 +2558,8 @@ def vectra_entity_detection_list_command(client: VectraClient, args: dict[str, A
         last_timestamp=last_timestamp,
         state=state,
         tags=tags,
+        entity_id=entity_id,
+        entity_type=entity_type,
     )
     count = response.get("count", 0)
     if count == 0:
@@ -3943,12 +3971,13 @@ def get_remote_data_command(client: VectraClient, args: dict, params: dict) -> G
     remote_incident_data["urgency_score_based_severity"] = severity
 
     # Collect the detections if the detection set is not empty.
+    # Used entity_id and entity_type to list detections
     if len(detection_set) != 0:
-        detections_ids = ",".join([url.split("/")[-1] for url in detection_set])
         detections_data = client.list_detections_request(
             detection_type=params.get("detection_type"),  # type: ignore
             detection_category=params.get("detection_category"),  # type: ignore
-            ids=detections_ids,
+            entity_id=int(vectra_entity_id),  # type: ignore
+            entity_type=vectra_entity_type,
         )
         detections = detections_data.get("results", [])
     else:
@@ -4069,6 +4098,7 @@ def update_remote_system_command(client: VectraClient, args: dict, params: dict)
     res = client.list_entity_tags_request(entity_id=mirror_entity_id, entity_type=remote_entity_type)
     vectra_tags = res.get("tags") or []
     if xsoar_tags:
+        xsoar_tags = get_valid_and_dropped_tags(xsoar_tags)[0]
         demisto.debug(f"Sending the tags: {xsoar_tags}")
         client.update_entity_tags_request(entity_id=mirror_entity_id, entity_type=remote_entity_type, tags=xsoar_tags)
     # Check if all tags from XSOAR removed
