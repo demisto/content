@@ -205,7 +205,10 @@ def test_run_okta_v2_success(mock_run_command):
         "Brand": "Okta v2",
         "Instance": "inst1",
     }
-    mock_run_command.return_value = [{"Contents": "### testuser status is Suspended"}], ""
+    mock_run_command.return_value = [{"Contents": {"Okta.Metadata(true)": {"x-rate-limit-limit": "1",
+                                                                           "x-rate-limit-remaining": "1",
+                                                                           "x-rate-limit-reset": "1"}},
+                                      "HumanReadable": "### testuser status is Suspended"}], ""
     result, _ = run_okta_v2(user, "inst1")
     expected: list[DisabledUserResult] = [
         {
@@ -232,7 +235,10 @@ def test_run_okta_v2_cannot_suspend_inactive(mock_run_command):
         "Brand": "Okta v2",
         "Instance": "inst1",
     }
-    mock_run_command.return_value = [{"Contents": "Cannot suspend a user that is not active"}], ""
+    mock_run_command.return_value = [{"Contents": {"Okta.Metadata(true)": {"x-rate-limit-limit": "1",
+                                                                           "x-rate-limit-remaining": "1",
+                                                                           "x-rate-limit-reset": "1"}},
+                                      "HumanReadable": "Cannot suspend a user that is not active"}], ""
     result, _ = run_okta_v2(user, "inst1")
     expected: list[DisabledUserResult] = [
         {
@@ -258,7 +264,10 @@ def test_run_okta_v2_failure(mock_run_command):
         "Brand": "Okta v2",
         "Instance": "inst1",
     }
-    mock_run_command.return_value = [{"Contents": "Unknown Okta error"}], ""
+    mock_run_command.return_value = [{"Contents": {"Okta.Metadata(true)": {"x-rate-limit-limit": "1",
+                                                                           "x-rate-limit-remaining": "1",
+                                                                           "x-rate-limit-reset": "1"}},
+                                      "HumanReadable": "Unknown Okta error"}], ""
     result, _ = run_okta_v2(user, "inst1")
     expected: list[DisabledUserResult] = [{"Disabled": False, "Result": "Failed", "Message": "Unknown Okta error"}]
     assert result == expected
