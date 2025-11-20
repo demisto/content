@@ -8,13 +8,12 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 2. Search for Doppel.
 3. Click **Add instance** to create and configure a new integration instance.
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Doppel Tenant URL | The Doppel server URL that will be used for calling the APIs. | True |
 | API Key | The API Key to use for connection with Doppel. | True |
 | User API Key | The User API Key \(Optional\) to use for connection with Doppel. | False |
-| Organization Code | Optional organization identifier used when your Doppel environment is organization-scoped. If required by the Doppel API, include the organization code provided by your Doppel administrator. | False | 
+| Organization Code | Optional organization identifier used when your Doppel environment is organization-scoped. If required by the Doppel API, include the organization code provided by your Doppel administrator. | False |
 | Trust Any Certificate (not secure) | When checked, SSL certificate verification is disabled. Use this only when the Doppel endpoint uses a self-signed or untrusted certificate. | False |
 | Use System Proxy Settings | When checked, the integration uses the system proxy defined in the XSOAR engine configuration (d1.conf). This is required if the engine routes outbound traffic through a local or organizational proxy. | False |
 | Fetch incidents |  | False |
@@ -26,7 +25,6 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 | Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 4. Click **Test** to validate the URLs, token, and connection.
 
