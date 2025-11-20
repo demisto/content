@@ -36,5 +36,6 @@ runonce: false
 dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
 fromversion: 6.9.0
+isllm: false
 tests:
 - If-Elif Test
