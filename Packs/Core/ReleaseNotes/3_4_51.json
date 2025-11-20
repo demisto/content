@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The following output context paths of the ***core-get-cases*** command have been removed. To retrieve them, use the ***core-get-case-extra-data*** command with the new paths: Core.Case.CaseExtraData.notes, Core.Case.CaseExtraData.detection_time, Core.Case.CaseExtraData.xdr_url, Core.Case.CaseExtraData.manual_description, Core.Case.CaseExtraData.starred_manually."
+}

@@ -2066,9 +2066,6 @@ script:
         - contextPath: Core.Case.manual_severity
           description: Severity manually assigned by the user. May be null.
           type: Number
-        - contextPath: Core.Case.manual_description
-          description: Description manually provided by the user.
-          type: String
         - contextPath: Core.Case.starred
           description: Indicates whether the case is starred.
           type: Boolean

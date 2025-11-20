@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The following arguments have been renamed: **start_time** to **creation_start_time**, **end_time** to **creation_end_time**. The following output context paths are no longer available under the Core.Case path. To retrieve them, set **get-enriched-case-data** to true and use the new paths: Core.Case.CaseExtraData.notes, Core.Case.CaseExtraData.detection_time, Core.Case.CaseExtraData.xdr_url, Core.Case.CaseExtraData.manual_description, Core.Case.CaseExtraData.starred_manually."
+}
