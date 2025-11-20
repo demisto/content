@@ -1,6 +1,7 @@
 category: Data Enrichment & Threat Intelligence
 sectionorder:
 - Connect
+- Collect
 commonfields:
   id: ANY.RUN TI Lookup
   version: -1
@@ -10,6 +11,31 @@ configuration:
   required: true
   type: 9
   section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  required: false
+- name: integrationReliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+  section: Collect
 description: TI Lookup is a searchable database of IOCs, IOAs, IOBs, and events for threat hunting and a service for browsing malicious files by their content.
 display: ANY.RUN TI Lookup
 name: ANY.RUN TI Lookup
@@ -233,493 +259,689 @@ script:
       name: http_response_file_type
       required: false
       type: String
-    description: 'Perform threat intelligence using specified IOC.'
+    description: 'Perform threat intelligence using specified IOC. Attaches a JSON summary to WarRoom.'
     name: anyrun-get-intelligence
     outputs:
-    - contextPath: ANYRUN.Lookup.destinationPort
-      description: 'Destination ports numbers.'
-      type: Unknown
-    - contextPath: ANYRUN.Lookup.destinationIPgeo
-      description: 'Destination IP Geo (countries).'
-      type: Unknown
-    - contextPath: ANYRUN.Lookup.destinationIpAsn.asn
-      description: 'Destination IP ASN (autonomous system number).'
-      type: String
-    - contextPath: ANYRUN.Lookup.destinationIpAsn.date
-      description: 'Destination IP ASN Date.'
-      type: Date
-    - contextPath: ANYRUN.Lookup.relatedTasks
-      description: 'Links to related tasks in ANY.RUN sandbox.'
-      type: String
-    - contextPath: ANYRUN.Lookup.threatName
-      description: 'Threat names.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedIncidents.task
-      description: 'Link to the task in ANY.RUN sandbox.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedIncidents.time
-      description: 'Creation time.'
-      type: Date
-    - contextPath: ANYRUN.Lookup.relatedIncidents.MITRE
-      description: 'Array of MITRE matrix techniques IDs ans sub-techniques IDs.'
-      type: Unknown
-    - contextPath: ANYRUN.Lookup.relatedIncidents.event.destinationPort
-      description: 'Destination ports numbers.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedIncidents.event.destinationIP
-      description: 'Destination IP address.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.commandLine
-      description: 'Command line string.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.imagePath
-      description: 'Image path string.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.threatName
-      description: 'Threat names.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.MITRE
-      description: 'Array of MITRE matrix techniques IDs ans sub-techniques IDs.'
-      type: Unknown
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.pid
-      description: 'Process ID.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.known_threat
-      description: 'Indicates if it is a known threat.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.network_loader
-      description: 'Indicates if network download was detected.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.network
-      description: 'Indicates if network activity was enabled.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.uac_request
-      description: 'Indicates if User Access Control (UAC) request was detected.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.injects
-      description: 'Indicates if threat uses injections.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.service_luncher
-      description: 'Indicates if new service registration was detected.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.executable_dropped
-      description: 'Indicates if threat uses dropped executables.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.multiprocessing
-      description: 'Indicates if threat uses multiprocessing.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.crashed_apps
-      description: 'Indicates if application crashed.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.debug_output
-      description: 'Indicates if application has debug output message.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.stealing
-      description: 'Indicates if process steals info from infected machine.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.exploitable
-      description: 'Indicates if any known exploit was detected.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.static_detections
-      description: 'Indicates if any malicious pattern was detected by static analysis engine.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.susp_struct
-      description: 'Is susp struct.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.autostart
-      description: 'Indicates if application was added to autostart.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.low_access
-      description: 'Indicates if threat uses low level access.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.tor
-      description: 'Indicates if TOR was used.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.spam
-      description: 'Indicates if spam was detected.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.malware_config
-      description: 'Indicates if malware config was extracted from submitted file.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.process_dump
-      description: 'Indicates if the process memory dump can be extracted.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.eventsCounters.raw.registry
-      description: 'Number of registry events.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.eventsCounters.raw.files
-      description: 'Number of files.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.eventsCounters.raw.modules
-      description: 'Number of modules.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.eventsCounters.raw.objects
-      description: 'Number of objects.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedIncidents.process.threatLevel
-      description: 'Threat level.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedIncidents.event.destinationIpAsn
-      description: 'Destination IP ASN (autonomous system number).'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedIncidents.event.title
-      description: 'Title of event type.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedIncidents.event.url
-      description: 'URL.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedIncidents.event.domainName
-      description: 'Domain name.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedIncidents.event.ruleThreatLevel
-      description: 'Rule threat level.'
-      type: String
-    - contextPath: ANYRUN.Lookup.destinationIP.destinationIP
-      description: 'Destination IP address.'
-      type: String
-    - contextPath: ANYRUN.Lookup.destinationIP.date
-      description: 'Creation date.'
-      type: Date
-    - contextPath: ANYRUN.Lookup.destinationIP.threatLevel
-      description: 'Threat level.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.destinationIP.threatName
-      description: 'Threat names.'
-      type: Unknown
-    - contextPath: ANYRUN.Lookup.destinationIP.isMalconf
-      description: 'Indicates if the IOC was extracted from malware configuration.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.task
-      description: 'Link to the task in ANY.RUN sandbox.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedFiles.fileLink
-      description: 'Link to the HTTP response files.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedFiles.time
-      description: 'Creation date.'
-      type: Date
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.commandLine
-      description: 'Command line string.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.imagePath
-      description: 'Image path string.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.MITRE
-      description: 'Array of MITRE matrix techniques IDs ans sub-techniques IDs.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.pid
-      description: 'Process ID.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.known_threat
-      description: 'Indicates if it is a known threat.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.network_loader
-      description: 'Indicates if network download was detected.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.network
-      description: 'Indicates if network activity was enabled.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.uac_request
-      description: 'Indicates if User Access Control (UAC) request was detected.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.injects
-      description: 'Indicates if threat uses injections.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.service_luncher
-      description: 'Indicates if new service registration was detected.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.executable_dropped
-      description: 'Indicates if threat uses dropped executables.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.multiprocessing
-      description: 'Indicates if threat uses multiprocessing.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.crashed_apps
-      description: 'Indicates if application crashed.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.debug_output
-      description: 'Indicates if application has debug output message.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.stealing
-      description: 'Indicates if process steals info from infected machine.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.exploitable
-      description: 'Indicates if any known exploit was detected.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.static_detections
-      description: 'Indicates if any malicious pattern was detected by static analysis engine.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.susp_struct
-      description: 'Is susp struct.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.autostart
-      description: 'Indicates if application was added to autostart.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.low_access
-      description: 'Indicates if threat uses low level access.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.tor
-      description: 'Indicates if TOR was used.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.spam
-      description: 'Indicates if spam was detected.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.malware_config
-      description: 'Indicates if malware config was extracted from submitted file.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.eventsCounters.raw.registry
-      description: 'Number of registry events.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.eventsCounters.raw.files
-      description: 'Number of files.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.eventsCounters.raw.modules
-      description: 'Number of modules.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.eventsCounters.raw.objects
-      description: 'Number of objects.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.threatLevel
-      description: 'Threat level.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedFiles.hashes.md5
-      description: 'MD5 hash string.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedFiles.hashes.sha1
-      description: 'SHA1 hash string.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedFiles.hashes.sha256
-      description: 'SHA256 hash string.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedFiles.hashes.ssdeep
-      description: 'Ssdeep hash string.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.threatName
-      description: 'Threat name.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.process_dump
-      description: 'Indicates if the process memory dump can be extracted.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedDNS.domainName
-      description: 'Domain name.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedDNS.threatName
-      description: 'Threat name.'
-      type: Unknown
-    - contextPath: ANYRUN.Lookup.relatedDNS.threatLevel
-      description: 'Threat level.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedDNS.date
-      description: 'Creation date.'
-      type: Date
-    - contextPath: ANYRUN.Lookup.relatedDNS.isMalconf
-      description: 'Indicates if the IOC was extracted from malware configuration.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedURLs.url
-      description: 'URL.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedURLs.date
-      description: 'Creation date.'
-      type: Date
-    - contextPath: ANYRUN.Lookup.relatedURLs.threatLevel
-      description: 'Threat level.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedURLs.threatName
-      description: 'Threat names.'
-      type: Unknown
-    - contextPath: ANYRUN.Lookup.relatedURLs.isMalconf
-      description: 'Indicates if the IOC was extracted from malware configuration.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.sourceTasks.uuid
-      description: 'Task UUID.'
-      type: String
-    - contextPath: ANYRUN.Lookup.sourceTasks.related
-      description: 'Link to the task in ANY.RUN sandbox.'
-      type: String
-    - contextPath: ANYRUN.Lookup.sourceTasks.date
-      description: 'Task creation time.'
-      type: Date
-    - contextPath: ANYRUN.Lookup.sourceTasks.threatLevel
-      description: 'Threat level.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.sourceTasks.tags
-      description: 'Tags.'
-      type: Unknown
-    - contextPath: ANYRUN.Lookup.sourceTasks.mainObject.type
-      description: 'Type.'
-      type: String
-    - contextPath: ANYRUN.Lookup.sourceTasks.mainObject.name
-      description: 'Name.'
-      type: String
-    - contextPath: ANYRUN.Lookup.sourceTasks.mainObject.hashes.md5
-      description: 'MD5 hash string.'
-      type: String
-    - contextPath: ANYRUN.Lookup.sourceTasks.mainObject.hashes.sha1
-      description: 'SHA1 hash string.'
-      type: String
-    - contextPath: ANYRUN.Lookup.sourceTasks.mainObject.hashes.sha256
-      description: 'SHA256 hash string.'
-      type: String
-    - contextPath: ANYRUN.Lookup.sourceTasks.mainObject.hashes.ssdeep
-      description: 'Ssdeep hash string.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.syncObjectTime
-      description: 'Time.'
-      type: Date
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.syncObjectType
-      description: 'Type.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.syncObjectOperation
-      description: 'Operation.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.syncObjectName
-      description: 'Name.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.task
-      description: 'Task link.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.commandLine
-      description: 'Command line string.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.imagePath
-      description: 'Image path string.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.MITRE
-      description: 'Array of MITRE matrix techniques IDs ans sub-techniques IDs.'
-      type: Unknown
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.pid
-      description: 'Process ID.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.known_threat
-      description: 'Indicates if it is a known threat.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.network_loader
-      description: 'Indicates if network download was detected.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.network
-      description: 'Indicates if network activity was enabled.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.uac_request
-      description: 'Indicates if User Access Control (UAC) request was detected.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.injects
-      description: 'Indicates if threat uses injections.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.service_luncher
-      description: 'Indicates if new service registration was detected.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.executable_dropped
-      description: 'Indicates if threat uses dropped executables.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.multiprocessing
-      description: 'Indicates if threat uses multiprocessing.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.crashed_apps
-      description: 'Indicates if application crashed.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.debug_output
-      description: 'Indicates if application has debug output message.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.stealing
-      description: 'Indicates if process steals info from infected machine.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.exploitable
-      description: 'Indicates if any known exploit was detected.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.static_detections
-      description: 'Indicates if any malicious pattern was detected by static analysis engine.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.susp_struct
-      description: 'Is susp struct.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.autostart
-      description: 'Indicates if application was added to autostart.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.low_access
-      description: 'Indicates if threat uses low level access.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.tor
-      description: 'Indicates if TOR was used.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.spam
-      description: 'Indicates if spam was detected.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.malware_config
-      description: 'Indicates if malware config was extracted from submitted file.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.eventsCounters.raw.registry
-      description: 'Number of registry events.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.eventsCounters.raw.files
-      description: 'Number of files.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.eventsCounters.raw.modules
-      description: 'Number of modules.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.eventsCounters.raw.objects
-      description: 'Number of objects.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.threatLevel
-      description: 'Threat level.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.threatName
-      description: 'Threat name.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.process_dump
-      description: 'Indicates if the process memory dump can be extracted.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.relatedNetworkThreats.suricataClass
-      description: 'Suricata class.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedNetworkThreats.imagePath
-      description: 'Image path.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedNetworkThreats.suricataID
-      description: 'SID.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedNetworkThreats.suricataMessage
-      description: 'Suricata message.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedNetworkThreats.tags
-      description: 'Tags.'
-      type: Unknown
-    - contextPath: ANYRUN.Lookup.relatedNetworkThreats.MITRE
-      description: 'Array of MITRE matrix techniques IDs ans sub-techniques IDs.'
-      type: Unknown
-    - contextPath: ANYRUN.Lookup.relatedNetworkThreats.suricataThreatLevel
-      description: 'Suricata threat level.'
-      type: String
-    - contextPath: ANYRUN.Lookup.relatedNetworkThreats.task
-      description: 'Task link.'
-      type: String
-    - contextPath: ANYRUN.Lookup.summary.threatLevel
-      description: 'Threat level.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.summary.lastSeen
-      description: 'Last Seen Date.'
-      type: Date
-    - contextPath: ANYRUN.Lookup.summary.detectedType
-      description: 'Detected type.'
-      type: String
-    - contextPath: ANYRUN.Lookup.summary.isTrial
-      description: 'Is trial request.'
-      type: Boolean
-    - contextPath: ANYRUN.Lookup.summary.tags
-      description: 'Tags.'
-      type: String
-    - contextPath: ANYRUN.Lookup.summary.details.type
-      description: 'IOC type.'
-      type: String
-    - contextPath: ANYRUN.Lookup.summary.details.threatLevel
-      description: 'Threat level.'
-      type: Number
-    - contextPath: ANYRUN.Lookup.summary.details.lastSeen
-      description: 'Last Seen Date.'
-      type: Date
-    - contextPath: ANYRUN.Lookup.summary.details.count
-      description: 'Count of iocs/objects by threat level.'
-      type: Number
-  dockerimage: demisto/anyrun-sdk:1.0.0.3970895
+      - contextPath: ANYRUN.Lookup.destinationPort
+        description: 'Destination ports numbers.'
+        type: Unknown
+      - contextPath: ANYRUN.Lookup.destinationIPgeo
+        description: 'Destination IP Geo (countries).'
+        type: Unknown
+      - contextPath: ANYRUN.Lookup.destinationIpAsn.asn
+        description: 'Destination IP ASN (autonomous system number).'
+        type: String
+      - contextPath: ANYRUN.Lookup.destinationIpAsn.date
+        description: 'Destination IP ASN Date.'
+        type: Date
+      - contextPath: ANYRUN.Lookup.relatedTasks
+        description: 'Links to related tasks in ANY.RUN sandbox.'
+        type: String
+      - contextPath: ANYRUN.Lookup.threatName
+        description: 'Threat names.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedIncidents.task
+        description: 'Link to the task in ANY.RUN sandbox.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedIncidents.time
+        description: 'Creation time.'
+        type: Date
+      - contextPath: ANYRUN.Lookup.relatedIncidents.MITRE
+        description: 'Array of MITRE matrix techniques IDs ans sub-techniques IDs.'
+        type: Unknown
+      - contextPath: ANYRUN.Lookup.relatedIncidents.event.destinationPort
+        description: 'Destination ports numbers.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedIncidents.event.destinationIP
+        description: 'Destination IP address.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.commandLine
+        description: 'Command line string.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.imagePath
+        description: 'Image path string.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.threatName
+        description: 'Threat names.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.MITRE
+        description: 'Array of MITRE matrix techniques IDs ans sub-techniques IDs.'
+        type: Unknown
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.pid
+        description: 'Process ID.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.known_threat
+        description: 'Indicates if it is a known threat.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.network_loader
+        description: 'Indicates if network download was detected.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.network
+        description: 'Indicates if network activity was enabled.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.uac_request
+        description: 'Indicates if User Access Control (UAC) request was detected.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.injects
+        description: 'Indicates if threat uses injections.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.service_luncher
+        description: 'Indicates if new service registration was detected.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.executable_dropped
+        description: 'Indicates if threat uses dropped executables.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.multiprocessing
+        description: 'Indicates if threat uses multiprocessing.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.crashed_apps
+        description: 'Indicates if application crashed.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.debug_output
+        description: 'Indicates if application has debug output message.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.stealing
+        description: 'Indicates if process steals info from infected machine.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.exploitable
+        description: 'Indicates if any known exploit was detected.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.static_detections
+        description: 'Indicates if any malicious pattern was detected by static analysis engine.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.susp_struct
+        description: 'Is susp struct.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.autostart
+        description: 'Indicates if application was added to autostart.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.low_access
+        description: 'Indicates if threat uses low level access.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.tor
+        description: 'Indicates if TOR was used.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.spam
+        description: 'Indicates if spam was detected.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.malware_config
+        description: 'Indicates if malware config was extracted from submitted file.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.scores.specs.process_dump
+        description: 'Indicates if the process memory dump can be extracted.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.eventsCounters.raw.registry
+        description: 'Number of registry events.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.eventsCounters.raw.files
+        description: 'Number of files.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.eventsCounters.raw.modules
+        description: 'Number of modules.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.eventsCounters.raw.objects
+        description: 'Number of objects.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedIncidents.process.threatLevel
+        description: 'Threat level.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedIncidents.event.destinationIpAsn
+        description: 'Destination IP ASN (autonomous system number).'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedIncidents.event.title
+        description: 'Title of event type.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedIncidents.event.url
+        description: 'URL.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedIncidents.event.domainName
+        description: 'Domain name.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedIncidents.event.ruleThreatLevel
+        description: 'Rule threat level.'
+        type: String
+      - contextPath: ANYRUN.Lookup.destinationIP.destinationIP
+        description: 'Destination IP address.'
+        type: String
+      - contextPath: ANYRUN.Lookup.destinationIP.date
+        description: 'Creation date.'
+        type: Date
+      - contextPath: ANYRUN.Lookup.destinationIP.threatLevel
+        description: 'Threat level.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.destinationIP.threatName
+        description: 'Threat names.'
+        type: Unknown
+      - contextPath: ANYRUN.Lookup.destinationIP.isMalconf
+        description: 'Indicates if the IOC was extracted from malware configuration.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.task
+        description: 'Link to the task in ANY.RUN sandbox.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedFiles.fileLink
+        description: 'Link to the HTTP response files.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedFiles.time
+        description: 'Creation date.'
+        type: Date
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.commandLine
+        description: 'Command line string.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.imagePath
+        description: 'Image path string.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.MITRE
+        description: 'Array of MITRE matrix techniques IDs ans sub-techniques IDs.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.pid
+        description: 'Process ID.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.known_threat
+        description: 'Indicates if it is a known threat.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.network_loader
+        description: 'Indicates if network download was detected.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.network
+        description: 'Indicates if network activity was enabled.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.uac_request
+        description: 'Indicates if User Access Control (UAC) request was detected.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.injects
+        description: 'Indicates if threat uses injections.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.service_luncher
+        description: 'Indicates if new service registration was detected.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.executable_dropped
+        description: 'Indicates if threat uses dropped executables.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.multiprocessing
+        description: 'Indicates if threat uses multiprocessing.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.crashed_apps
+        description: 'Indicates if application crashed.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.debug_output
+        description: 'Indicates if application has debug output message.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.stealing
+        description: 'Indicates if process steals info from infected machine.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.exploitable
+        description: 'Indicates if any known exploit was detected.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.static_detections
+        description: 'Indicates if any malicious pattern was detected by static analysis engine.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.susp_struct
+        description: 'Is susp struct.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.autostart
+        description: 'Indicates if application was added to autostart.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.low_access
+        description: 'Indicates if threat uses low level access.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.tor
+        description: 'Indicates if TOR was used.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.spam
+        description: 'Indicates if spam was detected.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.malware_config
+        description: 'Indicates if malware config was extracted from submitted file.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.eventsCounters.raw.registry
+        description: 'Number of registry events.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.eventsCounters.raw.files
+        description: 'Number of files.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.eventsCounters.raw.modules
+        description: 'Number of modules.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.eventsCounters.raw.objects
+        description: 'Number of objects.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.threatLevel
+        description: 'Threat level.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedFiles.hashes.md5
+        description: 'MD5 hash string.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedFiles.hashes.sha1
+        description: 'SHA1 hash string.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedFiles.hashes.sha256
+        description: 'SHA256 hash string.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedFiles.hashes.ssdeep
+        description: 'Ssdeep hash string.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.threatName
+        description: 'Threat name.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedFiles.process.scores.specs.process_dump
+        description: 'Indicates if the process memory dump can be extracted.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedDNS.domainName
+        description: 'Domain name.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedDNS.threatName
+        description: 'Threat name.'
+        type: Unknown
+      - contextPath: ANYRUN.Lookup.relatedDNS.threatLevel
+        description: 'Threat level.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedDNS.date
+        description: 'Creation date.'
+        type: Date
+      - contextPath: ANYRUN.Lookup.relatedDNS.isMalconf
+        description: 'Indicates if the IOC was extracted from malware configuration.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedURLs.url
+        description: 'URL.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedURLs.date
+        description: 'Creation date.'
+        type: Date
+      - contextPath: ANYRUN.Lookup.relatedURLs.threatLevel
+        description: 'Threat level.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedURLs.threatName
+        description: 'Threat names.'
+        type: Unknown
+      - contextPath: ANYRUN.Lookup.relatedURLs.isMalconf
+        description: 'Indicates if the IOC was extracted from malware configuration.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.sourceTasks.uuid
+        description: 'Task UUID.'
+        type: String
+      - contextPath: ANYRUN.Lookup.sourceTasks.related
+        description: 'Link to the task in ANY.RUN sandbox.'
+        type: String
+      - contextPath: ANYRUN.Lookup.sourceTasks.date
+        description: 'Task creation time.'
+        type: Date
+      - contextPath: ANYRUN.Lookup.sourceTasks.threatLevel
+        description: 'Threat level.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.sourceTasks.tags
+        description: 'Tags.'
+        type: Unknown
+      - contextPath: ANYRUN.Lookup.sourceTasks.mainObject.type
+        description: 'Type.'
+        type: String
+      - contextPath: ANYRUN.Lookup.sourceTasks.mainObject.name
+        description: 'Name.'
+        type: String
+      - contextPath: ANYRUN.Lookup.sourceTasks.mainObject.hashes.md5
+        description: 'MD5 hash string.'
+        type: String
+      - contextPath: ANYRUN.Lookup.sourceTasks.mainObject.hashes.sha1
+        description: 'SHA1 hash string.'
+        type: String
+      - contextPath: ANYRUN.Lookup.sourceTasks.mainObject.hashes.sha256
+        description: 'SHA256 hash string.'
+        type: String
+      - contextPath: ANYRUN.Lookup.sourceTasks.mainObject.hashes.ssdeep
+        description: 'Ssdeep hash string.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.syncObjectTime
+        description: 'Time.'
+        type: Date
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.syncObjectType
+        description: 'Type.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.syncObjectOperation
+        description: 'Operation.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.syncObjectName
+        description: 'Name.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.task
+        description: 'Task link.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.commandLine
+        description: 'Command line string.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.imagePath
+        description: 'Image path string.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.MITRE
+        description: 'Array of MITRE matrix techniques IDs ans sub-techniques IDs.'
+        type: Unknown
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.pid
+        description: 'Process ID.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.known_threat
+        description: 'Indicates if it is a known threat.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.network_loader
+        description: 'Indicates if network download was detected.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.network
+        description: 'Indicates if network activity was enabled.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.uac_request
+        description: 'Indicates if User Access Control (UAC) request was detected.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.injects
+        description: 'Indicates if threat uses injections.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.service_luncher
+        description: 'Indicates if new service registration was detected.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.executable_dropped
+        description: 'Indicates if threat uses dropped executables.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.multiprocessing
+        description: 'Indicates if threat uses multiprocessing.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.crashed_apps
+        description: 'Indicates if application crashed.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.debug_output
+        description: 'Indicates if application has debug output message.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.stealing
+        description: 'Indicates if process steals info from infected machine.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.exploitable
+        description: 'Indicates if any known exploit was detected.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.static_detections
+        description: 'Indicates if any malicious pattern was detected by static analysis engine.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.susp_struct
+        description: 'Is susp struct.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.autostart
+        description: 'Indicates if application was added to autostart.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.low_access
+        description: 'Indicates if threat uses low level access.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.tor
+        description: 'Indicates if TOR was used.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.spam
+        description: 'Indicates if spam was detected.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.malware_config
+        description: 'Indicates if malware config was extracted from submitted file.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.eventsCounters.raw.registry
+        description: 'Number of registry events.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.eventsCounters.raw.files
+        description: 'Number of files.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.eventsCounters.raw.modules
+        description: 'Number of modules.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.eventsCounters.raw.objects
+        description: 'Number of objects.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.threatLevel
+        description: 'Threat level.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.threatName
+        description: 'Threat name.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedSynchronizationObjects.process.scores.specs.process_dump
+        description: 'Indicates if the process memory dump can be extracted.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.relatedNetworkThreats.suricataClass
+        description: 'Suricata class.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedNetworkThreats.imagePath
+        description: 'Image path.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedNetworkThreats.suricataID
+        description: 'SID.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedNetworkThreats.suricataMessage
+        description: 'Suricata message.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedNetworkThreats.tags
+        description: 'Tags.'
+        type: Unknown
+      - contextPath: ANYRUN.Lookup.relatedNetworkThreats.MITRE
+        description: 'Array of MITRE matrix techniques IDs ans sub-techniques IDs.'
+        type: Unknown
+      - contextPath: ANYRUN.Lookup.relatedNetworkThreats.suricataThreatLevel
+        description: 'Suricata threat level.'
+        type: String
+      - contextPath: ANYRUN.Lookup.relatedNetworkThreats.task
+        description: 'Task link.'
+        type: String
+      - contextPath: ANYRUN.Lookup.summary.threatLevel
+        description: 'Threat level.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.summary.lastSeen
+        description: 'Last Seen Date.'
+        type: Date
+      - contextPath: ANYRUN.Lookup.summary.detectedType
+        description: 'Detected type.'
+        type: String
+      - contextPath: ANYRUN.Lookup.summary.isTrial
+        description: 'Is trial request.'
+        type: Boolean
+      - contextPath: ANYRUN.Lookup.summary.tags
+        description: 'Tags.'
+        type: String
+      - contextPath: ANYRUN.Lookup.summary.details.type
+        description: 'IOC type.'
+        type: String
+      - contextPath: ANYRUN.Lookup.summary.details.threatLevel
+        description: 'Threat level.'
+        type: Number
+      - contextPath: ANYRUN.Lookup.summary.details.lastSeen
+        description: 'Last Seen Date.'
+        type: Date
+      - contextPath: ANYRUN.Lookup.summary.details.count
+        description: 'Count of iocs/objects by threat level.'
+        type: Number
+  - arguments:
+      - default: true
+        description: IP address to query.
+        isArray: true
+        name: ip
+        required: true
+    description: Check IP reputation (when information is available, returns a JSON with details).
+    name: ip
+    outputs:
+      - contextPath: IP.Address
+        description: The IP address.
+        type: String
+      - contextPath: IP.Port
+        description: Ports that are associated with the IP.
+        type: String
+      - contextPath: IP.Tags
+        description: Tags related the IP use (hosting, proxy, tor, vpn).
+        type: String
+      - contextPath: IP.FeedRelatedIndicators.value
+        description: Names of indicators associated with the IP.
+        type: String
+      - contextPath: IP.FeedRelatedIndicators.type
+        description: Types of indicators associated with the IP.
+        type: String
+      - contextPath: IP.Country
+        description: The IP country.
+        type: String
+      - contextPath: IP.ASOwner
+        description: The autonomous system owner of the IP.
+        type: String
+      - contextPath: IP.LastModified
+        description: The date that the IP was last updated.
+        type: Date
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Reliability
+        description: How reliable the score is (for example, "C - fairly reliable").
+        type: String
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+  - arguments:
+      - default: true
+        description: Domain name to query.
+        isArray: true
+        name: domain
+        required: true
+    description: Check Domain reputation (when information is available, returns a JSON with details).
+    name: domain
+    outputs:
+      - contextPath: Domain.Name
+        description: The Domain name.
+        type: String
+      - contextPath: Domain.Port
+        description: Ports that are associated with the Domain.
+        type: String
+      - contextPath: Domain.Tags
+        description: Tags related the Domain use (hosting, proxy, tor, vpn).
+        type: String
+      - contextPath: Domain.FeedRelatedIndicators.value
+        description: Names of indicators associated with the Domain.
+        type: String
+      - contextPath: Domain.FeedRelatedIndicators.type
+        description: Types of indicators associated with the Domain.
+        type: String
+      - contextPath: Domain.Country
+        description: The Domain country.
+        type: String
+      - contextPath: Domain.ASOwner
+        description: The autonomous system owner of the Domain.
+        type: String
+      - contextPath: Domain.LastModified
+        description: The date that the Domain was last updated.
+        type: Date
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Reliability
+        description: How reliable the score is (for example, "C - fairly reliable").
+        type: String
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+  - arguments:
+      - default: true
+        description: URL to query.
+        isArray: true
+        name: url
+        required: true
+    description: Check URL reputation (when information is available, returns a JSON with details).
+    name: url
+    outputs:
+      - contextPath: URL.Data
+        description: The URL name.
+        type: String
+      - contextPath: URL.Port
+        description: Ports that are associated with the URL.
+        type: String
+      - contextPath: URL.Tags
+        description: Tags related the URL use (hosting, proxy, tor, vpn).
+        type: String
+      - contextPath: URL.ASOwner
+        description: The autonomous system owner of the IP.
+        type: String
+      - contextPath: URL.LastModified
+        description: The date that the IP was last updated.
+        type: Date
+      - contextPath: URL.FeedRelatedIndicators.value
+        description: Names of indicators associated with the URL.
+        type: String
+      - contextPath: URL.FeedRelatedIndicators.type
+        description: Types of indicators associated with the URL.
+        type: String
+      - contextPath: URL.Country
+        description: The URL country.
+        type: String
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Reliability
+        description: How reliable the score is (for example, "C - fairly reliable").
+        type: String
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+  - arguments:
+      - default: true
+        description: File to query.
+        isArray: true
+        name: file
+        required: true
+    description: Check File reputation (when information is available, returns a JSON with details).
+    name: file
+    outputs:
+      - contextPath: File.Name
+        description: The File name.
+        type: String
+      - contextPath: File.Extension
+        description: The File name.
+        type: String
+      - contextPath: File.Path
+        description: The File path.
+        type: String
+      - contextPath: File.SHA256
+        description: The SHA256 hash of the file.
+      - contextPath: File.SHA1
+        description: The SHA1 hash of the file.
+      - contextPath: File.MD5
+        description: The MD5 hash of the file.
+        type: String
+      - contextPath: File.SSDeep
+        description: The ssdeep hash of the file (same as displayed in file entries).
+        type: String
+      - contextPath: File.Tags
+        description: Tags related the File use (hosting, proxy, tor, vpn).
+        type: String
+      - contextPath: File.FeedRelatedIndicators.value
+        description: Names of indicators associated with the File.
+        type: String
+      - contextPath: File.FeedRelatedIndicators.type
+        description: Types of indicators associated with the File.
+        type: String
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Reliability
+        description: How reliable the score is (for example, "C - fairly reliable").
+        type: String
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+  dockerimage: demisto/anyrun-sdk:1.0.0.5185978
   subtype: python3
   runonce: false
   script: '-'
