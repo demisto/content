@@ -8,19 +8,25 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 2. Search for Doppel.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Doppel Tenant URL | The tenant URL of the Doppel. | True |
-    | API Key | API key to use for the connection. | True |
-    | Fetch incidents | Enables the Integration to pull Doppel Alerts. | False |
-    | Incident type | Classifies the type of security incident. (Use this only if classifiers are not used). | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | Sets the historical period for the first data retrieval operation. | False |
-    | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
-    | Number of incidents for each fetch | The number of Doppel Alerts to be fetched per polling process. | False |
-    | Trust any certificate (not secure) | Trust any SSL Certificates while interacting with Servers | False |
-    | Use system proxy settings | Uses your system Proxy Setting | False |
-    | Incidents Fetch Interval |  The interval specifies the cadence with which the Doppel alerts be fetched | False |
-    | Mirror Direction | Choose the direction to mirror the incident: Incoming \(from Doppel to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Doppel\), or Incoming and Outgoing \(from/to Cortex XSOAR and Doppel\). | False |
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Doppel Tenant URL | The Doppel server URL that will be used for calling the APIs. | True |
+| API Key | The API Key to use for connection with Doppel. | True |
+| User API Key | The User API Key \(Optional\) to use for connection with Doppel. | False |
+| Organization Code | Optional organization identifier used when your Doppel environment is organization-scoped. If required by the Doppel API, include the organization code provided by your Doppel administrator. | False | 
+| Trust Any Certificate (not secure) | When checked, SSL certificate verification is disabled. Use this only when the Doppel endpoint uses a self-signed or untrusted certificate. | False |
+| Use System Proxy Settings | When checked, the integration uses the system proxy defined in the XSOAR engine configuration (d1.conf). This is required if the engine routes outbound traffic through a local or organizational proxy. | False |
+| Fetch incidents |  | False |
+| Incidents Fetch Interval | The interval specifies the cadence with which the Doppel alerts be fetched. | True |
+| Incident type |  | False |
+| Mirror Direction | Choose the direction to mirror the incident: None \(No mirroring\), Incoming \(from Doppel to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Doppel\), Incoming and Outgoing \(from/to Cortex XSOAR and Doppel\). | False |
+| First fetch | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). | False |
+| Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
+| Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -125,7 +131,7 @@ Retrieves the alert details by ID or entity. Must include either ID or entity.
 >
 >| ID | Entity | Brand | Queue State | Entity State | Severity | Product | Platform | Source | Created At | Doppel Link | Uploaded By |  
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |  
->| TST-31 | http://dummyrul.com | test_brand | doppel_review | active | medium | domains | domains | Analyst Upload | 2024-11-27T06:51:50.357664 | [Doppel Link](https://app.doppel.com/alerts/TST-31222) | currentuser@doppel.com |  
+>| TST-31 | <http://dummyrul.com> | test_brand | doppel_review | active | medium | domains | domains | Analyst Upload | 2024-11-27T06:51:50.357664 | [Doppel Link](https://app.doppel.com/alerts/TST-31222) | currentuser@doppel.com |  
 
 ### doppel-create-alert
 
@@ -173,7 +179,7 @@ Creates an alert for a specified entity. This command requires the entity to be 
 >
 >| ID | Entity | Doppel Link |  
 >| --- | --- | --- |  
->| TST-1001 | http://example.com | [Doppel Link](https://app.doppel.com/alerts/TST-1001) |  
+>| TST-1001 | <http://example.com> | [Doppel Link](https://app.doppel.com/alerts/TST-1001) |  
 
 ### doppel-update-alert
 
@@ -274,7 +280,7 @@ Updates an alert in the Doppel platform. Either `alert_id` or `entity` must be s
 >
 >| ID | Entity | Brand | Queue State | Entity State | Severity | Product | Platform | Source | Created At | Doppel Link | Uploaded By |  
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |  
->| TST-31 | http://dummyrul.com | test_brand | actioned | down | medium | domains | domains | Analyst Upload | 2024-11-27T06:51:50.357664 | [Doppel Link](https://app.doppel.com/alerts/TST-31222) | currentuser@doppel.com |  
+>| TST-31 | <http://dummyrul.com> | test_brand | actioned | down | medium | domains | domains | Analyst Upload | 2024-11-27T06:51:50.357664 | [Doppel Link](https://app.doppel.com/alerts/TST-31222) | currentuser@doppel.com |  
 
 ### doppel-create-abuse-alert
 
@@ -444,7 +450,7 @@ Retrieves a list of alerts. The result can be filtered by provided parameters.
 >
 >| ID | Entity | Brand | Queue State | Entity State | Severity | Product | Platform | Source | Created At | Doppel Link | Uploaded By |  
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |  
->| ALERT-12345 | http://example.com | Test Brand | doppel_review | active | high | domains | website | Analyst Upload | 2024-11-27T10:20:30Z | [Doppel Link](https://app.doppel.com/alerts/ALERT-12345) | analyst@example.com |  
+>| ALERT-12345 | <http://example.com> | Test Brand | doppel_review | active | high | domains | website | Analyst Upload | 2024-11-27T10:20:30Z | [Doppel Link](https://app.doppel.com/alerts/ALERT-12345) | analyst@example.com |  
 
 ### get-mapping-fields
 
