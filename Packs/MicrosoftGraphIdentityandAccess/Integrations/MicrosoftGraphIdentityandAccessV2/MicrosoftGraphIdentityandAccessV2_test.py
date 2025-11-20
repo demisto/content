@@ -223,11 +223,26 @@ def test_detection_to_incident_with_severity_override(incident, expected):
 @pytest.mark.parametrize(
     "incident,expected",
     [
-        ({}, {"name": "Azure User at Risk:  -  - ", "occurred": "2025-05-06Z", "rawJSON": "{}"}),
+        (
+            {},
+            {
+                "name": "Microsoft Entra ID user risk:  - ",
+                "severity": 2,
+                "details": "Risk detected by Microsoft for  Entra ID account. Risk level is .",
+                "occurred": "2025-05-06Z",
+                "rawJSON": "{}",
+            },
+        ),
         (
             {"userPrincipalName": "test", "riskLevel": "high", "riskState": "atRisk"},
             {
-                "name": "Azure User at Risk: test - atRisk - high",
+                "name": "High-risk Microsoft Entra ID user",
+                "severity": 3,
+                "details": (
+                    "High-risk of test Entra ID account compromise. "
+                    "Microsoft is highly confident that the account is compromised.  Signals such as threat intelligence "
+                    "and known attack patterns factor into the confidence level of the risk detection"
+                ),
                 "occurred": "2025-05-06Z",
                 "rawJSON": '{"userPrincipalName": "test", "riskLevel": "high", "riskState": "atRisk"}',
             },
@@ -245,7 +260,50 @@ def test_risky_user_to_incident(incident, expected):
     Then:
     - Ensure that the dict is what we expected.
     """
-    assert MicrosoftGraphIdentityandAccessV2.risky_user_to_incident(incident, "2025-05-06") == expected
+    assert MicrosoftGraphIdentityandAccessV2.risky_user_to_incident(incident, "2025-05-06", False, "") == expected
+
+
+@pytest.mark.parametrize(
+    "incident,expected",
+    [
+        (
+            {},
+            {
+                "name": "Microsoft Entra ID user risk:  - ",
+                "severity": 2,
+                "details": "Risk detected by Microsoft for  Entra ID account. Risk level is .",
+                "occurred": "2025-05-06Z",
+                "rawJSON": "{}",
+            },
+        ),
+        (
+            {"userPrincipalName": "test", "riskLevel": "high", "riskState": "atRisk"},
+            {
+                "name": "High-risk Microsoft Entra ID user",
+                "severity": 2,
+                "details": (
+                    "High-risk of test Entra ID account compromise. "
+                    "Microsoft is highly confident that the account is compromised.  Signals such as threat intelligence "
+                    "and known attack patterns factor into the confidence level of the risk detection"
+                ),
+                "occurred": "2025-05-06Z",
+                "rawJSON": '{"userPrincipalName": "test", "riskLevel": "high", "riskState": "atRisk"}',
+            },
+        ),
+    ],
+)
+def test_risky_user_to_incident_wityh_severity_override(incident, expected):
+    """
+    Given:
+    -  A dict with the incident details.
+
+    When:
+    -  Getting the incident.
+
+    Then:
+    - Ensure that the dict is what we expected.
+    """
+    assert MicrosoftGraphIdentityandAccessV2.risky_user_to_incident(incident, "2025-05-06", True, "medium") == expected
 
 
 @pytest.mark.parametrize(
@@ -264,7 +322,13 @@ def test_risky_user_to_incident(incident, expected):
             (
                 [
                     {
-                        "name": "Azure User at Risk: test - atRisk - medium",
+                        "name": "Microsoft Entra ID user is at risk",
+                        "severity": 2,
+                        "details": (
+                            "One or more medium-severity anomalies were detected "
+                            "by Microsoft on test Entra ID account. Sign-in patterns, behaviors, "
+                            "and other signals factor into the confidence level of the risk detection."
+                        ),
                         "occurred": "2025-05-14T02:00:00.000000Z",
                         "rawJSON": '{"userPrincipalName": "test", "riskLevel": "medium", "riskState": "atRisk", "riskLastUpdatedDateTime": "2025-05-14T02:00:00.0000000Z"}',  # noqa: E501
                     }
@@ -285,7 +349,10 @@ def test_risky_users_to_incidents(incidents, expected):
     Then:
     - Ensure that the dict is what we expected.
     """
-    assert MicrosoftGraphIdentityandAccessV2.risky_users_to_incidents(incidents, "2025-05-14T01:00:00.0000000Z") == expected
+    assert (
+        MicrosoftGraphIdentityandAccessV2.risky_users_to_incidents(incidents, "2025-05-14T01:00:00.0000000Z", False, "")
+        == expected
+    )
 
 
 @pytest.mark.parametrize(
