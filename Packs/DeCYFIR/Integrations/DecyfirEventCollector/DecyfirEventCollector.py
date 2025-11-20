@@ -305,7 +305,7 @@ def fetch_events(
 
         latest_time = compute_next_fetch_time(filtered_events, after, event_type)
         current_run.setdefault(event_type, {})["next_fetch_time"] = latest_time
-        update_fetched_event_ids(current_run, event_type, events, arg_to_datetime(latest_time)) # type: ignore[arg-type]
+        update_fetched_event_ids(current_run, event_type, events, arg_to_datetime(latest_time))  # type: ignore[arg-type]
 
     demisto.debug(f"Fetch complete. Total events: {len(all_events)}")
     return current_run, all_events
