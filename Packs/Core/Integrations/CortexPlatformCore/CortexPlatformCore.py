@@ -923,7 +923,7 @@ def get_cases_command(client, args):
     filter_builder.add_field(CASE_FIELDS["starred"], FilterType.EQ, argToList(args.get("starred")))
     filter_builder.add_field(CASE_FIELDS["asset_ids"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_ids")))
     filter_builder.add_field(CASE_FIELDS["asset_groups"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_groups")))
-    filter_builder.add_field(CASE_FIELDS["hosts"], FilterType.EQ, argToList(args.get("hosts")))
+    filter_builder.add_field(CASE_FIELDS["hosts"], FilterType.CASE_HOST_EQ, argToList(args.get("hosts")))
     filter_builder.add_field(CASE_FIELDS["assignee"], FilterType.CONTAINS, argToList(args.get("assignee")))
 
     request_data = build_webapp_request_data(
