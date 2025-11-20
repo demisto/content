@@ -2742,7 +2742,7 @@ def gcp_compute_network_insert(creds: Credentials, args: dict[str, Any]) -> Comm
         config["description"] = args.get("description")
 
     # Auto-create subnets (default to True)
-    auto_create_sub_networks = argToBoolean(args.get("autoCreateSubnetworks"))
+    auto_create_sub_networks = argToBoolean(args.get("autoCreateSubnetworks", True))
     if auto_create_sub_networks is not None:
         config["autoCreateSubnetworks"] = auto_create_sub_networks
     else:
@@ -2858,6 +2858,8 @@ def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> Comma
     remove_empty_elements(outputs)
     return CommandResults(
         readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Networks",
+        outputs_key_field="id",
         outputs=outputs,
         raw_response=response,
     )

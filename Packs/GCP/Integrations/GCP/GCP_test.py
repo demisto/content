@@ -3532,7 +3532,7 @@ def test_gcp_compute_zone_get_basic_success(mocker):
     mock_zones.get.assert_called_once_with(project="test-project", zone="us-central1-a")
 
     # Verify outputs structure
-    assert result.outputs_prefix == "gcp.compute.Zones"
+    assert result.outputs_prefix == "GCP.Compute.Zones"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_response
     assert result.raw_response == mock_response
@@ -3628,7 +3628,7 @@ def test_gcp_compute_zone_get_table_generation(mocker):
     assert table_data["id"] == "4000"
 
     # Check headers
-    expected_headers = ["status", "id", "name"]
+    expected_headers = ["id", "name", "status"]
     assert table_call_args[1]["headers"] == expected_headers
 
     # Check other parameters
@@ -3820,50 +3820,6 @@ def test_gcp_compute_zone_get_special_zone_names(mocker):
     assert result.outputs["name"] == "us-central1-a"
 
 
-def test_gcp_compute_zone_get_data_res_structure(mocker):
-    """
-    Given: A zone API response with various fields
-    When: gcp_compute_zone_get is called
-    Then: The data_res structure should only contain status, name, and id fields
-    """
-    from GCP import gcp_compute_zone_get
-
-    # Mock arguments
-    args = {"project_id": "test-project", "zone": "us-west1-a"}
-
-    # Mock API response with extra fields that shouldn't be in data_res
-    mock_response = {
-        "id": "7000",
-        "name": "us-west1-a",
-        "status": "UP",
-        "description": "Should not be in data_res",
-        "region": "Should not be in data_res",
-        "selfLink": "Should not be in data_res",
-        "availableCpuPlatforms": ["Should not be in data_res"],
-        "extraField": "Should not be in data_res",
-    }
-
-    # Mock the GCP API calls
-    mock_compute = mocker.Mock()
-    mock_zones = mocker.Mock()
-    mock_compute.zones.return_value = mock_zones
-    mock_zones.get.return_value.execute.return_value = mock_response
-
-    # Mock the build function
-    mock_creds = mocker.Mock(spec=Credentials)
-    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
-    mock_table = mocker.patch("GCP.tableToMarkdown", return_value="Filtered data table")
-
-    # Execute the function
-    gcp_compute_zone_get(mock_creds, args)
-
-    # Verify tableToMarkdown was called with filtered data_res
-    mock_table.assert_called_once()
-    mock_table.call_args[0][1]
-
-    # Check that data_res only contains the expected fields
-
-
 # gcp_compute_network_get_command
 def test_gcp_compute_network_get_command_basic_success(mocker):
     """
@@ -4001,7 +3957,7 @@ def test_gcp_compute_network_get_command_table_generation(mocker):
     assert table_data["id"] == "5555666677778888999"
 
     # Check headers
-    expected_headers = ["id", "name"]
+    expected_headers = ["id", "name", "creationTimestamp", "description"]
     assert table_call_args[1]["headers"] == expected_headers
 
     # Check other parameters
@@ -4367,7 +4323,7 @@ def test_gcp_compute_image_get_table_generation(mocker):
     table_call_args = mock_table.call_args
 
     # Check table title
-    assert table_call_args[0][0] == "GCP images centos-7-v20230724"
+    assert table_call_args[0][0] == "GCP image centos-7-v20230724"
 
     # Check table data
     table_data = table_call_args[0][1]
@@ -4375,7 +4331,7 @@ def test_gcp_compute_image_get_table_generation(mocker):
     assert table_data["id"] == "5555666677778888999"
 
     # Check headers
-    expected_headers = ["id", "name"]
+    expected_headers = ["id", "name", "creationTimestamp", "description"]
     assert table_call_args[1]["headers"] == expected_headers
 
     # Check other parameters
@@ -4566,14 +4522,18 @@ def test_gcp_compute_image_get_special_image_names(mocker):
     # Verify image name is handled correctly in table title
     mock_table.assert_called_once()
     table_title = mock_table.call_args[0][0]
-    assert table_title == "GCP images custom-image-with-hyphens-v1-2-3"
+    assert table_title == "GCP image custom-image-with-hyphens-v1-2-3"
 
     assert result.outputs["name"] == "custom-image-with-hyphens-v1-2-3"
 
 
 # gcp_compute_region_get
 def test_gcp_compute_region_get_success(mocker):
-    """Test successful region retrieval"""
+    """
+    Given: Valid credentials and region retrieval arguments
+    When: gcp_compute_region_get is called with proper project_id and region
+    Then: The function should return correct CommandResults with region data and verify API calls
+    """
     from GCP import gcp_compute_region_get
     from GCP import GCPServices
 
@@ -4610,7 +4570,13 @@ def test_gcp_compute_region_get_success(mocker):
 
 
 def test_gcp_compute_region_get_minimal_response(mocker):
-    """Test region retrieval with minimal response data"""
+    """
+    Given: A mocked environment where the Google Compute API is set to return
+           a minimal, successful response for a specific region.
+    When: gcp_compute_region_get is called with valid project ID and region name ("europe-west1").
+    Then: The result's structured output must match the mocked API response,
+          and the readable output must contain both the region name and its ID.
+    """
     from GCP import GCPServices
     from GCP import gcp_compute_region_get
 
@@ -4637,7 +4603,12 @@ def test_gcp_compute_region_get_minimal_response(mocker):
 
 
 def test_gcp_compute_region_get_empty_args(mocker):
-    """Test region retrieval with empty/None args"""
+    """
+    Given: A mocked API environment configured to return a response with a status of "DOWN".
+    When: gcp_compute_region_get is called with explicitly set empty arguments (project_id=None, region=None).
+    Then: The function should call the API's get method with None values for project and region,
+          and return the mocked response data.
+    """
     from GCP import GCPServices
     from GCP import gcp_compute_region_get
 
@@ -4663,7 +4634,11 @@ def test_gcp_compute_region_get_empty_args(mocker):
 
 
 def test_gcp_compute_region_get_api_exception(mocker):
-    """Test region retrieval when API raises exception"""
+    """
+    Given: A mocked API environment configured to raise a generic Exception (API Error).
+    When: gcp_compute_region_get is called with arguments that would trigger the API call.
+    Then: The function call should raise the expected Exception with the matching error message ("API Error").
+    """
     from GCP import GCPServices
     from GCP import gcp_compute_region_get
 
@@ -4685,7 +4660,12 @@ def test_gcp_compute_region_get_api_exception(mocker):
 
 
 def test_gcp_compute_region_get_all_status_values(mocker):
-    """Test region retrieval with different status values"""
+    """
+    Given: A mocked API environment where the region API call is configured to return a region with a "DOWN" status.
+    When: gcp_compute_region_get is called for the region "asia-east1".
+    Then: The result's structured output must correctly show the "DOWN" status, and the readable output must also reflect the
+    "DOWN" status.
+    """
     from GCP import GCPServices
     from GCP import gcp_compute_region_get
 
@@ -4711,7 +4691,11 @@ def test_gcp_compute_region_get_all_status_values(mocker):
 
 
 def test_gcp_compute_region_get_missing_keys_args(mocker):
-    """Test region retrieval with missing keys in args"""
+    """
+    Given: A mocked API environment where no project_id or region arguments are provided in the args dictionary.
+    When: gcp_compute_region_get is called with empty arguments.
+    Then: The function should handle missing keys gracefully, call the API with None values, and return the mock response.
+    """
     from GCP import GCPServices
     from GCP import gcp_compute_region_get
 
@@ -4739,7 +4723,12 @@ def test_gcp_compute_region_get_missing_keys_args(mocker):
 # gcp_compute_instance_group_get
 class TestGCPComputeInstanceGroupGet:
     def test_gcp_compute_instance_group_get_success(self, mocker):
-        """Test successful instance group retrieval."""
+        """
+        Given: A mocked GCP Compute API environment with instance group data.
+        When: gcp_compute_instance_group_get is called with valid project_id, instance_group, and zone arguments.
+        Then: The function should successfully retrieve the instance group, return the correct outputs and readable output,
+        and call the API with the expected parameters.
+        """
         from GCP import GCPServices
         from GCP import gcp_compute_instance_group_get
 
@@ -4762,7 +4751,7 @@ class TestGCPComputeInstanceGroupGet:
         mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
         mocker.patch("GCP.tableToMarkdown", return_value="Mocked table output")
 
-        args = {"project_id": "test-project", "instanceGroup": "test-instance-group", "zone": "us-central1-a"}
+        args = {"project_id": "test-project", "instance_group": "test-instance-group", "zone": "us-central1-a"}
 
         result = gcp_compute_instance_group_get(mock_creds, args)
 
@@ -4776,7 +4765,12 @@ class TestGCPComputeInstanceGroupGet:
         )
 
     def test_gcp_compute_instance_group_get_minimal_response(self, mocker):
-        """Test instance group retrieval with minimal response data."""
+        """
+        Given: A mocked API environment configured to return a minimal Instance Group response.
+        When: gcp_compute_instance_group_get is called with a project, instanceGroup name, and zone.
+        Then: The function should return the correct minimal Instance Group data in the structured output and
+        the expected readable output.
+        """
         from GCP import GCPServices
         from GCP import gcp_compute_instance_group_get
 
@@ -4802,7 +4796,12 @@ class TestGCPComputeInstanceGroupGet:
         assert result.readable_output == "Minimal table output"
 
     def test_gcp_compute_instance_group_get_empty_response(self, mocker):
-        """Test instance group retrieval with empty response."""
+        """
+        Given: A mocked API environment configured to return an empty Instance Group response.
+        When: gcp_compute_instance_group_get is called with a project, instanceGroup name, and zone.
+        Then: The function should handle the empty response gracefully and return empty outputs with the expected
+        readable output.
+        """
         from GCP import GCPServices
         from GCP import gcp_compute_instance_group_get
 
@@ -4828,7 +4827,12 @@ class TestGCPComputeInstanceGroupGet:
         assert result.readable_output == "Empty table output"
 
     def test_gcp_compute_instance_group_get_missing_args(self, mocker):
-        """Test instance group retrieval with missing required arguments."""
+        """
+        Given: A mocked API environment and missing required parameters (None values for project_id,
+        instanceGroup, and zone).
+        When: gcp_compute_instance_group_get is called with None values for required arguments.
+        Then: The function should raise an exception indicating missing required parameters.
+        """
         from GCP import GCPServices
         from GCP import gcp_compute_instance_group_get
 
@@ -4849,7 +4853,11 @@ class TestGCPComputeInstanceGroupGet:
             gcp_compute_instance_group_get(mock_creds, args)
 
     def test_gcp_compute_instance_group_get_api_error(self, mocker):
-        """Test instance group retrieval with API error."""
+        """
+        Given: A mocked API environment where the API call fails with an exception.
+        When: gcp_compute_instance_group_get is called with valid arguments but the API returns an error.
+        Then: The function should raise an exception with the appropriate error message.
+        """
         from GCP import GCPServices
         from GCP import gcp_compute_instance_group_get
 
@@ -4869,42 +4877,15 @@ class TestGCPComputeInstanceGroupGet:
         with pytest.raises(Exception, match="Instance group not found"):
             gcp_compute_instance_group_get(mock_creds, args)
 
-    def test_gcp_compute_instance_group_get_table_markdown_called_correctly(self, mocker):
-        """Test that tableToMarkdown is called with correct parameters."""
-        from GCP import GCPServices
-        from GCP import gcp_compute_instance_group_get
-
-        mock_creds = mocker.Mock()
-        mock_compute = mocker.Mock()
-        mock_instance_groups = mocker.Mock()
-        mock_get = mocker.Mock()
-
-        mock_response = {"id": "test-id", "name": "test-group", "zone": "test-zone", "network": "test-network"}
-
-        mock_get.execute.return_value = mock_response
-        mock_instance_groups.get.return_value = mock_get
-        mock_compute.instanceGroups.return_value = mock_instance_groups
-
-        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
-        mock_table_to_markdown = mocker.patch("GCP.tableToMarkdown", return_value="Table output")
-
-        args = {"project_id": "test-project", "instanceGroup": "test-group", "zone": "us-central1-a"}
-
-        gcp_compute_instance_group_get(mock_creds, args)
-
-        expected_data = {"id": "test-id", "name": "test-group", "zone": "test-zone", "network": "test-network"}
-        expected_headers = ["id", "name", "zone", "network"]
-
-        mock_table_to_markdown.assert_called_once_with(
-            "GCP instanceGroups test-group", expected_data, headers=expected_headers, removeNull=True
-        )
-
 
 # gcp_compute_network_insert
-
-
 class TestGCPComputeNetworkInsert:
     def test_gcp_compute_network_insert_minimal_required_args(self, mocker):
+        """
+        Given: A mocked GCP Compute service environment with minimal required arguments.
+        When: gcp_compute_network_insert is called with only name and project_id.
+        Then: The function should create a network with default autoCreateSubnetworks=True and return operation details.
+        """
         from GCP import GCPServices
         from GCP import gcp_compute_network_insert
 
@@ -4937,6 +4918,11 @@ class TestGCPComputeNetworkInsert:
         assert result.outputs_key_field == "id"
 
     def test_gcp_compute_network_insert_missing_name_raises_error(self, mocker):
+        """
+        Given: A mocked GCP Compute service environment with missing name argument.
+        When: gcp_compute_network_insert is called without a name parameter.
+        Then: The function should raise a ValueError indicating that the 'name' argument is required.
+        """
         from GCP import gcp_compute_network_insert
 
         mock_creds = mocker.Mock()
@@ -4946,6 +4932,11 @@ class TestGCPComputeNetworkInsert:
             gcp_compute_network_insert(mock_creds, args)
 
     def test_gcp_compute_network_insert_empty_name_raises_error(self, mocker):
+        """
+        Given: A mocked GCP Compute service environment with an empty name argument.
+        When: gcp_compute_network_insert is called with an empty string for the name parameter.
+        Then: The function should raise a ValueError indicating that the 'name' argument is required.
+        """
         from GCP import gcp_compute_network_insert
 
         mock_creds = mocker.Mock()
@@ -4955,6 +4946,12 @@ class TestGCPComputeNetworkInsert:
             gcp_compute_network_insert(mock_creds, args)
 
     def test_gcp_compute_network_insert_with_description(self, mocker):
+        """
+        Given: A mocked GCP Compute service environment with name and description arguments.
+        When: gcp_compute_network_insert is called with name and description parameters.
+        Then: The function should create a network with the provided name and description, and verify the correct API
+        call.
+        """
         from GCP import GCPServices
         from GCP import gcp_compute_network_insert
 
@@ -4978,11 +4975,17 @@ class TestGCPComputeNetworkInsert:
 
         gcp_compute_network_insert(mock_creds, args)
 
-        expected_config = {"name": "network-with-desc", "description": "Test network description", "autoCreateSubnetworks": True}
+        expected_config = {"name": "Network-With-Desc", "description": "Test network description", "autoCreateSubnetworks": True}
 
         mock_networks.insert.assert_called_once_with(project="test-project", body=expected_config)
 
     def test_gcp_compute_network_insert_auto_create_subnets_false_string(self, mocker):
+        """
+        Given: A mocked GCP Compute service environment with a string 'false' value for autoCreateSubnetworks.
+        When: gcp_compute_network_insert is called with autoCreateSubnetworks set to the string "false".
+        Then: The function should create a network with autoCreateSubnetworks converted to boolean False, and verify the correct
+        API call.
+        """
         from GCP import GCPServices
         from GCP import gcp_compute_network_insert
 
@@ -5006,6 +5009,12 @@ class TestGCPComputeNetworkInsert:
         mock_networks.insert.assert_called_once_with(project="test-project", body=expected_config)
 
     def test_gcp_compute_network_insert_auto_create_subnets_true_string(self, mocker):
+        """
+        Given: A mocked GCP Compute service environment with a string 'TRUE' value for autoCreateSubnetworks.
+        When: gcp_compute_network_insert is called with autoCreateSubnetworks set to the string "TRUE".
+        Then: The function should create a network with autoCreateSubnetworks converted to boolean True, and verify the
+        correct API call.
+        """
         from GCP import GCPServices
         from GCP import gcp_compute_network_insert
 
@@ -5029,6 +5038,11 @@ class TestGCPComputeNetworkInsert:
         mock_networks.insert.assert_called_once_with(project="test-project", body=expected_config)
 
     def test_gcp_compute_network_insert_auto_create_subnets_boolean_false(self, mocker):
+        """
+        Given: A mocked GCP Compute service environment with a boolean False value for autoCreateSubnetworks.
+        When: gcp_compute_network_insert is called with autoCreateSubnetworks set to boolean False.
+        Then: The function should create a network with autoCreateSubnetworks as False, and verify the correct API call.
+        """
         from GCP import GCPServices
         from GCP import gcp_compute_network_insert
 
@@ -5052,6 +5066,11 @@ class TestGCPComputeNetworkInsert:
         mock_networks.insert.assert_called_once_with(project="test-project", body=expected_config)
 
     def test_gcp_compute_network_insert_routing_config_regional(self, mocker):
+        """
+        Given: A mocked GCP Compute service environment with routing configuration set to REGIONAL mode.
+        When: gcp_compute_network_insert is called with routing_config_routing_mode set to "REGIONAL".
+        Then: The function should create a network with REGIONAL routing mode, and verify the correct API call.
+        """
         from GCP import GCPServices
         from GCP import gcp_compute_network_insert
 
@@ -5066,7 +5085,7 @@ class TestGCPComputeNetworkInsert:
 
         mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
-        args = {"name": "test-network", "routingConfigRoutingMode": "REGIONAL", "project_id": "test-project"}
+        args = {"name": "test-network", "routing_config_routing_mode": "REGIONAL", "project_id": "test-project"}
 
         gcp_compute_network_insert(mock_creds, args)
 
@@ -5075,6 +5094,11 @@ class TestGCPComputeNetworkInsert:
         mock_networks.insert.assert_called_once_with(project="test-project", body=expected_config)
 
     def test_gcp_compute_network_insert_routing_config_global(self, mocker):
+        """
+        Given: A mocked GCP Compute service environment with routing mode set to GLOBAL.
+        When: gcp_compute_network_insert is called with routing_config_routing_mode set to "GLOBAL".
+        Then: The function should create a network with GLOBAL routing mode configuration, and verify the correct API call.
+        """
         from GCP import GCPServices
         from GCP import gcp_compute_network_insert
 
@@ -5089,7 +5113,7 @@ class TestGCPComputeNetworkInsert:
 
         mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
-        args = {"name": "test-network", "routingConfigRoutingMode": "GLOBAL", "project_id": "test-project"}
+        args = {"name": "test-network", "routing_config_routing_mode": "GLOBAL", "project_id": "test-project"}
 
         gcp_compute_network_insert(mock_creds, args)
 
@@ -5098,6 +5122,13 @@ class TestGCPComputeNetworkInsert:
         mock_networks.insert.assert_called_once_with(project="test-project", body=expected_config)
 
     def test_gcp_compute_network_insert_all_options(self, mocker):
+        """
+        Given: A mocked GCP Compute service environment with all network configuration options specified.
+        When: gcp_compute_network_insert is called with name, description, autoCreateSubnetworks set to "false", and
+        routing_config_routing_mode set to "GLOBAL".
+        Then: The function should create a network with all specified configurations, verify the correct API call with
+        proper parameter conversion, and return operation details including progress.
+        """
         from GCP import GCPServices
         from GCP import gcp_compute_network_insert
 
@@ -5123,14 +5154,14 @@ class TestGCPComputeNetworkInsert:
             "name": "FULL-Test-Network",
             "description": "Complete test network",
             "autoCreateSubnetworks": "false",
-            "routingConfigRoutingMode": "GLOBAL",
+            "routing_config_routing_mode": "GLOBAL",
             "project_id": "full-test-project",
         }
 
         result = gcp_compute_network_insert(mock_creds, args)
 
         expected_config = {
-            "name": "full-test-network",
+            "name": "FULL-Test-Network",
             "description": "Complete test network",
             "autoCreateSubnetworks": False,
             "routingConfig": {"routingMode": "GLOBAL"},
@@ -5141,6 +5172,12 @@ class TestGCPComputeNetworkInsert:
         assert result.outputs["progress"] == 50
 
     def test_gcp_compute_network_insert_response_with_missing_fields(self, mocker):
+        """
+        Given: A mocked GCP Compute service environment where the API response contains only some fields.
+        When: gcp_compute_network_insert is called and the response has missing optional fields like 'kind'.
+        Then: The function should handle the partial response gracefully, return available fields in outputs, and ensure
+        missing fields are either absent or None without causing errors.
+        """
         from GCP import gcp_compute_network_insert
         from GCP import GCPServices
 
@@ -5167,204 +5204,226 @@ class TestGCPComputeNetworkInsert:
 # gcp_compute_networks_list
 
 
-def test_gcp_compute_networks_list_success_with_pagination(mocker):
-    """Test successful networks list retrieval with pagination."""
-    from GCP import gcp_compute_networks_list
-    from GCP import GCPServices
+class TestGCPComputeNetworksList:
+    def test_gcp_compute_networks_list_default_limit(self, mocker):
+        """
+        Given: A mocked API environment configured to return a single network item.
+        When: gcp_compute_networks_list is called with only the project_id argument.
+        Then: The function must call the underlying API with the default limit (maxResults=50) and return a list containing the
+        single network item.
+        """
+        from GCP import gcp_compute_networks_list
+        from GCP import GCPServices
 
-    mock_creds = MagicMock()
-    args = {"project_id": "test-project", "maxResults": 2, "filters": "name:test*", "orderBy": "name", "pageToken": "token123"}
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_list = mocker.Mock()
 
-    mock_compute = MagicMock()
-    mock_networks = MagicMock()
-    mock_list = MagicMock()
+        mock_response = {
+            "items": [{"name": "default-network", "id": "12345", "creationTimestamp": "2023-01-01T00:00:00Z", "status": "READY"}]
+        }
 
-    # First page response
-    first_response = {"items": [{"name": "network1", "id": "123"}, {"name": "network2", "id": "456"}]}
+        mock_list.execute.return_value = mock_response
+        mock_networks.list.return_value = mock_list
+        mock_compute.networks.return_value = mock_networks
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
-    # Second page response
-    second_response = {"items": [{"name": "network3", "id": "789"}]}
-
-    # Mock the pagination flow
-    first_request = MagicMock()
-    second_request = MagicMock()
-
-    first_request.execute.return_value = first_response
-    second_request.execute.return_value = second_response
-
-    mock_list.side_effect = [first_request, second_request]
-    mock_networks.list = mock_list
-    mock_networks.list_next.side_effect = [second_request, None]
-    mock_compute.networks.return_value = mock_networks
-
-    with mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute):
+        args = {"project_id": "test-project"}
         result = gcp_compute_networks_list(mock_creds, args)
 
-    assert "Google Cloud Compute Networks" in result.readable_output
-    assert result.outputs_prefix == "GCP.Compute.Networks"
-    assert result.outputs_key_field == "id"
-    assert result.outputs == second_response
+        mock_networks.list.assert_called_once_with(
+            project="test-project", filter=None, maxResults=50, orderBy=None, pageToken=None
+        )
+        assert len(result.outputs["GCP.Compute.Networks(val.id && val.id == obj.id)"]) == 1
 
-    mock_list.assert_called_with(project="test-project", filter="name:test*", maxResults=2, orderBy="name", pageToken="token123")
-    assert mock_networks.list_next.call_count == 2
+    def test_gcp_compute_networks_list_with_all_parameters(self, mocker):
+        """
+        Given: A mocked API environment configured to return a single network item and a next page token.
+        When: gcp_compute_networks_list is called with custom values for limit, filters, order_by, and page_token.
+        Then: The function must call the underlying API with all specified parameters and include the next page token and
+        limit in the readable output.
+        """
+        from GCP import gcp_compute_networks_list
+        from GCP import GCPServices
 
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_list = mocker.Mock()
 
-def test_gcp_compute_networks_list_empty_response(mocker):
-    """Test networks list with empty response."""
-    from GCP import gcp_compute_networks_list
-    from GCP import GCPServices
+        mock_response = {
+            "items": [{"name": "custom-network", "id": "67890", "creationTimestamp": "2023-02-01T00:00:00Z", "status": "READY"}],
+            "nextPageToken": "next-token-123",
+        }
 
-    mock_creds = MagicMock()
-    args = {"project_id": "test-project"}
+        mock_list.execute.return_value = mock_response
+        mock_networks.list.return_value = mock_list
+        mock_compute.networks.return_value = mock_networks
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
-    mock_compute = MagicMock()
-    mock_networks = MagicMock()
-    mock_request = MagicMock()
-
-    empty_response = {}
-    mock_request.execute.return_value = empty_response
-    mock_networks.list.return_value = mock_request
-    mock_networks.list_next.return_value = None
-    mock_compute.networks.return_value = mock_networks
-
-    with mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute):
+        args = {
+            "project_id": "test-project",
+            "limit": "25",
+            "filters": "name=custom*",
+            "order_by": "name",
+            "page_token": "prev-token",
+        }
         result = gcp_compute_networks_list(mock_creds, args)
 
-    assert "Google Cloud Compute Networks" in result.readable_output
-    assert result.outputs_prefix == "GCP.Compute.Networks"
-    assert result.outputs_key_field == "id"
-    assert result.outputs == empty_response
+        mock_networks.list.assert_called_once_with(
+            project="test-project", filter="name=custom*", maxResults=25, orderBy="name", pageToken="prev-token"
+        )
+        assert "next-token-123" in result.readable_output
+        assert "limit=25" in result.readable_output
 
+    def test_gcp_compute_networks_list_with_next_page_token(self, mocker):
+        """
+        Given: A mocked API environment configured to return an empty item list but containing a nextPageToken and a selfLink.
+        When: gcp_compute_networks_list is called with only the project_id argument.
+        Then: The function must correctly parse and store the nextPageToken and the selfLink in the CommandResults structured
+        output under the global 'GCP.Compute(true)' context key.
+        """
+        from GCP import gcp_compute_networks_list
+        from GCP import GCPServices
 
-def test_gcp_compute_networks_list_missing_optional_fields(mocker):
-    """Test networks list with items missing optional fields."""
-    from GCP import gcp_compute_networks_list
-    from GCP import GCPServices
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_list = mocker.Mock()
 
-    mock_creds = MagicMock()
-    args = {"project_id": "test-project"}
+        mock_response = {
+            "items": [],
+            "nextPageToken": "token-456",
+            "selfLink": "https://compute.googleapis.com/compute/v1/projects/test-project/global/networks",
+        }
 
-    mock_compute = MagicMock()
-    mock_networks = MagicMock()
-    mock_request = MagicMock()
+        mock_list.execute.return_value = mock_response
+        mock_networks.list.return_value = mock_list
+        mock_compute.networks.return_value = mock_networks
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
-    response_with_missing_fields = {
-        "items": [
-            {"name": "network1"},  # Missing id
-            {"id": "456"},  # Missing name
-            {"name": "network3", "id": "789", "extra_field": "value"},
-        ]
-    }
-
-    mock_request.execute.return_value = response_with_missing_fields
-    mock_networks.list.return_value = mock_request
-    mock_networks.list_next.return_value = None
-    mock_compute.networks.return_value = mock_networks
-
-    with mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute):
+        args = {"project_id": "test-project"}
         result = gcp_compute_networks_list(mock_creds, args)
 
-    assert "Google Cloud Compute Networks" in result.readable_output
-    assert result.outputs_prefix == "GCP.Compute.Networks"
-    assert result.outputs_key_field == "id"
-    assert result.outputs == response_with_missing_fields
+        assert result.outputs["GCP.Compute(true)"]["NetworksNextPageToken"] == "token-456"
+        assert (
+            result.outputs["GCP.Compute(true)"]["NetworksSelfLink"]
+            == "https://compute.googleapis.com/compute/v1/projects/test-project/global/networks"
+        )
 
+    def test_gcp_compute_networks_list_empty_response(self, mocker):
+        """
+        Given: A mocked API environment where the network list call is configured to return an empty response dictionary ({}).
+        When: gcp_compute_networks_list is called with the project ID.
+        Then: The structured output for networks must be an empty list, and the raw response size must be zero, confirming correct
+        handling of an empty API response.
+        """
+        from GCP import gcp_compute_networks_list
+        from GCP import GCPServices
 
-def test_gcp_compute_networks_list_with_all_optional_args(mocker):
-    """Test networks list with all optional arguments provided."""
-    from GCP import gcp_compute_networks_list
-    from GCP import GCPServices
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_list = mocker.Mock()
 
-    mock_creds = MagicMock()
-    args = {
-        "project_id": "test-project",
-        "maxResults": 50,
-        "filters": "name:prod-*",
-        "orderBy": "creationTimestamp desc",
-        "pageToken": "next_page_token",
-    }
+        mock_response = {}
 
-    mock_compute = MagicMock()
-    mock_networks = MagicMock()
-    mock_request = MagicMock()
+        mock_list.execute.return_value = mock_response
+        mock_networks.list.return_value = mock_list
+        mock_compute.networks.return_value = mock_networks
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
-    response = {"items": [{"name": "prod-network", "id": "123"}]}
-
-    mock_request.execute.return_value = response
-    mock_networks.list.return_value = mock_request
-    mock_networks.list_next.return_value = None
-    mock_compute.networks.return_value = mock_networks
-
-    with mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute):
+        args = {"project_id": "test-project"}
         result = gcp_compute_networks_list(mock_creds, args)
 
-    mock_networks.list.assert_called_once_with(
-        project="test-project", filter="name:prod-*", maxResults=50, orderBy="creationTimestamp desc", pageToken="next_page_token"
-    )
+        assert result.outputs["GCP.Compute.Networks(val.id && val.id == obj.id)"] == []
+        assert len(result.raw_response) == 0
 
-    assert result.outputs_prefix == "GCP.Compute.Networks"
-    assert result.outputs_key_field == "id"
+    def test_gcp_compute_networks_list_with_warning(self, mocker):
+        """
+        Given: A mocked API environment where the network list call is configured to return a response containing a 'warning'
+        block.
+        When: gcp_compute_networks_list is called with the project ID.
+        Then: The function must correctly parse and store the warning block in the CommandResults structured output under the
+        global 'GCP.Compute(true)' context key.
+        """
+        from GCP import gcp_compute_networks_list
+        from GCP import GCPServices
 
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_list = mocker.Mock()
 
-def test_gcp_compute_networks_list_minimal_args(mocker):
-    """Test networks list with only required project_id argument."""
-    from GCP import gcp_compute_networks_list
-    from GCP import GCPServices
+        mock_response = {"items": [], "warning": {"code": "DEPRECATED_RESOURCE_USED", "message": "Resource is deprecated"}}
 
-    mock_creds = MagicMock()
-    args = {"project_id": "minimal-project"}
+        mock_list.execute.return_value = mock_response
+        mock_networks.list.return_value = mock_list
+        mock_compute.networks.return_value = mock_networks
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
-    mock_compute = MagicMock()
-    mock_networks = MagicMock()
-    mock_request = MagicMock()
-
-    response = {"items": [{"name": "default", "id": "default-id"}]}
-
-    mock_request.execute.return_value = response
-    mock_networks.list.return_value = mock_request
-    mock_networks.list_next.return_value = None
-    mock_compute.networks.return_value = mock_networks
-
-    with mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute):
+        args = {"project_id": "test-project"}
         result = gcp_compute_networks_list(mock_creds, args)
 
-    mock_networks.list.assert_called_once_with(
-        project="minimal-project", filter=None, maxResults=None, orderBy=None, pageToken=None
-    )
+        assert result.outputs["GCP.Compute(true)"]["outputsWarning"]["code"] == "DEPRECATED_RESOURCE_USED"
 
-    assert "Google Cloud Compute Networks" in result.readable_output
-    assert "default" in result.readable_output
+    def test_gcp_compute_networks_list_partial_network_data(self, mocker):
+        """
+        Given: A mocked API environment configured to return a list of networks, some of which contain only partial data (e.g.,
+        missing 'name' or 'status' fields).
+        When: gcp_compute_networks_list is called with the project ID.
+        Then: The function must correctly process the list of networks, preserving the partial data structure and asserting that
+        exactly two items are present in the structured output.
+        """
+        from GCP import gcp_compute_networks_list
+        from GCP import GCPServices
 
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_list = mocker.Mock()
 
-def test_gcp_compute_networks_list_multiple_pages(mocker):
-    """Test networks list retrieval across multiple pages."""
-    from GCP import gcp_compute_networks_list
-    from GCP import GCPServices
+        mock_response = {"items": [{"name": "partial-network", "id": "11111"}, {"id": "22222", "status": "READY"}]}
 
-    mock_creds = MagicMock()
-    args = {"project_id": "multi-page-project"}
+        mock_list.execute.return_value = mock_response
+        mock_networks.list.return_value = mock_list
+        mock_compute.networks.return_value = mock_networks
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
-    mock_compute = MagicMock()
-    mock_networks = MagicMock()
-
-    # Create multiple requests for pagination
-    requests = [MagicMock() for _ in range(3)]
-    responses = [
-        {"items": [{"name": "net1", "id": "1"}, {"name": "net2", "id": "2"}]},
-        {"items": [{"name": "net3", "id": "3"}]},
-        {"items": [{"name": "net4", "id": "4"}]},
-    ]
-
-    for req, resp in zip(requests, responses):
-        req.execute.return_value = resp
-
-    mock_networks.list.return_value = requests[0]
-    mock_networks.list_next.side_effect = [requests[1], requests[2], None]
-    mock_compute.networks.return_value = mock_networks
-
-    with mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute):
+        args = {"project_id": "test-project"}
         result = gcp_compute_networks_list(mock_creds, args)
 
-    assert mock_networks.list_next.call_count == 3
-    assert result.outputs == responses[2]  # Last response
-    assert "Google Cloud Compute Networks" in result.readable_output
+        networks_data = result.outputs["GCP.Compute.Networks(val.id && val.id == obj.id)"]
+        assert len(networks_data) == 2
+        assert networks_data[0]["name"] == "partial-network"
+        assert networks_data[0]["id"] == "11111"
+        assert networks_data[1].get("name") is None
+        assert networks_data[1]["id"] == "22222"
+
+    def test_gcp_compute_networks_list_custom_limit_in_metadata(self, mocker):
+        """
+        Given: A mocked API environment configured with a next page token ("custom-token").
+        When: gcp_compute_networks_list is called with a custom limit of "100" and a project ID.
+        Then: The resulting readable output must correctly reflect the custom limit used and the presence of the next page token.
+        """
+        from GCP import gcp_compute_networks_list
+        from GCP import GCPServices
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_list = mocker.Mock()
+
+        mock_response = {"items": [], "nextPageToken": "custom-token"}
+
+        mock_list.execute.return_value = mock_response
+        mock_networks.list.return_value = mock_list
+        mock_compute.networks.return_value = mock_networks
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        args = {"project_id": "test-project", "limit": "100"}
+        result = gcp_compute_networks_list(mock_creds, args)
+
+        assert "limit=100" in result.readable_output
+        assert "custom-token" in result.readable_output

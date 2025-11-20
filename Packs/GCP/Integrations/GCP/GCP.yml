@@ -2474,7 +2474,7 @@ script:
       description: ' Current usage of this metric.'
       type: string
     - contextPath: GCP.Compute.Regions.quotas.owner
-      description: Owning resource. This is the resource on which this quota is applied.
+      description: Owning resource. The resource to which this quota applies.
       type: string
     - contextPath: GCP.Compute.Regions.deprecated
       description: The deprecation status associated with this region.
@@ -2675,16 +2675,16 @@ script:
       description: Details about the current state of the peering.
       type: string
     - contextPath: GCP.Compute.Networks.peerings.autoCreateRoutes
-      description: This field will be deprecated soon. Prefer using exchangeSubnetRoutes instead. Indicates whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network.
+      description: This field will be deprecated soon. Prefer using exchangeSubnetRoutes instead. Indicates whether full mesh connectivity is created and managed automatically. When set to true, Google Compute Engine automatically creates and manages the routes between two networks while the state is ACTIVE. If set to false, the user must manually create routes to direct packets to the peer network.
       type: boolean
     - contextPath: GCP.Compute.Networks.peerings.exchangeSubnetRoutes
-      description: Whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the peering state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network.
+      description: Whether full mesh connectivity is created and managed automatically. When set to true, Google Compute Engine automatically creates and manages the routes between two networks while the peering state is ACTIVE. If set to false, the user must manually create routes to send packets to the peer network.
       type: boolean
     - contextPath: GCP.Compute.Networks.routingConfig
       description: The network-level routing configuration for this network. Used by Cloud Router to determine what type of network-wide routing behavior to enforce.
       type: string
     - contextPath: GCP.Compute.Networks.routingConfig.routingMode
-      description: The network-wide routing mode to use. If set to REGIONAL, this networks cloud routers will only advertise routes with subnets of this network in the same region as the router. If set to GLOBAL, this networks cloud routers will advertise routes with all subnets of this network, across regions.
+      description: Specifies the network-wide routing mode. If set to REGIONAL, the network’s cloud routers advertise routes only for subnets in the same region as the router. If set to GLOBAL, cloud routers advertise routes for all subnets in the network across all regions.
       type: string
     - contextPath: GCP.Compute.Networks.kind
       description: Type of the resource. Always compute#network for networks.
