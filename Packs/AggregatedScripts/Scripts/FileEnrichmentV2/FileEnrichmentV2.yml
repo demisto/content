@@ -4,7 +4,8 @@ args:
   required: true
   isArray: true
 - name: external_enrichment
-  description: "Whether to call external integrations for enrichment:
+  description: |
+    "Whether to call external integrations for enrichment:
     - 'true': enrich using all enabled integrations (e.g., VirusTotal (API v3), AlienVault OTX v2).
     - 'false': Will enrich using only WildFire-v2 if available; skip external integrations.
     If the 'brands' argument is provided, this flag is ignored and enrichment is run only on the brands provided."
@@ -25,7 +26,7 @@ args:
 - name: brands
   description: |
     A list of integration brands to run enrichment against.  
-    Example: `"VirusTotal (API v3), AlienVault OTX v2", "WildFire-v2"`.  
+    Example: `"AlienVault OTX v2", "WildFire-v2"`.  
     - If provided, only the selected brands are used. 
     - If left empty, the script runs enrichment on all enabled integrations,
       depending on the `external_enrichment` flag.
@@ -36,7 +37,7 @@ args:
 - name: additional_fields
   description: |
     When set to true, the output includes an `AdditionalFields` object
-    for each of the indicator result.  
+    for each of the indicator results.  
     `AdditionalFields` contains all fields returned by TIM or the integrations
     that are not part of the standard output keys: `MD5`, `SHA1`, `SHA256`, `SHA512`, `CRC32`, `CTPH`, `SSDeep`, `ImpHash`, 
     `SourceTimeStamp`, `Modified`, `Path`, `Size`, `FileExtension`, `AssociatedFileNames`, `Brand`, `Score`.
