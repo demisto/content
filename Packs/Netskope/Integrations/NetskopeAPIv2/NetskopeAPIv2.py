@@ -407,9 +407,12 @@ class Client(BaseClient):
             timestamp (int): The timestamp to filter by.
 
         Returns:
-            dict[str, Any]: The API response.
+            dict[str, Any]: The API response with large integers converted to strings.
         """
-        return self._http_request(
+        # Main request - use default behavior (automatic JSON parsing)
+        demisto.debug("[DEBUG-XSUP-59253] Making main request with default JSON parsing")
+        
+        response = self._http_request(
             "GET",
             url_suffix="api/v2/events/dataexport/events/incident",
             params={"operation": timestamp},
@@ -417,6 +420,63 @@ class Client(BaseClient):
             status_list_to_retry=[409, 429],
             backoff_factor=DEFAULT_WAIT_TIME,
         )
+
+        # Additional request with resp_type='text' for comparison (logging only)
+        demisto.debug("[DEBUG-XSUP-59253] Making additional request with resp_type='text' for comparison")
+        
+        response_text = self._http_request(
+            "GET",
+            url_suffix="api/v2/events/dataexport/events/incident",
+            params={"operation": timestamp},
+            retries=10,
+            status_list_to_retry=[409, 429],
+            backoff_factor=DEFAULT_WAIT_TIME,
+            resp_type="text",
+        )
+        
+        # Parse the text response manually for comparison
+        response_from_text = json.loads(response_text)
+        
+        # Log comparison of large integer fields from both methods
+        if response.get("result") and response_from_text.get("result"):
+            if response["result"] and response_from_text["result"]:
+                default_incident = response["result"][0]
+                text_incident = response_from_text["result"][0]
+                
+                if "dlp_incident_id" in default_incident:
+                    demisto.debug(
+                        f"[DEBUG-XSUP-59253] Default parsing - dlp_incident_id: {default_incident['dlp_incident_id']} (type: {type(default_incident['dlp_incident_id']).__name__})"
+                    )
+                    demisto.debug(
+                        f"[DEBUG-XSUP-59253] Text parsing - dlp_incident_id: {text_incident['dlp_incident_id']} (type: {type(text_incident['dlp_incident_id']).__name__})"
+                    )
+                
+                if "dlp_parent_id" in default_incident:
+                    demisto.debug(
+                        f"[DEBUG-XSUP-59253] Default parsing - dlp_parent_id: {default_incident['dlp_parent_id']} (type: {type(default_incident['dlp_parent_id']).__name__})"
+                    )
+                    demisto.debug(
+                        f"[DEBUG-XSUP-59253] Text parsing - dlp_parent_id: {text_incident['dlp_parent_id']} (type: {type(text_incident['dlp_parent_id']).__name__})"
+                    )
+
+        # Convert large integers to strings to prevent JavaScript precision loss
+        if incidents := response.get("result"):
+            for incident in incidents:
+                for key, value in list(incident.items()):
+                    if isinstance(value, int) and value > JS_NUMBER_LIMIT:
+                        incident[key] = str(value)
+
+                # Log large integer fields AFTER conversion
+                if "dlp_incident_id" in incident:
+                    demisto.debug(
+                        f"[DEBUG-XSUP-59253] After Conversion - dlp_incident_id: {incident['dlp_incident_id']} (type: {type(incident['dlp_incident_id']).__name__})"
+                    )
+                if "dlp_parent_id" in incident:
+                    demisto.debug(
+                        f"[DEBUG-XSUP-59253] After Conversion - dlp_parent_id: {incident['dlp_parent_id']} (type: {type(incident['dlp_parent_id']).__name__})"
+                    )
+
+        return response
 
     def update_dlp_incident(
         self,
@@ -879,6 +939,18 @@ def list_dlp_incident_command(
 
     incidents = remove_duplicates(incidents, "object_id")
 
+    # Log sample incident before CommandResults
+    if incidents:
+        sample = incidents[0]
+        if "dlp_incident_id" in sample:
+            demisto.debug(
+                f"[DEBUG-XSUP-59253] Before CommandResults - dlp_incident_id: {sample['dlp_incident_id']} (type: {type(sample['dlp_incident_id']).__name__})"
+            )
+        if "dlp_parent_id" in sample:
+            demisto.debug(
+                f"[DEBUG-XSUP-59253] Before CommandResults - dlp_parent_id: {sample['dlp_parent_id']} (type: {type(sample['dlp_parent_id']).__name__})"
+            )
+
     readable_output = tableToMarkdown(
         name="DLP Incident List:",
         t=incidents,
@@ -1209,21 +1281,52 @@ def parse_incident(
         dict: XSOAR Incident.
     """
     incident_id = incident["object_id"] if incident_type == "dlp_incident" else incident["_id"]
+
+    # Log large integer fields BEFORE conversion
+    if "dlp_incident_id" in incident:
+        demisto.debug(
+            f"[DEBUG-XSUP-59253] parse_incident Input - dlp_incident_id: {incident['dlp_incident_id']} (type: {type(incident['dlp_incident_id']).__name__})"
+        )
+    if "dlp_parent_id" in incident:
+        demisto.debug(
+            f"[DEBUG-XSUP-59253] parse_incident Input - dlp_parent_id: {incident['dlp_parent_id']} (type: {type(incident['dlp_parent_id']).__name__})"
+        )
+
     incident["incident_type"] = incident_type
     incident["mirror_direction"] = mirror_direction
     incident["mirror_instance"] = demisto.integrationInstance()
-    for key, value in incident.items():
+
+    for key, value in list(incident.items()):
         # JavaScript does not work well with large numbers larger than 2^53-1 so need to stringify them.
         # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
         if isinstance(value, int) and value > JS_NUMBER_LIMIT:
             incident[key] = str(value)
+
+    # Log large integer fields AFTER conversion
+    if "dlp_incident_id" in incident:
+        demisto.debug(
+            f"[DEBUG-XSUP-59253] parse_incident Output - dlp_incident_id: {incident['dlp_incident_id']} (type: {type(incident['dlp_incident_id']).__name__})"
+        )
+    if "dlp_parent_id" in incident:
+        demisto.debug(
+            f"[DEBUG-XSUP-59253] parse_incident Output - dlp_parent_id: {incident['dlp_parent_id']} (type: {type(incident['dlp_parent_id']).__name__})"
+        )
+
+    raw_json_str = json.dumps(incident)
+
+    # Verify large integers in JSON string
+    if "dlp_incident_id" in incident and str(incident["dlp_incident_id"]) in raw_json_str:
+        demisto.debug(f"[DEBUG-XSUP-59253] rawJSON contains dlp_incident_id: {incident['dlp_incident_id']}")
+    if "dlp_parent_id" in incident and str(incident["dlp_parent_id"]) in raw_json_str:
+        demisto.debug(f"[DEBUG-XSUP-59253] rawJSON contains dlp_parent_id: {incident['dlp_parent_id']}")
+
     return {
         "name": f"{incident_type} ID: {incident_id}",
         "incident_type": incident_type,
         "mirror_direction": mirror_direction,
         "mirror_instance": demisto.integrationInstance(),
         "occurred": convert_datetime_int_to_iso(incident["timestamp"]),
-        "rawJSON": json.dumps(incident),
+        "rawJSON": raw_json_str,
     }
 
 
