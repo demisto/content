@@ -2,7 +2,7 @@ import pytest
 from CommonServerPython import *
 from unittest.mock import MagicMock
 from freezegun import freeze_time
-from CitrixCloudEventCollector import Client, get_events_command, fetch_events_command, test_module_command
+from CitrixCloudEventCollector import Client, get_events_command, fetch_events_command, module_test_command
 
 
 @pytest.fixture
@@ -201,17 +201,17 @@ def test_fetch_events_command_sets_last_run(mocker):
     assert "LastRun" in last_run
 
 
-def test_test_module_returns_ok(mocker):
+def test_module_test_command_returns_ok(mocker):
     """
     Given:
         - A Client with mocked event data.
     When:
-        - Running the `test_module` function.
+        - Running the `module_test_command` function.
     Then:
         - The result should be 'ok', indicating a successful connection and fetch logic.
     """
     client = Client("url", "cust", "id", "secret", False, True)
     mocker.patch("CitrixCloudEventCollector.get_events_command", return_value="ok")
 
-    result = test_module_command(client, {})
+    result = module_test_command(client, {})
     assert result == "ok"
