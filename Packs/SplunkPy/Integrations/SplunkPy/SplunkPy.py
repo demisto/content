@@ -2042,30 +2042,37 @@ def get_modified_remote_data_command(
     # Build the query with the 60-second look-behind buffer.
     original_last_update = get_last_update_in_splunk_time(remote_args.last_update)
     last_update_splunk_timestamp = original_last_update - SPLUNK_INDEXING_TIME
-    findings_review_search = (
-        "|`findings_review` "
-        "| eval last_modified_timestamp=_time "
-        f"| where last_modified_timestamp>{last_update_splunk_timestamp} "
-        "| fields - _time,time "
-        "| expandtoken"
+    
+    # Query the audit index to get modified findings
+    # This query extracts last_modified_timestamp and finding_id from the audit logs,
+    # sorts by timestamp (descending), deduplicates by finding_id, and returns all relevant fields
+    mirror_in_search = (
+        f'index=_audit source=notable_update_rest_handler earliest={last_update_splunk_timestamp} '
+        f'| eval last_modified_timestamp = _time" '
+        f'| sort last_modified_timestamp DESC '
+        f'| dedup rule_id '
+        f'| table last_modified_timestamp, rule_id, owner, status, disposition, urgency, sensitivity'
     )
 
     modified_findings_map = {}
     entries: list[dict] = []
     current_run_processed_events = set()
 
-    demisto.debug(f"mirror-in: performing `findings_review` search with query: {findings_review_search}.")
+    demisto.debug(f"mirror-in: performing audit log search with query: {mirror_in_search}.")
+    
+    # Execute the search query to get modified findings
     for item in results.JSONResultsReader(
-        service.jobs.oneshot(query=findings_review_search, count=MIRROR_LIMIT, output_mode=OUTPUT_MODE_JSON)
+        service.jobs.oneshot(query=mirror_in_search, count=MIRROR_LIMIT, output_mode=OUTPUT_MODE_JSON)
     ):
         if handle_message(item):
             continue
 
+        # Parse the finding data from the audit log
         updated_finding = parse_finding(item, to_dict=True)
-        finding_id = updated_finding.get("rule_id")
 
         # Deduplication Mechanism:
         # Create a unique key for the event and check against the cache of previously processed events.
+        finding_id = updated_finding.get("rule_id")
         last_modified = updated_finding.get("last_modified_timestamp")
         if not finding_id or not last_modified:
             continue
