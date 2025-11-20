@@ -5867,7 +5867,7 @@
             "timeout": 600
         },
         {
-            "playbookID": "FileEnrichment-Test",
+            "playbookID": "FileEnrichment - Test",
             "integrations": [
                 "VirusTotal (API v3)",
                 "WildFire-v2"
