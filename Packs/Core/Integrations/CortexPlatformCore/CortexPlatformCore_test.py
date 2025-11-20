@@ -4565,3 +4565,212 @@ def test_appsec_remediate_issue_command_empty_issue_ids_list(mocker: MockerFixtu
 
     assert len(result.outputs) == 0
     mock_appsec_remediate.assert_not_called()
+
+
+def test_get_appsec_issues_command_success(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client and valid arguments with appsec issue filters.
+    When:
+        The get_appsec_issues_command function is called.
+    Then:
+        The response is parsed, formatted, and returned correctly with expected outputs.
+    """
+    from CortexPlatformCore import Client, get_appsec_issues_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {
+        "reply": {
+            "DATA": [
+                {
+                    "internal_id": "issue_001",
+                    "severity": "SEV_040_HIGH",
+                    "alert_name": "SQL Injection",
+                    "status_progress": "STATUS_010_NEW",
+                    "cas_issues_normalized_fields": {
+                        "xdm.vulnerability.cvss_score": 8.8,
+                    },
+                }
+            ]
+        }
+    }
+    mock_get_webapp_data = mocker.patch.object(
+        mock_client,
+        "get_webapp_data",
+        side_effect=lambda request_data: mock_response
+        if request_data.get("table_name") == "ISSUES_CVES"
+        else {"reply": {"DATA": []}},
+    )
+
+    args = {"severity": "high", "status": "New", "has_kev": "true"}
+
+    result = get_appsec_issues_command(mock_client, args)
+
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["internal_id"] == "issue_001"
+    assert result.outputs[0]["severity"] == "high"
+    assert result.outputs[0]["status"] == "New"
+    assert result.outputs[0]["cvss_score"] == 8.8
+    assert "SQL Injection" in result.readable_output
+    assert result.outputs_prefix == "Core.AppsecIssue"
+    assert mock_get_webapp_data.call_count > 0
+
+
+def test_get_appsec_issues_command_no_issues_found(mocker: MockerFixture):
+    """
+    Given:
+        A mocked client that returns an empty list of issues.
+    When:
+        The get_appsec_issues_command function is called.
+    Then:
+        An empty result is returned with the correct structure.
+    """
+    from CortexPlatformCore import Client, get_appsec_issues_command
+
+    mock_client = Client(base_url="", headers={})
+    mock_response = {"reply": {"DATA": []}}
+    mocker.patch.object(mock_client, "get_webapp_data", return_value=mock_response)
+
+    args = {"severity": "low"}
+
+    result = get_appsec_issues_command(mock_client, args)
+
+    assert result.outputs == []
+    assert "Application Security Issues" in result.readable_output
+
+
+def test_create_appsec_issues_filter_and_tables_simple_filter():
+    """
+    Given:
+        A simple filter argument.
+    When:
+        The create_appsec_issues_filter_and_tables function is called.
+    Then:
+        The function should return the correct list of tables and a FilterBuilder instance.
+    """
+    from CortexPlatformCore import create_appsec_issues_filter_and_tables
+
+    args = {"urgency": "high"}
+    tables_filters = create_appsec_issues_filter_and_tables(args)
+    assert set(tables_filters.keys()) == {
+        "ISSUES_IAC",
+        "ISSUES_CVES",
+        "ISSUES_SECRETS",
+        "ISSUES_WEAKNESSES",
+    }
+    for _, filter_builder in tables_filters.items():
+        filter_dict = filter_builder.to_dict()
+        assert any(
+            field.get("SEARCH_VALUE") == "high" and field.get("SEARCH_FIELD") == "urgency" for field in filter_dict.get("AND", [])
+        )
+
+
+def test_create_appsec_issues_filter_and_tables_cves_specific_filter():
+    """
+    Given:
+        A CVES specific filter argument.
+    When:
+        The create_appsec_issues_filter_and_tables function is called.
+    Then:
+        The function should return only the ISSUES_CVES table.
+    """
+    from CortexPlatformCore import create_appsec_issues_filter_and_tables
+
+    args = {"has_kev": "true"}
+    tables_filters = create_appsec_issues_filter_and_tables(args)
+    assert list(tables_filters.keys()) == ["ISSUES_CVES"]
+
+
+def test_create_appsec_issues_filter_and_tables_all_filters():
+    """
+    Given:
+        Arguments with all possible filters.
+    When:
+        The create_appsec_issues_filter_and_tables function is called.
+    Then:
+        The function should return the correct tables and a comprehensive filter.
+    """
+    from CortexPlatformCore import create_appsec_issues_filter_and_tables
+
+    args = {
+        "cvss_score_gte": "8.0",
+        "epss_score_gte": "0.5",
+        "has_kev": "true",
+        "sla": "breached",
+        "fix_available": "true",
+        "urgency": "critical",
+        "severity": "critical",
+        "issue_id": "ISSUE-123",
+        "issue_name": "XSS",
+        "collaborator": "john.doe",
+        "status": "In Progress",
+        "start_time": "2023-01-01",
+        "end_time": "2023-01-31",
+        "assignee": "assigned",
+    }
+    tables_filters = create_appsec_issues_filter_and_tables(args)
+    assert "ISSUES_CVES" in tables_filters
+    filter_builder = tables_filters["ISSUES_CVES"]
+    filter_dict = filter_builder.to_dict()
+    assert len(filter_dict["AND"]) >= 10
+
+
+def test_normalize_and_filter_appsec_issue():
+    """
+    Given:
+        A raw issue dictionary from the API.
+    When:
+        The normalize_and_filter_appsec_issue function is called.
+    Then:
+        The function should return a normalized and filtered dictionary with standard AppSec fields.
+    """
+    from CortexPlatformCore import normalize_and_filter_appsec_issue
+
+    raw_issue = {
+        "internal_id": "issue_001",
+        "severity": "SEV_050_CRITICAL",
+        "alert_name": "Insecure Configuration",
+        "issue_source": "Prisma Cloud",
+        "issue_category": "Misconfiguration",
+        "status_progress": "STATUS_025_RESOLVED",
+        "cas_issues_is_fixable": True,
+        "cas_issues_normalized_fields": {
+            "xdm.repository.name": "my-app",
+            "xdm.repository.organization": "my-org",
+            "xdm.vulnerability.cvss_score": 9.5,
+        },
+        "cas_sla_status": "IN_SLA",
+        "extra_field": "should be removed",
+    }
+
+    normalized_issue = normalize_and_filter_appsec_issue(raw_issue)
+
+    assert normalized_issue["internal_id"] == "issue_001"
+    assert normalized_issue["severity"] == "critical"
+    assert normalized_issue["issue_name"] == "Insecure Configuration"
+    assert normalized_issue["status"] == "Resolved"
+    assert normalized_issue["repository_name"] == "my-app"
+    assert normalized_issue["repository_organization"] == "my-org"
+    assert normalized_issue["cvss_score"] == 9.5
+    assert normalized_issue["is_fixable"] is True
+    assert normalized_issue["sla_status"] == "On Track"
+    assert "extra_field" not in normalized_issue
+
+
+def test_create_appsec_issues_filter_and_tables_no_matching_table():
+    """
+    Given:
+        Valid filter arguments that, when combined, do not match any single predefined Appsec issue type table.
+    When:
+        The create_appsec_issues_filter_and_tables function is called.
+    Then:
+        A DemistoException should be raised indicating no matching issue type found.
+    """
+    from CortexPlatformCore import create_appsec_issues_filter_and_tables
+    from CommonServerPython import DemistoException
+
+    # This combination of filters (validation and has_kev) does not exist in any single ISSUE_TYPE.filters set.
+    args = {"validation": "true", "has_kev": "true"}
+
+    with pytest.raises(DemistoException, match="No matching issue type found for the given filter combination"):
+        create_appsec_issues_filter_and_tables(args)
