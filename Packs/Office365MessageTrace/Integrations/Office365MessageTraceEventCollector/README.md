@@ -1,5 +1,5 @@
 Office 365 Message Trace integration allows you to retrieve email message tracking information from the Office 365 reporting web service. You can search for message traces by date range, sender, recipient, message ID, and status to troubleshoot email delivery issues.
-This integration was integrated and tested with version xx of Office 365 Message Trace Event Collector.
+This integration was integrated and tested with Office 365 as of 2025-11-19.
 
 ## Configure Office 365 Message Trace Event Collector in Cortex
 

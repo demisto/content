@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Office 365 Message Trace Event Collector
   version: -1
@@ -9,39 +12,47 @@ configuration:
   name: url
   required: false
   type: 0
+  section: Connect
 - additionalinfo: Azure AD tenant ID
   display: Tenant ID
   name: tenant_id
   required: true
   type: 0
+  section: Connect
 - additionalinfo: Azure AD application client ID
   display: Client ID
   name: client_id
   required: true
   type: 0
+  section: Connect
 - additionalinfo: Azure AD application client secret
   display: Client Secret
   name: client_secret
   required: true
-  type: 4
+  type: 9
+  section: Connect
 - additionalinfo: X.509 certificate thumbprint for certificate-based authentication (optional)
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 0
+  section: Connect
 - additionalinfo: Private key for certificate-based authentication (optional)
   display: Private Key
   name: private_key
   required: false
   type: 14
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
 - section: Collect
   display: First fetch time
   name: first_fetch
@@ -59,64 +70,67 @@ description: Office 365 Message Trace integration allows you to retrieve email m
 display: Office 365 Message Trace Event Collector
 name: Office 365 Message Trace Event Collector
 script:
-  commands:
-  - arguments:
-    - description: Start date for the search in ISO format (YYYY-MM-DDTHH:MM:SSZ). If not provided, defaults to 48 hours ago.
-      name: start_date
-    - description: End date for the search in ISO format (YYYY-MM-DDTHH:MM:SSZ). If not provided, defaults to current time.
-      name: end_date
-    - description: Date range for the search (e.g., "24 hours", "7 days"). Only used if start_date and end_date are not provided.
-      name: date_range
-    - description: Email address of the sender to filter results.
-      name: sender_address
-    - description: Email address of the recipient to filter results.
-      name: recipient_address
-    - description: Specific message trace ID to search for.
-      name: message_trace_id
-    - description: Message status to filter results (e.g., Delivered, Failed, Pending).
-      name: status
-    - description: Number of results to return, will impact paging.
-      name: top
-    description: Retrieve message trace data from Office 365 for troubleshooting email delivery issues.
-    name: office365-mt-get-events
-    outputs:
-    - contextPath: Office365.MessageTrace.MessageTraceId
-      description: Unique identifier for the message trace.
-      type: String
-    - contextPath: Office365.MessageTrace.Organization
-      description: The organization domain that processed the message.
-      type: String
-    - contextPath: Office365.MessageTrace.MessageId
-      description: The Internet MessageID header of the message.
-      type: String
-    - contextPath: Office365.MessageTrace.Received
-      description: Date and time when the message was received.
-      type: Date
-    - contextPath: Office365.MessageTrace.SenderAddress
-      description: SMTP email address of the sender.
-      type: String
-    - contextPath: Office365.MessageTrace.RecipientAddress
-      description: SMTP email address of the recipient.
-      type: String
-    - contextPath: Office365.MessageTrace.Subject
-      description: Subject line of the message.
-      type: String
-    - contextPath: Office365.MessageTrace.Status
-      description: Status of the message (e.g., Delivered, Failed).
-      type: String
-    - contextPath: Office365.MessageTrace.FromIP
-      description: IP address that transmitted the message to Office 365.
-      type: String
-    - contextPath: Office365.MessageTrace.ToIP
-      description: IP address that Office 365 sent the message to.
-      type: String
-    - contextPath: Office365.MessageTrace.Size
-      description: Size of the message in bytes.
-      type: Number
-  dockerimage: demisto/python3:3.10.13.84405
-  isfetchevents: true
-  subtype: python3
-  type: python
+  script:
+    commands:
+    - arguments:
+      - description: Start date for the search in ISO format (YYYY-MM-DDTHH:MM:SSZ). If not provided, defaults to 48 hours ago.
+        name: start_date
+      - description: End date for the search in ISO format (YYYY-MM-DDTHH:MM:SSZ). If not provided, defaults to current time.
+        name: end_date
+      - description: Date range for the search (e.g., "24 hours", "7 days"). Only used if start_date and end_date are not provided.
+        name: date_range
+      - description: Email address of the sender to filter results.
+        name: sender_address
+      - description: Email address of the recipient to filter results.
+        name: recipient_address
+      - description: Specific message trace ID to search for.
+        name: message_trace_id
+      - description: Message status to filter results (e.g., Delivered, Failed, Pending).
+        name: status
+      - description: Number of results to return, will impact paging.
+        name: top
+      description: Retrieve message trace data from Office 365 for troubleshooting email delivery issues.
+      name: office365-mt-get-events
+      outputs:
+      - contextPath: Office365.MessageTrace.MessageTraceId
+        description: Unique identifier for the message trace.
+        type: String
+      - contextPath: Office365.MessageTrace.Organization
+        description: The organization domain that processed the message.
+        type: String
+      - contextPath: Office365.MessageTrace.MessageId
+        description: The Internet MessageID header of the message.
+        type: String
+      - contextPath: Office365.MessageTrace.Received
+        description: Date and time when the message was received.
+        type: Date
+      - contextPath: Office365.MessageTrace.SenderAddress
+        description: SMTP email address of the sender.
+        type: String
+      - contextPath: Office365.MessageTrace.RecipientAddress
+        description: SMTP email address of the recipient.
+        type: String
+      - contextPath: Office365.MessageTrace.Subject
+        description: Subject line of the message.
+        type: String
+      - contextPath: Office365.MessageTrace.Status
+        description: Status of the message (e.g., Delivered, Failed).
+        type: String
+      - contextPath: Office365.MessageTrace.FromIP
+        description: IP address that transmitted the message to Office 365.
+        type: String
+      - contextPath: Office365.MessageTrace.ToIP
+        description: IP address that Office 365 sent the message to.
+        type: String
+      - contextPath: Office365.MessageTrace.Size
+        description: Size of the message in bytes.
+        type: Number
+    dockerimage: demisto/python3:3.12.12.5490952
+    isfetchevents: true
+    subtype: python3
+    type: python
 tests:
 - No test
 fromversion: 6.8.0
+marketplaces:
+- marketplacev2
