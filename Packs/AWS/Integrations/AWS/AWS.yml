@@ -180,7 +180,47 @@ script:
       - 'true'
       - 'false'
 
-    
+  - name: aws-s3-public-access-block-quick-action
+    description: Blocks all public access to the S3 bucket.
+    prettyname: Block S3 Public Access
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: bucket
+        prettyname: Bucket Name
+        description: The name of the Amazon S3 bucket.
+        required: true
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
+      - name: block_public_acls
+        description: Wether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
+        defaultValue: 'true'
+        hidden: true
+      - name: ignore_public_acls
+        description: Wether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
+        defaultValue: 'true'
+        hidden: true
+      - name: block_public_policy
+        description: Wether Amazon S3 should block public bucket policies for this bucket.
+        defaultValue: 'true'
+        hidden: true
+      - name: restrict_public_buckets
+        description: Wether Amazon S3 should restrict public bucket policies for this bucket.
+        defaultValue: 'true'
+        hidden: true
+
   - name: aws-s3-bucket-acl-put
     description: Sets the access control list (ACL) permissions for an existing Amazon S3 bucket. This command allows you to define who can access the bucket and what actions they can perform, using predefined ACLs. Since 2023, all new S3 buckets *block* ACLs by default for better security.
     arguments:
@@ -5251,6 +5291,39 @@ script:
     - contextPath: AWS.S3-Buckets.ServerSideEncryptionConfiguration.Rules
       description: Container for information about a particular server-side encryption configuration rule.
       type: array
+
+  - name: aws-ec2-enable-imdsv2-quick-action
+    description: Enables instance metadata services v2.0 for the EC2 instance.
+    prettyname: Enable IMDSv2
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: instance_id
+        prettyname: EC2 Instance ID
+        description: The ID of the instance.
+        required: true
+        prettypredefined:
+          EC2 Instance ID: ${asset.xdm.asset.strong_id}
+      - name: http_tokens
+        description: Whether IMDSv2 is required.
+        defaultValue: 'required'
+        hidden: true
+      - name: http_endpoint
+        description: Enables or disables the HTTP metadata endpoint on your instances.
+        defaultValue: 'enabled'
+        hidden: true
 
   - name: aws-s3-bucket-policy-get
     description: Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document in JSON format if one exists.
