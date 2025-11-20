@@ -1409,7 +1409,9 @@ def risky_user_to_incident(riskyuser: dict, riskyuser_date: str, severity_overri
         )
         incident_details = (
             f"User {riskyuser_upn} remediated. Risk might have been self-remediated by user through MFA "
-            "or secure password change, or manually remediated by an administrator."
+            "or secure password change, or manually remediated by an administrator. Caution is required "
+            "before dismissing this alert when risk detail is userPassedMFADrivenByRiskBasedPolicy "
+            "as AiTM attacks on an MFA-enabled account trigger this alert."
         )
 
     elif riskyuser_risk_level == "dismissed":
