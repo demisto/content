@@ -1,8 +1,8 @@
 Use the SplunkPy integration to:
 
-- Fetch events (logs) from within Cortex XSOAR
-- Push events from Cortex XSOAR to SplunkPy
-- Fetch SplunkPy ES notable events as Cortex XSOAR incidents.
+- Fetch events (logs) from within Cortex XSOAR/XSIAM
+- Push events from Cortex XSOAR/XSIAM to SplunkPy
+- Fetch SplunkPy ES notable events as Cortex XSOAR/XSIAM incidents.
 
 This integration was integrated and tested with Splunk Enterprise v9.4.3 and Enterprise Security v8.1.0.
 
