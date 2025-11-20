@@ -1,10 +1,10 @@
 /**
  * Creates an HTML email body by replacing placeholders with actual values
- * Supports different Cortex platforms: XSOAR, XSIAM, and unified platform
+ * Supports different Cortex marketplaces: XSOAR, XSIAM, and unified platform
  */
 
 // Constants
-const PLATFORMS = {
+const MARKETPLACES = {
     XSOAR: 'xsoar',
     XSIAM: 'x2',
     PLATFORM: 'unified_platform'
@@ -38,11 +38,6 @@ function replaceAll(text, search, replacement) {
 function getLabel(entity, path) {
     try {
         const pathParts = path.split('.');
-        if (pathParts.length < 3) {
-            logDebug("Invalid label path: " + path);
-            return null;
-        }
-
         const labelName = pathParts[2];
 
         for (let i = 0; i < entity.labels.length; i++) {
@@ -57,15 +52,15 @@ function getLabel(entity, path) {
 }
 
 /**
- * Get the appropriate entity type based on platform
- * @param {string} platform - Current platform
+ * Get the appropriate entity type based on marketplace
+ * @param {string} marketplace - Current marketplace
  * @returns {string} Entity type name
  */
-function getEntityType(platform) {
-    switch (platform) {
-        case PLATFORMS.XSIAM:
+function getEntityType(marketplace) {
+    switch (marketplace) {
+        case MARKETPLACES.XSIAM:
             return ENTITY_TYPES.ALERT;
-        case PLATFORMS.PLATFORM:
+        case MARKETPLACES.PLATFORM:
             return ENTITY_TYPES.ISSUE;
         default:
             return ENTITY_TYPES.INCIDENT;
@@ -75,14 +70,14 @@ function getEntityType(platform) {
 /**
  * Process field path and extract value
  * @param {string} path - Field path
- * @param {string} platform - Current platform
+ * @param {string} marketplace - Current marketplace
  * @param {Object} entity - Current entity (incident/alert/issue)
  * @param {Object} objectArg - Optional object argument
  * @returns {*} Field value or null
  */
-function processFieldPath(path, platform, entity, objectArg) {
+function processFieldPath(path, marketplace, entity, objectArg) {
     try {
-        const entityType = getEntityType(platform);
+        const entityType = getEntityType(marketplace);
         
         // Handle labels
         if (path.indexOf(entityType + '.labels.') === 0) {
@@ -142,9 +137,9 @@ try {
         return res;
     }
     
-    // Get platform information
-    const cortexPlatformDetail = getDemistoVersion().platform;
-    logDebug("Platform: " + cortexPlatformDetail);
+    // Get marketplace information
+    const cortexMarketplacesDetail = getDemistoVersion().platform;
+    logDebug("Marketplace: " + cortexMarketplacesDetail);
     
     // Find and process placeholders
     let html = res[0].Contents || '';
@@ -158,7 +153,7 @@ try {
     while ((match = placeholderRegex.exec(html)) !== null) {
         const path = match[1];
         if (!fieldMap.hasOwnProperty(path)) { // Avoid processing the same path multiple times
-            fieldMap[path] = processFieldPath(path, cortexPlatformDetail, incidents[0], args.object);
+            fieldMap[path] = processFieldPath(path, cortexMarketplacesDetail, incidents[0], args.object);
             logDebug("Field value fetched for " + path + ": " + fieldMap[path]);
         }
     }
