@@ -26,7 +26,7 @@ def cve_enrichment_script(
     Returns:
         CommandResults: The enriched CVE data.
     """
-    cve_list,hr = extract_indicators(cve_list, "cve")
+    cve_list, hr = extract_indicators(cve_list, "cve")
 
     indicator_mapping = {
         "ID": "ID",
@@ -82,7 +82,7 @@ def cve_enrichment_script(
     )
     command_result = cve_reputation.run()
     if verbose:
-        command_result.readable_output += hr
+        command_result.readable_output = (command_result.readable_output or "") + hr
     return command_result
 
 
@@ -100,7 +100,7 @@ def main():  # pragma: no cover
     demisto.debug(f"Data list: {cve_list}")
     demisto.debug(f"Brands: {brands}")
 
-    try: 
+    try:
         return_results(
             cve_enrichment_script(
                 cve_list=cve_list,

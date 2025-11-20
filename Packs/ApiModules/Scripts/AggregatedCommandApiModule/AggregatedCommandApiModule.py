@@ -1066,15 +1066,16 @@ class ReputationAggregatedCommand(AggregatedCommand):
         if self.unsupported_enrichment_brands:
             # Add Entry with all requested unsupported brands.
             demisto.debug(f"Missing brands: {self.unsupported_enrichment_brands}")
-            entries.append(
-                EntryResult(
-                    command_name=self.indicator.type,
-                    args="",
-                    brand=",".join(self.unsupported_enrichment_brands),
-                    status=Status.FAILURE,
-                    message="Unsupported Command: Verify you have proper integrations enabled to support it",
+            for unsupported_enrichment_brand in self.unsupported_enrichment_brands:
+                entries.append(
+                    EntryResult(
+                        command_name=self.indicator.type,
+                        args="",
+                        brand=unsupported_enrichment_brand,
+                        status=Status.FAILURE,
+                        message="Unsupported Command: Verify you have proper integrations enabled to support it",
+                    )
                 )
-            )
         human_readable = tableToMarkdown(
             "Final Results",
             # Remove Entries from non brands command such as CreateNewIndicator and EnrichIndicator
@@ -1113,11 +1114,11 @@ def build_hash_dict(value: str) -> dict[str, str]:
         value (str): The hash string to process.
 
     Returns:
-        dict[str, str]: A dictionary where the key is the uppercase hash type 
+        dict[str, str]: A dictionary where the key is the uppercase hash type
                         (e.g., "MD5") and the value is the original hash string.
     """
     return {get_hash_type(value).upper(): value}
-        
+
 
 def map_back_to_input(values: list[str], mapping: dict[str, str]) -> str:
     """
@@ -1141,7 +1142,7 @@ def map_back_to_input(values: list[str], mapping: dict[str, str]) -> str:
     return ""
 
 
-def extract_indicators(data: list[str], type: str) -> tuple[list[str],str]:
+def extract_indicators(data: list[str], type: str) -> tuple[list[str], str]:
     """
     Extract indicators from the provided `self.data` list from the relevant type.
     Use `extractIndicators` command to extract the input.
@@ -1174,7 +1175,7 @@ def extract_indicators(data: list[str], type: str) -> tuple[list[str],str]:
     if not extracted_indicators:
         raise ValueError("No valid indicators found in the input data.")
     hr = f"\n\n#### Result for name=extractIndicators args='text': {data}\n\n"
-    return list(extracted_indicators), hr +  tableToMarkdown(name="Extracted Indicators: ", t=result_context)
+    return list(extracted_indicators), hr + tableToMarkdown(name="Extracted Indicators: ", t=result_context)
 
 
 def deep_merge_in_place(dst: dict, src: dict) -> None:
