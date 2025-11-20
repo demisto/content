@@ -9394,6 +9394,8 @@ if 'requests' in sys.modules:
             self._auth = auth
             self._session = requests.Session()
 
+            demisto.info("init BaseClient")
+
             # the following condition was added to overcome the security hardening happened in Python 3.10.
             # https://github.com/python/cpython/pull/25778
             # https://bugs.python.org/issue43998
@@ -9418,9 +9420,12 @@ if 'requests' in sys.modules:
             self._time_sensitive_total_timeout = self.TIME_SENSITIVE_TOTAL_TIMEOUT
 
             if is_time_sensitive():
+                demisto.debug("Time-sensitive mode enabled. Setting execution time limit to {} seconds.".format(self._time_sensitive_total_timeout))
                 self._time_sensitive_deadline = time.time() + float(
                     self._time_sensitive_total_timeout
                 )
+            else:
+                demisto.info('Not!!! Inside Time Sensitive') # TODO
 
             self.execution_metrics = ExecutionMetrics()
 
@@ -9631,6 +9636,7 @@ if 'requests' in sys.modules:
             :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
             """
 
+            demisto.error("inside http request")
             # Time-Sensitive command Logic
             request_timeout = timeout
             request_retries = retries
@@ -9641,12 +9647,10 @@ if 'requests' in sys.modules:
                 remaining_time = self._time_sensitive_deadline - time.time()
 
                 if remaining_time <= 0:
-                    # Budget is already exceeded, fail fast.
                     raise DemistoException(
-                        "Time-sensitive command budget ({total_timeout}s) exceeded before API call.".format(
-                            total_timeout=self._time_sensitive_total_timeout
+                            "Time-sensitive command execution time limit ({time_limit}s) reached before performing the API request."
+                            .format(time_limit=self._time_sensitive_total_timeout)
                         )
-                    )
 
                 request_retries = 0
                 request_timeout = remaining_time
@@ -9714,9 +9718,9 @@ if 'requests' in sys.modules:
                     and remaining_time is not None
                     and remaining_time <= request_timeout
                 ):
-                    err_msg = "Time-sensitive command budget ({total_timeout}s) exceeded. {original_msg}".format(
-                        total_timeout=self._time_sensitive_total_timeout,
-                        original_msg=err_msg,
+                    err_msg = "Time-sensitive command execution time limit ({time_limit}s) exceeded. Original error: {original_msg}".format(
+                        time_limit=self._time_sensitive_total_timeout,
+                        original_msg=err_msg
                     )
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.SSLError as exception:
