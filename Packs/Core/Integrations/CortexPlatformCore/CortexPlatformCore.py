@@ -887,8 +887,8 @@ def get_cases_command(client, args):
     """
     page = arg_to_number(args.get("page")) or 0
     limit = arg_to_number(args.get("limit")) or MAX_GET_CASES_LIMIT
-    if limit > MAX_GET_CASES_LIMIT:
-        limit = MAX_GET_CASES_LIMIT
+    # if limit > MAX_GET_CASES_LIMIT:
+    #     limit = MAX_GET_CASES_LIMIT
 
     limit = page * MAX_GET_CASES_LIMIT + limit
     page = page * MAX_GET_CASES_LIMIT
