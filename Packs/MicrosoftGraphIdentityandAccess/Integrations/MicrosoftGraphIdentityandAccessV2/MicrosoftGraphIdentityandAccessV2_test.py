@@ -67,12 +67,12 @@ def test_date_str_to_azure_format(date, expected):
     [
         # Test empty riskDetection object returned by Microsoft.
         # Is it relevant to trigger an incident in such a scenario ?
-        ({}, {"name": "Entra ID sign-in risk detected:  ", "occurred": "2022-06-06Z", "rawJSON": "{}"}),
+        ({}, {"name": "Entra ID sign-in risk detected:  ", "severity": 2, "occurred": "2022-06-06Z", "rawJSON": "{}"}),
         # Test if riskLevel is not defined
         (
             {"riskEventType": "3", "riskDetail": "2", "id": "1", "userPrincipalName": "test@domain.com"},
             {
-                "name": "Entra ID sign-in risk detected for user test@domain.com: 3 2",
+                "name": "Entra ID sign-in risk detected: 3 2",
                 "occurred": "2022-06-06Z",
                 "severity": 2,
                 "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "id": "1", "userPrincipalName": "test@domain.com"}',
@@ -82,7 +82,7 @@ def test_date_str_to_azure_format(date, expected):
         (
             {"riskEventType": "3", "riskDetail": "2", "riskLevel": "low", "id": "1", "userPrincipalName": "test@domain.com"},
             {
-                "name": "Entra ID sign-in risk detected for user test@domain.com: 3 2",
+                "name": "Entra ID sign-in risk detected: 3 2",
                 "occurred": "2022-06-06Z",
                 "severity": 1,
                 "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "low", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
@@ -91,7 +91,7 @@ def test_date_str_to_azure_format(date, expected):
         (
             {"riskEventType": "3", "riskDetail": "2", "riskLevel": "medium", "id": "1", "userPrincipalName": "test@domain.com"},
             {
-                "name": "Entra ID sign-in risk detected for user test@domain.com: 3 2",
+                "name": "Entra ID sign-in risk detected: 3 2",
                 "occurred": "2022-06-06Z",
                 "severity": 2,
                 "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "medium", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
@@ -100,7 +100,7 @@ def test_date_str_to_azure_format(date, expected):
         (
             {"riskEventType": "3", "riskDetail": "2", "riskLevel": "high", "id": "1", "userPrincipalName": "test@domain.com"},
             {
-                "name": "Entra ID sign-in risk detected for user test@domain.com: 3 2",
+                "name": "Entra ID sign-in risk detected: 3 2",
                 "occurred": "2022-06-06Z",
                 "severity": 3,
                 "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "high", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
@@ -109,7 +109,7 @@ def test_date_str_to_azure_format(date, expected):
         (
             {"riskEventType": "3", "riskDetail": "2", "riskLevel": "hidden", "id": "1", "userPrincipalName": "test@domain.com"},
             {
-                "name": "Entra ID sign-in risk detected for user test@domain.com: 3 2",
+                "name": "Entra ID sign-in risk detected: 3 2",
                 "occurred": "2022-06-06Z",
                 "severity": 2,
                 "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "hidden", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
@@ -118,7 +118,7 @@ def test_date_str_to_azure_format(date, expected):
         (
             {"riskEventType": "3", "riskDetail": "2", "riskLevel": "none", "id": "1", "userPrincipalName": "test@domain.com"},
             {
-                "name": "Entra ID sign-in risk detected for user test@domain.com: 3 2",
+                "name": "Entra ID sign-in risk detected: 3 2",
                 "occurred": "2022-06-06Z",
                 "severity": 2,
                 "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "none", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
@@ -133,7 +133,7 @@ def test_date_str_to_azure_format(date, expected):
                 "userPrincipalName": "test@domain.com",
             },  # noqa: E501
             {
-                "name": "Entra ID sign-in risk detected for user test@domain.com: 3 2",
+                "name": "Entra ID sign-in risk detected: 3 2",
                 "occurred": "2022-06-06Z",
                 "severity": 2,
                 "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "unknownFutureValue", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
@@ -149,8 +149,15 @@ def test_date_str_to_azure_format(date, expected):
                 "userPrincipalName": "test@domain.com",
             },
             {
-                "name": "Microsoft Entra ID sign-in risk: Anomalous Token Detected",
-                "details": "Sign-in detected with an anomalous token for user test@domain.com.",
+                "name": "Microsoft Entra ID sign-in risk: Anomalous token",
+                "details": (
+                    "Sign-in detected with abnormal characteristics in the token, such as an unusual lifetime "
+                    "or a token played from an unfamiliar location, for user test@domain.com. "
+                    "This detection covers 'Session Tokens' "
+                    "and 'Refresh Tokens.' If the location, application, IP address, User Agent, or other characteristics "
+                    "are unexpected for the user, the administrator should consider "
+                    "this risk as an indicator of potential token replay."
+                ),
                 "severity": 3,
                 "occurred": "2022-06-06Z",
                 "rawJSON": '{"riskEventType": "anomalousToken", "riskDetail": "2", "riskLevel": "high", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
@@ -158,7 +165,7 @@ def test_date_str_to_azure_format(date, expected):
         ),
     ],
 )
-def test_detection_to_incident(incident, expected):
+def test_detection_to_incident_with_original_alert_severity(incident, expected):
     """
     Given:
     -  A dict with the incident details.
@@ -170,7 +177,47 @@ def test_detection_to_incident(incident, expected):
     - Ensure that the dict is what we expected.
     """
 
-    assert MicrosoftGraphIdentityandAccessV2.detection_to_incident(incident, "2022-06-06") == expected
+    assert MicrosoftGraphIdentityandAccessV2.detection_to_incident(incident, "2022-06-06", False, "") == expected
+
+
+@pytest.mark.parametrize(
+    "incident,expected",
+    [
+        # Test if riskLevel is not defined. Issue severity should be equal to medium.
+        (
+            {"riskEventType": "3", "riskDetail": "2", "id": "1", "userPrincipalName": "test@domain.com"},
+            {
+                "name": "Entra ID sign-in risk detected: 3 2",
+                "occurred": "2022-06-06Z",
+                "severity": 2,
+                "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "id": "1", "userPrincipalName": "test@domain.com"}',
+            },
+        ),
+        # Test the if riskLevel is different from "medium". Issue severity should be equal to medium.
+        (
+            {"riskEventType": "3", "riskDetail": "2", "riskLevel": "low", "id": "1", "userPrincipalName": "test@domain.com"},
+            {
+                "name": "Entra ID sign-in risk detected: 3 2",
+                "occurred": "2022-06-06Z",
+                "severity": 2,
+                "rawJSON": '{"riskEventType": "3", "riskDetail": "2", "riskLevel": "low", "id": "1", "userPrincipalName": "test@domain.com"}',  # noqa: E501
+            },
+        ),
+    ],
+)
+def test_detection_to_incident_with_severity_override(incident, expected):
+    """
+    Given:
+    -  A dict with the incident details.
+
+    When:
+    -  Getting the incident.
+
+    Then:
+    - Ensure that the dict is what we expected and that the severity is correctly overridden.
+    """
+
+    assert MicrosoftGraphIdentityandAccessV2.detection_to_incident(incident, "2022-06-06", True, "medium") == expected
 
 
 @pytest.mark.parametrize(
