@@ -884,6 +884,11 @@ script:
     - defaultValue: 'false'
       description: Whether to retrieve all results. If true, the "limit" argument will be ignored.
       name: all_results
+      predefined:
+      - 'true'
+      - 'false'
+    - description: A link that specifies a starting point to use for subsequent calls.
+      name: next_link
     description: Get a single watchlist item or list of watchlist items.
     name: azure-sentinel-list-watchlist-items
     outputs:
@@ -908,6 +913,13 @@ script:
     - contextPath: AzureSentinel.WatchlistItem.ItemsKeyValue
       description: Key-value pairs for a watchlist item.
       type: Unknown
+    - contextPath: AzureSentinel.NextLink.URL
+      description: Used if an operation returns partial results. If a response contains
+        a NextLink element, its value specifies a starting point to use for subsequent
+        calls.
+    - contextPath: AzureSentinel.NextLink.Description
+      description: Description of NextLink.
+    description: Get a single watchlist item or list of watchlist items.
   - arguments:
     - description: The watchlist alias.
       name: watchlist_alias
