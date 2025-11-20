@@ -9394,8 +9394,6 @@ if 'requests' in sys.modules:
             self._auth = auth
             self._session = requests.Session()
 
-            demisto.info("init BaseClient")
-
             # the following condition was added to overcome the security hardening happened in Python 3.10.
             # https://github.com/python/cpython/pull/25778
             # https://bugs.python.org/issue43998
@@ -9424,8 +9422,6 @@ if 'requests' in sys.modules:
                 self._time_sensitive_deadline = time.time() + float(
                     self._time_sensitive_total_timeout
                 )
-            else:
-                demisto.info('Not!!! Inside Time Sensitive') # TODO
 
             self.execution_metrics = ExecutionMetrics()
 
