@@ -13,6 +13,7 @@ from stix2 import (
     Campaign,
     CourseOfAction,
     ExternalReference,
+    KillChainPhase,
     Indicator,
     Infrastructure,
     IntrusionSet,
@@ -250,6 +251,27 @@ def main():
                             if mitreid:
                                 kwargs["external_references"] = [ExternalReference(source_name="mitre", external_id=mitreid)]
 
+                            # Add kill-chain phases if available
+                            kill_chain_phases = xsoar_indicator.get("killchainphases")
+                            if kill_chain_phases:
+                                # Convert XSOAR kill chain phase names to STIX format
+                                # XSOAR stores human-readable names like "Defense Evasion"
+                                # STIX requires objects with kill_chain_name and phase_name (lowercase with hyphens)
+                                # Docs for this can be found here: https://docs.oasis-open.org/cti/stix/v2.1/os/stix-v2.1-os.html#_i4tjv75ce50h
+                                stix_kill_chain_phases = []
+
+                                # Handle both list and comma-separated string formats
+                                if isinstance(kill_chain_phases, str):
+                                    kill_chain_phases = [phase.strip() for phase in kill_chain_phases.split(",")]
+
+                                for phase in kill_chain_phases:
+                                    # Strip whitespace and convert human-readable name to lowercase with hyphens
+                                    # e.g., " Defense Evasion" -> "defense-evasion"
+                                    phase_name = phase.strip().lower().replace(" ", "-")
+                                    stix_kill_chain_phases.append(
+                                        KillChainPhase(kill_chain_name="mitre-attack", phase_name=phase_name)
+                                    )
+                                kwargs["kill_chain_phases"] = stix_kill_chain_phases
                         except KeyError:
                             pass
 
