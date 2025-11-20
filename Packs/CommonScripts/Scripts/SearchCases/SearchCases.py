@@ -143,7 +143,7 @@ def main():  # pragma: nocover
     """
     args: dict = demisto.args()
     prepare_start_end_time(args)
-    args["limit"] = args.pop("page_size", 100)
+    args["limit"] = args.pop("page_size", 60)
     try:
         demisto.debug(f"Calling core-get-cases with arguments: {args}")
         results: dict = demisto.executeCommand("core-get-cases", args)  # type: ignore

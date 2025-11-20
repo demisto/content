@@ -12,7 +12,7 @@ INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
-
+MAX_GET_CASES_LIMIT = 60
 
 CASE_FIELDS = {
     "case_id_list": "CASE_ID",
@@ -555,13 +555,14 @@ def build_webapp_request_data(
     sort_field: str,
     on_demand_fields: list | None = None,
     sort_order: str = "DESC",
+    start_page: int = 0,
 ) -> dict:
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
     """
     filter_data = {
         "sort": [{"FIELD": sort_field, "ORDER": sort_order}],
-        "paging": {"from": 0, "to": limit},
+        "paging": {"from": start_page, "to": limit},
         "filter": filter_dict,
     }
     demisto.debug(f"{filter_data=}")
@@ -675,6 +676,18 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
 
 
 def map_case_format(case_list):
+    """
+    Maps a list of case data from the API response format to a standardized internal format.
+
+    Args:
+        case_list (list): List of case dictionaries from the API response.
+                         Each case should contain fields like CASE_ID, NAME, STATUS, etc.
+
+    Returns:
+        dict or list: Returns an empty dict if case_list is invalid or empty,
+                     otherwise returns a list of mapped case dictionaries with
+                     standardized field names and processed values.
+    """
     if not case_list or not isinstance(case_list, list):
         return {}
 
@@ -687,8 +700,8 @@ def map_case_format(case_list):
             "creation_time": case_data.get("CREATION_TIME"),
             "modification_time": case_data.get("LAST_UPDATE_TIME"),
             "resolved_timestamp": case_data.get("RESOLVED_TIMESTAMP"),
-            "status": case_data.get("STATUS").split("_")[-1].lower(),
-            "severity": case_data.get("SEVERITY").split("_")[-1].lower(),
+            "status": case_data.get("STATUS", "").split("_")[-1].lower(),
+            "severity": case_data.get("SEVERITY", "").split("_")[-1].lower(),
             "case_domain": case_data.get("INCIDENT_DOMAIN"),
             "original_tags": [tag.get("tag_name") for tag in case_data.get("ORIGINAL_TAGS", [])],
             "tags": [tag.get("tag_name") for tag in case_data.get("CURRENT_TAGS", [])],
@@ -705,7 +718,7 @@ def map_case_format(case_list):
             "assigned_user_pretty_name": case_data.get("ASSIGNED_USER_PRETTY"),
             "assigned_user_mail": case_data.get("ASSIGNED_USER"),
             "resolve_comment": case_data.get("RESOLVED_COMMENT"),
-            "issues_grouping_status": case_data.get("CASE_GROUPING_STATUS").split("_")[-1],
+            "issues_grouping_status": case_data.get("CASE_GROUPING_STATUS", "").split("_")[-1],
             "starred": case_data.get("CASE_STARRED"),
             "case_sources": case_data.get("INCIDENT_SOURCES"),
             "custom_fields": case_data.get("EXTENDED_FIELDS"),
@@ -736,11 +749,24 @@ def map_case_format(case_list):
 
 def get_cases_command(client, args):
     """
-    Retrieve a list of Cases from XDR, filtered by some filters.
+    Retrieves cases from Cortex platform based on provided filtering criteria.
+
+    Args:
+        client: The Cortex platform client instance for making API requests.
+        args (dict): Dictionary containing filter parameters including page number,
+                    limits, time ranges, status, severity, and other case attributes.
+
+    Returns:
+        List of mapped case objects containing case details and metadata.
     """
     page = arg_to_number(args.get("page")) or 0
-    limit_per_page = arg_to_number(args.get("limit")) or 50
-    limit = (page + 1) * limit_per_page
+    limit = arg_to_number(args.get("limit")) or MAX_GET_CASES_LIMIT
+    if limit > MAX_GET_CASES_LIMIT:
+        limit = MAX_GET_CASES_LIMIT
+
+    limit = page * MAX_GET_CASES_LIMIT + limit
+    page = page * MAX_GET_CASES_LIMIT
+
     sort_by_modification_time = args.get("sort_by_modification_time")
     sort_by_creation_time = args.get("sort_by_creation_time")
     since_creation_start_time = args.get("since_creation_time")
@@ -781,6 +807,7 @@ def get_cases_command(client, args):
         limit=limit,
         sort_field=sort_field,
         sort_order=sort_order,
+        start_page=page,
     )
     demisto.info(f"{request_data=}")
     response = client.get_webapp_data(request_data)

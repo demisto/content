@@ -8,16 +8,26 @@ type: python
 comment: Retrieves cases based on the provided filters.
 enabled: true
 args:
-  - description: A comma separated list of case IDs.
+  - description: A comma-separated list of case IDs.
     isArray: true
     name: case_id_list
   - description: "The start time for filtering according to case creation time. Supports free text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
     name: creation_start_time
   - description: "The end time for filtering according to case creation time. Supports free text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
     name: creation_end_time
+  - description: "The start time for filtering according to case modification time. Supports free text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
+    name: modification_start_time
+  - description: "The end time for filtering according to case modification time. Supports free text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
+    name: modification_end_time
   - auto: PREDEFINED
     description: Sorts returned cases by the date/time that the case was created ("asc" - ascending, "desc" - descending).
     name: sort_by_creation_time
+    predefined:
+      - asc
+      - desc
+  - auto: PREDEFINED
+    description: Sorts returned cases by the date/time that the case was modified ("asc" - ascending, "desc" - descending).
+    name: sort_by_modification_time
     predefined:
       - asc
       - desc
@@ -31,8 +41,8 @@ args:
   - defaultValue: '0'
     description: Page number (for pagination). The default is 0 (the first page).
     name: page
-  - defaultValue: '100'
-    description: Maximum number of cases to return per page. The default and maximum is 100.
+  - defaultValue: '60'
+    description: Maximum number of cases to return per page. The default and maximum is 60.
     name: page_size
   - description: Filter cases by domain.
     isArray: true
@@ -61,9 +71,6 @@ args:
     name: case_name
   - description: Filter cases by case description.
     name: case_description
-  - description: "Filter cases by last updated time. Supports free text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
-    isArray: true
-    name: last_updated
     
 outputs:
   - contextPath: Core.Case.case_id
@@ -186,10 +193,10 @@ outputs:
   - contextPath: Core.Case.CaseExtraData.manual_description
     description: Description manually provided by the user.
     type: String
-  - name: Core.Case.CaseExtraData.notes
+  - contextPath: Core.Case.CaseExtraData.notes
     description: The notes related to the case.
     type: String
-  - name: Core.Case.CaseExtraData.detection_time
+  - contextPath: Core.Case.CaseExtraData.detection_time
     description: The timestamp when the first issue was detected in the case.
     type: Date
 

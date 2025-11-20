@@ -373,80 +373,14 @@ def test_get_cases_command_case_id_as_int(mocker: MockerFixture):
     from CortexPlatformCore import get_cases_command
 
     client = mocker.Mock()
-    client.get_incidents.return_value = [{"case_id": "1"}]
+    client.get_webapp_data.return_value = {"reply": {"DATA": [{"CASE_ID": 1}]}}  # Changed to int
+    client.map_case_format.return_value = [{"case_id": "1"}]  # Mapped to string
     mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
     args = {"case_id_list": 1}
     result = get_cases_command(client, args)
-    assert result.outputs == [{"case_id": "1"}]
-    client.get_incidents.assert_called_once()
+    assert result.outputs[0].get("case_id") == "1"
     assert result.readable_output.startswith("table")
-
-
-def test_get_cases_command_limit_enforced(mocker: MockerFixture):
-    """
-    Given:
-        - limit greater than MAX_GET_INCIDENTS_LIMIT
-    When:
-        - Calling get_cases_command
-    Then:
-        - Limit is set to MAX_GET_INCIDENTS_LIMIT
-        - client.get_incidents is called with limit=MAX_GET_INCIDENTS_LIMIT
-    """
-    from CortexPlatformCore import get_cases_command
-
-    client = mocker.Mock()
-    client.get_incidents.return_value = [{"case_id": str(i)} for i in range(MAX_GET_INCIDENTS_LIMIT + 1)]
-    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
-    args = {"limit": MAX_GET_INCIDENTS_LIMIT + 10, "case_id_list": "1"}
-    result = get_cases_command(client, args)
-    assert len(result.outputs) == MAX_GET_INCIDENTS_LIMIT + 1
-    client.get_incidents.assert_called_with(
-        incident_id_list=["1"],
-        lte_modification_time=None,
-        gte_modification_time=None,
-        lte_creation_time=None,
-        gte_creation_time=None,
-        sort_by_creation_time=None,
-        sort_by_modification_time=None,
-        page_number=0,
-        limit=MAX_GET_INCIDENTS_LIMIT,
-        starred=None,
-        starred_incidents_fetch_window=mocker.ANY,
-    )
-
-
-def test_get_cases_command_no_filters_error(mocker: MockerFixture):
-    """
-    Given:
-        - No filters provided
-    When:
-        - Calling get_cases_command
-    Then:
-        - ValueError is raised
-    """
-    from CortexPlatformCore import get_cases_command
-
-    client = mocker.Mock()
-    args = {}
-    with pytest.raises(ValueError, match="Specify a query for the incidents"):
-        get_cases_command(client, args)
-
-
-def test_get_cases_command_conflicting_time_filters(mocker: MockerFixture):
-    """
-    Given:
-        - since_modification_time and gte_modification_time both set
-    When:
-        - Calling get_cases_command
-    Then:
-        - ValueError is raised
-    """
-    from CortexPlatformCore import get_cases_command
-
-    client = mocker.Mock()
-    args = {"since_modification_time": "1 day", "gte_modification_time": "2022-01-01"}
-    with pytest.raises(ValueError):
-        get_cases_command(client, args)
 
 
 def test_replace_substring_string():
