@@ -23,12 +23,20 @@ configuration:
   advanced: true
   required: false
 - display: UPN/Email
-  additionalinfo: These fields are required for Delegated Access. Details regarding delegated access can be found here - https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance#delegated-authentication
+  additionalinfo: User Principal Name (UPN) of the Microsoft account used for authentication.
   name: delegated_auth
   required: true
   type: 9
   displaypassword: Password
   hiddenpassword: true
+  section: Connect
+- display: UPN Password
+  additionalinfo: Password for the specified UPN. Required when using interactive delegated authentication. Leave this field empty when using device code based authentication.
+  name: credentials_app_secret
+  required: false
+  type: 9
+  displaypassword: UPN Password
+  hiddenusername: true
   section: Connect
 - display: The organization used in app-only authentication.
   name: organization
@@ -64,14 +72,6 @@ configuration:
   advanced: true
   required: false
   hidden: true
-- display: App Secret
-  name: credentials_app_secret
-  required: false
-  type: 9
-  displaypassword: App Secret
-  hiddenusername: true
-  section: Connect
-  advanced: true
 - display: Tenant ID
   name: tenant_id
   type: 0
@@ -547,7 +547,6 @@ script:
       predefined:
       - "Preview"
       - "Purge"
-      - "Export"
     - description: 'Purge type. Possible values are: "Soft Delete" and "HardDelete". Default is "SoftDelete".'
       name: purge_type
       auto: PREDEFINED
@@ -562,6 +561,7 @@ script:
       - 'IndividualMessage'
       - 'PerUserZip'
       - 'SingleZip'
+      deprecated: true
     - description: "Specifies the format of the search results when you use the Export action. Valid values are: FxStream: Export to PST files. This is the only option that's available when you export search results from the Microsoft Purview compliance portal. Mime: Export to .eml message files. This is the default value when you use cmdlets to export the search results. Msg: Export to .msg message files."
       name: format
       auto: PREDEFINED
@@ -569,16 +569,20 @@ script:
       - 'FxStream'
       - 'Mime'
       - 'Msg'
+      deprecated: true
     - description: Specifies whether to export previous versions of the document when you use the Export action.
       name: include_sharepoint_document_versions
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
+      deprecated: true
     - description: Specifies the email address target for the search results when you use the Export action.
       name: notify_email
+      deprecated: true
     - description: Specifies the cc email address target for the search results when you use the Export action.
       name: notify_email_cc
+      deprecated: true
     - description: Specifies the scenario type when you use the Export action.
       name: scenario
       auto: PREDEFINED
@@ -589,9 +593,11 @@ script:
       - 'Inventory'
       - 'RetentionReports'
       - 'TriagePreview'
+      deprecated: true
     - description: Specifies the items to include when the action is Export.
       name: scope
       auto: PREDEFINED
+      deprecated: true
       predefined:
       - 'IndexedItemsOnly'
       - 'UnindexedItemsOnly'

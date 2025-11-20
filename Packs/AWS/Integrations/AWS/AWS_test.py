@@ -5908,3 +5908,285 @@ def test_elb_modify_lb_attributes_client_error_is_handled(mocker):
     ELB.modify_load_balancer_attributes_command(mock_client, args)
 
     handle_client.assert_called_once_with(err)
+
+
+def test_get_bucket_website_command_success(mocker):
+    """
+    Given: A mocked boto3 S3 client and a valid bucket name.
+    When: get_bucket_website_command is called.
+    Then: It should return `CommandResults` with a readable output containing the Bucket Website Configuration.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_website.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"bucket": "mock_bucket_name"}
+    result = S3.get_bucket_website_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Bucket Website Configuration" in result.readable_output
+
+
+def test_get_bucket_website_command_failure(mocker):
+    """
+    Given: A mocked boto3 S3 client that returns an HTTP error response.
+    When: get_bucket_website_command is called.
+    Then: It should raise `DemistoException` indicating the failure to retrieve the bucket website configuration.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_website.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    args = {"bucket": "mock_bucket_name"}
+    S3.get_bucket_website_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_get_bucket_acl_command_success(mocker):
+    """
+    Given: A mocked boto3 S3 client and a valid bucket name.
+    When: get_bucket_acl_command is called.
+    Then: It should return `CommandResults` with a readable output containing the Bucket Acl information.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_acl.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"bucket": "mock_bucket_name"}
+    result = S3.get_bucket_acl_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Bucket Acl" in result.readable_output
+
+
+def test_get_bucket_acl_command_failure(mocker):
+    """
+    Given: A mocked boto3 S3 client that returns an HTTP error response.
+    When: get_bucket_acl_command is called.
+    Then: It should raise `DemistoException` indicating the failure to retrieve the bucket ACL.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_acl.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    args = {"bucket": "mock_bucket_name"}
+    S3.get_bucket_acl_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_create_network_acl_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and a valid VPC ID.
+    When: create_network_acl_command is called.
+    Then: It should return `CommandResults` with a readable output containing the details of the newly created Network ACL.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_network_acl.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "NetworkAcl": {"vpc_id": "mock_vpc_id", "Entries": []},
+    }
+    args = {"vpc_id": "mock_vpc_id"}
+    result = EC2.create_network_acl_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "The AWS EC2 Instance ACL" in result.readable_output
+
+
+def test_create_network_acl_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client that returns an HTTP error response.
+    When: create_network_acl_command is called with a VPC ID.
+    Then: It should raise `DemistoException` indicating the failure to create the Network ACL.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_network_acl.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    args = {"vpc_id": "mock_vpc_id"}
+    with pytest.raises(SystemExit):
+        EC2.create_network_acl_command(mock_client, args)
+
+
+def test_create_tags_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid resource IDs and tags.
+    When: create_tags_command is called to apply tags to specified resources.
+    Then: It should return `CommandResults` with a success message confirming that the resources were tagged successfully.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_tags.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"resources": "mock_resources", "tags": "key=mock_key,value=mock_value"}
+    result = EC2.create_tags_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "The resources where tagged successfully" in result.readable_output
+
+
+def test_create_tags_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client that returns an HTTP error response.
+    When: create_tags_command is called with resource IDs and tags.
+    Then: It should raise `DemistoException` indicating the failure to create the tags on the resources.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_tags.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    args = {"resources": "mock_resources", "tags": "key=mock_key,value=mock_value"}
+    EC2.create_tags_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_get_latest_ami_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client configured to simulate multi-page results from describe_images, where the latest
+     AMI is on the second page.
+    When: get_latest_ami_command is called with specific owner and region filters.
+    Then: It should handle pagination, correctly identify the AMI with the most recent CreationDate, and return `CommandResults`
+     containing the latest AMI's ID and details.
+    """
+    from AWS import EC2
+
+    first_response = {
+        "Images": [
+            {"CreationDate": "2024-01-01T10:00:00.000Z", "ImageId": "ami-old-1", "Tags": []},
+            {"CreationDate": "2023-12-31T10:00:00.000Z", "ImageId": "ami-old-2", "Tags": []},
+        ],
+        "nextToken": "next-page-token",
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+    }
+
+    second_response = {
+        "Images": [
+            {
+                "CreationDate": "2024-01-02T10:00:00.000Z",
+                "ImageId": "ami-latest",
+                "Name": "mock_name",
+                "State": "mock_state",
+                "Public": False,
+                "Tags": [{"Key": "mock_key", "Value": "mock_value"}],
+            }
+        ],
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+    }
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.side_effect = [first_response, second_response]
+    mock_client.get_latest_ami_command.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    args = {"owners": "self", "region": "us-east-1"}
+
+    result = EC2.get_latest_ami_command(mock_client, args)
+    assert mock_client.describe_images.call_count == 2
+    mock_client.describe_images.call_args_list[0].assert_called_with(Owner=["self"])
+    mock_client.describe_images.call_args_list[1].assert_called_with(Owner=["self"], NextToken="next-page-token")
+    expected_image_id = "ami-latest"
+
+    assert result.outputs["ImageId"] == expected_image_id
+    assert result.outputs["CreationDate"] == "2024-01-02T10:00:00.000Z"
+    assert expected_image_id in result.readable_output
+    assert isinstance(result, CommandResults)
+
+
+def test_get_latest_ami_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client that returns an HTTP error response from the describe_images call.
+    When: get_latest_ami_command is called.
+    Then: It should catch the failure response and raise a `DemistoException` indicating the AWS API call failure.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_images.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    with pytest.raises(SystemExit):
+        EC2.get_latest_ami_command(mock_client, {})
+
+
+def test_get_ipam_discovered_public_addresses_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and a valid IPAM Resource Discovery ID.
+    When: get_ipam_discovered_public_addresses_command is called.
+    Then: It should return `CommandResults` with a readable output containing the discovered public IP addresses.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.get_ipam_discovered_public_addresses.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "IpamDiscoveredPublicAddresses": {"mock_key": "mock_value"},
+    }
+    args = {"ipam_resource_discovery_id": "mock_id"}
+    result = EC2.get_ipam_discovered_public_addresses_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Ipam Discovered Public Addresses" in result.readable_output
+
+
+def test_get_ipam_discovered_public_addresses_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client that is configured to raise a ClientError (e.g., due to an invalid ID).
+    When: get_ipam_discovered_public_addresses_command is called.
+    Then: It should catch the AWS `ClientError` and raise a descriptive `DemistoException` indicating the failure of the API call.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.get_ipam_discovered_public_addresses.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}
+    }
+    with pytest.raises(SystemExit):
+        EC2.get_ipam_discovered_public_addresses_command(mock_client, {})
+
+
+def test_acm_update_certificate_options_success(mocker):
+    """
+    Given: A mocked ACM client returning HTTP 200 and valid args.
+    When: update_certificate_options_command is called.
+    Then: It returns CommandResults with success message and calls boto with correct kwargs.
+    """
+    from AWS import ACM, CommandResults
+
+    mock_client = mocker.Mock()
+    mock_client.update_certificate_options.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "certificate_arn": "arn:aws:acm:us-east-1:111122223333:certificate/abc-123",
+        "transparency_logging_preference": "ENABLED",
+    }
+
+    result = ACM.update_certificate_options_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Updated Certificate Transparency (CT) logging to 'ENABLED'" in result.readable_output
+
+    mock_client.update_certificate_options.assert_called_once_with(
+        CertificateArn="arn:aws:acm:us-east-1:111122223333:certificate/abc-123",
+        Options={"CertificateTransparencyLoggingPreference": "ENABLED"},
+    )
+
+
+def test_acm_update_certificate_options_non_ok_calls_handler(mocker):
+    """
+    Given: Boto returns a non-OK status code.
+    When: update_certificate_options_command is called.
+    Then: AWSErrorHandler.handle_response_error is invoked with the raw response.
+    """
+    from AWS import ACM, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    resp = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.update_certificate_options.return_value = resp
+
+    handle_resp = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+    mocker.patch("AWS.remove_nulls_from_dictionary", side_effect=lambda d: d)
+    mocker.patch("AWS.print_debug_logs")
+
+    args = {
+        "certificate_arn": "arn:aws:acm:us-east-1:111122223333:certificate/abc-123",
+        "transparency_logging_preference": "DISABLED",
+    }
+
+    ACM.update_certificate_options_command(mock_client, args)
+
+    handle_resp.assert_called_once_with(resp)

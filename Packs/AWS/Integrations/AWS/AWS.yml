@@ -180,6 +180,7 @@ script:
       - 'true'
       - 'false'
 
+    
   - name: aws-s3-bucket-acl-put
     description: Sets the access control list (ACL) permissions for an existing Amazon S3 bucket. This command allows you to define who can access the bucket and what actions they can perform, using predefined ACLs. Since 2023, all new S3 buckets *block* ACLs by default for better security.
     arguments:
@@ -614,6 +615,120 @@ script:
           - BucketOwnerPreferred
           - ObjectWriter
           - BucketOwnerEnforced
+
+  - name: aws-s3-bucket-website-get
+    description: Returns the website configuration for a bucket.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: bucket
+        description: The bucket name for which to get the website configuration.
+        required: true
+    outputs:
+      - contextPath: AWS.S3-Buckets.BucketWebsite.ErrorDocument
+        description: The object key name of the website error document to use for 4XX class errors.
+        type: Object
+      - contextPath: AWS.S3-Buckets.BucketWebsite.IndexDocument
+        description: The name of the index document for the website (for example index.html).
+        type: Object
+      - contextPath: AWS.S3-Buckets.BucketWebsite.RedirectAllRequestsTo
+        description: Specifies the redirect behavior of all requests to a website endpoint of an Amazon S3 bucket.
+        type: Object
+      - contextPath: AWS.S3-Buckets.BucketWebsite.RoutingRules
+        description: Rules that define when a redirect is applied and the redirect behavior.
+        type: Array
+
+  - name: aws-s3-bucket-acl-get
+    description: Return the access control list (ACL) of a bucket.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: bucket
+        description: Specifies the S3 bucket whose ACL is being requested.
+        required: true
+    outputs:
+      - contextPath: AWS.S3-Buckets.BucketAcl.Grants
+        description: A list of grants.
+        type: Array
+      - contextPath: AWS.S3-Buckets.BucketAcl.Owner
+        description: Container for the bucket owner's display name and ID.
+        type: Object
 
   - name: aws-iam-account-password-policy-get
     description: Gets the AWS account password policy.
@@ -1054,7 +1169,6 @@ script:
     - name: resources_vpc_config
       description: "A JSON representation of the VPC configuration used by the cluster control plane. For example \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
       required: false
-
   - name: aws-eks-enable-control-plane-logging-quick-action
     description: Enables control plane logging for an EKS cluster.
     prettyname: Enable Control Plane Logging
@@ -1113,7 +1227,7 @@ script:
         defaultValue: '{"endpointPublicAccess": false, "endpointPrivateAccess": true}'
         hidden: true
 
-  - name: aws-eks-describe-cluster
+  - name: aws-eks-cluster-describe
     description: Describes an Amazon EKS cluster.
     arguments:
     - name: account_id
@@ -1272,7 +1386,7 @@ script:
       description: The current authentication mode of the cluster.
       type: String
 
-  - name: aws-eks-associate-access-policy
+  - name: aws-eks-access-policy-associate
     description: Associates an access policy and its scope to an access entry.
     arguments:
     - name: account_id
@@ -2581,7 +2695,7 @@ script:
       - 'disabled'
       - 'enabled'
 
-  - name: aws-ec2-create-snapshot
+  - name: aws-ec2-snapshot-create
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -2681,7 +2795,7 @@ script:
       description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
 
-  - name: aws-ec2-modify-snapshot-permission
+  - name: aws-ec2-snapshot-permission-modify
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -2778,7 +2892,7 @@ script:
         defaultValue: 'all'
         hidden: true
 
-  - name: aws-ecs-update-cluster-settings
+  - name: aws-ecs-cluster-settings-update
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -4021,6 +4135,7 @@ script:
       description: "A comma-separated list of instance IDs to terminate. If you specify multiple instances and the request fails (for example, because of a single incorrect instance ID), none of the instances are terminated."
       required: true
       isArray: true
+
   - name: aws-ec2-instances-run
     description: Launches a specified number of instances using an AMI you have access to. You can save time by creating a launch template containing your parameters and using the template instead of entering the parameters each time. An instance is ready for you to use when it is in the running state. You can check the state of your instance using aws-ec2-instances-describe.
     execution: true
@@ -4457,6 +4572,420 @@ script:
     - contextPath: AWS.EC2.Instances.PublicIpAddress
       description: The public IPv4 address assigned to the instance.
       type: String
+
+  - name: aws-ec2-latest-ami-get
+    description: Get The latest AMI.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region where instances will be created. Must be a valid AWS region identifier.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: executable_users
+        description: Scopes the images by users with explicit launch permissions.
+      - name: filters
+        description: One or more filters. Filters must be separated by a semicolon (;) and specified using the format "key=key,values=val". Refer to the AWS documentation for detailed filter options.
+      - name: owners
+        description: Filters the images by the owner. Specify an AWS account ID, self (owner is the sender of the request), or an AWS owner alias (valid values are amazon | aws-marketplace | microsoft ). Omitting this option returns all images for which you have launch permissions, regardless of ownership. Separated by ','.
+      - name: image_ids
+        description: The image IDs separated by ','.
+      - name: include_deprecated
+        description: Specifies whether to include deprecated AMIs.
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: include_disabled
+        description: Specifies whether to include disabled AMIs.
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+    outputs:
+      - contextPath: AWS.EC2.Images.Architecture
+        description: The architecture of the image.
+        type: string
+      - contextPath: AWS.EC2.Images.CreationDate
+        description: The date and time the image was created.
+        type: date
+      - contextPath: AWS.EC2.Images.ImageId
+        description: The ID of the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.ImageLocation
+        description: The location of the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.ImageType
+        description: The type of image.
+        type: string
+      - contextPath: AWS.EC2.Images.Public
+        description: Indicates whether the image has public launch permissions. The value is true if this image has public launch permissions or false if it has only implicit and explicit launch permissions.
+        type: boolean
+      - contextPath: AWS.EC2.Images.KernelId
+        description: The kernel associated with the image, if any. Only applicable for machine images.
+        type: string
+      - contextPath: AWS.EC2.Images.OwnerId
+        description: The AWS account ID of the image owner.
+        type: string
+      - contextPath: AWS.EC2.Images.Platform
+        description: The value is Windows for Windows AMIs; otherwise blank.
+        type: string
+      - contextPath: AWS.EC2.Images.ProductCodes.ProductCodeId
+        description: The product code.
+        type: string
+      - contextPath: AWS.EC2.Images.ProductCodes.ProductCodeType
+        description: The type of product code.
+        type: string
+      - contextPath: AWS.EC2.Images.RamdiskId
+        description: The RAM disk associated with the image, if any. Only applicable for machine images.
+        type: string
+      - contextPath: AWS.EC2.Images.State
+        description: The current state of the AMI. If the state is available , the image is successfully registered and can be used to launch an instance.
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.DeviceName
+        description: The device name (for example, /dev/sdh or xvdh ).
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.VirtualName
+        description: The virtual device name (ephemeral N).
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.Encrypted
+        description: Indicates whether the EBS volume is encrypted.
+        type: boolean
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.DeleteOnTermination
+        description: Indicates whether the EBS volume is deleted on instance termination.
+        type: boolean
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.Iops
+        description: The number of I/O operations per second (IOPS) that the volume supports.
+        type: number
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.KmsKeyId
+        description: Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed CMK under which the EBS volume is encrypted.
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.SnapshotId
+        description: The ID of the snapshot.
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeSize
+        description: The size of the volume, in GiB.
+        type: number
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.Ebs.VolumeType
+        description: The volume type.
+        type: string
+      - contextPath: AWS.EC2.Images.BlockDeviceMappings.NoDevice
+        description: Suppresses the specified device included in the block device mapping of the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.Description
+        description: The description of the AMI that was provided during image creation.
+        type: string
+      - contextPath: AWS.EC2.Images.EnaSupport
+        description: Specifies whether enhanced networking with ENA is enabled.
+        type: boolean
+      - contextPath: AWS.EC2.Images.Hypervisor
+        description: The hypervisor type of the image.
+        type: string
+      - contextPath: AWS.EC2.Images.ImageOwnerAlias
+        description: The AWS account alias (for example, amazon , self ) or the AWS account ID of the AMI owner.
+        type: string
+      - contextPath: AWS.EC2.Images.Name
+        description: The name of the AMI that was provided during image creation.
+        type: string
+      - contextPath: AWS.EC2.Images.RootDeviceName
+        description: The device name of the root device volume (for example, /dev/sda1).
+        type: string
+      - contextPath: AWS.EC2.Images.RootDeviceType
+        description: The type of root device used by the AMI. The AMI can use an EBS volume or an instance store volume.
+        type: string
+      - contextPath: AWS.EC2.Images.SriovNetSupport
+        description: Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled.
+        type: string
+      - contextPath: AWS.EC2.Images.StateReason.Code
+        description: The reason code for the state change.
+        type: string
+      - contextPath: AWS.EC2.Images.StateReason.Message
+        description: The message for the state change.
+        type: string
+      - contextPath: AWS.EC2.Images.Tags.Key
+        description: The key of the tag.
+        type: string
+      - contextPath: AWS.EC2.Images.Tags.Value
+        description: The value of the tag.
+        type: string
+      - contextPath: AWS.EC2.Images.VirtualizationType
+        description: The type of virtualization of the AMI.
+        type: string
+      - contextPath: AWS.EC2.Images.AccountId
+        description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+        type: string
+
+  - name: aws-ec2-network-acl-create
+    description: Creates a network ACL in a VPC. Network ACLs provide an optional layer of security (in addition to security groups) for the instances in your VPC.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: vpc_id
+        description: The ID of the VPC.
+        required: true
+      - name: client_token
+        description: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+      - name: tag_specifications
+        description: The tags to assign to the network ACL. Must be separated by a semicolon (;) and specified using the format "key=key,values=val".
+    outputs:
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.Associations.NetworkAclAssociationId
+        description: The ID of the association between a network ACL and a subnet.
+        type: String
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.Associations.NetworkAclId
+        description: The ID of the network ACL.
+        type: String
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.Associations.SubnetId
+        description: The ID of the subnet.
+        type: String
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.CidrBlock
+        description: The IPv4 network range to allow or deny, in CIDR notation.
+        type: String
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.Egress
+        description: Indicates whether the rule is an egress rule (applied to traffic leaving the subnet).
+        type: Boolean
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.IcmpTypeCode.Code
+        description: The ICMP code. A value of -1 means all codes for the specified ICMP type.
+        type: Number
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.IcmpTypeCode.Type
+        description: The ICMP type. A value of -1 means all types.
+        type: Number
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.Ipv6CidrBlock
+        description: The IPv6 network range to allow or deny, in CIDR notation.
+        type: String
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.PortRange.From
+        description: The first port in the range.
+        type: Number
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.PortRange.To
+        description: The last port in the range.
+        type: Number
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.Protocol
+        description: The protocol number. A value of "-1" means all protocols.
+        type: String
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.RuleAction
+        description: Indicates whether to allow or deny the traffic that matches the rule.
+        type: String
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.Entries.RuleNumber
+        description: The rule number for the entry. ACL entries are processed in ascending order by rule number.
+        type: Number
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.NetworkAclId
+        description: The ID of the network ACL.
+        type: String
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.Tags.Key
+        description: The key of the tag.
+        type: String
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.Tags.Value
+        description: The value of the tag.
+        type: String
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.VpcId
+        description: The ID of the VPC for the network ACL.
+        type: String
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.OwnerId
+        description: The ID of the AWS account that owns the network ACL.
+        type: String
+      - contextPath: AWS.EC2.VpcId.NetworkAcl.AccountId
+        description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+        type: string
+
+  - name: aws-ec2-ipam-discovered-public-addresses-get
+    description: Gets the public IP addresses that have been discovered by IPAM, Amazon VPC IP Address Manager.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: ipam_resource_discovery_id
+        description: An IPAM resource discovery ID.
+        required: true
+      - name: address_region
+        description: The Amazon Web Services region for the IP address.
+        required: true
+      - name: filters
+        description: One or more filters. Filters must be separated by a semicolon (;) and specified using the format "key=key,values=val". Refer to the AWS documentation for detailed filter options.
+      - name: limit
+        description: The maximum number of results to return in a single call. Specify a value between 1000 and 5000.
+      - name: next_token
+        description: The token for the next set of results.
+    outputs:
+      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.Address
+        description: IPAM discovered public addresses.
+        type: String
+      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.AddressOwnerId
+        description: The ID of the owner of the resource the IP address is assigned to.
+        type: String
+      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.AddressType
+        description: The IP address type.
+        type: String
+      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.AssociationStatus
+        description: The association status.
+        type: String
+      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.InstanceId
+        description: The instance ID of the instance the assigned IP address is assigned to.
+        type: String
+      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.Tags
+        description: Tags associated with the IP address.
+        type: Unknown
+      - contextPath: AWS.EC2.IpamDiscoveredPublicAddresses.AccountId
+        description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+        type: string
+
+  - name: aws-ec2-tags-create
+    description: Adds or overwrites one or more tags for the specified Amazon EC2 resource or resources. When you specify an existing tag key, the value is overwritten with the new value.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: resources
+        description: The IDs of one or more resources to tag, separated by a comma. For example, ami-1a2b3c4d.
+        required: true
+      - name: tags
+        description: One or more tags. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456".
+        required: true
+
   - name: aws-cloudtrail-trails-describe
     description: Retrieves settings for the specified trail or returns information about all trails in the current AWS account.
     arguments:
@@ -4724,7 +5253,6 @@ script:
 
   - name: aws-s3-bucket-policy-get
     description: Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document in JSON format if one exists.
-    execution: true
     arguments:
     - description: The AWS account ID.
       name: account_id
@@ -4802,9 +5330,43 @@ script:
     - name: account_id
       required: true
       description: The AWS account ID.
-    - name: region
+    - description: The AWS region.
+      name: region
       required: true
-      description: The AWS region.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
     - name: function_name
       required: true
       description: Name, ARN, or qualified name of the Lambda function.
@@ -4980,9 +5542,43 @@ script:
     - name: account_id
       required: true
       description: The AWS account ID.
-    - name: region
+    - description: The AWS region.
+      name: region
       required: true
-      description: The AWS region.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
     - name: function_name
       required: true
       description: Name of the Lambda function.
@@ -5032,9 +5628,43 @@ script:
     - name: account_id
       required: true
       description: The AWS account ID.
-    - name: region
+    - description: The AWS region.
+      name: region
       required: true
-      description: The AWS region.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
     - name: function_name
       required: true
       description: Name of the Lambda function, version, or alias.
@@ -5080,9 +5710,43 @@ script:
     - name: account_id
       required: true
       description: The AWS account ID.
-    - name: region
+    - description: The AWS region.
+      name: region
       required: true
-      description: The AWS region.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
     - name: function_name
       required: true
       description: Name of the Lambda function to invoke.
@@ -5132,9 +5796,43 @@ script:
     - name: account_id
       required: true
       description: The AWS account ID.
-    - name: region
+    - description: The AWS region.
+      name: region
       required: true
-      description: The AWS region.
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
     - name: function_name
       required: true
       description: Name of the Lambda function.
@@ -5825,11 +6523,12 @@ script:
     - contextPath: AWS.Billing.NotificationNextToken
       description: Next page token for pagination.
       type: string
-  - name: aws-kms-key-enable-rotation
+  - name: aws-kms-key-rotation-enable
     description: Enables automatic rotation for a symmetric customer-managed KMS key. Not supported for asymmetric/HMAC keys, keys with imported material, or custom key stores.
     arguments:
     - name: account_id
       description: The AWS account ID.
+      required: true
     - name: key_id
       description: The key ARN to enable rotation for.
       required: true
@@ -5970,6 +6669,62 @@ script:
     - contextPath: AWS.ELB.LoadBalancer.LoadBalancerAttributes.AdditionalAttributes
       description: Additional attributes returned by the API.
       type: unknown
+
+  - name: aws-acm-certificate-options-update
+    description: Updates Certificate Transparency (CT) logging for an AWS Certificate Manager (ACM) certificate (ENABLED or DISABLED).
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: certificate_arn
+      description: The ARN of the ACM certificate to update.
+      required: true
+    - name: transparency_logging_preference
+      description: Whether the certificate is recorded in public CT logs.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ENABLED
+      - DISABLED
+    outputs: []
+
   isfetch: false
   runonce: false
   script: '-'
