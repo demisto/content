@@ -1391,20 +1391,76 @@ def detections_to_incidents(
     return incidents, latest_incident_time
 
 
-def risky_user_to_incident(riskyuser: dict, riskyuser_date: str) -> dict:
+def risky_user_to_incident(riskyuser: dict, riskyuser_date: str, severity_override: bool, overridden_issue_severity: str) -> dict:
     riskyuser_upn: str = riskyuser.get("userPrincipalName", "")
     riskyuser_risk_level: str = riskyuser.get("riskLevel", "")
     riskyuser_risk_state: str = riskyuser.get("riskState", "")
+    riskyuser_risk_details: str = riskyuser.get("riskDetail", "")
+
+    severity_map = {"low": 1, "medium": 2, "high": 3, "critical": 4}
+    if severity_override:
+        incident_severity = severity_map.get(overridden_issue_severity, 2)
+    else:
+        incident_severity = severity_map.get(riskyuser_risk_level, 2)
+
+    if riskyuser_risk_level == "remediated":
+        incident_name = (
+            f"Microsoft Entra ID user risk remediated {':' + riskyuser_risk_details if riskyuser_risk_details else ''}"
+        )
+        incident_details = (
+            f"User {riskyuser_upn} remediated. Risk might have been self-remediated by user through MFA "
+            "or secure password change, or manually remediated by an administrator."
+        )
+
+    elif riskyuser_risk_level == "dismissed":
+        incident_name = f"Microsoft Entra ID user risk dismissed{':' + riskyuser_risk_details if riskyuser_risk_details else ''}"
+        incident_details = (
+            f"User {riskyuser_upn} risk has been dismissed because the user's account has been considered safe. "
+            "In some cases, Microsoft Entra ID Protection can also automatically dismiss a user's risk state when "
+            "both the risk detection and the corresponding risky sign-in are identified by ID Protection as no longer "
+            "posing a security threat. This automatic intervention can happen if the user provides a second factor, "
+            "such as multifactor authentication (MFA) or if the real-time and offline assessment determines that the sign-in "
+            "is no longer risky"
+        )
+
+    elif riskyuser_risk_state == "atRisk" and riskyuser_risk_level == "high":
+        incident_name = f"High-risk Microsoft Entra ID user{':' + riskyuser_risk_details if riskyuser_risk_details else ''}"
+        incident_details = (
+            f"High-risk of {riskyuser_upn} Entra ID account compromise. "
+            "Microsoft is highly confident that the account is compromised.  Signals such as threat intelligence "
+            "and known attack patterns factor into the confidence level of the risk detection"
+        )
+
+    elif riskyuser_risk_state == "atRisk" and (riskyuser_risk_level == "medium" or riskyuser_risk_level == "low"):
+        incident_name = f"Microsoft Entra ID user is at risk{':' + riskyuser_risk_details if riskyuser_risk_details else ''}"
+        incident_details = (
+            f"One or more {riskyuser_risk_level}-severity anomalies were detected "
+            f"by Microsoft on {riskyuser_upn} Entra ID account. "
+            "Sign-in patterns, behaviors, and other signals factor into the confidence level of the risk detection."
+        )
+
+    else:
+        incident_name = (
+            "Microsoft Entra ID user risk: "
+            f"{riskyuser_risk_details if riskyuser_risk_details else ''} - {riskyuser_risk_state if riskyuser_risk_state else ''}"
+        )
+        incident_details = (
+            f"Risk detected by Microsoft for {riskyuser_upn} Entra ID account. Risk level is {riskyuser_risk_state}."
+        )
+
     incident = {
-        "name": f"Azure User at Risk: {riskyuser_upn} - {riskyuser_risk_state} - {riskyuser_risk_level}",
+        "name": incident_name,
+        "details": incident_details,
+        "severity": incident_severity,
         "occurred": f"{riskyuser_date}Z",
         "rawJSON": json.dumps(riskyuser),
     }
-
     return incident
 
 
-def risky_users_to_incidents(riskyusers: List[Dict[str, str]], last_fetch_datetime: str) -> tuple[List[Dict[str, str]], str]:
+def risky_users_to_incidents(
+    riskyusers: List[Dict[str, str]], last_fetch_datetime: str, severity_override: bool, overridden_issue_severity: str
+) -> tuple[List[Dict[str, str]], str]:
     """
     Given the risky users retrieved from Azure Identity Protection, transforms their data to incidents format.
     """
@@ -1415,7 +1471,9 @@ def risky_users_to_incidents(riskyusers: List[Dict[str, str]], last_fetch_dateti
     for riskyuser in riskyusers:
         riskyuser_datetime = riskyuser.get("riskLastUpdatedDateTime", "")
         riskyuser_datetime_in_azure_format = date_str_to_azure_format(riskyuser_datetime)
-        incident = risky_user_to_incident(riskyuser, riskyuser_datetime_in_azure_format)
+        incident = risky_user_to_incident(
+            riskyuser, riskyuser_datetime_in_azure_format, severity_override, overridden_issue_severity
+        )
         incidents.append(incident)
 
         if datetime.strptime(riskyuser_datetime_in_azure_format, DATE_FORMAT) > datetime.strptime(
@@ -1451,19 +1509,25 @@ def fetch_incidents(client: Client, params: Dict[str, str]):  # pragma: no cover
     limit = params.get("max_fetch", "50")
     filter_expression = query_filter
 
+    severity_override = params.get("override_issue_severity", False)
+    issue_severity = params.get("issue_severity", "medium")
+
     if params.get("alerts_to_fetch", "Risk Detections") == "Risky Users":
         riskyusers: list = client.list_risky_users(limit, None, filter_expression)  # type: ignore
-        incidents, latest_detection_time = risky_users_to_incidents(riskyusers, last_fetch_datetime=last_fetch)  # type: ignore
+        incidents, latest_detection_time = risky_users_to_incidents(
+            riskyusers,
+            last_fetch_datetime=last_fetch,
+            severity_override=severity_override,  # type: ignore
+            overridden_issue_severity=issue_severity,
+        )
     else:
-        severity_override = params.get("override_issue_severity", False)
-        issue_severity = params.get("issue_severity", "medium")
         detections: list = client.list_risk_detections(limit, None, filter_expression)  # type: ignore
         incidents, latest_detection_time = detections_to_incidents(
             detections,
             last_fetch_datetime=last_fetch,
             severity_override=severity_override,  # type: ignore
             overridden_issue_severity=issue_severity,
-        )  # type: ignore
+        )
 
     demisto.debug(f"Fetched {len(incidents)} incidents")
 
