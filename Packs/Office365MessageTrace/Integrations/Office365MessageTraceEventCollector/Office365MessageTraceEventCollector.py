@@ -13,7 +13,7 @@ API Documentation: https://learn.microsoft.com/en-us/previous-versions/office/de
 from typing import Any
 import time
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 import dateparser
 from urllib.parse import urlencode
 
@@ -360,7 +360,7 @@ def parse_message_trace_date_range(date_range: str | None = None, processing_del
     Returns:
         Tuple of (start_date, end_date) in ISO format
     """
-    end_date = datetime.now(timezone.utc)
+    end_date = datetime.now(UTC)
     fallback = timedelta(minutes=5)
 
     if date_range:
@@ -396,17 +396,17 @@ def format_message_trace_results(data: list[dict[str, Any]], for_dataset: bool =
     results = []
     for entry in data:
         formatted_entry = {
-            "MessageTraceId": entry.get("MessageTraceId"),
-            "Organization": entry.get("Organization"),
-            "MessageId": entry.get("MessageId"),
-            "Received": entry.get("Received"),
-            "SenderAddress": entry.get("SenderAddress"),
-            "RecipientAddress": entry.get("RecipientAddress"),
-            "Subject": entry.get("Subject"),
-            "Status": entry.get("Status"),
-            "FromIP": entry.get("FromIP"),
-            "ToIP": entry.get("ToIP"),
-            "Size": entry.get("Size"),
+            "MessageTraceId": entry.get("MessageTraceId", ""),
+            "Organization": entry.get("Organization", ""),
+            "MessageId": entry.get("MessageId", ""),
+            "Received": entry.get("Received", ""),
+            "SenderAddress": entry.get("SenderAddress", ""),
+            "RecipientAddress": entry.get("RecipientAddress", ""),
+            "Subject": entry.get("Subject", ""),
+            "Status": entry.get("Status", ""),
+            "FromIP": entry.get("FromIP", ""),
+            "ToIP": entry.get("ToIP", ""),
+            "Size": entry.get("Size", 0),
         }
 
         # If posting to a dataset, rename the Received key to _time
@@ -517,7 +517,7 @@ def get_events(client: Client, last_timestamp: str, processing_delay: int) -> tu
         A tuple containing the list of new events, the new last timestamp
     """
     new_last_timestamp = ""
-    end_date = (datetime.now(timezone.utc) - timedelta(minutes=processing_delay)).isoformat()
+    end_date = (datetime.now(UTC) - timedelta(minutes=processing_delay)).isoformat()
 
     result = office365_message_trace_list_paging(client=client, start_date=last_timestamp, end_date=end_date)
 

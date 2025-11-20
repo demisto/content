@@ -42,37 +42,24 @@ def test_get_message_trace_response(mock_http_request):
     from Office365MessageTraceEventCollector import Client
 
     # Mock response data
-    mock_response = {
-        "value": [
-            {
-                "MessageId": "<ABC123@contoso.com>",
-                "Received": "2023-07-01T12:00:00Z",
-                "SenderAddress": "sender@example.com",
-                "RecipientAddress": "recipient@example.com",
-                "Status": "Delivered",
-                "Subject": "Test Message",
-                "MessageTraceId": "123456-78901-abcdef",
-            },
-            {
-                "MessageId": "<ABC124@contoso.com>",
-                "Received": "2023-07-01T13:00:00Z",
-                "SenderAddress": "sender2@example.com",
-                "RecipientAddress": "recipient2@example.com",
-                "Status": "Delivered",
-                "Subject": "Test Message 2",
-                "MessageTraceId": "123456-78901-abcdef-2",
-            },
-        ]
-    }
+    mock_response = util_load_json("./test_data/message_trace_response.json")
 
     mock_http_request.return_value = mock_response
 
-    client = Client(url=TENANT_URL, tenant_id=TENANT_ID, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, verify=False)
+    client = Client(
+        url=TENANT_URL,
+        tenant_id=TENANT_ID,
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        verify=False,
+    )
 
     # Mock _get_access_token to avoid actual token request
     with patch.object(client, "_get_access_token", return_value="test_token"):
         result = client.get_message_trace(
-            start_date="2023-07-01T00:00:00Z", end_date="2023-07-02T00:00:00Z", sender_address="sender@example.com"
+            start_date="2023-07-01T00:00:00Z",
+            end_date="2023-07-02T00:00:00Z",
+            sender_address="sender@example.com",
         )
 
     # Assertions
@@ -162,20 +149,7 @@ def test_format_message_trace_results_with_time_field():
     """Test format_message_trace_results with Received field"""
     from Office365MessageTraceEventCollector import format_message_trace_results
 
-    events = [
-        {
-            "MessageId": "<event-1@example.com>",
-            "Received": "2023-09-15T10:00:00Z",
-            "Subject": "Test event 1",
-            "Status": "Delivered",
-        },
-        {
-            "MessageId": "<event-2@example.com>",
-            "Received": "2023-09-15T11:00:00Z",
-            "Subject": "Test event 2",
-            "Status": "Delivered",
-        },
-    ]
+    events = util_load_json("./test_data/format_message_trace_results.json")
 
     formatted = format_message_trace_results(events)
 
@@ -190,18 +164,11 @@ def test_format_message_trace_results_for_dataset():
     """Test format_message_trace_results for XSIAM dataset"""
     from Office365MessageTraceEventCollector import format_message_trace_results
 
-    events = [
-        {
-            "MessageId": "<event-1@example.com>",
-            "Received": "2023-09-15T10:00:00Z",
-            "Subject": "Test event 1",
-            "Status": "Delivered",
-        }
-    ]
+    events = util_load_json("./test_data/format_message_trace_results.json")
 
     formatted = format_message_trace_results(events, for_dataset=True)
 
-    assert len(formatted) == 1
+    assert len(formatted) == 2
     assert "_time" in formatted[0]
     assert formatted[0]["_time"] == "2023-09-15T10:00:00Z"
     assert "Received" not in formatted[0]
@@ -222,19 +189,16 @@ def test_format_message_trace_results_missing_timestamp():
     """Test format_message_trace_results with events that may have missing fields"""
     from Office365MessageTraceEventCollector import format_message_trace_results
 
-    events = [
-        {"MessageId": "<event-1@example.com>", "Received": "2023-09-15T10:00:00Z", "Subject": "Valid event"},
-        {"MessageId": "<event-2@example.com>", "Subject": "Event without Received field"},
-        {"MessageId": "<event-3@example.com>", "Received": "2023-09-15T12:00:00Z", "Subject": "Another valid event"},
-    ]
+    events = util_load_json("./test_data/format_message_trace_results_missing_fields.json")
 
     formatted = format_message_trace_results(events)
 
     # Should include all events - function doesn't skip based on timestamps
     assert len(formatted) == 3
     assert formatted[0]["MessageId"] == "<event-1@example.com>"
+    assert formatted[0]["Size"] == 0
     assert formatted[1]["MessageId"] == "<event-2@example.com>"
-    assert formatted[1]["Received"] is None  # Missing field returns None
+    assert formatted[1]["Received"] == ""  # Missing field returns empty string
     assert formatted[2]["MessageId"] == "<event-3@example.com>"
 
 
@@ -242,17 +206,7 @@ def test_format_message_trace_results_preserves_original_fields():
     """Test format_message_trace_results preserves all original event fields"""
     from Office365MessageTraceEventCollector import format_message_trace_results
 
-    events = [
-        {
-            "MessageId": "<event-1@example.com>",
-            "Received": "2023-09-15T10:00:00Z",
-            "Subject": "Test event",
-            "Status": "Delivered",
-            "SenderAddress": "sender@example.com",
-            "RecipientAddress": "recipient@example.com",
-            "CustomField": "customValue",
-        }
-    ]
+    events = util_load_json("./test_data/format_message_trace_results_preserve_fields.json")
 
     formatted = format_message_trace_results(events)
 
@@ -264,6 +218,7 @@ def test_format_message_trace_results_preserves_original_fields():
     assert formatted[0]["SenderAddress"] == "sender@example.com"
     assert formatted[0]["RecipientAddress"] == "recipient@example.com"
     # Note: function only formats known fields, so CustomField won't be in output
+    assert "CustomField" not in formatted[0]
 
 
 @patch("Office365MessageTraceEventCollector.Client._http_request")
@@ -272,17 +227,7 @@ def test_get_events_command(mock_http_request):
     from Office365MessageTraceEventCollector import Client, get_events
 
     # Mock response data
-    mock_response = {
-        "value": [
-            {
-                "MessageId": "<event-1@example.com>",
-                "Received": "2023-09-15T10:00:00Z",
-                "Subject": "Test event",
-                "Status": "Delivered",
-                "MessageTraceId": "123456-78901-abcdef",
-            }
-        ]
-    }
+    mock_response = util_load_json("./test_data/message_trace_get_events_response.json")
 
     mock_http_request.return_value = mock_response
 
@@ -296,7 +241,7 @@ def test_get_events_command(mock_http_request):
     assert len(events) == 1
     assert events[0]["MessageTraceId"] == "123456-78901-abcdef"
     assert "_time" in events[0]
-    assert events[0]["_time"] == "2023-09-15T10:00:00Z"
+    assert events[0]["_time"] == "2023-07-01T12:00:00Z"
     assert new_timestamp is not None
 
 
