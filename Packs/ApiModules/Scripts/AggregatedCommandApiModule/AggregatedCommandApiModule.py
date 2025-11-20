@@ -100,7 +100,7 @@ class Indicator:
 
     def get_all_values_from(self, data: dict[str, Any]) -> dict[str, Any]:
         """
-        Return ALL identity-like fields that exist in this entry.
+        Return ALL value fields that exist in this entry depends on self.value_field.
         For File, that could return {"MD5": "...", "SHA1": "...", ...}
         For URL (single value_field), this just returns {"Value": "..."} if available.
         Args:
