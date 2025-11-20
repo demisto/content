@@ -697,7 +697,7 @@ def test_fetch_incidents(mocker, client, requests_mock):
         "first_fetch": "1 hour",
         "max_fetch": "201",
         "fetch_entity_types": ["Accounts", "Hosts", "Detections"],
-        "tags": "hello,world",
+        "tags": "hello,world,tags%test",
         "fetch_escalated_accounts_and_hosts": True,
     }
     new_last_run, incidents = fetch_incidents(client, params)
@@ -2285,7 +2285,9 @@ def test_update_remote_system_command_when_tags_mirror(client, mocker):
     - Assert that the ID of the updated remote entity is returned.
     """
     mocker.patch.object(
-        demisto, "args", return_value={"remoteId": "1-account", "delta": {"tags": ["tag1", "tag2"]}, "data": {"id": "1"}}
+        demisto,
+        "args",
+        return_value={"remoteId": "1-account", "delta": {"tags": ["tag1", "tag2", "tags%test"]}, "data": {"id": "1"}},
     )
 
     mocker.patch.object(client, "add_note_request", return_value={})

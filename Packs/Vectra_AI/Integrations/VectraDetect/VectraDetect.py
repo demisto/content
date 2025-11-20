@@ -42,6 +42,7 @@ MAX_RESULTS: int = 200
 DEFAULT_FIRST_FETCH: str = "7 days"
 DEFAULT_FETCH_ENTITY_TYPES: list = ["Hosts", "Accounts"]
 DEFAULT_MAX_FETCH: int = 50
+TAGS_REGEX = re.compile(r"^[\w:._ -]+$", re.U)
 
 ERRORS = {
     "REQUIRED_ARGUMENT": "Please provide valid value of the '{}'. It is required field.",
@@ -2715,6 +2716,25 @@ def add_refetch_id_to_integration_context(entity_id: str, entity_type: str):
     demisto.debug(f"Updated {entity_type} ids list in the integration context: {integration_context[entity_type]['refetch_ids']}")
 
 
+def get_valid_and_dropped_tags(tags: list[str]) -> tuple[list[str], list[str]]:
+    """
+    Return (valid_tags, dropped_tags) using TAG_REGEX.fullmatch().
+
+    Note: does not strip/mutate inputs. If you want trimming, do it before calling.
+    """
+    valid: list[str] = []
+    invalid: list[str] = []
+    for t in tags:
+        if TAGS_REGEX.fullmatch(t):
+            valid.append(t)
+        else:
+            invalid.append(t)
+    if invalid:
+        demisto.debug(f"Dropping invalid tags which contains invalid characters: {invalid}")
+    demisto.debug(f"Provided Valid tags(s): {valid}")
+    return valid, invalid
+
+
 class VectraException(Exception):
     """
     Custom Vectra Exception in case of Vectra API issue
@@ -3200,6 +3220,10 @@ def update_remote_system_command(client: Client) -> str:
     vectra_tags = res.get("tags") or []
     if xsoar_tags or (not xsoar_tags and vectra_tags and "tags" in delta):
         demisto.debug(f"Sending the tags: {xsoar_tags}")
+        # Drop invalid tags that do not fully match the allowed pattern
+        if xsoar_tags:
+            valid_tags, dropped_tags = get_valid_and_dropped_tags(xsoar_tags)
+            xsoar_tags = valid_tags
         client.update_entity_tags_request(entity_id=mirror_entity_id, entity_type=remote_entity_type, tag_list=xsoar_tags)
 
     # For closing notes if the XSOAR incident is closed.
