@@ -77,7 +77,6 @@ configuration:
   name: exclude_combolist
   required: false
   type: 8
-  hidden: true
   additionalinfo: This parameter has been deprecated.
 - display: Include combolist type in data
   name: combolist
