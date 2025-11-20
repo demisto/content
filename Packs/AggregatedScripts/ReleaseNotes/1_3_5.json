@@ -1,0 +1,4 @@
+{
+  "breakingChanges": true,
+  "breakingChangesNotes": "Refactored the file-enrichment script to align with the other enrichment scripts; the context output structure and flow have been changed."
+}
