@@ -296,6 +296,20 @@ class Client:  # pragma: no cover
             odata_query += odata
         return self.ms_client.http_request("GET", f"v1.0/identityProtection/riskyUsers/{user_id}/history{odata_query}")["value"]
 
+    def get_user_signin_event(self, signin_request_id: str) -> list:
+        """Retrieve a specific Microsoft Entra user sign-in event
+
+        Args:
+            signin_request_id: RequestID property of the sign-in event
+
+        Returns:
+            a list of dictionaries with the object from the api
+
+        Docs:
+            https://learn.microsoft.com/en-us/graph/api/signin-get?view=graph-rest-1.0&tabs=http
+        """
+        return self.ms_client.http_request("GET", f"v1.0/auditLogs/signIns/{signin_request_id}")
+
     def activate_directory_role(self, template_id: str) -> dict:
         """Activating a role in the directory.
         Args:
@@ -1714,6 +1728,60 @@ def update_conditional_access_policy_command(client: Client, args: Dict[str, Any
     return result
 
 
+def get_user_signin_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve a specific Microsoft Entra ID user sign-in event
+
+    Args:
+        client (Client): An authenticated Microsoft Graph API client.
+        args (Dict[str, Any]): Command arguments including:
+            - request_id: RequestID property of the sign-in event
+
+    Returns:
+        CommandResults: A result object with the details of the requested user sign-in event.
+    """
+
+    signin_request_id = args.get("request_id", "")
+    messages: list[str] = []
+
+    if result := client.get_user_signin_event(signin_request_id):
+        signin_events = []
+        signin_event = {
+            "id": result.get("id"),  # type: ignore
+            "correlationId": result.get("correlationId"),  # type: ignore
+            "appDisplayName": result.get("appDisplayName"),  # type: ignore
+            "resourceDisplayName": result.get("resourceDisplayName"),  # type: ignore
+            "status": result.get("status"),  # type: ignore
+            "ipAddress": result.get("ipAddress"),  # type: ignore
+            "conditionalAccessStatus": result.get("conditionalAccessStatus"),  # type: ignore
+            "appliedConditionalAccessPolicies": result.get("appliedConditionalAccessPolicies"),  # type: ignore
+            "deviceDetail": result.get("deviceDetail"),  # type: ignore
+            "clientAppUsed": result.get("clientAppUsed"),  # type: ignore
+            "userDisplayName": result.get("userDisplayName"),  # type: ignore
+            "userPrincipalName": result.get("userPrincipalName"),  # type: ignore
+        }
+        signin_events.append(signin_event)
+        context = {"signinEvent": signin_event}
+        return CommandResults(
+            "MSGraph.AuditLog.signIn",
+            "signinEvent",
+            outputs=context,
+            raw_response=result,
+            ignore_auto_extract=True,
+            readable_output=tableToMarkdown(
+                "User sign-in event:",
+                signin_events,
+            ),
+        )
+    else:
+        return CommandResults(readable_output="could not list IP named locations")
+
+    if messages and result.readable_output and not result.readable_output.startswith("Error"):
+        result.readable_output += "\n\nNote:\n" + "\n".join(messages)
+
+    return result
+
+
 def main():  # pragma: no cover
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
@@ -1786,6 +1854,8 @@ def main():  # pragma: no cover
             return_results(create_conditional_access_policy_command(client, args))
         elif command == "msgraph-identity-ca-policy-update":
             return_results(update_conditional_access_policy_command(client, args))
+        elif command == "msgraph-identity-audit-signin-event-get":
+            return_results(get_user_signin_event_command(client, args))
         elif command == "fetch-incidents":
             incidents, last_run = fetch_incidents(client, params)
             demisto.incidents(incidents)
