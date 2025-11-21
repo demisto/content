@@ -3,7 +3,6 @@ This integration was integrated and tested with version 1.0 of Group-IB Digital 
 
 ## Configure Group-IB Digital Risk Protection in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | GIB DRP URL |  | True |
@@ -77,7 +76,6 @@ Receive all configured brands.
 >|---|---|
 >| Example Brand | PvY1BZUBSFbLZGo2x8TA |
 
-
 ### gibdrp-get-subscriptions
 
 ***
@@ -125,7 +123,6 @@ Receive all configured subscriptions.
 >|---|
 >| scam |
 
-
 ### gibdrp-get-violation-by-id
 
 ***
@@ -139,7 +136,7 @@ Getting a single violation by its ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | ID violation. | Required | 
+| id | ID violation. | Required |
 
 #### Context Output
 
@@ -166,8 +163,8 @@ Changing the status of a single violation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | ID violation. | Required | 
-| status | What status to change to. Possible values are: approve, reject. | Required | 
+| id | ID violation. | Required |
+| status | What status to change to. Possible values are: approve, reject. | Required |
 
 #### Context Output
 

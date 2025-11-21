@@ -182,3 +182,4 @@ fromversion: 6.10.0
 sectionorder:
 - Connect
 - Collect
+- Optimize

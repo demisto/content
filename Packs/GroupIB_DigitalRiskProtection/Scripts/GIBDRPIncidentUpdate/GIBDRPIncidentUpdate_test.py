@@ -2,17 +2,7 @@ import demistomock as demisto
 from GIBDRPIncidentUpdate import prevent_duplication
 
 
-EXISTING_INCIDENT = [
-    {
-        "Contents": {
-            "total": 1,
-            "data": [
-                {"id": "1",
-                 "gibdrpid": "12v"}
-            ]
-        }
-    }
-]
+EXISTING_INCIDENT = [{"Contents": {"total": 1, "data": [{"id": "1", "gibdrpid": "12v"}]}}]
 INCOMING_INCIDENT = {"gibdrpid": "12v"}
 
 

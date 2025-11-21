@@ -19,7 +19,7 @@ def prevent_duplication(current_incident):
     if "sla" in current_incident:
         del current_incident["sla"]
     current_incident.update(custom_fields)
-    gibdrpid = custom_fields.get('gibdrpid')
+    gibdrpid = custom_fields.get("gibdrpid")
     search_incident = demisto.executeCommand("getIncidents", {"query": f"gibdrpid: {gibdrpid}"})
     if search_incident:
         total = int(search_incident[0].get("Contents", {}).get("total", 0))
@@ -32,7 +32,7 @@ def prevent_duplication(current_incident):
                     f"Update incident key: {key} value: {value}"
                     f"DataUpdate incident id: {incident_id} incident_gibdrpid: {incident_gibdrpid}"
                 )
-                demisto.executeCommand('setIncident', {"id": incident_id, key: value})
+                demisto.executeCommand("setIncident", {"id": incident_id, key: value})
             demisto.debug(f"Update incident id: {incident_id} incident_gibdrpid: {incident_gibdrpid}")
 
     return result

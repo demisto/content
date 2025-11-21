@@ -145,9 +145,7 @@ class Client(BaseClient):
             )
         date_from = date_from.strftime("%Y-%m-%d")
         demisto.debug(f"generate_seq_update date_from {date_from}")
-        sequpdate = self.poller.get_seq_update_dict(
-            date=date_from, collection=Endpoints.VIOLATIONS.value
-        )
+        sequpdate = self.poller.get_seq_update_dict(date=date_from, collection=Endpoints.VIOLATIONS.value)
         demisto.debug(f"generate_seq_update sequpdate {sequpdate}")
         return sequpdate
 
@@ -182,11 +180,8 @@ class Client(BaseClient):
         if brands:
             brands = brands.strip(",")
 
-        demisto.debug(
-            f"create_generator {Endpoints.VIOLATIONS.value} {violation_subtypes} {section} {sequpdate} brands {brands}"
-        )
+        demisto.debug(f"create_generator {Endpoints.VIOLATIONS.value} {violation_subtypes} {section} {sequpdate} brands {brands}")
         try:
-
             return self.poller.create_update_generator(
                 collection_name=Endpoints.VIOLATIONS.value,
                 subtypes=violation_subtypes,
@@ -205,17 +200,18 @@ class Client(BaseClient):
         """
         Status could be approve or reject
         """
-        approve_statuses = {
-            "approve": True,
-            "reject": False
-        }
+        approve_statuses = {"approve": True, "reject": False}
         approve_status = approve_statuses.get(status)
         response = self.poller.search_feed_by_id(feed_id)
-        demisto.debug('change_violation_status', approve_status, response.raw_dict.get('violation', {}).get(
-            'status', None), response.raw_dict.get('violation', {}).get('approveState', None))
-        violation_status = response.raw_dict.get('violation', {}).get('status', None)
-        violation_approve_state = response.raw_dict.get('violation', {}).get('approveState', None)
-        if violation_status == 'detected' and violation_approve_state == 'under_review':
+        demisto.debug(
+            "change_violation_status",
+            approve_status,
+            response.raw_dict.get("violation", {}).get("status", None),
+            response.raw_dict.get("violation", {}).get("approveState", None),
+        )
+        violation_status = response.raw_dict.get("violation", {}).get("status", None)
+        violation_approve_state = response.raw_dict.get("violation", {}).get("approveState", None)
+        if violation_status == "detected" and violation_approve_state == "under_review":
             response = self._http_request(
                 method="POST",
                 url_suffix=Endpoints.CHANGE_APPROVE.value,
@@ -223,18 +219,15 @@ class Client(BaseClient):
                 retries=RETRIES,
                 status_list_to_retry=STATUS_LIST_TO_RETRY,
                 headers=self.additional_headers,
-                json_data={
-                    "violationId": feed_id,
-                    "approve": approve_status
-                },
-                resp_type="response"
+                json_data={"violationId": feed_id, "approve": approve_status},
+                resp_type="response",
             )
             return response.status_code
         else:
             return "Can not change the status of the selected feed"
 
     def get_formatted_brands(self) -> list[dict[str, str]]:
-        if hasattr(self.poller, 'get_brands'):
+        if hasattr(self.poller, "get_brands"):
             try:
                 brands_data = self.poller.get_brands()  # type: ignore[attr-defined]
                 return brands_data or []
@@ -242,13 +235,12 @@ class Client(BaseClient):
                 demisto.debug(f"get_brands failed: {e}")
                 return []
         demisto.debug(
-            "DRPPoller.get_brands is not available; returning empty list. "
-            f"Library version: {TechnicalConsts.library_version}"
+            "DRPPoller.get_brands is not available; returning empty list. " f"Library version: {TechnicalConsts.library_version}"
         )
         return []
 
     def get_formatted_subscriptions(self) -> list[str]:
-        if hasattr(self.poller, 'get_subscriptions'):
+        if hasattr(self.poller, "get_subscriptions"):
             try:
                 return self.poller.get_subscriptions() or []  # type: ignore[attr-defined]
             except Exception as e:
@@ -271,14 +263,10 @@ class Client(BaseClient):
                 headers=self.additional_headers,
                 resp_type="response",
             )
-            data = response.content, CommonHelpers.extract_mime_type(
-                response.headers.get("content-type", '')
-            )
+            data = response.content, CommonHelpers.extract_mime_type(response.headers.get("content-type", ""))
         except Exception:
             data = None
-            demisto.debug(
-                f"Could not download or the following image is not available: {file_sha}"
-            )
+            demisto.debug(f"Could not download or the following image is not available: {file_sha}")
         return data
 
     def get_violation_by_id(self, violation_id: str) -> Parser:
@@ -289,9 +277,7 @@ class Client(BaseClient):
         self, violation_id: str, get_images: bool | None = True
     ) -> tuple[dict[Any, Any], list[dict[str, str | bytes]]]:
         results = self.get_violation_by_id(violation_id=violation_id)
-        parse_result: dict[Any, Any] = results.parse_portion(
-            keys=COMMON_VIOLATION_MAPPING, as_json=False
-        )[0]
+        parse_result: dict[Any, Any] = results.parse_portion(keys=COMMON_VIOLATION_MAPPING, as_json=False)[0]
         updated_images = []
         if get_images:
             images = parse_result.get("images", [])
@@ -325,9 +311,7 @@ class CommonHelpers:
     }
 
     @staticmethod
-    def transform_dict(
-        input_dict: dict[str, list[str | list[Any]] | str | None]
-    ) -> list[dict[str, Any]]:
+    def transform_dict(input_dict: dict[str, list[str | list[Any]] | str | None]) -> list[dict[str, Any]]:
         if not input_dict:
             return [{}]
 
@@ -340,18 +324,11 @@ class CommonHelpers:
             else:
                 normalized_dict[k] = [v]
 
-        max_length = max(
-            (len(v) for v in normalized_dict.values() if isinstance(v, list)), default=1
-        )
+        max_length = max((len(v) for v in normalized_dict.values() if isinstance(v, list)), default=1)
 
         result = []
         for i in range(max_length):
-            result.append(
-                {
-                    k: (v[i] if i < len(v) else (v[0] if v else None))
-                    for k, v in normalized_dict.items()
-                }
-            )
+            result.append({k: (v[i] if i < len(v) else (v[0] if v else None)) for k, v in normalized_dict.items()})
 
         return result
 
@@ -362,12 +339,8 @@ class CommonHelpers:
         for key, value in feed.items():
             if key == "scores" and isinstance(value, dict):
                 additional_data = CommonHelpers.transform_dict(value)
-                position_score_dict = [
-                    item for item in additional_data if item.get("type") == "position"
-                ][0]
-                additional_data = [
-                    item for item in additional_data if item.get("type") != "position"
-                ]
+                position_score_dict = [item for item in additional_data if item.get("type") == "position"][0]
+                additional_data = [item for item in additional_data if item.get("type") != "position"]
 
                 for item in additional_data:
                     value_type = item.get("type")
@@ -398,9 +371,7 @@ class CommonHelpers:
             elif isinstance(value, dict):
                 additional_data = CommonHelpers.transform_dict(value)
                 for index, item in enumerate(additional_data):
-                    table = CommonHelpers.get_human_readable_feed(
-                        table=item, name=f"{key} table {index}"
-                    )
+                    table = CommonHelpers.get_human_readable_feed(table=item, name=f"{key} table {index}")
                     additional_tables.append(
                         CommandResults(
                             readable_output=table,
@@ -426,9 +397,7 @@ class CommonHelpers:
     def get_table_data(
         feed: dict[Any, Any],
     ):
-        updated_feed, additional_tables = (
-            CommonHelpers.transform_additional_fields_to_markdown_tables(feed)
-        )
+        updated_feed, additional_tables = CommonHelpers.transform_additional_fields_to_markdown_tables(feed)
 
         return updated_feed, additional_tables
 
@@ -440,11 +409,8 @@ class CommonHelpers:
 
     @staticmethod
     def convert_iso8601_with_timezone(date_str: str):
-
         if not re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{4}$", date_str):
-            raise ValueError(
-                "Invalid date format. A string in the following format is expected 'YYYY-MM-DDTHH:MM:SS+0000'."
-            )
+            raise ValueError("Invalid date format. A string in the following format is expected 'YYYY-MM-DDTHH:MM:SS+0000'.")
 
         date_part = date_str[:19]  # '2024-10-30T15:12:34'
         timezone_part = date_str[19:]  # '+0000'
@@ -476,9 +442,7 @@ class CommonHelpers:
                 elif isinstance(value, dict):
                     CommonHelpers.format_dates_in_dict(value)
                 elif isinstance(value, list):
-                    data[key] = list(
-                        map(CommonHelpers.convert_iso8601_with_timezone, value)
-                    )
+                    data[key] = list(map(CommonHelpers.convert_iso8601_with_timezone, value))
         return data
 
     @staticmethod
@@ -490,9 +454,7 @@ class CommonHelpers:
                 if isinstance(value, list):
                     if value:
                         all_empty = False
-                elif isinstance(value, dict) and not CommonHelpers.all_lists_empty(
-                    value
-                ):
+                elif isinstance(value, dict) and not CommonHelpers.all_lists_empty(value):
                     all_empty = False
         elif isinstance(data, list):
             for item in data:
@@ -502,15 +464,9 @@ class CommonHelpers:
         return all_empty
 
     @staticmethod
-    def replace_empty_values(
-        data: dict[str, Any] | list[dict[str, Any]]
-    ) -> dict[str, Any] | list[dict[str, Any]]:
-
+    def replace_empty_values(data: dict[str, Any] | list[dict[str, Any]]) -> dict[str, Any] | list[dict[str, Any]]:
         if isinstance(data, dict):
-            return {
-                key: CommonHelpers.replace_empty_values(value)
-                for key, value in data.items()
-            }
+            return {key: CommonHelpers.replace_empty_values(value) for key, value in data.items()}
 
         elif isinstance(data, list):
             if not data:
@@ -527,9 +483,7 @@ class CommonHelpers:
             return data
 
     @staticmethod
-    def remove_underscore_and_lowercase_keys(
-        dict_list: list[dict[str, Any]] | list[dict[str, Any]]
-    ) -> list[dict[str, Any]]:
+    def remove_underscore_and_lowercase_keys(dict_list: list[dict[str, Any]] | list[dict[str, Any]]) -> list[dict[str, Any]]:
         updated_dicts = []
 
         for d in dict_list:
@@ -602,20 +556,14 @@ class IncidentBuilder:
             for field in TABLES_MAPPING:
                 field_data = incident.get(field, {})
                 if field_data and CommonHelpers.all_lists_empty(field_data) is False:
-                    transformed_data = CommonHelpers.transform_dict(
-                        input_dict=field_data
-                    )
+                    transformed_data = CommonHelpers.transform_dict(input_dict=field_data)
 
-                    transformed_and_replaced_empty_values_data = (
-                        CommonHelpers.replace_empty_values(transformed_data)
-                    )
+                    transformed_and_replaced_empty_values_data = CommonHelpers.replace_empty_values(transformed_data)
                     clean_data = CommonHelpers.remove_underscore_and_lowercase_keys(
                         transformed_and_replaced_empty_values_data  # type: ignore
                     )
                     if field == "scores":
-                        clean_data = [
-                            item for item in clean_data if item["type"] != "position"
-                        ]
+                        clean_data = [item for item in clean_data if item["type"] != "position"]
                         for score in clean_data:
                             score_type = score.get("type")
                             if isinstance(score_type, str):
@@ -646,16 +594,15 @@ class IncidentBuilder:
         )
         for portion in portions:
             sequpdate = portion.sequpdate
-            parse_result: list[dict[Any, Any]] = portion.parse_portion(
-                keys=COMMON_VIOLATION_MAPPING, as_json=False
-            )
+            parse_result: list[dict[Any, Any]] = portion.parse_portion(keys=COMMON_VIOLATION_MAPPING, as_json=False)
 
             for feed in parse_result:
                 feed = CommonHelpers.data_pre_cleaning(violation=feed)
                 feed = CommonHelpers.violation_source_mapping(feed=feed)
                 feed = CommonHelpers.format_dates_in_dict(data=feed)
                 feed = CommonHelpers.set_tag_downloaded_by_typoSquatting(
-                    violation=feed, only_typosquatting=self.only_typosquatting)
+                    violation=feed, only_typosquatting=self.only_typosquatting
+                )
                 incident = self.transform_fields_to_grid_table(incident=feed)
 
                 if self.download_images:
@@ -762,12 +709,8 @@ class BuilderCommandResponses:
         parse_result, updated_images = self.client.get_formatted_violation_by_id(violation_id=id_)
         parse_result: dict = CommonHelpers.data_pre_cleaning(violation=parse_result)
         parse_result = CommonHelpers.violation_source_mapping(feed=parse_result)
-        updated_feed, additional_tables = CommonHelpers.get_table_data(
-            feed=parse_result
-        )
-        readable_output = CommonHelpers.get_human_readable_feed(
-            table=updated_feed, name=f"Feed {id_}"
-        )
+        updated_feed, additional_tables = CommonHelpers.get_table_data(feed=parse_result)
+        readable_output = CommonHelpers.get_human_readable_feed(table=updated_feed, name=f"Feed {id_}")
         results = []
         results.append(
             CommandResults(
@@ -801,9 +744,7 @@ class BuilderCommandResponses:
 
     def build(self) -> str | tuple[CommandResults, dict[str, Any]] | CommandResults:
         # Check if the method exists in the class
-        if hasattr(self, self.requested_method) and callable(
-            getattr(self, self.requested_method)
-        ):
+        if hasattr(self, self.requested_method) and callable(getattr(self, self.requested_method)):
             # Call the method
             return getattr(self, self.requested_method)()
         else:
@@ -931,30 +872,19 @@ class Commands:
             return f"gibdrp-{method_name.replace('_', '-')}"
 
         # Get and format all methods
-        methods = [
-            format_method(method)
-            for method in dir(Commands)
-            if callable(getattr(Commands, method))
-        ]
+        methods = [format_method(method) for method in dir(Commands) if callable(getattr(Commands, method))]
         return list(filter(None, methods))
 
     def get_results(
         self,
     ) -> (
         tuple[CommandResults, str]
-        | tuple[
-            tuple[
-                CommandResults, tuple[dict, list]
-            ],
-            str
-        ]
+        | tuple[tuple[CommandResults, tuple[dict, list]], str]
         | tuple[str, str]
         | tuple[tuple[dict[str, int | Any], list], str]
     ):
         # Check if the method exists in the class
-        if hasattr(self, self.requested_method) and callable(
-            getattr(self, self.requested_method)
-        ):
+        if hasattr(self, self.requested_method) and callable(getattr(self, self.requested_method)):
             # Call the method
             return getattr(self, self.requested_method)(), self.requested_method
         else:
@@ -989,7 +919,7 @@ def main():
         # to filter on multiple brands
         brands = params.get("brands")
         download_images = params.get("download_images", False)
-        only_typosquatting = params.get('only_typosquatting', False)
+        only_typosquatting = params.get("only_typosquatting", False)
 
         client = Client(
             base_url=base_url,
@@ -1002,11 +932,11 @@ def main():
         # because the commands are implemented flexibly and
         # such a record of them is required only for passing the tests
         if command in [
-            'test-module',
+            "test-module",
             "gibdrp-get-brands",
             "gibdrp-get-subscriptions",
             "gibdrp-get-violation-by-id",
-            "gibdrp-change-violation-status"
+            "gibdrp-change-violation-status",
         ]:
             pass
 
@@ -1036,10 +966,7 @@ def main():
                 raise ValueError("Expected results to be a tuple containing next_run and violations")
 
     except Exception:
-        return_error(
-            f"Failed to execute {demisto.command()} command.\n"
-            f"Error: {format_exc()}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\n" f"Error: {format_exc()}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

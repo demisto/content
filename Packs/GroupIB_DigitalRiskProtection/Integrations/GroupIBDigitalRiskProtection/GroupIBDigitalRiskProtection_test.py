@@ -17,16 +17,17 @@ BRANDS_RAW_JSON = [
     {"name": "Example Brand 2", "id": "exampleid321"},
 ]
 
-SUBSCRIPTIONS_RAW_JSON = ['scam', 'example']
+SUBSCRIPTIONS_RAW_JSON = ["scam", "example"]
 
-with open(f'{realpath}/test_data/violation_by_id_example.json') as example:
+with open(f"{realpath}/test_data/violation_by_id_example.json") as example:
     VIOLATION_BY_ID_RAW_JSON = load(example)
 
-with open(f'{realpath}/test_data/violations_example.json') as example:
+with open(f"{realpath}/test_data/violations_example.json") as example:
     VIOLATIONS_RAW_JSON = load(example)
 
 TEST_GET_FILES_BYTES = open(
-    f'{realpath}/test_data/get_file_example_5a7bf6ece60ff635c6b844418a0528d97fa7016b362387125a96f4c0bf60a774.jpeg', 'rb').read()
+    f"{realpath}/test_data/get_file_example_5a7bf6ece60ff635c6b844418a0528d97fa7016b362387125a96f4c0bf60a774.jpeg", "rb"
+).read()
 
 TEST_VIOLATION_ID = "exampleid"
 TEST_FILE_SHA = "5a7bf6ece60ff635c6b844418a0528d97fa7016b362387125a96f4c0bf60a774"
@@ -88,7 +89,7 @@ def test_main_error():
 
 def test_get_brands(mocker, session_fixture):
     client = session_fixture
-    mocker.patch.object(client, 'get_formatted_brands', return_value=[BRANDS_RAW_JSON])
+    mocker.patch.object(client, "get_formatted_brands", return_value=[BRANDS_RAW_JSON])
     response = client.get_formatted_brands()
     assert isinstance(response, list)
     assert len(response) > 0
@@ -96,7 +97,7 @@ def test_get_brands(mocker, session_fixture):
 
 def test_get_subscriptions(mocker, session_fixture):
     client = session_fixture
-    mocker.patch.object(client, 'get_formatted_subscriptions', return_value=[SUBSCRIPTIONS_RAW_JSON])
+    mocker.patch.object(client, "get_formatted_subscriptions", return_value=[SUBSCRIPTIONS_RAW_JSON])
     response = client.get_formatted_subscriptions()
     assert isinstance(response, list)
     assert len(response) > 0
@@ -104,14 +105,14 @@ def test_get_subscriptions(mocker, session_fixture):
 
 def test_get_violation_by_id(mocker, session_fixture):
     client = session_fixture
-    mocker.patch.object(client, 'get_violation_by_id', return_value=Parser(chunk=VIOLATION_BY_ID_RAW_JSON, keys=[], iocs_keys=[]))
+    mocker.patch.object(client, "get_violation_by_id", return_value=Parser(chunk=VIOLATION_BY_ID_RAW_JSON, keys=[], iocs_keys=[]))
     response = client.get_formatted_violation_by_id(violation_id=TEST_VIOLATION_ID, get_images=False)
     assert isinstance(response[0], dict)
 
 
 def test_get_file(mocker, session_fixture):
     client = session_fixture
-    mocker.patch.object(client, 'get_file', return_value=[TEST_GET_FILES_BYTES, "image/jpeg"])
+    mocker.patch.object(client, "get_file", return_value=[TEST_GET_FILES_BYTES, "image/jpeg"])
     response = client.get_file(file_sha=TEST_FILE_SHA)
     assert isinstance(response[0], bytes)
 
@@ -129,7 +130,7 @@ def test_get_avalible_commands():
 
 def test_command_get_brands(mocker, session_fixture):
     client = session_fixture
-    mocker.patch.object(client, 'get_formatted_brands', return_value=[BRANDS_RAW_JSON])
+    mocker.patch.object(client, "get_formatted_brands", return_value=[BRANDS_RAW_JSON])
     result, requested_method = GroupIBDigitalRiskProtection.Commands(
         client=client,
         command=Commands.GET_BRANDS.value,
@@ -142,15 +143,12 @@ def test_command_get_brands(mocker, session_fixture):
     ).get_results()
     assert result is not None
     assert isinstance(requested_method, str)
-    assert (
-        requested_method
-        in GroupIBDigitalRiskProtection.Commands.methods_requiring_return_results
-    )
+    assert requested_method in GroupIBDigitalRiskProtection.Commands.methods_requiring_return_results
 
 
 def test_command_get_subscriptions(mocker, session_fixture):
     client = session_fixture
-    mocker.patch.object(client, 'get_formatted_subscriptions', return_value=[SUBSCRIPTIONS_RAW_JSON])
+    mocker.patch.object(client, "get_formatted_subscriptions", return_value=[SUBSCRIPTIONS_RAW_JSON])
     result, requested_method = GroupIBDigitalRiskProtection.Commands(
         client=client,
         command=Commands.GET_SUBSCRIPTIONS.value,
@@ -163,15 +161,12 @@ def test_command_get_subscriptions(mocker, session_fixture):
     ).get_results()
     assert result is not None
     assert isinstance(requested_method, str)
-    assert (
-        requested_method
-        in GroupIBDigitalRiskProtection.Commands.methods_requiring_return_results
-    )
+    assert requested_method in GroupIBDigitalRiskProtection.Commands.methods_requiring_return_results
 
 
 def test_command_get_violation_by_id(mocker, session_fixture):
     client = session_fixture
-    mocker.patch.object(client, 'get_violation_by_id', return_value=Parser(chunk=VIOLATION_BY_ID_RAW_JSON, keys=[], iocs_keys=[]))
+    mocker.patch.object(client, "get_violation_by_id", return_value=Parser(chunk=VIOLATION_BY_ID_RAW_JSON, keys=[], iocs_keys=[]))
     result, requested_method = GroupIBDigitalRiskProtection.Commands(
         client=client,
         command=Commands.GET_VIOLATION_BY_ID.value,
@@ -186,15 +181,12 @@ def test_command_get_violation_by_id(mocker, session_fixture):
     first = result[0]
     assert first is not None
     assert isinstance(requested_method, str)
-    assert (
-        requested_method
-        in GroupIBDigitalRiskProtection.Commands.methods_requiring_return_results
-    )
+    assert requested_method in GroupIBDigitalRiskProtection.Commands.methods_requiring_return_results
 
 
 def test_command_test_module(mocker, session_fixture):
     client = session_fixture
-    mocker.patch.object(client, 'get_formatted_brands', return_value=[BRANDS_RAW_JSON])
+    mocker.patch.object(client, "get_formatted_brands", return_value=[BRANDS_RAW_JSON])
     result, requested_method = GroupIBDigitalRiskProtection.Commands(
         client=client,
         command=Commands.TEST_MODULE.value,
@@ -208,10 +200,7 @@ def test_command_test_module(mocker, session_fixture):
     assert isinstance(result, str)
     assert result == "ok"
     assert isinstance(requested_method, str)
-    assert (
-        requested_method
-        in GroupIBDigitalRiskProtection.Commands.methods_requiring_return_results
-    )
+    assert requested_method in GroupIBDigitalRiskProtection.Commands.methods_requiring_return_results
 
 
 def test_client_get_violation_section_number_and_error(session_fixture):
@@ -323,20 +312,18 @@ def test_commands_fetch_incidents_flow(session_fixture):
         sequpdate = {"cursor": "abc"}
 
         def parse_portion(self, keys, as_json=False):  # noqa: ARG002
-            return [{
-                "id": "1",
-                "title": "t",
-                "violation_uri": "//example.com",
-                "source": 1,
-                "tags": [None, "x"],
-                "dates_created_date": "2024-10-30T15:12:34+0000",
-                "images": [],
-                "scores": {
-                    "type": ["risk", "position"],
-                    "score": [10, 99],
-                    "version": [1, 2]
+            return [
+                {
+                    "id": "1",
+                    "title": "t",
+                    "violation_uri": "//example.com",
+                    "source": 1,
+                    "tags": [None, "x"],
+                    "dates_created_date": "2024-10-30T15:12:34+0000",
+                    "images": [],
+                    "scores": {"type": ["risk", "position"], "score": [10, 99], "version": [1, 2]},
                 }
-            }]
+            ]
 
     def generator():
         yield Portion()
@@ -374,21 +361,19 @@ def test_client_change_violation_status_paths(mocker, session_fixture):
     # perform POST path
     mocker.patch.object(
         client.poller,
-        'search_feed_by_id',
-        return_value=Resp({"violation": {"status": "detected", "approveState": "under_review"}})
+        "search_feed_by_id",
+        return_value=Resp({"violation": {"status": "detected", "approveState": "under_review"}}),
     )
 
     class HTTPResponse:
         status_code = 200
 
-    mocker.patch.object(client, '_http_request', return_value=HTTPResponse())
+    mocker.patch.object(client, "_http_request", return_value=HTTPResponse())
     assert client.change_violation_status(feed_id="1", status="approve") == 200
 
     # cannot change path
     mocker.patch.object(
-        client.poller,
-        'search_feed_by_id',
-        return_value=Resp({"violation": {"status": "approved", "approveState": "approved"}})
+        client.poller, "search_feed_by_id", return_value=Resp({"violation": {"status": "approved", "approveState": "approved"}})
     )
     res = client.change_violation_status(feed_id="1", status="approve")
     assert isinstance(res, str)
@@ -400,15 +385,10 @@ def test_client_get_formatted_violation_by_id_with_images(session_fixture, mocke
 
     class FakeParser:
         def parse_portion(self, keys, as_json=False):  # noqa: ARG002
-            return [{
-                "id": "1",
-                "violation_uri": "//example.com",
-                "source": 1,
-                "images": ["abc"]
-            }]
+            return [{"id": "1", "violation_uri": "//example.com", "source": 1, "images": ["abc"]}]
 
-    mocker.patch.object(client, 'get_violation_by_id', return_value=FakeParser())
-    mocker.patch.object(client, 'get_file', return_value=(b"bytes", "image/jpeg"))
+    mocker.patch.object(client, "get_violation_by_id", return_value=FakeParser())
+    mocker.patch.object(client, "get_file", return_value=(b"bytes", "image/jpeg"))
     parsed, images = client.get_formatted_violation_by_id(violation_id="1", get_images=True)
     assert isinstance(parsed, dict)
     assert isinstance(images, list)
@@ -419,13 +399,7 @@ def test_client_get_formatted_violation_by_id_with_images(session_fixture, mocke
 
 
 def test_commonhelpers_get_table_data_returns_additional_tables():
-    feed = {
-        "scores": {
-            "type": ["risk", "position"],
-            "score": [10, 99],
-            "version": [1, 2]
-        }
-    }
+    feed = {"scores": {"type": ["risk", "position"], "score": [10, 99], "version": [1, 2]}}
     updated_feed, additional_tables = GroupIBDigitalRiskProtection.CommonHelpers.get_table_data(feed)
     assert isinstance(updated_feed, dict)
     assert isinstance(additional_tables, list)
@@ -434,7 +408,7 @@ def test_commonhelpers_get_table_data_returns_additional_tables():
 
 def test_commands_change_violation_status_message(session_fixture, mocker):
     client = session_fixture
-    mocker.patch.object(client, 'change_violation_status', return_value=200)
+    mocker.patch.object(client, "change_violation_status", return_value=200)
     res, requested_method = GroupIBDigitalRiskProtection.Commands(
         client=client,
         command=Commands.CHANGE_VIOLATION_STATUS.value,
