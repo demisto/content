@@ -76,6 +76,7 @@ To use this integration, the following permissions are required on the Azure app
 - `Policy.ReadWrite.ConditionalAccess`
 - `Policy.Read.All`
 - `Application.Read.All`
+- `AuditLog.Read.All`
 
 ## Commands
 
@@ -1165,3 +1166,118 @@ There is no context output for this command.
 #### Human Readable Output
 >
 >Conditional Access policy fc271abb-e52c-4c40-aff9-5fd1e534a58d was successfully deleted.
+
+### msgraph-identity-audit-signin-event-get
+
+***
+Retrieve Microsoft Entra ID sign-in event.
+
+#### Base Command
+
+`msgraph-identity-audit-signin-event-get`
+
+#### Required Permissions
+
+`Permission type : Application or Delegated`
+`Permissions:AuditLog.Read.All`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Required. Unique ID representing the sign-in event. | Required |
+
+#### Context Output
+
+| **Context Path**                                             | **Type**   | **Description**                                             |
+|--------------------------------------------------------------|------------|-------------------------------------------------------------|
+| MSGraphIdentity.AuditLog.signIns.appDisplayName             | string     | App name displayed in the Microsoft Entra admin center.                                                                                                                                                                            |
+| MSGraphIdentity.AuditLog.signIns.appId                      | string     | Unique GUID that represents the app ID in the Microsoft Entra ID.                                                                                                                                                                  |
+| MSGraphIdentity.AuditLog.signIns.appliedConditionalAccessPolicies | array      | List of conditional access policies that the corresponding sign-in activity triggers.                                                                                                                                              |
+| MSGraphIdentity.AuditLog.signIns.clientAppUsed              | string     | Identifies the client used for the sign-in activity. Modern authentication clients include Browser, modern clients. Legacy authentication clients include Exchange ActiveSync, IMAP, MAPI, SMTP, POP, and other clients.          |
+| MSGraphIdentity.AuditLog.signIns.conditionalAccessStatus    | string     | Reports status of activated conditional access policy. Possible values are success, failure, notApplied, and unknownFutureValue.                                                                                                  |
+| MSGraphIdentity.AuditLog.signIns.correlationId              | string     | The request ID sent from the client when the sign-in is initiated. Used to troubleshoot sign-in activity.                                                                                                                          |
+| MSGraphIdentity.AuditLog.signIns.createdDateTime            | string     | Date and time (UTC) the sign-in was initiated.                                                                                                                                                                                     |
+| MSGraphIdentity.AuditLog.signIns.deviceDetail               | object     | Device information from where the sign-in occurred; includes device ID, operating system, and browser.                                                                                                                             |
+| MSGraphIdentity.AuditLog.signIns.id                         | string     | Unique ID representing the sign-in activity.                                                                                                                                                                                       |
+| MSGraphIdentity.AuditLog.signIns.ipAddress                  | string     | IP address of the client used to sign in.                                                                                                                                                                                          |
+| MSGraphIdentity.AuditLog.signIns.isInteractive              | boolean    | Indicates whether a sign-in is interactive.                                                                                                                                                                                        |
+| MSGraphIdentity.AuditLog.signIns.location                   | object     | Provides the city, state, and country code where the sign-in originated.                                                                                                                                                           |
+| MSGraphIdentity.AuditLog.signIns.resourceDisplayName        | string     | Name of the resource the user signed into.                                                                                                                                                                                         |
+| MSGraphIdentity.AuditLog.signIns.riskDetail                 | array      | The reason behind a specific state of a risky user, sign-in, or a risk event. The value none means that Microsoft Entra risk detection did not flag the user or the sign-in as a risky event so far.                               |
+| MSGraphIdentity.AuditLog.signIns.riskEventTypes_v2          | array      | The list of risk event types associated with the sign-in.                                                                                                                                                                          |
+| MSGraphIdentity.AuditLog.signIns.riskLevelAggregated        | string     | Aggregated risk level. The value hidden means the user or sign-in wasn't enabled for Microsoft Entra ID Protection.                                                                                                                |
+| MSGraphIdentity.AuditLog.signIns.riskLevelDuringSignIn      | string     | Risk level during sign-in. The value hidden means the user or sign-in wasn't enabled for Microsoft Entra ID Protection.                                                                                                            |
+| MSGraphIdentity.AuditLog.signIns.riskState                  | string     | Reports status of the risky user, sign-in, or a risk event.                                                                                                                                                                        |
+| MSGraphIdentity.AuditLog.signIns.status                     | object     | Sign-in status. Includes the error code and description of the error (if a sign-in failure occurs).                                                                                                                                |
+| MSGraphIdentity.AuditLog.signIns.userDisplayName            | string     | Display name of the user that initiated the sign-in.                                                                                                                                                                               |
+| MSGraphIdentity.AuditLog.signIns.userId                     | string     | ID of the user that initiated the sign-in.                                                                                                                                                                                         |
+| MSGraphIdentity.AuditLog.signIns.userPrincipalName          | string     | User principal name of the user that initiated the sign-in. This value is always in lowercase.                                                                                                                                     |
+
+#### Command example
+
+```!msgraph-identity-audit-signin-event-get id="ed015f68-15ad-4375-9cad-16ec81880100"```
+
+#### Context Example
+
+```json
+{
+  "MSGraphIdentity": {
+    "AuditLog": {
+      "signIns": {
+        "riskDetail": "none",
+        "userDisplayName": "TestUser",
+        "riskState": "none",
+        "createdDateTime": "2025-11-13T11:52:24Z",
+        "userId": "cfzt37e3-c2cd-4c99-ad40-cf9ac726283u",
+        "deviceDetail": {
+          "browser": "Firefox Mobile 144.0",
+          "deviceId": "",
+          "displayName": "",
+          "isCompliant": false,
+          "isManaged": false,
+          "operatingSystem": "Android",
+          "trustType": null
+        },
+        "resourceId": "00000002-0000-0ff1-ce00-000000000000",
+        "appDisplayName": "One Outlook Web",
+        "ipAddress": "AAA.XXX.YYY.ZZZ",
+        "riskEventTypes_v2": null,
+        "userPrincipalName": "testUser@testdomain.onmicrosoft.com",
+        "riskEventTypes": null,
+        "status": {
+          "additionalDetails": null,
+          "errorCode": 0,
+          "failureReason": "Other."
+        },
+        "clientAppUsed": "Browser",
+        "location": {
+          "city": "Cape Town",
+          "countryOrRegion": "ZA",
+          "geoCoordinates": {
+            "altitude": null,
+            "latitude": -33.9249,
+            "longitude": 18.4241
+          },
+          "state": "Western Cape"
+        },
+        "isInteractive": true,
+        "riskLevelDuringSignIn": "low",
+        "riskLevelAggregated": "none",
+        "id": "26e93953-93c2-4922-b752-78cf3e180300",
+        "conditionalAccessStatus": "success",
+        "appId": "9199bf20-a13f-4107-85dc-02114787ef48",
+        "appliedConditionalAccessPolicies": null,
+        "correlationId": "8799925d-08ac-cf4d-368f-8a24549aaf98",
+        "resourceDisplayName": "Office 365 Exchange Online"
+      }
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+| appDisplayName  | appliedConditionalAccessPolicies | clientAppUsed | conditionalAccessStatus | correlationId  | deviceDetail     | id   | ipAddress     | resourceDisplayName     | status    | userDisplayName | userPrincipalName   |
+|-----------------|----------------------------------|---------------|-------------------------|----------------|------------------|------|---------------|-------------------------|-----------|-----------------|---------------------|
+| One Outlook Web |                                  | Browser       | success                 | 8799925d-08ac-cf4d-368f-8a24549aaf98  | deviceId:<br>displayName:<br>operatingSystem: Android<br>browser: Firefox Mobile 144.0<br>isCompliant: false<br>isManaged: false<br>trustType: null | 26e93953-93c2-4922-b752-78cf3e180300     | AAA.XXX.YYY.ZZZ  | Office 365 Exchange Online  | errorCode: 0<br>failureReason: Other.<br>additionalDetails: null           | TestUser        | testUser@testdomain.onmicrosoft.com |
