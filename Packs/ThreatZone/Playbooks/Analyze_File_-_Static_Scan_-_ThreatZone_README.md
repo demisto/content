@@ -30,8 +30,8 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | File | File object of the file to analyze. The File is taken from the context. | File | Optional |
-| Interval | Duration for executing the pooling \(in minutes\) | 1 | Optional |
-| Timeout | The duration after which to stop pooling and to resume the playbook \(in minutes\) | 15 | Optional |
+| Interval | Frequency \(in minutes\) between polling attempts. | 1 | Optional |
+| Timeout | Maximum polling duration \(in minutes\) before the playbook resumes. | 15 | Optional |
 
 ## Playbook Outputs
 
@@ -39,16 +39,16 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| ThreatZone.Analysis.STATUS | The status of the submission scanning process. | String |
-| ThreatZone.Analysis.LEVEL | Threat Level of the scanned file. \(malicious, suspicious or informative\). | String |
-| ThreatZone.Analysis.URL | The result page url of the submission. | String |
-| ThreatZone.Analysis.INFO | Contains the file name, scan process status and public status. | String |
-| ThreatZone.Analysis.REPORT | The analysis report of the submission. | String |
-| ThreatZone.Analysis.MD5 | The md5 hash of the submission. | String |
-| ThreatZone.Analysis.SHA1 | The sha1 hash of the submission. | String |
-| ThreatZone.Analysis.SHA256 | The sha256 hash of the submission. | String |
-| ThreatZone.Analysis.UUID | The UUID of the submission. | String |
-| ThreatZone.Analysis.SANITIZED | The url of the sanitized file. | String |
+| ThreatZone.Submission.Summary.STATUS | The status of the submission scanning process. | String |
+| ThreatZone.Submission.Summary.LEVEL | Threat Level of the scanned file. \(malicious, suspicious or informative\). | String |
+| ThreatZone.Submission.Summary.URL | The result page url of the submission. | String |
+| ThreatZone.Submission.Summary.INFO | Contains the file name, scan process status and public status. | String |
+| ThreatZone.Submission.Summary.REPORT | The analysis report of the submission. | String |
+| ThreatZone.Submission.Summary.MD5 | The md5 hash of the submission. | String |
+| ThreatZone.Submission.Summary.SHA1 | The sha1 hash of the submission. | String |
+| ThreatZone.Submission.Summary.SHA256 | The sha256 hash of the submission. | String |
+| ThreatZone.Submission.Summary.UUID | The UUID of the submission. | String |
+| ThreatZone.Submission.Summary.SANITIZED | The url of the sanitized file. | String |
 
 ## Playbook Image
 

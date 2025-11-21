@@ -6,325 +6,510 @@ display: ThreatZone
 category: Forensics & Malware Analysis
 description: ThreatZone malware analysis sandboxing.
 configuration:
-  - display: Server URL (e.g. https://app.threat.zone)
-    name: url
-    defaultvalue: https://app.threat.zone
-    type: 0
-    required: true
-  - display: ThreatZone API Key
-    name: apikey
-    type: 4
-    required: true
-  - display: Source Reliability
-    name: integrationReliability
-    type: 15
-    additionalinfo: Reliability of the source.
-    defaultvalue: A - Completely reliable
-    options:
-      - A+ - 3rd party enrichment
-      - A - Completely reliable
-      - B - Usually reliable
-      - C - Fairly reliable
-      - D - Not usually reliable
-      - E - Unreliable
-      - F - Reliability cannot be judged
-    required: false
-  - display: Trust any certificate (not secure)
-    name: insecure
-    defaultvalue: "false"
-    type: 8
-    required: false
-  - display: Use system proxy settings
-    name: proxy
-    defaultvalue: "false"
-    type: 8
-    required: false
+- display: Server URL (e.g. https://app.threat.zone)
+  name: url
+  defaultvalue: https://app.threat.zone
+  type: 0
+  required: true
+- display: ThreatZone API Key
+  name: apikey
+  type: 4
+  required: true
+- display: Source Reliability
+  name: integrationReliability
+  type: 15
+  additionalinfo: Reliability of the source.
+  defaultvalue: A - Completely reliable
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: "-"
   type: python
   commands:
-    - name: tz-sandbox-upload-sample
-      arguments:
-        - name: entry_id
-          description: Entry ID of the file to submit.
-          required: true
-        - name: environment
-          required: false
-          auto: PREDEFINED
-          predefined:
-            - w7_x64
-            - w10_x64
-            - w11_x64
-          description: Choose what environment you want to run your submission.
-          defaultValue: w7_x64
-        - name: private
-          required: false
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          description: Privacy of the submission.
-          defaultValue: "true"
-        - name: timeout
-          auto: PREDEFINED
-          predefined:
-            - "60"
-            - "120"
-            - "180"
-            - "300"
-          description: Duration of the submission analysis.
-          defaultValue: "60"
-        - name: work_path
-          auto: PREDEFINED
-          predefined:
-            - desktop
-            - root
-            - appdata
-            - windows
-            - temp
-          description: The working path of the submission.
-          defaultValue: desktop
-        - name: mouse_simulation
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          description: Enable mouse simulation.
-          defaultValue: "false"
-        - name: https_inspection
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          description: Https inspection to read encrypted traffic.
-          defaultValue: "false"
-        - name: internet_connection
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          description: Enable internet connection.
-          defaultValue: "false"
-        - name: raw_logs
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          description: Raw logs.
-          defaultValue: "false"
-        - name: snapshot
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          description: Snapshot.
-          defaultValue: "false"
-      outputs:
-        - contextPath: ThreatZone.Submission.Sandbox.UUID
-          description: UUID of sample.
-          type: String
-        - contextPath: ThreatZone.Limits.E_Mail
-          description: The owner e-mail of current plan.
-          type: String
-        - contextPath: ThreatZone.Limits.API_Limit
-          description: The remaining/total API request limits of the current plan.
-          type: String
-        - contextPath: ThreatZone.Limits.Concurrent_Limit
-          description: The remaining/total concurrent analysis limits of the current plan.
-          type: String
-        - contextPath: ThreatZone.Limits.Daily_Submission_Limit
-          description: The remaining/total daily submission limits of the current plan.
-          type: String
-      description: Submits a sample to ThreatZone for sandbox analysis.
-    - name: tz-static-upload-sample
-      arguments:
-        - name: entry_id
-          description: Entry ID of the file to submit.
-          required: true
-        - name: private
-          required: false
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          description: If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission.
-          defaultValue: "false"
-        - name: extension_check
-          required: false
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          description: If extension check is true and you do not know the submission extension or mimetype then our systems automatically detects file extension and mimetype.
-          defaultValue: "true"
-      outputs:
-        - contextPath: ThreatZone.Submission.Static.UUID
-          description: UUID of sample.
-          type: String
-        - contextPath: ThreatZone.Limits.E_Mail
-          description: The owner e-mail of current plan.
-          type: String
-        - contextPath: ThreatZone.Limits.API_Limit
-          description: The remaining/total API request limits of the current plan.
-          type: String
-        - contextPath: ThreatZone.Limits.Concurrent_Limit
-          description: The remaining/total concurrent analysis limits of the current plan.
-          type: String
-        - contextPath: ThreatZone.Limits.Daily_Submission_Limit
-          description: The remaining/total daily submission limits of the current plan.
-          type: String
-      description: Submits a sample to ThreatZone for static analysis.
-    - name: tz-cdr-upload-sample
-      arguments:
-        - name: entry_id
-          description: Entry ID of the file to submit.
-          required: true
-        - name: private
-          required: false
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          description: If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission.
-          defaultValue: "true"
-        - name: extension_check
-          required: false
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          description: If extension check is true and you do not know the submission extension or mimetype then our systems automatically detects file extension and mimetype.
-          defaultValue: "true"
-      outputs:
-        - contextPath: ThreatZone.Submission.CDR.UUID
-          description: UUID of sample.
-          type: String
-        - contextPath: ThreatZone.Limits.E_Mail
-          description: The owner e-mail of current plan.
-          type: String
-        - contextPath: ThreatZone.Limits.API_Limit
-          description: The remaining/total API request limits of the current plan.
-          type: String
-        - contextPath: ThreatZone.Limits.Concurrent_Limit
-          description: The remaining/total concurrent analysis limits of the current plan.
-          type: String
-        - contextPath: ThreatZone.Limits.Daily_Submission_Limit
-          description: The remaining/total daily submission limits of the current plan.
-          type: String
-      description: Submits a sample to ThreatZone for CDR.
-    - name: tz-get-result
-      arguments:
-        - name: uuid
-          required: true
-          description: UUID of the submission.
-      outputs:
-        - contextPath: ThreatZone.Analysis.STATUS
-          description: The status of the submission scanning process.
-          type: String
-        - contextPath: ThreatZone.Analysis.LEVEL
-          description: Threat Level of the scanned file. (malicious, suspicious or informative).
-          type: String
-        - contextPath: ThreatZone.Analysis.INFO
-          description: Contains the file name, scan process status and public status.
-          type: String
-        - contextPath: ThreatZone.Analysis.REPORT
-          description: The analysis report of the submission.
-          type: String
-        - contextPath: ThreatZone.Analysis.MD5
-          description: The md5 hash of the submission.
-          type: String
-        - contextPath: ThreatZone.Analysis.SHA1
-          description: The sha1 hash of the submission.
-          type: String
-        - contextPath: ThreatZone.Analysis.SHA256
-          description: The sha256 hash of the submission.
-          type: String
-        - contextPath: ThreatZone.Analysis.UUID
-          description: The UUID of the submission.
-          type: String
-        - contextPath: ThreatZone.IOC.URL
-          description: The URL data extracted from IOC.
-          type: List
-        - contextPath: ThreatZone.IOC.IP
-          description: The IP data extracted from IOC.
-          type: List
-        - contextPath: ThreatZone.IOC.DOMAIN
-          description: The DOMAIN data extracted from IOC.
-          type: List
-        - contextPath: ThreatZone.IOC.EMAIL
-          description: The EMAIL data extracted from IOC.
-          type: List
-        - contextPath: DBotScore.Indicator
-          description: The indicator that was tested.
-          type: String
-        - contextPath: DBotScore.Reliability
-          description: The reliability of the source providing the intelligence data.
-          type: String
-        - contextPath: DBotScore.Score
-          description: The actual score.
-          type: Number
-        - contextPath: DBotScore.Type
-          description: The indicator type.
-          type: String
-        - contextPath: DBotScore.Vendor
-          description: The vendor used to calculate the score.
-      description: Retrive the analysis result from ThreatZone.
-    - name: tz-get-sanitized
-      arguments:
-        - name: uuid
-          required: true
-          description: UUID of the submission.
-      description: Downloads and uploads sanitized file from ThreatZone API to WarRoom & Context Data.
-      outputs:
-        - contextPath: InfoFile.Extension
-          type: String
-          description: Extension of the file sanitized by CDR.
-        - contextPath: InfoFile.Name
-          type: String
-          description: The name of the file sanitized by CDR.
-        - contextPath: InfoFile.Size
-          type: Number
-          description: Size of the file sanitized by CDR.
-        - contextPath: InfoFile.EntryID
-          type: String
-          description: EntryID of the file sanitized by CDR.
-        - contextPath: InfoFile.Info
-          type: String
-          description: Info of the file sanitized by CDR.
-        - contextPath: InfoFile.MD5
-          type: String
-          description: MD5 hash of the file sanitized by CDR.
-        - contextPath: InfoFile.SHA1
-          type: String
-          description: SHA1 hash of the file sanitized by CDR.
-        - contextPath: InfoFile.SHA256
-          type: String
-          description: SHA256 hash of the file sanitized by CDR.
-        - contextPath: InfoFile.SHA512
-          type: String
-          description: SHA512 hash of the file sanitized by CDR.
-        - contextPath: InfoFile.SSDeep
-          type: String
-          description: SSDeep hash of the file sanitized by CDR.
-    - name: tz-check-limits
-      arguments: []
-      description: Check the plan limits from ThreatZone API.
-      outputs:
-        - contextPath: ThreatZone.Limits.E_Mail
-          description: The owner e-mail of current plan.
-          type: String
-        - contextPath: ThreatZone.Limits.API_Limit
-          description: The remaining/total API request limits of the current plan.
-          type: String
-        - contextPath: ThreatZone.Limits.Concurrent_Limit
-          description: The remaining/total concurrent analysis limits of the current plan.
-          type: String
-        - contextPath: ThreatZone.Limits.Daily_Submission_Limit
-          description: The remaining/total daily submission limits of the current plan.
-          type: String
+  - name: tz-sandbox-upload-sample
+    arguments:
+    - name: entry_id
+      description: Entry ID of the file to submit.
+      required: true
+    - name: environment
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - w7_x64
+      - w10_x64
+      - w11_x64
+      - macos
+      - linux
+      - android
+      description: Choose what environment you want to run your submission.
+      defaultValue: w7_x64
+    - name: private
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Privacy of the submission.
+      defaultValue: "true"
+    - name: extension_check
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Enforce MIME-based extension correction before sandbox execution.
+      defaultValue: "true"
+      required: false
+    - name: auto
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: When true, automatically selects a sandbox environment based on the uploaded file type.
+      defaultValue: "false"
+      required: false
+    - name: modules
+      description: Optional modules to enable (enter a comma-separated list or JSON array, e.g. ["cdr"]).
+      required: false
+    - name: analyze_config
+      description: Provide raw analyzeConfig JSON to override/add sandbox metafields.
+      required: false
+    - name: timeout
+      auto: PREDEFINED
+      predefined:
+      - "60"
+      - "120"
+      - "180"
+      - "300"
+      description: Duration of the submission analysis.
+      defaultValue: "60"
+    - name: work_path
+      auto: PREDEFINED
+      predefined:
+      - "desktop"
+      - "root"
+      - appdata
+      - windows
+      - temp
+      description: The working path of the submission.
+      defaultValue: "desktop"
+    - name: mouse_simulation
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Enable mouse simulation.
+      defaultValue: "false"
+    - name: https_inspection
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Https inspection to read encrypted traffic.
+      defaultValue: "false"
+    - name: internet_connection
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Enable internet connection.
+      defaultValue: "false"
+    - name: raw_logs
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Raw logs.
+      defaultValue: "false"
+    - name: snapshot
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Snapshot.
+      defaultValue: "false"
+    - name: entrypoint
+      required: false
+      description: For archives, specify the filename inside the archive to execute.
+    - name: password
+      required: false
+      description: Password for password-protected archives.
+    outputs:
+    - contextPath: ThreatZone.Submission.Sandbox.UUID
+      description: UUID of sample.
+      type: String
+    - contextPath: ThreatZone.Limits.E_Mail
+      description: The owner e-mail of current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.API_Limit
+      description: The remaining/total API request limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Concurrent_Limit
+      description: The remaining/total concurrent analysis limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Daily_Submission_Limit
+      description: The remaining/total daily submission limits of the current plan.
+      type: String
+    description: Submits a sample to ThreatZone for sandbox analysis.
+  - name: tz-static-upload-sample
+    arguments:
+    - name: entry_id
+      description: Entry ID of the file to submit.
+      required: true
+    - name: private
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission.
+      defaultValue: "false"
+    - name: extension_check
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Enforce MIME-based extension correction before static scan.
+      defaultValue: "false"
+    - name: entrypoint
+      required: false
+      description: For archives, specify the filename inside the archive to analyse.
+    - name: password
+      required: false
+      description: Password for password-protected archives.
+    outputs:
+    - contextPath: ThreatZone.Submission.Static.UUID
+      description: UUID of sample.
+      type: String
+    - contextPath: ThreatZone.Limits.E_Mail
+      description: The owner e-mail of current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.API_Limit
+      description: The remaining/total API request limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Concurrent_Limit
+      description: The remaining/total concurrent analysis limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Daily_Submission_Limit
+      description: The remaining/total daily submission limits of the current plan.
+      type: String
+    description: Submits a sample to ThreatZone for static analysis.
+  - name: tz-cdr-upload-sample
+    arguments:
+    - name: entry_id
+      description: Entry ID of the file to submit.
+      required: true
+    - name: private
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission.
+      defaultValue: "false"
+    - name: extension_check
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Enforce MIME-based extension correction before sanitization.
+      defaultValue: "true"
+    - name: entrypoint
+      required: false
+      description: For archives, specify the filename inside the archive to sanitize.
+    - name: password
+      required: false
+      description: Password for password-protected archives.
+    outputs:
+    - contextPath: ThreatZone.Submission.CDR.UUID
+      description: UUID of sample.
+      type: String
+    - contextPath: ThreatZone.Limits.E_Mail
+      description: The owner e-mail of current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.API_Limit
+      description: The remaining/total API request limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Concurrent_Limit
+      description: The remaining/total concurrent analysis limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Daily_Submission_Limit
+      description: The remaining/total daily submission limits of the current plan.
+      type: String
+    description: Submits a sample to ThreatZone for CDR.
+  - name: tz-url-analysis
+    arguments:
+    - name: url
+      required: true
+      description: URL to analyse.
+    - name: private
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Mark the submission as workspace-private.
+      defaultValue: "false"
+    outputs:
+    - contextPath: ThreatZone.Submission.URL.UUID
+      description: UUID of the URL submission.
+      type: String
+    - contextPath: ThreatZone.Submission.URL.URL
+      description: The URL submitted for analysis.
+      type: String
+    - contextPath: ThreatZone.Limits.E_Mail
+      description: The owner e-mail of current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.API_Limit
+      description: The remaining/total API request limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Concurrent_Limit
+      description: The remaining/total concurrent analysis limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Daily_Submission_Limit
+      description: The remaining/total daily submission limits of the current plan.
+      type: String
+    description: Submits a URL to ThreatZone for analysis.
+  - name: tz-get-result
+    arguments:
+    - name: uuid
+      required: true
+      description: UUID of the submission.
+    - name: details
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: When true, include inline Indicators, IOCs, YARA matches, artifacts, and configuration data in the readable output.
+      defaultValue: "false"
+    - name: download_sanitized
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: When true and the submission is a CDR analysis, download the sanitized file after the analysis completes.
+      defaultValue: "false"
+    description: Retrieve the analysis result from ThreatZone.
+    outputs:
+    - contextPath: ThreatZone.Submission
+      type: Unknown
+      description: Raw submission data returned by ThreatZone.
+    - contextPath: DBotScore.Indicator
+      type: String
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Reliability
+      type: String
+      description: The reliability of the source providing the intelligence data.
+    - contextPath: DBotScore.Score
+      type: Number
+      description: The actual score.
+    - contextPath: DBotScore.Type
+      type: String
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+  - name: tz-get-indicator-result
+    arguments:
+    - name: uuid
+      required: true
+      description: UUID of the submission.
+    description: Retrieves dynamic behaviour indicators for a submission from ThreatZone.
+    outputs:
+    - contextPath: ThreatZone.Submission.Indicators.UUID
+      description: The UUID of the submission.
+      type: String
+    - contextPath: ThreatZone.Submission.Indicators.Data
+      description: Dynamic behaviour indicators returned by ThreatZone.
+      type: Unknown
+  - name: tz-get-ioc-result
+    arguments:
+    - name: uuid
+      required: true
+      description: UUID of the submission.
+    outputs:
+    - contextPath: ThreatZone.Submission.IOCs.UUID
+      description: The UUID of the submission.
+      type: String
+    - contextPath: ThreatZone.Submission.IOCs.Data
+      description: Indicators of Compromise returned by ThreatZone.
+      type: Unknown
+    description: Retrieves Indicators of Compromise for a submission from ThreatZone.
+  - name: tz-get-yara-result
+    arguments:
+    - name: uuid
+      required: true
+      description: UUID of the submission.
+    outputs:
+    - contextPath: ThreatZone.Submission.YaraMatches.UUID
+      description: The UUID of the submission.
+      type: String
+    - contextPath: ThreatZone.Submission.YaraMatches.Data
+      description: Matched YARA rules returned by ThreatZone.
+      type: Unknown
+    description: Retrieves matched YARA rules for a submission from ThreatZone.
+  - name: tz-get-artifact-result
+    arguments:
+    - name: uuid
+      required: true
+      description: UUID of the submission.
+    outputs:
+    - contextPath: ThreatZone.Submission.Artifacts.UUID
+      description: The UUID of the submission.
+      type: String
+    - contextPath: ThreatZone.Submission.Artifacts.Data
+      description: Analysis artifacts returned by ThreatZone.
+      type: Unknown
+    description: Retrieves analysis artifacts for a submission from ThreatZone.
+  - name: tz-get-config-result
+    arguments:
+    - name: uuid
+      required: true
+      description: UUID of the submission.
+    outputs:
+    - contextPath: ThreatZone.Submission.Config.UUID
+      description: The UUID of the submission.
+      type: String
+    - contextPath: ThreatZone.Submission.Config.Data
+      description: Configuration extractor results returned by ThreatZone.
+      type: Unknown
+    description: Retrieves configuration extractor results for a submission from ThreatZone.
+  - name: tz-get-sanitized
+    arguments:
+    - name: uuid
+      required: true
+      description: UUID of the submission.
+    description: Downloads and uploads sanitized file from ThreatZone API to WarRoom & Context Data.
+    outputs:
+    - contextPath: InfoFile.Extension
+      type: String
+      description: Extension of the file sanitized by CDR.
+    - contextPath: InfoFile.Name
+      type: String
+      description: The name of the file sanitized by CDR.
+    - contextPath: InfoFile.Size
+      type: Number
+      description: Size of the file sanitized by CDR.
+    - contextPath: InfoFile.EntryID
+      type: String
+      description: EntryID of the file sanitized by CDR.
+    - contextPath: InfoFile.Info
+      type: String
+      description: Info of the file sanitized by CDR.
+    - contextPath: InfoFile.MD5
+      type: String
+      description: MD5 hash of the file sanitized by CDR.
+    - contextPath: InfoFile.SHA1
+      type: String
+      description: SHA1 hash of the file sanitized by CDR.
+    - contextPath: InfoFile.SHA256
+      type: String
+      description: SHA256 hash of the file sanitized by CDR.
+    - contextPath: InfoFile.SHA512
+      type: String
+      description: SHA512 hash of the file sanitized by CDR.
+    - contextPath: InfoFile.SSDeep
+      type: String
+      description: SSDeep hash of the file sanitized by CDR.
+  - name: tz-download-html-report
+    arguments:
+    - name: uuid
+      required: true
+      description: UUID of the submission.
+    description: Downloads the HTML report for a submission and uploads it to the War Room.
+    outputs:
+    - contextPath: InfoFile.Extension
+      type: String
+      description: Extension of the HTML report.
+    - contextPath: InfoFile.Name
+      type: String
+      description: The name of the downloaded HTML report.
+    - contextPath: InfoFile.Size
+      type: Number
+      description: Size of the downloaded HTML report.
+    - contextPath: InfoFile.EntryID
+      type: String
+      description: EntryID of the downloaded HTML report.
+    - contextPath: InfoFile.Info
+      type: String
+      description: Info for the downloaded HTML report.
+    - contextPath: InfoFile.MD5
+      type: String
+      description: MD5 hash of the downloaded HTML report.
+    - contextPath: InfoFile.SHA1
+      type: String
+      description: SHA1 hash of the downloaded HTML report.
+    - contextPath: InfoFile.SHA256
+      type: String
+      description: SHA256 hash of the downloaded HTML report.
+    - contextPath: InfoFile.SHA512
+      type: String
+      description: SHA512 hash of the downloaded HTML report.
+    - contextPath: InfoFile.SSDeep
+      type: String
+      description: SSDeep hash of the downloaded HTML report.
+  - name: tz-check-limits
+    arguments:
+    - name: detailed
+      description: When true, include plan file limits, enabled modules, and account metadata.
+      default: false
+    description: Check the plan limits from ThreatZone API.
+    outputs:
+    - contextPath: ThreatZone.Limits.E_Mail
+      description: The owner e-mail of current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.API_Limit
+      description: The remaining/total API request limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Concurrent_Limit
+      description: The remaining/total concurrent analysis limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Daily_Submission_Limit
+      description: The remaining/total daily submission limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Plan.File_Size_Limit_MiB
+      description: Maximum upload size for the workspace plan (MiB).
+      type: Number
+    - contextPath: ThreatZone.Plan.Allowed_Extensions
+      description: The list of permitted file extensions for uploads.
+      type: List
+    - contextPath: ThreatZone.Plan.Modules
+      description: Enabled ThreatZone modules for the workspace.
+      type: List
+    - contextPath: ThreatZone.Metadata.Full_Name
+      description: Full name of the authenticated user.
+      type: String
+    - contextPath: ThreatZone.Metadata.Workspace
+      description: Workspace identifier or name associated with the account.
+      type: String
+    - contextPath: ThreatZone.Metadata.Plan_Name
+      description: Name of the active ThreatZone plan.
+      type: String
+    - contextPath: ThreatZone.Metadata.Plan_Status
+      description: Status of the active ThreatZone plan.
+      type: String
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   subtype: python3
 fromversion: 6.9.0
 tests:
-  - No tests (auto formatted)
+- ThreatZone Test

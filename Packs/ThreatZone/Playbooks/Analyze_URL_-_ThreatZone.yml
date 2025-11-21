@@ -1,25 +1,24 @@
-id: Analyze File - Static Scan - ThreatZone
+id: Analyze URL - ThreatZone
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Analyze File - Static Scan - ThreatZone
-description: |-
-  Analyzes one file using the ThreatZone static scan integration.
-  Returns relevant reports to the War Room and file reputations to the context data.
-  All file types are supported.
+name: Analyze URL - ThreatZone
+description: |
+  Analyzes a URL using the ThreatZone integration.
+  Submits the URL for analysis, waits for completion, and pulls the resulting verdict and telemetry into the War Room.
 tags:
 - Malware
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 49405544-da98-42ae-8f77-9d34d5861ce6
+    taskid: 82894a77-4375-44f5-8c1e-3772f7f6d7e3
     type: start
     task:
-      id: 49405544-da98-42ae-8f77-9d34d5861ce6
+      id: 82894a77-4375-44f5-8c1e-3772f7f6d7e3
       version: -1
       name: ""
-      description: analyzes a file using ThreatZone
+      description: Analyze a URL using ThreatZone.
       iscommand: false
       brand: ""
     nexttasks:
@@ -43,14 +42,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 6986e4b6-c083-476c-817a-98e2385db956
+    taskid: 82e16b20-3550-4ccc-9f20-7dc76be92f17
     type: regular
     task:
-      id: 6986e4b6-c083-476c-817a-98e2385db956
+      id: 82e16b20-3550-4ccc-9f20-7dc76be92f17
       version: -1
-      name: ThreatZone Submit File for Analysis
-      description: Submits a sample to ThreatZone for static analysis.
-      script: '|||tz-static-upload-sample'
+      name: ThreatZone Submit URL for Analysis
+      description: Submits a URL to ThreatZone for analysis.
+      script: '|||tz-url-analysis'
       type: regular
       iscommand: true
       brand: ""
@@ -58,10 +57,9 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      entry_id:
+      url:
         complex:
-          root: inputs.File
-          accessor: EntryID
+          root: inputs.URL
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -80,15 +78,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: dfd6ef91-f3e1-4246-810f-9380d0f6c8fd
+    taskid: 556881e0-5f53-4f9b-b60f-8baa9c98bb63
     type: playbook
     task:
-      id: dfd6ef91-f3e1-4246-810f-9380d0f6c8fd
+      id: 556881e0-5f53-4f9b-b60f-8baa9c98bb63
       version: -1
       name: GenericPolling
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        This playbook implements polling by continuously running the command in Step #2 until the operation completes.
         The remote action should have the following structure:
 
         1. Initiate the operation.
@@ -104,7 +102,7 @@ tasks:
     scriptarguments:
       Ids:
         complex:
-          root: ThreatZone.Submission.Static
+          root: ThreatZone.Submission.URL
           accessor: UUID
       Interval:
         complex:
@@ -141,13 +139,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: e8e7e947-64f8-4cfc-8fb6-fad579150a17
+    taskid: 1ad7233a-8b71-4e76-8524-26e15428bf43
     type: title
     task:
-      id: e8e7e947-64f8-4cfc-8fb6-fad579150a17
+      id: 1ad7233a-8b71-4e76-8524-26e15428bf43
       version: -1
       name: Done
-      description: analyzes a file using ThreatZone
+      description: URL analysis completed.
       type: title
       iscommand: false
       brand: ""
@@ -169,13 +167,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 35559340-c3d1-4408-89b7-6f9f66c51a0b
+    taskid: 8edff6b1-fd1f-4c42-8e6f-5fa91f231132
     type: condition
     task:
-      id: 35559340-c3d1-4408-89b7-6f9f66c51a0b
+      id: 8edff6b1-fd1f-4c42-8e6f-5fa91f231132
       version: -1
-      name: Is there a File to analyze?
-      description: Look for files to analyze
+      name: Is there a URL to analyze?
+      description: Verify the URL input exists.
       type: condition
       iscommand: false
       brand: ""
@@ -192,8 +190,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.File
-                accessor: EntryID
+                root: inputs.URL
             iscontext: true
           right:
             value: {}
@@ -214,13 +211,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: e93e0610-e03b-40eb-8724-4945482881fc
+    taskid: a7a2d3d3-8174-44f2-8d37-5688c51171b7
     type: condition
     task:
-      id: e93e0610-e03b-40eb-8724-4945482881fc
+      id: a7a2d3d3-8174-44f2-8d37-5688c51171b7
       version: -1
       name: Is ThreatZone enabled?
-      description: Check if integration instance is enabled
+      description: Check if the ThreatZone integration instance is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -276,13 +273,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 3d40b8b2-79c5-46a4-8370-b572453cf682
+    taskid: 615d9942-1d2f-4d5f-83e5-3d0c92d1f07b
     type: regular
     task:
-      id: 3d40b8b2-79c5-46a4-8370-b572453cf682
+      id: 615d9942-1d2f-4d5f-83e5-3d0c92d1f07b
       version: -1
-      name: ThreatZone Get Report
-      description: Retrive the analysis result from ThreatZone Sandbox.
+      name: ThreatZone Get Result
+      description: Retrieve the analysis result from ThreatZone.
       script: '|||tz-get-result'
       type: regular
       iscommand: true
@@ -293,7 +290,7 @@ tasks:
     scriptarguments:
       uuid:
         complex:
-          root: ThreatZone.Submission.Static
+          root: ThreatZone.Submission.URL
           accessor: UUID
     separatecontext: false
     continueonerrortype: ""
@@ -324,12 +321,13 @@ view: |-
     }
   }
 inputs:
-- key: File
+- key: URL
   value:
     complex:
-      root: File
+      root: URL
+      accessor: Data
   required: false
-  description: File object of the file to analyze. The File is taken from the context.
+  description: URL to analyze. Provide via playbook input or ensure a URL exists in context.
   playbookInputQuery:
 - key: Interval
   value:
@@ -348,32 +346,17 @@ outputs:
   description: The status of the submission scanning process.
   type: String
 - contextPath: ThreatZone.Submission.Summary.LEVEL
-  description: Threat Level of the scanned file. (malicious, suspicious or informative).
-  type: String
-- contextPath: ThreatZone.Submission.Summary.URL
-  description: The result page url of the submission.
+  description: Threat Level of the analyzed URL (malicious, suspicious, or informative).
   type: String
 - contextPath: ThreatZone.Submission.Summary.INFO
-  description: Contains the file name, scan process status and public status.
+  description: Contains URL metadata and privacy status.
   type: String
 - contextPath: ThreatZone.Submission.Summary.REPORT
   description: The analysis report of the submission.
   type: String
-- contextPath: ThreatZone.Submission.Summary.MD5
-  description: The md5 hash of the submission.
-  type: String
-- contextPath: ThreatZone.Submission.Summary.SHA1
-  description: The sha1 hash of the submission.
-  type: String
-- contextPath: ThreatZone.Submission.Summary.SHA256
-  description: The sha256 hash of the submission.
-  type: String
 - contextPath: ThreatZone.Submission.Summary.UUID
   description: The UUID of the submission.
   type: String
-- contextPath: ThreatZone.Submission.Summary.SANITIZED
-  description: The url of the sanitized file.
-  type: String
 tests:
 - No tests (auto formatted)
-fromversion: 6.9.0
+fromversion: 6.10.0
