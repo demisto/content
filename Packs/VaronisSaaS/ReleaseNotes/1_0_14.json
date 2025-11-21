@@ -1,0 +1,4 @@
+{
+  "breakingChanges": false,
+  "breakingChangesNotes": "Added new alert severity 'Informational' to VaronisSaaS integration and incident fields."
+}

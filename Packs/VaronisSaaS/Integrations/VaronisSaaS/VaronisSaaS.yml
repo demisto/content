@@ -64,6 +64,7 @@ configuration:
   - Low
   - Medium
   - High
+  - Informational
   required: false
   type: 15
   section: Collect
