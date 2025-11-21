@@ -1,4 +1,6 @@
 category: Endpoint
+sectionorder:
+- Connect
 commonfields:
   id: CyberArkEPMSOCResponse
   version: -1
@@ -8,25 +10,18 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
-- display: Set name
-  additionalinfo: The name of the set to target. If not provided, endpoint will be searched across all sets.
-  name: set_name
-  required: false
-  type: 0
+  section: Connect
 - additionalinfo: 'Required for local(EPM) authentication only. See how to get the application ID https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID'
   display: Application ID
   name: application_id
   required: false
   type: 0
-- display: Use system proxy settings
-  advanced: true
-  name: proxy
-  required: false
-  type: 8
+  section: Connect
 description: This integration allows you to activate and deactivate CyberArk EPM risk plans for specific endpoints.
 display: CyberArk EPM SOC Response
 name: CyberArkEPMSOCResponse

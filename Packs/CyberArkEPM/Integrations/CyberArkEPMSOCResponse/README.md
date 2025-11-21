@@ -7,8 +7,7 @@ This integration allows you to automate risk plan management in CyberArk Endpoin
 | EPM Logon URL | Example: https://login.epm.cyberark.com.                                                                          | True |
 | Username |                                                                                                                   | True |
 | Password |                                                                                                                   | True |
-| Application ID | Required for local\(EPM\) authentication only.                                                                    | False |
-| Use system proxy settings |                                                                                                                   | False |
+| Application ID | Required for local\(EPM\) authentication only.                                                                    | False | 
 
 ## Commands
 

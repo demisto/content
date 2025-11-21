@@ -7,6 +7,7 @@ description: Deactivates a specific CyberArk EPM SOC risk plan for a specified e
 marketplaces:
 - marketplacev2
 - platform
+fromversion: 6.5.0
 starttaskid: "0"
 tasks:
   "0":
