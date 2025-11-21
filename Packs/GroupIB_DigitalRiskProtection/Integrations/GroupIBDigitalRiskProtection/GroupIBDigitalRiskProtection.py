@@ -331,9 +331,14 @@ class CommonHelpers:
         if not input_dict:
             return [{}]
 
-        normalized_dict = {
-            k: v if isinstance(v, list) else [v] for k, v in input_dict.items()  # type: ignore
-        }
+        normalized_dict: dict[str, list[Any]] = {}
+        for k, v in input_dict.items():
+            if isinstance(v, list):
+                normalized_dict[k] = v
+            elif v is None:
+                normalized_dict[k] = []
+            else:
+                normalized_dict[k] = [v]
 
         max_length = max(
             (len(v) for v in normalized_dict.values() if isinstance(v, list)), default=1

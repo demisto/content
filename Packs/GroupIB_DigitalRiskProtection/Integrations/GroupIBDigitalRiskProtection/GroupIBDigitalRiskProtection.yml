@@ -36,12 +36,14 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
+  section: Collect
 - name: credentials
   display: Username
   required: true
   type: 9
   displaypassword: ""
   hiddenusername: false
+  section: Connect
 - display: Filter by Violation Type
   additionalinfo: >
     Select a Violation Section to filter fetched Violations. Options map to DRP sections: Web (1), Marketplace (3), Advertising (5), Mobile Apps (2), Social Networks (4), Instant Messengers (6). Leave empty to fetch from all sections.
@@ -55,12 +57,14 @@ configuration:
   - "Mobile Apps"
   - "Social Networks"
   - "Instant Messengers"
+  section: Collect
 - display: Filter by Brand
   name: brands
   type: 0
   required: false
   additionalinfo: >
     Requests only Violations associated with the specified Brand IDs. The list of available brands can be obtained with the command !gibdrp-get-brands in the menu WarRoom -> Playground. After getting the brands you must specify the brand ID for which you want to receive violations. Attention! Currently filtering is available only by one brand in one Instance
+  section: Collect
 - additionalinfo: Date to start fetching incidents from.
   defaultvalue: 3 days
   display: Incidents first fetch
@@ -68,18 +72,21 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - display: Download images
   name: download_images
   defaultvalue: "false"
   type: 8
   required: false
   additionalinfo: Enables or disables loading of each image in each violation. Can significantly affect the speed of data collection if the parameter is enabled, i.e. set to True
+  section: Optimize
 - display: Get Typosquatting Only
   name: only_typosquatting
   defaultvalue: "false"
   type: 8
   required: false
   additionalinfo: Returns only records of the Typosquatting type. If not specified, you consume only violations - without Typosquatting detections.
+  section: Optimize
 - display: Number of requests per collection
   name: max_fetch
   type: 15
@@ -93,6 +100,7 @@ configuration:
   - "5"
   - "6"
   additionalinfo: A number of requests per collection that integration sends in one fetch iteration (each request picks up to 30 incidents). If you face some runtime errors, lower the value.
+  section: Collect
 description: Pack helps to integrate Group-IB Digital Risk Protection and get violations incidents directly into Cortex XSOAR.
 display: Group-IB Digital Risk Protection
 name: Group-IB Digital Risk Protection
