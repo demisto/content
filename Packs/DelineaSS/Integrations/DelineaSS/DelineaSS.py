@@ -45,42 +45,42 @@ class AuthenticationModel:
 
 
 class AuthenticationService:
-    def authenticate_async(self, auth_model: AuthenticationModel):
 
+    def authenticate_async(self, auth_model: AuthenticationModel):
         try:
             base = auth_model.server_url.rstrip("/")
             ss_url = f"{base}/api/v1/healthcheck"
             pf_url = f"{base}/health"
 
-            # Check Secret Server first
             if self.check_json_response_async(ss_url):
                 auth_model.set_platform_login(False)
                 return auth_model
-
-            # If not SS, check Platform
             if self.check_json_response_async(pf_url):
                 auth_model.set_platform_login(True)
                 return PlatformLogin().platform_authentication(auth_model)
-
-            auth_model.set_error(f"Invalid Server URL {auth_model.server_url}")
-            return auth_model
+            error_model = AuthenticationModel()
+            error_model.set_error(f"Invalid Server URL {auth_model.server_url}")
+            return error_model
 
         except Exception as e:
-            raise RuntimeError(str(e))
+            raise RuntimeError(f"Authentication failed: {str(e)}")
 
     def check_json_response_async(self, url):
         try:
-            response = requests.get(url)
-            if response.status_code != 200:
+            response = requests.get(url, timeout=3)
+
+            if not response.text:
                 return False
 
+            body = response.text
             try:
-                json_body = response.json()
-                return json_body.get("healthy", False)
-            except json.JSONDecodeError:
-                return "Healthy" in response.text
-
-        except requests.exceptions.RequestException:
+                json_data = response.json()
+                if isinstance(json_data, dict) and json_data.get("healthy") is True:
+                    return True
+            except Exception:
+                pass
+            return "Healthy" in body or "healthy" in body
+        except Exception:
             return False
 
 
@@ -120,7 +120,6 @@ class PlatformLogin:
     def handle_error_response(self, msg):
         return AuthenticationModel(error=msg, platform_login=True)
 
-
     def get_access_token(self, auth_model: AuthenticationModel):
         url = auth_model.server_url.rstrip("/") + "/identity/api/oauth2/token/xpmplatform"
         body = (
@@ -151,14 +150,20 @@ class Client(BaseClient):
         super().__init__(base_url=server_url, proxy=proxy, verify=verify)
         self._username = username
         self._password = password
+        self._platform_url = None
+        self._headers = {}
         self._token = self.authenticate()
-        self._headers = None
+
+    # @property
+    # def platform_url(self):
+    #     return getattr(self, '_platformurl', None)
 
     def authenticate(self):
         authentication_model = is_platform_or_ss(self._base_url, self._username, self._password)
         if authentication_model.platform_login:
             if authentication_model.error:
                 raise Exception(authentication_model.error)
+            self._platform_url = self._base_url
             self._token = authentication_model.token
             self._base_url = authentication_model.vault_url
             self._headers = {'Authorization': f'Bearer {self._token}', 'Content-Type': 'application/json'}
@@ -377,26 +382,55 @@ class Client(BaseClient):
         url_suffix = "/api/v1/users"
         return self._http_request("GET", url_suffix)
 
-    def platformusercreate(self, **kwargs) -> str:
+    def platform_user_create(self, **kwargs) -> str:
         bodyJSON = {}
 
         for key, value in kwargs.items():
             bodyJSON[key] = value
+        return self._http_request("POST", json_data=bodyJSON,
+                                  full_url=f"{self._platform_url}/identity/api/CDirectoryService/CreateUser")
 
-        return self._http_request("POST", url_suffix="/identity/api/CDirectoryService/CreateUser", json_data=bodyJSON)
-
-    def platformuserupdate(self, id: str, **kwargs) -> str:
-        # 2 method
-        response = self._http_request("GET", url_suffix="/identity/api/CDirectoryService/ChangeUser" + str(id))
+    def platform_user_update(self, **kwargs) -> str:
+        bodyJSON = {}
 
         for key, value in kwargs.items():
-            response[key] = value
+            bodyJSON[key] = value
+        return self._http_request("POST", json_data=bodyJSON,
+                                  full_url=f"{self._platform_url}/identity/api/CDirectoryService/ChangeUser")
 
-        return self._http_request("PUT", url_suffix="/identity/api/CDirectoryService/ChangeUser" + str(id),
-                                  json_data=response)
+    def platform_user_delete(self, id: str) -> str:
+        return self._http_request("POST", full_url=f"{self._platform_url}/identity/api/UserMgmt/RemoveUser",
+                                  params={"id": str(id)})
 
-    def platformuserdelete(self, id: str) -> str:
-        return self._http_request("DELETE", url_suffix="/identity/api/entity/users/" + str(id))
+    def get_platform_user(self, user_id: str) -> dict:
+        full_url = f"{self._platform_url}/identity/api/users/{user_id}"
+        return self._http_request(
+            "GET",
+            full_url=full_url,
+            params={"api-version": "3.0"}
+        )
+
+    def get_all_platform_users(self, **kwargs) -> dict:
+        params = {}
+        params["pageSize"] = kwargs.get("pageSize", 1000)
+        for key, value in kwargs.items():
+            if value is None or key == "pageSize":
+                continue
+            formatted_key = key.replace("_", ".")
+            params[formatted_key] = value
+        params["api-version"] = "3.0"
+        return self._http_request("GET", full_url=f"{self._platform_url}/identity/api/users", params=params)
+
+    def get_platform_user_searchbytext(self, **kwargs) -> dict:
+        params = {}
+        params["pageSize"] = kwargs.get("pageSize", 1000)
+        for key, value in kwargs.items():
+            if value is None or key == "pageSize":
+                continue
+            formatted_key = key.replace("_", ".")
+            params[formatted_key] = value
+        params["api-version"] = "3.0"
+        return self._http_request("GET", full_url=f"{self._platform_url}/identity/api/users", params=params)
 
 
 def test_module(client) -> str:
@@ -449,7 +483,7 @@ def secret_get_command(client, secret_id: str = '', autoComment: str = ''):
     )
 
 
-def user_get_command(client):
+def secret_server_user_get_command(client):
     user = client.getuser()
     markdown = tableToMarkdown('All user list', user)
     markdown += tableToMarkdown('Records for user', user['records'])
@@ -608,7 +642,7 @@ def folder_delete_command(client, folder_id: str = ''):
     )
 
 
-def user_create_command(client, **kwargs):
+def secret_server_user_create_command(client, **kwargs):
     user = client.userCreate(**kwargs)
     markdown = tableToMarkdown('Created new user', user)
 
@@ -621,7 +655,7 @@ def user_create_command(client, **kwargs):
     )
 
 
-def user_search_command(client, **kwargs):
+def secret_server_user_search_command(client, **kwargs):
     user = client.userSearch(**kwargs)
     markdown = tableToMarkdown('Search user', user)
 
@@ -634,7 +668,7 @@ def user_search_command(client, **kwargs):
     )
 
 
-def user_update_command(client, id: str = '', **kwargs):
+def secret_server_user_update_command(client, id: str = '', **kwargs):
     user = client.userUpdate(id, **kwargs)
     markdown = tableToMarkdown('Updated user', user)
 
@@ -648,8 +682,8 @@ def user_update_command(client, id: str = '', **kwargs):
 
 
 def platform_user_create_command(client, **kwargs):
-    user = client.platformusercreate(**kwargs)
-    markdown = tableToMarkdown('Created new platform user', user)
+    user = client.platform_user_create(**kwargs)
+    markdown = tableToMarkdown('Created new Platform service user', user)
 
     return CommandResults(
         readable_output=markdown,
@@ -660,27 +694,50 @@ def platform_user_create_command(client, **kwargs):
     )
 
 
-def platform_user_get_command(client, user_id: str = ''):
-    user = client.getUser(user_id)
-    markdown = tableToMarkdown('Full user object', user)
+def platform_user_get_command(client, userUuidOrUpn: str = ""):
+    user = client.get_platform_user(userUuidOrUpn)
+    markdown = tableToMarkdown('Platform User Details', user)
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix='Delinea-Platform-User-Get',
-        outputs_key_field="user",
+        outputs_prefix='Delinea.Platform.User.Get',
+        outputs_key_field='uuid',
         raw_response=user,
-        outputs=user
+        outputs={'Delinea.Platform.User.Get': user}
     )
 
 
-def getUser(self, user_id: str) -> str:
-    url_suffix = "/identity/api/entity/users/" + str(user_id)
-    retries = 3
-    return self._http_request("GET", url_suffix, retries=retries)
+def platform_get_all_users_command(client, **kwargs):
+    users = client.get_all_platform_users(**kwargs)
+    user_list = users.get("_embedded", {}).get("users", [])
+    markdown = tableToMarkdown('Platform User Search Results', user_list)
+
+    return CommandResults(
+        readable_output=markdown,
+        outputs_prefix='Delinea.Platform.UserSearch',
+        outputs_key_field='uuid',
+        raw_response=users,
+        outputs={'Delinea.Platform.UserSearch': user_list}
+    )
+
+
+def platform_get_user_searchbytext_command(client, **kwargs):
+    users = client.get_platform_user_searchbytext(**kwargs)
+    user_list = users.get("_embedded", {}).get("users", [])
+
+    markdown = tableToMarkdown('Platform User Search by Text Results', user_list)
+
+    return CommandResults(
+        readable_output=markdown,
+        outputs_prefix='Delinea.Platform.Get.User.Searchbytext',
+        outputs_key_field='uuid',
+        raw_response=users,
+        outputs={'Delinea.Platform.Get.User.Searchbytext': user_list}
+    )
 
 
 def platform_user_delete_command(client, id: str = ''):
-    user = client.platformuserdelete(id)
+    user = client.platform_user_delete(id)
     markdown = tableToMarkdown('Deleted user', user)
 
     return CommandResults(
@@ -692,9 +749,9 @@ def platform_user_delete_command(client, id: str = ''):
     )
 
 
-def platform_user_update_command(client, id: str = '', **kwargs):
-    user = client.platformuserupdate(id, **kwargs)
-    markdown = tableToMarkdown('Updated Platform user', user)
+def platform_user_update_command(client, **kwargs):
+    user = client.platform_user_update(**kwargs)
+    markdown = tableToMarkdown('Updated Platform Service user', user)
 
     return CommandResults(
         readable_output=markdown,
@@ -705,7 +762,7 @@ def platform_user_update_command(client, id: str = '', **kwargs):
     )
 
 
-def user_delete_command(client, id: str = ''):
+def secret_server_user_delete_command(client, id: str = ''):
     user = client.userDelete(id)
     markdown = tableToMarkdown('Deleted user', user)
 
@@ -823,15 +880,17 @@ def main():
         'delinea-folder-search': folder_search_command,
         'delinea-folder-update': folder_update_command,
         'delinea-folder-delete': folder_delete_command,
-        'delinea-user-create': user_create_command,
-        'delinea-user-search': user_search_command,
-        'delinea-user-update': user_update_command,
-        'delinea-user-delete': user_delete_command,
-        'delinea-user-get': user_get_command,
+        'delinea-secret-server-user-create': secret_server_user_create_command,
+        'delinea-secret-server-user-search': secret_server_user_search_command,
+        'delinea-secret-server-user-update': secret_server_user_update_command,
+        'delinea-secret-server-user-delete': secret_server_user_delete_command,
+        'delinea-secret-server-user-get': secret_server_user_get_command,
         'delinea-platform-user-create': platform_user_create_command,
         'delinea-platform-user-update': platform_user_update_command,
         'delinea-platform-user-delete': platform_user_delete_command,
         'delinea-platform-user-get': platform_user_get_command,
+        'delinea-platform-get-all-users': platform_get_all_users_command,
+        'delinea-platform-get-user-searchbytext': platform_get_user_searchbytext_command
     }
     command = demisto.command()
     try:

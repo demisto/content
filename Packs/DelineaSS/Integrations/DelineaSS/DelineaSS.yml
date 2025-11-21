@@ -468,9 +468,9 @@ script:
       - 'true'
       - 'false'
     description: Create a new user
-    name: delinea-user-create
+    name: delinea-secret-server-user-create
     outputs:
-    - contextPath: Delinea.User.Create
+    - contextPath: Delinea.secret.server.User.Create
       description: User object
       type: String
   - arguments:
@@ -497,9 +497,9 @@ script:
     - description: Maximum number of records to include in results(integer)
       name: take
     description: Search, filter, sort, and page users
-    name: delinea-user-search
+    name: delinea-secret-server-user-search
     outputs:
-    - contextPath: Delinea.User.Search
+    - contextPath: Delinea.Secret.Server.User.Search
       description: List of User IDs
       type: String
   - arguments:
@@ -585,9 +585,9 @@ script:
       - '2'
       - '3'
     description: Update a single user by ID
-    name: delinea-user-update
+    name: delinea-secret-server-user-update
     outputs:
-    - contextPath: Delinea.User.Update
+    - contextPath: Delinea.Secret.Server.User.Update
       description: User object
       type: String
   - arguments:
@@ -595,18 +595,18 @@ script:
       name: id
       required: true
     description: Delete user by ID
-    name: delinea-user-delete
+    name: delinea-secret-server-user-delete
     outputs:
-    - contextPath: Delinea.User.Delete
+    - contextPath: Delinea.Secret.Server.User.Delete
       description: User object
       type: String
   - arguments:
     deprecated: false
     description: Get users list
     execution: false
-    name: delinea-user-get
+    name: delinea-secret-server-user-get
     outputs:
-    - contextPath: Delinea.User
+    - contextPath: Delinea.Secret.Server.User
       description: User object
       type: String
   - arguments:
@@ -625,61 +625,57 @@ script:
       description: Secret summary
       type: String
   - arguments:
-    - description: The user’s name as displayed in the user interface.
-      name: displayname
-      required: true
+    - description: The user mobile number.
+      name: MobileNumber
+    - description: The UUID of the cloud user to change.
+      name: ID
+    - description: The user is in the Everybody role?
+      name: InEverybodyRole
+      predefined:
+        - 'true'
+        - 'false'
+    - description: The MFA redirected user uuid.
+      name: CmaRedirectedUserUuid
+    - description: The user office number.
+      name: OfficeNumber
+    - description: The user reports to this user UUID.
+      name: ReportsTo
+    - description: The user preferred culture.
+      name: PreferredCulture
+    - description: The user display.
+      name: DisplayName
     - description: Password for new user. The password used to log in.
       name: password
       required: true
-    - description: Username
-      name: name
+    - description: The user name.
+      name: Name
       required: true
-    - description: Account Expiration
+    - description: Account expires date/time.
       name: AccountExp
-    - description: Description
-      name: Description
-    - auto: PREDEFINED
-      description: Whether Password Never Expire is enabled
+    - description: Does user's password expire?
       name: PasswordNeverExpire
       predefined:
         - 'true'
         - 'false'
-    - description: The user's email address. Used by the system to send reports, access requests, and other notifications.
+    - description: The User email.
       name: Mail
-      required: true
-    - auto: PREDEFINED
-      description: Whether the user account is enabled. Disabled users are unable to log in and do not consume a user license.
-      name: Disabled
-      defaultValue: 'true'
-      predefined:
-        - 'true'
-        - 'false'
-    - auto: PREDEFINED
-      description: Whether this is an service account. Service accounts are used for automation, cannot log in using the UI, and do not consume a user license.
+    - description: Whether this is an service account. Service accounts are used for automation, cannot log in using the UI, and do not consume a user license.
       name: ServiceUser
       predefined:
         - 'true'
         - 'false'
-    - auto: PREDEFINED
-      description: Whether Force Password Change Next is enabled
-      name: ForcePasswordChangeNext
-      predefined:
-        - 'true'
-        - 'false'
-    - auto: PREDEFINED
-      description: Whether Send Email Invite is enabled
-      name: SendEmailInvite
-      predefined:
-        - 'true'
-        - 'false'
-    description: Create a new user in Platform
+    - description: The User description.
+      name: Description
+    - description: The user home number.
+      name: HomeNumber
+    description: Create a new service user in Platform
     name: delinea-platform-user-create
     outputs:
     - contextPath: Delinea.Platform.User.Create
       description: User object
       type: String
   - arguments:
-    - description: User ID
+    - description: The name or UUID of the user to remove.
       name: id
       required: true
     description: Delete user by ID
@@ -689,74 +685,89 @@ script:
         description: User object
         type: String
   - arguments:
-    - description: User ID. Must match ID in path.
-      name: id
-      required: true
-    - description: The user’s name as displayed in the user interface.
-      name: displayname
-      required: true
-    - description: Password for new user. The password used to log in.
-      name: password
-      required: true
-    - description: Username
-      name: name
-      required: true
-    - description: Account Expiration
-      name: AccountExp
-    - description: Description
-      name: Description
-    - auto: PREDEFINED
-      description: Whether Password Never Expire is enabled
-      name: PasswordNeverExpire
-      predefined:
-        - 'true'
-        - 'false'
-    - description: The user's email address. Used by the system to send reports, access requests, and other notifications.
-      name: Mail
-      required: true
-    - auto: PREDEFINED
-#      defaultValue: 'true'
-      description: Whether the user account is enabled. Disabled users are unable to log in and do not consume a user license.
-      name: Disabled
-      predefined:
-        - 'true'
-        - 'false'
-    - auto: PREDEFINED
-      description: Whether this is an service account. Service accounts are used for automation, cannot log in using the UI, and do not consume a user license.
-      name: ServiceUser
-      predefined:
-        - 'true'
-        - 'false'
-    - auto: PREDEFINED
-      description: Whether Force Password Change Next is enabled
-      name: ForcePasswordChangeNext
-      predefined:
-        - 'true'
-        - 'false'
-    - auto: PREDEFINED
-      description: Whether Send Email Invite is enabled
-      name: SendEmailInvite
-      predefined:
-        - 'true'
-        - 'false'
-    description: Update a single user by ID
+      - description: The user mobile number.
+        name: MobileNumber
+      - description: The UUID of the cloud user to change.
+        name: ID
+        required: true
+      - description: The user is in the Everybody role?
+        name: InEverybodyRole
+        predefined:
+          - 'true'
+          - 'false'
+      - description: The MFA redirected user uuid.
+        name: CmaRedirectedUserUuid
+      - description: The user office number.
+        name: OfficeNumber
+      - description: The user reports to this user UUID.
+        name: ReportsTo
+      - description: The user preferred culture.
+        name: PreferredCulture
+      - description: The user display .
+        name: DisplayName
+      - description: Password for new user. The password used to log in.
+        name: password
+      - description: The user name.
+        name: Name
+      - description: Account expires date/time.
+        name: AccountExp
+      - description: Does user's password expire?
+        name: PasswordNeverExpire
+        predefined:
+          - 'true'
+          - 'false'
+      - description: The User email.
+        name: Mail
+      - description: Whether this is an service account. Service accounts are used for automation, cannot log in using the UI, and do not consume a user license.
+        name: ServiceUser
+        predefined:
+          - 'true'
+          - 'false'
+      - description: The User description.
+        name: Description
+      - description: The user home number.
+        name: HomeNumber
+    description: Update a single user by ID.
     name: delinea-platform-user-update
     outputs:
       - contextPath: Delinea.Platform.User.Update
         description: User object
         type: String
   - arguments:
-    - description: Secret ID
-      name: secret_id
+    - description: Fetches a platform user by uuid or upn (User Principal Name).
+      name: userUuidOrUpn
       required: true
-    - description: Notes to get a secret
-      name: autoComment
-    description: Get secret object by ID secret
+    description: Fetches a single platform user by uuid or upn
     name: delinea-platform-user-get
     outputs:
-    - contextPath: Delinea.Platform.User.get
+    - contextPath: Delinea.Platform.User.Get
       description: User object
       type: String
+  - arguments:
+    - description: Display name to filter users.
+      name: filter_displayName
+      required: false
+    - description: Page size. Default 1000.
+      name: pageSize
+      required: false
+    description: Fetches all platform user.
+    name: delinea-platform-get-all-users
+    outputs:
+      - contextPath: Delinea.Platform.Get.All.Users
+        description: User object
+        type: String
+  - arguments:
+      - description: SearchText is looked for in multiple fields.
+        name: filter.searchText
+        required: true
+      - description: Page size. Default 1000.
+        name: pageSize
+    description: Get Platform User search by text.
+    name: delinea-platform-get-user-searchbytext
+    outputs:
+      - contextPath: Delinea.Platform.Get.User.Searchbytext
+        description: User object
+        type: String
   dockerimage: demisto/python3:3.10.12.68714
   runonce: false
   script: '-'
