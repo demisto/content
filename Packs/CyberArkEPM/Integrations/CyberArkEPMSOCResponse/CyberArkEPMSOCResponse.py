@@ -20,6 +20,7 @@ class Client(BaseClient):
         self._headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
+            "x-cybr-telemetry": "aW49RVBNIFNPQyBSZXNwb25zZSZpdj0xLjAmdm49UGFsbyBBbHRvJml0PUVQTQ=="
         }
         self.username = username
         self.password = password

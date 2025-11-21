@@ -4,6 +4,9 @@ vcShouldKeepItemLegacyProdMachine: false
 name: CyberArk Deactivate EPM SOC Response
 description: Deactivates a specific CyberArk EPM SOC risk plan for a specified endpoint.
   This will reset to baseline EPM Policies, effective prior to SOC Response Action.
+marketplaces:
+- marketplacev2
+- platform
 starttaskid: "0"
 tasks:
   "0":
