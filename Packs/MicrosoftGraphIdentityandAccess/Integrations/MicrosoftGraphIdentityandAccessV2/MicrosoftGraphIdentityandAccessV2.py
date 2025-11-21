@@ -296,11 +296,11 @@ class Client:  # pragma: no cover
             odata_query += odata
         return self.ms_client.http_request("GET", f"v1.0/identityProtection/riskyUsers/{user_id}/history{odata_query}")["value"]
 
-    def get_user_signin_event(self, signin_request_id: str) -> list:
+    def get_user_signin_event(self, signin_id: str) -> dict:
         """Retrieve a specific Microsoft Entra user sign-in event
 
         Args:
-            signin_request_id: RequestID property of the sign-in event
+            signin_id: Unique ID representing the sign-in event.
 
         Returns:
             a list of dictionaries with the object from the api
@@ -308,7 +308,7 @@ class Client:  # pragma: no cover
         Docs:
             https://learn.microsoft.com/en-us/graph/api/signin-get?view=graph-rest-1.0&tabs=http
         """
-        return self.ms_client.http_request("GET", f"v1.0/auditLogs/signIns/{signin_request_id}")
+        return self.ms_client.http_request("GET", f"v1.0/auditLogs/signIns/{signin_id}")
 
     def activate_directory_role(self, template_id: str) -> dict:
         """Activating a role in the directory.
@@ -1735,51 +1735,51 @@ def get_user_signin_event_command(client: Client, args: Dict[str, Any]) -> Comma
     Args:
         client (Client): An authenticated Microsoft Graph API client.
         args (Dict[str, Any]): Command arguments including:
-            - request_id: RequestID property of the sign-in event
+            - id: Unique ID representing the sign-in event.
 
     Returns:
         CommandResults: A result object with the details of the requested user sign-in event.
     """
 
-    signin_request_id = args.get("request_id", "")
-    messages: list[str] = []
+    signin_id = args.get("id", "")
 
-    if result := client.get_user_signin_event(signin_request_id):
-        signin_events = []
-        signin_event = {
-            "id": result.get("id"),  # type: ignore
-            "correlationId": result.get("correlationId"),  # type: ignore
-            "appDisplayName": result.get("appDisplayName"),  # type: ignore
-            "resourceDisplayName": result.get("resourceDisplayName"),  # type: ignore
-            "status": result.get("status"),  # type: ignore
-            "ipAddress": result.get("ipAddress"),  # type: ignore
-            "conditionalAccessStatus": result.get("conditionalAccessStatus"),  # type: ignore
-            "appliedConditionalAccessPolicies": result.get("appliedConditionalAccessPolicies"),  # type: ignore
-            "deviceDetail": result.get("deviceDetail"),  # type: ignore
-            "clientAppUsed": result.get("clientAppUsed"),  # type: ignore
-            "userDisplayName": result.get("userDisplayName"),  # type: ignore
-            "userPrincipalName": result.get("userPrincipalName"),  # type: ignore
+    context = []
+    readable_signin_events = []
+
+    if signin_event := client.get_user_signin_event(signin_id):
+        # Append raw sign-in event object retrieved from Graph API to context which will be an array
+        # to make it compatible with retrieval of multiple sign-in events by other commands
+        context.append(signin_event)
+
+        # Extract relevant items from the raw Graph API object to display them in war room
+        readable_signin_event = {
+            "id": signin_event.get("id"),
+            "correlationId": signin_event.get("correlationId"),
+            "appDisplayName": signin_event.get("appDisplayName"),
+            "resourceDisplayName": signin_event.get("resourceDisplayName"),
+            "status": signin_event.get("status"),
+            "ipAddress": signin_event.get("ipAddress"),
+            "conditionalAccessStatus": signin_event.get("conditionalAccessStatus"),
+            "appliedConditionalAccessPolicies": signin_event.get("appliedConditionalAccessPolicies"),
+            "deviceDetail": signin_event.get("deviceDetail"),
+            "clientAppUsed": signin_event.get("clientAppUsed"),
+            "userDisplayName": signin_event.get("userDisplayName"),
+            "userPrincipalName": signin_event.get("userPrincipalName"),
         }
-        signin_events.append(signin_event)
-        context = {"signinEvent": signin_event}
+        readable_signin_events.append(readable_signin_event)
+
         return CommandResults(
-            "MSGraph.AuditLog.signIn",
-            "signinEvent",
+            "MSGraphIdentity.AuditLog.signIns",
+            "id",
             outputs=context,
-            raw_response=result,
             ignore_auto_extract=True,
             readable_output=tableToMarkdown(
-                "User sign-in event:",
-                signin_events,
+                "Microsoft Entra ID user sign-in event :",
+                readable_signin_events,
             ),
         )
     else:
-        return CommandResults(readable_output="could not list IP named locations")
-
-    if messages and result.readable_output and not result.readable_output.startswith("Error"):
-        result.readable_output += "\n\nNote:\n" + "\n".join(messages)
-
-    return result
+        return CommandResults(readable_output=f"Could not retrieve sign-in data for request_id {signin_id}")
 
 
 def main():  # pragma: no cover
