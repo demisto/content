@@ -1,6 +1,7 @@
 Checks if the email address is part of the internal domain.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Checks if the email address is part of the internal domain.
 | Script Type | javascript |
 | Tags | email |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +20,7 @@ Checks if the email address is part of the internal domain.
 | include_subdomains | Whether to include the subdomains of the domain list. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

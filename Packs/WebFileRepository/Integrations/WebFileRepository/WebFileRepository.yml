@@ -1,4 +1,7 @@
 category: Utilities
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Web File Repository
   version: -1
@@ -7,26 +10,31 @@ configuration:
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - defaultvalue: "true"
   display: Long running instance
   name: longRunning
   type: 8
   required: false
+  section: Connect
 - display: Port mapping (<port> or <host port>:<docker port>)
   name: longRunningPort
   required: true
   type: 0
   additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a port, an unused port for Web File Repository will automatically be generated when the instance is saved. However, if using an engine, you must enter a port."
+  section: Connect
 - display: User ID for Read/Write
   displaypassword: Password
   name: rwCredentials
   type: 9
   required: false
+  section: Connect
 - display: User ID for Read-Only
   displaypassword: Password
   name: roCredentials
   type: 9
   required: false
+  section: Connect
 - additionalinfo: Some of the browsers such as Chrome may not support Digest-sha256.
   display: Authentication Method
   name: authenticationMethod
@@ -36,28 +44,33 @@ configuration:
   - Digest-sha256
   type: 15
   required: false
-- additionalinfo: Authentication is not requiured for read access
+  section: Connect
+- additionalinfo: Authentication is not required for read access
   defaultvalue: "true"
   display: Public Read Access
   name: publicReadAccess
   type: 8
   required: false
+  section: Connect
 - additionalinfo: '"mime-type  extension [extension]*" for each line, wild-card file extensions are supported.'
   display: MIME Types for file extensions
   name: mimeTypes
   type: 12
   required: false
+  section: Collect
 - additionalinfo: Set true to merge the specified types with the default settings, false to replace them
   defaultvalue: "true"
   display: Merge with Default MIME Types
   name: mergeMimeTypes
   type: 8
   required: false
+  section: Collect
 - additionalinfo: List of extensions to set "attachment" to Content-Disposition
   display: Attachment extensions
   name: attachmentExtensions
   type: 0
   required: false
+  section: Collect
 - defaultvalue: read/write
   display: Storage Protection
   name: storageProtection
@@ -67,16 +80,19 @@ configuration:
   - sandbox
   required: true
   type: 15
+  section: Collect
 - defaultvalue: 100MB
   display: The maximum repository size
   name: maxStorageSize
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 1GB
   display: The maximum sandbox repository size
   name: maxSandboxSize
   type: 0
   required: false
+  section: Collect
 description: |-
   Simple web server with a file uploading console to store small files.
   This is helpful to make your environment ready for testing purpose for your playbooks or automations to download files from a web server.
@@ -255,7 +271,7 @@ script:
   - arguments: []
     description: Reset the repository data.
     name: wfr-reset
-  dockerimage: demisto/bottle:1.0.0.2057122
+  dockerimage: demisto/bottle:1.0.0.3189500
   longRunning: true
   longRunningPort: true
   resetContext: true
@@ -265,3 +281,14 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+triggers:
+  - conditions:
+      - name: engine
+        operator: not_exists
+      - name: isEngineGroup
+        operator: not_exists
+    effects:
+      - name: longRunningPort
+        action:
+          hidden: true
+          required: false

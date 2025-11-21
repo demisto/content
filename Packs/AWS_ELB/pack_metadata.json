@@ -2,17 +2,23 @@
     "name": "AWS Elastic Load Balancing",
     "description": "Elastic Load Balancing (ELB) automatically distributes incoming application traffic across multiple targets and virtual appliances in one or more Availability Zones (AZs).",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM"
+        "Analytics & SIEM",
+        "Cloud Services"
     ],
-    "tags": [],
+    "tags": [
+        "Network",
+        "IT"
+    ],
     "useCases": [],
     "keywords": [
-        "ELB"
+        "AWS",
+        "ELB",
+        "Amazon"
     ],
     "marketplaces": [
         "marketplacev2",
@@ -22,6 +28,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

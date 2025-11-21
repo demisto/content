@@ -2,7 +2,7 @@ commonfields:
   id: LookoutMobileEndpointSecurity
   version: -1
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -58,13 +58,11 @@ display: Lookout Mobile Endpoint Security
 name: LookoutMobileEndpointSecurity
 script:
   commands: []
-  dockerimage: demisto/sse-client:1.0.0.2993422
+  dockerimage: demisto/sse-client:1.0.0.3533332
   script: '-'
   subtype: python3
   type: python
   longRunning: true
-marketplaces:
-- marketplacev2
 fromversion: 8.4.0
 tests:
 - No tests (auto formatted)

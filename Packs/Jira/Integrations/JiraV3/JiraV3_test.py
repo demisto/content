@@ -1,10 +1,10 @@
 import json
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 import demistomock as demisto
 import pytest
 from CommonServerPython import *
-from JiraV3 import JiraBaseClient, JiraCloudClient, JiraOnPremClient
+from JiraV3 import JiraBaseClient, JiraCloudClient, JiraOnPremClient, get_remote_data_preview_command
 from pytest_mock import MockerFixture
 
 
@@ -27,7 +27,7 @@ def jira_base_client_mock(username: str = "", api_key: str = "", pat: str = "") 
     however, if this set is empty, the Python interpreter will happily instantiate our class without any problems.
     """
     return JiraBaseClient(
-        base_url="dummy_url",
+        base_url="https://dummy_url",
         proxy=False,
         verify=False,
         callback_url="dummy_callback",
@@ -46,7 +46,7 @@ def jira_cloud_client_mock() -> JiraCloudClient:
         client_secret="dummy_secret",
         callback_url="dummy_url",
         cloud_id="dummy_cloud_id",
-        server_url="dummy_server_url",
+        server_url="https://dummy_server_url",
         username="",
         api_key="",
         pat="",
@@ -60,7 +60,7 @@ def jira_onprem_client_mock() -> JiraOnPremClient:
         client_id="dummy_client_id",
         client_secret="dummy_secret",
         callback_url="dummy_url",
-        server_url="dummy_server_url",
+        server_url="https://dummy_server_url",
         username="",
         api_key="",
         pat="",
@@ -194,28 +194,38 @@ CREATE_ISSUE_QUERY_CASES = [
         "some_jql_string",
         None,
         None,
-        {"jql": "some_jql_string", "startAt": 0, "maxResults": 50},
+        {"jql": "some_jql_string", "maxResults": 50},
+        "",
     ),
     (
         "some_jql_string",
         12,
         None,
         {"jql": "some_jql_string", "startAt": 12, "maxResults": 50},
+        "",
     ),
     (
         "some_jql_string",
         1,
         80,
         {"jql": "some_jql_string", "startAt": 1, "maxResults": 80},
+        "",
+    ),
+    (
+        "some_jql_string",
+        5,
+        80,
+        {"jql": "some_jql_string", "nextPageToken": "dummy_page_token", "maxResults": 80},
+        "dummy_page_token",
     ),
 ]
 
 
-@pytest.mark.parametrize("jql, start_at, max_results, expected_query_params", CREATE_ISSUE_QUERY_CASES)
-def test_create_query_params(jql, start_at, max_results, expected_query_params):
+@pytest.mark.parametrize("jql, start_at, max_results, expected_query_params, next_page_token", CREATE_ISSUE_QUERY_CASES)
+def test_create_query_params(jql, start_at, max_results, expected_query_params, next_page_token):
     from JiraV3 import create_query_params
 
-    query_params = create_query_params(jql_query=jql, start_at=start_at, max_results=max_results)
+    query_params = create_query_params(jql_query=jql, start_at=start_at, max_results=max_results, next_page_token=next_page_token)
     assert query_params == expected_query_params
 
 
@@ -285,15 +295,15 @@ def test_test_module_basic_auth(mocker):
     Given:
         - mock client with username and api_key (basic auth)
     When:
-        - run `test_module` function
+        - run `jira_test_module` function
     Then:
         - Ensure no error is raised, and return `ok`
     """
-    from JiraV3 import test_module
+    from JiraV3 import jira_test_module
 
     client = jira_base_client_mock("dummy_username", "dummy_api_key")
-    mocker.patch.object(client, "test_instance_connection")
-    assert test_module(client) == "ok"
+    mocker.patch.object(client, "jira_test_instance_connection")
+    assert jira_test_module(client, params={}) == "ok"
 
 
 def test_test_module_pat(mocker):
@@ -301,15 +311,15 @@ def test_test_module_pat(mocker):
     Given:
         - mock client with personal access token (pat)
     When:
-        - run `test_module` function
+        - run `jira_test_module` function
     Then:
         - Ensure no error is raised, and return `ok`
     """
-    from JiraV3 import test_module
+    from JiraV3 import jira_test_module
 
     client = jira_base_client_mock(pat="dummy_pat")
-    mocker.patch.object(client, "test_instance_connection")
-    assert test_module(client) == "ok"
+    mocker.patch.object(client, "jira_test_instance_connection")
+    assert jira_test_module(client, params={}) == "ok"
 
 
 def test_module_oauth2(mocker):
@@ -317,16 +327,16 @@ def test_module_oauth2(mocker):
     Given:
         - mock client without username and api_key (oauth2)
     When:
-        - run `test_module` function
+        - run `jira_test_module` function
     Then:
         - Ensure that error msg is raised, with a guide how to connect through oauth2
     """
-    from JiraV3 import test_module
+    from JiraV3 import jira_test_module
 
     client = jira_base_client_mock()
-    mocker.patch.object(client, "test_instance_connection")
+    mocker.patch.object(client, "jira_test_instance_connection")
     with pytest.raises(DemistoException, match="In order to authorize the instance, first run the command `!jira-oauth-start`."):
-        test_module(client)
+        jira_test_module(client, params={})
 
 
 @pytest.mark.parametrize(
@@ -879,9 +889,19 @@ class TestJiraCreateIssueCommand:
         client = jira_base_client_mock()
         raw_response = {"id": "1234", "key": "dummy_key", "self": "dummy_link"}
         expected_outputs = {"Id": "1234", "Key": "dummy_key"}
+        expected_mo_outputs = {
+            "object_id": "1234",
+            "object_name": "dummy_key",
+            "object_url": "https://example.com/browse/dummy_key",
+        }
+
         mocker.patch.object(client, "create_issue", return_value=raw_response)
-        command_result = create_issue_command(client=client, args={"summary": "test"})
-        assert command_result.to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
+        mocker.patch.object(demisto, "results")
+        command_results = create_issue_command(
+            client=client, args={"summary": "test"}, is_quick_action=True, server_url="https://example.com"
+        )
+        assert command_results[0].to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
+        assert demisto.results.call_args[0][0]["ExtendedPayload"].get("MirrorObject") == expected_mo_outputs
 
     def test_create_issue_command_with_issue_json(self, mocker):
         """
@@ -898,9 +918,23 @@ class TestJiraCreateIssueCommand:
         client = jira_base_client_mock()
         raw_response = {"id": "1234", "key": "dummy_key", "self": "dummy_link"}
         expected_outputs = {"Id": "1234", "Key": "dummy_key"}
+        expected_mo_outputs = {
+            "object_id": "1234",
+            "object_name": "dummy_key",
+            "object_url": "http://example.com/browse/dummy_key",
+        }
+
         mocker.patch.object(client, "create_issue", return_value=raw_response)
-        command_result = create_issue_command(client=client, args={"issue_json": '{"fields": {"summary": "test"}}'})
-        assert command_result.to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
+        mocker.patch.object(demisto, "results")
+
+        command_results = create_issue_command(
+            client=client,
+            args={"issue_json": '{"fields": {"summary": "test"}}'},
+            is_quick_action=True,
+            server_url="http://example.com",
+        )
+        assert command_results[0].to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
+        assert demisto.results.call_args[0][0]["ExtendedPayload"].get("MirrorObject") == expected_mo_outputs
 
     def test_create_issue_command_with_issue_json_and_another_arg(self):
         """
@@ -1922,6 +1956,94 @@ class TestJiraIssueQueryField:
             assert expected_command_result["EntryContext"] == command_result.to_context()["EntryContext"]
             assert expected_command_result["HumanReadable"] == command_result.to_context()["HumanReadable"]
 
+    def test_issue_query_command_uses_new_endpoint_for_cloud(self, mocker, requests_mock):
+        """
+        Given:
+            - A Cloud Jira client
+        When
+            - When calling the jira-issue-query
+        Then
+            - Validate that the new endpoint is used and the command returns the expected output.
+        """
+        from JiraV3 import issue_query_command
+
+        client = jira_cloud_client_mock()
+        mocker.patch.object(client, "get_headers_with_access_token", return_value={})
+        issue_query_raw_response = util_load_json("test_data/get_issue_query_test/raw_response.json")
+        expected_command_results = util_load_json("test_data/get_issue_query_test/parsed_result.json")
+        requests_mock.get("https://dummy_server_url/dummy_cloud_id/rest/api/3/search/jql", json=issue_query_raw_response)
+
+        command_results = issue_query_command(client=client, args={"fields": "watches,rank"})
+        command_results = command_results if isinstance(command_results, list) else [command_results]
+        for expected_command_result, command_result in zip(expected_command_results, command_results):
+            assert expected_command_result["EntryContext"] == command_result.to_context()["EntryContext"]
+            assert expected_command_result["HumanReadable"] == command_result.to_context()["HumanReadable"]
+
+    def test_issue_query_command_uses_old_endpoint_for_onprem(self, mocker, requests_mock):
+        """
+        Given:
+            - An on-prem Jira client
+        When
+            - When calling the jira-issue-query
+        Then
+            - Validate that the old endpoint is used and the command returns the expected output.
+        """
+        from JiraV3 import issue_query_command
+
+        client = jira_onprem_client_mock()
+        mocker.patch.object(client, "get_headers_with_access_token", return_value={})
+        issue_query_raw_response = util_load_json("test_data/get_issue_query_test/raw_response.json")
+        expected_command_results = util_load_json("test_data/get_issue_query_test/parsed_result.json")
+        requests_mock.get("https://dummy_server_url/rest/api/2/search", json=issue_query_raw_response)
+
+        command_results = issue_query_command(client=client, args={"fields": "watches,rank"})
+        command_results = command_results if isinstance(command_results, list) else [command_results]
+        for expected_command_result, command_result in zip(expected_command_results, command_results):
+            assert expected_command_result["EntryContext"] == command_result.to_context()["EntryContext"]
+            assert expected_command_result["HumanReadable"] == command_result.to_context()["HumanReadable"]
+
+    def test_issue_query_command_with_start_at(self, mocker, requests_mock):
+        """
+        Given:
+            - A Jira client
+        When
+            - When calling the jira-issue-query, with the `start_at` argument
+        Then
+            - Validate that the old endpoint is used
+        """
+        from JiraV3 import issue_query_command
+
+        client = jira_cloud_client_mock()
+        mocker.patch.object(client, "get_headers_with_access_token", return_value={})
+        issue_query_raw_response = util_load_json("test_data/get_issue_query_test/raw_response.json")
+        expected_command_results = util_load_json("test_data/get_issue_query_test/parsed_result.json")
+        requests_mock.get("https://dummy_server_url/dummy_cloud_id/rest/api/3/search", json=issue_query_raw_response)
+
+        command_results = issue_query_command(client=client, args={"start_at": "10", "fields": "watches,rank"})
+        command_results = command_results if isinstance(command_results, list) else [command_results]
+        for expected_command_result, command_result in zip(expected_command_results, command_results):
+            assert expected_command_result["EntryContext"] == command_result.to_context()["EntryContext"]
+            assert expected_command_result["HumanReadable"] == command_result.to_context()["HumanReadable"]
+
+    def test_issue_query_command_with_start_at_fail(self, requests_mock):
+        """
+        Given:
+            - A Jira client
+        When
+            - When calling the jira-issue-query, with the `start_at` argument
+            - The old endpoint is no longer available.
+        Then
+            - Validate that the old endpoint is used
+            - Validate that the custom error message is raised for 410 Gone.
+        """
+        from JiraV3 import issue_query_command
+
+        client = jira_base_client_mock(username="user", api_key="key")
+        requests_mock.get("https://dummy_url/rest/api/999/search", status_code=410)
+
+        with pytest.raises(DemistoException, match="The start_at argument is no longer supported in this Jira instance."):
+            issue_query_command(client=client, args={"start_at": "10"})
+
 
 class TestJiraAddUrlLink:
     def test_add_url_link(self, mocker):
@@ -2326,7 +2448,7 @@ class TestJiraGetRemoteData:
         client = jira_base_client_mock()
         issue_response = {"id": "1234", "fields": {"summary": "dummy summary", "updated": "2023-01-01"}}
         mocker.patch.object(client, "get_issue", return_value=issue_response)
-        mocker.patch("JiraV3.get_user_timezone", return_value="Asia/Jerusalem")
+        mocker.patch("JiraV3.get_cached_user_timezone", return_value="Asia/Jerusalem")
         close_reason = 'Issue was marked as "Resolved", or status was changed to "Done"'
         expected_parsed_entries = [
             {
@@ -2453,6 +2575,16 @@ class TestJiraFetchIncidents:
             "2023-02-01",
             [1, 2, 3, 4],
             'status!=done AND updated >= "2023-02-01" AND ID NOT IN (1, 2, 3, 4) ORDER BY updated ASC',
+        ),
+        (
+            "id",
+            '"request type" = "Report a Potential Security Incident"',
+            "0",
+            "",
+            "",
+            "",
+            [],
+            '"request type" = "Report a Potential Security Incident" AND id >= 0 ORDER BY id ASC',
         ),
     ]
 
@@ -2726,6 +2858,39 @@ class TestJiraFetchIncidents:
         parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=issue.get("names", {}) or {})
         assert expected_parsed_custom_fields == issue
 
+    @pytest.mark.parametrize(
+        "dateparser_settings, expected_parsed_created_time, expected_parsed_updated_time",
+        [
+            pytest.param(None, "2025-03-14 06:54", "2025-03-14 07:59", id="No timezone conversion"),
+            pytest.param({"TIMEZONE": "UTC-4"}, "2025-03-14 09:54", "2025-03-14 10:59", id="Convert to EST"),
+            pytest.param({"TIMEZONE": "UTC+3"}, "2025-03-14 16:54", "2025-03-14 17:59", id="Convert to IDT"),
+        ],
+    )
+    def test_parse_issue_times_for_next_run(
+        self,
+        dateparser_settings: dict | None,
+        expected_parsed_created_time: str,
+        expected_parsed_updated_time: str,
+    ):
+        """
+        Given:
+            - Issue created and updated timestamps in the UTC-7 timezone (US West Coast)
+        When
+            - Parsing the issue timestamps for fetch incidents next run
+        Then
+            - Validate that the timestamp fields get parsed correctly according to the date parser settings.
+        """
+        from JiraV3 import parse_issue_times_for_next_run
+
+        parsed_created_time, parsed_updated_time = parse_issue_times_for_next_run(
+            issue_id=1234,
+            issue_created_time="2025-03-14T06:54:33.000-0700",
+            issue_updated_time="2025-03-14T07:59:09.000-0700",
+            dateparser_settings=dateparser_settings,
+        )
+        assert parsed_created_time == expected_parsed_created_time
+        assert parsed_updated_time == expected_parsed_updated_time
+
     def test_set_last_run_when_first_time_running_fetch(self, mocker):
         """
         Given:
@@ -2738,9 +2903,10 @@ class TestJiraFetchIncidents:
         from JiraV3 import DEFAULT_FETCH_LIMIT, fetch_incidents
 
         client = jira_base_client_mock()
-        mocker.patch("JiraV3.demisto.getLastRun", return_value={})
+        mocker.patch("JiraV3.demisto.getLastRun", return_value={})  # empty last run (first fetch) -> Convert timezone
+        get_user_timezone_mocker = mocker.patch("JiraV3.get_cached_user_timezone", return_value="UTC")
         mocker.patch("JiraV3.create_incident_from_issue", return_value={})
-        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun", side_effect=demisto.setLastRun)
+        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun")
         query_raw_response = {
             "issues": [
                 {"id": "1", "fields": {"created": "2023-12-11 21:09", "updated": "2023-12-12 21:09"}},
@@ -2763,8 +2929,72 @@ class TestJiraFetchIncidents:
             attachment_tag_to_jira="attachment_tag_to_jira",
             attachment_tag_from_jira="attachment_tag_from_jira",
         )
-        expected_last_run = {"issue_ids": [1, 2], "id": 2, "created_date": "2023-12-11 22:09", "updated_date": "2023-12-12 22:09"}
+        expected_last_run = {
+            "issue_ids": [1, 2],
+            "id": 2,
+            "created_date": "2023-12-11 22:09",
+            "updated_date": "2023-12-12 22:09",
+            "convert_timezone": True,  # last run was empty, so timezone was converted
+        }
         assert expected_last_run == set_last_run_mocker.call_args[0][0]
+        assert get_user_timezone_mocker.call_count == 1
+
+    def test_set_last_run_when_timezone_has_utc_offset(self, mocker):
+        """
+        Given:
+            - Arguments to use when calling the fetch incidents mechanism
+        When
+            - Calling the fetch incidents mechanism with `convert_timezone` set to True
+        Then
+            - Validate that the last run object gets saved with the correct data
+        """
+        from JiraV3 import DEFAULT_FETCH_LIMIT, fetch_incidents
+
+        client = jira_base_client_mock()
+        mocker.patch(
+            "JiraV3.demisto.getLastRun",
+            return_value={
+                "issue_ids": [1],
+                "id": 1,
+                "created_date": "2023-12-11 21:04",
+                "updated_date": "2023-12-12 22:08",
+                "convert_timezone": True,
+            },
+        )
+        get_user_timezone_mocker = mocker.patch("JiraV3.get_cached_user_timezone", return_value="UTC-4")
+        mocker.patch("JiraV3.create_incident_from_issue", return_value={})
+        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun")
+        query_raw_response = {
+            "issues": [
+                {"id": "2", "fields": {"created": "2023-12-11 21:09-0700", "updated": "2023-12-12 21:09-0700"}},
+                {"id": "3", "fields": {"created": "2023-12-11 22:09-0700", "updated": "2023-12-12 23:18-0700"}},
+            ]
+        }
+        mocker.patch.object(client, "run_query", return_value=query_raw_response)
+        fetch_incidents(
+            client=client,
+            issue_field_to_fetch_from="created date",
+            fetch_query="status!=done",
+            id_offset=1234,
+            fetch_attachments=True,
+            fetch_comments=True,
+            max_fetch_incidents=DEFAULT_FETCH_LIMIT,
+            first_fetch_interval="3 days",
+            mirror_direction="Incoming And Outgoing",
+            comment_tag_to_jira="comment_tag_to_jira",
+            comment_tag_from_jira="comment_tag_from_jira",
+            attachment_tag_to_jira="attachment_tag_to_jira",
+            attachment_tag_from_jira="attachment_tag_from_jira",
+        )
+        expected_last_run = {
+            "issue_ids": [2, 3],
+            "id": 3,
+            "created_date": "2023-12-12 01:09",  # converted last created and updated from UTC-7 to UTC-4
+            "updated_date": "2023-12-13 02:18",
+            "convert_timezone": True,  # last run was empty, so timezone was converted
+        }
+        assert expected_last_run == set_last_run_mocker.call_args[0][0]
+        assert get_user_timezone_mocker.call_count == 1
 
     def test_set_last_run_when_last_run_is_not_empty(self, mocker):
         """
@@ -2778,17 +3008,18 @@ class TestJiraFetchIncidents:
         from JiraV3 import DEFAULT_FETCH_LIMIT, fetch_incidents
 
         client = jira_base_client_mock()
-        mocker.patch(
+        mocker.patch(  # convert_timezone is False -> No timezone conversion
             "JiraV3.demisto.getLastRun",
             return_value={
                 "issue_ids": ["1", "2"],
                 "id": "2",
                 "created_date": "2023-12-11 22:09",
                 "updated_date": "2023-12-12 22:09",
+                "convert_timezone": False,
             },
         )
         mocker.patch("JiraV3.create_incident_from_issue", return_value={})
-        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun", side_effect=demisto.setLastRun)
+        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun")
         query_raw_response = {
             "issues": [
                 {"id": "3", "fields": {"created": "2024-01-11 21:09", "updated": "2024-01-12 21:09"}},
@@ -2811,7 +3042,13 @@ class TestJiraFetchIncidents:
             attachment_tag_to_jira="attachment_tag_to_jira",
             attachment_tag_from_jira="attachment_tag_from_jira",
         )
-        expected_last_run = {"issue_ids": [3, 4], "id": 4, "created_date": "2024-01-11 22:09", "updated_date": "2024-01-12 22:09"}
+        expected_last_run = {
+            "issue_ids": [3, 4],
+            "id": 4,
+            "created_date": "2024-01-11 22:09",
+            "updated_date": "2024-01-12 22:09",
+            "convert_timezone": False,  # last run was not empty, no timezone conversion to keep backwards compatibility
+        }
         assert expected_last_run == set_last_run_mocker.call_args[0][0]
 
     def test_set_last_run_when_we_did_not_progress_in_created_time(self, mocker):
@@ -2828,7 +3065,7 @@ class TestJiraFetchIncidents:
         from JiraV3 import DEFAULT_FETCH_LIMIT, fetch_incidents
 
         client = jira_base_client_mock()
-        mocker.patch(
+        mocker.patch(  # last run not empty -> No timezone conversion
             "JiraV3.demisto.getLastRun",
             return_value={
                 "issue_ids": ["1", "2"],
@@ -2838,7 +3075,7 @@ class TestJiraFetchIncidents:
             },
         )
         mocker.patch("JiraV3.create_incident_from_issue", return_value={})
-        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun", side_effect=demisto.setLastRun)
+        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun")
         query_raw_response = {
             "issues": [
                 {"id": "3", "fields": {"created": "2023-12-11 22:09", "updated": "2024-01-12 21:09"}},
@@ -2866,6 +3103,7 @@ class TestJiraFetchIncidents:
             "id": 4,
             "created_date": "2023-12-11 22:09",
             "updated_date": "2024-01-12 22:09",
+            "convert_timezone": False,  # last run was not empty, no timezone conversion to keep backwards compatibility
         }
         assert expected_last_run == set_last_run_mocker.call_args[0][0]
 
@@ -2883,7 +3121,7 @@ class TestJiraFetchIncidents:
         from JiraV3 import DEFAULT_FETCH_LIMIT, fetch_incidents
 
         client = jira_base_client_mock()
-        mocker.patch(
+        mocker.patch(  # last run not empty -> No timezone conversion
             "JiraV3.demisto.getLastRun",
             return_value={
                 "issue_ids": ["1", "2"],
@@ -2893,7 +3131,7 @@ class TestJiraFetchIncidents:
             },
         )
         mocker.patch("JiraV3.create_incident_from_issue", return_value={})
-        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun", side_effect=demisto.setLastRun)
+        set_last_run_mocker = mocker.patch("JiraV3.demisto.setLastRun")
         query_raw_response = {
             "issues": [
                 {"id": "3", "fields": {"created": "2022-01-12 22:09", "updated": "2023-12-12 22:09"}},
@@ -2921,6 +3159,7 @@ class TestJiraFetchIncidents:
             "id": 4,
             "created_date": "2022-01-11 22:09",
             "updated_date": "2023-12-12 22:09",
+            "convert_timezone": False,  # last run was not empty, no timezone conversion to keep backwards compatibility
         }
         assert expected_last_run == set_last_run_mocker.call_args[0][0]
 
@@ -3317,3 +3556,61 @@ class TestJiraCreateMetadataField:
         else:
             with pytest.raises(ValueError):
                 get_create_metadata_field_command(client=client, args=args)
+
+
+def test_get_remote_data_preview_command():
+    # Given: Prepare the mock objects and inputs
+    mock_client = Mock()
+    args = {"id": "JIRA-123"}
+
+    # Mock Jira issue object returned by client
+    mock_issue = util_load_json("test_data/get_remote_data_preview/raw_response.json")
+
+    mock_client.get_issue.return_value = mock_issue
+
+    # When: Execute the command under test
+    result = get_remote_data_preview_command(mock_client, args)
+
+    # Then: Validate the outputs
+    assert result.outputs_prefix == "QuickActionPreview"
+    assert result.outputs_key_field == "id"
+
+    expected_preview = QuickActionPreview(
+        id="21487",
+        title="XSOAR description test",
+        description="Testing summary XSOAR mirroring",
+        status="Backlog",
+        assignee="Example User(admin@test.com)",
+        creation_date="2023-03-01T11:34:49.730+0200",
+        severity="Low",
+    ).to_context()
+
+    assert result.outputs == expected_preview
+
+    # Validate interactions
+    mock_client.get_issue.assert_called_once_with(issue_id_or_key="JIRA-123")
+
+
+@pytest.mark.parametrize(
+    "url, expected_is_cloud",
+    [
+        ("https://yourcompany.atlassian.net", True),
+        ("https://api.atlassian.com/ex/jira/", True),
+        ("https://www.callback.com", False),
+        ("https://test.atlassian.net.evil.com", False),
+        ("https://dummy_url", False),
+    ],
+)
+def test_is_jira_cloud_url(url, expected_is_cloud):
+    """
+    Given:
+        - Various URL strings including Jira Cloud URLs, on-premises URLs, and invalid URLs
+    When:
+        - Calling is_jira_cloud_url function
+    Then:
+        - Validate that True is returned for Jira Cloud URLs and False for others
+    """
+    from JiraV3 import is_jira_cloud_url
+
+    result = is_jira_cloud_url(url)
+    assert result == expected_is_cloud

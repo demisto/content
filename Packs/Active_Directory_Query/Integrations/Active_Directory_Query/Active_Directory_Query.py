@@ -569,7 +569,7 @@ def search_users(default_base_dn, page_size):
     # will preform a custom search to find users by a specific (one) attribute specified by the user
 
     args = demisto.args()
-
+    params = demisto.params()
     attributes: list[str] = []
     custom_attributes: list[str] = []
 
@@ -583,8 +583,8 @@ def search_users(default_base_dn, page_size):
         page_size = arg_to_number(args["page-size"])
         limit = page_size
 
-    # default query - list all users
-    query = "(&(objectClass=User)(objectCategory=person))"
+    # getting default query from parameter - list all users
+    query = params.get("default_base_query", "(&(objectClass=User)(objectCategory=person))")
     # query by user DN
     if args.get("dn"):
         dn = escape_filter_chars(args["dn"])
@@ -1506,7 +1506,7 @@ def add_member_to_group(default_base_dn):
             demisto.debug(f"Member DNs after formatting are: {member_dn}")
             member_dns.append(member_dn)
     elif args.get("computer-name"):
-        computers = argToList("computer-name")
+        computers = argToList(args.get("computer-name"))
         member_dns = []
         for c in computers:
             member_dn = computer_dn(c, search_base)

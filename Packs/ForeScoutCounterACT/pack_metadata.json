@@ -1,0 +1,38 @@
+{
+    "name": "ForeScout NAC - CounterACT",
+    "description": "ForeScout CounterACT",
+    "support": "xsoar",
+    "currentVersion": "1.0.3",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "Compliance",
+        "Security",
+        "Network"
+    ],
+    "useCases": [
+        "Compliance",
+        "Network Security"
+    ],
+    "keywords": [
+        "ForeScout",
+        "CounterACT",
+        "NAC"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
+    ]
+}

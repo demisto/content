@@ -41,7 +41,7 @@ def handle_connection_errors(error):
     return_error(error)
 
 
-def warn(*args):
+def warn(*args, **kwargs):
     """
     Do nothing with warnings
     """
@@ -252,6 +252,11 @@ ATTRIBUTE_FIELDS = [
 ]
 
 
+WARNINGLIST_HEADERS = ["ID", "Name", "Type", "Description", "Version", "Enabled", "Default", "Category", "Attributes"]
+WARNINGLIST_ENTRY_HEADERS = ["ID", "Value", "Comment"]
+WARNINGLIST_TYPE_HEADERS = ["ID", "Type"]
+
+
 def extract_error(error: list) -> list[dict]:
     """
     Extracting errors raised by PYMISP into readable response, for more information and examples
@@ -347,9 +352,7 @@ def replace_keys_from_misp_to_context_data(obj_to_build: dict | list | str) -> d
         return [replace_keys_from_misp_to_context_data(item) for item in obj_to_build]
     if isinstance(obj_to_build, dict):
         return {
-            (
-                MISP_ENTITIES_TO_CONTEXT_DATA.get(key, key)
-            ): replace_keys_from_misp_to_context_data(value)
+            (MISP_ENTITIES_TO_CONTEXT_DATA.get(key, key)): replace_keys_from_misp_to_context_data(value)
             for key, value in obj_to_build.items()
         }
     return obj_to_build
@@ -922,7 +925,7 @@ def get_events_related_to_scored_tag(all_attributes, found_tag):
 def remove_duplicated_related_events(related_events):
     related_events_no_duplicates = []
     for i in range(len(related_events)):
-        if related_events[i] not in related_events[i + 1:]:
+        if related_events[i] not in related_events[i + 1 :]:
             related_events_no_duplicates.append(related_events[i])
     return related_events_no_duplicates
 
@@ -1395,9 +1398,11 @@ def add_tag(demisto_args: dict, is_attribute=False):
     is_local_tag = argToBoolean(demisto_args.get("is_local", False))
     disable_output = argToBoolean(demisto_args.get("disable_output", False))
     try:
-        PYMISP.tag(uuid, tag, local=is_local_tag)  # add the tag
+        res = PYMISP.tag(uuid, tag, local=is_local_tag)  # add the tag
     except PyMISPError:
         raise DemistoException("Adding the required tag was failed. Please make sure the UUID exists.")
+    if "errors" in res:
+        raise DemistoException(f"Got error from MISP API: {res}")
     if is_attribute:
         response = None
         success_msg = f"Tag {tag} has been successfully added to attribute {uuid}"
@@ -1465,18 +1470,30 @@ def add_sighting(demisto_args: dict):
     """Adds sighting to MISP attribute"""
     attribute_id = demisto_args.get("id")
     attribute_uuid = demisto_args.get("uuid")
+    attribute_value = demisto_args.get("value")
+    sighting_source = demisto_args.get("source")
     sighting_type = demisto_args["type"]  # mandatory arg
     att_id = attribute_id or attribute_uuid
-    if not att_id:
-        raise DemistoException("ID or UUID not specified")
-    sighting_args = {"id": attribute_id, "uuid": attribute_uuid, "type": SIGHTING_TYPE_NAME_TO_ID[sighting_type]}
+    if not (att_id or attribute_value):
+        raise DemistoException("ID, UUID or value not specified")
+    sighting_args = {
+        "id": attribute_id,
+        "uuid": attribute_uuid,
+        "type": SIGHTING_TYPE_NAME_TO_ID[sighting_type],
+        "source": sighting_source,
+        "value": attribute_value,
+    }
     sigh_obj = MISPSighting()
     sigh_obj.from_dict(**sighting_args)
-    response = PYMISP.add_sighting(sigh_obj, att_id)
+
+    if attribute_value:
+        response = PYMISP.add_sighting(sigh_obj)
+    else:
+        response = PYMISP.add_sighting(sigh_obj, att_id)
     if response.get("message"):
         raise DemistoException(f"An error was occurred: {response.get('message')}")
     elif response.get("Sighting"):
-        human_readable = f"Sighting '{sighting_type}' has been successfully added to attribute {att_id}"
+        human_readable = f"Sighting '{sighting_type}' has been successfully added to attribute {attribute_value or att_id}"
         return CommandResults(readable_output=human_readable)
     raise DemistoException(f"An error was occurred: {json.dumps(response)}")
 
@@ -1871,6 +1888,196 @@ def warninglist_command(demisto_args: dict) -> CommandResults:
     )
 
 
+def get_warninglists_command(demisto_args: dict) -> CommandResults:
+    """
+    Gets warninglists from MISP
+    Args:
+        demisto_args: dict of arguments.
+
+    Returns:
+        CommandResults.
+    """
+    try:
+        logging.log(logging.DEBUG, f"{demisto.command()} Sending request to get warninglists")
+        if response := PYMISP.warninglists():
+            warninglists_output = []
+            for item in response:
+                # Ensure item is a dict and has the 'Warninglist' key
+                if warninglist := item.get("Warninglist") if isinstance(item, dict) else None:
+                    res = {
+                        "ID": warninglist.get("id"),
+                        "Name": warninglist.get("name"),
+                        "Type": warninglist.get("type"),
+                        "Description": warninglist.get("description"),
+                        "Version": warninglist.get("version"),
+                        "Enabled": warninglist.get("enabled"),
+                        "Default": warninglist.get("default"),
+                        "Category": warninglist.get("category"),
+                    }
+                    valid_attributes = warninglist.get("valid_attributes")
+                    if valid_attributes and isinstance(valid_attributes, str):
+                        res["Attributes"] = valid_attributes.split(",")
+
+                    warninglists_output.append(res)
+
+            human_readable = tableToMarkdown(
+                "MISP Warninglists", warninglists_output, headers=WARNINGLIST_HEADERS, removeNull=True
+            )
+
+            return CommandResults(
+                outputs_prefix="MISP.Warninglist",
+                outputs_key_field=["ID"],
+                outputs=warninglists_output,
+                readable_output=human_readable,
+                raw_response=response,
+            )
+        else:
+            return CommandResults(
+                outputs_prefix="MISP.Warninglist",
+                outputs_key_field=["ID"],
+                outputs=[],
+                readable_output="No warninglists found in MISP",
+                raw_response=[],
+            )
+    except Exception as e:
+        raise DemistoException(f"Error in `{demisto.command()}` command: {e}")
+
+
+def get_warninglist_command(demisto_args: dict) -> CommandResults:
+    """
+    Returns the values of a specific MISP warninglist based on ID
+    """
+    warninglist_id = demisto_args["id"]
+
+    try:
+        logging.log(logging.DEBUG, f"{demisto.command()} Sending request to get warninglist {warninglist_id}")
+        response = PYMISP.get_warninglist(warninglist_id)
+
+        warninglist_output = {}
+        if entity := response.get("Warninglist", {}):
+            warninglist_attributes = [f"{t['type']}" for t in (entity.get("WarninglistType"))]
+            warninglist_output = {
+                "ID": entity["id"],
+                "Name": entity["name"],
+                "Type": entity["type"],
+                "Description": entity["description"],
+                "Version": entity["version"],
+                "Enabled": entity["enabled"],
+                "Default": entity["default"],
+                "Category": entity["category"],
+                "Attributes": warninglist_attributes,
+            }
+            # Parse valid attributes from the "valid_attributes" field if present
+            warninglist_output["Entries"] = [
+                {
+                    "ID": entry["id"],
+                    "Value": entry.get("value"),
+                    "WarninglistID": entry.get("warninglist_id"),
+                    "Comment": entry.get("comment"),
+                }
+                for entry in (entity["WarninglistEntry"])
+            ]
+
+        human_readable = tableToMarkdown("MISP Warninglist", warninglist_output, headers=WARNINGLIST_HEADERS, removeNull=True)
+        human_readable += tableToMarkdown(
+            "Entries in MISP Warninglist",
+            warninglist_output["Entries"],
+            headers=WARNINGLIST_ENTRY_HEADERS,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs=warninglist_output,
+            outputs_prefix="MISP.Warninglist",
+            outputs_key_field=["ID"],
+            readable_output=human_readable,
+            raw_response=response,
+        )
+    except Exception as e:
+        raise DemistoException(f"Error in `{demisto.command()}` command: {e}")
+
+
+def change_warninglist_command(demisto_args: dict) -> CommandResults:
+    """
+    Appends new values to supplied warninglist
+    """
+    warninglist_id = demisto_args["id"]
+    warninglist_name = demisto_args.get("name")
+    warninglist_type = demisto_args.get("type")
+    warninglist_description = demisto_args.get("description")
+    warninglist_enabled = demisto_args.get("enabled")
+    warninglist_default = demisto_args.get("default")
+    warninglist_category = demisto_args.get("category")
+    warninglist_values = argToList(demisto_args.get("values"))
+    warninglist_types = argToList(demisto_args.get("types"))
+
+    data = {}
+    if warninglist_name:
+        data["name"] = warninglist_name
+    if warninglist_type:
+        data["type"] = warninglist_type
+    if warninglist_description:
+        data["description"] = warninglist_description
+    if warninglist_enabled:
+        data["enabled"] = warninglist_enabled
+    if warninglist_default:
+        data["default"] = warninglist_default
+    if warninglist_category:
+        data["category"] = warninglist_category
+    if warninglist_values:
+        for value in warninglist_values:
+            value_dict = {"value": value}
+            warninglist_values[warninglist_values.index(value)] = value_dict
+        data["WarninglistEntry"] = warninglist_values
+    if warninglist_types:
+        data["matching_attributes"] = warninglist_types
+    try:
+        logging.log(logging.DEBUG, f"{demisto.command()} Sending request to edit warninglist {warninglist_id}: {data}")
+        response = PYMISP._prepare_request("POST", f"warninglists/edit/{warninglist_id}", data=data)
+        logging.log(logging.DEBUG, f"{demisto.command()}Status {response.status_code}: warninglists/edit/{warninglist_id}")
+        response = response.json()
+        warninglist_output = {}
+        if entity := response.get("Warninglist", {}):  # type: ignore[attr-defined]
+            warninglist_output = {
+                "ID": entity["id"],
+                "Name": entity["name"],
+                "Type": entity["type"],
+                "Description": entity["description"],
+                "Version": entity["version"],
+                "Enabled": entity["enabled"],
+                "Default": entity["default"],
+                "Category": entity["category"],
+            }
+            warninglist_output["Attributes"] = [f"{t['type']}" for t in (response.get("WarninglistType"))]  # type: ignore[attr-defined]
+            warninglist_output["Entries"] = [
+                {
+                    "ID": entry.get("id"),
+                    "Value": entry.get("value"),
+                    "WarninglistID": entry.get("warninglist_id"),
+                    "Comment": entry.get("comment"),
+                }
+                for entry in (response["WarninglistEntry"])  # type: ignore[index]
+            ]
+
+        human_readable = tableToMarkdown("MISP Warninglist", warninglist_output, headers=WARNINGLIST_HEADERS, removeNull=True)
+        human_readable += tableToMarkdown(
+            "Entries in MISP Warninglist",
+            warninglist_output["Entries"],
+            headers=WARNINGLIST_ENTRY_HEADERS,
+            removeNull=True,
+        )
+        return CommandResults(
+            readable_output=human_readable,
+            outputs_prefix="MISP.Warninglist",
+            outputs_key_field="ID",
+            outputs=warninglist_output,
+            raw_response=response,
+        )
+
+    except Exception as e:
+        raise DemistoException(f"Error in `{demisto.command()}` command: {e}")
+
+
 def main():
     params = demisto.params()
     malicious_tag_ids = argToList(params.get("malicious_tag_ids"))
@@ -2013,6 +2220,12 @@ def main():
             return_results(set_event_attributes_command(args))
         elif command == "misp-check-warninglist":
             return_results(warninglist_command(args))
+        elif command == "misp-get-warninglists":
+            return_results(get_warninglists_command(args))
+        elif command == "misp-get-warninglist":
+            return_results(get_warninglist_command(args))
+        elif command == "misp-change-warninglist":
+            return_results(change_warninglist_command(args))
         elif command == "misp-add-user":
             return_results(add_user_to_misp(args))
         elif command == "misp-get-organization-info":

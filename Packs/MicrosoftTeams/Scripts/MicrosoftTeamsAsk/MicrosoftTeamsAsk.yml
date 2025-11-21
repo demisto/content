@@ -16,12 +16,12 @@ args:
   - 'true'
   - 'false'
 - defaultValue: 'yes'
-  description: First reply option (used only for if the form type is "predefined-options").
+  description: First reply option (used only for if the form type is "predefined-options"). Options cannot contain whitespaces.
   name: option1
 - defaultValue: 'no'
-  description: Second reply option  (used only for if the form type is "predefined-options").
+  description: Second reply option  (used only for if the form type is "predefined-options"). Options cannot contain whitespaces.
   name: option2
-- description: A CSV list of additional options (in case more than 2 options are required. Used only for if the form type is "predefined-options").
+- description: A CSV list of additional options (in case more than 2 options are required. Used only for if the form type is "predefined-options"). Options cannot contain whitespaces.
   name: additional_options
 - default: true
   description: Team member to which to send the question.
@@ -44,7 +44,7 @@ tags:
 - microsoftteams
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.12.8.1983910
+dockerimage: demisto/python3:3.12.11.4508456
 tests:
 - No test
 dependson:
@@ -52,8 +52,3 @@ dependson:
   - Microsoft Teams|||send-notification
 subtype: python3
 fromversion: 5.0.0
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS

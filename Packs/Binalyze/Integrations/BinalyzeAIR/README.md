@@ -1,12 +1,12 @@
 ## Binalyze AIR Integration
-This integration allows you to use the Binalyze AIR's isolation and evidence collecting features easily.
+
+This integration allows you to use the Binalyze AIR's isolation and evidence collecting features easily
 ---
 
 Collect your forensics data under 10 minutes.
 This integration was integrated and tested with version 2.6.2 of Binalyze AIR
 
 ## Configure Binalyze AIR in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -25,10 +25,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Isolate an endpoint
 
-
 #### Base Command
 
 `binalyze-air-isolate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -36,7 +36,6 @@ Isolate an endpoint
 | hostname | Hostname of endpoint. | Required |
 | organization_id | Organization ID of the endpoint. For the use of a custom organization ID, you can specify a custom value outside the predefined set. | Required |
 | isolation | To isolate use enable. Possible values are: enable, disable. | Required |
-
 
 #### Context Output
 
@@ -47,13 +46,14 @@ Isolate an endpoint
 | BinalyzeAIR.Isolate.result.organizationId | number | Organization Id of endpoint |
 
 ### binalyze-air-acquire
+
 ***
 Acquire evidence from an endpoint
-
 
 #### Base Command
 
 `binalyze-air-acquire`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                       | **Required** |
@@ -62,7 +62,6 @@ Acquire evidence from an endpoint
 | profile | Acquisition profile. To use a custom acquisition profile, you can specify a custom value outside the predefined set. Possible values are: compromise-assessment, browsing-history, event-logs, memory-ram-pagefile, quick, full. | Required |
 | case_id | ID for the case,e.g. C-2022-0001.                                                                                                                                                                                                                     | Required |
 | organization_id | Organization ID of the endpoint. For the use of a custom organization ID, you can specify a custom value outside the predefined set.                                                                                                                  | Required |
-
 
 #### Context Output
 

@@ -23,6 +23,7 @@ MIRROR_LIMIT = 1000
 ABSOLUTE_MAX_FETCH = 200
 MAX_FETCH = arg_to_number(demisto.params().get("max_fetch")) or 25
 MAX_FETCH = min(MAX_FETCH, ABSOLUTE_MAX_FETCH)
+RETRIEVE_SCREENSHOTS = bool(demisto.params().get("retrieve_screenshots", True))
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 CBS_OUTGOING_DATE_FORMAT = "%d-%m-%Y %H:%M"
 CBS_INCOMING_DATE_FORMAT = "%d-%m-%Y %I:%M:%S %p"
@@ -30,6 +31,7 @@ CBS_BASE_URL = "https://cbs.ctm360.com"
 CBS_API_ENDPOINT = "/api/v2"
 API = {
     "FETCH": "/incidents/xsoar",
+    "GET_SCREENSHOT": "/incidents/x_platform/screenshots",
     "CLOSE_INCIDENT": "/incidents/close_incident/",
     "REQUEST_TAKEDOWN": "/incidents/request_takedown/",
 }
@@ -45,9 +47,11 @@ DEFAULT_FIELDS = [
     {"name": "remarks", "description": "Remarks about the incident"},
     {"name": "type", "description": "Incident type"},
     {"name": "id", "description": "Unique ID for the incident record"},
+    {"name": "external_link", "description": "External link to the remote platform"},
 ]
 CBS_INCIDENT_FIELDS = [
     {"name": "subject", "description": "Asset or title of incident"},
+    {"name": "screenshots", "description": "The screenshot evidence if available"},
     {"name": "class", "description": "Subject class"},
     {"name": "coa", "description": "The possible course of action"},
     *DEFAULT_FIELDS,
@@ -58,6 +62,27 @@ CBS_CARD_FIELDS = [
     {"name": "cvv", "description": "The compromised card's Card Verification Value (CVV)."},
     {"name": "expiry_month", "description": "The compromised card's expiration month."},
     {"name": "expiry_year", "description": "The compromised card's expiration year."},
+    *DEFAULT_FIELDS,
+]
+
+CBS_MALWARE_LOG_FIELDS = [
+    {"name": "masked_password", "description": "The masked password related to the breached data."},
+    {"name": "password", "description": "Password found in the breached data or compromised account."},
+    {"name": "software", "description": "The software related to the breached data."},
+    {"name": "user", "description": "The user related to the breached data."},
+    {"name": "user_domain", "description": "The domain of the user related to the breached data."},
+    {"name": "website", "description": "The website related to the breached data."},
+    {"name": "sources", "description": "The sources related to the breached data."},
+    {"name": "source_uri", "description": "The source URI related to the breached data."},
+    {"name": "domain", "description": "The domain related to the breached data or compromised device."},
+    {"name": "hostname", "description": "The hostname related to the breached data."},
+    {"name": "stealer_family", "description": "The family of the malware."},
+    {"name": "compromise_details", "description": "The details of the compromise."},
+    {"name": "date_compromised", "description": "The date the malware was compromised."},
+    {"name": "computer_name", "description": "The name of the computer that was compromised."},
+    {"name": "operating_system", "description": "The operating system of the computer that was compromised."},
+    {"name": "malware_path", "description": "The path of the malware."},
+    {"name": "url_path", "description": "The URL path of the malware."},
     *DEFAULT_FIELDS,
 ]
 
@@ -94,6 +119,8 @@ class Instance:
                 self.mapping_fields = CBS_CARD_FIELDS
             case "breached_credentials":
                 self.mapping_fields = CBS_CRED_FIELDS
+            case "malware_logs":
+                self.mapping_fields = CBS_MALWARE_LOG_FIELDS
             case "domain_infringement":
                 self.mapping_fields = CBS_DOMAIN_INFRINGE_FIELDS
             case "subdomain_infringement":
@@ -107,6 +134,7 @@ INSTANCE = Instance(
         "Incidents": "incidents",
         "Compromised Cards": "compromised_cards",
         "Breached Credentials": "breached_credentials",
+        "Malware Logs": "malware_logs",
         "Domain Infringement": "domain_infringement",
         "Subdomain Infringement": "subdomain_infringement",
     }.get(demisto.params().get("module_to_use", "Incidents"), "incidents")
@@ -143,6 +171,28 @@ class Client(BaseClient):
         if response.get("statusCode") != 200:
             raise DemistoException(f'Error received: {response.get("errors", "request was not successful")}')
         return response.get("hits", [])
+
+    def get_screenshot_files(self, params: dict[str, Any]) -> list[dict[str, Any]]:
+        """Send request to get screenshot(s)
+
+        :param params: Parameters to be sent in the request
+        :type params: dict[str, Any]
+        :return: List of dictionaries containing file information
+        :rtype: list[dict[str, Any]]
+        """
+        log(DEBUG, "at client's get_screenshot_files function")
+        log(DEBUG, f"{params=}")
+        response = self._http_request(
+            method="POST",
+            retries=MAX_RETRIES,
+            backoff_factor=10,
+            status_list_to_retry=[400, 429, 500],
+            url_suffix=CBS_API_ENDPOINT + API.get("GET_SCREENSHOT", ""),
+            json_data=params,
+            params={"t": datetime.now().timestamp()},
+        )
+        log(DEBUG, f"{response=}")
+        return response.get("results", []) or []  # Return empty list if results is None
 
     def fetch_incidents(self, params: dict[str, Any]) -> list[dict[str, Any]]:
         """Send request to fetch list of incidents
@@ -356,7 +406,7 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
     :return: Incident in format ready for XSOAR
     :rtype: ``dict``
     """
-    unmapped_incident.pop("brand", "")
+    unmapped_incident.pop("screenshots", "")
     incident_id: str = unmapped_incident.pop("id", "")
     mapped_incident = {
         "name": unmapped_incident.pop("remarks", ""),
@@ -364,9 +414,11 @@ def map_and_create_incident(unmapped_incident: dict) -> dict:
             unmapped_incident.pop("first_seen", ""), CBS_INCOMING_DATE_FORMAT, in_iso_format=True, is_utc=True
         ),
         "externalstatus": unmapped_incident.pop("status", "monitoring"),
+        "externallink": unmapped_incident.pop("external_link", ""),
         "severity": convert_to_demisto_severity(unmapped_incident.pop("severity", "low")),
         "CustomFields": {
             "cbs_type": unmapped_incident.pop("type", ""),
+            "cbs_module": INSTANCE.module,
             "cbs_coa": unmapped_incident.pop("coa", ""),
             "cbs_updated_date": convert_time_string(
                 unmapped_incident.pop("last_seen", ""), CBS_INCOMING_DATE_FORMAT, in_iso_format=True, is_utc=True
@@ -416,7 +468,6 @@ def test_module(client: Client, params) -> str:
     message: str = ""
     args: dict[str, Any] = {}
     try:
-        log(DEBUG, f"{params=}")
         mirror_direction = params.get("mirror_direction", "")
         first_fetch = params.get("first_fetch", "")
         max_fetch = arg_to_number(params.get("max_fetch", ""))
@@ -694,6 +745,8 @@ def ctm360_cbs_details_command(client: Client, args: dict[str, Any]) -> CommandR
     params |= {"module_type": INSTANCE.module}
     result = client.fetch_incident(params)
     log(INFO, f"Received {result}")
+    if result.get("timestamp", ""):
+        result["timestamp"] = str(result["timestamp"])
 
     return CommandResults(
         outputs_prefix=INSTANCE.details_prefix,
@@ -721,6 +774,90 @@ def ctm360_cbs_incident_close_command(client: Client, args: dict[str, Any]) -> C
     log(INFO, f'Request to close incident {args["ticketId"]} {"was " if result else "was un"}successful.')
 
     return CommandResults(readable_output=msg)
+
+
+def ctm360_cbs_incident_retrieve_screenshots_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults | list[dict[str, Any]] | dict[str, Any]:
+    """Get screenshot evidence for an incident
+
+    Args:
+        client (Client): CyberBlindspot client
+        args (dict[str, Any]): Command arguments
+
+    Returns:
+        CommandResults | list[dict[str, Any]] | dict[str, Any]: File results or error message
+    """
+    params = {to_snake_case(key): v for key, v in args.items()}
+    log(DEBUG, f"Getting screenshot evidence for {params=}")
+
+    try:
+        # Early returns for disabled screenshots
+        if not RETRIEVE_SCREENSHOTS:
+            log(INFO, "Screenshot Evidence Retrieval is Disabled in Instance Configuration.")
+            return CommandResults(readable_output="Screenshot Evidence Retrieval is Disabled in Instance Configuration.")
+
+        # Get existing filenames from context
+        existing_files = demisto.context().get("InfoFile", [])
+        log(DEBUG, f"{existing_files=}")
+        if not isinstance(existing_files, list):
+            existing_files = [existing_files] if existing_files else []
+        existing_filenames = [d.get("Name") for d in existing_files if isinstance(d, dict) and d.get("Name")]
+
+        # Filter requested files that already exist in context
+        if "files" in params and isinstance(params["files"], list):
+            original_files = params["files"]
+            params["files"] = [
+                file_info
+                for file_info in original_files
+                if isinstance(file_info, dict) and file_info.get("filename") not in existing_filenames
+            ]
+
+            if not params["files"] and original_files:
+                return CommandResults(readable_output="All requested screenshots already exist in context")
+
+        # Make API call and handle errors
+        try:
+            results = client.get_screenshot_files(params) if params.get("files", True) else []
+            log(DEBUG, f"{results=}")
+        except Exception as e:
+            log(ERROR, f"Error calling get_screenshot_files: {str(e)}")
+            return CommandResults(readable_output=f"Failed to fetch screenshots from API: {str(e)}")
+
+        if not results:
+            return CommandResults(readable_output="No new screenshots to fetch")
+
+        # Process results
+        file_results = []
+        for file_data in results:
+            if not isinstance(file_data, dict):
+                continue
+
+            filename = file_data.get("filename")
+            filedata = file_data.get("filedata", {})
+
+            if not filename or not isinstance(filedata, dict) or "data" not in filedata:
+                continue
+
+            try:
+                data = bytes(filedata["data"])
+                file = fileResult(filename, data, file_type=EntryType.IMAGE)
+                if file:
+                    file_results.append(file)
+            except Exception as e:
+                log(ERROR, f"Failed to process file {filename}: {str(e)}")
+                continue
+
+        log(DEBUG, f"{file_results=}")
+        if not file_results:
+            return CommandResults(readable_output="No new screenshots to add to context")
+
+        log(INFO, f"Added {len(file_results)} new screenshot(s) to context")
+        return file_results
+
+    except Exception as e:
+        log(ERROR, f"Failed to get screenshot evidence: {str(e)}")
+        return CommandResults(readable_output=f"Failed to fetch screenshot(s): {str(e)}")
 
 
 """ MAIN FUNCTION """
@@ -758,6 +895,7 @@ def main() -> None:
             "ctm360-cbs-incident-details": ctm360_cbs_details_command,
             "ctm360-cbs-incident-request-takedown": ctm360_cbs_incident_request_takedown_command,
             "ctm360-cbs-incident-close": ctm360_cbs_incident_close_command,
+            "ctm360-cbs-incident-retrieve-screenshots": ctm360_cbs_incident_retrieve_screenshots_command,
         }
 
         if demisto_command == "fetch-incidents":

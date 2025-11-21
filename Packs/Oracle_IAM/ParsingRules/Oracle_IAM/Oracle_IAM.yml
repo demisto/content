@@ -1,0 +1,14 @@
+fromversion: 8.5.0
+id: Oracle_OAM_ParsingRule
+name: Oracle OAM Parsing Rule
+rules: ''
+samples: ''
+tags: []
+supportedModules:
+- xsiam
+- agentix
+- C1
+- X1
+- X3
+- X5
+- ENT_PLUS

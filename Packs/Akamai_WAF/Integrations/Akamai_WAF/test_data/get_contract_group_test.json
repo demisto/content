@@ -1,0 +1,23 @@
+{
+    "raw_response": {
+        "contractId": "ctr_1-23456",
+        "groups": [
+            {
+                "groupId": 12345,
+                "groupName": "Test Group"
+            }
+        ]
+    },
+    "human_readable": "### Akamai WAF Contract Groups\n|contractId|groups|\n|---|---|\n| ctr_1-23456 | {'groupId': 12345, 'groupName': 'Test Group'} |\n",
+    "context_entry": {
+        "Akamai.ContractGroup": {
+            "contractId": "ctr_1-23456",
+            "groups": [
+                {
+                    "groupId": 12345,
+                    "groupName": "Test Group"
+                }
+            ]
+        }
+    }
+}

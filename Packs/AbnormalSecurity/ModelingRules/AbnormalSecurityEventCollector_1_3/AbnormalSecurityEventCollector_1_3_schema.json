@@ -1,5 +1,13 @@
 {
     "abnormal_security_email_protection_raw": {
+        "attachmentNames": {
+            "type": "string",
+            "is_array": false
+        },
+        "senderIpAddress": {
+            "type": "string",
+            "is_array": false
+        },
         "threatId": {
             "type": "string",
             "is_array": false
@@ -9,10 +17,6 @@
             "is_array": false
         },
         "toAddresses": {
-            "type": "string",
-            "is_array": false
-        },
-        "attachmentNames": {
             "type": "string",
             "is_array": false
         },
@@ -48,17 +52,9 @@
             "type": "string",
             "is_array": false
         },
-        "abxPortalUrl": {
-            "type": "string",
-            "is_array": false
-        },
         "abxMessageId": {
             "type": "int",
             "is_array": false
-        },
-        "senderIpAddress": {
-            "type": "string",
-            "is_array": false
-        }
+        }                
     }
 }

@@ -1,6 +1,7 @@
 Prints a value to the specified alert's war-room. The alert must be in status "Under Investigation".
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Prints a value to the specified alert's war-room. The alert must be in status "U
 | Cortex XSOAR Version | 8.7.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,14 +20,16 @@ Prints a value to the specified alert's war-room. The alert must be in status "U
 | alert_id | The alert ID to print to. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
-
 ## Script Example
+
 ```!PrintToAlert alert_id=5 value="Hello from the other side"```
 
 ## Context Example
+
 ```json
 {}
 ```

@@ -28,10 +28,10 @@ def hash_object(str_list_dict):
     if isinstance(str_list_dict, list):
         return [hash_object(x) for x in str_list_dict]
 
-    if type(str_list_dict) in [str, str]:
+    if isinstance(str_list_dict, str):
         str_value = str_list_dict.encode("utf-8")
     else:
-        str_value = str(str_list_dict)
+        str_value = (str(str_list_dict)).encode("utf-8")
     return hashlib.md5(str_value).hexdigest()  # guardrails-disable-line  # nosec
 
 

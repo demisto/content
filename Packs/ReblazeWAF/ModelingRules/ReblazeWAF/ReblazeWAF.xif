@@ -1,0 +1,56 @@
+[MODEL: dataset = reblaze_waf_raw]
+alter
+    get_severity = parsed_fields_get_headers  -> pri,
+    get_source_ipv4 = arrayindex(regextract(parsed_fields -> remote_addr, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    get_reblaze_hostname = parsed_fields_get_headers -> hostname,
+    get_source_ipv6 = arrayindex(regextract(parsed_fields -> remote_addr, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+    get_status = parsed_fields -> status,
+    get_bytes_sent = to_integer(parsed_fields -> bytes_sent),
+    get_request_params = parsed_fields -> request,
+    get_block_status = parsed_fields -> blocked,
+    get_block_reason = parsed_fields -> block_reason,
+    get_request_id = parsed_fields -> request_id,
+    get_captured_vector = parsed_fields -> captured_vector,
+    get_duration_1 = multiply(to_float(parsed_fields -> request_time), 1000),
+    get_duration_2 = if(parsed_fields -> upstream_response_time = "-",0 , multiply(to_float(parsed_fields -> upstream_response_time), 1000)),
+    get_upstream_address = parsed_fields -> upstream_addr,
+    get_domain_name = parsed_fields -> domain_name,
+    get_host = parsed_fields -> host,
+    get_referer = parsed_fields -> referer,
+    get_user_agent = parsed_fields -> user_agent,
+    get_ssl_protocol = parsed_fields -> ssl_protocol
+
+
+| alter 
+    extract_target_ipv4 = arrayindex(regextract(get_upstream_address, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    extract_target_ipv6 = arrayindex(regextract(get_upstream_address, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+    extract_target_port =  arrayindex(regextract(get_upstream_address, ":(\d{1,5})$"),0),
+    extract_http_version = arrayindex(regextract(get_request_params , "(HTTP\/\d\.?\d?)"), 0) ,
+    extract_http_method = arrayindex(regextract(get_request_params , "^\S+"), 0) ,
+    calculate_duration = add(get_duration_1 , get_duration_2 )
+
+
+| alter
+    xdm.alert.severity = get_severity,
+    xdm.event.description = if(get_captured_vector = "-", "No Captured Vector", get_captured_vector),
+    xdm.event.duration = to_integer(calculate_duration),
+    xdm.event.id = get_request_id ,
+    xdm.event.outcome = if(get_block_status = "1", XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = if(get_block_reason = "-", "Request Was Not Denied", get_block_reason),
+    xdm.network.application_protocol = extract_http_version,
+    xdm.network.http.domain = get_domain_name,
+    xdm.network.http.method = if(extract_http_method = "acl", XDM_CONST.HTTP_METHOD_ACL, extract_http_method = "baseline_control", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, extract_http_method = "bind", XDM_CONST.HTTP_METHOD_BIND, extract_http_method = "checkin", XDM_CONST.HTTP_METHOD_CHECKIN, extract_http_method = "checkout", XDM_CONST.HTTP_METHOD_CHECKOUT, extract_http_method = "connect", XDM_CONST.HTTP_METHOD_CONNECT, extract_http_method = "copy", XDM_CONST.HTTP_METHOD_COPY, extract_http_method = "delete", XDM_CONST.HTTP_METHOD_DELETE, extract_http_method = "get", XDM_CONST.HTTP_METHOD_GET, extract_http_method = "head", XDM_CONST.HTTP_METHOD_HEAD, extract_http_method = "label", XDM_CONST.HTTP_METHOD_LABEL, extract_http_method = "link", XDM_CONST.HTTP_METHOD_LINK, extract_http_method = "lock", XDM_CONST.HTTP_METHOD_LOCK, extract_http_method = "merge", XDM_CONST.HTTP_METHOD_MERGE, extract_http_method = "mkactivity", XDM_CONST.HTTP_METHOD_MKACTIVITY, extract_http_method = "mkcalendar", XDM_CONST.HTTP_METHOD_MKCALENDAR, extract_http_method = "mkcol", XDM_CONST.HTTP_METHOD_MKCOL, extract_http_method = "mkredirectref", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, extract_http_method = "mkworkspace", XDM_CONST.HTTP_METHOD_MKWORKSPACE, extract_http_method = "move", XDM_CONST.HTTP_METHOD_MOVE, extract_http_method = "options", XDM_CONST.HTTP_METHOD_OPTIONS, extract_http_method = "orderpatch", XDM_CONST.HTTP_METHOD_ORDERPATCH, extract_http_method = "patch", XDM_CONST.HTTP_METHOD_PATCH, extract_http_method = "post", XDM_CONST.HTTP_METHOD_POST, extract_http_method = "pri", XDM_CONST.HTTP_METHOD_PRI, extract_http_method = "propfind", XDM_CONST.HTTP_METHOD_PROPFIND, extract_http_method = "proppatch", XDM_CONST.HTTP_METHOD_PROPPATCH, extract_http_method = "put", XDM_CONST.HTTP_METHOD_PUT, extract_http_method = "rebind", XDM_CONST.HTTP_METHOD_REBIND, extract_http_method = "report", XDM_CONST.HTTP_METHOD_REPORT, extract_http_method = "search", XDM_CONST.HTTP_METHOD_SEARCH, extract_http_method = "trace", XDM_CONST.HTTP_METHOD_TRACE, extract_http_method = "unbind", XDM_CONST.HTTP_METHOD_UNBIND, extract_http_method = "uncheckout", XDM_CONST.HTTP_METHOD_UNCHECKOUT, extract_http_method = "unlink", XDM_CONST.HTTP_METHOD_UNLINK, extract_http_method = "unlock", XDM_CONST.HTTP_METHOD_UNLOCK, extract_http_method = "update", XDM_CONST.HTTP_METHOD_UPDATE, extract_http_method = "updateredirectref", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, extract_http_method = "version_control", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, extract_http_method = null, null, to_string(extract_http_method)),
+    xdm.network.http.referrer = if(get_referer = "-", "No Referer", get_referer),
+    xdm.network.http.response_code = if(get_status = "100", XDM_CONST.HTTP_RSP_CODE_CONTINUE, get_status = "101", XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, get_status = "102", XDM_CONST.HTTP_RSP_CODE_PROCESSING, get_status = "103", XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, get_status = "200", XDM_CONST.HTTP_RSP_CODE_OK, get_status = "201", XDM_CONST.HTTP_RSP_CODE_CREATED, get_status = "202", XDM_CONST.HTTP_RSP_CODE_ACCEPTED, get_status = "203", XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, get_status = "204", XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, get_status = "205", XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, get_status = "206", XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, get_status = "207", XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, get_status = "208", XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, get_status = "226", XDM_CONST.HTTP_RSP_CODE_IM_USED, get_status = "300", XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, get_status = "301", XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, get_status = "302", XDM_CONST.HTTP_RSP_CODE_FOUND, get_status = "303", XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, get_status = "304", XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, get_status = "305", XDM_CONST.HTTP_RSP_CODE_USE_PROXY, get_status = "307", XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, get_status = "308", XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, get_status = "400", XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, get_status = "401", XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, get_status = "402", XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, get_status = "403", XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, get_status = "404", XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, get_status = "405", XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, get_status = "406", XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, get_status = "407", XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, get_status = "408", XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, get_status = "409", XDM_CONST.HTTP_RSP_CODE_CONFLICT, get_status = "410", XDM_CONST.HTTP_RSP_CODE_GONE, get_status = "411", XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, get_status = "412", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, get_status = "413", XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, get_status = "414", XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, get_status = "415", XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, get_status = "416", XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, get_status = "417", XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, get_status = "421", XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, get_status = "422", XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, get_status = "423", XDM_CONST.HTTP_RSP_CODE_LOCKED, get_status = "424", XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, get_status = "425", XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, get_status = "426", XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, get_status = "428", XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, get_status = "429", XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, get_status = "431", XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, get_status = "451", XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS, get_status = "500", XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, get_status = "501", XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, get_status = "502", XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, get_status = "503", XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, get_status = "504", XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, get_status = "505", XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, get_status = "506", XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, get_status = "507", XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, get_status = "508", XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, get_status = "511", XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, get_status = null, null, to_string(get_status)),
+    xdm.network.rule = if(get_block_reason = "-", "Request Was Not Denied", get_block_reason),
+    xdm.network.tls.protocol_version = get_ssl_protocol,
+    xdm.observer.name = get_reblaze_hostname,
+    xdm.session_context_id = get_request_id,
+    xdm.source.ipv4 = get_source_ipv4,
+    xdm.source.ipv6 = get_source_ipv6,
+    xdm.source.user_agent = get_user_agent,
+    xdm.target.host.hostname = get_host,
+    xdm.target.ipv4 = extract_target_ipv4,
+    xdm.target.ipv6 = rtrim(extract_target_ipv6, ":"),
+    xdm.target.port = to_integer(extract_target_port),
+    xdm.target.sent_bytes = get_bytes_sent;

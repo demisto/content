@@ -8,57 +8,52 @@ name: GetTasksWithSections
 script: '-'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.3296088
 tags:
 - Utility
 comment: Groups all tasks for a specific incident according to the task headers (titles).
 enabled: true
 outputs:
 - contextPath: Tasks
-  description: The entire task object
+  description: The entire task object.
 - contextPath: Tasks.id
-  description: Task ID
+  description: Task ID.
   type: string
 - contextPath: Tasks.name
-  description: Task name
+  description: Task name.
   type: string
 - contextPath: Tasks.section
-  description: Task section path
+  description: Task section path.
   type: string
 - contextPath: Tasks.type
-  description: Task type (regular, condition, title, playbook, start)
+  description: Task type (regular, condition, title, playbook, start).
   type: string
 - contextPath: Tasks.owner
-  description: Task owner
+  description: Task owner.
   type: string
 - contextPath: Tasks.state
-  description: Task state (inprogress, Completed, WillNotBeExecuted, Error, Waiting, Blocked, and empty string for not started)
+  description: Task state (inprogress, Completed, WillNotBeExecuted, Error, Waiting, Blocked, and empty string for not started).
   type: string
 - contextPath: Tasks.scriptId
-  description: Task related script (empty if manual)
+  description: Task related script (empty if manual).
   type: string
 - contextPath: Tasks.startDate
-  description: Task start date
+  description: Task start date.
   type: unknown
 - contextPath: Tasks.completedDate
-  description: Task completed date
+  description: Task completed date.
   type: unknown
 - contextPath: Tasks.dueDate
-  description: Task due date (SLA)
+  description: Task due date (SLA).
   type: unknown
 - contextPath: Tasks.parentPlaybookID
-  description: Task parent playbook ID (if the task is part of a sub-playbook)
+  description: Task parent playbook ID (if the task is part of a sub-playbook).
   type: unknown
 - contextPath: Tasks.completedBy
-  description: Name of the user who completed the task
+  description: Name of the user who completed the task.
   type: string
 scripttarget: 0
 sensitive: true
 tests:
 - GetTasksWithSections SetIRProcedures end to end test
 fromversion: 6.0.0
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS

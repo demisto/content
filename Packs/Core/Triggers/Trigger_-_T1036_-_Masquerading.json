@@ -1,55 +1,56 @@
 {
-  "trigger_id": "36ff93e2ba62421cbaf704a395c7a7d1",
-  "playbook_id": "T1036 - Masquerading",
-  "suggestion_reason": "Recommended for Alerts with evidence of MITRE technique “Masquerading”",
-  "description": "This trigger is responsible for handling T1036 - Masquerading alerts",
-  "trigger_name": "T1036 - Masquerading",
-  "alerts_filter": {
-    "filter": {
-      "OR": [
-        {
-            "SEARCH_FIELD": "mitre_technique_id_and_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "T1036 - Masquerading"
-        },
-        {
-            "SEARCH_FIELD": "mitre_technique_id_and_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "T1036.001 - Masquerading: Invalid Code Signature"
-        },
-        {
-            "SEARCH_FIELD": "mitre_technique_id_and_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "T1036.002 - Masquerading: Right-to-Left Override"
-        },
-        {
-            "SEARCH_FIELD": "mitre_technique_id_and_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "T1036.003 - Masquerading: Rename System Utilities"
-        },
-        {
-            "SEARCH_FIELD": "mitre_technique_id_and_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "T1036.004 - Masquerading: Masquerade Task or Service"
-        },
-        {
-            "SEARCH_FIELD": "mitre_technique_id_and_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "T1036.005 - Masquerading: Match Legitimate Name or Location"
-        },
-        {
-            "SEARCH_FIELD": "mitre_technique_id_and_name",
-            "SEARCH_TYPE": "CONTAINS",
-            "SEARCH_VALUE": "T1036.006 - Masquerading: Space after Filename"
+    "trigger_id": "36ff93e2ba62421cbaf704a395c7a7d1",
+    "playbook_id": "T1036 - Masquerading",
+    "suggestion_reason": "Recommended for Alerts with evidence of MITRE technique \u201cMasquerading\u201d",
+    "description": "This trigger is responsible for handling T1036 - Masquerading alerts",
+    "trigger_name": "T1036 - Masquerading",
+    "alerts_filter": {
+        "filter": {
+            "OR": [
+                {
+                    "SEARCH_FIELD": "mitre_technique_id_and_name",
+                    "SEARCH_TYPE": "CONTAINS",
+                    "SEARCH_VALUE": "T1036 - Masquerading"
+                },
+                {
+                    "SEARCH_FIELD": "mitre_technique_id_and_name",
+                    "SEARCH_TYPE": "CONTAINS",
+                    "SEARCH_VALUE": "T1036.001 - Masquerading: Invalid Code Signature"
+                },
+                {
+                    "SEARCH_FIELD": "mitre_technique_id_and_name",
+                    "SEARCH_TYPE": "CONTAINS",
+                    "SEARCH_VALUE": "T1036.002 - Masquerading: Right-to-Left Override"
+                },
+                {
+                    "SEARCH_FIELD": "mitre_technique_id_and_name",
+                    "SEARCH_TYPE": "CONTAINS",
+                    "SEARCH_VALUE": "T1036.003 - Masquerading: Rename System Utilities"
+                },
+                {
+                    "SEARCH_FIELD": "mitre_technique_id_and_name",
+                    "SEARCH_TYPE": "CONTAINS",
+                    "SEARCH_VALUE": "T1036.004 - Masquerading: Masquerade Task or Service"
+                },
+                {
+                    "SEARCH_FIELD": "mitre_technique_id_and_name",
+                    "SEARCH_TYPE": "CONTAINS",
+                    "SEARCH_VALUE": "T1036.005 - Masquerading: Match Legitimate Name or Location"
+                },
+                {
+                    "SEARCH_FIELD": "mitre_technique_id_and_name",
+                    "SEARCH_TYPE": "CONTAINS",
+                    "SEARCH_VALUE": "T1036.006 - Masquerading: Space after Filename"
+                }
+            ]
         }
-      ]
-    }
-  },
-  "supportedModules": [
-      "X1",
-      "X3",
-      "X5",
-      "ENT_PLUS"
-  ]
+    },
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "xsiam",
+        "agentix"
+    ]
 }
-

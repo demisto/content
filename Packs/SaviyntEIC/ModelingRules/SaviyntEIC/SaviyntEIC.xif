@@ -1,0 +1,18 @@
+[MODEL: dataset=saviynt_eic_raw]
+alter 
+        extract_message = if(Message contains "\"message", Message -> message, Message),
+        extract_message_objectName = Message -> objectName,
+        extract_ipv4 = arrayindex(regextract(IP_Address , "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+        extract_ipv6 = arrayindex(regextract(IP_Address, "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0)
+
+| alter
+        xdm.event.type = "Audit",
+        xdm.event.id = event_hash,
+        xdm.event.description = extract_message,
+        xdm.event.operation_sub_type = Action_Taken,
+        xdm.source.ipv4 = extract_ipv4,
+        xdm.source.ipv6 = extract_ipv6,
+        xdm.source.user.identifier = Accessed_By,
+        xdm.source.user.username = Accessed_By,
+        xdm.target.resource.type = Object_Type,
+        xdm.target.resource.name = extract_message_objectName;

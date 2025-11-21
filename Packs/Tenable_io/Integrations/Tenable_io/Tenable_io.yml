@@ -1,5 +1,5 @@
 category: Vulnerability Management
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -490,7 +490,7 @@ script:
       - 'false'
     - description: When specified, the results returned in the list are limited to assets with the specified tag category.
       name: tagCategory
-    - description: When specified, the results returned in the list are limited to assets with the specified tag value.
+    - description: When specified, the results returned in the list are limited to assets with the specified tag value. Can be comma-delimited for multiple items.
       name: tagValue
     - name: exportUuid
       description: The export UUID.
@@ -767,8 +767,9 @@ script:
       isArray: true
     - description: When specified, the results returned in the list are limited to assets with the specified tag category.
       name: tagCategory
-    - description: When specified, the results returned in the list are limited to assets with the specified tag value.
+    - description: When specified, the results returned in the list are limited to assets with the specified tag value. Can be comma-delimited for multiple items.
       name: tagValue
+      isArray: true
     - auto: PREDEFINED
       description: 'An operator that determines the limitation on Vulnerability Priority Rating (VPR), scores value specified at vprScoreValue argument. Supported values are: equal, not equal, lt-lesser, lte-lesser than or equal , gt-greater than , gte-greater than or equal.'
       name: vprScoreOperator
@@ -1322,24 +1323,24 @@ script:
     - contextPath: InfoFile.Extension
       description: The file extension of the file.
   - arguments:
-      - auto: PREDEFINED
-        defaultValue: 'false'
-        description: Set this argument to True in order to create events, otherwise the command will only display the events.
-        name: should_push_events
-        predefined:
-          - 'true'
-          - 'false'
-        required: true
-      - description: The maximum number of alerts to return (maximum value - 5000).
-        name: limit
-      - description: Return events that occurred after the specified date.
-        name: from_date
-      - description: Return events that occurred before the specified date.
-        name: to_date
-      - description: Return events that contain the specified actor UUID.
-        name: actor_id
-      - description: Return events matching the specified target UUID.
-        name: target_id
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True in order to create events, otherwise the command will only display the events.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - description: The maximum number of alerts to return (maximum value - 5000).
+      name: limit
+    - description: Return events that occurred after the specified date.
+      name: from_date
+    - description: Return events that occurred before the specified date.
+      name: to_date
+    - description: Return events that contain the specified actor UUID.
+      name: actor_id
+    - description: Return events matching the specified target UUID.
+      name: target_id
     description: Returns audit logs extracted from Tenable io.
     name: tenable-io-get-audit-logs
   runonce: false
@@ -1348,7 +1349,7 @@ script:
   isfetchassets: true
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.12.5490952
 tests:
 - Tenable.io test
 fromversion: 5.0.0

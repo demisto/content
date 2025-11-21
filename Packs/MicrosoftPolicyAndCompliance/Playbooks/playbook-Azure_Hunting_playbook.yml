@@ -388,7 +388,7 @@ tasks:
       name: Search for Azure AD service account created or modified
       description: Use the o365-search-auditlog command to search the unified audit
         log. This log contains events from Exchange Online, SharePoint Online, OneDrive
-        for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
+        for Business, Entra ID, Microsoft Teams, Power BI, and other
         Microsoft 365 services. You can search for all events in a specified date
         range, or you can filter the results based on specific criteria, such as the
         action, the user who performed the action, or the target object.
@@ -437,7 +437,7 @@ tasks:
       name: Search for Azure AD application sharing with additional tenants
       description: Use the o365-search-auditlog command to search the unified audit
         log. This log contains events from Exchange Online, SharePoint Online, OneDrive
-        for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
+        for Business, Entra ID, Microsoft Teams, Power BI, and other
         Microsoft 365 services. You can search for all events in a specified date
         range, or you can filter the results based on specific criteria, such as the
         action, the user who performed the action, or the target object.
@@ -487,7 +487,7 @@ tasks:
       name: Search for Azure AD custom unverified domain was added
       description: Use the o365-search-auditlog command to search the unified audit
         log. This log contains events from Exchange Online, SharePoint Online, OneDrive
-        for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
+        for Business, Entra ID, Microsoft Teams, Power BI, and other
         Microsoft 365 services. You can search for all events in a specified date
         range, or you can filter the results based on specific criteria, such as the
         action, the user who performed the action, or the target object.
@@ -532,7 +532,7 @@ tasks:
       name: Search for SSO being disabled for a domain
       description: Use the o365-search-auditlog command to search the unified audit
         log. This log contains events from Exchange Online, SharePoint Online, OneDrive
-        for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
+        for Business, Entra ID, Microsoft Teams, Power BI, and other
         Microsoft 365 services. You can search for all events in a specified date
         range, or you can filter the results based on specific criteria, such as the
         action, the user who performed the action, or the target object.
@@ -577,7 +577,7 @@ tasks:
       name: Search for domain federation settings modified
       description: Use the o365-search-auditlog command to search the unified audit
         log. This log contains events from Exchange Online, SharePoint Online, OneDrive
-        for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
+        for Business, Entra ID, Microsoft Teams, Power BI, and other
         Microsoft 365 services. You can search for all events in a specified date
         range, or you can filter the results based on specific criteria, such as the
         action, the user who performed the action, or the target object.
@@ -622,7 +622,7 @@ tasks:
       name: Search whether mail permissions were added to a service principal
       description: Use the o365-search-auditlog command to search the unified audit
         log. This log contains events from Exchange Online, SharePoint Online, OneDrive
-        for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
+        for Business, Entra ID, Microsoft Teams, Power BI, and other
         Microsoft 365 services. You can search for all events in a specified date
         range, or you can filter the results based on specific criteria, such as the
         action, the user who performed the action, or the target object.

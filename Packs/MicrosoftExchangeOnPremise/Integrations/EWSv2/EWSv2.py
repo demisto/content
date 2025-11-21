@@ -140,7 +140,7 @@ def exchangelib_cleanup():  # pragma: no cover
 
 
 # Prep Functions
-def parse_auth_type(auth_type):  # pragma: no cover
+def parse_auth_type(auth_type: str):  # pragma: no cover
     auth_type = auth_type.lower()
     if auth_type == "ntlm":
         return NTLM
@@ -701,8 +701,10 @@ def cast_mime_item_to_message(item):
     mime_content = item.mime_content
     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
     if isinstance(mime_content, bytes):
+        demisto.debug("Returning message as bytes")
         return email.message_from_bytes(mime_content, policy=email_policy)  # type: ignore[arg-type]
     else:
+        demisto.debug("Returning message as string")
         return email.message_from_string(mime_content, policy=email_policy)  # type: ignore[arg-type]
 
 
@@ -828,10 +830,7 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
                                         except ValueError as err:
                                             if "There may be at most" not in str(err):
                                                 raise err
-                            try:
-                                formatted_message = attached_email.as_string()
-                            except UnicodeEncodeError:
-                                formatted_message = attached_email.as_bytes()
+                            formatted_message = get_formatted_message(attached_email)
                             file_result = fileResult(
                                 get_attachment_name(
                                     attachment_name=attachment.name,
@@ -941,6 +940,19 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
             raise e
 
     return incident
+
+
+def get_formatted_message(attached_email) -> str | bytes:
+    try:
+        demisto.debug("Formatting attached mail as string")
+        return attached_email.as_string()
+    except Exception as e:
+        demisto.info(f"Could not parse attached mail as string, trying as bytes.\n{e}")
+        try:
+            return attached_email.as_bytes()
+        except Exception as e:
+            demisto.error(f"Could not parse attached mail as bytes, {e}")
+            raise Exception(f"Could not format message, {e}")
 
 
 def fetch_emails_as_incidents(
@@ -1143,7 +1155,7 @@ def fetch_attachments_for_message(
                             attachment_subject=attachment.item.subject,
                         )
                         + ".eml",
-                        attached_email.as_string(),
+                        get_formatted_message(attached_email),
                     )
                 )
 
@@ -1432,7 +1444,7 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma:
                         if "There may be at most" not in str(err):
                             raise err
         eml_name = item.subject if item.subject else "demisto_untitled_eml"
-        file_result = fileResult(eml_name + ".eml", email_content.as_string())
+        file_result = fileResult(eml_name + ".eml", get_formatted_message(email_content))
         file_result = file_result if file_result else "Failed uploading eml file to war room"
 
         return file_result
@@ -1556,13 +1568,15 @@ def send_email(client: EWSClient, args):
     return results
 
 
-def reply_email(client: EWSClient, args):  # pragma: no cover
+def reply_email(client: EWSClient, args: dict):  # pragma: no cover
     time_zone = get_time_zone()
     account = client.get_account(target_mailbox=client.account_email, time_zone=time_zone)
     bcc = argToList(args.get("bcc"))
     cc = argToList(args.get("cc"))
     to = argToList(args.get("to"))
-    subject = args.get("subject")
+    handle_inline_image: bool = argToBoolean(args.get("handle_inline_image", True))
+    from_mailbox = args.get("from")
+    subject = args.get("subject", "")
     subject = subject[:252] + "..." if subject and len(subject) > 255 else subject
 
     attachments, attachments_names = process_attachments(
@@ -1570,19 +1584,20 @@ def reply_email(client: EWSClient, args):  # pragma: no cover
     )
 
     client.reply_email(
-        args.get("inReplyTo", ""),
-        to,
-        args.get("body", ""),
-        subject,
-        bcc,
-        cc,
-        args.get("htmlBody"),
-        attachments,
-        args.get("from"),
-        account,
+        in_reply_to=args.get("inReplyTo", ""),
+        to=to,
+        body=args.get("body", ""),
+        subject=subject,
+        bcc=bcc,
+        cc=cc,
+        html_body=args.get("htmlBody"),
+        attachments=attachments,
+        from_mailbox=from_mailbox,
+        account=account,
+        handle_inline_image=handle_inline_image,
     )
     result_object = {
-        "from": args.get("from") or account.primary_smtp_address,
+        "from": from_mailbox or account.primary_smtp_address,
         "to": to,
         "subject": subject,
         "attachments": attachments_names,

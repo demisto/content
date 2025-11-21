@@ -65,9 +65,10 @@ Outputs
 
 ## Human Readable Output
 
- ### Docker Images In use:
+### Docker Images In use
+
 |Docker Image|Content Item|
 |---|---|
-| demisto/ldap:1.0.0.23980 | Active Directory Query v2| 
-| demisto/python3:3.9.6.22912 | AutoFocus Daily Feed,<br/>McAfee ePO,<br/>ServiceNow CMDB,<br/>ServiceNow IAM,<br/>ServiceNow v2| 
+| demisto/ldap:1.0.0.23980 | Active Directory Query v2|
+| demisto/python3:3.9.6.22912 | AutoFocus Daily Feed,<br/>McAfee ePO,<br/>ServiceNow CMDB,<br/>ServiceNow IAM,<br/>ServiceNow v2|
 | demisto/python3:3.9.6.24019 | AutoFocus Feed,<br/>GitLab (Community Contribution),<br/>Palo Alto Networks AutoFocus v2,<br/>ExtractEmailV2,<br/>GetIndicatorDBotScoreFromCache|

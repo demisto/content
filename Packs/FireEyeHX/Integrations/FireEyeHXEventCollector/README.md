@@ -4,7 +4,6 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure FireEye HX Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL (e.g., https://192.168.0.1:3000) |  | True |
@@ -14,7 +13,6 @@ This is the default integration for this content pack when configured by the Dat
 | Use system proxy settings |  | False |
 | The maximum number of events per fetch. | The maximum number of events to fetch every time fetch is executed. | False |
 | First Fetch Time | The First Fetch Time, e.g., 1 hour, 3 days | False |
-
 
 ## Commands
 
@@ -34,9 +32,9 @@ Manual command to fetch events and display them.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of events to get. | Optional | 
-| since | Occurrence time of the least recent event to include (inclusive). Default is 3 days. | Optional | 
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
+| limit | The maximum number of events to get. | Optional |
+| since | Occurrence time of the least recent event to include (inclusive). Default is 3 days. | Optional |
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
 
 #### Context Output
 

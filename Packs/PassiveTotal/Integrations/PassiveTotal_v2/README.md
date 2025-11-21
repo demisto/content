@@ -3,7 +3,6 @@ This integration was integrated and tested with enterprise version of PassiveTot
 
 ## Configure PassiveTotal v2 in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | API URL | True |
@@ -12,7 +11,6 @@ This integration was integrated and tested with enterprise version of PassiveTot
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 | request_timeout | HTTP\(S\) Request Timeout \(in seconds\) | False |
-
 
 ## Commands
 
@@ -24,7 +22,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Gets WHOIS information records based on field matching queries.
 
-
 #### Base Command
 
 `pt-whois-search`
@@ -33,90 +30,88 @@ Gets WHOIS information records based on field matching queries.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Query value to use in your request. | Required | 
-| field | WHOIS field to execute the search on: domain, email, name, organization, address, phone, nameserver. | Required | 
-
+| query | Query value to use in your request. | Required |
+| field | WHOIS field to execute the search on: domain, email, name, organization, address, phone, nameserver. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Domain.Name | String | The domain name, for example: 'google.com'. | 
-| Domain.WHOIS.CreationDate | Date | The date that the domain was created. | 
-| Domain.WHOIS.UpdatedDate | Date | The date that the domain was last updated. | 
-| Domain.WHOIS.ExpirationDate | Date | The expiration date of the domain. | 
-| Domain.WHOIS.NameServers | String | Name servers of the domain. | 
-| Domain.Organization | String | The organization of the domain. | 
-| Domain.Admin.Email | String | The email address of the domain administrator. | 
-| Domain.Admin.Name | String | The name of the domain administrator. | 
-| Domain.Admin.Phone | String | The phone number of the domain administrator. | 
-| Domain.Admin.Country | String | The country of the domain administrator. | 
-| Domain.Registrant.Email | String | The email address of the registrant. | 
-| Domain.Registrant.Name | String | The name of the registrant. | 
-| Domain.Registrant.Phone | String | The phone number for receiving abuse reports. | 
-| Domain.Registrant.Country | String | The country of the registrant. | 
-| Domain.WHOIS.Admin.Email | String | The email address of the domain administrator. | 
-| Domain.WHOIS.Admin.Name | String | The name of the domain administrator. | 
-| Domain.WHOIS.Admin.Phone | String | The phone number of the domain administrator. | 
-| Domain.WHOIS.Admin.Country | String | The country of the domain administrator. | 
-| Domain.WHOIS.Registrar.Name | String | The name of the registrar, for example: 'GoDaddy'. | 
-| Domain.WHOIS.Registrant.Email | String | The email address of the registrant. | 
-| Domain.WHOIS.Registrant.Name | String | The name of the registrant. | 
-| Domain.WHOIS.Registrant.Phone | String | The phone number for receiving abuse reports. | 
-| Domain.WHOIS.Registrant.Country | String | The country of the registrant. | 
-| PassiveTotal.WHOIS.domain | String | The domain name, for example: 'google.com'. | 
-| PassiveTotal.WHOIS.registrar | String | The name of the registrar of the domain | 
-| PassiveTotal.WHOIS.whoisServer | String | WHOIS server name where the details of domain registrations belong | 
-| PassiveTotal.WHOIS.registered | Date | The date that the domain was registered. | 
-| PassiveTotal.WHOIS.expiresAt | Date | The expiration date of the domain. | 
-| PassiveTotal.WHOIS.registryUpdatedAt | Date | The date when registry was last updated. | 
-| PassiveTotal.WHOIS.lastLoadedAt | Date | Last loaded date of WHOIS database. | 
-| PassiveTotal.WHOIS.nameServers | String | Name servers of the domain. | 
-| PassiveTotal.WHOIS.organization | String | The organization of the domain. | 
-| PassiveTotal.WHOIS.name | String | Name of the domain. | 
-| PassiveTotal.WHOIS.telephone | String | Telephone number fetched from whois details of the domain. | 
-| PassiveTotal.WHOIS.contactEmail | String | Contact Email address of the domain owner | 
-| PassiveTotal.WHOIS.registrantEmail | String | The name of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantFax | String | The fax number of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantName | String | The name of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantOrganization | String | The organizations of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantStreet | String | The street of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantCity | String | The city of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantState | String | The state of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantPostalCode | String | The postal code of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantCountry | String | The country of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantTelephone | String | The telephone number of the domain registrant. | 
-| PassiveTotal.WHOIS.adminEmail | String | The email address of the domain administrator. | 
-| PassiveTotal.WHOIS.adminFax | String | The fax number of the domain administrator. | 
-| PassiveTotal.WHOIS.adminName | String | The name of the domain administrator. | 
-| PassiveTotal.WHOIS.adminOrganization | String | The organizations of the domain administrator. | 
-| PassiveTotal.WHOIS.adminStreet | String | The street of the domain administrator. | 
-| PassiveTotal.WHOIS.adminCity | String | The city of the domain administrator. | 
-| PassiveTotal.WHOIS.adminState | String | The state of the domain administrator. | 
-| PassiveTotal.WHOIS.adminPostalCode | String | The postal code of the domain administrator. | 
-| PassiveTotal.WHOIS.adminCountry | String | The country of the domain administrator. | 
-| PassiveTotal.WHOIS.adminTelephone | String | The telephone number of the domain administrator. | 
-| PassiveTotal.WHOIS.billingEmail | String | The email address of the domain billing. | 
-| PassiveTotal.WHOIS.billingFax | String | The fax number of the domain billing. | 
-| PassiveTotal.WHOIS.billingName | String | The name of the domain billing. | 
-| PassiveTotal.WHOIS.billingOrganization | String | The organizations of the domain billing. | 
-| PassiveTotal.WHOIS.billingStreet | String | The street of the domain billing. | 
-| PassiveTotal.WHOIS.billingCity | String | The city of the domain billing. | 
-| PassiveTotal.WHOIS.billingState | String | The state of the domain billing. | 
-| PassiveTotal.WHOIS.billingPostalCode | String | The postal code of the domain billing. | 
-| PassiveTotal.WHOIS.billingCountry | String | The country of the domain billing. | 
-| PassiveTotal.WHOIS.billingTelephone | String | The telephone number of the domain billing. | 
-| PassiveTotal.WHOIS.techEmail | String | The email address of the domain tech. | 
-| PassiveTotal.WHOIS.techFax | String | The fax number of the domain tech. | 
-| PassiveTotal.WHOIS.techName | String | The name of the domain tech. | 
-| PassiveTotal.WHOIS.techOrganization | String | The organizations of domain tech. | 
-| PassiveTotal.WHOIS.techStreet | String | The street of the domain tech. | 
-| PassiveTotal.WHOIS.techCity | String | The city of the domain tech. | 
-| PassiveTotal.WHOIS.techState | String | The state of the domain tech. | 
-| PassiveTotal.WHOIS.techPostalCode | String | The postal code of the domain tech. | 
-| PassiveTotal.WHOIS.techCountry | String | The country of the domain tech. | 
-| PassiveTotal.WHOIS.techTelephone | String | The telephone number of the domain tech. | 
-
+| Domain.Name | String | The domain name, for example: 'google.com'. |
+| Domain.WHOIS.CreationDate | Date | The date that the domain was created. |
+| Domain.WHOIS.UpdatedDate | Date | The date that the domain was last updated. |
+| Domain.WHOIS.ExpirationDate | Date | The expiration date of the domain. |
+| Domain.WHOIS.NameServers | String | Name servers of the domain. |
+| Domain.Organization | String | The organization of the domain. |
+| Domain.Admin.Email | String | The email address of the domain administrator. |
+| Domain.Admin.Name | String | The name of the domain administrator. |
+| Domain.Admin.Phone | String | The phone number of the domain administrator. |
+| Domain.Admin.Country | String | The country of the domain administrator. |
+| Domain.Registrant.Email | String | The email address of the registrant. |
+| Domain.Registrant.Name | String | The name of the registrant. |
+| Domain.Registrant.Phone | String | The phone number for receiving abuse reports. |
+| Domain.Registrant.Country | String | The country of the registrant. |
+| Domain.WHOIS.Admin.Email | String | The email address of the domain administrator. |
+| Domain.WHOIS.Admin.Name | String | The name of the domain administrator. |
+| Domain.WHOIS.Admin.Phone | String | The phone number of the domain administrator. |
+| Domain.WHOIS.Admin.Country | String | The country of the domain administrator. |
+| Domain.WHOIS.Registrar.Name | String | The name of the registrar, for example: 'GoDaddy'. |
+| Domain.WHOIS.Registrant.Email | String | The email address of the registrant. |
+| Domain.WHOIS.Registrant.Name | String | The name of the registrant. |
+| Domain.WHOIS.Registrant.Phone | String | The phone number for receiving abuse reports. |
+| Domain.WHOIS.Registrant.Country | String | The country of the registrant. |
+| PassiveTotal.WHOIS.domain | String | The domain name, for example: 'google.com'. |
+| PassiveTotal.WHOIS.registrar | String | The name of the registrar of the domain |
+| PassiveTotal.WHOIS.whoisServer | String | WHOIS server name where the details of domain registrations belong |
+| PassiveTotal.WHOIS.registered | Date | The date that the domain was registered. |
+| PassiveTotal.WHOIS.expiresAt | Date | The expiration date of the domain. |
+| PassiveTotal.WHOIS.registryUpdatedAt | Date | The date when registry was last updated. |
+| PassiveTotal.WHOIS.lastLoadedAt | Date | Last loaded date of WHOIS database. |
+| PassiveTotal.WHOIS.nameServers | String | Name servers of the domain. |
+| PassiveTotal.WHOIS.organization | String | The organization of the domain. |
+| PassiveTotal.WHOIS.name | String | Name of the domain. |
+| PassiveTotal.WHOIS.telephone | String | Telephone number fetched from whois details of the domain. |
+| PassiveTotal.WHOIS.contactEmail | String | Contact Email address of the domain owner |
+| PassiveTotal.WHOIS.registrantEmail | String | The name of the domain registrant. |
+| PassiveTotal.WHOIS.registrantFax | String | The fax number of the domain registrant. |
+| PassiveTotal.WHOIS.registrantName | String | The name of the domain registrant. |
+| PassiveTotal.WHOIS.registrantOrganization | String | The organizations of the domain registrant. |
+| PassiveTotal.WHOIS.registrantStreet | String | The street of the domain registrant. |
+| PassiveTotal.WHOIS.registrantCity | String | The city of the domain registrant. |
+| PassiveTotal.WHOIS.registrantState | String | The state of the domain registrant. |
+| PassiveTotal.WHOIS.registrantPostalCode | String | The postal code of the domain registrant. |
+| PassiveTotal.WHOIS.registrantCountry | String | The country of the domain registrant. |
+| PassiveTotal.WHOIS.registrantTelephone | String | The telephone number of the domain registrant. |
+| PassiveTotal.WHOIS.adminEmail | String | The email address of the domain administrator. |
+| PassiveTotal.WHOIS.adminFax | String | The fax number of the domain administrator. |
+| PassiveTotal.WHOIS.adminName | String | The name of the domain administrator. |
+| PassiveTotal.WHOIS.adminOrganization | String | The organizations of the domain administrator. |
+| PassiveTotal.WHOIS.adminStreet | String | The street of the domain administrator. |
+| PassiveTotal.WHOIS.adminCity | String | The city of the domain administrator. |
+| PassiveTotal.WHOIS.adminState | String | The state of the domain administrator. |
+| PassiveTotal.WHOIS.adminPostalCode | String | The postal code of the domain administrator. |
+| PassiveTotal.WHOIS.adminCountry | String | The country of the domain administrator. |
+| PassiveTotal.WHOIS.adminTelephone | String | The telephone number of the domain administrator. |
+| PassiveTotal.WHOIS.billingEmail | String | The email address of the domain billing. |
+| PassiveTotal.WHOIS.billingFax | String | The fax number of the domain billing. |
+| PassiveTotal.WHOIS.billingName | String | The name of the domain billing. |
+| PassiveTotal.WHOIS.billingOrganization | String | The organizations of the domain billing. |
+| PassiveTotal.WHOIS.billingStreet | String | The street of the domain billing. |
+| PassiveTotal.WHOIS.billingCity | String | The city of the domain billing. |
+| PassiveTotal.WHOIS.billingState | String | The state of the domain billing. |
+| PassiveTotal.WHOIS.billingPostalCode | String | The postal code of the domain billing. |
+| PassiveTotal.WHOIS.billingCountry | String | The country of the domain billing. |
+| PassiveTotal.WHOIS.billingTelephone | String | The telephone number of the domain billing. |
+| PassiveTotal.WHOIS.techEmail | String | The email address of the domain tech. |
+| PassiveTotal.WHOIS.techFax | String | The fax number of the domain tech. |
+| PassiveTotal.WHOIS.techName | String | The name of the domain tech. |
+| PassiveTotal.WHOIS.techOrganization | String | The organizations of domain tech. |
+| PassiveTotal.WHOIS.techStreet | String | The street of the domain tech. |
+| PassiveTotal.WHOIS.techCity | String | The city of the domain tech. |
+| PassiveTotal.WHOIS.techState | String | The state of the domain tech. |
+| PassiveTotal.WHOIS.techPostalCode | String | The postal code of the domain tech. |
+| PassiveTotal.WHOIS.techCountry | String | The country of the domain tech. |
+| PassiveTotal.WHOIS.techTelephone | String | The telephone number of the domain tech. |
 
 #### Command Example
 
@@ -249,12 +244,10 @@ Gets WHOIS information records based on field matching queries.
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | domains@riskiq.com | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.180-0700 |
 
-
 ### pt-get-components
 
 ***
 Retrieves the host attribute components for a domain or IP address. Maximum 2000 records are fetched.
-
 
 #### Base Command
 
@@ -264,29 +257,27 @@ Retrieves the host attribute components for a domain or IP address. Maximum 2000
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Domain or IP address you want to search components for. | Required | 
-| start | Filter for records whose last seen is after this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format. | Optional | 
-| end | Filter for records whose first seen is before this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format. | Optional | 
-
+| query | Domain or IP address you want to search components for. | Required |
+| start | Filter for records whose last seen is after this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format. | Optional |
+| end | Filter for records whose first seen is before this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Domain.Name | String | The domain name, for example: "google.com". | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| IP.Address | String | The IP Address of the component. | 
-| PassiveTotal.Component.firstSeen | Date | The date and time when the component was first observed. | 
-| PassiveTotal.Component.lastSeen | Date | The date and time when the component was most recently observed. | 
-| PassiveTotal.Component.version | String | The current version of component. | 
-| PassiveTotal.Component.category | String | The category under which the component falls. | 
-| PassiveTotal.Component.label | String | The value of the component. | 
-| PassiveTotal.Component.hostname | String | The hostname of the component. | 
-| PassiveTotal.Component.address | String | The IP address of the component. | 
-
+| Domain.Name | String | The domain name, for example: "google.com". |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| IP.Address | String | The IP Address of the component. |
+| PassiveTotal.Component.firstSeen | Date | The date and time when the component was first observed. |
+| PassiveTotal.Component.lastSeen | Date | The date and time when the component was most recently observed. |
+| PassiveTotal.Component.version | String | The current version of component. |
+| PassiveTotal.Component.category | String | The category under which the component falls. |
+| PassiveTotal.Component.label | String | The value of the component. |
+| PassiveTotal.Component.hostname | String | The hostname of the component. |
+| PassiveTotal.Component.address | String | The IP address of the component. |
 
 #### Command Example
 
@@ -381,12 +372,10 @@ Retrieves the host attribute components for a domain or IP address. Maximum 2000
 >| www.furth.com.ar | 2016-01-11 23:45:15 | 2017-10-24 15:53:52 | Operating System | Unix |  |
 >| www.furth.com.ar | 2016-01-11 23:45:15 | 2017-10-24 15:53:52 | Server Module | mod_ssl | 2.2.29 |
 
-
 ### pt-get-trackers
 
 ***
 Retrieves the host attribute trackers for a domain or IP address. Maximum 2000 records are fetched.
-
 
 #### Base Command
 
@@ -396,28 +385,26 @@ Retrieves the host attribute trackers for a domain or IP address. Maximum 2000 r
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Domain or IP address you want to search trackers for. | Required | 
-| start | Filter for records whose last seen is after this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format. | Optional | 
-| end | Filter for records whose first seen is before this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format. | Optional | 
-
+| query | Domain or IP address you want to search trackers for. | Required |
+| start | Filter for records whose last seen is after this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format. | Optional |
+| end | Filter for records whose first seen is before this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Domain.Name | String | The domain name, for example: "google.com". | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| IP.Address | String | The IP Address of the component. | 
-| PassiveTotal.Tracker.firstSeen | Date | The date and time when the tracker was first observed. | 
-| PassiveTotal.Tracker.lastSeen | Date | The date and time when the tracker was most recently observed. | 
-| PassiveTotal.Tracker.attributeValue | String | The value of the tracker. | 
-| PassiveTotal.Tracker.attributeType | String | The type under which the tracker falls. | 
-| PassiveTotal.Tracker.hostname | String | The hostname of the tracker. | 
-| PassiveTotal.Tracker.address | String | The IP address of the tracker. | 
-
+| Domain.Name | String | The domain name, for example: "google.com". |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| IP.Address | String | The IP Address of the component. |
+| PassiveTotal.Tracker.firstSeen | Date | The date and time when the tracker was first observed. |
+| PassiveTotal.Tracker.lastSeen | Date | The date and time when the tracker was most recently observed. |
+| PassiveTotal.Tracker.attributeValue | String | The value of the tracker. |
+| PassiveTotal.Tracker.attributeType | String | The type under which the tracker falls. |
+| PassiveTotal.Tracker.hostname | String | The hostname of the tracker. |
+| PassiveTotal.Tracker.address | String | The IP address of the tracker. |
 
 #### Command Example
 
@@ -545,12 +532,10 @@ Retrieves the host attribute trackers for a domain or IP address. Maximum 2000 r
 >| filmesonlinegratis.net | 2014-02-11 01:30:40 | 2015-09-24 05:12:39 | FacebookId | filmesog |
 >| www.filmesonlinegratis.net | 2012-03-07 05:53:50 | 2012-03-07 16:00:45 | WhosAmungUsId | 6cdg |
 
-
 ### pt-get-pdns-details
 
 ***
 Retrieves the passive DNS results from active account sources.
-
 
 #### Base Command
 
@@ -560,31 +545,29 @@ Retrieves the passive DNS results from active account sources.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The domain or IP being queried. | Required | 
-| start | Filter for records whose last seen is after this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format. | Optional | 
-| end | Filter for records whose first seen is before this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format. | Optional | 
-
+| query | The domain or IP being queried. | Required |
+| start | Filter for records whose last seen is after this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format. | Optional |
+| end | Filter for records whose first seen is before this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.PDNS.resolve | String | The host or ip address that indicates resolve in Passive DNS record. | 
-| PassiveTotal.PDNS.resolveType | String | The type of the resolve. I.e domain, ip, host, etc. | 
-| PassiveTotal.PDNS.value | String | The value of the Passive DNS record. | 
-| PassiveTotal.PDNS.source | String | Source of the passive DNS records. | 
-| PassiveTotal.PDNS.firstSeen | String | First seen timestamp of the passive DNS record. | 
-| PassiveTotal.PDNS.lastSeen | String | Last seen timestamp of the passive DNS record. | 
-| PassiveTotal.PDNS.collected | String | The date when a passive DNS record is collected. | 
-| PassiveTotal.PDNS.recordType | String | The type of the passive DNS record. I.e CNAME, SOA, A, etc | 
-| PassiveTotal.PDNS.recordHash | String | The hash value of the passive DNS record. | 
-| Domain.Name | String | The domain name, for example: 'google.com'. | 
-| IP.Address | String | The IP Address of the component. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-
+| PassiveTotal.PDNS.resolve | String | The host or ip address that indicates resolve in Passive DNS record. |
+| PassiveTotal.PDNS.resolveType | String | The type of the resolve. I.e domain, ip, host, etc. |
+| PassiveTotal.PDNS.value | String | The value of the Passive DNS record. |
+| PassiveTotal.PDNS.source | String | Source of the passive DNS records. |
+| PassiveTotal.PDNS.firstSeen | String | First seen timestamp of the passive DNS record. |
+| PassiveTotal.PDNS.lastSeen | String | Last seen timestamp of the passive DNS record. |
+| PassiveTotal.PDNS.collected | String | The date when a passive DNS record is collected. |
+| PassiveTotal.PDNS.recordType | String | The type of the passive DNS record. I.e CNAME, SOA, A, etc |
+| PassiveTotal.PDNS.recordHash | String | The hash value of the passive DNS record. |
+| Domain.Name | String | The domain name, for example: 'google.com'. |
+| IP.Address | String | The IP Address of the component. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
 
 #### Command Example
 
@@ -713,12 +696,10 @@ Retrieves the passive DNS results from active account sources.
 >| webmaster@furth.com.ar | email | SOA | 2020-06-17 12:26:33 | 2020-06-17 05:26:33 | 2020-06-17 05:26:33 | pingly | 63deb7c38cbea98f631777fd3ba89de0c270178bd37eb6a270ee7e37b3cd92e5 |
 >| furth.com.ar | domain | MX | 2020-06-17 12:26:33 | 2020-06-17 05:26:33 | 2020-06-17 05:26:33 | pingly | 24fa99da36eecc22b8970a33f8adf0f150598391319df4fc02128d677999e886 |
 
-
 ### pt-ssl-cert-search
 
 ***
 Retrieves SSL certificates for a given field value.
-
 
 #### Base Command
 
@@ -728,48 +709,46 @@ Retrieves SSL certificates for a given field value.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| field | Field by which to search. <br/><br/>Allowed values: issuerSurname, subjectOrganizationName, issuerCountry, issuerOrganizationUnitName, fingerprint, subjectOrganizationUnitName, serialNumber, subjectEmailAddress, subjectCountry, issuerGivenName, subjectCommonName, issuerCommonName, issuerStateOrProvinceName, issuerProvince, subjectStateOrProvinceName, sha1, subjectStreetAddress, subjectSerialNumber, issuerOrganizationName, subjectSurname, subjectLocalityName, issuerStreetAddress, issuerLocalityName, subjectGivenName, subjectProvince, issuerSerialNumber, issuerEmailAddress | Required | 
-| query | Field value for which to search. | Required | 
-
+| field | Field by which to search. <br/><br/>Allowed values: issuerSurname, subjectOrganizationName, issuerCountry, issuerOrganizationUnitName, fingerprint, subjectOrganizationUnitName, serialNumber, subjectEmailAddress, subjectCountry, issuerGivenName, subjectCommonName, issuerCommonName, issuerStateOrProvinceName, issuerProvince, subjectStateOrProvinceName, sha1, subjectStreetAddress, subjectSerialNumber, issuerOrganizationName, subjectSurname, subjectLocalityName, issuerStreetAddress, issuerLocalityName, subjectGivenName, subjectProvince, issuerSerialNumber, issuerEmailAddress | Required |
+| query | Field value for which to search. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.SSL.firstSeen | Number | Epoch timestamp when SSL certificate identified by the system. | 
-| PassiveTotal.SSL.lastSeen | Number | The last seen epoch timestamp of the SSL certificates. | 
-| PassiveTotal.SSL.fingerprint | String | A fingerprint detail from the SSL certificates.  | 
-| PassiveTotal.SSL.sslVersion | Number | A version of the certificate. | 
-| PassiveTotal.SSL.expirationDate | String | The expiry date of the certificate. | 
-| PassiveTotal.SSL.issueDate | String | Issue date of the certificate. | 
-| PassiveTotal.SSL.sha1 | String | Sha1 of the certificate. | 
-| PassiveTotal.SSL.serialNumber | String | A serial number of the certificate. | 
-| PassiveTotal.SSL.issuerCountry | String | The country name of the certificate issuer. | 
-| PassiveTotal.SSL.issuerStateOrProvinceName | String | The state or province name of the certificate issuer. | 
-| PassiveTotal.SSL.issuerCommonName | String | The common name of the issuer. | 
-| PassiveTotal.SSL.issuerEmailAddress | String | A contact email address of the certificate issuer. | 
-| PassiveTotal.SSL.issuerProvince | String | A province of the certificate issuer. | 
-| PassiveTotal.SSL.issuerOrganizationUnitName | String | An organization unit name of the certificate issuer. | 
-| PassiveTotal.SSL.issuerSurname | String | The surname of the certificate issuer. | 
-| PassiveTotal.SSL.issuerStreetAddress | String | Street address of the certificate issuer. | 
-| PassiveTotal.SSL.issuerLocalityName | String | The locality of the certificate issuer. | 
-| PassiveTotal.SSL.issuerSerialNumber | String | The serial number of the certificate issuer. | 
-| PassiveTotal.SSL.issuerOrganizationName | String | An organization name of the certificate issuer. | 
-| PassiveTotal.SSL.issuerGivenName | String | A given name of the certificate issuer. | 
-| PassiveTotal.SSL.subjectCommonName | String | The common name of the subject. | 
-| PassiveTotal.SSL.subjectOrganizationName | String | An organization name of the subject of the certificate. | 
-| PassiveTotal.SSL.subjectOrganizationUnitName | String | An organization unit name of the subject of the certificate. | 
-| PassiveTotal.SSL.subjectGivenName | String | The given name of the subject of the certificate. | 
-| PassiveTotal.SSL.subjectSurname | String | The surname of the subject of the certificate. | 
-| PassiveTotal.SSL.subjectLocalityName | String | The locality of the subject. | 
-| PassiveTotal.SSL.subjectEmailAddress | String | A contact email address of the subject. | 
-| PassiveTotal.SSL.subjectProvince | String | The province of the subject. | 
-| PassiveTotal.SSL.subjectStateOrProvinceName | String | The state or province name of the subject. | 
-| PassiveTotal.SSL.subjectSerialNumber | String | A serial number of the subject. | 
-| PassiveTotal.SSL.subjectStreetAddress | String | The street address of the subject. | 
-| PassiveTotal.SSL.subjectCountry | String | The country name of the subject from the certificate. | 
-| PassiveTotal.SSL.subjectAlternativeNames | String | Alternative names of the subject from the certificate details. | 
-
+| PassiveTotal.SSL.firstSeen | Number | Epoch timestamp when SSL certificate identified by the system. |
+| PassiveTotal.SSL.lastSeen | Number | The last seen epoch timestamp of the SSL certificates. |
+| PassiveTotal.SSL.fingerprint | String | A fingerprint detail from the SSL certificates.  |
+| PassiveTotal.SSL.sslVersion | Number | A version of the certificate. |
+| PassiveTotal.SSL.expirationDate | String | The expiry date of the certificate. |
+| PassiveTotal.SSL.issueDate | String | Issue date of the certificate. |
+| PassiveTotal.SSL.sha1 | String | Sha1 of the certificate. |
+| PassiveTotal.SSL.serialNumber | String | A serial number of the certificate. |
+| PassiveTotal.SSL.issuerCountry | String | The country name of the certificate issuer. |
+| PassiveTotal.SSL.issuerStateOrProvinceName | String | The state or province name of the certificate issuer. |
+| PassiveTotal.SSL.issuerCommonName | String | The common name of the issuer. |
+| PassiveTotal.SSL.issuerEmailAddress | String | A contact email address of the certificate issuer. |
+| PassiveTotal.SSL.issuerProvince | String | A province of the certificate issuer. |
+| PassiveTotal.SSL.issuerOrganizationUnitName | String | An organization unit name of the certificate issuer. |
+| PassiveTotal.SSL.issuerSurname | String | The surname of the certificate issuer. |
+| PassiveTotal.SSL.issuerStreetAddress | String | Street address of the certificate issuer. |
+| PassiveTotal.SSL.issuerLocalityName | String | The locality of the certificate issuer. |
+| PassiveTotal.SSL.issuerSerialNumber | String | The serial number of the certificate issuer. |
+| PassiveTotal.SSL.issuerOrganizationName | String | An organization name of the certificate issuer. |
+| PassiveTotal.SSL.issuerGivenName | String | A given name of the certificate issuer. |
+| PassiveTotal.SSL.subjectCommonName | String | The common name of the subject. |
+| PassiveTotal.SSL.subjectOrganizationName | String | An organization name of the subject of the certificate. |
+| PassiveTotal.SSL.subjectOrganizationUnitName | String | An organization unit name of the subject of the certificate. |
+| PassiveTotal.SSL.subjectGivenName | String | The given name of the subject of the certificate. |
+| PassiveTotal.SSL.subjectSurname | String | The surname of the subject of the certificate. |
+| PassiveTotal.SSL.subjectLocalityName | String | The locality of the subject. |
+| PassiveTotal.SSL.subjectEmailAddress | String | A contact email address of the subject. |
+| PassiveTotal.SSL.subjectProvince | String | The province of the subject. |
+| PassiveTotal.SSL.subjectStateOrProvinceName | String | The state or province name of the subject. |
+| PassiveTotal.SSL.subjectSerialNumber | String | A serial number of the subject. |
+| PassiveTotal.SSL.subjectStreetAddress | String | The street address of the subject. |
+| PassiveTotal.SSL.subjectCountry | String | The country name of the subject from the certificate. |
+| PassiveTotal.SSL.subjectAlternativeNames | String | Alternative names of the subject from the certificate details. |
 
 #### Command Example
 
@@ -841,12 +820,10 @@ Retrieves SSL certificates for a given field value.
 >| 8848e868b190d0fdcb6f39c37b5382c87e0976b0 | 6995036355238373586 | Jan 15 13:15:00 2019 GMT | Apr 09 13:15:00 2019 GMT | 3 | 2019-01-15 13:40:31 | 2019-01-16 03:00:34 | Google Internet Authority G3 | www.google.com | www.google.com | Google Trust Services | Google LLC | Mountain View | California | US | US |
 >| 995b005f44be53bf3e5921901d79a98e54afd329 | 6995036355238373586 | Jan 15 13:15:00 2019 GMT | Apr 09 13:15:00 2019 GMT | 3 | 2019-01-25 22:34:01 | 2019-02-07 20:39:43 | Google Internet Authority G3 | www.google.com | www.google.com | Google Trust Services | Google LLC | Mountain View | California | US | US |
 
-
 ### pt-get-host-pairs
 
 ***
 Retrieves the host attribute pairs related to a domain or IP address. Maximum 2000 records are fetched.
-
 
 #### Base Command
 
@@ -856,22 +833,20 @@ Retrieves the host attribute pairs related to a domain or IP address. Maximum 20
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Domain or IP address you want to search host-pairs for. | Required | 
-| direction | The direction of searching pair records for a given domain. Valid values: children, parents. | Required | 
-| start | Filter for records whose last seen is after this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format. | Optional | 
-| end | Filter for records whose first seen is before this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format. | Optional | 
-
+| query | Domain or IP address you want to search host-pairs for. | Required |
+| direction | The direction of searching pair records for a given domain. Valid values: children, parents. | Required |
+| start | Filter for records whose last seen is after this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format. | Optional |
+| end | Filter for records whose first seen is before this datetime. It accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.HostPair.firstSeen | Date | The date and time when the host pair was first observed. | 
-| PassiveTotal.HostPair.lastSeen | Date | The date and time when the host pair was most recently observed. | 
-| PassiveTotal.HostPair.cause | String | The cause of relation between parent and child. | 
-| PassiveTotal.HostPair.parent | String | The hostname of the parent of the host pair. | 
-| PassiveTotal.HostPair.child | String | The hostname of the child of the host pair. | 
-
+| PassiveTotal.HostPair.firstSeen | Date | The date and time when the host pair was first observed. |
+| PassiveTotal.HostPair.lastSeen | Date | The date and time when the host pair was most recently observed. |
+| PassiveTotal.HostPair.cause | String | The cause of relation between parent and child. |
+| PassiveTotal.HostPair.parent | String | The hostname of the parent of the host pair. |
+| PassiveTotal.HostPair.child | String | The hostname of the child of the host pair. |
 
 #### Command Example
 
@@ -913,14 +888,12 @@ Retrieves the host attribute pairs related to a domain or IP address. Maximum 20
 >| ns1.furth.com.ar | furth.com.ar | 2020-05-29 07:05:22 | 2020-06-10 11:53:23 | redirect |
 >| ns1.furth.com.ar | ns1.furth.com.ar | 2020-05-02 06:47:23 | 2020-06-08 03:08:38 | parentPage |
 
-
 ### domain
 
 ***
 Provides data enrichment for domains.
 
 Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
-
 
 #### Base Command
 
@@ -930,91 +903,90 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain to enrich. | Optional | 
-
+| domain | The domain to enrich. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Domain.Name | String | The domain name, for example: 'google.com'. | 
-| Domain.WHOIS.CreationDate | Date | The date that the domain was created. | 
-| Domain.WHOIS.UpdatedDate | Date | The date that the domain was last updated. | 
-| Domain.WHOIS.ExpirationDate | Date | The expiration date of the domain. | 
-| Domain.WHOIS.NameServers | String | Name servers of the domain. | 
-| Domain.Organization | String | The organization of the domain. | 
-| Domain.Admin.Email | String | The email address of the domain administrator. | 
-| Domain.Admin.Name | String | The name of the domain administrator. | 
-| Domain.Admin.Phone | String | The phone number of the domain administrator. | 
-| Domain.Admin.Country | String | The country of the domain administrator. | 
-| Domain.Registrant.Email | String | The email address of the registrant. | 
-| Domain.Registrant.Name | String | The name of the registrant. | 
-| Domain.Registrant.Phone | String | The phone number for receiving abuse reports. | 
-| Domain.Registrant.Country | String | The country of the registrant. | 
-| Domain.WHOIS.Admin.Email | String | The email address of the domain administrator. | 
-| Domain.WHOIS.Admin.Name | String | The name of the domain administrator. | 
-| Domain.WHOIS.Admin.Phone | String | The phone number of the domain administrator. | 
-| Domain.WHOIS.Admin.Country | String | The country of the domain administrator. | 
-| Domain.WHOIS.Registrar.Name | String | The name of the registrar, for example: 'GoDaddy'. | 
-| Domain.WHOIS.Registrant.Email | String | The email address of the registrant. | 
-| Domain.WHOIS.Registrant.Name | String | The name of the registrant. | 
-| Domain.WHOIS.Registrant.Phone | String | The phone number for receiving abuse reports. | 
-| Domain.WHOIS.Registrant.Country | String | The country of the registrant. | 
-| PassiveTotal.Domain.domain | String | The domain name, for example: 'google.com'. | 
-| PassiveTotal.Domain.registrar | String | The name of the registrar of the domain | 
-| PassiveTotal.Domain.whoisServer | String | WHOIS server name where the details of domain registrations belong | 
-| PassiveTotal.Domain.registered | Date | The date that the domain was registered. | 
-| PassiveTotal.Domain.expiresAt | Date | The expiration date of the domain. | 
-| PassiveTotal.Domain.registryUpdatedAt | Date | The date when registry was last updated. | 
-| PassiveTotal.Domain.lastLoadedAt | Date | Last loaded date of WHOIS database. | 
-| PassiveTotal.Domain.nameServers | String | Name servers of the domain. | 
-| PassiveTotal.Domain.organization | String | The organization of the domain. | 
-| PassiveTotal.Domain.name | String | Name of the domain. | 
-| PassiveTotal.Domain.telephone | String | Telephone number fetched from whois details of the domain. | 
-| PassiveTotal.Domain.contactEmail | String | Contact Email address of the domain owner | 
-| PassiveTotal.Domain.registrantEmail | String | The name of the domain registrant. | 
-| PassiveTotal.Domain.registrantFax | String | The fax number of the domain registrant. | 
-| PassiveTotal.Domain.registrantName | String | The name of the domain registrant. | 
-| PassiveTotal.Domain.registrantOrganization | String | The organizations of the domain registrant. | 
-| PassiveTotal.Domain.registrantStreet | String | The street of the domain registrant. | 
-| PassiveTotal.Domain.registrantCity | String | The city of the domain registrant. | 
-| PassiveTotal.Domain.registrantState | String | The state of the domain registrant. | 
-| PassiveTotal.Domain.registrantPostalCode | String | The postal code of the domain registrant. | 
-| PassiveTotal.Domain.registrantCountry | String | The country of the domain registrant. | 
-| PassiveTotal.Domain.registrantTelephone | String | The telephone number of the domain registrant. | 
-| PassiveTotal.Domain.adminEmail | String | The email address of the domain administrator. | 
-| PassiveTotal.Domain.adminFax | String | The fax number of the domain administrator. | 
-| PassiveTotal.Domain.adminName | String | The name of the domain administrator. | 
-| PassiveTotal.Domain.adminOrganization | String | The organizations of the domain administrator. | 
-| PassiveTotal.Domain.adminStreet | String | The street of the domain administrator. | 
-| PassiveTotal.Domain.adminCity | String | The city of the domain administrator. | 
-| PassiveTotal.Domain.adminState | String | The state of the domain administrator. | 
-| PassiveTotal.Domain.adminPostalCode | String | The postal code of the domain administrator. | 
-| PassiveTotal.Domain.adminCountry | String | The country of the domain administrator. | 
-| PassiveTotal.Domain.adminTelephone | String | The telephone number of the domain administrator. | 
-| PassiveTotal.Domain.billingEmail | String | The email address of the domain billing. | 
-| PassiveTotal.Domain.billingFax | String | The fax number of the domain billing. | 
-| PassiveTotal.Domain.billingName | String | The name of the domain billing. | 
-| PassiveTotal.Domain.billingOrganization | String | The organizations of the domain billing. | 
-| PassiveTotal.Domain.billingStreet | String | The street of the domain billing. | 
-| PassiveTotal.Domain.billingCity | String | The city of the domain billing. | 
-| PassiveTotal.Domain.billingState | String | The state of the domain billing. | 
-| PassiveTotal.Domain.billingPostalCode | String | The postal code of the domain billing. | 
-| PassiveTotal.Domain.billingCountry | String | The country of the domain billing. | 
-| PassiveTotal.Domain.billingTelephone | String | The telephone number of the domain billing. | 
-| PassiveTotal.Domain.techEmail | String | The email address of the domain tech. | 
-| PassiveTotal.Domain.techFax | String | The fax number of the domain tech. | 
-| PassiveTotal.Domain.techName | String | The name of the domain tech. | 
-| PassiveTotal.Domain.techOrganization | String | The organizations of domain tech. | 
-| PassiveTotal.Domain.techStreet | String | The street of the domain tech. | 
-| PassiveTotal.Domain.techCity | String | The city of the domain tech. | 
-| PassiveTotal.Domain.techState | String | The state of the domain tech. | 
-| PassiveTotal.Domain.techPostalCode | String | The postal code of the domain tech. | 
-| PassiveTotal.Domain.techCountry | String | The country of the domain tech. | 
-| PassiveTotal.Domain.techTelephone | String | The telephone number of the domain tech. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| Domain.Name | String | The domain name, for example: 'google.com'. |
+| Domain.WHOIS.CreationDate | Date | The date that the domain was created. |
+| Domain.WHOIS.UpdatedDate | Date | The date that the domain was last updated. |
+| Domain.WHOIS.ExpirationDate | Date | The expiration date of the domain. |
+| Domain.WHOIS.NameServers | String | Name servers of the domain. |
+| Domain.Organization | String | The organization of the domain. |
+| Domain.Admin.Email | String | The email address of the domain administrator. |
+| Domain.Admin.Name | String | The name of the domain administrator. |
+| Domain.Admin.Phone | String | The phone number of the domain administrator. |
+| Domain.Admin.Country | String | The country of the domain administrator. |
+| Domain.Registrant.Email | String | The email address of the registrant. |
+| Domain.Registrant.Name | String | The name of the registrant. |
+| Domain.Registrant.Phone | String | The phone number for receiving abuse reports. |
+| Domain.Registrant.Country | String | The country of the registrant. |
+| Domain.WHOIS.Admin.Email | String | The email address of the domain administrator. |
+| Domain.WHOIS.Admin.Name | String | The name of the domain administrator. |
+| Domain.WHOIS.Admin.Phone | String | The phone number of the domain administrator. |
+| Domain.WHOIS.Admin.Country | String | The country of the domain administrator. |
+| Domain.WHOIS.Registrar.Name | String | The name of the registrar, for example: 'GoDaddy'. |
+| Domain.WHOIS.Registrant.Email | String | The email address of the registrant. |
+| Domain.WHOIS.Registrant.Name | String | The name of the registrant. |
+| Domain.WHOIS.Registrant.Phone | String | The phone number for receiving abuse reports. |
+| Domain.WHOIS.Registrant.Country | String | The country of the registrant. |
+| PassiveTotal.Domain.domain | String | The domain name, for example: 'google.com'. |
+| PassiveTotal.Domain.registrar | String | The name of the registrar of the domain |
+| PassiveTotal.Domain.whoisServer | String | WHOIS server name where the details of domain registrations belong |
+| PassiveTotal.Domain.registered | Date | The date that the domain was registered. |
+| PassiveTotal.Domain.expiresAt | Date | The expiration date of the domain. |
+| PassiveTotal.Domain.registryUpdatedAt | Date | The date when registry was last updated. |
+| PassiveTotal.Domain.lastLoadedAt | Date | Last loaded date of WHOIS database. |
+| PassiveTotal.Domain.nameServers | String | Name servers of the domain. |
+| PassiveTotal.Domain.organization | String | The organization of the domain. |
+| PassiveTotal.Domain.name | String | Name of the domain. |
+| PassiveTotal.Domain.telephone | String | Telephone number fetched from whois details of the domain. |
+| PassiveTotal.Domain.contactEmail | String | Contact Email address of the domain owner |
+| PassiveTotal.Domain.registrantEmail | String | The name of the domain registrant. |
+| PassiveTotal.Domain.registrantFax | String | The fax number of the domain registrant. |
+| PassiveTotal.Domain.registrantName | String | The name of the domain registrant. |
+| PassiveTotal.Domain.registrantOrganization | String | The organizations of the domain registrant. |
+| PassiveTotal.Domain.registrantStreet | String | The street of the domain registrant. |
+| PassiveTotal.Domain.registrantCity | String | The city of the domain registrant. |
+| PassiveTotal.Domain.registrantState | String | The state of the domain registrant. |
+| PassiveTotal.Domain.registrantPostalCode | String | The postal code of the domain registrant. |
+| PassiveTotal.Domain.registrantCountry | String | The country of the domain registrant. |
+| PassiveTotal.Domain.registrantTelephone | String | The telephone number of the domain registrant. |
+| PassiveTotal.Domain.adminEmail | String | The email address of the domain administrator. |
+| PassiveTotal.Domain.adminFax | String | The fax number of the domain administrator. |
+| PassiveTotal.Domain.adminName | String | The name of the domain administrator. |
+| PassiveTotal.Domain.adminOrganization | String | The organizations of the domain administrator. |
+| PassiveTotal.Domain.adminStreet | String | The street of the domain administrator. |
+| PassiveTotal.Domain.adminCity | String | The city of the domain administrator. |
+| PassiveTotal.Domain.adminState | String | The state of the domain administrator. |
+| PassiveTotal.Domain.adminPostalCode | String | The postal code of the domain administrator. |
+| PassiveTotal.Domain.adminCountry | String | The country of the domain administrator. |
+| PassiveTotal.Domain.adminTelephone | String | The telephone number of the domain administrator. |
+| PassiveTotal.Domain.billingEmail | String | The email address of the domain billing. |
+| PassiveTotal.Domain.billingFax | String | The fax number of the domain billing. |
+| PassiveTotal.Domain.billingName | String | The name of the domain billing. |
+| PassiveTotal.Domain.billingOrganization | String | The organizations of the domain billing. |
+| PassiveTotal.Domain.billingStreet | String | The street of the domain billing. |
+| PassiveTotal.Domain.billingCity | String | The city of the domain billing. |
+| PassiveTotal.Domain.billingState | String | The state of the domain billing. |
+| PassiveTotal.Domain.billingPostalCode | String | The postal code of the domain billing. |
+| PassiveTotal.Domain.billingCountry | String | The country of the domain billing. |
+| PassiveTotal.Domain.billingTelephone | String | The telephone number of the domain billing. |
+| PassiveTotal.Domain.techEmail | String | The email address of the domain tech. |
+| PassiveTotal.Domain.techFax | String | The fax number of the domain tech. |
+| PassiveTotal.Domain.techName | String | The name of the domain tech. |
+| PassiveTotal.Domain.techOrganization | String | The organizations of domain tech. |
+| PassiveTotal.Domain.techStreet | String | The street of the domain tech. |
+| PassiveTotal.Domain.techCity | String | The city of the domain tech. |
+| PassiveTotal.Domain.techState | String | The state of the domain tech. |
+| PassiveTotal.Domain.techPostalCode | String | The postal code of the domain tech. |
+| PassiveTotal.Domain.techCountry | String | The country of the domain tech. |
+| PassiveTotal.Domain.techTelephone | String | The telephone number of the domain tech. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
 | DBotScore.Score | Number | The actual DBot score. |
 | PassiveTotal.Domain.score | Number | Reputation score of the indicator. |
 | PassiveTotal.Domain.classification | String | Reputation classification of the indicator. (Can be GOOD, SUSPICIOUS, MALICIOUS, or UNKNOWN) |
@@ -1022,7 +994,6 @@ Notice: Submitting indicators using this command might make the indicator data p
 | PassiveTotal.Domain.rules.description | String | Description of the rule. |
 | PassiveTotal.Domain.rules.severity | Number | Severity of the rule. |
 | PassiveTotal.Domain.rules.link | String | Link to the rule. |
-
 
 #### Command Example
 
@@ -1182,68 +1153,68 @@ Retrieves exposed services on the recently open ports for an IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP address for which the user wants to search services for. | Required | 
+| ip | IP address for which the user wants to search services for. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.Service.ip | String | IP address of the service. | 
-| PassiveTotal.Service.portNumber | Number | Port number on which recent services were running or current services are running. | 
-| PassiveTotal.Service.firstSeen | Date | The date and time when the service was started for the first time on the port. | 
-| PassiveTotal.Service.lastSeen | Date | The date and time when the service was most recently used on the port. | 
-| PassiveTotal.Service.lastScan | Date | The date and time when the system performed the last scan to check whether any service is running on the port or not. | 
-| PassiveTotal.Service.count | Number | The total number of times service was used on the port. | 
-| PassiveTotal.Service.status | String | The status of the service. | 
-| PassiveTotal.Service.protocol | String | The protocol used by the service. | 
-| PassiveTotal.Service.banners.banner | String | The description of the banner generated as a result of scanning. Can be in HTML format. | 
-| PassiveTotal.Service.banners.scanType | String | The type of scan when the banner was generated. | 
-| PassiveTotal.Service.banners.firstSeen | Date | The date and time when the scan started. | 
-| PassiveTotal.Service.banners.lastSeen | Date | The date and time when the scan ended. | 
-| PassiveTotal.Service.banners.count | Number | The total number of times the same label was generated while scanning. | 
-| PassiveTotal.Service.currentServices.firstSeen | Date | The date and time when the current service started. | 
-| PassiveTotal.Service.currentServices.lastSeen | Date | The date and time when the current service was most recently used. | 
-| PassiveTotal.Service.currentServices.version | String | The version of the current service. | 
-| PassiveTotal.Service.currentServices.category | String | The category of the current service. | 
-| PassiveTotal.Service.currentServices.label | String | The label of the current service. | 
-| PassiveTotal.Service.recentServices.firstSeen | Date | The date and time when the recent service started. | 
-| PassiveTotal.Service.recentServices.lastSeen | Date | The date and time when the recent service was most recently used. | 
-| PassiveTotal.Service.recentServices.version | String | The version of the recent service. | 
-| PassiveTotal.Service.recentServices.category | String | The category of the recent service. | 
-| PassiveTotal.Service.recentServices.label | String | The label of the recent service. | 
-| PassiveTotal.Service.mostRecentSslCert.firstSeen | Date | The timestamp in epoch when the most recent SSL certificate was identified by the system. | 
-| PassiveTotal.Service.mostRecentSslCert.lastSeen | Date | The timestamp in epoch when the most recent SSL certificate was last used. | 
-| PassiveTotal.Service.mostRecentSslCert.fingerprint | String | A fingerprint detail from the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.sslVersion | String | The version of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.expirationDate | Date | The expiry date and time  of the most recent SSL certificate in GMT. | 
-| PassiveTotal.Service.mostRecentSslCert.issueDate | Date | The date and time in GMT when the most recent SSL certificate was issued. | 
-| PassiveTotal.Service.mostRecentSslCert.sha1 | String | Sha1 of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.serialNumber | String | The serial Number of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.subjectCountry | String | The name of the Country of the subject of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.issuerCommonName | String | The common name of the issuer of most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.issuerProvince | String | The province of the issuer of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.subjectStateOrProvinceName | String | The state or province name of the subject of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.subjectStreetAddress | String | The street address of the subject of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.issuerStateOrProvinceName | String | The state or province name of the issuer of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.subjectSurname | String | The surname of the subject of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.issuerCountry | String | The country of the issuer of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.subjectLocalityName | String | The subject locality name of the most recent SSL certificate. | 
+| PassiveTotal.Service.ip | String | IP address of the service. |
+| PassiveTotal.Service.portNumber | Number | Port number on which recent services were running or current services are running. |
+| PassiveTotal.Service.firstSeen | Date | The date and time when the service was started for the first time on the port. |
+| PassiveTotal.Service.lastSeen | Date | The date and time when the service was most recently used on the port. |
+| PassiveTotal.Service.lastScan | Date | The date and time when the system performed the last scan to check whether any service is running on the port or not. |
+| PassiveTotal.Service.count | Number | The total number of times service was used on the port. |
+| PassiveTotal.Service.status | String | The status of the service. |
+| PassiveTotal.Service.protocol | String | The protocol used by the service. |
+| PassiveTotal.Service.banners.banner | String | The description of the banner generated as a result of scanning. Can be in HTML format. |
+| PassiveTotal.Service.banners.scanType | String | The type of scan when the banner was generated. |
+| PassiveTotal.Service.banners.firstSeen | Date | The date and time when the scan started. |
+| PassiveTotal.Service.banners.lastSeen | Date | The date and time when the scan ended. |
+| PassiveTotal.Service.banners.count | Number | The total number of times the same label was generated while scanning. |
+| PassiveTotal.Service.currentServices.firstSeen | Date | The date and time when the current service started. |
+| PassiveTotal.Service.currentServices.lastSeen | Date | The date and time when the current service was most recently used. |
+| PassiveTotal.Service.currentServices.version | String | The version of the current service. |
+| PassiveTotal.Service.currentServices.category | String | The category of the current service. |
+| PassiveTotal.Service.currentServices.label | String | The label of the current service. |
+| PassiveTotal.Service.recentServices.firstSeen | Date | The date and time when the recent service started. |
+| PassiveTotal.Service.recentServices.lastSeen | Date | The date and time when the recent service was most recently used. |
+| PassiveTotal.Service.recentServices.version | String | The version of the recent service. |
+| PassiveTotal.Service.recentServices.category | String | The category of the recent service. |
+| PassiveTotal.Service.recentServices.label | String | The label of the recent service. |
+| PassiveTotal.Service.mostRecentSslCert.firstSeen | Date | The timestamp in epoch when the most recent SSL certificate was identified by the system. |
+| PassiveTotal.Service.mostRecentSslCert.lastSeen | Date | The timestamp in epoch when the most recent SSL certificate was last used. |
+| PassiveTotal.Service.mostRecentSslCert.fingerprint | String | A fingerprint detail from the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.sslVersion | String | The version of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.expirationDate | Date | The expiry date and time  of the most recent SSL certificate in GMT. |
+| PassiveTotal.Service.mostRecentSslCert.issueDate | Date | The date and time in GMT when the most recent SSL certificate was issued. |
+| PassiveTotal.Service.mostRecentSslCert.sha1 | String | Sha1 of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.serialNumber | String | The serial Number of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.subjectCountry | String | The name of the Country of the subject of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.issuerCommonName | String | The common name of the issuer of most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.issuerProvince | String | The province of the issuer of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.subjectStateOrProvinceName | String | The state or province name of the subject of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.subjectStreetAddress | String | The street address of the subject of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.issuerStateOrProvinceName | String | The state or province name of the issuer of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.subjectSurname | String | The surname of the subject of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.issuerCountry | String | The country of the issuer of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.subjectLocalityName | String | The subject locality name of the most recent SSL certificate. |
 | PassiveTotal.Service.mostRecentSslCert.subjectAlternativeNames | String | List of alternative names of the subject of the most recent SSL certificate. |
-| PassiveTotal.Service.mostRecentSslCert.issuerOrganizationUnitName | String | The name organization unit of the issuer of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.issuerOrganizationName | String | The  organization name of the issuer of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.subjectEmailAddress | String | Email Address of the subject of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.subjectOrganizationName | String | The organization name of the subject of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.issuerLocalityName | String | The name of the locality of the issuer of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.subjectCommonName | String | Common name of the subject of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.subjectProvince | String | The province of the subject of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.issuerGivenName | String | The given name of the issuer of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.subjectOrganizationUnitName | String | Subject organization unit name of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.issuerEmailAddress | String | The email address of the issuer of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.subjectGivenName | String | Given name of the subject of the the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.subjectSerialNumber | String | The serial number of the subject of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.issuerStreetAddress | String | The street Address of the issuer of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.issuerSerialNumber | String | The serial number of the issuer of the most recent SSL certificate. | 
-| PassiveTotal.Service.mostRecentSslCert.issuerSurname | String | The surname of the issuer of the most recent SSL certificate. | 
+| PassiveTotal.Service.mostRecentSslCert.issuerOrganizationUnitName | String | The name organization unit of the issuer of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.issuerOrganizationName | String | The  organization name of the issuer of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.subjectEmailAddress | String | Email Address of the subject of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.subjectOrganizationName | String | The organization name of the subject of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.issuerLocalityName | String | The name of the locality of the issuer of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.subjectCommonName | String | Common name of the subject of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.subjectProvince | String | The province of the subject of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.issuerGivenName | String | The given name of the issuer of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.subjectOrganizationUnitName | String | Subject organization unit name of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.issuerEmailAddress | String | The email address of the issuer of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.subjectGivenName | String | Given name of the subject of the the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.subjectSerialNumber | String | The serial number of the subject of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.issuerStreetAddress | String | The street Address of the issuer of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.issuerSerialNumber | String | The serial number of the issuer of the most recent SSL certificate. |
+| PassiveTotal.Service.mostRecentSslCert.issuerSurname | String | The surname of the issuer of the most recent SSL certificate. |
 
 #### Command Example
 
@@ -1378,7 +1349,6 @@ Retrieves exposed services on the recently open ports for an IP address.
 ***
 Gets WHOIS information records based on queries.
 
-
 #### Base Command
 
 `pt-get-whois`
@@ -1387,67 +1357,65 @@ Gets WHOIS information records based on queries.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Query value to use in the request. For example: riskiq.com, 1.1.1.1 | Required | 
-| history | Whether to return historical results. Valid values: true, false. | Optional | 
-
+| query | Query value to use in the request. For example: riskiq.com, 1.1.1.1 | Required |
+| history | Whether to return historical results. Valid values: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.WHOIS.domain | String | The domain name. For example: 'google.com'. | 
-| PassiveTotal.WHOIS.registrar | String | The name of the registrar of the domain. | 
-| PassiveTotal.WHOIS.whoisServer | String | WHOIS server name where the details of domain registrations belong. | 
-| PassiveTotal.WHOIS.registered | Date | The date that the domain was registered. | 
-| PassiveTotal.WHOIS.expiresAt | Date | The expiration date of the domain. | 
-| PassiveTotal.WHOIS.registryUpdatedAt | Date | The date when the registry was last updated. | 
-| PassiveTotal.WHOIS.lastLoadedAt | Date | Last loaded date of WHOIS database. | 
-| PassiveTotal.WHOIS.nameServers | String | Name servers of the domain. | 
-| PassiveTotal.WHOIS.organization | String | The organization of the domain. | 
-| PassiveTotal.WHOIS.name | String | Name of the domain. | 
-| PassiveTotal.WHOIS.telephone | String | Telephone number fetched from whois details of the domain. | 
-| PassiveTotal.WHOIS.contactEmail | String | Contact Email address of the domain owner. | 
-| PassiveTotal.WHOIS.registrantEmail | String | The name of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantFax | String | The fax number of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantName | String | The name of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantOrganization | String | The organizations of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantStreet | String | The street of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantCity | String | The city of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantState | String | The state of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantPostalCode | String | The postal code of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantCountry | String | The country of the domain registrant. | 
-| PassiveTotal.WHOIS.registrantTelephone | String | The telephone number of the domain registrant. | 
-| PassiveTotal.WHOIS.adminEmail | String | The email address of the domain administrator. | 
-| PassiveTotal.WHOIS.adminFax | String | The fax number of the domain administrator. | 
-| PassiveTotal.WHOIS.adminName | String | The name of the domain administrator. | 
-| PassiveTotal.WHOIS.adminOrganization | String | The organizations of the domain administrator. | 
-| PassiveTotal.WHOIS.adminStreet | String | The street of the domain administrator. | 
-| PassiveTotal.WHOIS.adminCity | String | The city of the domain administrator. | 
-| PassiveTotal.WHOIS.adminState | String | The state of the domain administrator. | 
-| PassiveTotal.WHOIS.adminPostalCode | String | The postal code of the domain administrator. | 
-| PassiveTotal.WHOIS.adminCountry | String | The country of the domain administrator. | 
-| PassiveTotal.WHOIS.adminTelephone | String | The telephone number of the domain administrator. | 
-| PassiveTotal.WHOIS.billingEmail | String | The email address of the domain billing. | 
-| PassiveTotal.WHOIS.billingFax | String | The fax number of the domain billing. | 
-| PassiveTotal.WHOIS.billingName | String | The name of the domain billing. | 
-| PassiveTotal.WHOIS.billingOrganization | String | The organizations of the domain billing. | 
-| PassiveTotal.WHOIS.billingStreet | String | The street of the domain billing. | 
-| PassiveTotal.WHOIS.billingCity | String | The city of the domain billing. | 
-| PassiveTotal.WHOIS.billingState | String | The state of the domain billing. | 
-| PassiveTotal.WHOIS.billingPostalCode | String | The postal code of the domain billing. | 
-| PassiveTotal.WHOIS.billingCountry | String | The country of the domain billing. | 
-| PassiveTotal.WHOIS.billingTelephone | String | The telephone number of the domain billing. | 
-| PassiveTotal.WHOIS.techEmail | String | The email address of the domain tech. | 
-| PassiveTotal.WHOIS.techFax | String | The fax number of the domain tech. | 
-| PassiveTotal.WHOIS.techName | String | The name of the domain tech. | 
-| PassiveTotal.WHOIS.techOrganization | String | The organizations of domain tech. | 
-| PassiveTotal.WHOIS.techStreet | String | The street of the domain tech. | 
-| PassiveTotal.WHOIS.techCity | String | The city of the domain tech. | 
-| PassiveTotal.WHOIS.techState | String | The state of the domain tech. | 
-| PassiveTotal.WHOIS.techPostalCode | String | The postal code of the domain tech. | 
-| PassiveTotal.WHOIS.techCountry | String | The country of the domain tech. | 
-| PassiveTotal.WHOIS.techTelephone | String | The telephone number of the domain tech. | 
-
+| PassiveTotal.WHOIS.domain | String | The domain name. For example: 'google.com'. |
+| PassiveTotal.WHOIS.registrar | String | The name of the registrar of the domain. |
+| PassiveTotal.WHOIS.whoisServer | String | WHOIS server name where the details of domain registrations belong. |
+| PassiveTotal.WHOIS.registered | Date | The date that the domain was registered. |
+| PassiveTotal.WHOIS.expiresAt | Date | The expiration date of the domain. |
+| PassiveTotal.WHOIS.registryUpdatedAt | Date | The date when the registry was last updated. |
+| PassiveTotal.WHOIS.lastLoadedAt | Date | Last loaded date of WHOIS database. |
+| PassiveTotal.WHOIS.nameServers | String | Name servers of the domain. |
+| PassiveTotal.WHOIS.organization | String | The organization of the domain. |
+| PassiveTotal.WHOIS.name | String | Name of the domain. |
+| PassiveTotal.WHOIS.telephone | String | Telephone number fetched from whois details of the domain. |
+| PassiveTotal.WHOIS.contactEmail | String | Contact Email address of the domain owner. |
+| PassiveTotal.WHOIS.registrantEmail | String | The name of the domain registrant. |
+| PassiveTotal.WHOIS.registrantFax | String | The fax number of the domain registrant. |
+| PassiveTotal.WHOIS.registrantName | String | The name of the domain registrant. |
+| PassiveTotal.WHOIS.registrantOrganization | String | The organizations of the domain registrant. |
+| PassiveTotal.WHOIS.registrantStreet | String | The street of the domain registrant. |
+| PassiveTotal.WHOIS.registrantCity | String | The city of the domain registrant. |
+| PassiveTotal.WHOIS.registrantState | String | The state of the domain registrant. |
+| PassiveTotal.WHOIS.registrantPostalCode | String | The postal code of the domain registrant. |
+| PassiveTotal.WHOIS.registrantCountry | String | The country of the domain registrant. |
+| PassiveTotal.WHOIS.registrantTelephone | String | The telephone number of the domain registrant. |
+| PassiveTotal.WHOIS.adminEmail | String | The email address of the domain administrator. |
+| PassiveTotal.WHOIS.adminFax | String | The fax number of the domain administrator. |
+| PassiveTotal.WHOIS.adminName | String | The name of the domain administrator. |
+| PassiveTotal.WHOIS.adminOrganization | String | The organizations of the domain administrator. |
+| PassiveTotal.WHOIS.adminStreet | String | The street of the domain administrator. |
+| PassiveTotal.WHOIS.adminCity | String | The city of the domain administrator. |
+| PassiveTotal.WHOIS.adminState | String | The state of the domain administrator. |
+| PassiveTotal.WHOIS.adminPostalCode | String | The postal code of the domain administrator. |
+| PassiveTotal.WHOIS.adminCountry | String | The country of the domain administrator. |
+| PassiveTotal.WHOIS.adminTelephone | String | The telephone number of the domain administrator. |
+| PassiveTotal.WHOIS.billingEmail | String | The email address of the domain billing. |
+| PassiveTotal.WHOIS.billingFax | String | The fax number of the domain billing. |
+| PassiveTotal.WHOIS.billingName | String | The name of the domain billing. |
+| PassiveTotal.WHOIS.billingOrganization | String | The organizations of the domain billing. |
+| PassiveTotal.WHOIS.billingStreet | String | The street of the domain billing. |
+| PassiveTotal.WHOIS.billingCity | String | The city of the domain billing. |
+| PassiveTotal.WHOIS.billingState | String | The state of the domain billing. |
+| PassiveTotal.WHOIS.billingPostalCode | String | The postal code of the domain billing. |
+| PassiveTotal.WHOIS.billingCountry | String | The country of the domain billing. |
+| PassiveTotal.WHOIS.billingTelephone | String | The telephone number of the domain billing. |
+| PassiveTotal.WHOIS.techEmail | String | The email address of the domain tech. |
+| PassiveTotal.WHOIS.techFax | String | The fax number of the domain tech. |
+| PassiveTotal.WHOIS.techName | String | The name of the domain tech. |
+| PassiveTotal.WHOIS.techOrganization | String | The organizations of domain tech. |
+| PassiveTotal.WHOIS.techStreet | String | The street of the domain tech. |
+| PassiveTotal.WHOIS.techCity | String | The city of the domain tech. |
+| PassiveTotal.WHOIS.techState | String | The state of the domain tech. |
+| PassiveTotal.WHOIS.techPostalCode | String | The postal code of the domain tech. |
+| PassiveTotal.WHOIS.techCountry | String | The country of the domain tech. |
+| PassiveTotal.WHOIS.techTelephone | String | The telephone number of the domain tech. |
 
 #### Command Example
 
@@ -1516,12 +1484,10 @@ Gets WHOIS information records based on queries.
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | domains@riskiq.com | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.180-0700 |
 
-
 ### pt-get-cookies
 
 ***
 Retrieves cookies addresses or hostname information based on cookie name or domain.
-
 
 #### Base Command
 
@@ -1531,23 +1497,21 @@ Retrieves cookies addresses or hostname information based on cookie name or doma
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search_by | Search cookies information by name or domain. Valid values: 1. get addresses by cookie domain, 2. get addresses by cookie name, 3. get hosts by cookie domain, 4. get hosts by cookie name. | Required | 
-| query | Name or domain of cookie the user wants to search for. | Required | 
-| page | Page number for paging through results. Each page contains 2000 values. Default is 0. | Optional | 
-| sort | Field to sort the results on. Valid values: last seen, first seen. Default is last seen. | Optional | 
-| order | Order to return the results in. Valid values: asc, desc. Default is desc. | Optional | 
-
+| search_by | Search cookies information by name or domain. Valid values: 1. get addresses by cookie domain, 2. get addresses by cookie name, 3. get hosts by cookie domain, 4. get hosts by cookie name. | Required |
+| query | Name or domain of cookie the user wants to search for. | Required |
+| page | Page number for paging through results. Each page contains 2000 values. Default is 0. | Optional |
+| sort | Field to sort the results on. Valid values: last seen, first seen. Default is last seen. | Optional |
+| order | Order to return the results in. Valid values: asc, desc. Default is desc. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.Cookie.hostname | String | The hostname/IP of the machine on which the cookie was found. | 
-| PassiveTotal.Cookie.cookieName | String | The name of the cookie that was found on the host. | 
-| PassiveTotal.Cookie.cookieDomain | String | The domain from which the cookie originated from. | 
-| PassiveTotal.Cookie.firstSeen | Date | The date and time when the cookie was first observed. | 
-| PassiveTotal.Cookie.lastSeen | Date | The date and time when the cookie was most recently observed. | 
-
+| PassiveTotal.Cookie.hostname | String | The hostname/IP of the machine on which the cookie was found. |
+| PassiveTotal.Cookie.cookieName | String | The name of the cookie that was found on the host. |
+| PassiveTotal.Cookie.cookieDomain | String | The domain from which the cookie originated from. |
+| PassiveTotal.Cookie.firstSeen | Date | The date and time when the cookie was first observed. |
+| PassiveTotal.Cookie.lastSeen | Date | The date and time when the cookie was most recently observed. |
 
 #### Command Example
 
@@ -1583,12 +1547,10 @@ Retrieves cookies addresses or hostname information based on cookie name or doma
 >|---|---|---|---|---|
 >| dummy.domain | dummyCookie | dummy.domain | 2019-04-02 01:53:50 | 2021-01-22 07:15:13 |
 
-
 ### pt-get-articles
 
 ***
 Retrieves information related to articles for a specific indicator.
-
 
 #### Base Command
 
@@ -1598,27 +1560,25 @@ Retrieves information related to articles for a specific indicator.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Indicator value to search for in articles. For example: riskiq.com, 1.1.1.1 | Required | 
+| query | Indicator value to search for in articles. For example: riskiq.com, 1.1.1.1 | Required |
 | type | Type of the indicator. For example: domain, ip, url | Optional |
-
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.Article.guid | String | The global unique ID of the article. | 
-| PassiveTotal.Article.title | String | The title of the article. | 
-| PassiveTotal.Article.summary | String | The summary of the article. | 
-| PassiveTotal.Article.type | String | The type of an article. | 
-| PassiveTotal.Article.publishedDate | Date | The date and time on which the article was published. | 
-| PassiveTotal.Article.link | String | The link of the article for getting more details. | 
-| PassiveTotal.Article.categories | Unknown | An array of categories of the article. | 
-| PassiveTotal.Article.tags | Unknown | An array of tags for the article. | 
-| PassiveTotal.Article.indicators.type | String | The type of the indicator. | 
-| PassiveTotal.Article.indicators.count | Number | Total number of indicators of a particular type. | 
-| PassiveTotal.Article.indicators.values | Unknown | An array of values related to indicators. | 
-| PassiveTotal.Article.indicators.source | String | The source of the indicator. | 
-
+| PassiveTotal.Article.guid | String | The global unique ID of the article. |
+| PassiveTotal.Article.title | String | The title of the article. |
+| PassiveTotal.Article.summary | String | The summary of the article. |
+| PassiveTotal.Article.type | String | The type of an article. |
+| PassiveTotal.Article.publishedDate | Date | The date and time on which the article was published. |
+| PassiveTotal.Article.link | String | The link of the article for getting more details. |
+| PassiveTotal.Article.categories | Unknown | An array of categories of the article. |
+| PassiveTotal.Article.tags | Unknown | An array of tags for the article. |
+| PassiveTotal.Article.indicators.type | String | The type of the indicator. |
+| PassiveTotal.Article.indicators.count | Number | Total number of indicators of a particular type. |
+| PassiveTotal.Article.indicators.values | Unknown | An array of values related to indicators. |
+| PassiveTotal.Article.indicators.source | String | The source of the indicator. |
 
 #### Command Example
 
@@ -1670,12 +1630,10 @@ Retrieves information related to articles for a specific indicator.
 >|---|---|---|---|---|---|---|---|
 >| 12e123b1 | Free PlayStations on the Internet are Probably an Online Scam | Did you know that you can get all kinds of free stuff, just by giving out your personal information? The internet is full of these fake reward scams which RiskIQ's sytems surface every hour of the day. | public | fake rewards, playstation, scam | Categories 1, Categories 2 | <https://community.riskiq.com/article/12e123b1> | Mon Aug 29 20:00:00 VET 2016 |
 
-
 ### pt-get-data-card
 
 ***
 Retrieves a summary data card associated with the given query.
-
 
 #### Base Command
 
@@ -1685,44 +1643,42 @@ Retrieves a summary data card associated with the given query.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The domain, host or IP address to be queried. For example: riskiq.com, 1.1.1.1. | Required | 
-
+| query | The domain, host or IP address to be queried. For example: riskiq.com, 1.1.1.1. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.DataCard.type | String | Type of the indicator. | 
-| PassiveTotal.DataCard.name | String | Name of the indicator. | 
-| PassiveTotal.DataCard.link | String | Link to the indicator. | 
-| PassiveTotal.DataCard.netblock | String | Netblock associated with the indicator. | 
-| PassiveTotal.DataCard.os | String | Operating system associated with the indicator. | 
-| PassiveTotal.DataCard.organization | String | The organization of the indicator. | 
-| PassiveTotal.DataCard.asn | String | Autonomous system number assigned to the indicator. | 
-| PassiveTotal.DataCard.hosting_provider | String | Host provider of the indicator. | 
-| PassiveTotal.DataCard.data_summary.resolutions.count | Number | Number of resolutions attached to the indicator. | 
-| PassiveTotal.DataCard.data_summary.resolutions.link | String | Link of the resolutions attached to the indicator. | 
-| PassiveTotal.DataCard.data_summary.services.count | Number | Number of service records for the indicator. | 
-| PassiveTotal.DataCard.data_summary.services.link | String | Link to the service records of the indicator. | 
-| PassiveTotal.DataCard.data_summary.certificates.count | Number | Number of certificates for the given indicator. | 
-| PassiveTotal.DataCard.data_summary.certificates.link | String | Link to the certificates associated with the indicator. | 
-| PassiveTotal.DataCard.data_summary.hashes.count | Number | Number of hashes associated with the indicator. | 
-| PassiveTotal.DataCard.data_summary.hashes.link | String | Link to the hashes associated with the indicator. | 
-| PassiveTotal.DataCard.data_summary.projects.count | Number | Number of projects containing the indicator. | 
-| PassiveTotal.DataCard.data_summary.projects.link | String | Number of projects containing the indicator. | 
-| PassiveTotal.DataCard.data_summary.articles.count | Number | Number of articles referencing the indicator. | 
-| PassiveTotal.DataCard.data_summary.articles.link | String | Link to the articles referencing the indicator. | 
-| PassiveTotal.DataCard.data_summary.trackers.count | Number | Number of trackers associated with the indicator. | 
-| PassiveTotal.DataCard.data_summary.trackers.link | String | Link to the trackers associated with the indicator. | 
-| PassiveTotal.DataCard.data_summary.components.count | Number | Number of components associated with the indicator. | 
-| PassiveTotal.DataCard.data_summary.components.link | String | Link to the components associated with the indicator. | 
-| PassiveTotal.DataCard.data_summary.host_pairs.count | Number | Number of host pairs associated with the indicator. | 
-| PassiveTotal.DataCard.data_summary.host_pairs.link | String | Link to the host pairs associated with the indicator. | 
-| PassiveTotal.DataCard.data_summary.reverse_dns.count | Number | Number of DNS records for the indicator. | 
-| PassiveTotal.DataCard.data_summary.reverse_dns.link | String | Link to the DNS records of the indicator. | 
-| PassiveTotal.DataCard.data_summary.cookies.count | Number | Number of available cookie records for the indicator. | 
-| PassiveTotal.DataCard.data_summary.cookies.link | String | Link to the cookie records for the indicator. | 
-
+| PassiveTotal.DataCard.type | String | Type of the indicator. |
+| PassiveTotal.DataCard.name | String | Name of the indicator. |
+| PassiveTotal.DataCard.link | String | Link to the indicator. |
+| PassiveTotal.DataCard.netblock | String | Netblock associated with the indicator. |
+| PassiveTotal.DataCard.os | String | Operating system associated with the indicator. |
+| PassiveTotal.DataCard.organization | String | The organization of the indicator. |
+| PassiveTotal.DataCard.asn | String | Autonomous system number assigned to the indicator. |
+| PassiveTotal.DataCard.hosting_provider | String | Host provider of the indicator. |
+| PassiveTotal.DataCard.data_summary.resolutions.count | Number | Number of resolutions attached to the indicator. |
+| PassiveTotal.DataCard.data_summary.resolutions.link | String | Link of the resolutions attached to the indicator. |
+| PassiveTotal.DataCard.data_summary.services.count | Number | Number of service records for the indicator. |
+| PassiveTotal.DataCard.data_summary.services.link | String | Link to the service records of the indicator. |
+| PassiveTotal.DataCard.data_summary.certificates.count | Number | Number of certificates for the given indicator. |
+| PassiveTotal.DataCard.data_summary.certificates.link | String | Link to the certificates associated with the indicator. |
+| PassiveTotal.DataCard.data_summary.hashes.count | Number | Number of hashes associated with the indicator. |
+| PassiveTotal.DataCard.data_summary.hashes.link | String | Link to the hashes associated with the indicator. |
+| PassiveTotal.DataCard.data_summary.projects.count | Number | Number of projects containing the indicator. |
+| PassiveTotal.DataCard.data_summary.projects.link | String | Number of projects containing the indicator. |
+| PassiveTotal.DataCard.data_summary.articles.count | Number | Number of articles referencing the indicator. |
+| PassiveTotal.DataCard.data_summary.articles.link | String | Link to the articles referencing the indicator. |
+| PassiveTotal.DataCard.data_summary.trackers.count | Number | Number of trackers associated with the indicator. |
+| PassiveTotal.DataCard.data_summary.trackers.link | String | Link to the trackers associated with the indicator. |
+| PassiveTotal.DataCard.data_summary.components.count | Number | Number of components associated with the indicator. |
+| PassiveTotal.DataCard.data_summary.components.link | String | Link to the components associated with the indicator. |
+| PassiveTotal.DataCard.data_summary.host_pairs.count | Number | Number of host pairs associated with the indicator. |
+| PassiveTotal.DataCard.data_summary.host_pairs.link | String | Link to the host pairs associated with the indicator. |
+| PassiveTotal.DataCard.data_summary.reverse_dns.count | Number | Number of DNS records for the indicator. |
+| PassiveTotal.DataCard.data_summary.reverse_dns.link | String | Link to the DNS records of the indicator. |
+| PassiveTotal.DataCard.data_summary.cookies.count | Number | Number of available cookie records for the indicator. |
+| PassiveTotal.DataCard.data_summary.cookies.link | String | Link to the cookie records for the indicator. |
 
 #### Command Example
 
@@ -1801,12 +1757,10 @@ Retrieves a summary data card associated with the given query.
 >|---|---|---|---|---|---|---|
 >| 1.1.1.1 | IP Address | 1.1.1.0/24 | AS13335 - CLOUDFLARENET | Cloudflare | CentOS | Resolutions: [1997](https://community.pt.com/search/1.1.1.1/resolutions), Services: [3](https://community.pt.com/search/1.1.1.1/services), Certificates: [3742](https://community.pt.com/search/1.1.1.1/domaincertificates), Hashes: [1000](https://community.pt.com/search/1.1.1.1/hashes), Projects: [4](https://community.pt.com/search/1.1.1.1/projects), Articles: 0, Trackers: [3983](https://community.pt.com/search/1.1.1.1/trackers), Components: [914](https://community.pt.com/search/1.1.1.1/components), Host Pairs: [6987](https://community.pt.com/search/1.1.1.1/hostpairs), Reverse Dns: [5](https://community.pt.com/search/1.1.1.1/dns), Cookies: [23346](https://community.pt.com/search/1.1.1.1/cookies) |
 
-
 ### pt-get-reputation
 
 ***
 Gets reputation for a given domain, host or IP.
-
 
 #### Base Command
 
@@ -1816,21 +1770,19 @@ Gets reputation for a given domain, host or IP.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The domain, host or IP address to be queried. For example: riskiq.com, 1.1.1.1. | Required | 
-
+| query | The domain, host or IP address to be queried. For example: riskiq.com, 1.1.1.1. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.Reputation.query | String | The value of the indicator. | 
-| PassiveTotal.Reputation.score | Number | Reputation score of the indicator. | 
-| PassiveTotal.Reputation.classification | String | Reputation classification of the indicator. \(Can be GOOD, SUSPICIOUS, MALICIOUS, or UNKNOWN\) | 
-| PassiveTotal.Reputation.rules.name | String | Name of the rule that informed the reputation score of the indicator. | 
-| PassiveTotal.Reputation.rules.description | String | Description of the rule. | 
-| PassiveTotal.Reputation.rules.severity | Number | Severity of the rule. | 
-| PassiveTotal.Reputation.rules.link | String | Link to the rule. | 
-
+| PassiveTotal.Reputation.query | String | The value of the indicator. |
+| PassiveTotal.Reputation.score | Number | Reputation score of the indicator. |
+| PassiveTotal.Reputation.classification | String | Reputation classification of the indicator. \(Can be GOOD, SUSPICIOUS, MALICIOUS, or UNKNOWN\) |
+| PassiveTotal.Reputation.rules.name | String | Name of the rule that informed the reputation score of the indicator. |
+| PassiveTotal.Reputation.rules.description | String | Description of the rule. |
+| PassiveTotal.Reputation.rules.severity | Number | Severity of the rule. |
+| PassiveTotal.Reputation.rules.link | String | Link to the rule. |
 
 #### Command Example
 
@@ -1868,12 +1820,10 @@ Gets reputation for a given domain, host or IP.
 >|---|---|---|
 >| [RiskIQ Intel Article](https://community.pt.com/article/d0bf5d18) | Vermilion Strike: Linux and Windows Re-implementation of Cobalt Strike | 5 |
 
-
 ### ip
 
 ***
 Checks the reputation of an IP address.
-
 
 #### Base Command
 
@@ -1883,26 +1833,24 @@ Checks the reputation of an IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The IP address to check. | Optional | 
-
+| ip | The IP address to check. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.IP.query | String | The value of the indicator. | 
-| PassiveTotal.IP.score | Number | Reputation score of the indicator. | 
-| PassiveTotal.IP.classification | String | Reputation classification of the indicator. \(Can be GOOD, SUSPICIOUS, MALICIOUS, or UNKNOWN\) | 
-| PassiveTotal.IP.rules.name | String | Name of the rule that informed the reputation score of the indicator. | 
-| PassiveTotal.IP.rules.description | String | Description of the rule. | 
-| PassiveTotal.IP.rules.severity | Number | Severity of the rule. | 
-| PassiveTotal.IP.rules.link | String | Link to the rule. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| IP.Address | String | The IP Address. | 
-
+| PassiveTotal.IP.query | String | The value of the indicator. |
+| PassiveTotal.IP.score | Number | Reputation score of the indicator. |
+| PassiveTotal.IP.classification | String | Reputation classification of the indicator. \(Can be GOOD, SUSPICIOUS, MALICIOUS, or UNKNOWN\) |
+| PassiveTotal.IP.rules.name | String | Name of the rule that informed the reputation score of the indicator. |
+| PassiveTotal.IP.rules.description | String | Description of the rule. |
+| PassiveTotal.IP.rules.severity | Number | Severity of the rule. |
+| PassiveTotal.IP.rules.link | String | Link to the rule. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| IP.Address | String | The IP Address. |
 
 #### Command Example
 
@@ -1948,12 +1896,10 @@ Checks the reputation of an IP address.
 >|---|---|---|
 >| Open ports observed | The number of open ports may indicate maliciousness | 3 |
 
-
 ### pt-list-intel-profiles
 
 ***
 Retrieves the list of all profiles.
-
 
 #### Base Command
 
@@ -1963,29 +1909,27 @@ Retrieves the list of all profiles.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the ID of the profile to retrieve the specific profile.<br/><br/>Note: If 'id' argument is provided, all other arguments will be neglected. | Optional | 
-| query | Filter the result based on title or aliases. . | Optional | 
-| type | Filter the results based on the profile type. <br/><br/>Possible values: actor, tool, backdoor. | Optional | 
-| indicator_value | Specify the indicator value to retrieve the profiles containing the given indicator.<br/><br/>Note: To retrieve the list of indicators, execute the "pt-list-intel-profile-indicators" command.<br/>When both indicator_value and query are provided, higher priority will be given to indicator_value. | Optional | 
-| source | Filter the result based on the indicator source. <br/><br/>Possible values: osint, riskiq.<br/><br/>Note: Requires 'indicator_value' argument. | Optional | 
-| category | Filter the result based on the indicator category. <br/><br/>Possible values: host, network.<br/><br/>Note: Requires 'indicator_value' argument. | Optional | 
-| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is 1000. Default is 50. | Optional | 
-
+| id | Specify the ID of the profile to retrieve the specific profile.<br/><br/>Note: If 'id' argument is provided, all other arguments will be neglected. | Optional |
+| query | Filter the result based on title or aliases. . | Optional |
+| type | Filter the results based on the profile type. <br/><br/>Possible values: actor, tool, backdoor. | Optional |
+| indicator_value | Specify the indicator value to retrieve the profiles containing the given indicator.<br/><br/>Note: To retrieve the list of indicators, execute the "pt-list-intel-profile-indicators" command.<br/>When both indicator_value and query are provided, higher priority will be given to indicator_value. | Optional |
+| source | Filter the result based on the indicator source. <br/><br/>Possible values: osint, riskiq.<br/><br/>Note: Requires 'indicator_value' argument. | Optional |
+| category | Filter the result based on the indicator category. <br/><br/>Possible values: host, network.<br/><br/>Note: Requires 'indicator_value' argument. | Optional |
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is 1000. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.IntelProfile.id | String | ID of the intel profile. | 
-| PassiveTotal.IntelProfile.title | String | Title of the intel profile. | 
-| PassiveTotal.IntelProfile.link | String | Link to the intel profile. | 
-| PassiveTotal.IntelProfile.osintIndicatorsCount | Number | Count of the open source intelligence indicators referencing the intel profile. | 
-| PassiveTotal.IntelProfile.riskIqIndicatorsCount | Number | Count of the riskiq indicators referencing the intel profile. | 
-| PassiveTotal.IntelProfile.indicators | String | Link to the indicators referencing the intel profile. | 
-| PassiveTotal.IntelProfile.aliases | String | Aliases of the intel profile. | 
-| PassiveTotal.IntelProfile.tags.label | String | Labels associated with the intel profile. | 
-| PassiveTotal.IntelProfile.tags.countryCode | String | Country code of the tags associated with the intel profile. | 
-
+| PassiveTotal.IntelProfile.id | String | ID of the intel profile. |
+| PassiveTotal.IntelProfile.title | String | Title of the intel profile. |
+| PassiveTotal.IntelProfile.link | String | Link to the intel profile. |
+| PassiveTotal.IntelProfile.osintIndicatorsCount | Number | Count of the open source intelligence indicators referencing the intel profile. |
+| PassiveTotal.IntelProfile.riskIqIndicatorsCount | Number | Count of the riskiq indicators referencing the intel profile. |
+| PassiveTotal.IntelProfile.indicators | String | Link to the indicators referencing the intel profile. |
+| PassiveTotal.IntelProfile.aliases | String | Aliases of the intel profile. |
+| PassiveTotal.IntelProfile.tags.label | String | Labels associated with the intel profile. |
+| PassiveTotal.IntelProfile.tags.countryCode | String | Country code of the tags associated with the intel profile. |
 
 #### Command Example
 
@@ -2063,12 +2007,10 @@ Retrieves the list of all profiles.
 >|---|---|---|---|---|
 >| apt33 | APT33 | Elfin, Magnallium, Refined Kitten, Holmium, Cobalt Trinity  | 410 | 122 |
 
-
 ### pt-list-intel-profile-indicators
 
 ***
 Retrieves the indicators for the given profile.
-
 
 #### Base Command
 
@@ -2078,30 +2020,28 @@ Retrieves the indicators for the given profile.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the ID of the profile to retrieve indicators for the specific profile.<br/><br/>Note: To retrieve the list of profile IDs, execute the "pt-list-intel-profile" command.| Required | 
-| type | Filter the results based on the indicator type. <br/><br/>Possible values: certificate_sha1, domain, email, hash_md5, hash_sha256, ip, pdb_path, soa_email, url, whois_email. | Optional | 
-| indicator_value | Specify the indicator value to retrieve the specific indicator. | Optional | 
-| source | Filter the result based on the indicator source. <br/><br/>Possible values: osint, riskiq. | Optional | 
-| category | Filter the result based on the indicator category. <br/><br/>Possible values: host, network. | Optional | 
-| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional | 
-| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional | 
-
+| id | Specify the ID of the profile to retrieve indicators for the specific profile.<br/><br/>Note: To retrieve the list of profile IDs, execute the "pt-list-intel-profile" command.| Required |
+| type | Filter the results based on the indicator type. <br/><br/>Possible values: certificate_sha1, domain, email, hash_md5, hash_sha256, ip, pdb_path, soa_email, url, whois_email. | Optional |
+| indicator_value | Specify the indicator value to retrieve the specific indicator. | Optional |
+| source | Filter the result based on the indicator source. <br/><br/>Possible values: osint, riskiq. | Optional |
+| category | Filter the result based on the indicator category. <br/><br/>Possible values: host, network. | Optional |
+| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional |
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.IntelProfile.id | String | Profile ID containing the indicator. | 
-| PassiveTotal.IntelProfile.indicator.id | String | ID of the indicator. | 
-| PassiveTotal.IntelProfile.indicator.type | String | Type of the indicator. | 
-| PassiveTotal.IntelProfile.indicator.value | String | Value of the indicator. | 
-| PassiveTotal.IntelProfile.indicator.category | String | Category of the indicator. | 
-| PassiveTotal.IntelProfile.indicator.firstSeen | String | Date &amp; time the record was first seen. | 
-| PassiveTotal.IntelProfile.indicator.lastSeen | String | Date &amp; time the record was most recently observed. | 
-| PassiveTotal.IntelProfile.indicator.osint | String | Whether the indicator was published in open source intelligence articles. | 
-| PassiveTotal.IntelProfile.indicator.osintUrl | String | Link to the osint source of the indicator. | 
-| PassiveTotal.IntelProfile.indicator.articleGuids | String | List of RiskIQ OSINT article GUIDs associated with the indicator. | 
-
+| PassiveTotal.IntelProfile.id | String | Profile ID containing the indicator. |
+| PassiveTotal.IntelProfile.indicator.id | String | ID of the indicator. |
+| PassiveTotal.IntelProfile.indicator.type | String | Type of the indicator. |
+| PassiveTotal.IntelProfile.indicator.value | String | Value of the indicator. |
+| PassiveTotal.IntelProfile.indicator.category | String | Category of the indicator. |
+| PassiveTotal.IntelProfile.indicator.firstSeen | String | Date &amp; time the record was first seen. |
+| PassiveTotal.IntelProfile.indicator.lastSeen | String | Date &amp; time the record was most recently observed. |
+| PassiveTotal.IntelProfile.indicator.osint | String | Whether the indicator was published in open source intelligence articles. |
+| PassiveTotal.IntelProfile.indicator.osintUrl | String | Link to the osint source of the indicator. |
+| PassiveTotal.IntelProfile.indicator.articleGuids | String | List of RiskIQ OSINT article GUIDs associated with the indicator. |
 
 #### Command Example
 
@@ -2143,12 +2083,10 @@ Retrieves the indicators for the given profile.
 >|---|---|---|---|---|---|
 >| apt33:00c417425a73db5a315d23fac8cb353f | 00c417425a73db5a315d23fac8cb353f | hash_md5 | 2017-03-06T00:00:00.000+00:00 | 2017-03-06T00:00:00.000+00:00 | OSINT |
 
-
 ### pt-list-my-attack-surface-insights
 
 ***
 Retrieves the attack surface insight  information of the individual's account.
-
 
 #### Base Command
 
@@ -2158,26 +2096,24 @@ Retrieves the attack surface insight  information of the individual's account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| priority | Filter the results based on the priority level specified.<br/><br/>Possible values: high, medium, low. | Required | 
-| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is 1000. Default is 50. | Optional | 
-
+| priority | Filter the results based on the priority level specified.<br/><br/>Possible values: high, medium, low. | Required |
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is 1000. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.Summary.Insight.name | String | The command name. | 
-| PassiveTotal.Summary.Insight.activeInsightCount | Number | Total number of active insights. | 
-| PassiveTotal.Summary.Insight.totalInsightCount | Number | Total number of insights. | 
-| PassiveTotal.Summary.Insight.totalObservations | Number | Total number of observations. | 
-| PassiveTotal.Insight.priorityLevel | String | Priority level of insights. | 
-| PassiveTotal.Insight.insight.name | String | Name of the insight. | 
-| PassiveTotal.Insight.insight.description | String | Description of the insight. | 
-| PassiveTotal.Insight.insight.observationCount | Number | Number of observations for the given insight. | 
-| PassiveTotal.Insight.insight.link | String | Link to the insight. | 
-| PassiveTotal.Insight.insight.insightId | String | ID of the third party insight. | 
-| PassiveTotal.Insight.insight.segmentBy | String | Segment by of the insight. | 
-
+| PassiveTotal.Summary.Insight.name | String | The command name. |
+| PassiveTotal.Summary.Insight.activeInsightCount | Number | Total number of active insights. |
+| PassiveTotal.Summary.Insight.totalInsightCount | Number | Total number of insights. |
+| PassiveTotal.Summary.Insight.totalObservations | Number | Total number of observations. |
+| PassiveTotal.Insight.priorityLevel | String | Priority level of insights. |
+| PassiveTotal.Insight.insight.name | String | Name of the insight. |
+| PassiveTotal.Insight.insight.description | String | Description of the insight. |
+| PassiveTotal.Insight.insight.observationCount | Number | Number of observations for the given insight. |
+| PassiveTotal.Insight.insight.link | String | Link to the insight. |
+| PassiveTotal.Insight.insight.insightId | String | ID of the third party insight. |
+| PassiveTotal.Insight.insight.segmentBy | String | Segment by of the insight. |
 
 #### Command Example
 
@@ -2232,12 +2168,10 @@ Retrieves the attack surface insight  information of the individual's account.
 >| ASI:  Deprecated Tech - Nginx | ##### Description <br/>Deprecated versions of Nginx web server that are no longer supported.  Running end of life or deprecated hardware or software can open organizations up to potential risks and vulnerabilities as these systems are no longer supported via regular updates and security patches<br/><br/>##### Remediation<br/>Organizations should consider upgrading to supported versions of Nginx to ensure security patches are available.<br/> | 146 | 40466 | savedfilter_metric_29643 |
 >| ASI: SSL Certificates Expiring in 30 Days | ##### Description <br/>The following SSL Certificates expire within the next 30 days.  Expired certificates can lead to critical business functions being unavailable to customers or employees.   Expired certificates could prevent customers from accessing your website and negatively impact an organization’s brand.<br/><br/><br/>##### Remediation<br/>Organizations should review these certificates and ensure appropriate policies and procedures are in place to keep SSL certificates up to date. | 13 | 40466 | savedfilter_metric_29632 |
 
-
 ### pt-list-my-attack-surfaces
 
 ***
 Retrieves the attack surface information of the individual's account.
-
 
 #### Base Command
 
@@ -2245,25 +2179,22 @@ Retrieves the attack surface information of the individual's account.
 
 #### Input
 
-
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is 1000. Default is 50. | Optional | 
-
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is 1000. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.AttackSurface.id | Number | ID of the attack surface. | 
-| PassiveTotal.AttackSurface.name | String | Name of the attack surface. | 
-| PassiveTotal.AttackSurface.priority.high.observationCount | Number | Total observations of high priority attack surface. | 
-| PassiveTotal.AttackSurface.priority.high.link | String | Link to the high priority attack surface. | 
-| PassiveTotal.AttackSurface.priority.medium.observationCount | Number | Total observations of medium priority attack surface. | 
-| PassiveTotal.AttackSurface.priority.medium.link | String | Link to the medium priority attack surface. | 
-| PassiveTotal.AttackSurface.priority.low.observationCount | Number | Total observations of low priority attack surface. | 
-| PassiveTotal.AttackSurface.priority.low.link | String | Link to the low priority attack surface. | 
-
+| PassiveTotal.AttackSurface.id | Number | ID of the attack surface. |
+| PassiveTotal.AttackSurface.name | String | Name of the attack surface. |
+| PassiveTotal.AttackSurface.priority.high.observationCount | Number | Total observations of high priority attack surface. |
+| PassiveTotal.AttackSurface.priority.high.link | String | Link to the high priority attack surface. |
+| PassiveTotal.AttackSurface.priority.medium.observationCount | Number | Total observations of medium priority attack surface. |
+| PassiveTotal.AttackSurface.priority.medium.link | String | Link to the medium priority attack surface. |
+| PassiveTotal.AttackSurface.priority.low.observationCount | Number | Total observations of low priority attack surface. |
+| PassiveTotal.AttackSurface.priority.low.link | String | Link to the low priority attack surface. |
 
 #### Command Example
 
@@ -2304,12 +2235,10 @@ Retrieves the attack surface information of the individual's account.
 >|---|---|---|---|---|
 >| 88256 | [RiskIQ, Inc.](https://community.pt.com/attack-surfaces/88256) | 13 observations | 4 observations | 165 observations |
 
-
 ### pt-list-third-party-attack-surface
 
 ***
 Retrieves the attack surface observations by severity level for the given third-party account.
-
 
 #### Base Command
 
@@ -2319,28 +2248,26 @@ Retrieves the attack surface observations by severity level for the given third-
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the vendor ID to retrieve the attack surface third party information. | Optional | 
-| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional | 
-| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional | 
-
+| id | Specify the vendor ID to retrieve the attack surface third party information. | Optional |
+| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional |
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.ThirdParty.id | Number | ID of the vendor. | 
-| PassiveTotal.ThirdParty.name | String | Name of the vendor. | 
-| PassiveTotal.ThirdParty.priority.high.observationCount | Number | Total observations of high priority attack surface. | 
-| PassiveTotal.ThirdParty.priority.high.link | String | Link to the high priority attack surface. | 
-| PassiveTotal.ThirdParty.priority.medium.observationCount | Number | Total observations of medium priority attack surface. | 
-| PassiveTotal.ThirdParty.priority.medium.link | String | Link to the medium priority attack surface. | 
-| PassiveTotal.ThirdParty.priority.low.observationCount | Number | Total observations of low priority attack surface. | 
-| PassiveTotal.ThirdParty.priority.low.link | String | Link to the low priority attack surface. | 
-| PassiveTotal.Summary.ThirdPartyASI.name | String | The command name. | 
-| PassiveTotal.Summary.ThirdPartyASI.totalCount | Number | Total number of attack surfaces. | 
-| PassiveTotal.Summary.ThirdPartyASI.totalPages | Number | Number of pages. | 
-| PassiveTotal.Summary.ThirdPartyASI.nextPage | String | Link to the next page. | 
-
+| PassiveTotal.ThirdParty.id | Number | ID of the vendor. |
+| PassiveTotal.ThirdParty.name | String | Name of the vendor. |
+| PassiveTotal.ThirdParty.priority.high.observationCount | Number | Total observations of high priority attack surface. |
+| PassiveTotal.ThirdParty.priority.high.link | String | Link to the high priority attack surface. |
+| PassiveTotal.ThirdParty.priority.medium.observationCount | Number | Total observations of medium priority attack surface. |
+| PassiveTotal.ThirdParty.priority.medium.link | String | Link to the medium priority attack surface. |
+| PassiveTotal.ThirdParty.priority.low.observationCount | Number | Total observations of low priority attack surface. |
+| PassiveTotal.ThirdParty.priority.low.link | String | Link to the low priority attack surface. |
+| PassiveTotal.Summary.ThirdPartyASI.name | String | The command name. |
+| PassiveTotal.Summary.ThirdPartyASI.totalCount | Number | Total number of attack surfaces. |
+| PassiveTotal.Summary.ThirdPartyASI.totalPages | Number | Number of pages. |
+| PassiveTotal.Summary.ThirdPartyASI.nextPage | String | Link to the next page. |
 
 #### Command Example
 
@@ -2409,12 +2336,10 @@ Retrieves the attack surface observations by severity level for the given third-
 >| 45998 | [Mitsubishi Corporation](https://community.pt.com/attack-surfaces/45998) | 3 observations | 35 observations | 92 observations |
 >| 371662 | [Aeroflot-Russian Airlines](https://community.pt.com/attack-surfaces/371662) | 7 observations | 8 observations | 16 observations |
 
-
 ### pt-list-third-party-attack-surface-insights
 
 ***
 Retrieves the attack surface insight information of the given third-party account.
-
 
 #### Base Command
 
@@ -2424,28 +2349,26 @@ Retrieves the attack surface insight information of the given third-party accoun
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the vendor ID to retrieve the third-party insights information.<br/><br/>Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command. | Required | 
-| priority | Filter the results based on the priority level specified.<br/><br/>Possible values: high, medium, low. | Required | 
-| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is 1000. Default is 50. | Optional | 
-
+| id | Specify the vendor ID to retrieve the third-party insights information.<br/><br/>Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command. | Required |
+| priority | Filter the results based on the priority level specified.<br/><br/>Possible values: high, medium, low. | Required |
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is 1000. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.Summary.ThirdPartyInsight.activeInsightCount | Number | Total number of active third party insights. | 
-| PassiveTotal.Summary.ThirdPartyInsight.totalInsightCount | Number | Total number of third party insights. | 
-| PassiveTotal.Summary.ThirdPartyInsight.totalObservations | Number | Total number of third party observations. | 
-| PassiveTotal.ThirdParty.id | Number | Vendor ID associated with the third party insights. | 
-| PassiveTotal.ThirdParty.priorityLevel | String | Priority level of third party insights. | 
-| PassiveTotal.ThirdParty.Insight.insight.name | String | Name of the third party insight. | 
-| PassiveTotal.ThirdParty.Insight.insight.description | String | Description of the third party insight. | 
-| PassiveTotal.ThirdParty.Insight.insight.observationCount | Number | Number of observations for the given third party insight. | 
-| PassiveTotal.ThirdParty.Insight.insight.link | String | Link to the third party insight. | 
-| PassiveTotal.ThirdParty.Insight.insight.insightId | String | ID of the third party insight. | 
-| PassiveTotal.ThirdParty.Insight.insight.segmentBy | String | Segment by of the third party insight. | 
-| PassiveTotal.Summary.ThirdPartyInsight.name | String | The command name. | 
-
+| PassiveTotal.Summary.ThirdPartyInsight.activeInsightCount | Number | Total number of active third party insights. |
+| PassiveTotal.Summary.ThirdPartyInsight.totalInsightCount | Number | Total number of third party insights. |
+| PassiveTotal.Summary.ThirdPartyInsight.totalObservations | Number | Total number of third party observations. |
+| PassiveTotal.ThirdParty.id | Number | Vendor ID associated with the third party insights. |
+| PassiveTotal.ThirdParty.priorityLevel | String | Priority level of third party insights. |
+| PassiveTotal.ThirdParty.Insight.insight.name | String | Name of the third party insight. |
+| PassiveTotal.ThirdParty.Insight.insight.description | String | Description of the third party insight. |
+| PassiveTotal.ThirdParty.Insight.insight.observationCount | Number | Number of observations for the given third party insight. |
+| PassiveTotal.ThirdParty.Insight.insight.link | String | Link to the third party insight. |
+| PassiveTotal.ThirdParty.Insight.insight.insightId | String | ID of the third party insight. |
+| PassiveTotal.ThirdParty.Insight.insight.segmentBy | String | Segment by of the third party insight. |
+| PassiveTotal.Summary.ThirdPartyInsight.name | String | The command name. |
 
 #### Command Example
 
@@ -2508,7 +2431,6 @@ Retrieves the attack surface insight information of the given third-party accoun
 ***
 Retrieves the attack surface asset information of the individual's account.
 
-
 #### Base Command
 
 `pt-list-my-attack-surface-assets`
@@ -2517,27 +2439,25 @@ Retrieves the attack surface asset information of the individual's account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the insight ID to retrieve the assets.<br/><br/>Note: To retrieve the list of insight IDs, execute the "pt-list-my-attack-surface-insights" command. | Required | 
-| segment_by | Specify the segment_by to retrieve the assets.<br/><br/>Note: To retrieve the list of segment by, execute the "pt-list-my-attack-surface-insights" command. | Required | 
-| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional | 
-| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional | 
-
+| id | Specify the insight ID to retrieve the assets.<br/><br/>Note: To retrieve the list of insight IDs, execute the "pt-list-my-attack-surface-insights" command. | Required |
+| segment_by | Specify the segment_by to retrieve the assets.<br/><br/>Note: To retrieve the list of segment by, execute the "pt-list-my-attack-surface-insights" command. | Required |
+| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional |
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.Summary.Asset.totalCount | Number | Total number of available assets. | 
-| PassiveTotal.Summary.Asset.totalPages | Number | Number of pages. | 
-| PassiveTotal.Summary.Asset.nextPage | String | Link to the next page. | 
-| PassiveTotal.Asset.insightId | String | Insight ID for which assets are retrieved. | 
-| PassiveTotal.Asset.segmentBy | String | Segment by for which assets are retrieved. | 
-| PassiveTotal.Asset.asset.type | String | Type of the asset. | 
-| PassiveTotal.Asset.asset.name | String | Name of the asset. | 
-| PassiveTotal.Asset.asset.firstSeen | Date | Date &amp; time the record was first seen. | 
-| PassiveTotal.Asset.asset.lastSeen | Date | Date &amp; time the record was most recently observed. | 
-| PassiveTotal.Summary.Asset.name | String | The command name. | 
-
+| PassiveTotal.Summary.Asset.totalCount | Number | Total number of available assets. |
+| PassiveTotal.Summary.Asset.totalPages | Number | Number of pages. |
+| PassiveTotal.Summary.Asset.nextPage | String | Link to the next page. |
+| PassiveTotal.Asset.insightId | String | Insight ID for which assets are retrieved. |
+| PassiveTotal.Asset.segmentBy | String | Segment by for which assets are retrieved. |
+| PassiveTotal.Asset.asset.type | String | Type of the asset. |
+| PassiveTotal.Asset.asset.name | String | Name of the asset. |
+| PassiveTotal.Asset.asset.firstSeen | Date | Date &amp; time the record was first seen. |
+| PassiveTotal.Asset.asset.lastSeen | Date | Date &amp; time the record was most recently observed. |
+| PassiveTotal.Summary.Asset.name | String | The command name. |
 
 #### Command Example
 
@@ -2579,12 +2499,10 @@ Retrieves the attack surface asset information of the individual's account.
 >|---|---|---|---|
 >| financialtradie.com | DOMAIN | 2016-05-25 20:07:40 | 2021-09-19 09:50:32 |
 
-
 ### pt-list-my-attack-surface-vulnerable-components
 
 ***
 Retrieves the attack surface vulnerable component information of the individual's account.
-
 
 #### Base Command
 
@@ -2594,23 +2512,21 @@ Retrieves the attack surface vulnerable component information of the individual'
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional | 
-| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional | 
-
+| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional |
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.Summary.VulnerableComponent.name | String | The command name. | 
-| PassiveTotal.Summary.VulnerableComponent.totalCount | Number | Total number of available vulnerable components. | 
-| PassiveTotal.Summary.VulnerableComponent.totalPages | Number | Number of pages. | 
-| PassiveTotal.Summary.VulnerableComponent.nextPage | String | Link to the next page. | 
-| PassiveTotal.VulnerableComponent.name | String | Name of the vulnerable component. | 
-| PassiveTotal.VulnerableComponent.type | String | Type of the vulnerable component. | 
-| PassiveTotal.VulnerableComponent.severity | String | Severity of the vulnerable component. | 
-| PassiveTotal.VulnerableComponent.count | Number | Number of assets affected. | 
-
+| PassiveTotal.Summary.VulnerableComponent.name | String | The command name. |
+| PassiveTotal.Summary.VulnerableComponent.totalCount | Number | Total number of available vulnerable components. |
+| PassiveTotal.Summary.VulnerableComponent.totalPages | Number | Number of pages. |
+| PassiveTotal.Summary.VulnerableComponent.nextPage | String | Link to the next page. |
+| PassiveTotal.VulnerableComponent.name | String | Name of the vulnerable component. |
+| PassiveTotal.VulnerableComponent.type | String | Type of the vulnerable component. |
+| PassiveTotal.VulnerableComponent.severity | String | Severity of the vulnerable component. |
+| PassiveTotal.VulnerableComponent.count | Number | Number of assets affected. |
 
 #### Command Example
 
@@ -2656,12 +2572,10 @@ Retrieves the attack surface vulnerable component information of the individual'
 >| nginx 1.14.0 | Server | HIGH | 129 |
 >| nginx 1.16.1 | Server | HIGH | 13 |
 
-
 ### pt-list-my-attack-surface-vulnerabilities
 
 ***
 Retrieves the attack surface vulnerability information of the individual's account.
-
 
 #### Base Command
 
@@ -2671,24 +2585,22 @@ Retrieves the attack surface vulnerability information of the individual's accou
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional | 
-| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional | 
-
+| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional |
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.Vulnerability.cveId | String | ID of the CVE. | 
-| PassiveTotal.Vulnerability.cwes.cweId | String | CWE ID associated with the CVE. | 
-| PassiveTotal.Vulnerability.priorityScore | Number | Priority score of the CVE. | 
-| PassiveTotal.Vulnerability.observationCount | Number | Number of observations of CVE. | 
-| PassiveTotal.Vulnerability.cveLink | String | Link to the CVE. | 
-| PassiveTotal.Summary.Vulnerability.name | String | The command name. | 
-| PassiveTotal.Summary.Vulnerability.totalCount | Number | Total number of vulnerabilities. | 
-| PassiveTotal.Summary.Vulnerability.totalPages | Number | Number of pages. | 
-| PassiveTotal.Summary.Vulnerability.nextPage | String | Link to the next page. | 
-
+| PassiveTotal.Vulnerability.cveId | String | ID of the CVE. |
+| PassiveTotal.Vulnerability.cwes.cweId | String | CWE ID associated with the CVE. |
+| PassiveTotal.Vulnerability.priorityScore | Number | Priority score of the CVE. |
+| PassiveTotal.Vulnerability.observationCount | Number | Number of observations of CVE. |
+| PassiveTotal.Vulnerability.cveLink | String | Link to the CVE. |
+| PassiveTotal.Summary.Vulnerability.name | String | The command name. |
+| PassiveTotal.Summary.Vulnerability.totalCount | Number | Total number of vulnerabilities. |
+| PassiveTotal.Summary.Vulnerability.totalPages | Number | Number of pages. |
+| PassiveTotal.Summary.Vulnerability.nextPage | String | Link to the next page. |
 
 #### Command Example
 
@@ -2744,12 +2656,10 @@ Retrieves the attack surface vulnerability information of the individual's accou
 >| CVE-2021-23017 | CWE-193  | 98.0 | 149 |
 >| CVE-2019-20372 | CWE-444  | 53.0 | 145 |
 
-
 ### pt-list-my-attack-surface-observations
 
 ***
 Retrieves the attack surface vulnerability observation information of the individual's account.
-
 
 #### Base Command
 
@@ -2759,26 +2669,24 @@ Retrieves the attack surface vulnerability observation information of the indivi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | Specify the CVE ID to retrieve observations of that CVE.<br/><br/>Note: To retrieve the list of CVE IDs, execute the "pt-list-my-attack-surface-vulnerabilities" command. | Required | 
-| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional | 
-| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional | 
-
+| cve_id | Specify the CVE ID to retrieve observations of that CVE.<br/><br/>Note: To retrieve the list of CVE IDs, execute the "pt-list-my-attack-surface-vulnerabilities" command. | Required |
+| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional |
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.Observation.asset.type | String | Type of the asset. | 
-| PassiveTotal.Observation.asset.name | String | Name of the asset. | 
-| PassiveTotal.Observation.asset.firstSeen | Date | Date &amp; time the record was first seen. | 
-| PassiveTotal.Observation.asset.lastSeen | Date | Date &amp; time the record was most recently observed. | 
-| PassiveTotal.Observation.cveId | String | ID of the CVE. | 
-| PassiveTotal.Observation.cwe.cweId | String | CWE ID associated with the CVE. | 
-| PassiveTotal.Summary.Observation.name | String | The command name. | 
-| PassiveTotal.Summary.Observation.totalCount | Number | Total number of vulnerabilities. | 
-| PassiveTotal.Summary.Observation.totalPages | Number | Number of pages. | 
-| PassiveTotal.Summary.Observation.nextPage | String | Link to the next page. | 
-
+| PassiveTotal.Observation.asset.type | String | Type of the asset. |
+| PassiveTotal.Observation.asset.name | String | Name of the asset. |
+| PassiveTotal.Observation.asset.firstSeen | Date | Date &amp; time the record was first seen. |
+| PassiveTotal.Observation.asset.lastSeen | Date | Date &amp; time the record was most recently observed. |
+| PassiveTotal.Observation.cveId | String | ID of the CVE. |
+| PassiveTotal.Observation.cwe.cweId | String | CWE ID associated with the CVE. |
+| PassiveTotal.Summary.Observation.name | String | The command name. |
+| PassiveTotal.Summary.Observation.totalCount | Number | Total number of vulnerabilities. |
+| PassiveTotal.Summary.Observation.totalPages | Number | Number of pages. |
+| PassiveTotal.Summary.Observation.nextPage | String | Link to the next page. |
 
 #### Command Example
 
@@ -2832,12 +2740,10 @@ Retrieves the attack surface vulnerability observation information of the indivi
 >| riskiq.app | HOST | 2018-05-11 20:40:17 | 2021-09-19 14:46:48 |
 >| www.riskiq.app | HOST | 2018-06-30 00:03:32 | 2021-09-15 19:36:38 |
 
-
 ### pt-list-third-party-attack-surface-assets
 
 ***
 Retrieves the attack surface asset information of the given third-party account.
-
 
 #### Base Command
 
@@ -2847,29 +2753,27 @@ Retrieves the attack surface asset information of the given third-party account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the insight ID to retrieve the assets.<br/><br/>Note: To retrieve the list of insight IDs, execute the "pt-list-third-party-attack-surface-insights" command. | Required | 
-| vendor_id | Specify the vendor ID to retrieve the assets of a specific vendor.<br/><br/>Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command. | Required | 
-| segment_by | Specify the segment_by to retrieve the assets.<br/><br/>Note: To retrieve the list of segment by, execute the "pt-list-third-party-attack-surface-insights" command. | Required | 
-| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional | 
-| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional | 
-
+| id | Specify the insight ID to retrieve the assets.<br/><br/>Note: To retrieve the list of insight IDs, execute the "pt-list-third-party-attack-surface-insights" command. | Required |
+| vendor_id | Specify the vendor ID to retrieve the assets of a specific vendor.<br/><br/>Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command. | Required |
+| segment_by | Specify the segment_by to retrieve the assets.<br/><br/>Note: To retrieve the list of segment by, execute the "pt-list-third-party-attack-surface-insights" command. | Required |
+| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional |
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.ThirdParty.id | Number | ID of the vendor. | 
-| PassiveTotal.Summary.ThirdPartyInsightAsset.name | String | The command name. | 
-| PassiveTotal.Summary.ThirdPartyInsightAsset.totalCount | Number | Total number of available assets. | 
-| PassiveTotal.Summary.ThirdPartyInsightAsset.totalPages | Number | Number of pages. | 
-| PassiveTotal.Summary.ThirdPartyInsightAsset.nextPage | String | Link to the next page. | 
-| PassiveTotal.ThirdParty.InsightAsset.insightId | Number | Insight ID for which assets are retrieved. | 
-| PassiveTotal.ThirdParty.InsightAsset.segmentBy | String | Segment by for which assets are retrieved. | 
-| PassiveTotal.ThirdParty.InsightAsset.asset.type | String | Type of the asset. | 
-| PassiveTotal.ThirdParty.InsightAsset.asset.name | String | Name of the asset. | 
-| PassiveTotal.ThirdParty.InsightAsset.asset.firstSeen | Date | Date &amp; time the record was first seen. | 
-| PassiveTotal.ThirdParty.InsightAsset.asset.lastSeen | Date | Date &amp; time the record was most recently observed. | 
-
+| PassiveTotal.ThirdParty.id | Number | ID of the vendor. |
+| PassiveTotal.Summary.ThirdPartyInsightAsset.name | String | The command name. |
+| PassiveTotal.Summary.ThirdPartyInsightAsset.totalCount | Number | Total number of available assets. |
+| PassiveTotal.Summary.ThirdPartyInsightAsset.totalPages | Number | Number of pages. |
+| PassiveTotal.Summary.ThirdPartyInsightAsset.nextPage | String | Link to the next page. |
+| PassiveTotal.ThirdParty.InsightAsset.insightId | Number | Insight ID for which assets are retrieved. |
+| PassiveTotal.ThirdParty.InsightAsset.segmentBy | String | Segment by for which assets are retrieved. |
+| PassiveTotal.ThirdParty.InsightAsset.asset.type | String | Type of the asset. |
+| PassiveTotal.ThirdParty.InsightAsset.asset.name | String | Name of the asset. |
+| PassiveTotal.ThirdParty.InsightAsset.asset.firstSeen | Date | Date &amp; time the record was first seen. |
+| PassiveTotal.ThirdParty.InsightAsset.asset.lastSeen | Date | Date &amp; time the record was most recently observed. |
 
 #### Command Example
 
@@ -2921,12 +2825,10 @@ Retrieves the attack surface asset information of the given third-party account.
 >| 160.189.11.4 | IP_ADDRESS | 2010-06-24 07:49:19 | 2021-09-21 23:02:08 |
 >| ec.soup-stock-tokyo.com | HOST | 2017-12-01 09:22:21 | 2021-09-21 18:23:10 |
 
-
 ### pt-list-third-party-attack-surface-vulnerable-components
 
 ***
 Retrieves the attack surface vulnerable component information of the given third-party account.
-
 
 #### Base Command
 
@@ -2936,25 +2838,23 @@ Retrieves the attack surface vulnerable component information of the given third
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the vendor ID to retrieve the vulnerable components for a particular vendor.<br/><br/>Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command. | Required | 
-| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional | 
-| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional | 
-
+| id | Specify the vendor ID to retrieve the vulnerable components for a particular vendor.<br/><br/>Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command. | Required |
+| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional |
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.ThirdParty.id | String | ID of the vendor. | 
-| PassiveTotal.Summary.ThirdPartyVulnerableComponent.name | String | The command name. | 
-| PassiveTotal.Summary.ThirdPartyVulnerableComponent.totalCount | Number | Total number of available vulnerable components. | 
-| PassiveTotal.Summary.ThirdPartyVulnerableComponent.totalPages | Number | Number of pages. | 
-| PassiveTotal.Summary.ThirdPartyVulnerableComponent.nextPage | String | Link to the next page. | 
-| PassiveTotal.ThirdParty.VulnerableComponent.name | String | Name of the vulnerable component. | 
-| PassiveTotal.ThirdParty.VulnerableComponent.type | String | Type of the vulnerable component. | 
-| PassiveTotal.ThirdParty.VulnerableComponent.severity | String | Severity of the vulnerable component. | 
-| PassiveTotal.ThirdParty.VulnerableComponent.count | Number | Number of assets affected. | 
-
+| PassiveTotal.ThirdParty.id | String | ID of the vendor. |
+| PassiveTotal.Summary.ThirdPartyVulnerableComponent.name | String | The command name. |
+| PassiveTotal.Summary.ThirdPartyVulnerableComponent.totalCount | Number | Total number of available vulnerable components. |
+| PassiveTotal.Summary.ThirdPartyVulnerableComponent.totalPages | Number | Number of pages. |
+| PassiveTotal.Summary.ThirdPartyVulnerableComponent.nextPage | String | Link to the next page. |
+| PassiveTotal.ThirdParty.VulnerableComponent.name | String | Name of the vulnerable component. |
+| PassiveTotal.ThirdParty.VulnerableComponent.type | String | Type of the vulnerable component. |
+| PassiveTotal.ThirdParty.VulnerableComponent.severity | String | Severity of the vulnerable component. |
+| PassiveTotal.ThirdParty.VulnerableComponent.count | Number | Number of assets affected. |
 
 #### Command Example
 
@@ -3003,12 +2903,10 @@ Retrieves the attack surface vulnerable component information of the given third
 >| Microsoft-IIS 8.5 | Server | MEDIUM | 14 |
 >| OpenSSL 1.0.2k | Server Module | HIGH | 5 |
 
-
 ### pt-list-third-party-attack-surface-vulnerabilities
 
 ***
 Retrieves the attack surface vulnerability information of the given third-party account.
-
 
 #### Base Command
 
@@ -3018,26 +2916,24 @@ Retrieves the attack surface vulnerability information of the given third-party 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the vendor ID to retrieve the vulnerabilities for a particular vendor.<br/><br/>Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command. | Required | 
-| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional | 
-| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional | 
-
+| id | Specify the vendor ID to retrieve the vulnerabilities for a particular vendor.<br/><br/>Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command. | Required |
+| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional |
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.ThirdParty.id | Number | ID of the vendor. | 
-| PassiveTotal.ThirdParty.Vulnerability.cveId | String | ID of the CVE. | 
-| PassiveTotal.ThirdParty.Vulnerability.cwes.cweId | String | CWE ID associated with the CVE. | 
-| PassiveTotal.ThirdParty.Vulnerability.priorityScore | Number | Priority score of the CVE. | 
-| PassiveTotal.ThirdParty.Vulnerability.observationCount | Number | Number of observations of CVE. | 
-| PassiveTotal.ThirdParty.Vulnerability.cveLink | String | Link to the CVE. | 
-| PassiveTotal.Summary.ThirdPartyVulnerability.name | String | The command name. | 
-| PassiveTotal.Summary.ThirdPartyVulnerability.totalCount | Number | Total number of vulnerabilities. | 
-| PassiveTotal.Summary.ThirdPartyVulnerability.totalPages | Number | Number of pages. | 
-| PassiveTotal.Summary.ThirdPartyVulnerability.nextPage | String | Link to the next page. | 
-
+| PassiveTotal.ThirdParty.id | Number | ID of the vendor. |
+| PassiveTotal.ThirdParty.Vulnerability.cveId | String | ID of the CVE. |
+| PassiveTotal.ThirdParty.Vulnerability.cwes.cweId | String | CWE ID associated with the CVE. |
+| PassiveTotal.ThirdParty.Vulnerability.priorityScore | Number | Priority score of the CVE. |
+| PassiveTotal.ThirdParty.Vulnerability.observationCount | Number | Number of observations of CVE. |
+| PassiveTotal.ThirdParty.Vulnerability.cveLink | String | Link to the CVE. |
+| PassiveTotal.Summary.ThirdPartyVulnerability.name | String | The command name. |
+| PassiveTotal.Summary.ThirdPartyVulnerability.totalCount | Number | Total number of vulnerabilities. |
+| PassiveTotal.Summary.ThirdPartyVulnerability.totalPages | Number | Number of pages. |
+| PassiveTotal.Summary.ThirdPartyVulnerability.nextPage | String | Link to the next page. |
 
 #### Command Example
 
@@ -3096,12 +2992,10 @@ Retrieves the attack surface vulnerability information of the given third-party 
 >| CVE-2020-11022 | CWE-79  | 61.0 | 19 |
 >| CVE-2020-11023 | CWE-79  | 61.0 | 19 |
 
-
 ### pt-list-third-party-attack-surface-observations
 
 ***
 Retrieves the attack surface vulnerability observation information of the given third-party account.
-
 
 #### Base Command
 
@@ -3111,28 +3005,26 @@ Retrieves the attack surface vulnerability observation information of the given 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the vendor ID to retrieve the vulnerability observations for a particular vendor.<br/><br/>Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command. | Required | 
-| cve_id | Specify the CVE ID to retrieve observations of the CVE.<br/><br/>Note: To retrieve the list of CVE IDs, execute the "pt-list-third-party-attack-surface-vulnerabilities" command. | Required | 
-| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional | 
-| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional | 
-
+| id | Specify the vendor ID to retrieve the vulnerability observations for a particular vendor.<br/><br/>Note: To retrieve the list of vendor IDs, execute the "pt-list-third-party-attack-surface" command. | Required |
+| cve_id | Specify the CVE ID to retrieve observations of the CVE.<br/><br/>Note: To retrieve the list of CVE IDs, execute the "pt-list-third-party-attack-surface-vulnerabilities" command. | Required |
+| page_number | Page number for paging through results.<br/><br/>Note: The minimum value supported is 0 and maximum value supported is int32. Default is 0. | Optional |
+| page_size | Maximum number of results to return per page.<br/><br/>Note: The minimum value supported is 1 and maximum value supported is int32. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PassiveTotal.ThirdParty.id | Number | ID of the vendor. | 
-| PassiveTotal.ThirdParty.Observation.asset.type | String | Type of the asset. | 
-| PassiveTotal.ThirdParty.Observation.asset.name | String | Name of the asset. | 
-| PassiveTotal.ThirdParty.Observation.asset.firstSeen | Date | Date &amp; time the record was first seen. | 
-| PassiveTotal.ThirdParty.Observation.asset.lastSeen | Date | Date &amp; time the record was most recently observed. | 
-| PassiveTotal.ThirdParty.Observation.cveId | String | ID of the CVE. | 
-| PassiveTotal.ThirdParty.Observation.cwe.cweId | String | CWE ID associated with the CVE. | 
-| PassiveTotal.Summary.ThirdPartyObservation.name | String | The command name. | 
-| PassiveTotal.Summary.ThirdPartyObservation.totalCount | Number | Total number of observations. | 
-| PassiveTotal.Summary.ThirdPartyObservation.totalPages | Number | Number of pages. | 
-| PassiveTotal.Summary.ThirdPartyObservation.nextPage | String | Link to the next page. | 
-
+| PassiveTotal.ThirdParty.id | Number | ID of the vendor. |
+| PassiveTotal.ThirdParty.Observation.asset.type | String | Type of the asset. |
+| PassiveTotal.ThirdParty.Observation.asset.name | String | Name of the asset. |
+| PassiveTotal.ThirdParty.Observation.asset.firstSeen | Date | Date &amp; time the record was first seen. |
+| PassiveTotal.ThirdParty.Observation.asset.lastSeen | Date | Date &amp; time the record was most recently observed. |
+| PassiveTotal.ThirdParty.Observation.cveId | String | ID of the CVE. |
+| PassiveTotal.ThirdParty.Observation.cwe.cweId | String | CWE ID associated with the CVE. |
+| PassiveTotal.Summary.ThirdPartyObservation.name | String | The command name. |
+| PassiveTotal.Summary.ThirdPartyObservation.totalCount | Number | Total number of observations. |
+| PassiveTotal.Summary.ThirdPartyObservation.totalPages | Number | Number of pages. |
+| PassiveTotal.Summary.ThirdPartyObservation.nextPage | String | Link to the next page. |
 
 #### Command Example
 

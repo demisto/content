@@ -110,10 +110,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 98d0d4cc-dd10-4282-8706-129362de2573
+    taskid: 87112bac-cc62-42a2-af1d-cb4db2c54823
     type: regular
     task:
-      id: 98d0d4cc-dd10-4282-8706-129362de2573
+      id: 87112bac-cc62-42a2-af1d-cb4db2c54823
       version: -1
       name: Get Domain Name reputation
       description: Checks the reputation of a domain.
@@ -139,16 +139,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerror: true
   "18":
     id: "18"
-    taskid: a5f8583c-7a45-4e75-845f-0633a5c03441
+    taskid: e87eb97f-d5fe-4811-b2e4-b5ec0beb3b3a
     type: regular
     task:
-      id: a5f8583c-7a45-4e75-845f-0633a5c03441
+      id: e87eb97f-d5fe-4811-b2e4-b5ec0beb3b3a
       version: -1
       name: Get destination IP reputation
       description: Checks the specified IP address against the AbuseIP database.
@@ -178,10 +179,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerror: true
   "19":
     id: "19"
     taskid: 30d6024b-0ba2-4dce-8069-f3e029c70305
@@ -1034,3 +1036,14 @@ tests:
 fromversion: 8.8.0
 
 
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- cloud
+- cloud_posture
+- cloud_runtime_security
+- edr
+- xsiam

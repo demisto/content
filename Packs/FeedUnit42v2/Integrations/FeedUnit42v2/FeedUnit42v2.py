@@ -1,8 +1,7 @@
+import urllib3
+from CommonServerPython import *
 from taxii2client.common import TokenAuth
 from taxii2client.v20 import Server, as_pages
-
-from CommonServerPython import *
-import urllib3
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -774,6 +773,9 @@ def main():  # pragma: no cover
     """
     PARSE AND VALIDATE FEED PARAMS
     """
+    if is_demisto_version_ge("8.12.0") and datetime.now() > datetime(2025, 12, 1):
+        return_error("Unit 42 ATOMs Feed integration is deprecated. Please use Unit 42 Feed integration instead.")
+
     params = demisto.params()
     args = demisto.args()
     api_key = params.get("credentials", {}).get("password") or str(params.get("api_key", ""))

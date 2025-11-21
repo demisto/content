@@ -2,7 +2,7 @@
     "name": "Lansweeper",
     "description": "Lansweeper content pack allows users to search specific assets, providing detailed information about each asset such as it’s type, operating system, serial number and much more contextual information.",
     "support": "partner",
-    "currentVersion": "1.0.11",
+    "currentVersion": "1.0.14",
     "author": "Lansweeper",
     "url": "https://www.lansweeper.com/contact-support/",
     "email": "",
@@ -25,6 +25,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

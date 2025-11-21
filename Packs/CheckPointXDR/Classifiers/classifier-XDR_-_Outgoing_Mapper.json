@@ -1,0 +1,22 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "CheckPointXDR_Out_Mapper",
+    "mapping": {
+        "Check Point XDR Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Severity": {
+                    "simple": "severity"
+                },
+                "Status": {
+                    "simple": "dbotstatus"
+                }
+            }
+        }
+    },
+    "name": "CheckPointXDR_Out_Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

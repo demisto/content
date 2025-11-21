@@ -748,6 +748,10 @@ def ips_reputation_command(
     results = []  # type: ignore
     ips = argToList(ip, ",")
     for single_ip in ips:
+        if is_ip_address_internal(single_ip):
+            demisto.info(f"Skipping internal IP: {single_ip}")
+            continue
+
         results.append(get_ip_reputation(client, score_calc, single_ip, status, threshold, threat_model_association))
     return results
 
@@ -2562,13 +2566,14 @@ def submit_report(
     import_indicators=True,
     submission_classification="private",
     report_platform="WINDOWS7",
-    premium_sandbox="false",
+    premium_sandbox="true",
     detail=None,
 ):
     """
     Detonates URL or file that was uploaded to war room to ThreatStream sandbox.
     """
     import_indicators = argToBoolean(import_indicators)
+
     data = {
         "report_radio-classification": submission_classification,
         "report_radio-platform": report_platform,

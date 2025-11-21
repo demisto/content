@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The context paths of the following commands have been updated as per the IOC v2 API response.<ul><li>`ip`: `Ignite.IP.Event` -> `Ignite.IP`</li><li>`domain`: `Ignite.Domain.Event` -> `Ignite.Domain`</li><li>`url`: `Ignite.URL.Event` -> `Ignite.URL`</li><li>`file`: `Ignite.File.Event` -> `Ignite.File`</li></ul>"
+}

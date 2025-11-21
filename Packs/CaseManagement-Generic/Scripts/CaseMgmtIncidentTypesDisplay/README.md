@@ -2,7 +2,7 @@ Restricts the Incident Types a user can create manually based on an XSOAR list, 
 
 Requirements - Create an XSOAR List called IncidentTypesFromList a list of comma separated Incident Types
 
-Incident Type 1,Incident Type 2, Incident Type 3 
+Incident Type 1,Incident Type 2, Incident Type 3
 
 ## Script Data
 

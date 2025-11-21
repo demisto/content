@@ -1,9 +1,118 @@
 {
-    "DBotScore": {
-        "Indicator": "dummy@dummy.com",
-        "Type": "ip-dst",
-        "Vendor": "Ignite",
-        "Score": 3,
-        "Reliability": "B - Usually reliable"
+    "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [
+        {
+            "Hashes": [
+                {
+                    "type": "MD5",
+                    "value": "00000000000000000000000000000001"
+                },
+                {
+                    "type": "SHA1",
+                    "value": "0000000000000000000000000000000000000001"
+                },
+                {
+                    "type": "SHA256",
+                    "value": "0000000000000000000000000000000000000000000000000000000000000001"
+                }
+            ],
+            "MD5": "00000000000000000000000000000001",
+            "SHA1": "0000000000000000000000000000000000000001",
+            "SHA256": "0000000000000000000000000000000000000000000000000000000000000001",
+            "Malicious": {
+                "Vendor": "Ignite",
+                "Description": "Found in malicious indicators dataset"
+            },
+            "Relationships": [
+                {
+                    "Relationship": "related-to",
+                    "EntityA": "00000000000000000000000000000001",
+                    "EntityAType": "File",
+                    "EntityB": "00000000000000000000000000000002",
+                    "EntityBType": "File"
+                }
+            ]
+        }
+    ],
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+        {
+            "Indicator": "00000000000000000000000000000001",
+            "Type": "file",
+            "Vendor": "Ignite",
+            "Score": 3,
+            "Reliability": "B - Usually reliable"
+        }
+    ],
+    "Ignite.File(val.id && val.id == obj.id)": {
+        "id": "dummy_id",
+        "type": "file",
+        "value": "00000000000000000000000000000001",
+        "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id",
+        "entity_type": "indicator",
+        "score": {
+            "value": "malicious",
+            "last_scored_at": "2025-01-02T01:00:00.000001"
+        },
+        "modified_at": "2025-01-02T01:00:00.000001",
+        "created_at": "2025-01-01T01:00:00.000000",
+        "last_seen_at": "2025-01-02T01:00:00.000001",
+        "sort_date": "2025-01-02T01:00:00.000001",
+        "platform_urls": {
+            "ignite": "https://mock_dummy.com/cti/malware/iocs/dummy_id"
+        },
+        "apt_description": "N/A",
+        "hashes": {
+            "md5": "00000000000000000000000000000001",
+            "sha1": "0000000000000000000000000000000000000001",
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000001"
+        },
+        "malware_description": "dummy description.",
+        "mitre_attack_ids": [
+            {
+                "id": "dummy_mitre_id",
+                "name": "dummy name",
+                "tactics": [
+                    "Defense Evasion"
+                ]
+            }
+        ],
+        "sightings": [
+            {
+                "source": "flashpoint_detection",
+                "sighted_at": "2025-01-02T01:00:00.000000",
+                "tags": [
+                    "malware:pony",
+                    "os:windows",
+                    "source:flashpoint_detection",
+                    "type:stealer"
+                ],
+                "related_iocs": [
+                    {
+                        "id": "dummy_id",
+                        "type": "file",
+                        "value": "00000000000000000000000000000001",
+                        "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id"
+                    }
+                ]
+            }
+        ],
+        "latest_sighting": {
+            "source": "flashpoint_detection",
+            "sighted_at": "2025-01-02T01:00:00.000000",
+            "tags": [
+                "malware:pony",
+                "os:windows",
+                "source:flashpoint_detection",
+                "type:stealer"
+            ],
+            "related_iocs": [
+                {
+                    "id": "dummy_id",
+                    "type": "file",
+                    "value": "00000000000000000000000000000002",
+                    "href": "https://mock_dummy.com/technical-intelligence/v2/indicators/dummy_id"
+                }
+            ]
+        },
+        "total_sightings": 1
     }
 }

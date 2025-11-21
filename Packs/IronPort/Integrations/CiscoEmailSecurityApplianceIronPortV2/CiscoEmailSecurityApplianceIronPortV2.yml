@@ -4,1179 +4,1752 @@ commonfields:
 name: CiscoESA
 display: Cisco ESA
 category: Network Security
+sectionorder:
+  - Connect
+  - Collect
 description: The Cisco Email Security Appliance is an email security gateway product. It is designed to detect and block a wide variety of email-born threats, such as malware, spam and phishing attempts.
 configuration:
-- name: base_url
-  display: Server URL
-  required: true
-  type: 0
-  additionalinfo: Base URL, e.g., https://XXX.eu.iphmx.com
-- name: credentials
-  display: Username
-  required: true
-  type: 9
-  additionalinfo: ""
-  displaypassword: Password
-- name: max_fetch
-  display: Maximum incidents per fetch
-  defaultvalue: 50
-  type: 0
-  additionalinfo: Default is 50. Maximum is 100.
-  required: false
-- name: first_fetch
-  display: First fetch timestamp
-  defaultvalue: 7 days
-  type: 0
-  additionalinfo: |-
-    Timestamp in ISO format or <number> <time unit>,
-    e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
-  required: false
-- name: filter_by
-  display: Filter by
-  type: 15
-  additionalinfo: The message field by which to fetch results.
-  options:
-  - from_address
-  - to_address
-  - subject
-  required: false
-- name: filter_operator
-  display: Filter operator
-  type: 15
-  additionalinfo: The message field operator by which to fetch results.
-  options:
-  - contains
-  - is
-  - begins_with
-  - ends_with
-  - does_not_contain
-  required: false
-- name: filter_value
-  display: Filter value
-  type: 0
-  additionalinfo: The message filter value by which to fetch results.
-  required: false
-- name: recipient_filter_operator
-  display: Recipient filter operator
-  type: 15
-  additionalinfo: The message recipient filter operator by which to fetch results.
-  options:
-  - contains
-  - is
-  - begins_with
-  - ends_with
-  - does_not_contain
-  required: false
-- name: recipient_filter_value
-  display: Recipient filter value
-  type: 0
-  additionalinfo: The message recipient filter value by which to fetch results.
-  required: false
-- name: jwt_token_expiration_period
-  display: Time to live for JWT session token (in minutes).
-  defaultvalue: 30
-  type: 0
-  required: false
-- name: proxy
-  display: Use system proxy settings
-  defaultvalue: "false"
-  type: 8
-  additionalinfo:
-  required: false
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  defaultvalue: "false"
-  additionalinfo:
-  required: false
-- display: Incident type
-  name: incidentType
-  type: 13
-  required: false
-- display: Fetch incidents
-  name: isFetch
-  type: 8
-  required: false
+  - name: base_url
+    display: Server URL
+    required: true
+    type: 0
+    additionalinfo: Base URL, e.g., https://XXX.eu.iphmx.com
+    section: Connect
+  - name: credentials
+    display: Username
+    required: true
+    type: 9
+    additionalinfo: ""
+    displaypassword: Password
+    section: Connect
+  - name: max_fetch
+    display: Maximum incidents per fetch
+    defaultvalue: 50
+    type: 0
+    additionalinfo: Default is 50. Maximum is 100.
+    required: false
+    section: Collect
+  - name: first_fetch
+    display: First fetch timestamp
+    defaultvalue: 7 days
+    type: 0
+    additionalinfo: |-
+      Timestamp in ISO format or <number> <time unit>,
+      e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+    required: false
+    section: Collect
+  - name: filter_by
+    display: Filter by
+    type: 15
+    additionalinfo: The message field by which to fetch results.
+    options:
+      - from_address
+      - to_address
+      - subject
+    required: false
+    section: Collect
+  - name: filter_operator
+    display: Filter operator
+    type: 15
+    additionalinfo: The message field operator by which to fetch results.
+    options:
+      - contains
+      - is
+      - begins_with
+      - ends_with
+      - does_not_contain
+    required: false
+    section: Collect
+  - name: filter_value
+    display: Filter value
+    type: 0
+    additionalinfo: The message filter value by which to fetch results.
+    required: false
+    section: Collect
+  - name: recipient_filter_operator
+    display: Recipient filter operator
+    type: 15
+    additionalinfo: The message recipient filter operator by which to fetch results.
+    options:
+      - contains
+      - is
+      - begins_with
+      - ends_with
+      - does_not_contain
+    required: false
+    section: Collect
+  - name: recipient_filter_value
+    display: Recipient filter value
+    type: 0
+    additionalinfo: The message recipient filter value by which to fetch results.
+    required: false
+    section: Collect
+  - name: jwt_token_expiration_period
+    display: Time to live for JWT session token (in minutes).
+    defaultvalue: 30
+    type: 0
+    required: false
+    section: Connect
+  - name: proxy
+    display: Use system proxy settings
+    defaultvalue: "false"
+    type: 8
+    additionalinfo:
+    required: false
+    section: Connect
+  - display: Trust any certificate (not secure)
+    name: insecure
+    type: 8
+    defaultvalue: "false"
+    additionalinfo:
+    required: false
+    section: Connect
+  - display: Incident type
+    name: incidentType
+    type: 13
+    required: false
+    section: Collect
+  - display: Fetch incidents
+    name: isFetch
+    type: 8
+    required: false
+    section: Collect
 script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.11.3982393
   isfetch: true
   commands:
-  - name: cisco-esa-spam-quarantine-message-search
-    description: Search messages in the spam quarantine.
-    arguments:
-    - name: start_date
+    - name: cisco-esa-spam-quarantine-message-search
+      description: Search messages in the spam quarantine.
+      arguments:
+        - name: start_date
+          description: |-
+            Start date in ISO format or <number> <time unit>,
+            e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          required: true
+        - name: end_date
+          description: |-
+            End date in ISO format or <number> <time unit>,
+            e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          required: true
+        - name: filter_by
+          description: The message field by which to filter the results.
+          auto: PREDEFINED
+          predefined:
+            - from_address
+            - to_address
+            - subject
+        - name: filter_operator
+          description: Filter operator by which to filter the results.
+          auto: PREDEFINED
+          predefined:
+            - contains
+            - is
+            - begins_with
+            - ends_with
+            - does_not_contain
+        - name: filter_value
+          description: The value to search for. This is a user defined value. D.g., filterValue=abc.com.
+        - name: recipient_filter_operator
+          description: Recipient operator filter by which to filter the results.
+          auto: PREDEFINED
+          predefined:
+            - contains
+            - is
+            - begins_with
+            - ends_with
+            - does_not_contain
+        - name: recipient_filter_value
+          description: Recipient filter by which to filter the results.
+        - name: order_by
+          description: The attribute by which to order the data in the response.
+          auto: PREDEFINED
+          predefined:
+            - from_address
+            - date
+            - subject
+            - size
+        - name: order_dir
+          description: Results order direction.
+          auto: PREDEFINED
+          predefined:
+            - asc
+            - desc
+        - name: page
+          description: |-
+            Page number of paginated results.
+            Minimum value: 1.
+        - name: page_size
+          description: Number of results per page. Maximum value 100.
+        - name: limit
+          defaultValue: 50
+          description: The maximum number of records to retrieve.
+      outputs:
+        - contextPath: CiscoESA.SpamQuarantineMessage.envelopeRecipient
+          description: Recipient email address.
+          type: String
+        - contextPath: CiscoESA.SpamQuarantineMessage.toAddress
+          description: Recipient email address.
+          type: String
+        - contextPath: CiscoESA.SpamQuarantineMessage.subject
+          description: Email subject.
+          type: String
+        - contextPath: CiscoESA.SpamQuarantineMessage.date
+          description: Email due date.
+          type: String
+        - contextPath: CiscoESA.SpamQuarantineMessage.fromAddress
+          description: Sender email address.
+          type: String
+        - contextPath: CiscoESA.SpamQuarantineMessage.size
+          description: email size.
+          type: String
+        - contextPath: CiscoESA.SpamQuarantineMessage.mid
+          description: Message ID.
+          type: Number
+    - name: cisco-esa-spam-quarantine-message-get
+      description: Get spam quarantine message details.
+      arguments:
+        - name: message_id
+          description: Message ID.
+          required: true
+      outputs:
+        - type: String
+          contextPath: CiscoESA.SpamQuarantineMessage.envelopeRecipient
+          description: Message recipient.
+        - type: String
+          contextPath: CiscoESA.SpamQuarantineMessage.toAddress
+          description: Message recipient.
+        - type: String
+          contextPath: CiscoESA.SpamQuarantineMessage.messageBody
+          description: Message body.
+        - type: String
+          contextPath: CiscoESA.SpamQuarantineMessage.date
+          description: Message date.
+        - type: String
+          contextPath: CiscoESA.SpamQuarantineMessage.fromAddress
+          description: Message sender.
+        - type: String
+          contextPath: CiscoESA.SpamQuarantineMessage.subject
+          description: Message subject.
+        - type: Number
+          contextPath: CiscoESA.SpamQuarantineMessage.mid
+          description: Message ID.
+    - name: cisco-esa-spam-quarantine-message-release
+      description: Release quarantine emails.
+      arguments:
+        - name: message_ids
+          description: A comma-separated list of message IDs.
+          required: true
+          isArray: true
+      outputs: []
+    - name: cisco-esa-spam-quarantine-message-delete
+      description: Delete quarantine emails.
+      arguments:
+        - name: message_ids
+          description: A comma-separated list of message IDs to delete.
+          required: true
+          isArray: true
+      outputs: []
+    - name: cisco-esa-list-entry-get
+      description: Get spam quarantine blocklist/safelist entry.
+      arguments:
+        - name: entry_type
+          description: List entry type.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - blocklist
+            - safelist
+        - name: page
+          description: |-
+            Page number of paginated results.
+            Minimum value: 1.
+        - name: page_size
+          description: Number of results per page. Maximum value 100.
+        - name: limit
+          defaultValue: 50
+          description: The maximum number of records to retrieve.
+        - name: order_by
+          description: The attribute by which to order the data in the response.
+          auto: PREDEFINED
+          predefined:
+            - recipient
+            - sender
+        - name: order_dir
+          description: Results order direction.
+          auto: PREDEFINED
+          predefined:
+            - asc
+            - desc
+        - name: view_by
+          description: View results by.
+          defaultValue: recipient
+          auto: PREDEFINED
+          predefined:
+            - recipient
+            - sender
+        - name: search
+          description: |-
+            Search for recipients or senders in blocklist/safelist with 'contains' operator.
+            e.g., test@test.com, test.com
+            This is only supported for the argument view_by=recipient.
+      outputs:
+        - type: String
+          contextPath: CiscoESA.ListEntry.Blocklist.senderList
+          description: Block list sender list.
+        - type: String
+          contextPath: CiscoESA.ListEntry.Blocklist.recipientAddress
+          description: Block list recipient address.
+        - type: String
+          contextPath: CiscoESA.ListEntry.Blocklist.recipientList
+          description: Block list recipient list.
+        - type: String
+          contextPath: CiscoESA.ListEntry.Blocklist.senderAddress
+          description: Block list sender address.
+        - type: String
+          contextPath: CiscoESA.ListEntry.Safelist.senderList
+          description: Safe list sender list.
+        - type: String
+          contextPath: CiscoESA.ListEntry.Safelist.recipientAddress
+          description: Safe list recipient address.
+        - type: String
+          contextPath: CiscoESA.ListEntry.Safelist.recipientList
+          description: Safe list recipient list.
+        - type: String
+          contextPath: CiscoESA.ListEntry.Safelist.senderAddress
+          description: Safe list sender address.
+    - name: cisco-esa-list-entry-add
+      description: Add spam quarantine blocklist/safelist entry.
+      arguments:
+        - name: entry_type
+          description: List entry type.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - blocklist
+            - safelist
+        - name: view_by
+          description: |-
+            Add list entry by recipient/sender.
+            When view_by = recipient, recipient_addresses and sender_list are mandatory.
+            When view_by = sender, sender_addresses and recipient_list are mandatory.
+          defaultValue: recipient
+          auto: PREDEFINED
+          predefined:
+            - recipient
+            - sender
+        - name: recipient_addresses
+          description: A comma-separated list of recipient addresses to add.
+          isArray: true
+        - name: sender_list
+          description: A comma-separated list of senders to add.
+          isArray: true
+        - name: sender_addresses
+          description: A comma-separated list of sender addresses to add.
+          isArray: true
+        - name: recipient_list
+          description: A comma-separated list of recipients to add.
+          isArray: true
+      outputs: []
+    - name: cisco-esa-list-entry-append
+      description: Append spam quarantine blocklist/safelist entry.
+      arguments:
+        - name: entry_type
+          description: List entry type.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - blocklist
+            - safelist
+        - name: view_by
+          description: |-
+            Append list entry by recipient/sender.
+            When view_by = recipient, recipient_addresses and sender_list are mandatory.
+            When view_by = sender, sender_addresses and recipient_list are mandatory.
+          defaultValue: recipient
+          auto: PREDEFINED
+          predefined:
+            - recipient
+            - sender
+        - name: recipient_list
+          description: A comma-separated list of recipients to append.
+          isArray: true
+        - name: sender_list
+          description: A comma-separated list of senders to append.
+        - name: recipient_addresses
+          description: A comma-separated list of recipient addresses to append.
+        - name: sender_addresses
+          description: A comma-separated list of sender addresses to append.
+      outputs: []
+    - name: cisco-esa-list-entry-edit
+      description: Edit spam quarantine blocklist/safelist entry. Using this command will override the existing value.
+      arguments:
+        - name: entry_type
+          description: List entry type.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - blocklist
+            - safelist
+        - name: view_by
+          description: |-
+            Edit list entry by recipient/sender.
+            When view_by = recipient, recipient_addresses and sender_list are mandatory.
+            When view_by = sender, sender_addresses and recipient_list are mandatory.
+          defaultValue: recipient
+          auto: PREDEFINED
+          predefined:
+            - recipient
+            - sender
+        - name: recipient_list
+          description: A comma-separated list of recipients to edit.
+          isArray: true
+        - name: sender_list
+          description: A comma-separated list of senders to edit.
+        - name: recipient_addresses
+          description: A comma-separated list of recipient addresses to edit.
+        - name: sender_addresses
+          description: A comma-separated list of sender addresses to edit.
+      outputs: []
+    - name: cisco-esa-list-entry-delete
+      description: Delete spam quarantine blocklist/safelist entry.
+      arguments:
+        - name: entry_type
+          description: List entry type.
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - blocklist
+            - safelist
+        - name: view_by
+          description: |-
+            Delete list entry by recipient/sender.
+            When view_by = recipient, recipient_list is mandatory.
+            When view_by = sender, sender_list is mandatory.
+          defaultValue: recipient
+          auto: PREDEFINED
+          predefined:
+            - recipient
+            - sender
+        - name: recipient_list
+          description: List of recipient/sender addresses to delete.
+          isArray: true
+        - name: sender_list
+          description: List of recipient/sender addresses to delete.
+          isArray: true
+      outputs: []
+    - name: cisco-esa-message-search
+      description: Search tracking messages.
+      arguments:
+        - name: start_date
+          description: |-
+            Start date in ISO format or <number> <time unit>,
+            e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          required: true
+        - name: end_date
+          description: |-
+            End date in ISO format or <number> <time unit>,
+            e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          required: true
+        - name: page
+          description: |-
+            Page number of paginated results.
+            Minimum value: 1.
+        - name: page_size
+          description: Number of results per page. Maximum value 100.
+        - name: limit
+          defaultValue: 50
+          description: The maximum number of records to retrieve.
+        - name: sender_filter_operator
+          description: Sender filter operator.
+          auto: PREDEFINED
+          predefined:
+            - contains
+            - is
+            - begins_with
+        - name: sender_filter_value
+          description: Sender filter value.
+        - name: recipient_filter_operator
+          description: Recipient filter operator.
+          auto: PREDEFINED
+          predefined:
+            - contains
+            - is
+            - begins_with
+        - name: recipient_filter_value
+          description: Recipient filter value.
+        - name: subject_filter_operator
+          description: Subject filter operator.
+          auto: PREDEFINED
+          predefined:
+            - contains
+            - is
+            - begins_with
+        - name: subject_filter_value
+          description: Subject filter value.
+        - name: attachment_name_operator
+          description: Attachment name operator.
+          auto: PREDEFINED
+          predefined:
+            - contains
+            - is
+            - begins_with
+        - name: attachment_name_value
+          description: Attachment name value.
+        - name: file_sha_256
+          description: |-
+            SHA256 must be 64 characters long and can contain only "0-9" and "a-f" characters.
+            e.g. e0d123e5f316bef78bfdf5a008837577e0d123e5f316bef78bfdf5a008837577.
+        - name: custom_query
+          description: |-
+            Custom query for cisco ESA's advanced filters.
+            Syntax: <key>=<value>;<key>=<value>;<key>=<value>
+            e.g., graymail=True;message_delivered=True.
+      outputs:
+        - type: String
+          contextPath: CiscoESA.Message.hostName
+          description: Email gateway hostname.
+        - type: String
+          contextPath: CiscoESA.Message.friendly_from
+          description: Friendly formatted sender email address.
+        - type: String
+          contextPath: CiscoESA.Message.isCompleteData
+          description: Whether the entire data was pulled.
+        - type: String
+          contextPath: CiscoESA.Message.messageStatus
+          description: Message delivery status.
+        - type: String
+          contextPath: CiscoESA.Message.recipientMap
+          description: Recipients list.
+        - type: String
+          contextPath: CiscoESA.Message.senderIp
+          description: Sender IP address.
+        - type: String
+          contextPath: CiscoESA.Message.mailPolicy
+          description: Matched mail policy.
+        - type: String
+          contextPath: CiscoESA.Message.senderGroup
+          description: Matched sender group.
+        - type: String
+          contextPath: CiscoESA.Message.subject
+          description: Subject of email message.
+        - type: Number
+          contextPath: CiscoESA.Message.mid
+          description: Message ID.
+        - type: String
+          contextPath: CiscoESA.Message.senderDomain
+          description: Domain of email message sender.
+        - type: String
+          contextPath: CiscoESA.Message.finalSubject
+          description: Extended email subject.
+        - type: String
+          contextPath: CiscoESA.Message.direction
+          description: Message direction, incoming or outgoing.
+        - type: Number
+          contextPath: CiscoESA.Message.icid
+          description: An Injection Connection ID (ICID). A numerical identifier for an individual SMTP connection to the system.
+        - type: String
+          contextPath: CiscoESA.Message.replyTo
+          description: Email message reply to.
+        - type: String
+          contextPath: CiscoESA.Message.timestamp
+          description: Time of the email message.
+        - type: String
+          contextPath: CiscoESA.Message.messageID
+          description: Extended message ID.
+        - type: String
+          contextPath: CiscoESA.Message.verdictChart
+          description: Verdict visual chart ID.
+        - type: String
+          contextPath: CiscoESA.Message.recipient
+          description: Recipients email addresses list.
+        - type: String
+          contextPath: CiscoESA.Message.sender
+          description: Sender email address.
+        - type: String
+          contextPath: CiscoESA.Message.serialNumber
+          description: Cisco ESA email gateway serial number.
+        - type: Number
+          contextPath: CiscoESA.Message.allIcid
+          description: ICIDs list.
+        - type: String
+          contextPath: CiscoESA.Message.sbrs
+          description: Sender Base Reputation Scores.
+    - name: cisco-esa-message-details-get
+      description: Retrieves metadata and tracking information for email messages processed by the ESA. Includes sender/recipient details, timestamps, message status for example, delivered, dropped), message size, AMP and DLP visibility flags, and applied mail policies. Useful for auditing and threat tracking.
+      arguments:
+        - name: injection_connection_id
+          description: An Injection Connection ID (ICID). A numerical identifier for an individual SMTP connection to the system. Use `cisco-esa-message-search` to get message Injection Connection IDs. Consider to insert this parameter in case you don't achive any results.
+          required: false
+        - name: message_ids
+          description: Comma-separated list of message IDs. Use `cisco-esa-message-search` to get message IDs.
+          required: true
+          isArray: true
+          default: true
+        - name: serial_number
+          description: The unique serial number assigned to an email message. Use `cisco-esa-message-search` to get the message serial numer.
+          required: true
+        - name: start_date
+          description: The start date for the messages. Timestamp in ISO format or , for example, 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          defaultValue: 1 month
+        - name: end_date
+          description: The end date for the messages. Timestamp in ISO format or , for example, 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          defaultValue: now
+        - name: limit
+          description: The maximum number of records to return.
+          defaultValue: "50"
+        - name: all_results
+          description: Whether to retrieve all the results by overriding the default limit.
+          defaultValue: "true"
+      outputs:
+        - type: String
+          contextPath: CiscoESA.Message.sdrAge
+          description: Sender domain reputation age.
+        - type: String
+          contextPath: CiscoESA.Message.attachments
+          description: Message attachments.
+        - type: String
+          contextPath: CiscoESA.Message.hostName
+          description: Email gateway hostname.
+        - type: Boolean
+          contextPath: CiscoESA.Message.isCompleteData
+          description: Whether the entire data was pulled.
+        - type: String
+          contextPath: CiscoESA.Message.messageStatus
+          description: Message delivery status.
+        - type: String
+          contextPath: CiscoESA.Message.mailPolicy
+          description: Matched mail policy.
+        - type: String
+          contextPath: CiscoESA.Message.senderGroup
+          description: Matched sender group.
+        - type: String
+          contextPath: CiscoESA.Message.subject
+          description: Subject of email message.
+        - type: Boolean
+          contextPath: CiscoESA.Message.showSummaryTimeBox
+          description: Whether to display the summary timebox.
+        - type: String
+          contextPath: CiscoESA.Message.sdrCategory
+          description: Sender domain reputation category.
+        - type: Number
+          contextPath: CiscoESA.Message.mid
+          description: Message ID.
+        - type: String
+          contextPath: CiscoESA.Message.sendingHostSummary.reverseDnsHostname
+          description: Sending host reverse DNS hostname.
+        - type: String
+          contextPath: CiscoESA.Message.sendingHostSummary.ipAddress
+          description: Sending host IP address.
+        - type: String
+          contextPath: CiscoESA.Message.sendingHostSummary.sbrsScore
+          description: Sending host sender base reputation scores.
+        - type: String
+          contextPath: CiscoESA.Message.direction
+          description: Message direction, incoming or outgoing.
+        - type: String
+          contextPath: CiscoESA.Message.smtpAuthId
+          description: SMTP authorization ID.
+        - type: String
+          contextPath: CiscoESA.Message.midHeader
+          description: Message ID header.
+        - type: String
+          contextPath: CiscoESA.Message.timestamp
+          description: Email message time.
+        - type: Boolean
+          contextPath: CiscoESA.Message.showDLP
+          description: Whether the DLP report is available.
+        - type: String
+          contextPath: CiscoESA.Message.messageSize
+          description: Email message size.
+        - type: String
+          contextPath: CiscoESA.Message.sdrReputation
+          description: Sender domain reputation.
+        - type: Boolean
+          contextPath: CiscoESA.Message.showURL
+          description: Whether the URL report is available.
+        - type: String
+          contextPath: CiscoESA.Message.recipient
+          description: Message recipient email address.
+        - type: String
+          contextPath: CiscoESA.Message.sender
+          description: Message sender email address.
+        - type: Boolean
+          contextPath: CiscoESA.Message.showAMP
+          description: Whether the AMP report is available.
+        - type: String
+          contextPath: CiscoESA.Message.summary.timestamp
+          description: Event summary time.
+        - type: String
+          contextPath: CiscoESA.Message.summary.description
+          description: Event summary description.
+        - type: Boolean
+          contextPath: CiscoESA.Message.summary.lastEvent
+          description: Whether this is the last summary event.
+        - type: Number
+          contextPath: CiscoESA.Message.allIcid
+          description: ICIDs list.
+        - type: String
+          contextPath: CiscoESA.Message.headerFrom
+          description: Email message header from.
+    - name: cisco-esa-message-amp-details-get
+      description: Retrieve AMP (Advanced Malware Protection) summary for specified email messages. Provides insight into file analysis, disposition changes, malware detection, and retrospective verdicts triggered by Cisco's Threat Grid or AMP engine for attachments in the email.
+      arguments:
+        - name: injection_connection_id
+          description: An Injection Connection ID (ICID). A numerical identifier for an individual SMTP connection to the system. Use `cisco-esa-message-search` to get message Injection Connection IDs. Consider to insert this parameter in case you don't achive any results.
+          required: false
+        - name: message_ids
+          description: Comma-separated list of message IDs. Use `cisco-esa-message-search` to get message IDs.
+          required: true
+          isArray: true
+          default: true
+        - name: serial_number
+          description: The unique serial number assigned to an email message. Use `cisco-esa-message-search` to get the message serial numer.
+          required: true
+        - name: start_date
+          description: The start date for the messages. Timestamp in ISO format or , for example, 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          defaultValue: 1 month
+        - name: end_date
+          description: The end date for the messages. Timestamp in ISO format or , for example, 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          defaultValue: now
+        - name: limit
+          description: The maximum number of records to return.
+          defaultValue: "50"
+        - name: all_results
+          description: Whether to retrieve all the results by overriding the default limit.
+          defaultValue: "true"
+      outputs:
+        - type: String
+          contextPath: CiscoESA.AMPDetail.sdrAge
+          description: Sender domain reputation age.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.attachments
+          description: Message attachments.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.hostName
+          description: Email gateway hostname.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.direction
+          description: Message direction, incoming or outgoing.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.messageStatus
+          description: Message delivery status.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.senderGroup
+          description: Matched sender group.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.subject
+          description: Email message subject.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.sdrCategory
+          description: Sender domain reputation category.
+        - type: Number
+          contextPath: CiscoESA.AMPDetail.mid
+          description: Message ID.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.ampDetails.timestamp
+          description: AMP event summary details timestamp.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.ampDetails.description
+          description: AMP event summary details description.
+        - type: Boolean
+          contextPath: CiscoESA.AMPDetail.ampDetails.lastEvent
+          description: AMP event summary details last event.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.smtpAuthId
+          description: SMTP authorization ID.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.midHeader
+          description: Message ID header.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.timestamp
+          description: Email message time.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.messageSize
+          description: Email message size.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.sdrThreatLevels
+          description: Sender domain reputation threat levels.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.sdrReputation
+          description: Sender domain reputation.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.recipient
+          description: Message recipient email address.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.sender
+          description: Message sender email address.
+        - type: Boolean
+          contextPath: CiscoESA.AMPDetail.showAMPDetails
+          description: Whether to show AMP details.
+        - type: Number
+          contextPath: CiscoESA.AMPDetail.allIcid
+          description: ICIDs list.
+        - type: String
+          contextPath: CiscoESA.AMPDetail.headerFrom
+          description: Email header from.
+    - name: cisco-esa-message-dlp-details-get
+      description: Get message DLP summary details.
+      arguments:
+        - name: serial_number
+          description: Email gateway serial number.
+          required: true
+        - name: message_ids
+          description: Message ID list.
+          required: true
+          isArray: true
+      outputs:
+        - type: String
+          contextPath: CiscoESA.DLPDetail.direction
+          description: Message direction, incoming or outgoing.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.smtpAuthId
+          description: SMTP authorization ID.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.sdrAge
+          description: Sender domain reputation age.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.sender
+          description: Message sender email address.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.midHeader
+          description: Message ID header.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.timestamp
+          description: Email message time.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.sdrCategory
+          description: Sender domain reputation category.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.hostName
+          description: Email gateway hostname.
+        - type: Number
+          contextPath: CiscoESA.DLPDetail.mid
+          description: Message ID.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.attachments
+          description: Message attachments.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.messageSize
+          description: Email message size.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.dlpDetails.violationSeverity
+          description: DLP details violation severity.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.dlpDetails.dlpMatchedContent.messagePartMatch.classifier
+          description: DLP matched content classifier.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.dlpDetails.dlpMatchedContent.messagePartMatch.classifierMatch
+          description: DLP matched content classifier match.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.dlpDetails.dlpMatchedContent.messagePart
+          description: DLP matched content message part.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.dlpDetails.mid
+          description: DLP message ID.
+        - type: Number
+          contextPath: CiscoESA.DLPDetail.dlpDetails.riskFactor
+          description: DLP risk factor.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.dlpDetails.dlpPolicy
+          description: DLP policy.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.sdrThreatLevels
+          description: Sender domain reputation threat levels.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.sdrReputation
+          description: Sender domain reputation.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.messageStatus
+          description: Message delivery status.
+        - type: Number
+          contextPath: CiscoESA.DLPDetail.allIcid
+          description: ICIDs list.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.senderGroup
+          description: Matched sender group.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.recipient
+          description: Message recipient email address.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.subject
+          description: Email message subject.
+        - type: String
+          contextPath: CiscoESA.DLPDetail.headerFrom
+          description: Email header from.
+    - name: cisco-esa-message-url-details-get
+      description: Retrieve URL summary details for specific email messages. This includes information about all URLs found within each message, such as rewritten URLs, timestamped access logs, and verdicts assigned by the email security engine.
+      arguments:
+        - name: injection_connection_id
+          description: An Injection Connection ID (ICID). A numerical identifier for an individual SMTP connection to the system. Use `cisco-esa-message-search` to get message Injection Connection IDs. Consider to insert this parameter in case you don't achive any results.
+          required: false
+        - name: message_ids
+          description: Comma-separated list of message IDs. Use `cisco-esa-message-search` to get message IDs.
+          required: true
+          isArray: true
+          default: true
+        - name: serial_number
+          description: The unique serial number assigned to an email message. Use `cisco-esa-message-search` to get the message serial numer.
+          required: true
+        - name: start_date
+          description: The start date for the messages. Timestamp in ISO format or , for example, 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          defaultValue: 1 month
+        - name: end_date
+          description: The end date for the messages. Timestamp in ISO format or , for example, 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          defaultValue: now
+        - name: limit
+          description: The maximum number of records to return.
+          defaultValue: "50"
+        - name: all_results
+          description: Whether to retrieve all the results by overriding the default limit.
+          defaultValue: "true"
+      outputs:
+        - type: String
+          contextPath: CiscoESA.URLDetail.sdrAge
+          description: Sender domain reputation age.
+        - type: String
+          contextPath: CiscoESA.URLDetail.attachments
+          description: Message attachments.
+        - type: Boolean
+          contextPath: CiscoESA.URLDetail.showURLDetails
+          description: Whether to show URL event details.
+        - type: String
+          contextPath: CiscoESA.URLDetail.urlDetails.timestamp
+          description: URL event details timestamp.
+        - type: String
+          contextPath: CiscoESA.URLDetail.urlDetails.description
+          description: URL event details description.
+        - type: String
+          contextPath: CiscoESA.URLDetail.hostName
+          description: Email gateway hostname.
+        - type: String
+          contextPath: CiscoESA.URLDetail.direction
+          description: Message direction, incoming or outgoing.
+        - type: String
+          contextPath: CiscoESA.URLDetail.messageStatus
+          description: Message delivery status.
+        - type: String
+          contextPath: CiscoESA.URLDetail.senderGroup
+          description: Matched sender group.
+        - type: String
+          contextPath: CiscoESA.URLDetail.subject
+          description: Email message subject.
+        - type: String
+          contextPath: CiscoESA.URLDetail.sdrCategory
+          description: Sender domain reputation category.
+        - type: Number
+          contextPath: CiscoESA.URLDetail.mid
+          description: Message ID.
+        - type: String
+          contextPath: CiscoESA.URLDetail.smtpAuthId
+          description: SMTP authorization ID.
+        - type: String
+          contextPath: CiscoESA.URLDetail.midHeader
+          description: Message ID header.
+        - type: String
+          contextPath: CiscoESA.URLDetail.timestamp
+          description: Email message time.
+        - type: String
+          contextPath: CiscoESA.URLDetail.messageSize
+          description: Email message size.
+        - type: String
+          contextPath: CiscoESA.URLDetail.sdrThreatLevels
+          description: Sender domain reputation threat levels.
+        - type: String
+          contextPath: CiscoESA.URLDetail.sdrReputation
+          description: Sender domain reputation.
+        - type: String
+          contextPath: CiscoESA.URLDetail.recipient
+          description: Message recipient email address.
+        - type: String
+          contextPath: CiscoESA.URLDetail.sender
+          description: Message sender email address.
+        - type: Number
+          contextPath: CiscoESA.URLDetail.allIcid
+          description: ICIDs list.
+        - type: String
+          contextPath: CiscoESA.URLDetail.headerFrom
+          description: Email header from.
+    - name: cisco-esa-report-get
       description: |-
-        Start date in ISO format or <number> <time unit>,
-        e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
-      required: true
-    - name: end_date
-      description: |-
-        End date in ISO format or <number> <time unit>,
-        e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
-      required: true
-    - name: filter_by
-      description: The message field by which to filter the results.
-      auto: PREDEFINED
-      predefined:
-      - from_address
-      - to_address
-      - subject
-    - name: filter_operator
-      description: Filter operator by which to filter the results.
-      auto: PREDEFINED
-      predefined:
-      - contains
-      - is
-      - begins_with
-      - ends_with
-      - does_not_contain
-    - name: filter_value
-      description: The value to search for. This is a user defined value. D.g., filterValue=abc.com.
-    - name: recipient_filter_operator
-      description: Recipient operator filter by which to filter the results.
-      auto: PREDEFINED
-      predefined:
-      - contains
-      - is
-      - begins_with
-      - ends_with
-      - does_not_contain
-    - name: recipient_filter_value
-      description: Recipient filter by which to filter the results.
-    - name: order_by
-      description: The attribute by which to order the data in the response.
-      auto: PREDEFINED
-      predefined:
-      - from_address
-      - date
-      - subject
-      - size
-    - name: order_dir
-      description: Results order direction.
-      auto: PREDEFINED
-      predefined:
-      - asc
-      - desc
-    - name: page
-      description: |-
-        Page number of paginated results.
-        Minimum value: 1.
-    - name: page_size
-      description: Number of results per page. Maximum value 100.
-    - name: limit
-      defaultValue: 50
-      description: The maximum number of records to retrieve.
-    outputs:
-    - contextPath: CiscoESA.SpamQuarantineMessage.envelopeRecipient
-      description: Recipient email address.
-      type: String
-    - contextPath: CiscoESA.SpamQuarantineMessage.toAddress
-      description: Recipient email address.
-      type: String
-    - contextPath: CiscoESA.SpamQuarantineMessage.subject
-      description: Email subject.
-      type: String
-    - contextPath: CiscoESA.SpamQuarantineMessage.date
-      description: Email due date.
-      type: String
-    - contextPath: CiscoESA.SpamQuarantineMessage.fromAddress
-      description: Sender email address.
-      type: String
-    - contextPath: CiscoESA.SpamQuarantineMessage.size
-      description: email size.
-      type: String
-    - contextPath: CiscoESA.SpamQuarantineMessage.mid
-      description: Message ID.
-      type: Number
-  - name: cisco-esa-spam-quarantine-message-get
-    description: Get spam quarantine message details.
-    arguments:
-    - name: message_id
-      description: Message ID.
-      required: true
-    outputs:
-    - type: String
-      contextPath: CiscoESA.SpamQuarantineMessage.envelopeRecipient
-      description: Message recipient.
-    - type: String
-      contextPath: CiscoESA.SpamQuarantineMessage.toAddress
-      description: Message recipient.
-    - type: String
-      contextPath: CiscoESA.SpamQuarantineMessage.messageBody
-      description: Message body.
-    - type: String
-      contextPath: CiscoESA.SpamQuarantineMessage.date
-      description: Message date.
-    - type: String
-      contextPath: CiscoESA.SpamQuarantineMessage.fromAddress
-      description: Message sender.
-    - type: String
-      contextPath: CiscoESA.SpamQuarantineMessage.subject
-      description: Message subject.
-    - type: Number
-      contextPath: CiscoESA.SpamQuarantineMessage.mid
-      description: Message ID.
-  - name: cisco-esa-spam-quarantine-message-release
-    description: Release quarantine emails.
-    arguments:
-    - name: message_ids
-      description: A comma-separated list of message IDs.
-      required: true
-      isArray: true
-    outputs: []
-  - name: cisco-esa-spam-quarantine-message-delete
-    description: Delete quarantine emails.
-    arguments:
-    - name: message_ids
-      description: A comma-separated list of message IDs to delete.
-      required: true
-      isArray: true
-    outputs: []
-  - name: cisco-esa-list-entry-get
-    description: Get spam quarantine blocklist/safelist entry.
-    arguments:
-    - name: entry_type
-      description: List entry type.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - blocklist
-      - safelist
-    - name: page
-      description: |-
-        Page number of paginated results.
-        Minimum value: 1.
-    - name: page_size
-      description: Number of results per page. Maximum value 100.
-    - name: limit
-      defaultValue: 50
-      description: The maximum number of records to retrieve.
-    - name: order_by
-      description: The attribute by which to order the data in the response.
-      auto: PREDEFINED
-      predefined:
-      - recipient
-      - sender
-    - name: order_dir
-      description: Results order direction.
-      auto: PREDEFINED
-      predefined:
-      - asc
-      - desc
-    - name: view_by
-      description: View results by.
-      defaultValue: recipient
-      auto: PREDEFINED
-      predefined:
-      - recipient
-      - sender
-    - name: search
-      description: |-
-        Search for recipients or senders in blocklist/safelist with 'contains' operator.
-        e.g., test@test.com, test.com
-        This is only supported for the argument view_by=recipient.
-    outputs:
-    - type: String
-      contextPath: CiscoESA.ListEntry.Blocklist.senderList
-      description: Block list sender list.
-    - type: String
-      contextPath: CiscoESA.ListEntry.Blocklist.recipientAddress
-      description: Block list recipient address.
-    - type: String
-      contextPath: CiscoESA.ListEntry.Blocklist.recipientList
-      description: Block list recipient list.
-    - type: String
-      contextPath: CiscoESA.ListEntry.Blocklist.senderAddress
-      description: Block list sender address.
-    - type: String
-      contextPath: CiscoESA.ListEntry.Safelist.senderList
-      description: Safe list sender list.
-    - type: String
-      contextPath: CiscoESA.ListEntry.Safelist.recipientAddress
-      description: Safe list recipient address.
-    - type: String
-      contextPath: CiscoESA.ListEntry.Safelist.recipientList
-      description: Safe list recipient list.
-    - type: String
-      contextPath: CiscoESA.ListEntry.Safelist.senderAddress
-      description: Safe list sender address.
-  - name: cisco-esa-list-entry-add
-    description: Add spam quarantine blocklist/safelist entry.
-    arguments:
-    - name: entry_type
-      description: List entry type.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - blocklist
-      - safelist
-    - name: view_by
-      description: |-
-        Add list entry by recipient/sender.
-        When view_by = recipient, recipient_addresses and sender_list are mandatory.
-        When view_by = sender, sender_addresses and recipient_list are mandatory.
-      defaultValue: recipient
-      auto: PREDEFINED
-      predefined:
-      - recipient
-      - sender
-    - name: recipient_addresses
-      description: A comma-separated list of recipient addresses to add.
-      isArray: true
-    - name: sender_list
-      description: A comma-separated list of senders to add.
-      isArray: true
-    - name: sender_addresses
-      description: A comma-separated list of sender addresses to add.
-      isArray: true
-    - name: recipient_list
-      description: A comma-separated list of recipients to add.
-      isArray: true
-    outputs: []
-  - name: cisco-esa-list-entry-append
-    description: Append spam quarantine blocklist/safelist entry.
-    arguments:
-    - name: entry_type
-      description: List entry type.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - blocklist
-      - safelist
-    - name: view_by
-      description: |-
-        Append list entry by recipient/sender.
-        When view_by = recipient, recipient_addresses and sender_list are mandatory.
-        When view_by = sender, sender_addresses and recipient_list are mandatory.
-      defaultValue: recipient
-      auto: PREDEFINED
-      predefined:
-      - recipient
-      - sender
-    - name: recipient_list
-      description: A comma-separated list of recipients to append.
-      isArray: true
-    - name: sender_list
-      description: A comma-separated list of senders to append.
-    - name: recipient_addresses
-      description: A comma-separated list of recipient addresses to append.
-    - name: sender_addresses
-      description: A comma-separated list of sender addresses to append.
-    outputs: []
-  - name: cisco-esa-list-entry-edit
-    description: Edit spam quarantine blocklist/safelist entry. Using this command will override the existing value.
-    arguments:
-    - name: entry_type
-      description: List entry type.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - blocklist
-      - safelist
-    - name: view_by
-      description: |-
-        Edit list entry by recipient/sender.
-        When view_by = recipient, recipient_addresses and sender_list are mandatory.
-        When view_by = sender, sender_addresses and recipient_list are mandatory.
-      defaultValue: recipient
-      auto: PREDEFINED
-      predefined:
-      - recipient
-      - sender
-    - name: recipient_list
-      description: A comma-separated list of recipients to edit.
-      isArray: true
-    - name: sender_list
-      description: A comma-separated list of senders to edit.
-    - name: recipient_addresses
-      description: A comma-separated list of recipient addresses to edit.
-    - name: sender_addresses
-      description: A comma-separated list of sender addresses to edit.
-    outputs: []
-  - name: cisco-esa-list-entry-delete
-    description: Delete spam quarantine blocklist/safelist entry.
-    arguments:
-    - name: entry_type
-      description: List entry type.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - blocklist
-      - safelist
-    - name: view_by
-      description: |-
-        Delete list entry by recipient/sender.
-        When view_by = recipient, recipient_list is mandatory.
-        When view_by = sender, sender_list is mandatory.
-      defaultValue: recipient
-      auto: PREDEFINED
-      predefined:
-      - recipient
-      - sender
-    - name: recipient_list
-      description: List of recipient/sender addresses to delete.
-      isArray: true
-    - name: sender_list
-      description: List of recipient/sender addresses to delete.
-      isArray: true
-    outputs: []
-  - name: cisco-esa-message-search
-    description: Search tracking messages.
-    arguments:
-    - name: start_date
-      description: |-
-        Start date in ISO format or <number> <time unit>,
-        e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
-      required: true
-    - name: end_date
-      description: |-
-        End date in ISO format or <number> <time unit>,
-        e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
-      required: true
-    - name: page
-      description: |-
-        Page number of paginated results.
-        Minimum value: 1.
-    - name: page_size
-      description: Number of results per page. Maximum value 100.
-    - name: limit
-      defaultValue: 50
-      description: The maximum number of records to retrieve.
-    - name: sender_filter_operator
-      description: Sender filter operator.
-      auto: PREDEFINED
-      predefined:
-      - contains
-      - is
-      - begins_with
-    - name: sender_filter_value
-      description: Sender filter value.
-    - name: recipient_filter_operator
-      description: Recipient filter operator.
-      auto: PREDEFINED
-      predefined:
-      - contains
-      - is
-      - begins_with
-    - name: recipient_filter_value
-      description: Recipient filter value.
-    - name: subject_filter_operator
-      description: Subject filter operator.
-      auto: PREDEFINED
-      predefined:
-      - contains
-      - is
-      - begins_with
-    - name: subject_filter_value
-      description: Subject filter value.
-    - name: attachment_name_operator
-      description: Attachment name operator.
-      auto: PREDEFINED
-      predefined:
-      - contains
-      - is
-      - begins_with
-    - name: attachment_name_value
-      description: Attachment name value.
-    - name: file_sha_256
-      description: |-
-        SHA256 must be 64 characters long and can contain only "0-9" and "a-f" characters.
-        e.g. e0d123e5f316bef78bfdf5a008837577e0d123e5f316bef78bfdf5a008837577.
-    - name: custom_query
-      description: |-
-        Custom query for cisco ESA's advanced filters.
-        Syntax: <key>=<value>;<key>=<value>;<key>=<value>
-        e.g., graymail=True;message_delivered=True.
-    outputs:
-    - type: String
-      contextPath: CiscoESA.Message.hostName
-      description: Email gateway hostname.
-    - type: String
-      contextPath: CiscoESA.Message.friendly_from
-      description: Friendly formatted sender email address.
-    - type: String
-      contextPath: CiscoESA.Message.isCompleteData
-      description: Whether the entire data was pulled.
-    - type: String
-      contextPath: CiscoESA.Message.messageStatus
-      description: Message delivery status.
-    - type: String
-      contextPath: CiscoESA.Message.recipientMap
-      description: Recipients list.
-    - type: String
-      contextPath: CiscoESA.Message.senderIp
-      description: Sender IP address.
-    - type: String
-      contextPath: CiscoESA.Message.mailPolicy
-      description: Matched mail policy.
-    - type: String
-      contextPath: CiscoESA.Message.senderGroup
-      description: Matched sender group.
-    - type: String
-      contextPath: CiscoESA.Message.subject
-      description: Subject of email message.
-    - type: Number
-      contextPath: CiscoESA.Message.mid
-      description: Message ID.
-    - type: String
-      contextPath: CiscoESA.Message.senderDomain
-      description: Domain of email message sender.
-    - type: String
-      contextPath: CiscoESA.Message.finalSubject
-      description: Extended email subject.
-    - type: String
-      contextPath: CiscoESA.Message.direction
-      description: Message direction, incoming or outgoing.
-    - type: Number
-      contextPath: CiscoESA.Message.icid
-      description: An Injection Connection ID (ICID). A numerical identifier for an individual SMTP connection to the system.
-    - type: String
-      contextPath: CiscoESA.Message.replyTo
-      description: Email message reply to.
-    - type: String
-      contextPath: CiscoESA.Message.timestamp
-      description: Time of the email message.
-    - type: String
-      contextPath: CiscoESA.Message.messageID
-      description: Extended message ID.
-    - type: String
-      contextPath: CiscoESA.Message.verdictChart
-      description: Verdict visual chart ID.
-    - type: String
-      contextPath: CiscoESA.Message.recipient
-      description: Recipients email addresses list.
-    - type: String
-      contextPath: CiscoESA.Message.sender
-      description: Sender email address.
-    - type: String
-      contextPath: CiscoESA.Message.serialNumber
-      description: Cisco ESA email gateway serial number.
-    - type: Number
-      contextPath: CiscoESA.Message.allIcid
-      description: ICIDs list.
-    - type: String
-      contextPath: CiscoESA.Message.sbrs
-      description: Sender Base Reputation Scores.
-  - name: cisco-esa-message-details-get
-    description: Get message details.
-    arguments:
-    - name: serial_number
-      description: Email gateway serial number.
-      required: true
-    - name: message_ids
-      description: Message ID list.
-      required: true
-      isArray: true
-    - name: injection_connection_id
-      description: Injection connection ID.
-    outputs:
-    - type: String
-      contextPath: CiscoESA.Message.sdrAge
-      description: Sender domain reputation age.
-    - type: String
-      contextPath: CiscoESA.Message.attachments
-      description: Message attachments.
-    - type: String
-      contextPath: CiscoESA.Message.hostName
-      description: Email gateway hostname.
-    - type: Boolean
-      contextPath: CiscoESA.Message.isCompleteData
-      description: Whether the entire data was pulled.
-    - type: String
-      contextPath: CiscoESA.Message.messageStatus
-      description: Message delivery status.
-    - type: String
-      contextPath: CiscoESA.Message.mailPolicy
-      description: Matched mail policy.
-    - type: String
-      contextPath: CiscoESA.Message.senderGroup
-      description: Matched sender group.
-    - type: String
-      contextPath: CiscoESA.Message.subject
-      description: Subject of email message.
-    - type: Boolean
-      contextPath: CiscoESA.Message.showSummaryTimeBox
-      description: Whether to display the summary timebox.
-    - type: String
-      contextPath: CiscoESA.Message.sdrCategory
-      description: Sender domain reputation category.
-    - type: Number
-      contextPath: CiscoESA.Message.mid
-      description: Message ID.
-    - type: String
-      contextPath: CiscoESA.Message.sendingHostSummary.reverseDnsHostname
-      description: Sending host reverse DNS hostname.
-    - type: String
-      contextPath: CiscoESA.Message.sendingHostSummary.ipAddress
-      description: Sending host IP address.
-    - type: String
-      contextPath: CiscoESA.Message.sendingHostSummary.sbrsScore
-      description: Sending host sender base reputation scores.
-    - type: String
-      contextPath: CiscoESA.Message.direction
-      description: Message direction, incoming or outgoing.
-    - type: String
-      contextPath: CiscoESA.Message.smtpAuthId
-      description: SMTP authorization ID.
-    - type: String
-      contextPath: CiscoESA.Message.midHeader
-      description: Message ID header.
-    - type: String
-      contextPath: CiscoESA.Message.timestamp
-      description: Email message time.
-    - type: Boolean
-      contextPath: CiscoESA.Message.showDLP
-      description: Whether the DLP report is available.
-    - type: String
-      contextPath: CiscoESA.Message.messageSize
-      description: Email message size.
-    - type: String
-      contextPath: CiscoESA.Message.sdrReputation
-      description: Sender domain reputation.
-    - type: Boolean
-      contextPath: CiscoESA.Message.showURL
-      description: Whether the URL report is available.
-    - type: String
-      contextPath: CiscoESA.Message.recipient
-      description: Message recipient email address.
-    - type: String
-      contextPath: CiscoESA.Message.sender
-      description: Message sender email address.
-    - type: Boolean
-      contextPath: CiscoESA.Message.showAMP
-      description: Whether the AMP report is available.
-    - type: String
-      contextPath: CiscoESA.Message.summary.timestamp
-      description: Event summary time.
-    - type: String
-      contextPath: CiscoESA.Message.summary.description
-      description: Event summary description.
-    - type: Boolean
-      contextPath: CiscoESA.Message.summary.lastEvent
-      description: Whether this is the last summary event.
-    - type: Number
-      contextPath: CiscoESA.Message.allIcid
-      description: ICIDs list.
-    - type: String
-      contextPath: CiscoESA.Message.headerFrom
-      description: Email message header from.
-  - name: cisco-esa-message-amp-details-get
-    description: Get message AMP summary details.
-    arguments:
-    - name: serial_number
-      description: Email gateway serial number.
-      required: true
-    - name: message_ids
-      description: Message ID list.
-      required: true
-      isArray: true
-    outputs:
-    - type: String
-      contextPath: CiscoESA.AMPDetail.sdrAge
-      description: Sender domain reputation age.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.attachments
-      description: Message attachments.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.hostName
-      description: Email gateway hostname.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.direction
-      description: Message direction, incoming or outgoing.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.messageStatus
-      description: Message delivery status.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.senderGroup
-      description: Matched sender group.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.subject
-      description: Email message subject.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.sdrCategory
-      description: Sender domain reputation category.
-    - type: Number
-      contextPath: CiscoESA.AMPDetail.mid
-      description: Message ID.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.ampDetails.timestamp
-      description: AMP event summary details timestamp.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.ampDetails.description
-      description: AMP event summary details description.
-    - type: Boolean
-      contextPath: CiscoESA.AMPDetail.ampDetails.lastEvent
-      description: AMP event summary details last event.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.smtpAuthId
-      description: SMTP authorization ID.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.midHeader
-      description: Message ID header.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.timestamp
-      description: Email message time.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.messageSize
-      description: Email message size.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.sdrThreatLevels
-      description: Sender domain reputation threat levels.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.sdrReputation
-      description: Sender domain reputation.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.recipient
-      description: Message recipient email address.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.sender
-      description: Message sender email address.
-    - type: Boolean
-      contextPath: CiscoESA.AMPDetail.showAMPDetails
-      description: Whether to show AMP details.
-    - type: Number
-      contextPath: CiscoESA.AMPDetail.allIcid
-      description: ICIDs list.
-    - type: String
-      contextPath: CiscoESA.AMPDetail.headerFrom
-      description: Email header from.
-  - name: cisco-esa-message-dlp-details-get
-    description: Get message DLP summary details.
-    arguments:
-    - name: serial_number
-      description: Email gateway serial number.
-      required: true
-    - name: message_ids
-      description: Message ID list.
-      required: true
-      isArray: true
-    outputs:
-    - type: String
-      contextPath: CiscoESA.DLPDetail.direction
-      description: Message direction, incoming or outgoing.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.smtpAuthId
-      description: SMTP authorization ID.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.sdrAge
-      description: Sender domain reputation age.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.sender
-      description: Message sender email address.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.midHeader
-      description: Message ID header.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.timestamp
-      description: Email message time.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.sdrCategory
-      description: Sender domain reputation category.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.hostName
-      description: Email gateway hostname.
-    - type: Number
-      contextPath: CiscoESA.DLPDetail.mid
-      description: Message ID.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.attachments
-      description: Message attachments.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.messageSize
-      description: Email message size.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.dlpDetails.violationSeverity
-      description: DLP details violation severity.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.dlpDetails.dlpMatchedContent.messagePartMatch.classifier
-      description: DLP matched content classifier.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.dlpDetails.dlpMatchedContent.messagePartMatch.classifierMatch
-      description: DLP matched content classifier match.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.dlpDetails.dlpMatchedContent.messagePart
-      description: DLP matched content message part.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.dlpDetails.mid
-      description: DLP message ID.
-    - type: Number
-      contextPath: CiscoESA.DLPDetail.dlpDetails.riskFactor
-      description: DLP risk factor.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.dlpDetails.dlpPolicy
-      description: DLP policy.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.sdrThreatLevels
-      description: Sender domain reputation threat levels.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.sdrReputation
-      description: Sender domain reputation.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.messageStatus
-      description: Message delivery status.
-    - type: Number
-      contextPath: CiscoESA.DLPDetail.allIcid
-      description: ICIDs list.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.senderGroup
-      description: Matched sender group.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.recipient
-      description: Message recipient email address.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.subject
-      description: Email message subject.
-    - type: String
-      contextPath: CiscoESA.DLPDetail.headerFrom
-      description: Email header from.
-  - name: cisco-esa-message-url-details-get
-    description: Get message URL summary details.
-    arguments:
-    - name: serial_number
-      description: Email gateway serial number.
-      required: true
-    - name: message_ids
-      description: Message ID list.
-      required: true
-      isArray: true
-    outputs:
-    - type: String
-      contextPath: CiscoESA.URLDetail.sdrAge
-      description: Sender domain reputation age.
-    - type: String
-      contextPath: CiscoESA.URLDetail.attachments
-      description: Message attachments.
-    - type: Boolean
-      contextPath: CiscoESA.URLDetail.showURLDetails
-      description: Whether to show URL event details.
-    - type: String
-      contextPath: CiscoESA.URLDetail.urlDetails.timestamp
-      description: URL event details timestamp.
-    - type: String
-      contextPath: CiscoESA.URLDetail.urlDetails.description
-      description: URL event details description.
-    - type: String
-      contextPath: CiscoESA.URLDetail.hostName
-      description: Email gateway hostname.
-    - type: String
-      contextPath: CiscoESA.URLDetail.direction
-      description: Message direction, incoming or outgoing.
-    - type: String
-      contextPath: CiscoESA.URLDetail.messageStatus
-      description: Message delivery status.
-    - type: String
-      contextPath: CiscoESA.URLDetail.senderGroup
-      description: Matched sender group.
-    - type: String
-      contextPath: CiscoESA.URLDetail.subject
-      description: Email message subject.
-    - type: String
-      contextPath: CiscoESA.URLDetail.sdrCategory
-      description: Sender domain reputation category.
-    - type: Number
-      contextPath: CiscoESA.URLDetail.mid
-      description: Message ID.
-    - type: String
-      contextPath: CiscoESA.URLDetail.smtpAuthId
-      description: SMTP authorization ID.
-    - type: String
-      contextPath: CiscoESA.URLDetail.midHeader
-      description: Message ID header.
-    - type: String
-      contextPath: CiscoESA.URLDetail.timestamp
-      description: Email message time.
-    - type: String
-      contextPath: CiscoESA.URLDetail.messageSize
-      description: Email message size.
-    - type: String
-      contextPath: CiscoESA.URLDetail.sdrThreatLevels
-      description: Sender domain reputation threat levels.
-    - type: String
-      contextPath: CiscoESA.URLDetail.sdrReputation
-      description: Sender domain reputation.
-    - type: String
-      contextPath: CiscoESA.URLDetail.recipient
-      description: Message recipient email address.
-    - type: String
-      contextPath: CiscoESA.URLDetail.sender
-      description: Message sender email address.
-    - type: Number
-      contextPath: CiscoESA.URLDetail.allIcid
-      description: ICIDs list.
-    - type: String
-      contextPath: CiscoESA.URLDetail.headerFrom
-      description: Email header from.
-  - name: cisco-esa-report-get
-    description: |-
-      Get statistics reports.
-      Note that each report type is compatible with different arguments.
-      Refer to Addendum for Cisco Secure Email Gateway ("Secure Email Reporting" sheet in the file), to view the dedicated arguments for each report type.
-      https://www.cisco.com/c/dam/en/us/td/docs/security/esa/esa14-0/api/AsyncOS-14-0-API-Addendum.xlsx
-    arguments:
-    - name: report_type
-      description: Report Type.
-      defaultValue: mail_incoming_traffic_summary
-      auto: PREDEFINED
-      predefined:
-      - mail_incoming_traffic_summary
-      - reporting_system
-      - mail_vof_threat_summary
-      - mail_vof_specific_threat_summary
-      - mail_amp_threat_summary
-    - name: custom_report_type
-      description: |-
-        Custom report type.
-        Specify this argument to get a report that does not exist in the report_type argument.
-    - name: start_date
-      description: |-
-        Start date in ISO format or <number> <time unit>,
-        e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
-      required: true
-    - name: end_date
-      description: |-
-        End date in ISO format or <number> <time unit>,
-        e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
-      required: true
-    - name: order_by
-      description: The attribute by which to order the data in the response. For example, orderBy=total_clean_recipients.
-    - name: order_dir
-      description: The report sort order direction.
-      auto: PREDEFINED
-      predefined:
-      - asc
-      - desc
-    - name: top
-      description: The number of records with the highest values to return.
-    - name: filter_value
-      description: The filter value to search for.
-    - name: filter_by
-      description: The filter field to use. Filter the data to be retrieved according to the filter property and value.
-    - name: filter_operator
-      description: The filter operator. Filter the response data based on the value specified.
-      auto: PREDEFINED
-      predefined:
-      - begins_with
-      - is
-    outputs:
-    - type: String
-      contextPath: CiscoESA.Report.type
-      description: Report type.
-    - type: Number
-      contextPath: CiscoESA.Report.resultSet
-      description: Report results summary.
-  - name: cisco-esa-dictionary-list
-    description: Retrieve information of all dictionaries or a specific configured dictionary and their list of words.
-    arguments:
-    - name: mode
-      description: "The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name."
-      required: false
-      defaultValue: cluster
-      auto: PREDEFINED
-      predefined:
-        - cluster
-        - group
-        - machine
-    - name: host_name
-      description: Required when cluster mode is 'machine'.
-      required: false
-    - name: group_name
-      description: Required when cluster mode is 'group'.
-      required: false
-    - name: dictionary_name
-      description: The name of the dictionary for which to get information. This argument is optional. 
-      required: false
-    outputs:
-      - contextPath: CiscoESA.Dictionary.name
-        description: The name of the dictionary.
-        type: String
-      - contextPath: CiscoESA.Dictionary.encoding
-        description: The encoding format used for the dictionary.
-        type: String
-      - contextPath: CiscoESA.Dictionary.ignorecase
-        description: Indicates whether the dictionary ignores case sensitivity (1 for true, 0 for false).
-        type: Number
-      - contextPath: CiscoESA.Dictionary.words
-        description: The words in the dictionary.
-        type: List
-      - contextPath: CiscoESA.Dictionary.words_count.term_count
-        description: The count of individual terms in the dictionary.
-        type: Number
-      - contextPath: CiscoESA.Dictionary.words_count.smart_identifier_count
-        description: The count of smart identifiers in the dictionary (special terms with additional metadata).
-        type: Number
-      - contextPath: CiscoESA.Dictionary.wholewords
-        description: Indicates whether the dictionary considers whole words only (1 for true, 0 for false).
-        type: Number
-  - name: cisco-esa-dictionary-add
-    description: Add a new dictionary.
-    arguments:
-    - name: mode
-      description: "The cluster mode of the email gateway determines its configuration.  If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name."
-      required: false
-      defaultValue: cluster
-      auto: PREDEFINED
-      predefined:
-        - cluster
-        - group
-        - machine
-    - name: host_name
-      description: Required when cluster mode is 'machine'.
-      required: false
-    - name: group_name
-      description: Required when cluster mode is 'group'.
-      required: false
-    - name: dictionary_name
-      description: The name of the dictionary for which to get information. This argument is optional. 
-      required: true
-    - name: whole_words
-      description: Indicates if the words need to be matched completely.
-      required: false
-      auto: PREDEFINED
-      defaultValue: "True"
-      predefined:
-        - "True"
-        - "False"
-    - name: words
-      description: |-
-        A list of terms to add to a dictionary. The term can have a weight of (0-10) associated with it. If no weight is given, the default weight is taken as "1".
-        A smart identifier can have an additional parameter - "prefix" associated with it. If no value is mentioned, no prefix is taken as default.
-        Example: ['*credit',2,'prefix'],['*aba'],['À term 1'].
-      required: true
-      isArray: true
-    - name: ignore_case_sensitive
-      description: Indicates if the term that needs to be matched is case-sensitive.
-      required: false
-      defaultValue: "False"
-      auto: PREDEFINED
-      predefined:
-        - "True"
-        - "False"
-  - name: cisco-esa-dictionary-edit
-    description: Edit a dictionary.
-    arguments:
-    - name: mode
-      description: "The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name."
-      required: false
-      defaultValue: cluster
-      auto: PREDEFINED
-      predefined:
-        - cluster
-        - group
-        - machine
-    - name: host_name
-      description: Required when cluster mode is 'machine'.
-      required: false
-    - name: group_name
-      description: Required when cluster mode is 'group'.
-      required: false
-    - name: dictionary_name
-      description: The name of the dictionary for which to get information. This argument is optional. 
-      required: true
-    - name: updated_name
-      description: Specify a new name for the dictionary to modify.
-      required: false
-    - name: whole_words
-      description: Indicates if the words need to be matched completely.
-      required: false
-      auto: PREDEFINED
-      defaultValue: "True"
-      predefined:
-        - "True"
-        - "False"
-    - name: words
-      description: |-
-        A list of terms to add to a dictionary. The term can have a weight of (0-10) associated with it. If no weight is given, the default weight is taken as "1".
-        A smart identifier can have an additional parameter - "prefix" associated with it. If no value is mentioned, no prefix is taken as default.
-        Example: ['*credit',2,'prefix'],['*aba'],['À term 1'].
-      required: true
-      isArray: true
-    - name: ignore_case_sensitive
-      description: Indicates if the term that needs to be matched is case-sensitive.
-      required: false
-      auto: PREDEFINED
-      defaultValue: "False"
-      predefined:
-        - "True"
-        - "False"
-  - name: cisco-esa-dictionary-delete
-    description: Delete a dictionary.
-    arguments:
-    - name: mode
-      description: "The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name."
-      required: false
-      defaultValue: cluster
-      auto: PREDEFINED
-      predefined:
-        - cluster
-        - group
-        - machine
-    - name: host_name
-      description: Required when cluster mode is 'machine'.
-      required: false
-    - name: group_name
-      description: Required when cluster mode is 'group'.
-      required: false
-    - name: dictionary_name
-      description: The name of the dictionary for which to get information. This argument is optional. 
-      required: true
-  - name: cisco-esa-dictionary-words-add
-    description: Add words to a specific dictionary.
-    arguments:
-    - name: mode
-      description: "The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', please a group_name. If the cluster mode is set to 'machine', specify a host_name."
-      required: false
-      defaultValue: cluster
-      auto: PREDEFINED
-      predefined:
-        - cluster
-        - group
-        - machine
-    - name: host_name
-      description: Required when cluster mode is 'machine'.
-      required: false
-    - name: group_name
-      description: Required when cluster mode is 'group'.
-      required: false
-    - name: dictionary_name
-      description: The name of the dictionary for which to get information. This argument is optional. 
-      required: true
-    - name: words
-      description: |-
-        A list of terms to add to a dictionary. The term can have a weight of (0-10) associated with it. If no weight is given, the default weight is taken as "1".
-        A smart identifier can have an additional parameter - "prefix" associated with it. If no value is mentioned, no prefix is taken as default.
-        Example: ['*credit',2,'prefix'],['*aba'],['À term 1'].
-      required: true
-      isArray: true
-  - name: cisco-esa-dictionary-words-delete
-    description: Delete existing words from specific dictionary.
-    arguments:
-    - name: mode
-      description: "The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name."
-      required: false
-      defaultValue: cluster
-      auto: PREDEFINED
-      predefined:
-        - cluster
-        - group
-        - machine
-    - name: host_name
-      description: Required when cluster mode is 'machine'.
-      required: false
-    - name: group_name
-      description: Required when cluster mode is 'group'.
-      required: false
-    - name: dictionary_name
-      description: The name of the dictionary for which to get information. This argument is optional. 
-      required: true
-    - name: words
-      description: |-
-        A list of terms that need to be deleted.
-        Example: credit,aba,term.
-      required: true
-      isArray: true
+        Get statistics reports.
+        Note that each report type is compatible with different arguments.
+        Refer to Addendum for Cisco Secure Email Gateway ("Secure Email Reporting" sheet in the file), to view the dedicated arguments for each report type.
+        https://www.cisco.com/c/dam/en/us/td/docs/security/esa/esa14-0/api/AsyncOS-14-0-API-Addendum.xlsx
+      arguments:
+        - name: report_type
+          description: Report Type.
+          defaultValue: mail_incoming_traffic_summary
+          auto: PREDEFINED
+          predefined:
+            - mail_incoming_traffic_summary
+            - reporting_system
+            - mail_vof_threat_summary
+            - mail_vof_specific_threat_summary
+            - mail_amp_threat_summary
+        - name: custom_report_type
+          description: |-
+            Custom report type.
+            Specify this argument to get a report that does not exist in the report_type argument.
+        - name: start_date
+          description: |-
+            Start date in ISO format or <number> <time unit>,
+            e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          required: true
+        - name: end_date
+          description: |-
+            End date in ISO format or <number> <time unit>,
+            e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          required: true
+        - name: order_by
+          description: The attribute by which to order the data in the response. For example, orderBy=total_clean_recipients.
+        - name: order_dir
+          description: The report sort order direction.
+          auto: PREDEFINED
+          predefined:
+            - asc
+            - desc
+        - name: top
+          description: The number of records with the highest values to return.
+        - name: filter_value
+          description: The filter value to search for.
+        - name: filter_by
+          description: The filter field to use. Filter the data to be retrieved according to the filter property and value.
+        - name: filter_operator
+          description: The filter operator. Filter the response data based on the value specified.
+          auto: PREDEFINED
+          predefined:
+            - begins_with
+            - is
+      outputs:
+        - type: String
+          contextPath: CiscoESA.Report.type
+          description: Report type.
+        - type: Number
+          contextPath: CiscoESA.Report.resultSet
+          description: Report results summary.
+    - name: cisco-esa-dictionary-list
+      description: Retrieve information of all dictionaries or a specific configured dictionary and their list of words.
+      arguments:
+        - name: mode
+          description: "The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name."
+          required: false
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: host_name
+          description: Required when cluster mode is 'machine'.
+          required: false
+        - name: group_name
+          description: Required when cluster mode is 'group'.
+          required: false
+        - name: dictionary_name
+          description: The name of the dictionary for which to get information. This argument is optional.
+          required: false
+      outputs:
+        - contextPath: CiscoESA.Dictionary.name
+          description: The name of the dictionary.
+          type: String
+        - contextPath: CiscoESA.Dictionary.encoding
+          description: The encoding format used for the dictionary.
+          type: String
+        - contextPath: CiscoESA.Dictionary.ignorecase
+          description: Indicates whether the dictionary ignores case sensitivity (1 for true, 0 for false).
+          type: Number
+        - contextPath: CiscoESA.Dictionary.words
+          description: The words in the dictionary.
+          type: List
+        - contextPath: CiscoESA.Dictionary.words_count.term_count
+          description: The count of individual terms in the dictionary.
+          type: Number
+        - contextPath: CiscoESA.Dictionary.words_count.smart_identifier_count
+          description: The count of smart identifiers in the dictionary (special terms with additional metadata).
+          type: Number
+        - contextPath: CiscoESA.Dictionary.wholewords
+          description: Indicates whether the dictionary considers whole words only (1 for true, 0 for false).
+          type: Number
+    - name: cisco-esa-dictionary-add
+      description: Add a new dictionary.
+      arguments:
+        - name: mode
+          description: "The cluster mode of the email gateway determines its configuration.  If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name."
+          required: false
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: host_name
+          description: Required when cluster mode is 'machine'.
+          required: false
+        - name: group_name
+          description: Required when cluster mode is 'group'.
+          required: false
+        - name: dictionary_name
+          description: The name of the dictionary for which to get information. This argument is optional.
+          required: true
+        - name: whole_words
+          description: Indicates if the words need to be matched completely.
+          required: false
+          auto: PREDEFINED
+          defaultValue: "True"
+          predefined:
+            - "True"
+            - "False"
+        - name: words
+          description: |-
+            A list of terms to add to a dictionary. The term can have a weight of (0-10) associated with it. If no weight is given, the default weight is taken as "1".
+            A smart identifier can have an additional parameter - "prefix" associated with it. If no value is mentioned, no prefix is taken as default.
+            Example: ['*credit',2,'prefix'],['*aba'],['À term 1'].
+          required: true
+          isArray: true
+        - name: ignore_case_sensitive
+          description: Indicates if the term that needs to be matched is case-sensitive.
+          required: false
+          defaultValue: "False"
+          auto: PREDEFINED
+          predefined:
+            - "True"
+            - "False"
+    - name: cisco-esa-dictionary-edit
+      description: Edit a dictionary.
+      arguments:
+        - name: mode
+          description: "The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name."
+          required: false
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: host_name
+          description: Required when cluster mode is 'machine'.
+          required: false
+        - name: group_name
+          description: Required when cluster mode is 'group'.
+          required: false
+        - name: dictionary_name
+          description: The name of the dictionary for which to get information. This argument is optional.
+          required: true
+        - name: updated_name
+          description: Specify a new name for the dictionary to modify.
+          required: false
+        - name: whole_words
+          description: Indicates if the words need to be matched completely.
+          required: false
+          auto: PREDEFINED
+          defaultValue: "True"
+          predefined:
+            - "True"
+            - "False"
+        - name: words
+          description: |-
+            A list of terms to add to a dictionary. The term can have a weight of (0-10) associated with it. If no weight is given, the default weight is taken as "1".
+            A smart identifier can have an additional parameter - "prefix" associated with it. If no value is mentioned, no prefix is taken as default.
+            Example: ['*credit',2,'prefix'],['*aba'],['À term 1'].
+          required: true
+          isArray: true
+        - name: ignore_case_sensitive
+          description: Indicates if the term that needs to be matched is case-sensitive.
+          required: false
+          auto: PREDEFINED
+          defaultValue: "False"
+          predefined:
+            - "True"
+            - "False"
+    - name: cisco-esa-dictionary-delete
+      description: Delete a dictionary.
+      arguments:
+        - name: mode
+          description: "The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name."
+          required: false
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: host_name
+          description: Required when cluster mode is 'machine'.
+          required: false
+        - name: group_name
+          description: Required when cluster mode is 'group'.
+          required: false
+        - name: dictionary_name
+          description: The name of the dictionary for which to get information. This argument is optional.
+          required: true
+    - name: cisco-esa-dictionary-words-add
+      description: Add words to a specific dictionary.
+      arguments:
+        - name: mode
+          description: "The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', please a group_name. If the cluster mode is set to 'machine', specify a host_name."
+          required: false
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: host_name
+          description: Required when cluster mode is 'machine'.
+          required: false
+        - name: group_name
+          description: Required when cluster mode is 'group'.
+          required: false
+        - name: dictionary_name
+          description: The name of the dictionary for which to get information. This argument is optional.
+          required: true
+        - name: words
+          description: |-
+            A list of terms to add to a dictionary. The term can have a weight of (0-10) associated with it. If no weight is given, the default weight is taken as "1".
+            A smart identifier can have an additional parameter - "prefix" associated with it. If no value is mentioned, no prefix is taken as default.
+            Example: ['*credit',2,'prefix'],['*aba'],['À term 1'].
+          required: true
+          isArray: true
+    - name: cisco-esa-dictionary-words-delete
+      description: Delete existing words from specific dictionary.
+      arguments:
+        - name: mode
+          description: "The cluster mode of the email gateway determines its configuration. If the cluster mode is set to 'group', specify a group_name. If the cluster mode is set to 'machine', specify a host_name."
+          required: false
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: host_name
+          description: Required when cluster mode is 'machine'.
+          required: false
+        - name: group_name
+          description: Required when cluster mode is 'group'.
+          required: false
+        - name: dictionary_name
+          description: The name of the dictionary for which to get information. This argument is optional.
+          required: true
+        - name: words
+          description: |-
+            A list of terms that need to be deleted.
+            Example: credit,aba,term.
+          required: true
+          isArray: true
+    - name: cisco-esa-dictionary-words-update
+      description: Modify words in a specified content dictionary. Unlike `cisco-esa-dictionary-edit`, which overrides the entire dictionary, this command adds new terms or updates existing ones without removing existing terms.
+      arguments:
+        - name: mode
+          description: Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: group_name
+          description: The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`.
+        - name: host_name
+          description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
+        - name: dictionary_name
+          description: The name of the dictionary to update with the specified words.
+          required: true
+          default: true
+        - name: words
+          description: |-
+            A list of terms to update in the dictionary. The term can have a weight of (0-10) associated with it. If no weight is given, the default weight is taken as "1".
+            A smart identifier can have an additional parameter - "prefix" associated with it. If no value is mentioned, no prefix is taken as default.
+            Example: ['*credit',2,'prefix'],['*aba'],['À term 1'].
+          required: true
+          isArray: true
+    - name: cisco-esa-url-list
+      description: Retrieve all URL lists or a specific list by name. URL lists define allowed or blocked domains for email content scanning and can be used in URL filtering configurations within mail policies.
+      arguments:
+        - name: mode
+          description: Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: group_name
+          description: The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`.
+        - name: host_name
+          description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
+        - name: url_list_name
+          description: The name of the URL list to retrieve.
+          default: true
+        - name: limit
+          description: The maximum number of records to return.
+          defaultValue: "50"
+        - name: all_results
+          description: Whether to retrieve all the results by overriding the default limit.
+          defaultValue: "false"
+      outputs:
+        - contextPath: CiscoESA.URLList.used_by
+          description: The policy names that using the list.
+          type: String
+        - contextPath: CiscoESA.URLList.urls_count
+          description: The number of urls in the list.
+          type: Number
+        - contextPath: CiscoESA.URLList.name
+          description: The name of the list.
+          type: String
+        - contextPath: CiscoESA.URLList.urls
+          description: The URLs in the list.
+          type: String
+    - name: cisco-esa-url-list-create
+      description: Create a new URL list.
+      arguments:
+        - name: mode
+          description: Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: group_name
+          description: The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`.
+        - name: host_name
+          description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
+        - name: url_list_name
+          description: The URL List name to create.
+          required: true
+        - name: urls
+          description: A comma-separated list of URLs to add to the list. For example, malicious.com,phishing.com.
+          required: true
+          isArray: true
+    - name: cisco-esa-url-list-update
+      description: Update URLs in an existing URL list. This command overrides all the URL entries in the list.
+      arguments:
+        - name: mode
+          description: Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: group_name
+          description: The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`.
+        - name: host_name
+          description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
+        - name: url_list_name
+          description: The URL List name to edit.
+          required: true
+          default: true
+        - name: urls
+          description: A comma-separated list of URLs to add to the list.
+          isArray: true
+    - name: cisco-esa-url-list-delete
+      description: Delete one or more URL lists. You cannot delete lists that are in use.
+      arguments:
+        - name: mode
+          description: Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: group_name
+          description: The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`.
+        - name: host_name
+          description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
+        - name: url_list_names
+          description: A comma-separated list of URL List names to delete.
+          required: true
+          isArray: true
+          default: true
+    - name: cisco-esa-file-hash-list
+      description: Retrieve all file hash lists or the contents of a specific list. File hash lists define allowed or blocked file signatures and can be used in Incoming Content Filter configurations to control file-based threats.
+      arguments:
+        - name: mode
+          description: Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: group_name
+          description: The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`.
+        - name: host_name
+          description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
+        - name: file_hash_list_name
+          description: The file hash list name to retrieve.
+          default: true
+        - name: limit
+          description: The maximum number of records to return.
+          defaultValue: "50"
+        - name: all_results
+          description: Whether to retrieve all the results by overriding the default limit.
+          defaultValue: "false"
+      outputs:
+        - contextPath: CiscoESA.FileHashList.filehashes
+          description: The hashes in the file hash list.
+          type: String
+        - contextPath: CiscoESA.FileHashList.description
+          description: The file hash list description.
+          type: String
+        - contextPath: CiscoESA.FileHashList.list_type
+          description: The file hash list type.
+          type: String
+        - contextPath: CiscoESA.FileHashList.name
+          description: The file hash list name.
+          type: String
+        - contextPath: CiscoESA.FileHashList.filehashes_count
+          description: The number of hashes in the list.
+          type: String
+    - name: cisco-esa-file-hash-create
+      description: Create a new file hash list with specified hash entries.
+      arguments:
+        - name: mode
+          description: Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: group_name
+          description: The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`.
+        - name: host_name
+          description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
+        - name: file_hash_list_name
+          description: The file hash list name to create.
+          required: true
+        - name: filehashes
+          description: A comma-separated list of hashes to add to the list.
+          required: true
+        - name: description
+          description: Short description for the hash list.
+          required: true
+        - name: list_type
+          description: The type of the hashes in the list.
+          defaultValue: any
+          auto: PREDEFINED
+          predefined:
+            - md5
+            - sha256
+            - any
+          required: true
+    - name: cisco-esa-file-hash-update
+      description: Updates the provided file hash list. This command overrides all existing hash entries in the list.
+      arguments:
+        - name: mode
+          description: Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: group_name
+          description: The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`.
+        - name: host_name
+          description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
+        - name: file_hash_list_name
+          description: "The name of the file hash list to update. "
+          required: true
+          default: true
+        - name: filehashes
+          description: A comma-separated string of file hash values to be added to the specified fle hash list. Each hash must have a valid format (for example, SHA256).
+          required: true
+          isArray: true
+    - name: cisco-esa-pvo-quarantine-list
+      description: List all PVO quarantine rules or retrieve a specific rule by ID. PVO rules determine how messages are quarantined based on policy violations, detected viruses, or outbreak conditions.
+      arguments:
+        - name: type
+          description: The rule type to return.
+          defaultValue: pvo
+        - name: limit
+          description: The maximum number of records to return.
+          defaultValue: "50"
+        - name: all_results
+          description: Whether to retrieve all the results by overriding the default limit.
+          defaultValue: "false"
+        - name: rule_id
+          description: The rule ID to retrieve.
+        - name: offset
+          description: Specify an offset value to retrieve a subset of records starting with the offset value. Offset works with limit, which determines how many records to retrieve starting from the offset. Relevant with using `rule_id` and required when using `limit`.
+        - name: order_by
+          description: The order of the results.
+        - name: order_direction
+          description: The direction of the results.
+      outputs:
+        - contextPath: CiscoESA.QuarantineRule.number_of_messages
+          description: The number of messages matching the rule.
+          type: Number
+        - contextPath: CiscoESA.QuarantineRule.capacity
+          description: The storage capacity used by messages matching the rule, represented as a percentage.
+          type: String
+        - contextPath: CiscoESA.QuarantineRule.rule_id
+          description: The unique identifier or label for the quarantine rule.
+          type: String
+        - contextPath: CiscoESA.QuarantineRule.total_size
+          description: The total size of all messages matching the rule.
+          type: String
+        - contextPath: CiscoESA.QuarantineRule.rule_description
+          description: Description of the quarantine rule.
+          type: String
+        - contextPath: CiscoESA.QuarantineRule.average_message_size
+          description: The average size of the quarantined messages.
+          type: String
+        - contextPath: CiscoESA.QuarantineRule.rid
+          description: The rule identifier associated with the quarantine entry.
+          type: Number
+    - name: cisco-esa-pvo-quarantine-message-release
+      description: Release messages associated with a specific PVO quarantine rule. This command releases all messages that match the specified rule from quarantine.
+      arguments:
+        - name: rule_ids
+          description: Comma-separated list of rule IDs to release messages from.
+          required: true
+          isArray: true
+        - name: quarantine_type
+          description: The quarantine rule type.
+          defaultValue: pvo
+    - name: cisco-esa-pvo-quarantine-message-delete
+      description: Delete messages associated with a specific PVO quarantine rule. This command deletes all messages that match the specified rule from quarantine.
+      arguments:
+        - name: rule_ids
+          description: A comma-separated list of rule IDs to release message from.
+          required: true
+          isArray: true
+          default: true
+        - name: quarantine_type
+          description: The quarantine rule type.
+          defaultValue: pvo
+    - name: cisco-esa-incoming-policy-user-list
+      description: Retrieve user-defined sender/recipient entries from an incoming mail policy.
+      arguments:
+        - name: mode
+          description: Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: group_name
+          description: The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`.
+        - name: host_name
+          description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
+        - name: policy_name
+          description: The name of the policy to retrieve user entries. No helper command exists to retrieve policy names; you must provide this manually.
+          required: true
+          default: true
+        - name: limit
+          description: The maximum number of records to return.
+          defaultValue: "50"
+        - name: all_results
+          description: Whether to retrieve all the results by overriding the default limit.
+          defaultValue: "false"
+      outputs:
+        - contextPath: CiscoESA.IncomingMailPolicyUser.sender_config.sender.domain_entries
+          description: List of sender domain entries. Messages from these senders will match the policy.
+          type: String
+        - contextPath: CiscoESA.IncomingMailPolicyUser.receiver_config.operation
+          description: Logical operator used to evaluate receiver and receiver_not entries. Valid values are 'and' or 'or'.
+          type: String
+        - contextPath: CiscoESA.IncomingMailPolicyUser.receiver_config.receiver.domain_entries
+          description: List of recipient domain entries. Messages sent to these recipients will match the policy.
+          type: String
+        - contextPath: CiscoESA.IncomingMailPolicyUser.receiver_config.receiver_not.domain_entries
+          description: List of recipient domain entries to exclude. Messages NOT sent to these recipients will match the policy. Only valid with the 'and' operator.
+          type: String
+    - name: cisco-esa-incoming-policy-user-add
+      description: Add sender and recipient entries to an incoming mail policy.
+      arguments:
+        - name: mode
+          description: Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: group_name
+          description: The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`.
+        - name: host_name
+          description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
+        - name: policy_name
+          description: The name of the policy to add sender and recipient entry.
+          default: true
+          required: true
+        - name: sender_domain_entries
+          description: Comma-separated sender domain entries (for example, user@example.com, @example.com) used to match messages from these senders. Required only if `sender_non_domain_entries` is not provided. Cannot be used together with `sender_non_domain_entries`.
+          isArray: true
+        - name: sender_non_domain_entries
+          description: Comma-separated sender domain entries to exclude. Used to match messages not from these senders. Required only if `sender_domain_entries` is not provided. Cannot be used together with `sender_domain_entries`.
+          isArray: true
+        - name: receiver_operation
+          description: Specifies how to combine receiver matching conditions. Use `and` if `receiver_not_domain_entries` is provided. Use `or` if using ANY as a domain.
+          auto: PREDEFINED
+          predefined:
+            - and
+            - or
+          required: true
+          isArray: true
+        - name: receiver_domain_entries
+          description: Comma-separated recipient domain entries (for example, user@example.com, @example.com) used to match messages sent to these recipients.
+          isArray: true
+          required: true
+        - name: receiver_not_domain_entries
+          description: Comma-separated recipient domain entries to exclude. Used to match messages not sent to these recipients. Only allowed when receiver_operation is set to and.
+          isArray: true
+    - name: cisco-esa-incoming-policy-user-update
+      description: Update sender and recipient entries in an existing incoming mail policy. This command overrides all existing sender and recipient entries with the provided values.
+      arguments:
+        - name: mode
+          description: Defines the configuration level for applying changes on the email gateway. Set to 'cluster' to update the entire cluster, `group` to target a specific group (requires `group_name`), or 'machine' to update a single machine (requires `host_name`).
+          defaultValue: cluster
+          auto: PREDEFINED
+          predefined:
+            - cluster
+            - group
+            - machine
+        - name: group_name
+          description: The name of the group to target when 'mode' is set to `group`. This value is required only if mode is `group`.
+        - name: host_name
+          description: The hostname of the machine to target when 'mode' is set to 'machine'. This value is required only if mode is 'machine'.
+        - name: policy_name
+          description: The name of the policy to edit all the sender and recipient entries.
+          default: true
+          required: true
+        - name: sender_domain_entries
+          description: Comma-separated sender domain entries (for example, user@example.com, @example.com) used to match messages from these senders. Required only if `sender_non_domain_entries` is not provided. Cannot be used together with `sender_non_domain_entries`.
+          isArray: true
+        - name: sender_non_domain_entries
+          description: Comma-separated sender domain entries to exclude. Used to match messages not from these senders. Required only if `sender_domain_entries` is not provided. Cannot be used together with `sender_domain_entries`.
+          isArray: true
+        - name: receiver_operation
+          description: Specifies how to combine receiver matching conditions. Use `and` if `receiver_not_domain_entries` is provided. Use `or` if using ANY as a domain.
+          auto: PREDEFINED
+          predefined:
+            - and
+            - or
+          required: true
+          isArray: true
+        - name: receiver_domain_entries
+          description: Comma-separated recipient domain entries (for example, user@example.com, @example.com) used to match messages sent to these recipients.
+          isArray: true
+          required: true
+        - name: receiver_not_domain_entries
+          description: Comma-separated recipient domain entries to exclude. Used to match messages not sent to these recipients. Only allowed when receiver_operation is set to and.
+          isArray: true
+    - name: cisco-esa-message-connection-details-get
+      description: Retrieve metadata about the SMTP connection and transmission behavior of specified messages. Returns details such as SBRS (Sender Base Reputation Score), connection summary logs, and sender group classification to help understand how messages were handled at the connection layer.
+      arguments:
+        - name: injection_connection_id
+          description: An Injection Connection ID (ICID). A numerical identifier for an individual SMTP connection to the system. Use `cisco-esa-message-search` to get message Injection Connection IDs. Consider to insert this parameter in case you don't achive any results.
+          required: false
+        - name: message_ids
+          description: Comma-separated list of message IDs. Use `cisco-esa-message-search` to get message IDs.
+          required: true
+          isArray: true
+          default: true
+        - name: serial_number
+          description: The unique serial number assigned to an email message. Use `cisco-esa-message-search` to get the message serial numer.
+          required: true
+        - name: start_date
+          description: The start date for the messages. Timestamp in ISO format or , for example, 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          defaultValue: 1 month
+        - name: end_date
+          description: The end date for the messages. Timestamp in ISO format or , for example, 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          defaultValue: now
+        - name: limit
+          description: The maximum number of records to return.
+          defaultValue: "50"
+        - name: all_results
+          description: Whether to retrieve all the results by overriding the default limit.
+          defaultValue: "false"
+      outputs:
+        - contextPath: CiscoESA.MessageConnection.sender_group
+          description: The sender group assigned to the connection (for example, RELAYLIST).
+          type: String
+        - contextPath: CiscoESA.MessageConnection.Message.timestamp
+          description: Timestamp of the connection summary event.
+          type: String
+        - contextPath: CiscoESA.MessageConnection.Message.description
+          description: Description of the connection summary event.
+          type: String
+        - contextPath: CiscoESA.MessageConnection.Message.last_event
+          description: Indicates whether this is the final summary event.
+          type: Boolean
+        - contextPath: CiscoESA.MessageConnection.sbrs
+          description: Sender Base Reputation Score (SBRS) of the sender IP.
+          type: String
+    - name: cisco-esa-message-remediation-details-get
+      description: Retrieve historical remediation actions taken on messages, such as message deletions or recalls. Includes batch initiator details, message status, delivery timestamps, and whether the message was read, supporting audit and compliance tracking for retroactive threat actions.
+      arguments:
+        - name: injection_connection_id
+          description: An Injection Connection ID (ICID). A numerical identifier for an individual SMTP connection to the system. Use `cisco-esa-message-search` to get message Injection Connection IDs. Consider to insert this parameter in case you don't achive any results.
+          required: false
+        - name: message_ids
+          description: Comma-separated list of message IDs. Use `cisco-esa-message-search` to get message IDs.
+          required: true
+          isArray: true
+          default: true
+        - name: serial_number
+          description: The unique serial number assigned to an email message. Use `cisco-esa-message-search` to get the message serial numer.
+          required: true
+        - name: start_date
+          description: The start date for the messages. Timestamp in ISO format or , for example, 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          defaultValue: 1 month
+        - name: end_date
+          description: The end date for the messages. Timestamp in ISO format or , for example, 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+          defaultValue: now
+        - name: limit
+          description: The maximum number of records to return.
+          defaultValue: "50"
+        - name: all_results
+          description: Whether to retrieve all the results by overriding the default limit.
+          defaultValue: "false"
+      outputs:
+        - contextPath: CiscoESA.MessageRemediation.batch_details.b_init_username
+          description: Username that initiated the remediation batch.
+          type: String
+        - contextPath: CiscoESA.MessageRemediation.batch_details.mor_action
+          description: The remediation action type (e.g., Delete).
+          type: String
+        - contextPath: CiscoESA.MessageRemediation.batch_details.b_init_time
+          description: Timestamp when the remediation batch was initiated (UNIX time).
+          type: Number
+        - contextPath: CiscoESA.MessageRemediation.batch_details.batch_name
+          description: The name assigned to the remediation batch.
+          type: String
+        - contextPath: CiscoESA.MessageRemediation.batch_details.batch_desc
+          description: The description of the remediation batch.
+          type: String
+        - contextPath: CiscoESA.MessageRemediation.batch_details.b_init_source
+          description: The source that initiated the batch (e.g., ESA device name).
+          type: String
+        - contextPath: CiscoESA.MessageRemediation.message_details.delivered_at
+          description: Timestamp when the message was delivered (UNIX time).
+          type: Number
+        - contextPath: CiscoESA.MessageRemediation.message_details.mid
+          description: The message ID of the remediated email.
+          type: String
+        - contextPath: CiscoESA.MessageRemediation.message_details.from_email
+          description: Sender email address of the remediated message.
+          type: String
+        - contextPath: CiscoESA.MessageRemediation.message_details.recipient_email
+          description: Recipient email address of the remediated message.
+          type: String
+        - contextPath: CiscoESA.MessageRemediation.message_details.mor_status
+          description: The status of the remediation operation (for example, Success, Failed).
+          type: String
+        - contextPath: CiscoESA.MessageRemediation.message_details.msg_read
+          description: Indicates whether the message was read (0 = unread, 1 = read, or N/A).
+          type: String
 fromversion: 6.5.0
 tests:
-- CiscoESA_dictionary_commands_tpb
+  - CiscoESA_dictionary_commands_tpb
+  - CiscoEsaEnhancement_Test

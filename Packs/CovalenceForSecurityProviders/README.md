@@ -1,8 +1,8 @@
-Threats can come from many sources, both externally and internally, and are often the result of vulnerable software, improperly configured devices and systems, or human error. To achieve maximum protection, you need to consider your vulnerabilities, monitor across the entire threat surface, and apply an attacker's mindset in order to create a proactive security posture rather than a solely reactive one.   
+Threats can come from many sources, both externally and internally, and are often the result of vulnerable software, improperly configured devices and systems, or human error. To achieve maximum protection, you need to consider your vulnerabilities, monitor across the entire threat surface, and apply an attacker's mindset in order to create a proactive security posture rather than a solely reactive one.
 
-Covalence monitors across your customers endpoints, cloud and network, correlating information across all three, identifying threats, and helping you protect them from attacks and vulnerabilities.   
+Covalence monitors across your customers endpoints, cloud and network, correlating information across all three, identifying threats, and helping you protect them from attacks and vulnerabilities.
 
-This pack collects the alerts generated, which are generated as incidents within XSOAR. I also allows you to query online the Covalence for additional information.   
+This pack collects the alerts generated, which are generated as incidents within XSOAR. I also allows you to query online the Covalence for additional information.
 
 # What does this pack do ?
 
@@ -13,9 +13,9 @@ This pack collects the alerts generated, which are generated as incidents within
 - Lists monitored organization, of interest for MSPs or equivalent who are managing alerts for multiple organizations
 - Within the XSOAR War Room, you can query Covalence for its configuration, including internal networks and sensors
 - Query Covalence for information about the network, endpoints and alerts, specifically:
-   - Alerts (in and ad-hoc manner - this is in addition to the automatic generation of incidents from alerts) allowing you to see a list of alerts by status, for example
-   - Connections summary by IP or port
-   - DNS resolutions
+  - Alerts (in and ad-hoc manner - this is in addition to the automatic generation of incidents from alerts) allowing you to see a list of alerts by status, for example
+  - Connections summary by IP or port
+  - DNS resolutions
 - Query Covalence for additional detail about a user or process of interest
 
-Note this pack should not be executed alongside the Covalence Managed Security pack, or duplicate incidents will be generated.    
+Note this pack should not be executed alongside the Covalence Managed Security pack, or duplicate incidents will be generated.

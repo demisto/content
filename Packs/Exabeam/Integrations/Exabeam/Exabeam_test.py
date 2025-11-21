@@ -625,6 +625,7 @@ def test_fetch_incidents_with_look_back(mocker, params, expected_incidents, expe
     ],
     ids=["with_old_username_risky", "without_old_username_risky"],
 )
+@freeze_time("2025-07-15T23:18:43.123456Z")
 def test_notable_users_fetch_incdents(mocker, args, last_run_obj, expected_new_incidents_count):
     mocker.patch.object(Client, "_login", return_value=None)
     client = Client(base_url="https://example.com", username="test_user", password="1234", verify=False, proxy=False, headers={})
@@ -635,8 +636,7 @@ def test_notable_users_fetch_incdents(mocker, args, last_run_obj, expected_new_i
 
     assert len(incidents) == expected_new_incidents_count
     assert incidents[0]["Name"] == "new_username_risky"
-    actual_last_run = last_run["last_run_notable_users"].split(".")[0]  # Remove microseconds for comparison
-    assert actual_last_run == datetime.now(pytz.utc).strftime("%Y-%m-%dT%H:%M:%S")
+    assert last_run["last_run_notable_users"] == "2025-07-15T23:18:43.123456"
 
 
 @pytest.mark.parametrize(

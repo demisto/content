@@ -36,18 +36,18 @@ Search for stolen credit card number
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| card_number | Credit card number to search. | Required | 
-| page_size | Number of vendors that should appear on each page. Each page of data will have at most this many vendors. | Optional | 
-| page | 1-indexed page number to get a particular page of results. | Optional | 
+| card_number | Credit card number to search. | Required |
+| page_size | Number of vendors that should appear on each page. Each page of data will have at most this many vendors. | Optional |
+| page | 1-indexed page number to get a particular page of results. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| USTA.StolenCreditCards.id | Number | The ticket ID of the alert | 
-| USTA.StolenCreditCards.card_number | String | The stolen credit card number | 
-| USTA.StolenCreditCards.expire | String | The expiration date of the stolen credit card | 
-| USTA.StolenCreditCards.created | String | The creation date of the stolen credit card | 
+| USTA.StolenCreditCards.id | Number | The ticket ID of the alert |
+| USTA.StolenCreditCards.card_number | String | The stolen credit card number |
+| USTA.StolenCreditCards.expire | String | The expiration date of the stolen credit card |
+| USTA.StolenCreditCards.created | String | The creation date of the stolen credit card |
 
 ### Command Example
 

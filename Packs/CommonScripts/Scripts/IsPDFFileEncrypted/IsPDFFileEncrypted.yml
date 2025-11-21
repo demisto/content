@@ -18,4 +18,5 @@ scripttarget: 0
 tests:
 - No test
 fromversion: 6.5.0
+deprecated: true
 dockerimage: demisto/readpdf:1.0.0.2034953

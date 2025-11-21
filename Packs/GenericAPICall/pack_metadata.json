@@ -1,0 +1,38 @@
+{
+    "name": "Generic API Call",
+    "description": "Content pack to enable execution of generic API calls to a variety of endpoints outside the scope of other integrations",
+    "support": "community",
+    "currentVersion": "1.0.2",
+    "author": "Josh Levine",
+    "url": "",
+    "email": "xsoar@cantreach.me",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "devEmail": [
+        "xsoar@cantreach.me"
+    ],
+    "githubUser": [
+        "TerminalFIN"
+    ],
+    "supportedModules": [
+        "C1",
+        "C3",
+        "X0",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix",
+        "xsiam",
+        "cloud_posture"
+    ]
+}

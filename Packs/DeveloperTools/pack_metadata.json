@@ -2,7 +2,7 @@
     "name": "Developer Tools",
     "description": "Basic tools for content development.",
     "support": "community",
-    "currentVersion": "1.3.30",
+    "currentVersion": "1.3.36",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -49,6 +49,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

@@ -6,6 +6,7 @@ Cisco ThreatGird integration
 """
 import copy
 import hashlib
+import re
 from collections.abc import Callable, MutableMapping, MutableSequence
 from datetime import datetime
 from typing import (
@@ -199,7 +200,7 @@ class Client(BaseClient):
 
     def upload_sample(
         self,
-        files: dict | None = None,
+        file: str | None = None,
         payload: dict | None = None,
         private: bool | None = None,
         vm: str | None = None,
@@ -207,7 +208,7 @@ class Client(BaseClient):
     ) -> dict[str, Any]:
         """Submits a sample (file or URL) to Malware Analytics for analysis.
         Args:
-            files (dict, optional): File name and path in XSOAR.
+            file (str, optional): File path in XSOAR.
             payload (dict, optional): The URL object.
 
         Returns:
@@ -215,17 +216,20 @@ class Client(BaseClient):
         """
         params = remove_empty_elements({"private": private, "vm": vm, "playbook": playbook})
 
-        # When the sample is a file, send the api_key via the data request
-        if files:
-            demisto.debug("the sample id is a file, added the api_key to data request")
-            if self._headers:
-                self._headers.pop("Authorization")
-            payload = {"api_key": self.api_key, "classify": True}
+        if file:
+            with open(file, "rb") as f:
+                file_dict = {"sample": (os.path.basename(file), f)}
+                return self._http_request(
+                    "POST",
+                    urljoin(API_V2_PREFIX, "samples"),
+                    files=file_dict,
+                    data=payload,
+                    params=params,
+                )
 
         return self._http_request(
             "POST",
             urljoin(API_V2_PREFIX, "samples"),
-            files=files,
             data=payload,
             params=params,
         )
@@ -499,6 +503,27 @@ def search_submission_command(
     )
 
 
+def remove_angle_brackets(response):
+    """
+    Recursively walk through any nested dict or list.
+    If a string value contains a URL wrapped in < >, remove the angle brackets.
+    Necessary to make URL un-clickable.
+    """
+    url_pattern = re.compile(r"<((http[s]?://|www\.)[^>]+)>")
+
+    if isinstance(response, dict):
+        return {k: remove_angle_brackets(v) for k, v in response.items()}
+
+    elif isinstance(response, list):
+        return [remove_angle_brackets(item) for item in response]
+
+    elif isinstance(response, str):
+        return url_pattern.sub(r"\1", response)
+
+    else:
+        return response
+
+
 def search_command(
     client: Client,
     args: dict[str, Any],
@@ -606,14 +631,16 @@ def analysis_sample_command(
     items = response["data"]["items"] if response["data"].get("items") else response["data"]
 
     items_to_display = parse_output(items, url_param) if isinstance(items, dict) else items
+    items_to_display_no_clickable_url = remove_angle_brackets(items_to_display)
 
     response["data"].update({"sample_id": sample_id})
 
     readable_output = tableToMarkdown(
         name="List of samples analysis:",
-        t=items_to_display,
+        t=items_to_display_no_clickable_url,
         headerTransform=string_to_table_header,
     )
+
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'ThreatGrid.{ANALYSIS_OUTPUTS[url_param]["output"]}',
@@ -848,8 +875,8 @@ def upload_sample_command(
         raise ValueError("You must specified file_id or url, not both.")
 
     if file_id:
-        file = parse_file_to_sample(file_id)
-        response = client.upload_sample(files=file, private=private, vm=vm, playbook=playbook)
+        file_path = demisto.getFilePath(file_id)["path"]
+        response = client.upload_sample(file=file_path, private=private, vm=vm, playbook=playbook)
     else:
         payload = {"url": url}
         response = client.upload_sample(payload=payload, private=private, vm=vm, playbook=playbook)
@@ -913,10 +940,11 @@ def get_sample_command(
         return fileResult(filename=f"{sample_id}-{artifact}", data=response)
     else:
         sample_details = dict_safe_get(response, ["data", "items"]) or response.get("data")  # type: ignore[assignment]
+    sample_details_no_clickable_url = remove_angle_brackets(sample_details)
 
     readable_output = tableToMarkdown(
         name=SAMPLE_ARGS[arg_name]["name"],
-        t=sample_details,
+        t=sample_details_no_clickable_url,
         metadata=pagination_message,
         headerTransform=string_to_table_header,
     )
@@ -1496,22 +1524,6 @@ def parse_output(
             ANALYSIS_OUTPUTS[analysis_arg]["keys_to_delete"],
         )
     return items_to_display
-
-
-def parse_file_to_sample(file_id: str) -> dict[str, Any]:
-    """Open file to send data to API.
-
-    Args:
-        file_id (str): The file ID.
-
-    Returns:
-        Dict[str, Any]: Dict with file data.
-    """
-    file_data = demisto.getFilePath(file_id)
-    file_name = file_data["name"]
-    with open(file_data["path"], "rb") as f:
-        file = {"sample": (file_name, f.read())}
-    return file
 
 
 def get_arg_from_command_name(

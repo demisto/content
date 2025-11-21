@@ -12,8 +12,18 @@ import html
 import panos.errors
 
 from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
-from panos.panorama import Panorama, DeviceGroup, Template, PanoramaCommitAll
-from panos.policies import Rulebase, PreRulebase, PostRulebase, SecurityRule, NatRule
+from panos.panorama import Panorama, DeviceGroup, Template, TemplateStack, PanoramaCommitAll
+from panos.policies import (
+    Rulebase,
+    PreRulebase,
+    PostRulebase,
+    SecurityRule,
+    NatRule,
+    ApplicationOverride,
+    AuthenticationRule,
+    DecryptionRule,
+    PolicyBasedForwarding,
+)
 from panos.objects import (
     LogForwardingProfile,
     LogForwardingProfileMatchList,
@@ -78,6 +88,12 @@ DEVICE_GROUP_ARG_NAME = "device-group"
 XPATH_OBJECTS = ""
 
 XPATH_RULEBASE = ""
+
+# op commands for run_op_command
+SHOW_LOCAL_CERTS = "request certificate show"
+SHOW_CONFIG_RUNNING = "show config running"
+SHOW_CONFIG_PUSHED_TEMPLATE = "show config pushed-template"
+PREDEFINED_CERTS_XPATH = "/config/predefined/certificate"
 
 # pan-os-python device timeout value, in seconds
 DEVICE_TIMEOUT = 120
@@ -149,15 +165,25 @@ PAN_OS_ERROR_DICT = {
     "22": "Session timed out - The session for this query timed out.",
 }
 OBJ_NOT_FOUND_ERR = "Object was not found"
-# was taken from here: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Cm5hCAC
+# was taken from here: https://docs.paloaltonetworks.com/advanced-url-filtering/administration/url-filtering-basics/url-categories
 PAN_DB_URL_FILTERING_CATEGORIES = {
     "abortion",
     "abused-drugs",
     "adult",
+    "ai-code-assistant",
+    "ai-conversational-assistant",
+    "ai-data-and-workflow-optimizer",
+    "ai-media-service",
+    "ai-meeting-assistant",
+    "ai-platform-service",
+    "ai-website-generator",
+    "ai-writing-assistant",
     "alcohol-and-tobacco",
+    "artificial-intelligence",
     "auctions",
     "business-and-economy",
     "command-and-control",
+    "compromised-website",
     "computer-and-internet-info",
     "content-delivery-networks",
     "copyright-infringement",
@@ -165,6 +191,7 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     "dating",
     "dynamic-dns",
     "educational-institutions",
+    "encrypted-dns",
     "entertainment-and-arts",
     "extremism",
     "financial-services",
@@ -182,6 +209,7 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     "job-search",
     "legal",
     "malware",
+    "marijuana",
     "military",
     "motor-vehicles",
     "music",
@@ -201,6 +229,8 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     "recreation-and-hobbies",
     "reference-and-research",
     "religion",
+    "remote-access",
+    "scanning-activity",
     "search-engines",
     "sex-education",
     "shareware-and-freeware",
@@ -246,12 +276,53 @@ CHARACTERISTICS_LIST = (
 
 RULE_TYPES_MAP = {"Security Rule": "security", "NAT Rule": "nat", "PBF Rule": "pbf"}
 
+# Map rulebase types to their corresponding class implementations
+Rulebase_to_ClassType_Map = {
+    "security": SecurityRule,
+    "application-override": ApplicationOverride,
+    "authentication": AuthenticationRule,
+    "decryption": DecryptionRule,
+    "nat": NatRule,
+    "pbf": PolicyBasedForwarding,
+}
+
+# Map rulebase types to the Context prefix to use when returning command results for rule changes.
+Rulebase_to_ContextPrefix_Map = {
+    "security": "SecurityRule",
+    "decryption": "SSLRule",
+    "nat": "NAT",
+    "pbf": "PBF",
+    "authentication": "AuthRule",
+    "application-override": "AppOverride",
+}
+
+
+# Map Panorama rule positions to their corresponding class implementations
+Pre_Post_to_ClassType_Map = {"pre-rulebase": PreRulebase, "post-rulebase": PostRulebase}
+
 
 class ExceptionCommandType(enum.Enum):
     ADD = "set"
     EDIT = "edit"
     DELETE = "delete"
     LIST = "get"
+
+
+class DynamicUpdateType(enum.Enum):
+    """Enum for dynamic update types to download/install"""
+
+    APP_THREAT = "content"
+    ANTIVIRUS = "anti-virus"
+    WILDFIRE = "wildfire"
+    GP = "global-protect-clientless-vpn"
+
+
+DynamicUpdateContextPrefixMap = {
+    DynamicUpdateType.APP_THREAT: "Content",
+    DynamicUpdateType.ANTIVIRUS: "AntiVirus",
+    DynamicUpdateType.WILDFIRE: "WildFire",
+    DynamicUpdateType.GP: "GP",
+}
 
 
 class QueryMap(TypedDict):
@@ -516,6 +587,12 @@ def http_request(
             raise Exception("Request Failed.\n" + str(json_result["response"]))
 
     return json_result
+
+
+def convert_to_list(obj: Any):
+    if isinstance(obj, list):
+        return obj
+    return [obj]
 
 
 def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
@@ -2176,10 +2253,10 @@ def panorama_edit_address_group_command(args: dict):
                 "Please specify exactly one of the following: element_to_add, element_to_remove."
             )
         address_group_prev = panorama_get_address_group(address_group_name)
-        address_group_list: List[str] = []
-        if "static" in address_group_prev:
-            if address_group_prev["static"]:
-                address_group_list = argToList(address_group_prev["static"]["member"])
+        address_group_list: list[str] = [
+            (address["#text"] if isinstance(address, dict) else address)  # in pan-os versions >11 the "address" var is a dict
+            for address in convert_to_list(dict_safe_get(address_group_prev, ["static", "member"], []))
+        ]
         if element_to_add:
             addresses = list(set(element_to_add + address_group_list))
         else:
@@ -4031,6 +4108,9 @@ def build_audit_comment_cmd(xpath, audit_comment, xml_type="set") -> str:
     """
     Builds up the needed `cmd` param to get or update the audit comment of a policy rule.
     """
+    audit_comment = html.escape(
+        html.escape(audit_comment)
+    )  # special characters need to be escaped twice to be properly stored on PANOS side.
     if xml_type == "set":
         return f"<set><audit-comment><xpath>{xpath}</xpath><comment>{audit_comment}</comment></audit-comment></set>"
     elif xml_type == "show":
@@ -4109,33 +4189,6 @@ def panorama_edit_rule_command(args: dict):
                 "EntryContext": {"Panorama.SecurityRule(val.Name == obj.Name)": rule_output},
             }
         )
-
-
-@logger
-def panorama_delete_rule_command(rulename: str):
-    """
-    Delete a security rule
-    """
-    params = {"type": "config", "action": "delete", "key": API_KEY}
-    if DEVICE_GROUP:
-        if not PRE_POST:
-            raise Exception("Please provide the pre_post argument when moving a rule in Panorama instance.")
-        else:
-            params["xpath"] = XPATH_SECURITY_RULES + PRE_POST + "/security/rules/entry" + "[@name='" + rulename + "']"
-    else:
-        params["xpath"] = XPATH_SECURITY_RULES + "[@name='" + rulename + "']"
-
-    result = http_request(URL, "POST", body=params)
-
-    return_results(
-        {
-            "Type": entryTypes["note"],
-            "ContentsFormat": formats["json"],
-            "Contents": result,
-            "ReadableContentsFormat": formats["text"],
-            "HumanReadable": "Rule deleted successfully.",
-        }
-    )
 
 
 @logger
@@ -6509,10 +6562,21 @@ def panorama_show_device_version_command(target: Optional[str] = None):
 
 
 @logger
-def panorama_download_latest_content_update_content(target: Optional[str] = None):
+def panorama_check_latest_dynamic_update_content(update_type: DynamicUpdateType, target: Optional[str] = None) -> Dict:
+    """panorama_check_latest_dynamic_update_content Check for available firewall Dyanmic Update items.
+
+    Run API call to request the firewall to check update servers for all available Dynamic Update items of the given type.
+
+    Args:
+        update_type (DynamicUpdateType): The type of dynamic update item to check for.
+        target (Optional[str], optional): The serial number of a firewall to proxy through Panorama to.
+
+    Returns:
+        Dict: Dictionary containing firewall API response.
+    """
     params = {
         "type": "op",
-        "cmd": "<request><content><upgrade><download><latest/></download></upgrade></content></request>",
+        "cmd": f"<request><{update_type.value}><upgrade><check/></upgrade></{update_type.value}></request>",
         "key": API_KEY,
     }
     if target:
@@ -6523,35 +6587,160 @@ def panorama_download_latest_content_update_content(target: Optional[str] = None
     return result
 
 
-def panorama_download_latest_content_update_command(args: dict):
+def panorama_check_latest_dynamic_update_command(args: dict):
     """
-    Download content and show message in war room
+    Check latest available versions of dynamic updates for App/Threat, Antivirus, WildFire, and GP Clientless VPN
     """
-    target = args.get("target", None)
-    if DEVICE_GROUP and not target:
-        raise Exception("Download latest content is only supported on Firewall (not Panorama).")
+    target = args.get("target")
+    outdated_item_count = 0
+    outputs = {}
 
-    result = panorama_download_latest_content_update_content(target)
+    if not VSYS and not target:
+        # When the VSYS param is not set it meams that this is a panorama instance -> user must specify a target FW
+        raise DemistoException(
+            f"When running from a Panorama instance, you must specify the target argument. "
+            f"Set target to the serial number of the Panorama-managed firewall you want to check updates for."
+        )
 
-    if "result" in result["response"]:
-        # download has been given a jobid
-        download_status_output = {"JobID": result["response"]["result"]["job"], "Status": "Pending"}
-        entry_context = {"Panorama.Content.Download(val.JobID == obj.JobID)": download_status_output}
-        human_readable = tableToMarkdown("Content download:", download_status_output, ["JobID", "Status"], removeNull=True)
+    for update_type in DynamicUpdateType:
+        # Call firewall API to check for the latest available update of each type
+        try:
+            result = panorama_check_latest_dynamic_update_content(update_type, target)
 
-        return_results(
+            if "result" in result["response"] and result["response"]["@status"] == "success":
+                versions = result.get("response", {}).get("result", {}).get("content-updates", {}).get("entry", [])
+                if not versions:  # firewall probably doesn't have app/threat or Antivirus or WildFire or GP installed
+                    demisto.debug(f"No available updates (Firewall probably doesn't have any {update_type.value} installed).")
+
+                # Ensure versions is a list even if there's only one entry
+                if not isinstance(versions, list):
+                    versions = [versions]
+
+                latest_version = {}
+                current_version = {}
+                latest_version_parts = (0, 0)
+
+                # Identify the latest available version and what is currently installed
+                for entry in versions:
+                    # Find current version
+                    if entry.get("current") == "yes" or entry.get("installing") == "yes":
+                        current_version = entry
+
+                    # Parse version parts as integers for proper comparison
+                    version_str = entry.get("version", "")
+                    if "-" in version_str:
+                        major, minor = version_str.split("-")
+                        version_parts = (int(major), int(minor))
+
+                        # Check if this is the latest version
+                        if version_parts > latest_version_parts:
+                            latest_version_parts = version_parts
+                            latest_version = entry
+
+                # Check if currently installed is the most recent available
+                is_up_to_date = False
+                if current_version and latest_version:
+                    is_up_to_date = current_version.get("version") == latest_version.get("version")
+
+                context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
+
+                if not is_up_to_date:
+                    outdated_item_count += 1
+
+                # Add both latest and current versions to the output
+                outputs[context_prefix] = {
+                    "LatestAvailable": latest_version,
+                    "CurrentlyInstalled": current_version,
+                    "IsUpToDate": is_up_to_date,
+                }
+            else:
+                # Raise error if API call failed
+                raise DemistoException(
+                    f"Failed to retrieve dynamic update information for {update_type.value}.\nAPI response:\n"
+                    f"{result['response']['msg']}"
+                )
+        except Exception as e:
+            if "There is no Global Protext Gateway license on the box" in str(e):
+                outputs["GP"] = {
+                    "LatestAvailable": {
+                        "version": "An Error received from Panorama API: 'There is no Global Protect Gateway license on the box.'"
+                    },
+                    "CurrentlyInstalled": {},
+                    "IsUpToDate": False,
+                }
+                continue
+            elif "There is not wildfire license on the box" in str(e):
+                outputs["WILDFIRE"] = {
+                    "LatestAvailable": {
+                        "version": "An Error received from Panorama API: 'There is not wildfire license on the box.'"
+                    },
+                    "CurrentlyInstalled": {},
+                    "IsUpToDate": False,
+                }
+                continue
+            else:
+                raise e
+
+    outputs["ContentTypesOutOfDate"] = {"Count": outdated_item_count}
+
+    # Create summary table for human-readable output
+    summary_table = []
+    for update_type, data in outputs.items():
+        # Skip the ContentTypesOutOfDate counter
+        if update_type == "ContentTypesOutOfDate":
+            continue
+
+        summary_table.append(
             {
-                "Type": entryTypes["note"],
-                "ContentsFormat": formats["json"],
-                "Contents": result,
-                "ReadableContentsFormat": formats["markdown"],
-                "HumanReadable": human_readable,
-                "EntryContext": entry_context,
+                "Update Type": update_type,
+                "Is Up To Date": "True" if data["IsUpToDate"] else "False",
+                "Latest Available Version": data["LatestAvailable"].get("version", "N/A"),  # type: ignore[attr-defined]
+                "Currently Installed Version": data["CurrentlyInstalled"].get("version", "N/A"),  # type: ignore[attr-defined]
             }
         )
-    else:
-        # no download took place
-        return_results(result["response"]["msg"])
+
+    # Add the outdated count as a footer in the table markdown
+    summary_markdown = tableToMarkdown(
+        "Dynamic Update Status Summary",
+        summary_table,
+        headers=["Update Type", "Is Up To Date", "Latest Available Version", "Currently Installed Version"],
+    )
+
+    summary_markdown += f"\n\n**Total Content Types Outdated: {outdated_item_count}**"
+
+    command_results = CommandResults(
+        outputs_prefix="Panorama.DynamicUpdates",
+        outputs=outputs,
+        readable_output=summary_markdown,
+    )
+
+    return_results(command_results)
+
+
+@logger
+def panorama_download_latest_dynamic_update_content(update_type: DynamicUpdateType, target: Optional[str] = None) -> Dict:
+    """panorama_download_latest_dynamic_update_content Download the latest available firewall Dynamic Update item.
+
+    Run API call to download the latest available Dynamic Update item of the given type.
+
+    Args:
+        update_type (DynamicUpdateType):  The type of dynamic update item to download.
+        target (Optional[str], optional):  The serial number of a firewall to proxy through Panorama to.
+
+    Returns:
+        Dict: Dictionary containing firewall API response.
+    """
+    params = {
+        "type": "op",
+        "cmd": f"<request><{update_type.value}><upgrade><download><latest/></download></upgrade></{update_type.value}></request>",
+        "key": API_KEY,
+    }
+    if target:
+        params["target"] = target
+
+    result = http_request(URL, "POST", body=params)
+
+    return result
 
 
 @logger
@@ -6565,11 +6754,131 @@ def panorama_content_update_download_status(target: str, job_id: str):
     return result
 
 
-def panorama_content_update_download_status_command(args: dict):
+@logger
+def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateType, args: dict):
     """
-    Check jobID of content update download status
+    Download dynamic update of the given type, poll for status, and return details to war room & context
     """
-    target = str(args["target"]) if "target" in args else None
+    target = args.get("target")
+    job_id = args.get("job_id")
+    entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
+    polling = argToBoolean(args.get("polling", "true"))
+
+    # Map update type to command name
+    command_map = {
+        "APP_THREAT": "pan-os-download-latest-content-update",
+        "ANTIVIRUS": "pan-os-download-latest-antivirus-update",
+        "WILDFIRE": "pan-os-download-latest-wildfire-update",
+        "GP": "pan-os-download-latest-gp-update",
+    }
+    command_to_run = command_map.get(update_type.name, "")
+
+    if not job_id:
+        # Initiate new download job
+        if DEVICE_GROUP and not target:
+            raise Exception("Download latest content is only supported on Firewall (not Panorama).")
+
+        result = panorama_download_latest_dynamic_update_content(update_type, target)
+
+        if "result" in result["response"] and result["response"]["@status"] == "success":
+            # Download has been given a job ID
+            job_id = result["response"]["result"]["job"]
+
+            entry_context = {"JobID": job_id, "Status": "Pending"}
+
+            if not polling:
+                # Return result immediately if polling is not enabled
+                command_results = CommandResults(
+                    readable_output=f"Content download JobID {job_id} started on device {target}.",
+                    outputs={f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": entry_context},
+                )
+
+            else:
+                # Polling is enabled - schedule command to check download status
+                args["job_id"] = job_id
+                scheduled_command = ScheduledCommand(
+                    command=command_to_run,
+                    next_run_in_seconds=10,
+                    args=args,
+                    timeout_in_seconds=300,
+                )
+
+                command_results = CommandResults(
+                    scheduled_command=scheduled_command,
+                    readable_output=f"Content download JobID {job_id} started on device {target}. Status will be checked shortly.",
+                    outputs={f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": entry_context},
+                )
+
+            return_results(command_results)
+
+        else:
+            # No download took place
+            return_results(result["response"]["msg"])
+    else:
+        # Check status of existing job
+        result = panorama_content_update_download_status(target, job_id)
+
+        job_result = result["response"]["result"]["job"]
+
+        content_download_status = {"JobID": job_result["id"]}
+
+        # Determine job status
+        if job_result["status"] in ["FIN", "ACT", "FAIL"]:
+            status_res = job_result["result"]
+            if status_res == "OK":
+                content_download_status["Status"] = "Completed"
+            elif status_res == "FAIL":
+                content_download_status["Status"] = "Failed"
+            elif status_res == "PEND":
+                content_download_status["Status"] = "Pending"
+            content_download_status["Details"] = job_result
+
+        if job_result["status"] == "PEND":
+            content_download_status["Status"] = "Pending"
+
+        if content_download_status.get("Status") == "Pending":
+            # Schedule another status check
+            args["job_id"] = job_id
+            scheduled_command = ScheduledCommand(
+                command=command_to_run,
+                next_run_in_seconds=10,
+                args=args,
+                timeout_in_seconds=300,
+            )
+
+            command_results = CommandResults(
+                scheduled_command=scheduled_command,
+                readable_output=f"Dynamic Update download JobID {job_id} still running on device {target}. Status will be checked shortly.",
+            )
+
+            return_results(command_results)
+        else:
+            # Job is complete, return final status
+            entry_context = {f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": content_download_status}
+            human_readable = tableToMarkdown(
+                f"{entry_context_prefix} update download status:",
+                content_download_status,
+                ["JobID", "Status", "Details"],
+                removeNull=True,
+            )
+
+            return_results(
+                {
+                    "Type": entryTypes["note"],
+                    "ContentsFormat": formats["json"],
+                    "Contents": result,
+                    "ReadableContentsFormat": formats["markdown"],
+                    "HumanReadable": human_readable,
+                    "EntryContext": entry_context,
+                }
+            )
+
+
+def panorama_dynamic_update_download_status_command(update_type: DynamicUpdateType, args: dict):
+    """
+    Check jobID of dynamic update download status
+    """
+    target = str(args["target"]) if "target" in args else ""
     if DEVICE_GROUP and not target:
         raise Exception("Content download status is only supported on Firewall (not Panorama).")
     job_id = args["job_id"]
@@ -6589,9 +6898,13 @@ def panorama_content_update_download_status_command(args: dict):
     if result["response"]["result"]["job"]["status"] == "PEND":
         content_download_status["Status"] = "Pending"
 
-    entry_context = {"Panorama.Content.Download(val.JobID == obj.JobID)": content_download_status}
+    entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
+    entry_context = {f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": content_download_status}
     human_readable = tableToMarkdown(
-        "Content download status:", content_download_status, ["JobID", "Status", "Details"], removeNull=True
+        f"{entry_context_prefix} update download status:",
+        content_download_status,
+        ["JobID", "Status", "Details"],
+        removeNull=True,
     )
 
     return_results(
@@ -6607,10 +6920,21 @@ def panorama_content_update_download_status_command(args: dict):
 
 
 @logger
-def panorama_install_latest_content_update(target: str):
+def panorama_install_latest_dynamic_update(update_type: DynamicUpdateType, target: str) -> Dict:
+    """panorama_install_latest_dynamic_update Install the latest available firewall Dynamic Update item.
+
+    Run API call to install the latest available Dynamic Update item of the given type.
+
+    Args:
+        update_type (DynamicUpdateType): The type of dynamic update item to install.
+        target (str): The serial number of a firewall to proxy through Panorama to.
+
+    Returns:
+        Dict: Dictionary containing firewall API response.
+    """
     params = {
         "type": "op",
-        "cmd": "<request><content><upgrade><install><version>latest</version></install></upgrade></content></request>",
+        "cmd": f"<request><{update_type.value}><upgrade><install><version>latest</version></install></upgrade></{update_type.value}></request>",
         "key": API_KEY,
     }
     if target:
@@ -6618,33 +6942,6 @@ def panorama_install_latest_content_update(target: str):
     result = http_request(URL, "GET", params=params)
 
     return result
-
-
-def panorama_install_latest_content_update_command(target: Optional[str] = None):
-    """
-    Check jobID of content content install status
-    """
-    result = panorama_install_latest_content_update(target)
-
-    if "result" in result["response"]:
-        # installation has been given a jobid
-        content_install_info = {"JobID": result["response"]["result"]["job"], "Status": "Pending"}
-        entry_context = {"Panorama.Content.Install(val.JobID == obj.JobID)": content_install_info}
-        human_readable = tableToMarkdown("Result:", content_install_info, ["JobID", "Status"], removeNull=True)
-
-        return_results(
-            {
-                "Type": entryTypes["note"],
-                "ContentsFormat": formats["json"],
-                "Contents": result,
-                "ReadableContentsFormat": formats["markdown"],
-                "HumanReadable": human_readable,
-                "EntryContext": entry_context,
-            }
-        )
-    else:
-        # no content install took place
-        return_results(result["response"]["msg"])
 
 
 @logger
@@ -6656,7 +6953,128 @@ def panorama_content_update_install_status(target: str, job_id: str):
     return result
 
 
-def panorama_content_update_install_status_command(args: dict):
+@logger
+def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateType, args: dict):
+    """
+    Install latest downloaded dynamic update of the given type, poll for status, and return details to war room & context
+    """
+    target = args.get("target")
+    job_id = args.get("job_id")
+    entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
+    polling = argToBoolean(args.get("polling", "true"))
+
+    # Map update type to command name
+    command_map = {
+        "APP_THREAT": "pan-os-install-latest-content-update",
+        "ANTIVIRUS": "pan-os-install-latest-antivirus-update",
+        "WILDFIRE": "pan-os-install-latest-wildfire-update",
+        "GP": "pan-os-install-latest-gp-update",
+    }
+    command_to_run = command_map.get(update_type.name, "")
+
+    if not job_id:
+        # Initiate installation job
+        if DEVICE_GROUP and not target:
+            raise Exception("Install latest content is only supported on Firewall (not Panorama).")
+
+        result = panorama_install_latest_dynamic_update(update_type, target)
+
+        if "result" in result["response"] and result["response"]["@status"] == "success":
+            # installation has been given a jobid
+            job_id = result["response"]["result"]["job"]
+
+            entry_context = {"JobID": job_id, "Status": "Pending"}
+
+            if not polling:
+                # Return result immediately if polling is not enabled
+                command_results = CommandResults(
+                    readable_output=f"Content install JobID {job_id} started on device {target}.",
+                    outputs={f"Panorama.{entry_context_prefix}.Install(val.JobID == obj.JobID)": entry_context},
+                )
+
+            else:
+                # Polling is enabled - schedule command to check download status
+                # Schedule command to check install status
+                args["job_id"] = job_id
+                scheduled_command = ScheduledCommand(
+                    command=command_to_run,
+                    next_run_in_seconds=10,
+                    args=args,
+                    timeout_in_seconds=300,
+                )
+
+                command_results = CommandResults(
+                    scheduled_command=scheduled_command,
+                    readable_output=f"Content install JobID {job_id} started on device {target}. Status will be checked shortly.",
+                    outputs={f"Panorama.{entry_context_prefix}.Install(val.JobID == obj.JobID)": entry_context},
+                )
+
+            return_results(command_results)
+
+        else:
+            # no content install took place
+            return_results(result["response"]["msg"])
+
+    else:
+        # Check status of existing job
+        result = panorama_content_update_install_status(target, job_id)
+        job_result = result["response"]["result"]["job"]
+
+        content_install_status = {"JobID": job_result["id"]}
+
+        # Determine job status
+        if job_result["status"] in ["FIN", "ACT", "FAIL"]:
+            status_res = job_result["result"]
+            if status_res == "OK":
+                content_install_status["Status"] = "Completed"
+            elif status_res == "FAIL":
+                content_install_status["Status"] = "Failed"
+            elif status_res == "PEND":
+                content_install_status["Status"] = "Pending"
+            content_install_status["Details"] = job_result
+
+        if job_result["status"] == "PEND":
+            content_install_status["Status"] = "Pending"
+
+        if content_install_status.get("Status") == "Pending":
+            # Schedule another status check
+            args["job_id"] = job_id
+            scheduled_command = ScheduledCommand(
+                command=command_to_run,
+                next_run_in_seconds=10,
+                args=args,
+                timeout_in_seconds=300,
+            )
+
+            command_results = CommandResults(
+                scheduled_command=scheduled_command,
+                readable_output=f"Dynamic Update install JobID {job_id} still running on device {target}. Status will be checked shortly.",
+            )
+
+            return_results(command_results)
+        else:
+            # Job is complete, return final status
+            entry_context = {f"Panorama.{entry_context_prefix}.Install(val.JobID == obj.JobID)": content_install_status}
+            human_readable = tableToMarkdown(
+                f"{entry_context_prefix} update install status:",
+                content_install_status,
+                ["JobID", "Status", "Details"],
+                removeNull=True,
+            )
+
+            return_results(
+                {
+                    "Type": entryTypes["note"],
+                    "ContentsFormat": formats["json"],
+                    "Contents": result,
+                    "ReadableContentsFormat": formats["markdown"],
+                    "HumanReadable": human_readable,
+                    "EntryContext": entry_context,
+                }
+            )
+
+
+def panorama_dynamic_update_install_status_command(update_type: DynamicUpdateType, args: dict):
     """
     Check jobID of content update install status
     """
@@ -6679,9 +7097,11 @@ def panorama_content_update_install_status_command(args: dict):
     if result["response"]["result"]["job"]["status"] == "PEND":
         content_install_status["Status"] = "Pending"
 
-    entry_context = {"Panorama.Content.Install(val.JobID == obj.JobID)": content_install_status}
+    entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
+
+    entry_context = {f"Panorama.{entry_context_prefix}.Install(val.JobID == obj.JobID)": content_install_status}
     human_readable = tableToMarkdown(
-        "Content install status:", content_install_status, ["JobID", "Status", "Details"], removeNull=True
+        f"{entry_context_prefix} install status:", content_install_status, ["JobID", "Status", "Details"], removeNull=True
     )
     return_results(
         {
@@ -8764,7 +9184,21 @@ class BestPractices:
     SPYWARE_BLOCK_SEVERITIES = ["critical", "high"]
     VULNERABILITY_ALERT_THRESHOLD = ["medium", "low"]
     VULNERABILITY_BLOCK_SEVERITIES = ["critical", "high"]
-    URL_BLOCK_CATEGORIES = ["command-and-control", "hacking", "malware", "phishing"]
+    URL_BLOCK_CATEGORIES = [
+        "abused-drugs",
+        "adult",
+        "command-and-control",
+        "compromised-website",
+        "gambling",
+        "grayware",
+        "hacking",
+        "malware",
+        "phishing",
+        "questionable",
+        "ransomware",
+        "scanning-activity",
+        "weapons",
+    ]
 
 
 # pan-os-python new classes
@@ -9017,7 +9451,7 @@ class Topology:
             if connected == "yes":
                 new_firewall_object = Firewall(serial=serial_number)
                 device.add(new_firewall_object)
-                self.add_device_object(new_firewall_object)
+                self.add_device_object(new_firewall_object, getting_children=True)
                 ha_peer_serial_element = device_entry.find("./ha/peer/serial")
                 ha_peer_serial = None
                 if ha_peer_serial_element is not None and hasattr(ha_peer_serial_element, "text"):
@@ -9039,13 +9473,14 @@ class Topology:
         else:
             self.ha_pair_serials = ha_pair_dict
 
-    def add_device_object(self, device: Union[PanDevice, Panorama, Firewall]):
+    def add_device_object(self, device: Union[PanDevice, Panorama, Firewall], getting_children: bool = False):
         """
         Given a PANdevice device object, works out how to add it to this Topology instance.
         Firewalls get added directly to the object. If `device` is Panorama, then it's queried for all
         connected Firewalls, which are then also added to the object.
         This function also checks the HA state of all firewalls using the Panorama output.
         :param device: Either Panorama or Firewall Pandevice instance
+        :param getting_children: Whether this is being called while enumerating connected devices from a Panorama instance
         """
         if isinstance(device, Panorama):
             serial_number_or_hostname = device.serial if device.serial else device.hostname
@@ -9090,6 +9525,59 @@ class Topology:
             return
 
         elif isinstance(device, Firewall):
+            # Check HA state for directly connected Firewall devices
+            serial_number = device.serial
+
+            # Only proceed to get device HA state data if this method is not called during enumeration of Panorama child devices
+            if not getting_children:
+                try:
+                    firewall_ha_state_result = run_op_command(device, "show high-availability state")
+                    enabled = firewall_ha_state_result.find("./result/enabled")
+
+                    if enabled is not None:
+                        if enabled.text == "yes":
+                            # HA is enabled on this firewall
+                            try:
+                                state = find_text_in_element(firewall_ha_state_result, "./result/group/local-info/state")
+                                peer_serial = None
+
+                                # Try to get peer serial number
+                                try:
+                                    peer_serial = find_text_in_element(
+                                        firewall_ha_state_result, "./result/group/peer-info/serial-num"
+                                    )
+                                except LookupError:
+                                    # If serial not available, try getting peer IP as fallback
+                                    try:
+                                        peer_serial = find_text_in_element(
+                                            firewall_ha_state_result, "./result/group/peer-info/mgmt-ip"
+                                        )
+                                    except LookupError:
+                                        peer_serial = None
+
+                                if "active" in state:
+                                    self.ha_active_devices[serial_number] = peer_serial
+                                    if peer_serial:
+                                        self.ha_pair_serials[serial_number] = peer_serial
+                                        self.ha_pair_serials[peer_serial] = serial_number
+                                else:
+                                    # This is a passive device, mark the peer as active if we have it
+                                    if peer_serial:
+                                        self.ha_active_devices[peer_serial] = serial_number
+                                        self.ha_pair_serials[serial_number] = peer_serial
+                                        self.ha_pair_serials[peer_serial] = serial_number
+
+                            except LookupError:
+                                # Could not determine HA state, treat as standalone
+                                self.ha_active_devices[serial_number] = "STANDALONE"
+                    else:
+                        # HA is not enabled, treat as standalone
+                        self.ha_active_devices[serial_number] = "STANDALONE"
+
+                except Exception:
+                    # If we can't query HA state, treat as standalone
+                    self.ha_active_devices[serial_number] = "STANDALONE"
+
             self.firewall_objects[device.serial] = device
             return
 
@@ -9255,8 +9743,10 @@ class Topology:
                     )
                 # Set the timeout
                 device.timeout = DEVICE_TIMEOUT
-                topology.add_device_object(device)
+                topology.add_device_object(device, getting_children=False)
             except (panos.errors.PanURLError, panos.errors.PanXapiError, HTTPError) as e:
+                if isinstance(e, panos.errors.PanURLError) and "403" in e.message:
+                    raise Exception("Request Failed. Invalid Credentials.")
                 demisto.debug(f"Failed to connected to {hostname}, {e}")
                 # If a device fails to respond, don't add it to the topology.
 
@@ -9282,7 +9772,7 @@ class Topology:
         # Set the timeout
         device.timeout = DEVICE_TIMEOUT
         topology = cls()
-        topology.add_device_object(device)
+        topology.add_device_object(device, getting_children=False)
 
         topology.username = username
         topology.password = password
@@ -9310,7 +9800,7 @@ class Topology:
         device_filter_string: Optional[str] = None,
         container_name: Optional[str] = None,
         top_level_devices_only: Optional[bool] = False,
-    ) -> List[Tuple[PanDevice, Union[Panorama, Firewall, DeviceGroup, Template, Vsys]]]:
+    ) -> List[Tuple[PanDevice, Union[Panorama, Firewall, DeviceGroup, Template, TemplateStack, Vsys]]]:
         """
         Given a device, returns all the possible configuration containers that can contain objects -
         vsys, device-groups, templates and template-stacks.
@@ -9333,6 +9823,10 @@ class Topology:
             templates = Template.refreshall(device)
             for template in templates:
                 containers.append((device, template))
+
+            template_stacks = TemplateStack.refreshall(device)
+            for template_stack in template_stacks:
+                containers.append((device, template_stack))
 
             virtual_systems = Vsys.refreshall(device)
             for virtual_system in virtual_systems:
@@ -9531,6 +10025,9 @@ class ShowSystemInfoResultData(ResultData):
     :param wildfire_version: Wildfire content version
     :param wildfire_release_date: Wildfire release date
     :param url_filtering_version: URL Filtering content version
+    :param global_protect_client_package_version: GlobalProtect content version
+    :param advanced_routing: Advanced Routing engine feature
+    :param multi_vsys: Virtual System feature
     """
 
     ip_address: str
@@ -9546,6 +10043,8 @@ class ShowSystemInfoResultData(ResultData):
     default_gateway: str = ""
     public_ip_address: str = ""
     hostname: str = ""
+    advanced_routing: str = ""
+    multi_vsys: str = ""
     av_version: str = "not_installed"
     av_release_date: str = "not_installed"
     app_version: str = "not_installed"
@@ -9555,6 +10054,7 @@ class ShowSystemInfoResultData(ResultData):
     wildfire_version: str = "not_installed"
     wildfire_release_date: str = "not_installed"
     url_filtering_version: str = "not_installed"
+    global_protect_client_package_version: str = "0.0.0"
 
 
 @dataclass
@@ -10024,6 +10524,74 @@ class PanosObjectReference(ResultData):
     _title = "PAN-OS Objects"
 
 
+@dataclass
+class ShowRuleHitCountResult:
+    """
+    :param name: The name of the rule.
+    :param vsys: The name of the vsys where the rule is configured.
+    :param rulebase: The rulebase type of the rule.
+    :param instanceName: The name of the Integration Instance running the command
+    :param instanceType: The type of the Integration Instance running the command (panorama or firewall)
+    :param latest:
+    :param hit_count: The number of hits for the rule.
+    :param last_hit_timestamp: Timestmap of the last time the rule was hit.
+    :param last_reset_timestamp: Timestamp of the last time the hit count was reset.
+    :param first_hit_timestamp: Timestamp of the first time the rule was hit.
+    :param rule_creation_timestamp: Timestamp of when the rule was created.
+    :param rule_modification_timestamp: Timestamp of the last time the rule's configuration was modified.
+    :param is_from_panorama: Boolean indicating if the rule is pushed from Panorama (True) or local to firewall (False)
+    """
+
+    hostid: str
+    latest: str
+    hit_count: int
+    last_hit_timestamp: str
+    last_reset_timestamp: str
+    first_hit_timestamp: str
+    rule_creation_timestamp: str
+    rule_modification_timestamp: str
+    instanceName: str = ""
+    instanceType: str = ""
+    name: str = ""
+    vsys: str = ""
+    rulebase: str = ""
+    is_from_panorama: bool = False
+    from_dg_name: str = ""
+    position: str = ""
+
+    _output_prefix = OUTPUT_PREFIX + "RuleHitCount"
+    _title = "PAN-OS Rule Hit Count"
+    _outputs_key_field = "rulebase"
+
+    def __post_init__(self):
+        self.hit_count = int(self.hit_count)
+        self.last_hit_timestamp = self._format_timestamp(self.last_hit_timestamp)
+        self.last_reset_timestamp = self._format_timestamp(self.last_reset_timestamp)
+        self.first_hit_timestamp = self._format_timestamp(self.first_hit_timestamp)
+        self.rule_creation_timestamp = self._format_timestamp(self.rule_creation_timestamp)
+        self.rule_modification_timestamp = self._format_timestamp(self.rule_modification_timestamp)
+
+    def _format_timestamp(self, timestamp):
+        return datetime.fromtimestamp(int(timestamp)).strftime(DATE_FORMAT)
+
+
+@dataclass
+class PushedSharedPolicy:
+    """
+    :param hostid: The serial number of the firewall the pushed policies were found on
+    :param name: The name of the rule
+    :param loc: The device group location of the rule
+    :param position: The rule position (pre-rulebase or post-rulebase)
+    :param policy_type: The rule's policy type (security, nat, etc)
+    """
+
+    hostid: str
+    name: str
+    loc: str
+    position: str = ""
+    policy_type: str = ""
+
+
 def dataclass_from_dict(device: Union[Panorama, Firewall], object_dict: dict, class_type: Callable):
     """
     Given a dictionary and a datacalass, converts the dictionary into the dataclass type.
@@ -10114,7 +10682,7 @@ def resolve_host_id(device: PanDevice):
     return host_id
 
 
-def resolve_container_name(container: Union[Panorama, Firewall, DeviceGroup, Template, Vsys]):
+def resolve_container_name(container: Union[Panorama, Firewall, DeviceGroup, Template, TemplateStack, Vsys]):
     """
     Gets the name of a given PanDevice container or if it's not a container, returns shared.
     :param container: Named container, or device instance
@@ -10187,6 +10755,120 @@ class ConfigurationHygieneFix(ResultData):
 
     _output_prefix = OUTPUT_PREFIX + "ConfigurationHygieneFix"
     _title = "PAN-OS Fixed Configuration Hygiene Issues"
+
+
+@logger
+def panorama_disable_or_delete_rule_command(
+    topology: Topology,
+    operation: str,
+    rulename: str,
+    rulebase: str = "security",
+    pre_post: str = "",
+    target: str = "",
+    vsys: str = "",
+):
+    """
+    Disable or Delete a policy rule from the specified rulebase.
+
+    :param topology: The network topology containing firewall and Panorama objects
+    :param operation: The operation to perform ('delete' or 'disable')
+    :param rulename: Name of the rule to delete or disable
+    :param rulebase: Type of rulebase containing the rule.  Default is "security".
+    :param pre_post: Whether the rule is in pre or post rulebase
+    :param target: Target firewall device
+    :param vsys: Virtual system identifier
+    """
+    # Identify the platform type
+    is_panorama = len(topology.panorama_objects) > 0
+
+    # Identify the pan-os-python class type for the given rulebase
+    rule_class_type = Rulebase_to_ClassType_Map.get(rulebase)
+
+    if rule_class_type is None:
+        raise ValueError(f"Unsupported rulebase type: {rulebase}")
+
+    category = ""
+    applied_action = ""
+    location_description = ""
+
+    if (is_panorama and target) or not is_panorama:
+        # Firewall case - Directly connected to a Firewall, otherwise proxying through Panorama to issue Firewall commands
+        firewall = next(iter(topology.firewalls(target=target)))
+        if vsys:
+            firewall.vsys = vsys
+
+        # Prepare class objects
+        rulebase_object = firewall.add(Rulebase())
+        rule = rule_class_type(name=rulename)
+        rulebase_object.add(rule)
+
+        # Fetch rule details from the device
+        try:
+            rule.refresh()
+        except panos.errors.PanObjectMissing as ex:
+            return_error(f"Rule {rulename} was not found on firewall {target}.")
+
+        category = "Local"
+        location_description = f"firewall {target}"
+
+    elif is_panorama and pre_post and DEVICE_GROUP:
+        # Panorama case - Connected to Panorama and the rule is configured there
+        pre_post = pre_post.replace("_", "-")
+        panorama = next(iter(topology.panorama_devices()))
+
+        # Prepare class objects
+        devicegroup_object = panorama.add(DeviceGroup(name=DEVICE_GROUP))
+        pre_post_class_type = Pre_Post_to_ClassType_Map.get(pre_post)
+
+        if pre_post_class_type is None:
+            raise ValueError(f"Unsupported pre_post value: {pre_post}")
+
+        rulebase_object = devicegroup_object.add(pre_post_class_type())
+        rule = rule_class_type(name=rulename)
+        rulebase_object.add(rule)
+
+        # Fetch rule details from the device
+        try:
+            rule.refresh()
+        except panos.errors.PanObjectMissing as ex:
+            return_error(f"Rule {rulename} was not found on Panorama device group {DEVICE_GROUP} {pre_post}.")
+
+        category = "Panorama"
+        location_description = f"Panorama device group {DEVICE_GROUP} {pre_post}"
+
+    else:
+        return_error(
+            f"Invalid arguments provided. Disabling or deleting rules from Panorama requires device-group and pre_post to be set."
+        )
+
+    # Apply the operation (common to both cases)
+    if operation == "delete":
+        rule.delete()
+        applied_action = "Deleted"
+    elif operation == "disable":
+        rule.disabled = True
+        rule.apply()
+        applied_action = "Disabled"
+
+    # Build outputs (common structure)
+    outputs = {
+        "Panorama.CleanedUpRules": {
+            "Category": category,
+            "RuleName": rulename,
+            "Rulebase": rulebase,
+            "PrePost": pre_post,
+            "DeviceGroup": DEVICE_GROUP,
+            "Target": target,
+            "Vsys": vsys,
+            "AppliedAction": applied_action,
+        }
+    }
+
+    result = CommandResults(
+        readable_output=f"Rule {rulename} was successfully {applied_action.lower()} on {location_description}.", outputs=outputs
+    )
+
+    return_results(result)
 
 
 class HygieneRemediation:
@@ -10641,107 +11323,6 @@ class HygieneLookups:
         return conforming_profiles
 
     @staticmethod
-    def check_vulnerability_profiles(
-        topology: Topology,
-        device_filter_str: Optional[str] = None,
-        minimum_block_severities: Optional[List[str]] = None,
-        minimum_alert_severities: Optional[List[str]] = None,
-    ) -> ConfigurationHygieneCheckResult:
-        """
-        Checks the environment to ensure at least one vulnerability profile is configured according to visibility best practices.
-        The minimum severities can be tweaked to customize what "best practices" is.
-
-        :param topology: `Topology` instance
-        :param device_filter_str: Filter checks to a specific device or devices
-        :param minimum_alert_severities: A string list of severities that MUST be in a alert mode
-        :param minimum_block_severities: A string list of severities that MUST be in block mode
-        """
-
-        if not minimum_block_severities:
-            minimum_block_severities = BestPractices.VULNERABILITY_BLOCK_SEVERITIES
-        if not minimum_alert_severities:
-            minimum_alert_severities = BestPractices.VULNERABILITY_ALERT_THRESHOLD
-
-        conforming_profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]] = []
-        issues = []
-
-        check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-4"])
-
-        # BP-V-4 - Check at least one vulnerability profile exists with the correct settings.
-        for device, container in topology.get_all_object_containers(device_filter_str):
-            vulnerability_profiles: List[VulnerabilityProfile] = VulnerabilityProfile.refreshall(container)
-            conforming_profiles = conforming_profiles + HygieneLookups.get_conforming_threat_profiles(
-                vulnerability_profiles,
-                minimum_block_severities=minimum_block_severities,
-                minimum_alert_severities=minimum_alert_severities,
-            )
-
-        if len(conforming_profiles) == 0:
-            issues.append(
-                ConfigurationHygieneIssue(
-                    hostid="GLOBAL",
-                    container_name="",
-                    description="No conforming vulnerability profiles.",
-                    name="",
-                    issue_code="BP-V-4",
-                )
-            )
-            check = check_register.get("BP-V-4")
-            check.result = UNICODE_FAIL
-            check.issue_count += 1
-
-        return ConfigurationHygieneCheckResult(summary_data=[item for item in check_register.values()], result_data=issues)
-
-    @staticmethod
-    def check_spyware_profiles(
-        topology: Topology,
-        device_filter_str: Optional[str] = None,
-        minimum_block_severities: Optional[List[str]] = None,
-        minimum_alert_severities: Optional[List[str]] = None,
-    ) -> ConfigurationHygieneCheckResult:
-        """
-        Checks the environment to ensure at least one Spyware profile is configured according to visibility best practices.
-        The minimum severities can be tweaked to customize what "best practices" is.
-
-        :param topology: `Topology` instance
-        :param device_filter_str: Filter checks to a specific device or devices
-        :param minimum_alert_severities: A string list of severities that MUST be in a alert mode
-        :param minimum_block_severities: A string list of severities that MUST be in block mode
-        """
-        if not minimum_block_severities:
-            minimum_block_severities = BestPractices.SPYWARE_BLOCK_SEVERITIES
-        if not minimum_alert_severities:
-            minimum_alert_severities = BestPractices.SPYWARE_ALERT_THRESHOLD
-
-        conforming_profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]] = []
-        issues = []
-        check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-5"])
-        # BP-V-5 - Check at least one AS profile exists with the correct settings.
-        for device, container in topology.get_all_object_containers(device_filter_str):
-            spyware_profiles: List[AntiSpywareProfile] = AntiSpywareProfile.refreshall(container)
-            conforming_profiles = conforming_profiles + HygieneLookups.get_conforming_threat_profiles(
-                spyware_profiles,
-                minimum_block_severities=minimum_block_severities,
-                minimum_alert_severities=minimum_alert_severities,
-            )
-
-        if len(conforming_profiles) == 0:
-            issues.append(
-                ConfigurationHygieneIssue(
-                    hostid="GLOBAL",
-                    container_name="",
-                    description="No conforming anti-spyware profiles.",
-                    name="",
-                    issue_code="BP-V-5",
-                )
-            )
-            check = check_register.get("BP-V-5")
-            check.result = UNICODE_FAIL
-            check.issue_count += 1
-
-        return ConfigurationHygieneCheckResult(summary_data=[item for item in check_register.values()], result_data=issues)
-
-    @staticmethod
     def get_conforming_url_filtering_profiles(profiles: List[URLFilteringProfile]) -> List[URLFilteringProfile]:
         """
         Returns the url filtering profiles, if any, that meet current recommended best practices for Visibility.
@@ -10857,41 +11438,6 @@ class HygieneLookups:
         return result
 
     @staticmethod
-    def check_url_filtering_profiles(topology: Topology, device_filter_str: Optional[str] = None):
-        """
-        Checks the configured URL filtering profiles to make sure at least one is configured according to PAN best practices
-        for visibility.
-
-        :param topology: `Topology` Instance
-        :param device_filter_str: Filter checks to a specific device or devices
-        """
-        issues: List[ConfigurationHygieneIssue] = []
-        conforming_profiles: List[URLFilteringProfile] = []
-        check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-6"])
-        # BP-V-6 - Check at least one URL Filtering profile exists with the correct settings.
-        for device, container in topology.get_all_object_containers(device_filter_str):
-            url_filtering_profiles: List[URLFilteringProfile] = URLFilteringProfile.refreshall(container)
-            conforming_profiles = conforming_profiles + HygieneLookups.get_conforming_url_filtering_profiles(
-                url_filtering_profiles
-            )
-
-        if len(conforming_profiles) == 0:
-            issues.append(
-                ConfigurationHygieneIssue(
-                    hostid="GLOBAL",
-                    container_name="",
-                    description="No conforming url-filtering profiles.",
-                    name="",
-                    issue_code="BP-V-6",
-                )
-            )
-            check = check_register.get("BP-V-6")
-            check.result = UNICODE_FAIL
-            check.issue_count += 1
-
-        return ConfigurationHygieneCheckResult(summary_data=[item for item in check_register.values()], result_data=issues)
-
-    @staticmethod
     def check_security_zones(topology: Topology, device_filter_str: Optional[str] = None) -> ConfigurationHygieneCheckResult:
         """
         Check all security zones are configured with Log Forwarding profiles.
@@ -10899,24 +11445,39 @@ class HygieneLookups:
         """
         issues = []
         check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-7"])
-        # This is temporary only look at panorama because PAN-OS-PYTHON doesn't let us tell if a config
-        # is template pushed yet
-        for device, container in topology.get_all_object_containers(device_filter_str, top_level_devices_only=True):
+        # pan-os-python will include Panorama template-pushed zones when checking a Firewall device without indication
+        # where they are actually configured, so we have to check after.
+        for device, container in topology.get_all_object_containers(device_filter_str):
             security_zones: List[Zone] = Zone.refreshall(container)
+
+            if isinstance(device, Firewall):
+                # If this is a Firewall device, get a list of all Template-pushed Zones (if any).
+                pushed_zones = set()
+                pushed_template = run_op_command(device, "show config pushed-template")
+                vsys_entries = pushed_template.findall(".//vsys/entry")
+                for vsys_entry in vsys_entries:
+                    zone_entries = vsys_entry.findall("./zone/entry")
+                    for zone_entry in zone_entries:
+                        pushed_zones.add(zone_entry.get("name"))
+
             for security_zone in security_zones:
-                if not security_zone.log_setting:
-                    issues.append(
-                        ConfigurationHygieneIssue(
-                            hostid=resolve_host_id(device),
-                            container_name=resolve_container_name(container),
-                            description="Security zone has no log forwarding setting.",
-                            name=security_zone.name,
-                            issue_code="BP-V-7",
+                # Skip zone if it's pushed from Panorama template so we accurately represent where it is configured.
+                if isinstance(device, Firewall) and security_zone.name in pushed_zones:
+                    continue
+                else:
+                    if not security_zone.log_setting:
+                        issues.append(
+                            ConfigurationHygieneIssue(
+                                hostid=resolve_host_id(device),
+                                container_name=resolve_container_name(container),
+                                description="Security zone has no log forwarding setting.",
+                                name=security_zone.name,
+                                issue_code="BP-V-7",
+                            )
                         )
-                    )
-                    check = check_register.get("BP-V-7")
-                    check.result = UNICODE_FAIL
-                    check.issue_count += 1
+                        check = check_register.get("BP-V-7")
+                        check.result = UNICODE_FAIL
+                        check.issue_count += 1
 
         return ConfigurationHygieneCheckResult(summary_data=[item for item in check_register.values()], result_data=issues)
 
@@ -10994,6 +11555,106 @@ class HygieneLookups:
                     check = check_register.get("BP-V-10")
                     check.result = UNICODE_FAIL
                     check.issue_count += 1
+
+        return ConfigurationHygieneCheckResult(summary_data=[item for item in check_register.values()], result_data=issues)
+
+    @staticmethod
+    def check_security_profiles(
+        topology: Topology,
+        profile_type: str,
+        device_filter_str: Optional[str] = None,
+        minimum_block_severities: Optional[List[str]] = None,
+        minimum_alert_severities: Optional[List[str]] = None,
+        return_nonconforming_profiles: Optional[bool] = False,
+    ) -> ConfigurationHygieneCheckResult:
+        """
+        Checks the environment to ensure at least one security profile is configured according to visibility best practices.
+
+        :param topology: `Topology` instance
+        :param profile_type: Type of profile to check ('vulnerability', 'spyware', or 'url')
+        :param device_filter_str: Filter checks to a specific device or devices
+        :param minimum_alert_severities: A string list of severities that MUST be in alert mode
+        :param minimum_block_severities: A string list of severities that MUST be in block mode
+        :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
+        """
+        # Configure profile-specific settings
+        if profile_type == "vulnerability":
+            profile_class = VulnerabilityProfile
+            issue_code = "BP-V-4"
+            description_prefix = "Vulnerability"
+            no_conforming_description = "No conforming vulnerability profiles."
+            block_severities = minimum_block_severities or BestPractices.VULNERABILITY_BLOCK_SEVERITIES
+            alert_severities = minimum_alert_severities or BestPractices.VULNERABILITY_ALERT_THRESHOLD
+        elif profile_type == "spyware":
+            profile_class = AntiSpywareProfile
+            issue_code = "BP-V-5"
+            description_prefix = "Spyware"
+            no_conforming_description = "No conforming anti-spyware profiles."
+            block_severities = minimum_block_severities or BestPractices.SPYWARE_BLOCK_SEVERITIES
+            alert_severities = minimum_alert_severities or BestPractices.SPYWARE_ALERT_THRESHOLD
+        elif profile_type == "url":
+            profile_class = URLFilteringProfile
+            issue_code = "BP-V-6"
+            description_prefix = "URL Filtering"
+            no_conforming_description = "No conforming url-filtering profiles."
+            # URL filtering doesn't use these parameters, but we'll keep them for uniformity
+            block_severities = None
+            alert_severities = None
+        else:
+            raise ValueError(f"Unsupported profile_type: {profile_type}. Use 'vulnerability', 'spyware', or 'url'.")
+
+        conforming_profiles = []
+        issues = []
+        check_register = HygieneCheckRegister.get_hygiene_check_register([issue_code])
+
+        # Check all profiles in the topology
+        for device, container in topology.get_all_object_containers(device_filter_str):
+            profiles = profile_class.refreshall(container)
+
+            # Get conforming profiles based on profile type
+            if profile_type == "url":
+                current_conforming_profiles = HygieneLookups.get_conforming_url_filtering_profiles(profiles)
+            else:
+                # Ensure block_severities and alert_severities are not None before passing to get_conforming_threat_profiles
+                block_severities = block_severities if block_severities is not None else []
+                alert_severities = alert_severities if alert_severities is not None else []
+
+                current_conforming_profiles = HygieneLookups.get_conforming_threat_profiles(
+                    profiles,
+                    minimum_block_severities=block_severities,
+                    minimum_alert_severities=alert_severities,
+                )
+
+            conforming_profiles.extend(current_conforming_profiles)
+
+            # Add non-conforming profiles if requested
+            if return_nonconforming_profiles:
+                current_non_conforming_profiles = [profile for profile in profiles if profile not in current_conforming_profiles]
+                for profile in current_non_conforming_profiles:
+                    issues.append(
+                        ConfigurationHygieneIssue(
+                            hostid=resolve_host_id(device),
+                            container_name=resolve_container_name(container),
+                            description=f"{description_prefix} profile is not configured to block/alert on the required severity values.",
+                            name=profile.name,
+                            issue_code=issue_code,
+                        )
+                    )
+
+        # Check if any conforming profiles were found
+        if len(conforming_profiles) == 0:
+            issues.append(
+                ConfigurationHygieneIssue(
+                    hostid="GLOBAL",
+                    container_name="",
+                    description=no_conforming_description,
+                    name="",
+                    issue_code=issue_code,
+                )
+            )
+            check = check_register.get(issue_code)
+            check.result = UNICODE_FAIL
+            check.issue_count += 1
 
         return ConfigurationHygieneCheckResult(summary_data=[item for item in check_register.values()], result_data=issues)
 
@@ -11471,6 +12132,106 @@ class FirewallCommand:
 
         return ShowRoutingRouteCommandResult(summary_data=summary_data, result_data=result_data)
 
+    @staticmethod
+    def get_hitcounts(
+        topology: Topology,
+        cmd: str,
+        rulebase_type: str,
+        no_new_hits_since: datetime | None,
+        device_filter_string: Optional[str] = None,
+        target: Optional[str] = None,
+        unused_only: str = "false",
+    ) -> List[ShowRuleHitCountResult] | None:
+        """
+        Runs the `show rule-hit-count` command.
+        :param topology: `Topology` instance.
+        :param cmd: The XML-formatted command to run on the firewalls.
+        :param rulebase_type: The rulebase being examined
+        :param no_new_hits_since: The datetime object used to filter out rules that haven't had any new hits since that time.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single serial number to target with this command.
+        :param unused_only: Whether only rules with hitcount of 0 should be returned ("true" or "false")
+        """
+        # Initialize empty list to store results to return
+        result_data = []
+
+        # Get the name of the PANOS integration instance
+        instanceName = demisto.callingContext["context"]["IntegrationInstance"]
+
+        # Identify the platform type the PANOS integration instance is connected to
+        instanceType = "panorama" if len(topology.panorama_objects) > 0 else "firewall"
+
+        # Run operational command on each firewall using the given XML command to get rule hitcounts
+        for firewall in topology.firewalls(filter_string=device_filter_string, target=target):
+            demisto.debug(
+                f"Now running operational command to get rule hitcounts.  Command XML: {cmd}\n"
+                f"Device Filter String: {device_filter_string}\nTarget: {target}"
+            )
+            hitcount_response = run_op_command(firewall, cmd=cmd, cmd_xml=False)
+
+            # Get list of vsys entries in the response
+            vsys_entries = hitcount_response.findall("./result/rule-hit-count/vsys/entry")
+
+            # Run operational command on the firewall to fetch policies pushed from Panorama (if any)
+            # Details from this will be used to enhance the returned results.
+            demisto.debug(f"Now running operational command to get Panorama pushed policies")
+            pushed_config_cmd = "<show><config><pushed-shared-policy/></config></show>"
+            pushed_config_response = run_op_command(firewall, cmd=pushed_config_cmd, cmd_xml=False)
+            pushed_rulebases = {}
+            pushed_rulebases["pre_rulebase"] = pushed_config_response.findall(
+                f"./result/policy/panorama/pre-rulebase/{rulebase_type}/rules/entry"
+            )
+            pushed_rulebases["post_rulebase"] = pushed_config_response.findall(
+                f"./result/policy/panorama/post-rulebase/{rulebase_type}/rules/entry"
+            )
+
+            # Create data class items from pushed policy data
+            pushed_rulebase_results = {}
+            for position in ["pre_rulebase", "post_rulebase"]:
+                for pushed_rule in pushed_rulebases[position]:
+                    pushed_rulebase_entry: PushedSharedPolicy = dataclass_from_element(firewall, PushedSharedPolicy, pushed_rule)
+                    pushed_rulebase_entry.policy_type = rulebase_type
+                    pushed_rulebase_entry.position = position
+                    pushed_rulebase_results[pushed_rulebase_entry.name] = pushed_rulebase_entry
+
+            for vsys_entry in vsys_entries:
+                # Get the name of the current vsys entry
+                vsys_name = vsys_entry.get("name", "")
+
+                for rulebase_entry in vsys_entry.findall("./rule-base/entry"):
+                    # Get the name of the current rulebase entry
+                    rulebase_name = rulebase_entry.get("name", "")
+
+                    for rule_entry in rulebase_entry.findall("./rules/entry"):
+                        # Iterate through all rules in the list, formatting them as a data class
+                        ET.SubElement(rule_entry, "instanceName")
+                        result: ShowRuleHitCountResult = dataclass_from_element(firewall, ShowRuleHitCountResult, rule_entry)
+
+                        # Skip rules with hits or no new hits since a given date if those arguments were specified
+                        if (unused_only == "true" and result.hit_count != 0) or (
+                            no_new_hits_since and datetime.strptime(result.last_hit_timestamp, DATE_FORMAT) > no_new_hits_since
+                        ):
+                            continue  # Skip this result if given filter arguments say we should omit it
+
+                        # Add vsys and rulebase, and integration instance names identified from earlier stages
+                        result.vsys = vsys_name
+                        result.rulebase = rulebase_name
+                        result.instanceName = instanceName
+                        result.instanceType = instanceType
+
+                        # Add information about Panorama pushed policy, if any
+                        pushed_rule_entry = pushed_rulebase_results.get(result.name)
+                        if pushed_rule_entry:
+                            result.is_from_panorama = True
+                            result.position = pushed_rule_entry.position
+                            result.from_dg_name = pushed_rule_entry.loc
+
+                        # Add the result to the list of results
+                        result_data.append(result)
+
+        # Return final results
+        return result_data
+
 
 """
 -- XSOAR Specific Code Starts below --
@@ -11702,6 +12463,70 @@ def update_ha_state(topology: Topology, target: str, state: str) -> HighAvailabi
     return FirewallCommand.change_status(topology, hostid=target, state=state)
 
 
+def get_rule_hitcounts(
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+    target: Optional[str] = None,
+    rulebase: str = "security",
+    vsys: str = "all",
+    rules: str = "all",
+    unused_only: str = "false",
+    no_new_hits_since: Optional[str] = None,
+):
+    """
+    Retrieves hit counts for policy rules from the specified firewall or device.
+
+    :param topology: `Topology` instance
+    :param device_filter_string: String to filter to only check given device
+    :param target: ID of host (serial or hostname) to target
+    :param rulebase: Type of rulebase to check (default: security)
+    :param vsys: Virtual system to check, or "all" for all virtual systems
+    :param rules: Comma-separated list of rule names to check, or "all" for all rules
+    :param unused_only: Whether to return only unused rules (default: false)
+    :param no_new_hits_since: Date string in format "YYYY/MM/DD HH:MM:SS" to filter rules with no hits since that time
+    """
+    # Prepare XML ElementTree to add attributes to
+    xml_root = ET.Element("show")
+    xml_rule_hit_count = ET.SubElement(xml_root, "rule-hit-count")
+
+    # Add vsys selection to ElementTree
+    xml_vsys = ET.SubElement(xml_rule_hit_count, "vsys")
+
+    # Function to add rulebase and rule selections to the appropriate parent object
+    def add_rulebase_and_rules(parent):
+        # Add rule-base and rules list to the parent element
+        rulebase_elem = ET.SubElement(parent, "rule-base")
+        rulebase_entry = ET.SubElement(rulebase_elem, "entry", name=rulebase)
+        return ET.SubElement(rulebase_entry, "rules")
+
+    # Add rules argument to ElementTree, adding container attribute for specific rules if needed
+    if vsys == "all":
+        all_vsys = ET.SubElement(xml_vsys, "all")
+        vsys_rules = add_rulebase_and_rules(all_vsys)
+    else:
+        vsys_name = ET.SubElement(xml_vsys, "vsys-name")
+        vsys_name_entry = ET.SubElement(vsys_name, "entry", name=vsys)
+        vsys_rules = add_rulebase_and_rules(vsys_name_entry)
+
+    # Add rules to check to ElementTree
+    if rules == "all":
+        ET.SubElement(vsys_rules, "all")
+    else:
+        # If a list of specific rules was given, split comma-separated list & strip whitespace, then add to ElementTree
+        rule_list = ET.SubElement(vsys_rules, "list")
+        for rule in rules.split(","):
+            ET.SubElement(rule_list, "member").text = f"{rule.strip()}"
+
+    # Format operational command XPATH
+    cmd = ET.tostring(xml_root, encoding="us-ascii")
+
+    # Convert date string from "no_new_hits_since" argument to datetime object
+    no_new_hits_since_dt = datetime.strptime(no_new_hits_since, "%Y/%m/%d %H:%M:%S") if no_new_hits_since else None
+
+    # Execute command and return result
+    return FirewallCommand.get_hitcounts(topology, cmd, rulebase, no_new_hits_since_dt, device_filter_string, target, unused_only)
+
+
 """Hygiene Commands"""
 
 
@@ -11721,6 +12546,7 @@ def check_vulnerability_profiles(
     device_filter_string: Optional[str] = None,
     minimum_block_severities: str = "critical,high",
     minimum_alert_severities: str = "medium,low",
+    return_nonconforming_profiles: str = "no",
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks the configured Vulnerability profiles to ensure at least one meets best practices. This will validate profiles
@@ -11730,12 +12556,15 @@ def check_vulnerability_profiles(
     :param device_filter_string: String to filter to only check given device
     :param minimum_block_severities: csv list of severities that must be in drop/reset/block-ip mode.
     :param minimum_alert_severities: csv list of severities that must be in alert/default or higher mode.
+    :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
     """
-    return HygieneLookups.check_vulnerability_profiles(
-        topology,
+    return HygieneLookups.check_security_profiles(
+        topology=topology,
+        profile_type="vulnerability",
         device_filter_str=device_filter_string,
         minimum_block_severities=argToList(minimum_block_severities),
         minimum_alert_severities=argToList(minimum_alert_severities),
+        return_nonconforming_profiles=argToBoolean(return_nonconforming_profiles),
     )
 
 
@@ -11744,6 +12573,7 @@ def check_spyware_profiles(
     device_filter_string: Optional[str] = None,
     minimum_block_severities: str = "critical,high",
     minimum_alert_severities: str = "medium,low",
+    return_nonconforming_profiles: str = "no",
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks the configured Anti-spyware profiles to ensure at least one meets best practices.
@@ -11752,27 +12582,35 @@ def check_spyware_profiles(
     :param device_filter_string: String to filter to only check given device
     :param minimum_block_severities: csv list of severities that must be in drop/reset/block-ip mode.
     :param minimum_alert_severities: csv list of severities that must be in alert/default or higher mode.
+    :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
+
     """
-    return HygieneLookups.check_spyware_profiles(
-        topology,
+    return HygieneLookups.check_security_profiles(
+        topology=topology,
+        profile_type="spyware",
         device_filter_str=device_filter_string,
         minimum_block_severities=argToList(minimum_block_severities),
         minimum_alert_severities=argToList(minimum_alert_severities),
+        return_nonconforming_profiles=argToBoolean(return_nonconforming_profiles),
     )
 
 
 def check_url_filtering_profiles(
-    topology: Topology, device_filter_string: Optional[str] = None
+    topology: Topology, device_filter_string: Optional[str] = None, return_nonconforming_profiles: str = "no"
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks the configured URL Filtering profiles to ensure at least one meets best practices.
 
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only check given device
+    :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
+
     """
-    return HygieneLookups.check_url_filtering_profiles(
-        topology,
+    return HygieneLookups.check_security_profiles(
+        topology=topology,
+        profile_type="url",
         device_filter_str=device_filter_string,
+        return_nonconforming_profiles=argToBoolean(return_nonconforming_profiles),
     )
 
 
@@ -12130,7 +12968,7 @@ def parse_list_templates_response(entries):
         parse_pan_os_un_committed_data(entry, ["@admin", "@dirtyId", "@time"])
         name = entry.get("@name")
         description = entry.get("description")
-        variables = entry.get("variable", {}).get("entry", [])
+        variables = (entry.get("variable") or {}).get("entry", [])
         context.append({"Name": name, "Description": description, "Variable": parse_template_variables(variables)})
         table.append({"Name": name, "Description": description, "Variable": extract_objects_info_by_key(variables, "@name")})
 
@@ -14554,6 +15392,299 @@ def pan_os_get_master_key_details_command() -> CommandResults:
     )
 
 
+def expiration_status_check(cert_expiration: datetime) -> str:
+    """
+    Returns the expiration status of a certificate based on its expiration date.
+
+    Args:
+        cert_expiration (datetime): The expiration date and time of the certificate
+
+    Returns:
+        str: The expiration status, one of:
+            - "Expired": Certificate has already expired
+            - "Expiring in 30 days": Certificate expires within 30 days
+            - "Expiring in 60 days": Certificate expires within 31-60 days
+            - "Expiring in 90 days": Certificate expires within 61-90 days
+            - "Valid": Certificate expires in more than 90 days
+    """
+    now = datetime.now()
+    if cert_expiration < now:
+        return "Expired"
+    elif cert_expiration < now + timedelta(days=30):
+        return "Expiring in 30 days"
+    elif cert_expiration < now + timedelta(days=60):
+        return "Expiring in 60 days"
+    elif cert_expiration < now + timedelta(days=90):
+        return "Expiring in 90 days"
+    else:
+        return "Valid"
+
+
+def compile_certificate_details(
+    cert_list: List, cert_type: str, device: str, devices_using_certificate: Optional[List] = None
+) -> List[dict]:
+    """
+    Extract and consolidate certificate details from XML certificate entries into structured dictionaries.
+
+    Args:
+        cert_list (List): List of XML certificate entry elements to process
+        cert_type (str): Type of certificate, one of:
+            - "Pushed": Certificates pushed from Panorama to firewalls
+            - "Local": Certificates stored locally on firewall
+            - "Predefined": System predefined certificates
+        device (str): Device identifier (hostname, serial number, etc.) where certificates are found
+        devices_using_certificate (Optional[List], optional): List of devices that use these certificates. Defaults to None.
+
+    Returns:
+        List[dict]: List of dictionaries containing certificate details. Each dictionary contains:
+            - name (str): Certificate name
+            - device (str): Device identifier
+            - subject (str): Certificate subject or None if not available
+            - expiration_date (str): Expiration date string or None if not available
+            - expiration_status (str): Status from expiration_status_check() or None
+            - location (str): "Panorama" or "Firewall" based on cert_type and DEVICE_GROUP
+            - cert_type (str): The certificate type passed as input
+            - devices_using_certificate (List): Included only if devices_using_certificate is provided
+    """
+
+    cert_details = []
+    if cert_type == "Pushed":
+        location = "Panorama"
+    elif cert_type == "Local":
+        location = "Firewall"
+    elif cert_type == "Predefined":
+        location = "Panorama" if DEVICE_GROUP else "Firewall"
+    else:
+        location = ""
+
+    for cert in cert_list:
+        not_valid_after = cert.find("not-valid-after")
+        subject_elem = cert.find("subject")
+        if not_valid_after is not None and not_valid_after.text is not None:
+            cert_expiration = datetime.strptime(not_valid_after.text, "%b %d %H:%M:%S %Y %Z")
+            expiration_status = expiration_status_check(cert_expiration)
+        else:
+            cert_expiration = None
+            expiration_status = None
+
+        cert_details_dict = {
+            "name": cert.get("name"),
+            "device": device,
+            "subject": subject_elem.text if subject_elem is not None else None,
+            "expiration_date": not_valid_after.text if not_valid_after is not None else None,
+            "expiration_status": expiration_status,
+            "location": location,
+            "cert_type": cert_type,
+        }
+        if devices_using_certificate:
+            cert_details_dict.update({"devices_using_certificate": devices_using_certificate})
+        cert_details.append(cert_details_dict)
+
+    return cert_details
+
+
+def extract_certificates_from_running_config(device: Union[Panorama, Firewall]) -> Tuple[List, List]:
+    """
+    Process pushed certificates from Panorama response and consolidate them.
+
+    Args:
+        device: Panorama device object
+
+    Returns:
+        Tuple[List, List]: Tuple containing pushed certificates and target devices
+
+    Raises:
+        AttributeError: If XML elements don't have expected attributes
+    """
+    templates = Template.refreshall(device)
+    template_stacks = TemplateStack.refreshall(device)
+    response_pushed = run_op_command(device, SHOW_CONFIG_RUNNING)
+
+    if not (response_pushed is not None and hasattr(response_pushed, "get") and response_pushed.get("status") == "success"):
+        demisto.debug("Response is not valid or status is not success")
+        return [], []
+
+    try:
+        template_config = response_pushed.find(".//template")
+        template_stack_config = response_pushed.find(".//template-stack")
+
+        devices_using_certificate: List = []
+        certificate: Optional[ET.Element] = None
+
+        # Check template configuration first
+        if template_config is not None:
+            certificate = template_config.find(".//certificate")
+            if certificate is not None:
+                devices_using_certificate = [
+                    template.devices for template in templates if hasattr(template, "devices") and template.devices
+                ]
+
+        # Check template stack configuration if no certificate found in template
+        if certificate is None and template_stack_config is not None:
+            certificate = template_stack_config.find(".//certificate")
+            if certificate is not None:
+                devices_using_certificate = [
+                    template_stack.devices
+                    for template_stack in template_stacks
+                    if hasattr(template_stack, "devices") and template_stack.devices
+                ]
+
+        # Process found certificates
+        pushed_certs: List[ET.Element] = []
+        if certificate is not None:
+            pushed_certs = certificate.findall(".//entry")
+
+        demisto.debug(f"Found {len(pushed_certs)} pushed certificates")
+
+        # Get the first device group safely
+        target_devices = devices_using_certificate[0] if devices_using_certificate else []
+
+        return pushed_certs, target_devices
+
+    except (AttributeError, IndexError) as e:
+        demisto.debug(f"Error processing pushed certificates: {str(e)}")
+        raise
+
+
+def extract_certificate_from_pushed_template(device: Union[Panorama, Firewall]) -> List:
+    """
+    Extract certificate entries from pushed template configuration.
+
+    Args:
+        device: Firewall device object
+
+    Returns:
+        List of pushed certificate entries
+    """
+    response_pushed = run_op_command(device, SHOW_CONFIG_PUSHED_TEMPLATE)
+
+    # Process pushed certificates
+    if response_pushed is not None and hasattr(response_pushed, "get") and response_pushed.get("status") == "success":
+        certificate = response_pushed.find(".//certificate")
+        pushed_certs = certificate.findall(".//entry") if certificate else []
+        demisto.debug(f"Found {len(pushed_certs)} pushed certificates")
+        return pushed_certs
+
+    return []
+
+
+def extract_local_certificates(device: Union[Panorama, Firewall]) -> List:
+    """
+    Extract local certificate entries from device.
+
+    Args:
+        device: Firewall device object
+
+    Returns:
+        List of local certificate entries
+    """
+    response_local = run_op_command(device, SHOW_LOCAL_CERTS)
+
+    # Process local certificates
+    if response_local is not None and hasattr(response_local, "get") and response_local.get("status") == "success":
+        local_certs = response_local.findall(".//entry")
+        demisto.debug(f"Found {len(local_certs)} local certificates")
+        return local_certs
+
+    return []
+
+
+def get_predefined_certificates() -> List:
+    """
+    Extract predefined certificate entries from system configuration.
+
+    Returns:
+        List of predefined certificate entries
+    """
+    params = {"type": "config", "action": "get", "xpath": PREDEFINED_CERTS_XPATH, "cmd": "show predefined", "key": API_KEY}
+
+    response_predefined = requests.get(URL, params=params, verify=USE_SSL)
+
+    if response_predefined and response_predefined.status_code == 200:
+        root = ET.fromstring(response_predefined.text)
+        certificate = root.find(".//certificate")
+        predefined_certs = certificate.findall(".//entry") if certificate is not None else []
+        demisto.debug(f"Found {len(predefined_certs)} predefined certificates")
+        return predefined_certs
+
+    return []
+
+
+def pan_os_get_certificate_info_command(topology: Topology, args: Dict) -> CommandResults:
+    """
+    Get certificate information from PAN-OS device
+
+    Args:
+        topology: `Topology` instance
+        args (dict): The command argument - show_expired_only
+
+    Returns:
+        CommandResults: Certificate information
+    """
+    consolidated_cert_details = []
+
+    try:
+        panorama_devices = topology.panorama_devices()
+        if panorama_devices:
+            for device in panorama_devices:
+                # 1. Get certs pushed from Panorama using SHOW_CONFIG_RUNNING command:
+                pushed_certs, target_devices = extract_certificates_from_running_config(device)
+
+                consolidated_cert_details.extend(
+                    compile_certificate_details(pushed_certs, "Pushed", device.hostname, target_devices)
+                )
+
+        firewall_devices = topology.firewall_devices()
+        if firewall_devices:
+            for device in firewall_devices:
+                # 1. Check if pushed certs were already obtained
+                if not panorama_devices:
+                    pushed_certs = extract_certificate_from_pushed_template(device)
+                    device_hostname = device.parent.get("hostname") if device.parent else device.serial
+                    consolidated_cert_details.extend(compile_certificate_details(pushed_certs, "Pushed", device_hostname or ""))
+
+                # 2. Get local certs on each firewall
+                local_certs = extract_local_certificates(device)
+
+                consolidated_cert_details.extend(compile_certificate_details(local_certs, "Local", device.serial or ""))
+
+        # 3. Get predefined certs
+        predefined_certs = get_predefined_certificates()
+
+        consolidated_cert_details.extend(
+            compile_certificate_details(predefined_certs, "Predefined", URL.replace("https://", "").split(":")[0])
+        )
+
+        readable_output = tableToMarkdown(
+            "Certificate Information",
+            consolidated_cert_details,
+            headers=[
+                "name",
+                "device",
+                "subject",
+                "expiration_date",
+                "expiration_status",
+                "location",
+                "cert_type",
+                "devices_using_certificate",
+            ],
+            removeNull=True,
+        )
+
+        if args.get("show_expired_only") == True:
+            consolidated_cert_details = [cert for cert in consolidated_cert_details if cert.get("expiration_status") == "Expired"]
+
+        return CommandResults(
+            outputs_prefix="Panorama.Certificate",
+            outputs=consolidated_cert_details,
+            readable_output=readable_output if len(consolidated_cert_details) > 0 else "No certificates found",
+            raw_response=consolidated_cert_details,
+        )
+
+    except Exception as e:
+        raise Exception(f"Failed to get certificate information: {str(e)}")
+
+
 """ Fetch Incidents """
 
 
@@ -14578,7 +15709,6 @@ def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int, offse
         dir="forward",
         skip=offset_fetch,
     )
-    demisto.debug(f"{params=}")
     response = http_request(URL, "GET", params=params)
     return dict_safe_get(response, ("response", "result", "job"))  # type: ignore
 
@@ -14660,7 +15790,7 @@ def add_time_filter_to_query_parameter(query: str, last_fetch: datetime, time_ke
     Returns:
         str: a string representing a query with added time filter parameter
     """
-    return f"{query} and ({time_key} geq '{last_fetch.strftime(QUERY_DATE_FORMAT)}')"
+    return f"({query}) and ({time_key} geq '{last_fetch.strftime(QUERY_DATE_FORMAT)}')"
 
 
 def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[str, str]:
@@ -15118,7 +16248,7 @@ def main():  # pragma: no cover
 
         # Service groups commands
         elif command == "panorama-list-service-groups" or command == "pan-os-list-service-groups":
-            panorama_list_service_groups_command(args.get("tags"))
+            panorama_list_service_groups_command(args.get("tag"))
 
         elif command == "panorama-get-service-group" or command == "pan-os-get-service-group":
             panorama_get_service_group_command(args.get("name"))
@@ -15249,7 +16379,18 @@ def main():  # pragma: no cover
             panorama_edit_rule_command(args)
 
         elif command == "panorama-delete-rule" or command == "pan-os-delete-rule":
-            panorama_delete_rule_command(args.get("rulename"))
+            topology = get_topology()
+            args = demisto.args()
+            args.pop("device-group", None)
+            args["operation"] = "delete"
+            panorama_disable_or_delete_rule_command(topology, **args)
+
+        elif command == "panorama-disable-rule" or command == "pan-os-disable-rule":
+            topology = get_topology()
+            args = demisto.args()
+            args.pop("device-group", None)
+            args["operation"] = "disable"
+            panorama_disable_or_delete_rule_command(topology, **args)
 
         # Traffic Logs - deprecated
         elif command == "panorama-query-traffic-logs" or command == "pan-os-query-traffic-logs":
@@ -15304,21 +16445,49 @@ def main():  # pragma: no cover
         elif command == "panorama-show-device-version" or command == "pan-os-show-device-version":
             panorama_show_device_version_command(args.get("target"))
 
-        # Download the latest content update
+        # Check latest available versions of Dynamic Updates
+        elif command == "pan-os-check-dynamic-updates-status":
+            panorama_check_latest_dynamic_update_command(args)
+
+        # Download the latest app/threat content update
         elif command == "panorama-download-latest-content-update" or command == "pan-os-download-latest-content-update":
-            panorama_download_latest_content_update_command(args)
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.APP_THREAT, args)
 
-        # Download the latest content update
+        # Download the latest antivirus content update
+        elif command == "pan-os-download-latest-antivirus-update":
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, args)
+
+        # Download the latest wildfire content update
+        elif command == "pan-os-download-latest-wildfire-update":
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.WILDFIRE, args)
+
+        # Download the latest GP content update
+        elif command == "pan-os-download-latest-gp-update":
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.GP, args)
+
+        # Check download status of the latest app/threat content update
         elif command == "panorama-content-update-download-status" or command == "pan-os-content-update-download-status":
-            panorama_content_update_download_status_command(args)
+            panorama_dynamic_update_download_status_command(DynamicUpdateType.APP_THREAT, args)
 
-        # Install the latest content update
+        # Install the latest app/threat content update
         elif command == "panorama-install-latest-content-update" or command == "pan-os-install-latest-content-update":
-            panorama_install_latest_content_update_command(args.get("target"))
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.APP_THREAT, args)
 
-        # Content update install status
+        # Install the latest antivirus content update
+        elif command == "pan-os-install-latest-antivirus-update":
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, args)
+
+        # Install the latest wildfire content update
+        elif command == "pan-os-install-latest-wildfire-update":
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.WILDFIRE, args)
+
+        # Install the latest GP content update
+        elif command == "pan-os-install-latest-gp-update":
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.GP, args)
+
+        # App/Threat update install status
         elif command == "panorama-content-update-install-status" or command == "pan-os-content-update-install-status":
-            panorama_content_update_install_status_command(args)
+            panorama_dynamic_update_install_status_command(DynamicUpdateType.APP_THREAT, args)
 
         # Check PAN-OS latest software update
         elif command == "panorama-check-latest-panos-software" or command == "pan-os-check-latest-panos-software":
@@ -15671,6 +16840,14 @@ def main():  # pragma: no cover
             return_results(
                 dataclasses_to_command_results(get_object(topology, **demisto.args()), empty_result_message="No objects found.")
             )
+        elif command == "pan-os-get-rule-hitcounts":
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_rule_hitcounts(topology, **demisto.args()),
+                    empty_result_message="No devices in Topology returned rule hit count data.",
+                )
+            )
         elif command == "pan-os-platform-get-device-state":
             topology = get_topology()
             # This just returns a fileResult object directly.
@@ -15751,6 +16928,9 @@ def main():  # pragma: no cover
             return_results(pan_os_update_master_key_command(args))
         elif command == "pan-os-get-master-key-details":
             return_results(pan_os_get_master_key_details_command())
+        elif command == "pan-os-get-certificate-info":
+            topology = get_topology()
+            return_results(pan_os_get_certificate_info_command(topology, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception as err:

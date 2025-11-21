@@ -25,11 +25,10 @@ With this integration, you can use your custom profiles as well as following pre
 - Browsing History,
 - Compromise Assessment.
 
-
-
 **2. Isolation**
 
 Endpoint isolation works by terminating all connections of an endpoint and not allowing any new connections.
+
 - When an endpoint is isolated, you can still perform tasks such as Acquisition.
 
 For more information, please refer to [Knowledge Base](https://kb.binalyze.com/)

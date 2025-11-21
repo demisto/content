@@ -1,5 +1,5 @@
 category: Case Management
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -11,15 +11,44 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: Username/Client ID
-  name: credentials
-  type: 9
-  required: false
-  section: Connect
 - additionalinfo: Select this checkbox if to use OAuth 2.0 authentication. See (?) for more information.
   display: Use OAuth Login
   name: use_oauth
   type: 8
+  required: false
+  section: Connect
+- additionalinfo: Select this checkbox to use JWT authentication. See (?) for more information.
+  display: Use JWT Authentication
+  name: use_jwt
+  type: 8
+  required: false
+  section: Connect
+- display: Username/Client ID/JWT Audience (aud)
+  displaypassword: Password/Client Secret
+  name: credentials
+  type: 9
+  required: false
+  section: Connect
+- displaypassword: Private key
+  name: private_key
+  hiddenusername: true
+  type: 9
+  required: false
+  section: Connect
+- display: kid (Key Id)
+  name: kid
+  type: 0
+  required: false
+  section: Connect
+- display: sub
+  name: sub
+  type: 0
+  required: false
+  section: Connect
+- additionalinfo: If not set, Client ID will be used.
+  display: iss (Issuer)
+  name: iss
+  type: 0
   required: false
   section: Connect
 - additionalinfo: 'The ticket type can be: incident, problem, change_request, sc_request, sc_task or sc_req_item.'
@@ -28,7 +57,7 @@ configuration:
   name: ticket_type
   type: 0
   required: false
-  section: Connect
+  section: Collect
 - display: ServiceNow API Version (e.g. 'v1')
   name: api_version
   type: 0
@@ -93,6 +122,7 @@ configuration:
   type: 15
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - additionalinfo: Select this checkbox to retrieve comments and work notes without accessing the `sys_field_journal` table.
@@ -113,6 +143,7 @@ configuration:
   - dd.MM.yyyy
   - yyyy-MM-dd
   - mmm-dd-yyyy
+  - yyyy-MMM-dd
   type: 15
   required: false
   section: Collect
@@ -123,6 +154,7 @@ configuration:
   type: 0
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment from ServiceNow.
@@ -132,6 +164,7 @@ configuration:
   type: 0
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - additionalinfo: Choose the tag to add to an entry to mirror it as a work note in ServiceNow.
@@ -141,6 +174,7 @@ configuration:
   type: 0
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - additionalinfo: Choose the tag to add to an entry to mirror it as a work note from ServiceNow.
@@ -150,6 +184,7 @@ configuration:
   type: 0
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file in ServiceNow.
@@ -159,6 +194,7 @@ configuration:
   type: 0
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file from ServiceNow.
@@ -168,14 +204,17 @@ configuration:
   type: 0
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - additionalinfo: "According to the timestamp in this field, records will be queried to check for updates."
   display: Timestamp field to query for updates as part of the mirroring flow
   name: update_timestamp_field
   type: 0
+  advanced: true
   hidden:
   - marketplacev2
+  - platform
   defaultvalue: sys_updated_on
   required: false
   section: Collect
@@ -184,16 +223,20 @@ configuration:
   display: How many incidents to mirror incoming each time
   name: mirror_limit
   type: 0
+  advanced: true
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - additionalinfo: "Custom (user defined) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here."
   display: Custom Fields to Mirror
   name: custom_fields
   type: 12
+  advanced: true
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR.
@@ -201,12 +244,14 @@ configuration:
   display: Mirrored XSOAR Ticket closure method
   name: close_incident
   type: 15
+  advanced: true
   options:
   - None
   - closed
   - resolved
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - additionalinfo: 'Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.'
@@ -214,16 +259,20 @@ configuration:
   display: Mirrored XSOAR Ticket custom close state code
   name: server_close_custom_state
   type: 0
+  advanced: true
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - additionalinfo: 'Define how to close the mirrored tickets in Cortex XSOAR with a custom resolution code. Enter a comma-separated list of custom resolution codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.'
   display: Mirrored XSOAR Ticket custom close resolution code (overwrites the custom close state)
   name: server_custom_close_code
   type: 0
+  advanced: true
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - additionalinfo: Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
@@ -231,20 +280,24 @@ configuration:
   display: Mirrored ServiceNow Ticket closure method
   name: close_ticket_multiple_options
   type: 15
+  advanced: true
   options:
   - None
   - closed
   - resolved
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - display: Mirrored ServiceNow Ticket custom close state code
   name: close_custom_state
   type: 0
+  advanced: true
   additionalinfo: Define how to close the mirrored tickets in ServiceNow with a custom state. Enter here the custom closure state code (should be an integer) to override the default closure method. If the closure code does not exist, the default code will be used instead.
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - defaultvalue: 'false'
@@ -260,8 +313,10 @@ configuration:
   display: Mirror Existing Notes For New Fetched Incidents
   name: mirror_notes_for_new_incidents
   type: 8
+  advanced: true
   hidden:
   - marketplacev2
+  - platform
   required: false
   section: Collect
 - defaultvalue: 'false'
@@ -287,6 +342,7 @@ configuration:
   additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   name: look_back
   type: 0
+  advanced: true
   required: false
   section: Collect
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
@@ -894,6 +950,13 @@ script:
       - sn_si_incident
     description: Deletes a ticket from ServiceNow.
     name: servicenow-delete-ticket
+    outputs:
+    - contextPath: ServiceNow.Ticket.ID
+      description: Ticket ID.
+      type: string
+    - contextPath: ServiceNow.Ticket.DeleteMessage
+      description: A Message indicating the result of the ticket deletion operation.
+      type: string
   - arguments:
     - description: Attachment File ID.
       name: file_sys_id
@@ -1549,6 +1612,12 @@ script:
     description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
     name: get-remote-data
   - arguments:
+    - description: The ticket ID.
+      name: id
+      required: true
+    description: Get remote data preview from a remote incident. This method does not update the current incident, and is used to preview the ticket which would be updated.
+    name: get-remote-data-preview
+  - arguments:
     - description: The username to use for login.
       name: username
       required: true
@@ -1731,6 +1800,10 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: Indicates if the ticket should be mirrored.
+      name: mirroring
+      type: mirroring
+      hidden: true
     - description: The ticket activity due date, in the format "2016-07-02 21:51:11".
       name: activity_due
     - description: List of users assigned to the ticket.
@@ -1885,7 +1958,7 @@ script:
       description: Ticket close code.
       type: string
 
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/auth-utils:1.0.0.5427065
   isfetch: true
   ismappable: true
   isremotesyncin: true

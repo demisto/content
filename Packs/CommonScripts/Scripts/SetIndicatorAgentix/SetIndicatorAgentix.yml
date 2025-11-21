@@ -1,0 +1,45 @@
+args:
+- description: Indicator value to set.
+  name: value
+  required: true
+- description: Indicator type to set.
+  name: type
+- description: Sets indicator reputation.
+  name: verdict
+  auto: PREDEFINED
+  predefined:
+  - Unknown
+  - Benign
+  - Suspicious
+  - Malicious
+- description: A Comma-separated list of tags to set for the indicator.
+  name: tags
+  isArray: true
+- description: A Comma-separated list of issues IDs to associate the indicator with.
+  name: related_issues
+  isArray: true
+outputs:
+- contextPath: SetIndicator.Value
+  description: The indicator value that was processed.
+  type: String
+- contextPath: SetIndicator.Result
+  description: The result of the indicator setting operation, including success messages and any error information.
+  type: String
+comment: Updates the properties of an existing indicator and associates the indicator with related issues if they exist.
+commonfields:
+  id: SetIndicatorAgentix
+  version: -1
+enabled: true
+name: SetIndicatorAgentix
+script: '-'
+system: false
+timeout: '0'
+type: python
+isInternal: true
+subtype: python3
+tests:
+- No tests
+dockerimage: demisto/python3:3.12.12.5490952
+fromversion: 6.1.0
+marketplaces:
+- platform

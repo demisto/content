@@ -13,6 +13,7 @@ def main():
 
     title = args.get("title")
     headers = argToList(args.get("headers"))
+    url_keys = argToList(args.get("url_keys"))
     is_auto_json_transform = argToBoolean(args.get("is_auto_json_transform", False))
     json_transform_properties = args.get("json_transform_properties")
     json_transformers = {}
@@ -21,7 +22,12 @@ def main():
         for header_key, values in json_transform_properties.items():
             json_transformers[header_key] = JsonTransformer(**values)
     markdown = tableToMarkdown(
-        title, value, headers=headers, json_transform_mapping=json_transformers, is_auto_json_transform=is_auto_json_transform
+        title,
+        value,
+        headers=headers,
+        json_transform_mapping=json_transformers,
+        is_auto_json_transform=is_auto_json_transform,
+        url_keys=url_keys,
     )
 
     return_results(

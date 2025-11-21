@@ -16,10 +16,10 @@ from cryptography.hazmat.primitives import serialization
 """GLOBAL VARS"""
 
 PARAMS = demisto.params()  # pylint: disable=W9016
-CREDENTIALS = PARAMS.get("credentials")
+CREDENTIALS = PARAMS.get("credentials", {})
 USER = CREDENTIALS.get("identifier")
 PASSWORD = CREDENTIALS.get("password")
-CERTIFICATE = CREDENTIALS.get("credentials", {}).get("sshkey").encode()
+CERTIFICATE = CREDENTIALS.get("credentials", {}).get("sshkey", "").encode()
 CERT_PASSWORD = CREDENTIALS.get("credentials", {}).get("password")
 CERT_PASSWORD = CERT_PASSWORD.encode() if CERT_PASSWORD else None
 ACCOUNT = PARAMS.get("account")
@@ -80,7 +80,13 @@ def convert_datetime_to_string(v):  # pylint: disable=W9014
         Formatted string of the object
     """
     if isinstance(v, datetime):
-        return v.strftime("%Y-%m-%d %H:%M:%S.%f %z").strip()
+        formatted_datetime = v.strftime("%Y-%m-%d %H:%M:%S.%f %z").strip()
+        if "." in formatted_datetime:  # convert the time format to 2 digits after the decimal point to co-p with server formats.
+            split_datetime = formatted_datetime.split('.')
+            fixed_datetime = split_datetime[0] + '.' + split_datetime[1][:2]
+        else:
+            fixed_datetime = formatted_datetime
+        return fixed_datetime.strip()
     elif isinstance(v, date):
         return v.strftime("%Y-%m-%d").strip()
     elif isinstance(v, dttime):
@@ -266,7 +272,7 @@ def row_to_incident(column_descriptions, row):  # pylint: disable=W9014
         name = "Snowflake Incident -- "
         name += convert_datetime_to_string(occurred) + "- " + str(datetime.now().timestamp())
     incident["name"] = name
-    incident["occurred"] = occurred.isoformat()
+    incident["occurred"] = timestamp_to_datestring(timestamp)
     # Incident occurrence time as timestamp - the datetime field specified in the integration parameters
     incident["timestamp"] = timestamp
     # The raw response for the row (reformatted to be json serializable) returned by the db query

@@ -1,19 +1,22 @@
 # Celonis
- 
+
 <~XSIAM>
- 
+
 Celonis is a process mining and execution management platform that helps organizations analyze and optimize their business processes for improved efficiency and performance.
- 
-### This pack includes:
+
+### This pack includes
+
 - Collection of Celonis Audit, Studio Adoption and Login History logs
 - Log Normalization - XDM mapping for key event types.
 
-## Supported Event Types:
+## Supported Event Types
+
 - Login-History
 - Platform Adoption
 - Audit Log
 
 ## How to integrate with XSIAM?
+
 1. Click **Admin & Settings** and select **Applications**.
 2. Click **Add New Application** -> **OAuth client** to create your OAuth client.
 3. Create a new OAuth client by following the steps below:
@@ -28,5 +31,4 @@ Celonis is a process mining and execution management platform that helps organiz
 
 For more information, check the Celnios Public API documentation -> [Click here](https://docs.celonis.com/).
 
- 
 </~XSIAM>

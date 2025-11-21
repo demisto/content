@@ -1,6 +1,7 @@
 Creates markdown tables based on information from the GetTasksWithSection command.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |

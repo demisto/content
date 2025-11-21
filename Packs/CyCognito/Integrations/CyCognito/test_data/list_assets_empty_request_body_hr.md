@@ -1,4 +1,4 @@
-### Asset List:
+### Asset List: 
  Assets Type: Domain
 |Asset ID|Security Grade|Status|Organizations|Investigation Status|Severe Issues|First Seen|Last Seen|Hosting Type|
 |---|---|---|---|---|---|---|---|---|

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Before using this version, make sure to update the ***Machine Learning*** pack to the latest version. If the ***Machine Learning*** pack is not installed, this message can be safely ignored."
+}

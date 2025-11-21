@@ -340,3 +340,49 @@ def test_return_non_content_entries(mocker):
     return_results_mock = mocker.patch("FindEmailCampaign.return_results")
     FindEmailCampaign.main()
     return_results_mock.assert_called_with([NON_CONTENT_ENTRY1, NON_CONTENT_ENTRY2])
+
+
+def test_horizontal_to_vertical_md_table():
+    """
+    Given: a horizontal markdown table with pipes in the values.
+    When: Running the scipt.
+    Then: assert that fields that include pipes without spaces will not be split.
+        For example, for the markdown:
+        "### Possible Campaign Detected\n|field1|name|field3|\n|--|-|--|\n| value_field1 | Phishing:X|hello@test.com|Subject
+        Details (1) | value_field3 |\n"
+        The outcome of the fields and values will be:
+        "field1": "value_field1"
+        "name": "Phishing:X|hello@test.com|Subject Details (1)"
+        "field3": "value_field1"
+    """
+    horizontal_md_table = (
+        "### Possible Campaign Detected\n"
+        "|field1|name|field3|\n"
+        "|--|-|--|\n"
+        "| value_field1 | Phishing:X|hello@test.com|Subject Details (1) | value_field3 |\n"
+    )
+    expected_value = (
+        "\n| | |\n|---|---|\n|**field1**| value_field1 |\n|**name**| Phishing:X|hello@test.com|Subject Details (1) "
+        "|\n|**field3**| value_field3 |"
+    )
+    result = horizontal_to_vertical_md_table(horizontal_md_table)
+    assert expected_value == result
+
+
+def test_horizontal_to_vertical_md_table_no_pipe():
+    """
+    Given: a horizontal markdown table without pipes in the values.
+    When: Running the scipt.
+    Then: assert that fields are extracted as expected.
+    """
+    horizontal_md_table = (
+        "### Possible Campaign Detected\n"
+        "|field1|name|field3|\n"
+        "|--|-|--|\n"
+        "| value_field1 | value_field2:text | value_field3 |\n"
+    )
+    expected_value = (
+        "\n| | |\n|---|---|\n|**field1**| value_field1 |\n|**name**| value_field2:text |\n|**field3**| value_field3 |"
+    )
+    result = horizontal_to_vertical_md_table(horizontal_md_table)
+    assert expected_value == result

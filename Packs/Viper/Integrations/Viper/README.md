@@ -2,7 +2,6 @@ Viper is a binary analysis and management framework.
 
 ## Configure Viper in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL | True |
@@ -10,7 +9,6 @@ Viper is a binary analysis and management framework.
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
 | Viper Project | True |
-
 
 ## Commands
 
@@ -30,11 +28,12 @@ Download a sample with file hash
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_hash | SHA256 Value. | Required | 
+| file_hash | SHA256 Value. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### viper-search
 
 ***
@@ -48,7 +47,7 @@ Search for sample with file hash
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_hash | SHA256 Value. | Required | 
+| file_hash | SHA256 Value. | Required |
 
 #### Context Output
 

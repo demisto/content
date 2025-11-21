@@ -1,0 +1,40 @@
+commonfields:
+  id: MicrosoftAtpUnisolateMachine
+  version: -1
+name: MicrosoftAtpUnisolateMachine
+script: ''
+type: python
+tags:
+  - Utilities
+comment: A polling wrapper script; isolates a machine from accessing external networks.
+enabled: true
+args:
+  - description: "A comma-separated list of machine IDs to be used to stop the isolation. For example: 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424."
+    isArray: true
+    name: machine_id
+    required: true
+  - description: Comment to associate with the action.
+    name: comment
+    required: true
+  - description: Flag for the rate limit retry.
+    name: ran_once_flag
+    deprecated: true
+outputs:
+  - contextPath: MicrosoftATP.Machine.Isolation.Requestor
+    description: Machine un-isolation requestor.
+    type: string
+  - contextPath: MicrosoftATP.Machine.Isolation.RequestorComment
+    description: Machine un-isolation requestor comment.
+    type: string
+  - contextPath: MicrosoftATP.Machine.ID
+    description: Machine ID.
+    type: Unknown
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.11.4508456
+fromversion: 6.1.0
+isInternal: true
+tests:
+  - No tests (auto formatted)
+marketplaces:
+  - platform

@@ -1,0 +1,20 @@
+[MODEL: dataset = commvault_backupsolution_raw]
+alter
+	xdm.alert.name = coalesce(alert, alert_name),
+	xdm.alert.original_alert_id = to_string(alert_id),
+	xdm.network.rule = alert_rule_name,
+	xdm.alert.description = alertdescription,
+	xdm.alert.severity = severity,
+	xdm.observer.name = coalesce(commcell, commcellname),
+	xdm.target.host.hostname = coalesce(computer, client),
+	xdm.event.description = coalesce(description, details),
+	xdm.event.type = if(
+		opid != null and to_string(opid) !~= "^\s*$", "Audit",
+		alert_id != null and to_string(alert_id) !~= "^\s*$", "Alert",
+		event_id != null and to_string(event_id) !~= "^\s*$", coalesce(detected_criteria, type, "Event")
+	),
+	xdm.event.original_event_type = to_string(event_code),
+	xdm.event.id = coalesce(to_string(event_id), to_string(opid)),
+	xdm.event.operation_sub_type = operation,
+	xdm.source.application.name = program,
+	xdm.source.user.username = user;

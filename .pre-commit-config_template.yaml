@@ -18,6 +18,7 @@ repos:
   - id: check-added-large-files
     args: ['--maxkb=5120', --enforce-all]
     skip:nightly: true
+    exclude: Integrations/.*/README.md|Scripts/.*/README.md
   - id: check-case-conflict
 - repo: https://github.com/python-poetry/poetry
   rev: 1.8.2
@@ -36,6 +37,11 @@ repos:
 - repo: https://github.com/charliermarsh/ruff-pre-commit
   rev: v0.8.0
   hooks:
+  - id: ruff-format
+    min_py_version: '3.7'
+    skip:nightly: true
+    skip:docker_autoupdate: true
+    parallel: false
   - id: ruff
     parallel: false
     min_py_version: '3.7'
@@ -61,9 +67,20 @@ repos:
     exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py|Utils/download_packs_and_docker_images.py
     language: system
     entry: mypy
+    skip: true
+    skip:validate_content: false
 
 - repo: local
   hooks:
+  - id: mdx-validation
+    name: Validate README.md files with MDX
+    entry: node .hooks/validate-mdx.js
+    language: node
+    files: "^(.*/)?README\\.md$"
+    additional_dependencies:
+      - "@mdx-js/mdx@1.6.22"  #The correct version is the one in the `package-lock.json` of content-docs, all instances should match it.
+      - "fs-extra@11.3.0"
+
   - id: xsoar-lint
     name: xsoar-lint
     description: Run xsoar-linter on the code in content packs
@@ -131,7 +148,7 @@ repos:
     language: docker
     files: Packs\/.*_test\.py$
     # The exclude list includes the list of all integration/scripts which require network for testing
-    exclude: test_data|Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py|Packs/Whois/Integrations/Whois/Whois_test.py
+    exclude: test_data|Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py
     env:
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     args:
@@ -172,7 +189,7 @@ repos:
     docker_image: from-yml
     entry: coverage
     language: docker
-    files: Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py|Packs/Whois/Integrations/Whois/Whois_test.py
+    files: Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py
     env:
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     args:
@@ -273,11 +290,16 @@ repos:
     args:
     - --skip-pack-dependencies
     - --config-path=validation_config.toml
+    - --ignore=AG100
     args:packwise:
     - --skip-pack-dependencies
     - --config-path=validation_config.toml
     - --ignore=DO106
     - --ignore=CJ105
+    - --ignore=AG100
+    args:check_private_packs:
+    - --skip-pack-dependencies
+    - --config-path=validation_config.toml
     pass_filenames: false
     language: system
     require_serial: true
@@ -304,6 +326,7 @@ repos:
     entry: validate-validation-config-file
     language: python
     pass_filenames: false
+    skip:nightly: true
     args:
     - --config-path=validation_config.toml
 
@@ -372,3 +395,11 @@ repos:
     - --diff
     - git diff HEAD
     skip: true
+
+- repo: https://github.com/DavidAnson/markdownlint-cli2
+  rev: v0.17.2
+  hooks:
+    - id: markdownlint-cli2
+      files: "^(.*/)?README\\.md$"
+      args: [ "--config", ".markdownlint-cli2.jsonc" ]
+      exclude: Packs/ReversingLabs_Titanium_Cloud/Integrations/ReversingLabsTitaniumCloudv2/README\.md

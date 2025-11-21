@@ -115,6 +115,14 @@
         "tenantId": {
             "type": "string",
             "is_array": false
+        },
+        "_raw_log": {
+            "type": "string",
+            "is_array": false
+        },
+        "time": {
+            "type": "string",
+            "is_array": false
         }
     },
     "msft_azure_ad_raw": {

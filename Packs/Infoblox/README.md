@@ -1,4 +1,61 @@
+Note: Support for this Pack was moved to Partner starting October 15, 2025. In case of any issues arise, please contact the Partner directly at <support@infoblox.com> or <https://support.infoblox.com/>.
+
 # Infoblox NIOS
+
+The Infoblox NIOS integration enables network security and DNS based controls through the Infoblox NIOS platform. This integration provides capabilities for IP information retrieval, DNS firewall management via Response Policy Zones (RPZs), and network infrastructure monitoring within your Cortex XSOAR environment.
+
+#### DNS Security & Firewall
+
+- Manages DNS Firewall by configuring Response Policy Zones (RPZs) to control DNS resolution behavior
+- Blocks DNS resolution for malicious or unauthorized hostnames to prevent access to harmful destinations
+- Redirects clients to walled gardens by substituting DNS responses for enhanced security control
+- Provides comprehensive rule management including creation, updates, enabling/disabling, and deletion
+- Supports multiple substitute record types (A, AAAA, MX, NAPTR, PTR, SRV, TXT, IPv4, IPv6) for advanced DNS response control
+- Enables rule searching and object field inspection for detailed policy management
+
+#### IP Information & Network Monitoring
+
+- Retrieves detailed metadata about IP addresses including status, network associations, and device information
+- Provides comprehensive IP address information for both IPv4 and IPv6 addresses
+- Supports network information lookup and related object searches
+- Enables DHCP lease lookups for network troubleshooting and analysis
+
+#### Host Record Management
+
+- Creates new host records with IPv4 and IPv6 address assignments
+- Lists and retrieves existing host records with detailed configuration information
+- Supports host record configuration including DNS settings, aliases, and extended attributes
+- Manages host record associations with network views and DNS zones
+
+#### Network Infrastructure Integration
+
+- Integrates with Infoblox NIOS appliances for DNS and network security management
+- Provides API access to manage DNS security policies through Response Policy Zones
+- Enables integration with security workflows for policy management
+
+#### Pack Use-cases
+
+- Retrieve detailed IP address information and network metadata for security investigations
+- Create and manage Response Policy Zones (RPZs) for DNS based threat blocking
+- Configure DNS firewall rules to block, redirect, or allow specific domains and IP addresses
+- Create advanced substitute records (A, AAAA, MX, NAPTR, PTR, SRV, TXT) for sophisticated DNS response control
+- Update existing RPZ rules and policies to adapt to changing security requirements
+- Enable, disable, search, and delete RPZ rules for comprehensive policy lifecycle management
+- Monitor network infrastructure and retrieve IP address status information
+- Create new host records for DNS management and network asset tracking
+- List and manage existing host records with comprehensive configuration details
+- Integrate DNS security policy management with security workflows and automation
+- Implement DNS based security controls as part of a layered defense strategy
+- Perform DHCP lease lookups for network troubleshooting and security analysis
+
+#### Support
+
+- For technical support or troubleshooting, please contact Infoblox Support at [https://www.infoblox.com/support/](https://www.infoblox.com/support/)
+- For documentation and resources, visit [https://docs.infoblox.com/](https://docs.infoblox.com/)
+
+#### Contact
+
+- For more information about Infoblox NIOS, visit [https://www.infoblox.com/products/nios](https://www.infoblox.com/products/nios)
 
 <~XSIAM>
 This pack includes XSIAM content.
@@ -8,20 +65,25 @@ This pack includes XSIAM content.
 The following XQL Queries demonstrate the XDM modeling for the ingested Infoblox syslog messages:
 
 1. **DNS Queries**
+
    ```javascript
     config timeframe = 1H
    | datamodel dataset = infoblox_infoblox_raw
    | filter xdm.event.type = "DNS Query"
    | fields xdm.source.process.name, xdm.source.process.pid, xdm.alert.severity, xdm.event.log_level, xdm.event.type, xdm.event.description, xdm.source.ipv4, xdm.source.port, xdm.intermediate.ipv4, xdm.network.dns.dns_question.name, xdm.network.dns.dns_question.type, xdm.network.dns.dns_question.class, xdm.event.outcome, xdm.event.outcome_reason,  xdm.network.ip_protocol
     ```
-2. **DNS Responses** 
+
+2. **DNS Responses**
+
     ```javascript
    config timeframe = 1H  
    | datamodel dataset = infoblox_infoblox_raw
    | filter xdm.event.type  = "DNS Response" 
    | fields xdm.source.process.name, xdm.source.process.pid, xdm.alert.severity, xdm.event.log_level, xdm.event.type, xdm.event.description, xdm.source.ipv4, xdm.source.port,  xdm.network.dns.authoritative,  xdm.network.dns.dns_question.name, xdm.network.dns.dns_question.class, xdm.network.dns.dns_question.type, xdm.network.dns.is_response,xdm.network.dns.is_truncated,  xdm.network.dns.response_code, xdm.network.dns.dns_resource_record.name, xdm.network.dns.dns_resource_record.value, xdm.network.dns.dns_resource_record.type,  xdm.network.dns.dns_resource_record.class, xdm.target.host.ipv4_addresses, xdm.target.host.ipv6_addresses, xdm.target.ipv4, xdm.target.ipv6, xdm.network.ip_protocol, xdm.event.outcome, xdm.event.outcome_reason
     ```
-3. **DHCP Events** 
+
+3. **DHCP Events**
+
     ```javascript
    config timeframe = 1H  
    | datamodel dataset = infoblox_infoblox_raw
@@ -30,31 +92,34 @@ The following XQL Queries demonstrate the XDM modeling for the ingested Infoblox
     ```
 
 ## Configuration on Server Side
+
 This section describes the configuration steps that need to be done on your Infoblox NIOS appliance for sending event logs to Cortex XSIAM Broker VM via syslog.
 
-1. Login to the Infoblox NIOS appliance. 
+1. Login to the Infoblox NIOS appliance.
 2. From the **Grid** tab, Navigate to **Grid Manager** &rarr; **Members**, and then click **Grid Properties** &rarr; **Edit** from the Toolbar.
-3. In the **Grid Properties** editor, select the **Monitoring** tab, and then complete the following: 
+3. In the **Grid Properties** editor, select the **Monitoring** tab, and then complete the following:
    1. Select **Log to External Syslog Servers** to enable the appliance to send messages to a specified syslog server.
    2. Click the **Add** icon to add a new syslog server configuration and complete the following:
-      
-   | Parameter                  | Value    
-   | :---                       | :---                    
+
+   | Parameter                  | Value
+   | :---                       | :---
    | **`Address`**              | Enter the IP address of the Cortex XSIAM Broker VM Syslog server.
-   | **`Transport`**            | Select whether the appliance should use **UDP**, **TCP**, or **Secure TCP** to connect to the Cortex XSIAM Broker VM. 
+   | **`Transport`**            | Select whether the appliance should use **UDP**, **TCP**, or **Secure TCP** to connect to the Cortex XSIAM Broker VM.
    | **`Server Certificate`**   | To transport the logs over **Secure TCP**, upload a self-signed or a CA-signed server certificate.
    | **`Interface`**            | Select the interface through which the appliance should send the syslog messages to the Cortex XSIAM Broker VM.
    | **`Source`**               | Select whether the appliance should send only **Internal** messages, **External** messages, or both (**Any**).
-   | **`Node ID`**              | Specify the host or node identification string that would be used in the syslog message header to identify the appliance from which the syslog messages originated. 
+   | **`Node ID`**              | Specify the host or node identification string that would be used in the syslog message header to identify the appliance from which the syslog messages originated.
    | **`Port`**                 | Enter the port number that the Cortex XSIAM Broker VM is listening on for receiving syslog messages from the Infoblox appliance.
    | **`Severity`**             | Select the severity level of which messages from this level and above should be sent to Cortex XSIAM.
-   | **`Logging Category`**     | Select **Send selected categories** and use the arrows to move the requested logging categories from the **Available** table to the **Selected** table and vice versa. 
+   | **`Logging Category`**     | Select **Send selected categories** and use the arrows to move the requested logging categories from the **Available** table to the **Selected** table and vice versa.
+
    4. Click **Add** to add the external syslog server information.
    5. Optionally, click the **Test** button to test the connection to the Cortex XSIAM syslog server.
 4. If you want Audit logs to be forwarded to Cortex XSIAM Broker VM as well, select **Copy Audit Log Messages to Syslog** and select the facility that determines the processes and daemons from which the log messages are generated.
 5. Save the configuration and click **Restart** if it appears at the top of the screen.
 
 ### Remark
+
 Timestamp Parsing for syslog messages sent from Infoblox to Cortex XSIAM is supported in GMT time zone. The time zone configured on the grid member should be set accordingly. See [Using a Syslog Server](https://docs.infoblox.com/space/nios86/423493735/Using+a+Syslog+Server) and [Viewing the Syslog](https://docs.infoblox.com/space/NAG8/22252249/Using+a+Syslog+Server#Viewing-the-Syslog) Infoblox docs for additional details.
 
 ## Collect Events from Vendor
@@ -62,19 +127,21 @@ Timestamp Parsing for syslog messages sent from Infoblox to Cortex XSIAM is supp
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
-You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+
+You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Set-up-and-configure-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
 
-1. Navigate to **Settings** &rarr; **Configuration** &rarr; **Data Broker** &rarr; **Broker VMs**. 
+1. Navigate to **Settings** &rarr; **Configuration** &rarr; **Data Broker** &rarr; **Broker VMs**.
 2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.
 3. Click **Add New**.
 3. When configuring the Syslog Collector, set the following parameters:
-   | Parameter     | Value    
-   | :---          | :---                    
+
+   | Parameter     | Value
+   | :---          | :---
    | `Protocol`    | Select **UDP**, **TCP**, or **Secure TCP**, in accordance with the selected syslog transport method configured on the Infoblox appliance.
-   | `Port`        | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from the Infoblox appliance. 
-   | `Vendor`      | Enter **Infoblox**. 
-   | `Product`     | Enter **Infoblox**. 
+   | `Port`        | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from the Infoblox appliance.
+   | `Vendor`      | Enter **Infoblox**.
+   | `Product`     | Enter **Infoblox**.
 
 </~XSIAM>

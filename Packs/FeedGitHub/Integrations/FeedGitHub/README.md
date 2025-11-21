@@ -3,7 +3,6 @@ This integration was integrated and tested with version 1.0.0 of Github Feed.
 
 ## Configure Github Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch indicators |  | False |
@@ -31,7 +30,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### github-get-indicators
 
 ***
-Gets indicators from the feed within a specified date range and up to a maximum limit..
+Retrieves indicators from the feed within a specified date range and up to a maximum limit.
 
 #### Base Command
 
@@ -41,10 +40,17 @@ Gets indicators from the feed within a specified date range and up to a maximum 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| since | The start date from which to fetch indicators. Accepts date strings like "7 days ago", "2 weeks ago", etc. Default is 7 days. | Optional | 
-| until | The end date until which to fetch indicators. Accepts date strings like "now", "2023-05-19", etc. | Optional | 
-| limit | The maximum number of results to return. Default is 50. | Optional | 
+| since | The start date from which to fetch indicators. Accepts date strings like "7 days ago", "2 weeks ago", etc. Default is 7 days. | Optional |
+| until | The end date until which to fetch indicators. Accepts date strings like "now", "2023-05-19", etc. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
+## Troubleshooting
+
+- HTTP 404 Error: `No common ancestor between {commit} and {branch}`
+  - Typically occurs when a "force push" or a "commit squash" overwrites previously pushed commits on the configured branch.
+  - **Resolution**: To resolve this issue, reset indicator fetching of the affected integration instance.
+  - **Prevention**: To avoid this error, refrain from force pushing or squashing commits on the branch configured in the integration instance.

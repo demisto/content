@@ -135,7 +135,7 @@ class CyberArkIdentityEventsClient(IntegrationEventsClient):
             url=f"{str(self.request.url).removesuffix('/RedRock/Query')}/oauth2/platformtoken",  # type: ignore[arg-type]
             headers={"Authorization": f"Basic {credentials}"},
             data={"grant_type": "client_credentials", "scope": "siem"},
-            verify=not self.request.verify,
+            verify=self.request.verify,
         )
 
         response = self.call(request)

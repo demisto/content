@@ -1,4 +1,4 @@
-Sets multiple key/value pairs to the context under a common parent key. 
+Sets multiple key/value pairs to the context under a common parent key.
 
 ## Script Data
 
@@ -9,16 +9,16 @@ Sets multiple key/value pairs to the context under a common parent key.
 | Script Type | python |
 | Tags | Utility |
 
-
 ## Inputs
 
 ---
 
-| **Argument Name** | **Description** |
-| --- | --- |
-| parent | The parent key to which we append all the other keys. |
-| keys | The comma-separated list of keys. |
-| values | The comma-separated list of values. |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| parent | The parent key to which we append all the other keys. | Required |
+| keys | Separated list of keys separated by the specified delimiter (Comma is the default delimiter). | Required |
+| values | Separated list of values separated by the specified delimiter (Comma is the default delimiter). | Required |
+| delimiter | Delimiter by which the content of the values and keys lists are separated.<br/>Eg:  "," , ":", "|||". Default is ",". | Optional |
 
 ## Outputs
 
@@ -38,4 +38,3 @@ There are no outputs for this script.
 ### Context Result
 
 ![Example Output](../../doc_files/88423600-dd54b900-cda0-11ea-89f4-83981367659a.png)
-

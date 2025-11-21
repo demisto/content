@@ -4,8 +4,8 @@ from sigma import exceptions
 from sigma.backends.carbonblack import CarbonBlackBackend
 from sigma.backends.cortexxdr import CortexXDRBackend
 from sigma.backends.elasticsearch import LuceneBackend
-from sigma.backends.microsoft365defender import Microsoft365DefenderBackend
-from sigma.backends.qradar import QradarBackend
+from sigma.backends.kusto import KustoBackend
+from sigma.backends.QRadarAQL import QRadarAQLBackend
 from sigma.backends.sentinelone import SentinelOneBackend
 from sigma.backends.splunk import SplunkBackend
 from sigma.rule import SigmaRule
@@ -16,8 +16,8 @@ def main():
         "xql": CortexXDRBackend(),
         "splunk": SplunkBackend(),
         "sentinel_one": SentinelOneBackend(),
-        "qradar": QradarBackend(),
-        "microsoft_defender": Microsoft365DefenderBackend(),
+        "qradar": QRadarAQLBackend(),
+        "microsoft_defender": KustoBackend(),
         "carbon_black": CarbonBlackBackend(),
         "elastic": LuceneBackend(),
     }

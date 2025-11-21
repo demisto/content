@@ -2,7 +2,7 @@
     "name": "Intel471 Feed",
     "description": "This content pack fetches actor and malware related indicators from Intel 471. It also fetches watcher alerts.",
     "support": "partner",
-    "currentVersion": "2.1.9",
+    "currentVersion": "2.1.13",
     "author": "Intel 471",
     "url": "https://www.intel471.com",
     "email": "support@intel471.com",
@@ -28,6 +28,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

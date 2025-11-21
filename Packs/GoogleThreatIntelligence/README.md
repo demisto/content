@@ -35,6 +35,7 @@ Security team challenges | Solving with Google Threat Intelligence + XSOAR
 - Is a vulnerability (CVE) that appeared in my environment being currently leveraged by malware? How popular is it?
 
 **Technical capabilities**
+
 - Threat reputation for {files, hashes, domains, IPs, URLs} coming from [over 90 security vendors](https://docs.virustotal.com/docs/contributors) (antivirus solutions, nextgen EDRs, domain blocklists, network perimeter solutions, etc.).
 - Multi-angular detection for files via crowdsourced {[YARA](https://virustotal.github.io/yara/), [SIGMA](https://blog.virustotal.com/2021/05/context-is-king-part-i-crowdsourced.html), [IDS](https://docs.virustotal.com/docs/crowdsourced-ids-rules)} rules.
 - Allowlist (benign) information through the [aggregation of goodware indicators and provenance details](https://blog.virustotal.com/2021/08/introducing-known-distributors.html).
@@ -51,8 +52,8 @@ Security team challenges | Solving with Google Threat Intelligence + XSOAR
 - Advanced faceted/elastic searches over the {file, domain, IP, URL} corpus to identify IoCs that match certain criteria, e.g. list all MS Office documents that when opened launch a powershell script and end up exhibiting network communication.
 - Download any file in the Google Threat Intelligence corpus and reroute it to other analysis systems you own.
 
-
 **Popular tasks**
+
 - Enrich (context + reputation) IoCs (domains, IPs, URLs, attachments) found in suspicious emails entering your organization, escalate to the pertinent SOC function.
 - Scan suspicious files seen in your organization and get a second opinion that complements your corporate security stack.
 - Automatically discard false positive alerts recorded in your organization’s SIEM, sparing SOC resources.
@@ -65,8 +66,8 @@ Security team challenges | Solving with Google Threat Intelligence + XSOAR
 - Derive scores based on malicious observations and relationships for IPs transacting with your business.
 - Assign a severity score to issues identified in a vulnerability scan of your networks.
 
-
 **Additional information**
+
 - [Contact the Google Threat Intelligence team](https://www.virustotal.com/gui/contact-us)
 - [Google Threat Intelligence website](https://www.virustotal.com/)
 - [Google Threat Intelligence API developer reference guide](https://gtidocs.virustotal.com/reference)

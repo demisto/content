@@ -1,0 +1,5 @@
+[file:incidentfield-Asimily_CVE_Name.json]
+ignore=IF115
+
+[file:incidentfield-Asimily_Anomaly_Name.json]
+ignore=IF115

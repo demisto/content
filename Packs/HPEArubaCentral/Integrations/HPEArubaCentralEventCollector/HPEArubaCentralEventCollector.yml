@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -11,6 +11,7 @@ configuration:
   required: true
   type: 0
   section: Connect
+  additionalinfo: The region-specific Base URL for the Aruba Central API Gateway.
 - name: credentials
   display: Client ID
   required: true
@@ -18,12 +19,14 @@ configuration:
   displaypassword: Client Secret
   section: Connect
   hiddenusername: false
+  additionalinfo: The secret key associated with your Client ID for API authentication. Can be obtained via the APIs page in the product.
 - name: customer_id
   required: true
   type: 9
   displaypassword: Customer ID
   section: Connect
   hiddenusername: true
+  additionalinfo: The unique identifier for your Aruba Central account. Can be obtained via the APIs page in the product.
 - name: user
   display: Username
   required: true
@@ -31,6 +34,7 @@ configuration:
   displaypassword: Password 
   section: Connect
   hiddenusername: false
+  additionalinfo: The username and password of an Aruba Central account with at least read-only privileges.
 - display: Fetch networking events
   name: fetch_networking_events
   type: 8
@@ -91,7 +95,11 @@ script:
     description: Gets events from Aruba Central.
     execution: false
     name: aruba-central-get-events
-  dockerimage: demisto/python3:3.11.10.111039
+  - description: Use this command to test the connectivity of the HPE Aruba Central instance.
+    name: aruba-auth-test
+    execution: false
+    deprecated: false
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetchevents: true
   runonce: false
   script: '-'

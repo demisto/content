@@ -1,8 +1,8 @@
 category: Endpoint
 defaultEnabled: true
-sectionOrder:
-  - Connect
-  - Collect
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Cortex Core - IR
   version: -1
@@ -17,7 +17,7 @@ configuration:
   type: 0
   hidden: true
   required: false
-  section: Connect  
+  section: Connect
 - display: API Key ID
   name: apikey_id
   type: 4
@@ -43,7 +43,7 @@ configuration:
   name: timeout
   type: 0
   required: false
-  section: Connect  
+  section: Connect
 description: The Cortex Core IR integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
 display: Investigation & Response
 name: Cortex Core - IR
@@ -187,11 +187,19 @@ script:
     description: Isolates the specified endpoint.
     execution: true
     name: core-isolate-endpoint
+    supportedModules:
+    - C3
+    - X0
+    - X3
+    - X5
+    - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.Isolation.endpoint_id
       description: The endpoint ID.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: Links the response action to the triggered incident.
       name: incident_id
@@ -208,8 +216,8 @@ script:
       required: true
       prettyname: Run action on
       prettypredefined:
-        Issue initiator host: ${issue.hostname}
-        Issue remote host: ${issue.remotehost}
+        Issue initiator host: ${issue.xdmsourceagentidentifier}
+        Issue remote host: ${issue.xdmtargetagentidentifier}
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Suppress an error when trying to isolate a disconnected endpoint. When set to false, an error is returned.
@@ -220,6 +228,12 @@ script:
     description: Isolates the specified endpoint.
     execution: true
     name: core-isolate-endpoint-quick-action
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     prettyname: Isolate Endpoint
     quickaction: true
     hidden: true
@@ -252,6 +266,12 @@ script:
     description: Reverses the isolation of an endpoint.
     execution: true
     name: core-unisolate-endpoint
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.UnIsolation.endpoint_id
@@ -893,8 +913,14 @@ script:
       predefined:
       - asc
       - desc
-    description: Gets agent event reports. You can filter by multiple fields, which will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of reports from the start of the result set (start by counting from 0).
+    description: Gets agent event reports. You can filter by multiple fields, which are combined using an AND condition (OR is not supported). The maximum result set size is 100. The offset specifies the zero-based index of reports from the start of the result set (start by counting from 0).
     name: core-get-audit-agent-reports
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.AuditAgentReports.ENDPOINTID
       description: Endpoint ID.
@@ -957,11 +983,17 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Block lists requested files which have not already been block listed or added to allow lists.
+    description: Blocks requested files that are not already on the block list or the allow list.
     name: core-blocklist-files
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.blocklist.added_hashes
-      description: Added fileHash to blocklist.
+      description: Added file hash to the block list.
       type: Number
     - contextPath: Core.blocklist.excluded_hashes
       description: Added fileHash to blocklist.
@@ -982,11 +1014,17 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Adds requested files to allow list if they are not already on block list or allow list.
+    description: Adds requested files to the allow list if they are not already on the block list or the allow list.
     name: core-allowlist-files
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.allowlist.added_hashes
-      description: Added fileHash to allowlist.
+      description: Added a file hash to the allow list.
       type: Number
     - contextPath: Core.allowlist.excluded_hashes
       description: Added fileHash to allowlist.
@@ -1014,6 +1052,12 @@ script:
       name: timeout_in_seconds
     description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
     name: core-quarantine-files
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
@@ -1043,6 +1087,8 @@ script:
     - contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
       description: The error reason terminate result.
       type: Unknown
+    compliantpolicies:
+    - Quarantine File
   - arguments:
     - description: Links the response action to the triggered incident.
       name: incident_id
@@ -1051,8 +1097,8 @@ script:
       name: endpoint_id_list
       prettyname: Run action on
       prettypredefined:
-        Initiator host endpoint ID: ${issue.hostname}
-        Remote host endpoint ID: ${issue.remotehost}
+        Initiator host endpoint ID: ${issue.xdmsourceagentidentifier}
+        Remote host endpoint ID: ${issue.xdmtargetagentidentifier}
       required: true
     - description: String that represents the path of the file you want to quarantine.
       name: file_path
@@ -1076,6 +1122,12 @@ script:
       name: timeout_in_seconds
     description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
     name: core-quarantine-files-quick-action
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     prettyname: Quarantine File
     quickaction: true
     hidden: true
@@ -1118,10 +1170,16 @@ script:
     - description: String that represents the file path.
       name: file_path
       required: true
-    description: Retrieves the quarantine status for a selected file.
+    description: Retrieves the quarantine status of a selected file.
     name: core-get-quarantine-status
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
   - arguments:
-    - description: Links the response action to the incident that triggered it.
+    - description: Links a response action to the incident that triggered it.
       name: incident_id
     - description: String that represents the file in hash. Must be a valid SHA256 hash.
       name: file_hash
@@ -1136,8 +1194,14 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    description: Restores a quarantined file on requested endpoints.
+    description: Restores a quarantined file on the requested endpoints.
     name: core-restore-file
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
@@ -1186,8 +1250,14 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    description: Restores a quarantined file on requested endpoints.
+    description: Restores a quarantined file on the requested endpoints.
     name: core-restore-file-quick-action
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     prettyname: Restore File From Quarantine
     quickaction: true
     hidden: true
@@ -1279,9 +1349,15 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    description: Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note that scanning all the endpoints may cause performance issues and latency.
+    description: Runs a scan on a selected endpoint. To scan all endpoints, use the argument all=true. Scanning all endpoints may affect performance and cause latency.
     execution: true
     name: core-endpoint-scan
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.endpointScan.actionId
@@ -1326,8 +1402,8 @@ script:
       name: endpoint_id_list
       prettyname: Run action on
       prettypredefined:
-        Issue initiator host: ${issue.hostname}
-        Issue remote host: ${issue.remotehost}
+        Issue initiator host: ${issue.xdmsourceagentidentifier}
+        Issue remote host: ${issue.xdmtargetagentidentifier}
     - description: Name of the distribution list.
       isArray: true
       name: dist_name
@@ -1381,9 +1457,15 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    description: Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note that scanning all the endpoints may cause performance issues and latency.
+    description: Runs a scan on a selected endpoint. To scan all endpoints, run the command with the argument all=true. Scanning all endpoints may impact performance and cause latency.
     execution: true
     name: core-endpoint-scan-quick-action
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     prettyname: Run Malware Scan
     quickaction: true
     hidden: true
@@ -1473,12 +1555,18 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Cancel the selected endpoints scan. A scan can only be cancelled if the selected endpoints are Pending or In Progress. To scan all endpoints, run the command with the argument all=true. Note that scanning all of the endpoints may cause performance issues and latency.
+    description: Cancels the scan on the selected endpoints. A scan can only be canceled if the selected endpoints are Pending or In Progress. To scan all endpoints, run the command with the argument all=true. Scanning all endpoints may impact performance and cause latency.
     execution: true
     name: core-endpoint-scan-abort
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.endpointScan.actionId
-      description: The action id of the abort scan request.
+      description: The action ID of the abort scan request.
       type: Unknown
     - contextPath: Core.endpointScan.aborted
       description: Was the scan cancelled.
@@ -1697,8 +1785,14 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
+    description: Retrieves files from selected endpoints. You can retrieve up to 20 files from no more than 10 endpoints. At least one endpoint ID and one file path are required to run the command. After running the command, use the core-action-status-get command with the returned action_id to check the action status.
     name: core-retrieve-files
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.RetrievedFiles.action_id
@@ -1740,8 +1834,8 @@ script:
       required: true
       prettyname: Run action on
       prettypredefined:
-        Issue initiator host: ${issue.hostname}
-        Remote host: ${issue.remotehost}
+        Issue initiator host: ${issue.xdmsourceagentidentifier}
+        Remote host: ${issue.xdmtargetagentidentifier}
     - description: A comma-separated list of file paths on the Windows platform.
       isArray: true
       name: windows_file_paths
@@ -1754,10 +1848,10 @@ script:
     - description: A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on.
       isArray: true
       name: generic_file_path
-      defaultValue: 'Issue initiator file'
       prettyname: File to retrieve
+      required: true
       prettypredefined:
-        Issue initiator file: ${issue.filepath}
+        Issue initiator file: ${issue.initiatorpath}
         Issue CGO file path: ${issue.cgopath}
     - description: For polling use.
       isArray: true
@@ -1767,8 +1861,14 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
+    description: Retrieves files from selected endpoints. You can retrieve up to 20 files from no more than 10 endpoints. At least one endpoint ID and one file path are required to run the command. After running the command, use the core-action-status-get command with the returned action_id to check the action status.
     name: core-retrieve-files-quick-action
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     prettyname: Retrieve File
     quickaction: true
     hidden: true
@@ -1809,11 +1909,17 @@ script:
       isArray: true
       name: action_id
       required: true
-    description: View the file retrieved by the core-retrieve-files command according to the action ID. Before running this command, you can use the core-action-status-get command to check if this action completed successfully.
+    description: Views the file retrieved by the core-retrieve-files command using the action ID. Before running this command, use the core-action-status-get command to check if the action completed successfully.
     name: core-retrieve-file-details
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: File
-      description: The file details command results.
+      description: The file details returned by the command.
       type: Unknown
     - contextPath: File.Name
       description: The full file name (including the file extension).
@@ -1912,11 +2018,17 @@ script:
       isArray: true
       name: action_id
       required: true
-    description: Retrieves the status of the requested actions according to the action ID.
+    description: Retrieves the status of the requested actions using the action ID.
     name: core-action-status-get
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.GetActionStatus
-      description: The action status command results.
+      description: The results of the action status command.
       type: Unknown
     - contextPath: Core.GetActionStatus.endpoint_id
       description: Endpoint ID.
@@ -1968,8 +2080,14 @@ script:
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
-    description: Deprecated. Use core-script-run instead.
+    description: Deprecated. Use the core-script-run command instead.
     name: core-run-script
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     deprecated: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -1995,8 +2113,14 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    description: Initiates a new endpoint script execution action using the provided snippet code.
+    description: Initiates a new endpoint script execution using the provided snippet code.
     name: core-run-snippet-code-script
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -2037,11 +2161,17 @@ script:
       isArray: true
       name: action_id
       required: true
-    description: Retrieves the status of a script execution action.
+    description: Retrieves the status of a script execution.
     name: core-get-script-execution-status
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.ScriptStatus.general_status
-      description: General status of the action, considering the status of all the endpoints.
+      description: The general status of the action, based on the status of all endpoints.
       type: String
     - contextPath: Core.ScriptStatus.error_message
       description: Error message regarding permissions for running APIs or the action doesn’t exist.
@@ -2081,11 +2211,17 @@ script:
       isArray: true
       name: action_id
       required: true
-    description: Retrieve the results of a script execution action.
+    description: Retrieve the results of a script execution.
     name: core-get-script-execution-results
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.ScriptResult.action_id
-      description: ID of the action initiated.
+      description: The ID of the initiated action.
       type: Number
     - contextPath: Core.ScriptResult.results.retrieved_files
       description: Number of successfully retrieved files.
@@ -2137,6 +2273,12 @@ script:
       required: true
     description: Gets the files retrieved from a specific endpoint during a script execution.
     name: core-get-script-execution-result-files
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -2202,8 +2344,14 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    description: Initiate a new endpoint script execution of shell commands.
+    description: Initiates a new endpoint script execution of shell commands.
     name: core-run-script-execute-commands
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -2261,8 +2409,14 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    description: Initiates a new endpoint script execution to delete the specified file.
+    description: Initiates a new endpoint script execution to delete a specified file.
     name: core-run-script-delete-file
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -2320,8 +2474,14 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    description: Initiates a new endpoint script execution to check if file exists.
+    description: Initiates a new endpoint script execution to check if a file exists.
     name: core-run-script-file-exists
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -2379,8 +2539,14 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    description: Initiates a new endpoint script execution kill process.
+    description: Initiates a new endpoint script execution to kill a process.
     name: core-run-script-kill-process
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -2429,9 +2595,15 @@ script:
       name: hostname
     description: Returns information about an endpoint.
     name: endpoint
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Endpoint.Hostname
-      description: The endpoint's hostname.
+      description: The hostname of the endpoint.
       type: String
     - contextPath: Endpoint.OS
       description: The endpoint's operation system.
@@ -2489,11 +2661,17 @@ script:
       required: true
     - description: String that represents additional information regarding the action.
       name: comment
-    description: Removes requested files from allow list.
+    description: Removes the requested files from the allow list.
     name: core-remove-allowlist-files
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.allowlist.removed_hashes
-      description: Removed file hash.
+      description: The removed file hash.
       type: Number
   - arguments:
     - description: Links the response action to the incident that triggered it.
@@ -2504,11 +2682,17 @@ script:
       required: true
     - description: String that represents additional information regarding the action.
       name: comment
-    description: Removes requested files from block list.
+    description: Removes the requested files from the block list.
     name: core-remove-blocklist-files
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.blocklist.removed_hashes
-      description: Removed fileHash from blocklist.
+      description: The removed file hash from the block list.
       type: Number
   - arguments:
     - description: Name of the exclusion.
@@ -3619,8 +3803,14 @@ script:
       hidden: true
       description: Is the command being called from a core pack.
       defaultValue: true
-    description: Initiates a new endpoint script execution action using a script from the script library and returns the results.
+    description: Initiates a new endpoint script execution using a script from the script library and returns the results.
     name: core-script-run
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptResult.action_id
@@ -3667,8 +3857,8 @@ script:
       required: true
       prettyname: Run action on
       prettypredefined:
-        Initiator host: ${issue.hostname}
-        Remote host: ${issue.remotehost}
+        Initiator host: ${issue.xdmsourceagentidentifier}
+        Remote host: ${issue.xdmtargetagentidentifier}
     - description: Unique identifier of the script. Can be retrieved by running the core-get-scripts command.
       name: script_uid
       required: true
@@ -3694,8 +3884,14 @@ script:
       hidden: true
       description: Is the command being called from a core pack.
       defaultValue: true
-    description: Initiates a new endpoint script execution action using a script from the script library and returns the results.
+    description: Initiates a new endpoint script execution using a script from the script library and returns the results
     name: core-script-run-quick-action
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     prettyname: Run Endpoint Script
     quickaction: true
     hidden: true
@@ -3763,7 +3959,13 @@ script:
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
     name: core-terminate-process
-    description: Terminate a process by its instance ID. Available only for XSIAM 2.4 and above.
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
+    description: Terminates a process by its instance ID. Available only for XSIAM 2.4 and above.
     polling: true
     outputs:
     - contextPath: Core.TerminateProcess.action_id
@@ -3831,10 +4033,16 @@ script:
       deprecated: true
     - description: Interval in seconds between each poll.
       name: interval_in_seconds
-    - description: Polling timeout in seconds.
+    - description: The polling timeout in seconds.
       name: timeout_in_seconds
     name: core-terminate-causality
-    description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and above.
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
+    description: Terminates a process tree by its causality ID. Available only for XSIAM 2.4 and above.
     polling: true
     outputs:
     - contextPath: Core.TerminateCausality.action_id
@@ -3907,9 +4115,15 @@ script:
       deprecated: true
     - description: Interval in seconds between each poll.
       name: interval_in_seconds
-    - description: Polling timeout in seconds.
+    - description: The polling timeout in seconds.
       name: timeout_in_seconds
     name: core-terminate-causality-quick-action
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     prettyname: Terminate CGO
     quickaction: true
     hidden: true
@@ -3963,6 +4177,8 @@ script:
       name: asset_id
       required: true
     name: core-get-asset-details
+    deprecated:marketplacev2: false
+    deprecated: true
     description: Get asset information.
     outputs:
     - contextPath: Core.CoreAsset
@@ -4003,12 +4219,323 @@ script:
       description: The normalized fields associated with the asset.
     - contextPath: Core.CoreAsset.all_sources
       description: A list of all sources providing information about the asset.
+  - arguments:
+    - description: The action ID for polling use.
+      name: action_id
+      hidden: true
+    - description: Interval in seconds between each poll.
+      defaultValue: '10'
+      name: polling_interval_in_seconds
+    - description: Polling timeout in seconds.
+      name: polling_timeout_in_seconds
+      defaultValue: '600'
+    - name: hide_polling_output
+      hidden: true
+      description: Whether to hide the polling result (automatically filled by polling).
+    - name: is_core
+      hidden: true
+      description: Is the command being called from a core pack.
+      defaultValue: true
+    - description: Unique identifier of the execute_commands script.
+      name: script_uid
+      hidden: true
+    - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}.
+      name: parameters
+      hidden: true
+    - description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
+      name: endpoint_ids
+      required: true
+      isArray: true
+      type: String
+    - description: List of shell commands to execute, separated by the defined command_separator argument. Set the is_raw_command argument to true to prevent splitting by the separator character.
+      name: command
+      required: true
+      isArray: true
+      type: String
+    - description: The maximum running time of the command.
+      name: timeout
+      required: false
+      isArray: false
+      type: Integer
+      defaultValue: 600
+    - description: Link the response action to the triggered incident.
+      name: incident_id
+      required: false
+      isArray: false
+      type: String
+    - description: Whether to pass the command as-is. When false, the command is split by the chosen command_separator argument and sent as a list of commands that are run independently.
+      name: is_raw_command
+      required: false
+      isArray: false
+      type: Boolean
+    - description: The separator used to split the command list. For example, using the default value (a comma), the string command1,command2 will be split into two separate commands, and each will be executed individually.
+      name: command_separator
+      required: false
+      isArray: false
+      type: String
+      defaultValue: ','
+      auto: PREDEFINED
+      predefined:
+      - ","
+      - "|"
+      - "/"
+    - description: Type of shell command.
+      name: command_type
+      auto: PREDEFINED
+      required: false
+      isArray: false
+      type: String
+      predefined:
+      - "powershell"
+      - "native"
+    description: Run a shell command on a specific endpoint and return its result.
+    name: core-execute-command
+    polling: true
+    outputs:
+    - contextPath: Core.ScriptResult.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: Core.ScriptResult.results.retrieved_files
+      description: Number of successfully retrieved files.
+      type: Number
+    - contextPath: Core.ScriptResult.results.endpoint_ip_address
+      description: Endpoint IP address.
+      type: String
+    - contextPath: Core.ScriptResult.results.endpoint_name
+      description: Endpoint name.
+      type: String
+    - contextPath: Core.ScriptResult.results.failed_files
+      description: Number of files failed to retrieve.
+      type: Number
+    - contextPath: Core.ScriptResult.results.endpoint_status
+      description: Endpoint status.
+      type: String
+    - contextPath: Core.ScriptResult.results.domain
+      description: Domain to which the endpoint belongs.
+      type: String
+    - contextPath: Core.ScriptResult.results.endpoint_id
+      description: Endpoint ID.
+      type: String
+    - contextPath: Core.ScriptResult.results.execution_status
+      description: Execution status of this endpoint.
+      type: String
+    - contextPath: Core.ScriptResult.results.return_value
+      description: Value returned by the script in case the type is not a dictionary.
+      type: String
+    - contextPath: Core.ScriptResult.results.standard_output
+      description: The STDOUT and the STDERR logged by the script during the execution.
+      type: String
+    - contextPath: Core.ScriptResult.results.retention_date
+      description: Timestamp in which the retrieved files will be deleted from the server.
+      type: Date
+    - contextPath: Core.ScriptResult.results.command
+      description: The command that was executed by the script.
+      type: String
+  - arguments:
+    - description: String that identifies the indicator you want to ingest into XSIAM. Required when the ioc_object is not in use.
+      name: indicator
+      required: false
+      isArray: false
+      type: String
+    - auto: PREDEFINED
+      description: The keyword identifying the type of indicator. Required when the ioc_object is not in use.
+      name: type
+      predefined:
+      - 'HASH'
+      - 'IP'
+      - 'PATH'
+      - 'DOMAIN_NAME'
+      - 'FILENAME'
+      required: false
+      isArray: false
+      type: String
+    - auto: PREDEFINED
+      description: The keyword identifying the indicator's severity. Required when the ioc_object is not in use.
+      name: severity
+      predefined:
+      - 'INFO'
+      - 'LOW'
+      - 'MEDIUM'
+      - 'HIGH'
+      - 'CRITICAL'
+      required: false
+      isArray: false
+      type: String
+    - description: "Integer representing the indicator's expiration timestamp. This is a Unix epoch timestamp value, in milliseconds. Also valid is the UTC date or relative timestamp to set the IOC rule expiration date, for example: '7 Days', '12 hours'. Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. If this indicator has no expiration, use Never. If value is not given, the indicator receives the indicator's type default expiration date."
+      name: expiration_date
+      required: false
+      isArray: false
+      type: String
+    - description: Comment string.
+      name: comment
+      required: false
+      isArray: false
+      type: String
+    - auto: PREDEFINED
+      description: Keyword representing the indicator's reputation.
+      name: reputation
+      predefined:
+      - 'GOOD'
+      - 'BAD'
+      - 'SUSPICIOUS'
+      - 'UNKNOWN'
+      required: false
+      isArray: false
+      type: String
+    - auto: PREDEFINED
+      description: Character representing the indicator's reliability rating. Valid values are A-F. A is the most reliable, F is the least.
+      name: reliability
+      predefined:
+      - 'A'
+      - 'B'
+      - 'C'
+      - 'D'
+      - 'E'
+      - 'F'
+      required: false
+      isArray: false
+      type: String
+    - description: String representing the indicator class (for example, "Malware").
+      name: class
+      required: false
+      isArray: false
+      type: String
+    - description: String representing the name of the vendor who reported this indicator.
+      name: vendor_name
+      required: false
+      isArray: false
+      type: String
+    - auto: PREDEFINED
+      description: Keyword representing the vendor's reputation. Required when vendor_name is defined.
+      name: vendor_reputation
+      predefined:
+      - 'GOOD'
+      - 'BAD'
+      - 'SUSPICIOUS'
+      - 'UNKNOWN'
+      required: false
+      isArray: false
+      type: String
+    - auto: PREDEFINED
+      description: The character representing the vendor's reliability rating. Valid values are A-F. A is the most reliable, F is the least. Required when vendor_reputation is defined.
+      name: vendor_reliability
+      predefined:
+      - 'A'
+      - 'B'
+      - 'C'
+      - 'D'
+      - 'E'
+      - 'F'
+      required: false
+      isArray: false
+      type: String
+    - auto: PREDEFINED
+      description: The input format selected, which determines how parameters are sent to the XDR API.
+      defaultValue: 'JSON'
+      name: input_format
+      predefined:
+      - 'CSV'
+      - 'JSON'
+      required: false
+      isArray: false
+      type: String
+    - description: "The JSON/CSV object contains the IOC details. Make sure a valid IOC object is passed."
+      name: ioc_object
+      required: false
+      isArray: false
+      type: String
+    description: "Upload the IOC rules to XSIAM. When the ioc_object is defined, disregard any other provided arguments, as the ioc_object takes precedence. Validate the indicator parameters when ioc_object is used. If `vendor_name`, `vendor_reputation`, and `vendor_reliability` are used, only a single vendor is supported. For multiple vendors, utilize an `ioc_object` in JSON format. Adding a rule with the same indicator, but with different parameters, will update the existing rule."
+    name: core-add-indicator-rule
+    outputs:
+    - contextPath: Core.Indicator.indicator
+      description: String that identifies the indicator that was ingested into XSIAM.
+      type: String
+    - contextPath: Core.Indicator.type
+      description: Keyword identifying the type of indicator.
+      type: String
+    - contextPath: Core.Indicator.severity
+      description: Keyword identifying the indicator's severity.
+      type: String
+    - contextPath: Core.Indicator.expiration_date
+      description: Integer representing the indicator's expiration timestamp.
+      type: Number
+    - contextPath: Core.Indicator.comment
+      description: Comment string.
+      type: String
+    - contextPath: Core.Indicator.reputation
+      description: Keyword representing the indicator's reputation.
+      type: String
+    - contextPath: Core.Indicator.reliability
+      description: Keyword representing the indicator's reliability rating.
+      type: String
+    - contextPath: Core.Indicator.class
+      description: String representing the indicator class.
+      type: String
+    - contextPath: Core.Indicator.vendors
+      description: List representing the vendors who reported this indicator.
+      type: List
+  - arguments:
+    - description: The alert ID's from where to retrieve the contributing events.
+      isArray: true
+      name: alert_ids
+      required: true
+    - defaultValue: '50'
+      description: The maximum number of contributing events to retrieve.
+      name: limit
+    - defaultValue: '1'
+      description: The page number to retrieve. Minimum is 1.
+      name: page_number
+    - defaultValue: '50'
+      description: The page size.
+      name: page_size
+    description: Retrieves contributing events for a specific correlation alert.
+    name: core-get-contributing-event
+    outputs:
+    - contextPath: Core.ContributingEvent.alertID
+      description: The alert ID.
+      type: String
+    - contextPath: Core.ContributingEvent.events
+      description: The contributing events.
+      type: Unknown
+  - arguments:
+    - description: List of agent IDs that support the operation.
+      name: endpoint_list
+      required: true
+    - description: List of IPv6 or IPv4 addresses to be added to the blocklist.
+      name: addresses
+      required: true
+    - description: Number of minutes to block (Max 518,400). The default is 300.
+      name: duration
+    - description: The blocked IP address lists required for polling that are not visible to the user.
+      name: blocked_list
+      hidden: true
+    polling: true
+    name: core-block-ip
+    description: Block malicious or suspicious IP addresses.  
+    outputs:
+    - contextPath: Core.ip_block_results
+      description: A list of Dictionaries, each containing ip_address, end_point, and reason (including status and error message).
+      type: List
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.2113590
+  dockerimage: demisto/google-cloud-storage:1.0.0.4885491
 tests:
 - No tests
 supportsquickactions: true
 fromversion: 6.2.0
+supportedModules:
+- C3
+- X0
+- X1
+- X3
+- X5
+- ENT_PLUS
+- exposure_management
+- cloud
+- cloud_runtime_security
+- agentix
+- cloud_posture
+- xsiam
+- edr

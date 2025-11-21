@@ -1,0 +1,729 @@
+{
+	"description": "Maps incoming Recorded Future classic and playbook alerts.",
+	"feed": false,
+	"id": "RF - Incoming Mapper",
+	"mapping": {
+		"RF Classic Alert": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"RF AI Insights": {
+					"simple": "ai_insights"
+				},
+				"RF Documents": {
+					"complex": {
+						"filters": [],
+						"root": "documents",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"RF Entities": {
+					"complex": {
+						"filters": [],
+						"root": "entities",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"RF Fragment": {
+					"complex": {
+						"filters": [],
+						"root": "fragments",
+						"transformers": [
+							{
+								"operator": "ArrayToCSV"
+							}
+						]
+					}
+				},
+				"RF Markdown": {
+					"simple": "markdown"
+				},
+				"RF Portal URL": {
+					"simple": "portal_url"
+				},
+				"RF Rule ID": {
+					"simple": "rule.id"
+				},
+				"RF Triggered By": {
+					"complex": {
+						"accessor": "triggered_by_strings",
+						"filters": [],
+						"root": "triggered_by",
+						"transformers": [
+							{
+								"operator": "ArrayToCSV"
+							}
+						]
+					}
+				},
+				"Rule Name": {
+					"simple": "rule.name"
+				},
+				"occurred": {
+					"simple": "created"
+				}
+			}
+		},
+		"RF Data Leakage on Code Repo Playbook Alert": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "subtype"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"RF Affected Products": {
+					"complex": {
+						"accessor": "name",
+						"filters": [],
+						"root": "details.affected_products",
+						"transformers": [
+							{
+								"operator": "ArrayToCSV"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": ",\n"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": ","
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				},
+				"RF Insikt Notes": {
+					"complex": {
+						"accessor": "insikt_notes",
+						"filters": [],
+						"root": "details",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"RF Lifecycle Stage": {
+					"simple": "details.lifecycle_stage"
+				},
+				"RF Markdown": {
+					"simple": "markdown"
+				},
+				"RF Risk Rule": {
+					"complex": {
+						"accessor": "risk_rules",
+						"filters": [],
+						"root": "details",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"RF Targeted Products": {
+					"complex": {
+						"filters": [],
+						"root": "targets",
+						"transformers": [
+							{
+								"operator": "uniq"
+							},
+							{
+								"operator": "ArrayToCSV"
+							}
+						]
+					}
+				},
+				"Source Priority": {
+					"simple": "priority"
+				},
+				"Target": {
+					"complex": {
+						"filters": [],
+						"root": "targets",
+						"transformers": [
+							{
+								"operator": "ArrayToCSV"
+							}
+						]
+					}
+				},
+				"occurred": {
+					"simple": "created"
+				}
+			}
+		},
+		"RF Domain Abuse Playbook Alert": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "subtype"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"RF Affected Products": {
+					"complex": {
+						"accessor": "name",
+						"filters": [],
+						"root": "details.affected_products",
+						"transformers": [
+							{
+								"operator": "ArrayToCSV"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": ",\n"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": ","
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				},
+				"RF DNS Records": {
+					"complex": {
+						"accessor": "resolved_record_list",
+						"filters": [],
+						"root": "details",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"RF Insikt Notes": {
+					"complex": {
+						"accessor": "insikt_notes",
+						"filters": [],
+						"root": "details",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"RF Lifecycle Stage": {
+					"simple": "details.lifecycle_stage"
+				},
+				"RF Markdown": {
+					"simple": "markdown"
+				},
+				"RF Risk Rule": {
+					"complex": {
+						"accessor": "risk_rules",
+						"filters": [],
+						"root": "details",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"RF Targeted Domains": {
+					"complex": {
+						"filters": [],
+						"root": "targets",
+						"transformers": [
+							{
+								"operator": "ArrayToCSV"
+							}
+						]
+					}
+				},
+				"RF Targeted Products": {
+					"complex": {
+						"filters": [],
+						"root": "targets",
+						"transformers": [
+							{
+								"operator": "uniq"
+							},
+							{
+								"operator": "ArrayToCSV"
+							}
+						]
+					}
+				},
+				"RF Whois Record Data": {
+					"complex": {
+						"accessor": "value",
+						"filters": [],
+						"root": "details.whois",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"Source Priority": {
+					"simple": "priority"
+				},
+				"occurred": {
+					"simple": "created"
+				}
+			}
+		},
+		"RF Facility Risk Playbook Alert": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "subtype"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"RF Affected Products": {
+					"complex": {
+						"accessor": "name",
+						"filters": [],
+						"root": "details.affected_products",
+						"transformers": [
+							{
+								"operator": "ArrayToCSV"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": ",\n"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": ","
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				},
+				"RF Insikt Notes": {
+					"complex": {
+						"accessor": "insikt_notes",
+						"filters": [],
+						"root": "details",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"RF Lifecycle Stage": {
+					"simple": "details.lifecycle_stage"
+				},
+				"RF Markdown": {
+					"simple": "markdown"
+				},
+				"RF Risk Rule": {
+					"complex": {
+						"accessor": "risk_rules",
+						"filters": [],
+						"root": "details",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"RF Targeted Products": {
+					"complex": {
+						"filters": [],
+						"root": "targets",
+						"transformers": [
+							{
+								"operator": "uniq"
+							},
+							{
+								"operator": "ArrayToCSV"
+							}
+						]
+					}
+				},
+				"Source Priority": {
+					"simple": "priority"
+				},
+				"Target": {
+					"complex": {
+						"filters": [],
+						"root": "targets",
+						"transformers": [
+							{
+								"operator": "ArrayToCSV"
+							}
+						]
+					}
+				},
+				"occurred": {
+					"simple": "created"
+				}
+			}
+		},
+		"RF Playbook Alert": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "subtype"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"RF Affected Products": {
+					"complex": {
+						"accessor": "name",
+						"filters": [],
+						"root": "details.affected_products",
+						"transformers": [
+							{
+								"operator": "ArrayToCSV"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": ",\n"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": ","
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				},
+				"RF Insikt Notes": {
+					"complex": {
+						"accessor": "insikt_notes",
+						"filters": [],
+						"root": "details",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"RF Lifecycle Stage": {
+					"simple": "details.lifecycle_stage"
+				},
+				"RF Markdown": {
+					"simple": "markdown"
+				},
+				"RF Risk Rule": {
+					"complex": {
+						"accessor": "risk_rules",
+						"filters": [],
+						"root": "details",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"RF Targeted Products": {
+					"complex": {
+						"filters": [],
+						"root": "targets",
+						"transformers": [
+							{
+								"operator": "uniq"
+							},
+							{
+								"operator": "ArrayToCSV"
+							}
+						]
+					}
+				},
+				"Source Priority": {
+					"simple": "priority"
+				},
+				"occurred": {
+					"simple": "created"
+				}
+			}
+		},
+		"RF Third-Party Cyber Playbook Alert": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "subtype"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"RF Affected Products": {
+					"complex": {
+						"accessor": "name",
+						"filters": [],
+						"root": "details.affected_products",
+						"transformers": [
+							{
+								"operator": "ArrayToCSV"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": ",\n"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": ","
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				},
+				"RF Insikt Notes": {
+					"complex": {
+						"accessor": "insikt_notes",
+						"filters": [],
+						"root": "details",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"RF Lifecycle Stage": {
+					"simple": "details.lifecycle_stage"
+				},
+				"RF Markdown": {
+					"simple": "markdown"
+				},
+				"RF Risk Rule": {
+					"complex": {
+						"accessor": "risk_rules",
+						"filters": [],
+						"root": "details",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"RF Targeted Products": {
+					"complex": {
+						"filters": [],
+						"root": "targets",
+						"transformers": [
+							{
+								"operator": "uniq"
+							},
+							{
+								"operator": "ArrayToCSV"
+							}
+						]
+					}
+				},
+				"Source Priority": {
+					"simple": "priority"
+				},
+				"Target": {
+					"complex": {
+						"filters": [],
+						"root": "targets",
+						"transformers": [
+							{
+								"operator": "ArrayToCSV"
+							}
+						]
+					}
+				},
+				"occurred": {
+					"simple": "created"
+				}
+			}
+		},
+		"RF Vulnerability Playbook Alert": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "subtype"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"RF Affected Products": {
+					"complex": {
+						"accessor": "name",
+						"filters": [],
+						"root": "details.affected_products",
+						"transformers": [
+							{
+								"operator": "ArrayToCSV"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": ",\n"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": ","
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				},
+				"RF Insikt Notes": {
+					"complex": {
+						"accessor": "insikt_notes",
+						"filters": [],
+						"root": "details",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"RF Lifecycle Stage": {
+					"simple": "details.lifecycle_stage"
+				},
+				"RF Markdown": {
+					"simple": "markdown"
+				},
+				"RF Risk Rule": {
+					"complex": {
+						"accessor": "risk_rules",
+						"filters": [],
+						"root": "details",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"RF Targeted Products": {
+					"complex": {
+						"filters": [],
+						"root": "targets",
+						"transformers": [
+							{
+								"operator": "uniq"
+							},
+							{
+								"operator": "ArrayToCSV"
+							}
+						]
+					}
+				},
+				"Source Priority": {
+					"simple": "priority"
+				},
+				"occurred": {
+					"simple": "created"
+				}
+			}
+		}
+	},
+	"name": "RF - Incoming Mapper",
+	"type": "mapping-incoming",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

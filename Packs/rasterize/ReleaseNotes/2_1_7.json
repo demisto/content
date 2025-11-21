@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "This update reverts changes introduced in version 2.1.6. As a result, the 'url' argument in the rasterize command no longer supports array inputs when used in the War Room."
+}

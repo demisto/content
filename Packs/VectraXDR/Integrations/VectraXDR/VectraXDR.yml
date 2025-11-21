@@ -1,4 +1,7 @@
 category: Network Security
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: VectraXDR
   version: -1
@@ -8,25 +11,30 @@ configuration:
   name: server_url
   required: true
   type: 0
+  section: Connect
 - display: Client ID
   displaypassword: Client Secret Key
   name: credentials
   type: 9
   required: true
+  section: Connect
 - additionalinfo: When checked, no SSL certificates check will be done when interacting with the Vectra XDR API. It's insecure. (Default - unchecked)
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - additionalinfo: Use the system proxy settings to reach with the Vectra XDR API.
   display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - additionalinfo: The maximum number of entities to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200.
   defaultvalue: '50'
   display: Max Fetch
@@ -34,6 +42,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: "The date or relative timestamp from which to begin fetching entities.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n    \nFor example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z."
   defaultvalue: 1 hour
   display: First Fetch Time
@@ -41,6 +50,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: The mirroring direction in which to mirror the entities. You can mirror "Incoming" (from Vectra to XSOAR), "Outgoing" (from XSOAR to Vectra), or in both directions.
   display: Mirroring Direction
   hidden: false
@@ -51,6 +61,14 @@ configuration:
   - Incoming And Outgoing
   required: false
   type: 15
+  section: Collect
+- additionalinfo: "If selected, new incidents will be created. If not selected, it reopens previously closed incidents.\n\nNote: This flow is triggered only when the relevant entity is still active and the previously fetched incident is closed."
+  defaultvalue: "false"
+  display: Re-Fetch closed incidents via mirroring
+  name: refetch_closed_incidents
+  required: false
+  type: 8
+  section: Collect
 - additionalinfo: The tag value should be used to mirror the entity note by adding the same tag in the notes.
   defaultvalue: note
   display: Mirror tag for notes
@@ -58,6 +76,7 @@ configuration:
   name: note_tag
   required: false
   type: 0
+  section: Collect
 - additionalinfo: Entity Type(Host, Account).
   display: Entity Type
   hidden: false
@@ -67,6 +86,7 @@ configuration:
   - Host
   required: false
   type: 16
+  section: Collect
 - additionalinfo: Retrieve only prioritize entities based on the configuration on the Vectra platform. If not selected will fetch all entities.
   defaultvalue: 'Yes'
   display: Prioritized
@@ -77,12 +97,14 @@ configuration:
   - 'No'
   required: false
   type: 15
+  section: Collect
 - additionalinfo: Retrieve entities that contain any of the tags specified. Supports comma-separated values.
   display: Tags
   hidden: false
   name: tags
   required: false
   type: 0
+  section: Collect
 - additionalinfo: Retrieve detections belonging to a specified category.
   display: Detection Category
   hidden: false
@@ -96,12 +118,14 @@ configuration:
   - Info
   required: false
   type: 15
+  section: Collect
 - additionalinfo: Retrieve detections belonging to a specified detection type.
   display: Detection Type
   hidden: false
   name: detection_type
   required: false
   type: 0
+  section: Collect
 - additionalinfo: If the entity's urgency score is equal to or less than the configured threshold, it would be considered as a "Low" Severity Incident. Default is 30.
   defaultvalue: '30'
   display: Specify the numeric value of "Urgency Score" for mapping the Low Incident Severity.
@@ -109,6 +133,7 @@ configuration:
   name: urgency_score_low_threshold
   required: false
   type: 0
+  section: Collect
 - additionalinfo: If the entity's urgency score is equal to or less than the configured threshold, it would be considered as a "Medium" Severity Incident.Default is 50.
   defaultvalue: '50'
   display: Specify the numeric value of "Urgency Score" for mapping the Medium Incident Severity.
@@ -116,6 +141,7 @@ configuration:
   name: urgency_score_medium_threshold
   required: false
   type: 0
+  section: Collect
 - additionalinfo: "If the entity's urgency score is equal to or less than the configured threshold, \nit would be considered as a \"High\" Severity Incident and if urgency score greater than threshold, it would be considered as a \"Critical\" Severity Incident. Default is 80."
   defaultvalue: '80'
   display: Specify the numeric value of "Urgency Score" for mapping the High Incident Severity.
@@ -123,10 +149,12 @@ configuration:
   name: urgency_score_high_threshold
   required: false
   type: 0
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Collect
 description: This integration allows to create incidents based on Vectra XDR Entities.
 display: Vectra XDR
 name: VectraXDR
@@ -211,6 +239,8 @@ script:
       - host
       required: false
       secret: false
+    - description: Filter by matching entity name.
+      name: name
     - default: false
       description: Filter by a tag or a comma-separated list of tags.
       isArray: false
@@ -2168,7 +2198,7 @@ script:
     - contextPath: Vectra.Group.rules.description
       description: Description of the rule.
       type: String
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.11.4508456
   feed: false
   isfetch: true
   isremotesyncin: true

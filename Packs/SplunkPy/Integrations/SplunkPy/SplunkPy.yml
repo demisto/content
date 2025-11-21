@@ -2,7 +2,7 @@ category: Analytics & SIEM
 commonfields:
   id: SplunkPy
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -118,6 +118,7 @@ configuration:
   section: Collect
   hidden:
   - marketplacev2
+  - platform
   required: false
 - additionalinfo: When selected, closing the Splunk notable event with a "Closed" status will close the Cortex XSOAR incident.
   defaultvalue: 'false'
@@ -128,6 +129,7 @@ configuration:
   advanced: true
   hidden:
   - marketplacev2
+  - platform
   required: false
 - display: Additional Splunk status labels to close on mirror (Incoming Mirroring)
   name: close_extra_labels
@@ -150,6 +152,7 @@ configuration:
   advanced: true
   hidden:
   - marketplacev2
+  - platform
   additionalinfo: When selected, closing the Cortex XSOAR incident  will close the Notable Event in Splunk.
   defaultvalue: 'false'
   required: false
@@ -178,6 +181,7 @@ configuration:
   displaypassword: HEC Token (HTTP Event Collector)
   hiddenusername: true
   required: false
+  display: ''
 - display: 'HEC Token (HTTP Event Collector)'
   name: hec_token
   type: 4
@@ -235,6 +239,23 @@ configuration:
 - display: 'Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise.'
   name: extensive_logs
   type: 8
+  section: Collect
+  advanced: true
+  required: false
+- display: 'Advanced: Time type to use when fetching events'
+  name: notable_time_source
+  type: 15
+  defaultvalue: "creation time"
+  options:
+  - "creation time"
+  - "index time (Beta)"
+  additionalinfo: |
+    Defines which timestamp will be used to filter the events:
+    - creation time: Filters based on when the event actually occurred.
+    - index time (Beta): *Beta feature* – Filters based on when the event was ingested into Splunk.  
+      This option is still in testing and may not behave as expected in all scenarios.  
+      When using this mode, the parameter "Fetch backwards window for the events occurrence time (minutes)" should be set to `0``, as indexing time ensures there are no delay-based gaps.
+      The default is "creation time".
   section: Collect
   advanced: true
   required: false
@@ -457,7 +478,6 @@ script:
         Event payload key-value pair.
         String example: "event": "Access log test message".
       name: event
-      required: false
     - description: Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma-separated, fields.
       name: fields
     - description: The index name.
@@ -479,9 +499,10 @@ script:
     description: Sends events to an HTTP Event Collector using the Splunk platform JSON event protocol.
     name: splunk-submit-event-hec
   - arguments:
-    - description: ID of the job for which to get the status.
+    - description: Comma-separated list of job IDs for which to retrieve the statuses.
       name: sid
       required: true
+      isArray: true
     description: Returns the status of a job.
     name: splunk-job-status
     outputs:
@@ -680,7 +701,17 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.2074112
+  - arguments:
+    - description: Comma-separated list of job IDs to share.
+      isArray: true
+      name: sid
+      required: true
+    - defaultValue: '1800'
+      description: Time in seconds for the job's expiry time.
+      name: ttl
+    description: Change job settings to share its results to all Splunk users, and change its TTL.
+    name: splunk-job-share
+  dockerimage: demisto/splunksdk-py3:1.0.0.4887903
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -688,6 +719,7 @@ script:
   script: ''
   subtype: python3
   type: python
+  runonce: false
 tests:
 - SplunkPySearch_Test_default_handler
 - SplunkPy-Test-V2_default_handler

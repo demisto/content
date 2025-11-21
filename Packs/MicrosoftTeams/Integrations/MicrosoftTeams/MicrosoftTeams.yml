@@ -1,5 +1,5 @@
 category: Messaging and Conferencing
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -80,6 +80,13 @@ configuration:
   advanced: true
   hidden: true
   required: false
+- display: Bot Type Converted to Single-Tenant
+  name: is_single_tenant_bot_type
+  type: 8
+  section: Connect
+  additionalinfo: Select this option if the bot was originally created as multi-tenant and later converted to single-tenant. The system will detect the bot type automatically in all other standard cases.
+  advanced: true
+  required: false
 - display: Minimum incident severity to send notifications to Teams by
   name: min_incident_severity
   type: 15
@@ -96,6 +103,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - platform
 - display: Disable Automatic Notifications
   name: auto_notifications
   type: 8
@@ -446,15 +454,13 @@ script:
       - 'text'
       - 'html'
       defaultValue: 'text'
-    - description: The type of chat message.
-      name: message_type
-      defaultValue: 'message'
     description: |-
       Sends a new chat message in the specified chat. 
       Notes: 
       - This command works with the consent user, not with the bot. Which means, the message is sent to the given chat by the consent user, not the bot. 
       - This command will fail if the consent user is not a member of the destination chat.
       - This command may fail if the bot app has not yet appeared in the "built for your org" section in teams.
+      - This command can only send messages from type 'message'.
     name: microsoft-teams-message-send-to-chat
     outputs:
     - contextPath: MicrosoftTeams.ChatList.chatId
@@ -553,7 +559,7 @@ script:
       required: true
     description: |-
       Retrieves a list of members from a chat.
-      
+
       Notes: 
       - This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
     name: microsoft-teams-chat-member-list
@@ -721,7 +727,7 @@ script:
       defaultValue: 50
     description: |-
       Retrieves a list of chats that the consent user is a member of. If 'chat' is specified, retrieves this chat only.
-      
+
     name: microsoft-teams-chat-list
     outputs:
     - contextPath: MicrosoftTeams.ChatList.chatId
@@ -806,10 +812,10 @@ script:
     hidden: true
     quickaction: true
     outputs:
-      - contextPath: MicrosoftTeams.Message.ID
-        description: ID of the message sent.
-        type: String
-  dockerimage: demisto/teams:1.0.0.2027266
+    - contextPath: MicrosoftTeams.Message.ID
+      description: ID of the message sent.
+      type: String
+  dockerimage: demisto/teams:1.0.0.4835986
   longRunning: true
   longRunningPort: true
   script: ''
@@ -822,3 +828,14 @@ tests:
 - Microsoft Teams - Test
 supportsquickactions: true
 fromversion: 5.0.0
+triggers:
+- conditions:
+  - name: engine
+    operator: not_exists
+  - name: isEngineGroup
+    operator: not_exists
+  effects:
+  - name: longRunningPort
+    action:
+      hidden: true
+      required: false

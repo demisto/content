@@ -1,5 +1,7 @@
-Creates an array object in context from a given string's input. 
+Creates an array object in context from a given string's input.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -7,8 +9,8 @@ Creates an array object in context from a given string's input.
 | Script Type | javascript |
 | Tags | Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,5 +20,6 @@ Creates an array object in context from a given string's input.
 | contextKey | The key to place result array in context. The default is "array". |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

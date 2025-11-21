@@ -153,7 +153,7 @@ def get_endpoint_context(res=None, endpoint_id=None):
 
 def get_endpoint_user_context(res=None, endpoint_user_id=None):
     if res is None:
-        res = http_get(f"/endpoint_users/{endpoint_user_id}")["data"]
+        res = http_get(f"/endpoint_users/{endpoint_user_id}").get("data", [])
 
     endpoint_users = []
     for endpoint_user in res:
@@ -194,26 +194,29 @@ def get_full_timeline(detection_id, per_page=100):
         activities.extend(current_data)
         last_data = current_data
         page += 1
-
     return activities
 
 
 def process_timeline(detection_id):
     res = get_full_timeline(detection_id)
+    demisto.debug(f"The full process timeline: {res}")
     activities = []
     domains = []
     files = []
     ips = []
     processes = []
     for activity in res:
-        if activity["type"] != "activity_timelines.ActivityOccurred":
+        if activity.get("type") not in [
+            "activity_timelines.LatestIndicationSeen",
+            "activity_timelines.EventActivityOccurred",
+            "activity_timelines.ActivityOccurred",
+        ]:
             continue
-
         activity_time = get_time_str(get_time_obj(activity["attributes"]["occurred_at"]))
         notes = activity["attributes"]["analyst_notes"]
         additional_data = {}  # type:ignore
 
-        if activity["attributes"]["type"] == "process_activity_occurred":
+        if activity.get("attributes", {}).get("type") == "process_activity_occurred":
             process = activity["attributes"]["process_execution"]["attributes"].get("operating_system_process", {})
             if not process:
                 demisto.debug(
@@ -232,16 +235,16 @@ def process_timeline(detection_id):
                 }
                 files.append(
                     {
-                        "Name": os.path.basename(image.get("path", "")),
+                        "Name": os.path.basename(image.get("path") or ""),
                         "MD5": image.get("md5"),
                         "SHA256": image.get("sha256"),
                         "Path": image.get("path"),
-                        "Extension": os.path.splitext(image.get("path", ""))[-1],
+                        "Extension": os.path.splitext(image.get("path") or "")[-1],
                     }
                 )
                 processes.append(
                     {
-                        "Name": os.path.basename(image.get("path", "")),
+                        "Name": os.path.basename(image.get("path") or ""),
                         "Path": image.get("path"),
                         "MD5": image.get("md5"),
                         "SHA256": image.get("sha256"),
@@ -250,7 +253,7 @@ def process_timeline(detection_id):
                     }
                 )
 
-        elif activity["attributes"]["type"] == "network_connection_activity_occurred":
+        elif activity.get("attributes", {}).get("type") == "network_connection_activity_occurred":
             network = activity["attributes"]["network_connection"]["attributes"]
             additional_data = {
                 "IP": network["ip_address"]["attributes"]["ip_address"],
@@ -269,11 +272,29 @@ def process_timeline(detection_id):
                     "Port": network["port"],
                 }
             )
+        elif activity.get("attributes", {}).get("type") == "primitive_activities.network_connection":
+            network = activity["attributes"].get("activity", {})
+            additional_data["Domain"] = network["domain"]
+            additional_data["IP"] = network["remote_ip"]
+            domains.append(
+                {
+                    "Name": network["domain"],
+                }
+            )
+
+            ips.append(
+                {
+                    "Address": network["remote_ip"],
+                    "Port": network.get("remote_port", "Unknown"),
+                }
+            )
 
         activities.append(
             {
                 "Time": activity_time,
-                "Type": activity["attributes"]["type"].replace("_", " "),
+                "Type": activity.get("attributes", {}).get("type")
+                and activity["attributes"].get("type").replace("_", " ")
+                or None,
                 "Notes": notes,
                 "Activity Details": createContext(additional_data, removeNull=True),
             }
@@ -302,6 +323,7 @@ def detection_to_context(raw_detection):
 
 
 def detections_to_entry(detections, show_timeline=False):
+    demisto.debug(f"Detection Data: {detections}")
     fixed_detections = [detection_to_context(d) for d in detections]
     endpoints = []
     for d in detections:
@@ -319,6 +341,7 @@ def detections_to_entry(detections, show_timeline=False):
     activities = ""
     title = "Detections"
     if show_timeline and len(detections) == 1:
+        demisto.debug(f"Fixed detection: {fixed_detections}")
         title = "Detection {}".format(fixed_detections[0]["Headline"])
         activities, domains, files, ips, processes = process_timeline(fixed_detections[0]["ID"])
         activities = tableToMarkdown("Detection Timeline", activities, headers=["Time", "Type", "Activity Details", "Notes"])
@@ -354,7 +377,9 @@ def detections_to_entry(detections, show_timeline=False):
     }
 
 
-def get_unacknowledged_detections(t: datetime, per_page: int = 50) -> Generator[dict, None, None]:
+def get_unacknowledged_detections(
+    t: datetime, per_page: int = 50, is_fetch_acknowledged: bool = False
+) -> Generator[dict, None, None]:
     """iterate over all unacknowledged detections later then time t
 
     Args:
@@ -371,7 +396,10 @@ def get_unacknowledged_detections(t: datetime, per_page: int = 50) -> Generator[
             attributes = detection.get("attributes", {})
             # If 'last_acknowledged_at' or 'last_acknowledged_by' are in attributes,
             # the detection is acknowledged and should not create a new incident.
-            if attributes.get("last_acknowledged_at") is None and attributes.get("last_acknowledged_by") is None:
+            # If is_fetch_acknowledged is True, then we want to fetch acknowledged incidents as well.
+            if is_fetch_acknowledged or (
+                attributes.get("last_acknowledged_at") is None and attributes.get("last_acknowledged_by") is None
+            ):
                 yield detection
 
         page += 1
@@ -425,7 +453,7 @@ def get_detection_command():
 @logger
 def get_detection(_id):
     res = http_get(f"/detections/{_id}")
-    return res["data"]
+    return res.get("data", [])
 
 
 def acknowledge_detection_command():
@@ -585,7 +613,7 @@ def execute_playbook(playbook_id, detection_id):
     return res
 
 
-def fetch_incidents(last_run, per_page):
+def fetch_incidents(last_run, per_page, is_fetch_acknowledged: bool = False):
     last_incidents_ids = []
 
     if last_run:
@@ -599,7 +627,9 @@ def fetch_incidents(last_run, per_page):
     demisto.debug(f"iterating on detections, looking for more recent than {last_fetch}")
     incidents = []
     new_incidents_ids = []
-    for raw_detection in get_unacknowledged_detections(last_fetch, per_page=per_page):
+    for raw_detection in get_unacknowledged_detections(
+        last_fetch, per_page=per_page, is_fetch_acknowledged=is_fetch_acknowledged
+    ):
         demisto.debug("found a new detection in RedCanary #{}".format(raw_detection["id"]))
         incident = detection_to_incident(raw_detection)
         # the rawJson is a string of dictionary e.g. - ('{"ID":2,"Type":5}')
@@ -629,6 +659,7 @@ def main():
     API_KEY = params.get("api_key_creds", {}).get("password") or params.get("api_key")
     USE_SSL = not params.get("insecure", False)
     per_page = params.get("fetch_limit", 2)
+    is_fetch_acknowledged = argToBoolean(params.get("isFetchAcknowledged", False))
 
     """ EXECUTION CODE """
     COMMANDS = {
@@ -651,7 +682,7 @@ def main():
         if command_func is not None:
             if demisto.command() == "fetch-incidents":
                 initial_last_run = demisto.getLastRun()
-                last_run, incidents = fetch_incidents(initial_last_run, per_page)
+                last_run, incidents = fetch_incidents(initial_last_run, per_page, is_fetch_acknowledged)
                 demisto.incidents(incidents)
                 demisto.setLastRun(last_run)
             else:

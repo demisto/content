@@ -481,3 +481,49 @@ def test_predict_without_similarity_fields(sample_data):
         model.predict()
 
     assert "No fields were provided for similarity calculation" in str(e)
+
+
+@pytest.mark.parametrize(
+    "similar_text_field",
+    [
+        (
+            "incident.xdralerts.osactorprocesscommandline,incident.xdralerts.actorprocesscommandline,incident.xdralerts."
+            "actionprocessimagecommandline,incident.xdralerts.causalityactorprocesscommandline,incident.xdralerts.host_name,"
+            "incident.xdralerts.user_name"
+        ),
+        (
+            "alert.xdralerts.osactorprocesscommandline,alert.xdralerts.actorprocesscommandline,alert.xdralerts."
+            "actionprocessimagecommandline,alert.xdralerts.causalityactorprocesscommandline,alert.xdralerts.host_name,"
+            "alert.xdralerts.user_name"
+        ),
+        (
+            "issue.xdralerts.osactorprocesscommandline,issue.xdralerts.actorprocesscommandline,issue.xdralerts."
+            "actionprocessimagecommandline,issue.xdralerts.causalityactorprocesscommandline,issue.xdralerts.host_name,incident."
+            "xdralerts.user_name"
+        ),
+    ],
+)
+def test_extract_fields_from_args(similar_text_field):
+    """
+    Given:
+        - Fields to extract with different prefixes.
+        - Case 1: incident prefix.
+        - Case 2: alert prefix.
+        - Case 3: issue prefix.
+    When:
+        Calling extract_fields_from_args function.
+    Then:
+        - Ensure the fields were extracted correctly.
+    """
+    from DBotFindSimilarIncidents import extract_fields_from_args
+
+    results = extract_fields_from_args(similar_text_field)
+    expected_results = [
+        "xdralerts.osactorprocesscommandline",
+        "xdralerts.actorprocesscommandline",
+        "xdralerts.actionprocessimagecommandline",
+        "xdralerts.causalityactorprocesscommandline",
+        "xdralerts.host_name",
+        "xdralerts.user_name",
+    ]
+    assert results == expected_results

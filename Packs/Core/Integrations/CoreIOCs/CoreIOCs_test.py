@@ -1,10 +1,9 @@
-from CoreIOCs import *
 import pytest
+from CoreIOCs import *
 from freezegun import freeze_time
 
-
 Client.severity = "INFO"
-client = Client({"url": "https://example.com"})
+client = Client({"url": "https://example.com", "apikey": "apikey", "apikey_id": "apikey_id"})
 
 
 def d_sort(in_dict):
@@ -246,8 +245,8 @@ class TestCreateFile:
             "unexpected IOC format in key: '"
         ), f"create_file_sync empty message\n\tstarts: {error_msg}\n\tinstead: unexpected IOC format in key: '"  # noqa: E501
         assert error_msg.endswith(
-            f"', {str(defective_indicator)}"
-        ), f"create_file_sync empty message\n\tends: {error_msg}\n\tinstead: ', {str(defective_indicator)}"  # noqa: E501
+            f"', {defective_indicator!s}"
+        ), f"create_file_sync empty message\n\tends: {error_msg}\n\tinstead: ', {defective_indicator!s}"  # noqa: E501
 
     def test_create_file_iocs_to_keep_without_iocs(self, mocker):
         """
@@ -691,7 +690,7 @@ class TestCommands:
         mocker_reurn_results = mocker.patch("CoreIOCs.return_results")
         mocker_set_context = mocker.patch.object(demisto, "setIntegrationContext")
         set_sync_time("2021-11-25T00:00:00")
-        mocker_reurn_results.assert_called_once_with("set sync time to 2021-11-25T00:00:00 seccedded.")
+        mocker_reurn_results.assert_called_once_with("Successfully set sync time to 2021-11-25T00:00:00.")
         call_args = mocker_set_context.call_args[0][0]
         assert call_args["ts"] == 1637798400000
         assert call_args["time"] == "2021-11-25T00:00:00Z"

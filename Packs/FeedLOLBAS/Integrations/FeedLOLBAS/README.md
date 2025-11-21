@@ -2,7 +2,6 @@ This integration was integrated and tested with version v1 of LOLBAS.
 
 ## Configure LOLBAS Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Base URL |  | True |
@@ -16,7 +15,6 @@ This integration was integrated and tested with version v1 of LOLBAS.
 | Tags | Supports CSV values. | False |
 | Create relationships |  | False |
 | Feed Fetch Interval |  | False |
-
 
 ## Commands
 
@@ -36,30 +34,33 @@ Retrieves a limited number of indicators.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. | Required | 
+| limit | The maximum number of indicators to return. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LOLBAS.Indicators.Commands.category | String | The category of the command. | 
-| LOLBAS.Indicators.Commands.command | String | The command. | 
-| LOLBAS.Indicators.Commands.description | String | The description of the command. | 
-| LOLBAS.Indicators.Commands.mitreid | String | The MITRE ID related to the command. | 
-| LOLBAS.Indicators.Commands.operatingsystem | String | The operating system the command ran on. | 
-| LOLBAS.Indicators.Commands.privileges | String | The privileges required to run the command. | 
-| LOLBAS.Indicators.Commands.usecase | String | The use case of the command. | 
-| LOLBAS.Indicators.Description | String | The description of the indicator. | 
-| LOLBAS.Indicators.Detections.content | String | The content of the detection. | 
-| LOLBAS.Indicators.Detections.type | String | The type of the detection. | 
-| LOLBAS.Indicators.Name | String | The name of the indicator. | 
-| LOLBAS.Indicators.Paths.path | String | The path of the indicator. | 
-| LOLBAS.Indicators.Type | String | The type of the indicator. | 
-| LOLBAS.Indicators.URL | String | The URL to the indicator. | 
+| LOLBAS.Indicators.Commands.category | String | The category of the command. |
+| LOLBAS.Indicators.Commands.command | String | The command. |
+| LOLBAS.Indicators.Commands.description | String | The description of the command. |
+| LOLBAS.Indicators.Commands.mitreid | String | The MITRE ID related to the command. |
+| LOLBAS.Indicators.Commands.operatingsystem | String | The operating system the command ran on. |
+| LOLBAS.Indicators.Commands.privileges | String | The privileges required to run the command. |
+| LOLBAS.Indicators.Commands.usecase | String | The use case of the command. |
+| LOLBAS.Indicators.Description | String | The description of the indicator. |
+| LOLBAS.Indicators.Detections.content | String | The content of the detection. |
+| LOLBAS.Indicators.Detections.type | String | The type of the detection. |
+| LOLBAS.Indicators.Name | String | The name of the indicator. |
+| LOLBAS.Indicators.Paths.path | String | The path of the indicator. |
+| LOLBAS.Indicators.Type | String | The type of the indicator. |
+| LOLBAS.Indicators.URL | String | The URL to the indicator. |
 
 #### Command example
+
 ```!lolbas-get-indicators limit=2```
+
 #### Context Example
+
 ```json
 {
     "LOLBAS": {
@@ -135,6 +136,7 @@ Retrieves a limited number of indicators.
 #### Human Readable Output
 
 >### LOLBAS indicators
+>
 >|Name|Description|
 >|---|---|
 >| AppInstaller.exe | Tool used for installation of AppX/MSIX applications on Windows 10 |

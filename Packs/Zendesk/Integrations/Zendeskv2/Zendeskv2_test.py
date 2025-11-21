@@ -951,7 +951,7 @@ class TestFetchIncidents:
             zendesk_client.fetch_incidents({}, {})
             assert ticket_mock_10.called_once
             assert ticket_mock_20.called_once
-            assert demisto_incidents_mock.called_once()
+            demisto_incidents_mock.assert_called_once()
             assert [json.loads(x["rawJSON"])["id"] for x in demisto_incidents_mock.call_args[0][0]] == [10, 20]
             assert demisto_set_lust_run_mock.call_args[0][0] == {
                 "fetched_tickets": [10, 20],
@@ -969,9 +969,9 @@ class TestFetchIncidents:
             demisto_incidents_mock = mocker.patch.object(demisto, "incidents")
             demisto_set_lust_run_mock = mocker.patch.object(demisto, "setLastRun")
             zendesk_client.fetch_incidents({"max_fetch": 1}, {})
-            assert ticket_mock_10.called_once
             assert ticket_mock_20.call_count == 0
-            assert demisto_incidents_mock.called_once()
+            assert ticket_mock_10.called_once
+            demisto_incidents_mock.assert_called_once()
             assert [json.loads(x["rawJSON"])["id"] for x in demisto_incidents_mock.call_args[0][0]] == [10]
             assert demisto_set_lust_run_mock.call_args[0][0] == {
                 "max_fetch": 1,
@@ -1007,7 +1007,7 @@ class TestFetchIncidents:
             )
             assert ticket_mock_10.call_count == 0
             assert ticket_mock_20.called_once
-            assert demisto_incidents_mock.called_once()
+            demisto_incidents_mock.assert_called_once()
             assert [json.loads(x["rawJSON"])["id"] for x in demisto_incidents_mock.call_args[0][0]] == [20]
             assert demisto_set_lust_run_mock.call_args[0][0] == {
                 "max_fetch": 1,
@@ -1042,7 +1042,7 @@ class TestFetchIncidents:
                 ),
             )
             assert ticket_mock_10.call_count == ticket_mock_20.call_count == 0
-            assert demisto_incidents_mock.called_once_with([])
+            demisto_incidents_mock.assert_called_once_with([])
             assert demisto_set_lust_run_mock.call_args[0][0] == {
                 "fetched_tickets": [10, 20],
                 "fetch_time": "2023-01-15T11:59:00Z",
@@ -1061,7 +1061,7 @@ class TestFetchIncidents:
             zendesk_client.fetch_incidents({}, json.dumps({"fetched_tickets": [10], "fetch_time": "2023-01-12T12:00:00Z"}))
             assert ticket_mock_10.call_count == 0
             assert ticket_mock_20.called_once
-            assert demisto_incidents_mock.called_once()
+            demisto_incidents_mock.assert_called_once()
             assert [json.loads(x["rawJSON"])["id"] for x in demisto_incidents_mock.call_args[0][0]] == [20]
             assert demisto_set_lust_run_mock.call_args[0][0] == {
                 "fetched_tickets": [10, 20],
@@ -1118,7 +1118,7 @@ class TestFetchIncidents:
             zendesk_client.fetch_incidents({}, json.dumps({"fetched_tickets": [10], "fetch_time": "2023-01-12T12:00:00Z"}))
             assert ticket_mock_10.call_count == 0
             assert ticket_mock_20.called_once
-            assert demisto_incidents_mock.called_once()
+            demisto_incidents_mock.assert_called_once()
             assert [json.loads(x["rawJSON"])["id"] for x in demisto_incidents_mock.call_args[0][0]] == [20]
             assert demisto_incidents_mock.call_args[0][0][0]["attachment"] == [
                 {"path": "77fe1c6d-3096-4f1c-80c7-4e7c8573d580", "name": "TestFile.json"}

@@ -1,12 +1,14 @@
 Searches Demisto incidents. A summarized version of this scrips is available with the summarizedversion argument.
 
 ## Permissions
+
 ---
 
 This automation runs using the default Limited User role, unless you explicitly change the permissions.
 For more information, see the section about permissions here: <~XSOAR>For Cortex XSOAR 6, see the https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations for Cortex XSOAR 8 Cloud, see the https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script for Cortex XSOAR 8 On-prem, see the https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script.</~XSOAR><~XSIAM>[https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Permission-Management](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Permission-Management)</~XSIAM>
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -16,8 +18,10 @@ For more information, see the section about permissions here: <~XSOAR>For Cortex
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Used In
+
 ---
 Sample usage of this script can be found in the following playbooks and scripts.
+
 * Endpoint Investigation Plan
 * ExtraHop - Ticket Tracking
 * Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack
@@ -58,6 +62,7 @@ Spring Core and Cloud Function SpEL RCEs
  -->
 
 ## Inputs
+
 ---
 
 | **Argument Name**  | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
@@ -88,6 +93,7 @@ Spring Core and Cloud Function SpEL RCEs
 | limit              | The maximum number of incidents to be returned. Default is 100.                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -105,11 +111,12 @@ Spring Core and Cloud Function SpEL RCEs
 | foundIncidents.phase | A list of incident phases returned from the query. | Unknown |
 | foundIncidents.searchResultsLabel| The value provided in the searchresultslabel argument. | String |
 
-
 ## Script Example
+
 ```!SearchIncidentsV2 name="Incident to search"```
 
 ## Context Example
+
 ```
 {
     "foundIncidents": [
@@ -235,8 +242,9 @@ Spring Core and Cloud Function SpEL RCEs
 ```
 
 ## Human Readable Output
+
 ### Incidents found
+
 |id|name|severity|status|owner|created|closed|
 |---|---|---|---|---|---|---|
 | 978 | Incident to search | 0 | 0 | admin | 2020-09-29T17:29:44.162034+03:00 | 0001-01-01T00:00:00Z |
-

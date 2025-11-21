@@ -1,5 +1,5 @@
 import re
-
+from unittest.mock import Mock
 import Qualysv2
 import pytest
 import requests
@@ -61,8 +61,6 @@ WARNING
 ?action=list&since_datetime=2022-12-21T03:42:05Z&truncation_limit=10&id_max=123456"
 ----END_RESPONSE_FOOTER_CSV"""
 
-HOST_LIST_DETECTIONS_RAW_RESPONSE = "<HOST_LIST_VM_DETECTION_OUTPUT> <RESPONSE> </RESPONSE> </HOST_LIST_VM_DETECTION_OUTPUT>"
-
 BASE_URL = "https://server_url.com/"
 SNAPSHOT_ID = "1737885000"
 
@@ -76,24 +74,6 @@ def client() -> Client:
 def util_load_json(path: str):
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
-
-
-def mock_client_get_host_list_detection(*args, sleep_time: int | float) -> tuple[str, bool]:
-    """Mocks `Client.get_host_list_detection` method by introducing an artificial delay using the `sleep_time` argument.
-
-    Args:
-        sleep_time (int | float): The number of seconds to sleep.
-
-    Returns:
-        tuple[str, bool]: Raw API response XML string and set_new_limit boolean (indicates if to make the next API call smaller).
-    """
-    if sleep_time:
-        time.sleep(sleep_time)  # sleep to simulate slow API response
-
-    set_new_limit = False
-    host_list_detections = HOST_LIST_DETECTIONS_RAW_RESPONSE
-
-    return host_list_detections, set_new_limit
 
 
 def test_get_activity_logs_events_command(requests_mock: RequestsMocker, client: Client):
@@ -1138,9 +1118,11 @@ class TestClientClass:
         self.client.get_host_list_detection(since_datetime=since_datetime, limit=HOST_LIMIT)
         http_request_kwargs = client_http_request.call_args.kwargs
 
-        assert client_http_request.called_once
+        assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "GET"
-        assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list")
+        assert http_request_kwargs["url_suffix"] == urljoin(
+            API_SUFFIX, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"
+        )
         assert http_request_kwargs["params"] == {
             "truncation_limit": HOST_LIMIT,
             "vm_scan_date_after": since_datetime,
@@ -1175,7 +1157,7 @@ class TestClientClass:
 
         http_request_kwargs = client_http_request.call_args.kwargs
 
-        assert client_http_request.called_once
+        assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "POST"
         assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list")
         assert http_request_kwargs["params"] == expected_params
@@ -1925,48 +1907,74 @@ def test_send_assets_and_vulnerabilities_to_xsiam(
     assert not send_data_to_xsiam_vulns_kwargs["should_update_health_module"]
 
 
-@pytest.mark.parametrize(
-    "sleep_time, expected_response, expected_set_new_limit",
-    [
-        pytest.param(3, "", True, id="Slow response"),
-        pytest.param(0, HOST_LIST_DETECTIONS_RAW_RESPONSE, False, id="Fast response"),
-    ],
-)
-def test_get_client_host_list_detection_with_timeout(
-    mocker: MockerFixture,
-    client: Client,
-    sleep_time: int | float,
-    expected_response: str,
-    expected_set_new_limit: bool,
-):
+@pytest.fixture
+def mock_client():
+    client = Mock()
+    return client
+
+
+def test_get_qid_for_cve_single_qid(mock_client):
     """
     Given:
-        - A since_datetime, no next_page, and the default HOST_LIMIT.
+        - A single CVE
 
     When:
-        - When calling get_client_host_list_detection_with_timeout with a simulated "slow" and "fast" API responses.
+        - When executing the get_qid_for_cve function
 
-    Assert:
-        - Case A (Slow): Ensure empty raw API response and set_new_limit boolean is True (next API call needs to be smaller).
-        - Case B (Fast): Ensure raw API response is unchanged from the original value and set_new_limit boolean is False.
+    Then:
+        - Ensure the function returns CommandResults
+        - Ensure the outputs contain the right value
+        - Ensure the outputs_prefix
     """
-    from Qualysv2 import get_client_host_list_detection_with_timeout
+    xml_response = b"""
+    <RESPONSE>
+        <VULN_LIST>
+            <VULN>
+                <QID>12345</QID>
+            </VULN>
+        </VULN_LIST>
+    </RESPONSE>
+    """
 
-    thread_timeout = 2  # Slow: Sleep one second more than timeout. Fast: Don't sleep.
+    mock_response = Mock()
+    mock_response.content = xml_response
+    mock_client.get_qid_for_cve.return_value = mock_response
 
-    mocker.patch.object(
-        client,
-        "get_host_list_detection",
-        side_effect=lambda *args: mock_client_get_host_list_detection(*args, sleep_time=sleep_time),
-    )
+    from Qualysv2 import get_qid_for_cve  # Replace 'your_module' with your filename (without .py)
 
-    raw_response, set_new_limit = get_client_host_list_detection_with_timeout(
-        client=client,
-        since_datetime="2025-01-25",
-        next_page="",
-        limit=HOST_LIMIT,
-        thread_timeout=thread_timeout,
-    )
+    result = get_qid_for_cve(mock_client, "CVE-2024-0001")
 
-    assert raw_response == expected_response
-    assert set_new_limit is expected_set_new_limit
+    assert isinstance(result, CommandResults)
+    assert result.outputs == ["12345"]
+    assert result.outputs_prefix == "Qualys.QID"
+
+
+def test_get_qid_for_cve_multiple_qids(mock_client):
+    """
+    Given:
+        - A single CVE
+
+    When:
+        - When executing the get_qid_for_cve function
+
+    Then:
+        - Ensure the outputs contain the right values ( in this case there are 2 qids for the given CVE)
+    """
+    xml_response = b"""
+    <RESPONSE>
+        <VULN_LIST>
+            <VULN><QID>12345</QID></VULN>
+            <VULN><QID>67890</QID></VULN>
+        </VULN_LIST>
+    </RESPONSE>
+    """
+
+    mock_response = Mock()
+    mock_response.content = xml_response
+    mock_client.get_qid_for_cve.return_value = mock_response
+
+    from Qualysv2 import get_qid_for_cve
+
+    result = get_qid_for_cve(mock_client, "CVE-2024-9999")
+
+    assert result.outputs == ["12345", "67890"]

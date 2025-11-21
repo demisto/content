@@ -1,5 +1,5 @@
 category: Messaging and Conferencing
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -61,7 +61,7 @@ display: AWS-SNS-Listener
 name: AWS-SNS-Listener
 script:
   commands: []
-  dockerimage: demisto/fastapi:0.115.5.117397
+  dockerimage: demisto/fastapi:0.116.1.4266494
   longRunning: true
   longRunningPort: true
   script: '-'
@@ -71,3 +71,14 @@ script:
 fromversion: 6.10.0
 tests:
 - AWS SNS Listener - Test
+triggers:
+  - conditions:
+      - name: engine
+        operator: not_exists
+      - name: isEngineGroup
+        operator: not_exists
+    effects:
+      - name: longRunningPort
+        action:
+          hidden: true
+          required: false

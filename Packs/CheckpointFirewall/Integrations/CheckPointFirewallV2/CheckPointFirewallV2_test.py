@@ -210,10 +210,10 @@ def test_checkpoint_add_host_command(mocker):
     mock_response = util_load_json("test_data/add_host_response.json")
     mocked_client.add_host.return_value = mock_response
     result = checkpoint_add_host_command(mocked_client, "host 1", "1.2.3.4", False, False).outputs
-    assert result.get("name") == "add host"
-    assert result.get("uid") == "123"
-    assert result.get("type") == "host"
-    assert len(result) == 12
+    assert result[0].get("name") == "add host"
+    assert result[0].get("uid") == "123"
+    assert result[0].get("type") == "host"
+    assert len(result[0]) == 12
 
 
 def test_checkpoint_update_host_command(mocker):

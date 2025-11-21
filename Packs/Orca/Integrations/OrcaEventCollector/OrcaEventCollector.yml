@@ -2,6 +2,9 @@ category: Analytics & SIEM
 commonfields:
   id: Orca Event Collector
   version: -1
+sectionorder:
+- Connect
+- Collect
 description: Orca Security event collector integration for Cortex XSIAM.
 display: Orca Event Collector
 name: Orca Event Collector
@@ -41,6 +44,7 @@ configuration:
   name: proxy
   type: 8
   required: false
+  section: Connect
 script:
   commands:
   - description: Manual command to fetch events from Orca Security.
@@ -58,7 +62,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.12.5490952
 fromversion: '6.8.0'
 supportlevelheader: xsoar
 marketplaces:
@@ -66,3 +70,10 @@ marketplaces:
 - platform
 tests:
 - No tests (auto formatted)
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
+- xsiam

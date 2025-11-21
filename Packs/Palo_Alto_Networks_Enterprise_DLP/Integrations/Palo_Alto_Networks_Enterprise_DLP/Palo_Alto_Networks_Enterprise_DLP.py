@@ -92,16 +92,16 @@ class Client(BaseClient):
             print_debug_msg(str(e))
             raise
 
-    def _handle_403_errors(self, res):
+    def _handle_4xx_errors(self, res):
         """
-        Handles 403 exception on get-dlp-report and tries to refresh token
+        Handles 4xx exception on get-dlp-report and tries to refresh token
         Args:
             res: Response of DLP API call
         """
-        if res.status_code != 403:
+        if res.status_code < 400 or res.status_code >= 500:
             return
         try:
-            print_debug_msg("Got 403, attempting to refresh access token")
+            print_debug_msg(f"Got {res.status_code}, attempting to refresh access token")
             if self.credentials[CREDENTIAL]:
                 print_debug_msg("Requesting access token with client id/client secret")
                 self._refresh_token_with_client_credentials()
@@ -125,11 +125,11 @@ class Client(BaseClient):
                 headers={"Authorization": "Bearer " + self.access_token},
                 url_suffix=url_suffix,
                 ok_codes=[200, 201, 204],
-                error_handler=self._handle_403_errors,
+                error_handler=self._handle_4xx_errors,
                 resp_type="",
                 return_empty_response=True,
             )
-            if res.status_code != 403:
+            if res.status_code < 400 or res.status_code >= 500:
                 break
             count += 1
 
@@ -159,11 +159,11 @@ class Client(BaseClient):
                 url_suffix=url_suffix,
                 json_data=payload,
                 ok_codes=[200, 201, 204],
-                error_handler=self._handle_403_errors,
+                error_handler=self._handle_4xx_errors,
                 resp_type="response",
                 return_empty_response=True,
             )
-            if res.status_code != 403:
+            if res.status_code < 400 or res.status_code >= 500:
                 break
             count += 1
 
@@ -395,6 +395,7 @@ def parse_incident_details(compressed_details: str):
     details_byte_data = bz2.decompress(base64.b64decode(compressed_details))
     details_string = details_byte_data.decode("utf-8")
     details_obj = json.loads(details_string)
+    demisto.debug(f"Parsed incident details: {details_obj}.")
     return details_obj
 
 
@@ -406,10 +407,12 @@ def create_incident(notification: dict, region: str):
     incident_creation_time = dateparser.parse(raw_incident["createdAt"])
     parsed_details = parse_incident_details(raw_incident["incidentDetails"])
     raw_incident["incidentDetails"] = parsed_details
-    if not raw_incident["userId"]:
-        for header in parsed_details["headers"]:
-            if header["attribute_name"] == "username":
-                raw_incident["userId"] = header["attribute_value"]
+    if not raw_incident.get("userId"):
+        for header in parsed_details.get("headers", []):
+            attribute_name = header.get("attribute_name")
+            attribute_value = header.get("attribute_value")
+            if attribute_name == "username" and attribute_value:
+                raw_incident["userId"] = attribute_value
 
     event_dump = json.dumps(raw_incident)
     incident = {
@@ -431,6 +434,7 @@ def fetch_incidents(client: Client, regions: str, start_time: int = None, end_ti
     notification_map, _ = client.get_dlp_incidents(regions=regions, start_time=start_time, end_time=end_time)
     incidents = []
     for region, notifications in notification_map.items():
+        demisto.debug(f"Received {len(notifications)} raw notifications from {region=}.")
         for notification in notifications:
             incident = create_incident(notification, region)
             incidents.append(incident)
@@ -464,9 +468,10 @@ def fetch_notifications(client: Client, regions: str):
         client.set_access_token(access_token)
 
     incidents = fetch_incidents(client=client, regions=regions)
-    print_debug_msg(f"Received {len(incidents)} incidents")
+    print_debug_msg(f"Received {len(incidents)} incidents from raw notifications.")
     if not is_reset_triggered():
         demisto.createIncidents(incidents)
+        demisto.debug(f"Created {len(incidents)} incidents: {[incident.get('name') for incident in incidents]}.")
         new_ctx = {ACCESS_TOKEN: client.access_token, "samples": incidents}
         demisto.setIntegrationContext(new_ctx)
     elif len(incidents) > 0:

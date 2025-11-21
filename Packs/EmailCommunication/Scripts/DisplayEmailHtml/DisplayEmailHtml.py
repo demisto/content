@@ -12,9 +12,12 @@ def create_email_html(email_html="", entry_id_list=None):
 
     for entry_id in entry_id_list:
         # Handling inline attachments from Gmail mailboxes
+        saas_xsoar_xsiam_prefix = "xsoar/" if is_xsiam_or_xsoar_saas() else ""
         if re.search(f'src="[^>]+"(?=[^>]+alt="{entry_id[0]}")', email_html):
             email_html = re.sub(
-                f'src="[^>]+"(?=[^>]+alt="{entry_id[0]}")', f"src={account_name}/entry/download/{entry_id[1]}", email_html
+                f'src="[^>]+"(?=[^>]+alt="{entry_id[0]}")',
+                f"src={account_name}/{saas_xsoar_xsiam_prefix}entry/download/{entry_id[1]}",
+                email_html,
             )
         # Handling inline attachments from Outlook mailboxes
         # Note: when tested, entry id list and inline attachments were in the same order, so there was no need in
@@ -22,7 +25,7 @@ def create_email_html(email_html="", entry_id_list=None):
         else:
             email_html = re.sub(
                 '(src="cid(.*?"))',
-                f"src={account_name}/entry/download/{entry_id[1]}",
+                f"src={account_name}/{saas_xsoar_xsiam_prefix}entry/download/{entry_id[1]}",
                 email_html,
                 count=1,
             )

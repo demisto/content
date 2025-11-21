@@ -1,6 +1,7 @@
 Adds the provided entries to the incident Evidence Board. The playbook, can be positioned after a task to add the previous task's entries to the Evidence Board automatically (with no need to provide arguments).
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Adds the provided entries to the incident Evidence Board. The playbook, can be p
 | Cortex XSOAR Version | 2.5.0+ |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,5 +23,6 @@ Adds the provided entries to the incident Evidence Board. The playbook, can be p
 | tags | The evidence tags. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

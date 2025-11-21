@@ -140,7 +140,7 @@ script:
     - name: resp_code
       description: Filters by the resp_code in the dns set.
     - name: resp
-      description: filter by the resp in the dns_set
+      description: filter by the resp in the dns_set.
     outputs:
     - contextPath: Vectra.Detection.Category
       description: 'The category of the detected vname attack.'
@@ -202,7 +202,7 @@ script:
     - name: threat_score_gte
       description: Filters by the threat score, greater than or equal to the score provided.
     - name: certainty_score
-      description: filter by certainty score
+      description: filter by certainty score.
     - name: certainty_score_gte
       description: Filters by the certainty score, greater than or equal to the score provided.
     - name: last_detection_timestamp
@@ -227,7 +227,7 @@ script:
       description: 'List of Detections for Account.'
       type: String
     - contextPath: Vectra.Host.KeyAsset
-      description: 'Flag indicating if the host is a key asset'
+      description: 'Flag indicating if the host is a key asset.'
       type: Boolean
     - contextPath: Vectra.Host.State
       description: 'The state of this host.'
@@ -281,7 +281,7 @@ script:
       description: Kerberos Account.
     - contextPath: Vectra.Rule.Remote.Kerberos.Service
       description: Kerberos Service.
-    description: The rules branch can be used to retrieve a listing of configured Triage rules
+    description: The rules branch can be used to retrieve a listing of configured Triage rules.
     deprecated: true
   - name: vectra-get-host-by-id
     arguments:
@@ -300,7 +300,7 @@ script:
     description: Returns detections by detection ID.
     deprecated: true
   - name: vectra-get-users
-    description: Retrieves the current list of Users
+    description: Retrieves the current list of Users.
     arguments:
     - name: username
       description: 'Filters by username.'
@@ -377,7 +377,7 @@ script:
     description: "Runs an advanced search on hosts and detections."
     deprecated: true
   isfetch: true
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.12.11.4819260
 tests:
 - No tests (deprecated)
 fromversion: 5.0.0

@@ -75,16 +75,16 @@ class Client(BaseClient):
             config_ids: Unique identifier for each security configuration. To report on more than one configuration, separate
                       integer identifiers with semicolons, e.g. 12892;29182;82912.
             offset: This token denotes the last message. If specified, this operation fetches only security events that have
-                    occurred from offset. This is a required parameter for offset mode and you can’t use it in time-based
+                    occurred from offset. This is a required parameter for offset mode and you can't use it in time-based
                     requests.
             limit: Defines the approximate maximum number of security events each fetch returns, in both offset and
                    time-based modes. The default limit is 10000. Expect requests to return a slightly higher number of
                    security events than you set in the limit parameter, because data is stored in different buckets.
             from_epoch: The start of a specified time range, expressed in Unix epoch seconds.
-                        This is a required parameter to get time-based results for a set period, and you can’t use it in
+                        This is a required parameter to get time-based results for a set period, and you can't use it in
                         offset mode.
-            to_epoch: The end of a specified time range, expressed in Unix epoch seconds. You can’t use this parameter in
-                      offset mode and it’s an optional parameter in time-based mode. If omitted, the value defaults to the
+            to_epoch: The end of a specified time range, expressed in Unix epoch seconds. You can't use this parameter in
+                      offset mode and it's an optional parameter in time-based mode. If omitted, the value defaults to the
                       current time.
 
         Returns:
@@ -229,7 +229,7 @@ def date_format_converter(from_format: str, date_before: str, readable_format: s
 
 def decode_message(msg: str) -> Sequence[str | None]:
     """
-        Follow these steps for data members that appear within the event’s attackData section:
+        Follow these steps for data members that appear within the event's attackData section:
             1. If the member name is prefixed rule, URL-decode the value.
             2. The result is a series of base64-encoded chunks delimited with semicolons.
             3. Split the value at semicolon (;) characters.
@@ -419,15 +419,15 @@ def get_events_command(
         config_ids: Unique identifier for each security configuration. To report on more than one configuration, separate
                   integer identifiers with semicolons, e.g. 12892;29182;82912.
         offset: This token denotes the last message. If specified, this operation fetches only security events that have
-                occurred from offset. This is a required parameter for offset mode and you can’t use it in time-based requests.
+                occurred from offset. This is a required parameter for offset mode and you can't use it in time-based requests.
         limit: Defines the approximate maximum number of security events each fetch returns, in both offset and
                time-based modes. The default limit is 10000. Expect requests to return a slightly higher number of
                security events than you set in the limit parameter, because data is stored in different buckets.
         from_epoch: The start of a specified time range, expressed in Unix epoch seconds.
-                    This is a required parameter to get time-based results for a set time_stamp, and you can’t use it in
+                    This is a required parameter to get time-based results for a set time_stamp, and you can't use it in
                     offset mode.
-        to_epoch: The end of a specified time range, expressed in Unix epoch seconds. You can’t use this parameter in
-                  offset mode and it’s an optional parameter in time-based mode. If omitted, the value defaults to the
+        to_epoch: The end of a specified time range, expressed in Unix epoch seconds. You can't use this parameter in
+                  offset mode and it's an optional parameter in time-based mode. If omitted, the value defaults to the
                   current time.
         time_stamp: timestamp (<number> <time unit>, e.g., 12 hours, 7 days of events
 
@@ -687,7 +687,7 @@ async def fetch_events_long_running_command(
     async for events, counter, last_offset in get_events_from_akamai(
         client, config_ids, from_time, page_size, offset, max_concurrent_tasks
     ):
-        asyncio.create_task(    # noqa: RUF006
+        asyncio.create_task(  # noqa: RUF006
             process_and_send_events_to_xsiam(
                 events,
                 should_skip_decode_events,  # noqa: RUF006
@@ -926,9 +926,7 @@ def akamai_send_data_to_xsiam(
         return None
 
     if not data:
-        demisto.debug(
-            f"send_data_to_xsiam function received no {data_type}, skipping the API call to send {data_type} to XSIAM"
-        )
+        demisto.debug(f"send_data_to_xsiam function received no {data_type}, skipping the API call to send {data_type} to XSIAM")
         demisto.updateModuleHealth({f"{data_type}Pulled": data_size})
         return None
 
@@ -943,9 +941,7 @@ def akamai_send_data_to_xsiam(
         # Separating each event with a new line
         data = "\n".join(data)
     elif not isinstance(data, str):
-        raise DemistoException(
-            f"Unsupported type: {type(data)} for the {data_type} parameter. Should be a string or list."
-        )
+        raise DemistoException(f"Unsupported type: {type(data)} for the {data_type} parameter. Should be a string or list.")
     if not data_format:
         data_format = "text"
 
@@ -1073,7 +1069,7 @@ def split_data_by_slices(data, target_chunk_size):  # pragma: no cover
     entry_size = sys.getsizeof(data[0])
     num_of_entries_per_chunk = target_chunk_size // entry_size
     for i in range(0, len(data), num_of_entries_per_chunk):
-        chunk = data[i: i + num_of_entries_per_chunk]
+        chunk = data[i : i + num_of_entries_per_chunk]
         yield chunk
 
 
@@ -1104,12 +1100,10 @@ async def xsiam_api_call_async_with_retries(
     attempt_num = 1
     response = None
     while status_code != 200 and attempt_num < num_of_attempts + 1:
-        demisto.debug(
-            f"Sending {data_type} into xsiam, attempt number {attempt_num}"
-        )
+        demisto.debug(f"Sending {data_type} into xsiam, attempt number {attempt_num}")
         # in the last try we should raise an exception if any error occurred, including 429
         ok_codes = (200, 429) if attempt_num < num_of_attempts else None
-        async with aiohttp.ClientSession() as session:    # noqa: SIM117
+        async with aiohttp.ClientSession() as session:  # noqa: SIM117
             async with session.post(urljoin(xsiam_url, "/logs/v1/xsiam"), data=zipped_data, headers=headers) as response:
                 try:
                     response.raise_for_status()  # This raises an exception for non-2xx status codes
@@ -1309,7 +1303,8 @@ def main():  # pragma: no cover
                             should_fail = True
                     if should_fail:
                         raise DemistoException(
-                            "Encountered an error while sending events to xsiam, will attempt to send all events to xsiam again.")
+                            "Encountered an error while sending events to xsiam, will attempt to send all events to xsiam again."
+                        )
                     demisto.info(
                         f"Done sending {data_size} events to xsiam."
                         f"sent {total_events_count} events to xsiam in total during this interval."

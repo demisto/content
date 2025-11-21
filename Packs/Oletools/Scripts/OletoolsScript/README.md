@@ -5,6 +5,7 @@ forensics, and debugging.
 Note that oletools is open source code and is subject to change.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -13,6 +14,7 @@ Note that oletools is open source code and is subject to change.
 | Cortex XSOAR Version | 6.5.0           |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                |
@@ -23,6 +25,7 @@ Note that oletools is open source code and is subject to change.
 | password | If encrypted office files are encountered, try decryption with this password. May be repeated.                                                                                                                                                                                                                 |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

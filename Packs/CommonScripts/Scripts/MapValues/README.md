@@ -1,8 +1,9 @@
-Maps the given values to the translated values. 
+Maps the given values to the translated values.
 
 If given values: "a,b,c" and translated: 1,2,3 then input "a" will return a 1.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,8 +11,8 @@ If given values: "a,b,c" and translated: 1,2,3 then input "a" will return a 1.
 | Script Type | javascript |
 | Tags | Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,5 +22,6 @@ If given values: "a,b,c" and translated: 1,2,3 then input "a" will return a 1.
 | input | The value to compare and replace. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

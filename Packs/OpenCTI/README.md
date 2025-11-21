@@ -4,8 +4,10 @@ This pack enables you to take advantage of the cyber threat intelligence databas
 You can get lists of indicators that are linked to threats, with additional information to assist with your investigation. You can also contribute to the OpenCTI database by reporting new indicators or updating the information of existing indicators.
 
 ## What does this pack do?
+
 This pack enables you to
-- Get information about indicators from the OpenCTI database. Fetch indicators according to the indicator type and/or indicator score. 
+
+- Get information about indicators from the OpenCTI database. Fetch indicators according to the indicator type and/or indicator score.
 - Report new indicators to OpenCTI.
 - Delete indicators from the OpenCTI database.
 - Update the score and description fields of indicators in the OpenCTI database. You can also add/remove marking definitions and labels of existing indicators.

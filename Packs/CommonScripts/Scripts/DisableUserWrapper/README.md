@@ -1,6 +1,7 @@
 This script allows disabling a specified user using one or more of the following integrations: SailPointIdentityIQ, ActiveDirectoryQuery, Okta, MicrosoftGraphUser, and IAM.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ This script allows disabling a specified user using one or more of the following
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ This script allows disabling a specified user using one or more of the following
 | approve_action | Whether to run the command. This is used to prevent unwanted calls to the command. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

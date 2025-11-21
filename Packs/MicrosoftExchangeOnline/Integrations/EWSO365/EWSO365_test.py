@@ -35,6 +35,7 @@ from exchangelib.attachments import AttachmentId, ItemAttachment
 from exchangelib.items import Item, Message
 from exchangelib.properties import MessageHeader
 from freezegun import freeze_time
+from EWSApiModule import EWSClient
 
 with open("test_data/commands_outputs.json") as f:
     COMMAND_OUTPUTS = json.load(f)
@@ -51,7 +52,7 @@ class TestNormalCommands:
         * ews-expand-group
     """
 
-    class MockClient:
+    class MockClient(EWSClient):
         class MockAccount:
             DEFAULT_FOLDER_TRAVERSAL_DEPTH = 3
 
@@ -193,6 +194,7 @@ MESSAGES = [
         datetime_received=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_sent=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_created=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key="UTC")),
+        last_modified_time=EWSDateTime(2021, 7, 14, 13, 00, 00, tzinfo=EWSTimeZone(key="UTC")),
     ),
     Message(
         subject="message2",
@@ -202,6 +204,7 @@ MESSAGES = [
         datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
+        last_modified_time=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
     ),
     Message(
         subject="message3",
@@ -211,6 +214,7 @@ MESSAGES = [
         datetime_received=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
         datetime_created=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
+        last_modified_time=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone(key="UTC")),
     ),
 ]
 CASE_FIRST_RUN_NO_INCIDENT = ({}, [], {"lastRunTime": None, "folderName": "Inbox", "ids": [], "errorCounter": 0})
@@ -263,11 +267,11 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     """
 
     class MockObject:
-        def filter(self, last_modified_time__gte="", datetime_received__gte=""):
+        def filter(self, last_modified_time__gte="", datetime_received__gte="", is_read=None):
             return MockObject2()
 
     class MockObject2:
-        def filter(self):
+        def filter(self, **kwargs):
             return MockObject2()
 
         def only(self, *args):
@@ -293,7 +297,7 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     last_run = mocker.patch.object(demisto, "setLastRun")
     fetch_emails_as_incidents(client, current_last_run, RECEIVED_FILTER, False)
     assert last_run.call_args[0][0].get("lastRunTime") == expected_last_run.get("lastRunTime")
-    assert set(last_run.call_args[0][0].get("ids")) == set(expected_last_run.get("ids"))
+    assert set(last_run.call_args[0][0].get("ids_dict")) == set(expected_last_run.get("ids"))
 
 
 @pytest.mark.parametrize(
@@ -350,11 +354,11 @@ def test_fetch_and_mark_as_read(mocker):
     """
 
     class MockObject:
-        def filter(self, last_modified_time__gte="", datetime_received__gte=""):
+        def filter(self, last_modified_time__gte="", datetime_received__gte="", is_read=None):
             return MockObject2()
 
     class MockObject2:
-        def filter(self):
+        def filter(self, **kwargs):
             return MockObject2()
 
         def only(self, *args):
@@ -488,8 +492,12 @@ def test_handle_html(mocker, html_input, expected_output):
 @pytest.mark.parametrize(
     "since_datetime, filter_arg, expected_result",
     [
-        ("", "last_modified_time__gte", EWSDateTime.from_string("2021-05-23 13:08:14.901293+00:00")),
-        ("2021-05-23 21:28:14.901293+00:00", "datetime_received__gte", "2021-05-23 21:28:14.901293+00:00"),
+        ("", "datetime_received__gte", EWSDateTime.from_string("2021-05-23 13:08:14.901293+00:00")),
+        (
+            "2021-05-23 21:28:14.901293+00:00",
+            "datetime_received__gte",
+            "2021-05-23 21:28:14.901293+00:00",
+        ),
     ],
 )
 def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
@@ -502,16 +510,16 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
         - Fetching last emails
 
     Then:
-        - Verify last_modified_time__gte is ten minutes earlier
+        - Verify datetime_received__gte is ten minutes earlier
         - Verify datetime_received__gte according to the datetime received
     """
 
     class MockObject:
-        def filter(self, last_modified_time__gte="", datetime_received__gte=""):
+        def filter(self, last_modified_time__gte="", datetime_received__gte="", is_read=None):
             return MockObject2()
 
     class MockObject2:
-        def filter(self):
+        def filter(self, **kwargs):
             return MockObject2()
 
         def only(self, *args):
@@ -535,6 +543,61 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
     assert MockObject.filter.call_args[1].get(filter_arg) == expected_result
 
 
+@freeze_time("2021-05-23 13:18:14.901293+00:00")
+@pytest.mark.parametrize(
+    "exclude_ids, expected_result, incident_filter",
+    [
+        ({"id1": ""}, [Message(message_id="id2"), Message(message_id="id3")], "received-time"),
+        ({"id1": "2021-05-23T13:19:14Z"}, [Message(message_id="id2"), Message(message_id="id3")], "received-time"),
+        ({"id2": "2021-05-23T13:19:14Z"}, [Message(message_id="id3")], "received-time"),
+        ({"id2": "2021-05-23T13:17:14Z"}, [Message(message_id="id2"), Message(message_id="id3")], "received-time"),
+        ({"id2": "2021-05-23T13:17:14Z"}, [Message(message_id="id2"), Message(message_id="id3")], "modified-time"),
+    ],
+)
+def test_fetch_last_emails_dedup_mechanism(mocker, exclude_ids, expected_result, incident_filter):
+    class MockObject:
+        def filter(self, last_modified_time__gte="", datetime_received__gte="", is_read=None):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self, **kwargs):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            class MockQuerySet:
+                def __iter__(self):
+                    return (
+                        m
+                        for m in [
+                            Message(
+                                message_id="id2",
+                                datetime_created=EWSDateTime.from_string("2021-05-23T13:18:14Z"),
+                                last_modified_time=EWSDateTime.from_string("2021-05-23T13:18:14Z"),
+                            ),
+                            Message(
+                                message_id="id3",
+                                datetime_created=EWSDateTime.from_string("2021-05-23T13:19:14Z"),
+                                last_modified_time=EWSDateTime.from_string("2021-05-23T13:18:14Z"),
+                            ),
+                        ]
+                    )
+
+            return MockQuerySet()
+
+    def mock_get_folder_by_path(path, account=None, is_public=False):
+        return MockObject()
+
+    client = TestNormalCommands.MockClient()
+    client.get_folder_by_path = mock_get_folder_by_path
+    results = fetch_last_emails(client, exclude_ids=exclude_ids, incident_filter=incident_filter)
+    result_ids = [msg.message_id for msg in results]
+    expected_ids = [msg.message_id for msg in expected_result]
+    assert result_ids == expected_ids
+
+
 @freeze_time("2021-05-23 18:28:14.901293+00:00")
 @pytest.mark.parametrize("max_fetch, expected_result", [(6, 5), (2, 2), (5, 5)])
 def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
@@ -554,11 +617,11 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
     """
 
     class MockObject:
-        def filter(self, last_modified_time__gte="", datetime_received__gte=""):
+        def filter(self, last_modified_time__gte="", datetime_received__gte="", is_read=None):
             return MockObject2()
 
     class MockObject2:
-        def filter(self):
+        def filter(self, **kwargs):
             return MockObject2()
 
         def only(self, *args):
@@ -713,7 +776,7 @@ def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
     # sent to "fileResult", original headers from content with matched casing, with additional header
     expected_data = (
         "MIME-Version: 1.0\r\n"
-        "Message-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n"
+        "Message-ID: <message-test-idRANDOMVALUES@testing.com>\r\n"
         "X-FAKE-Header: HVALue\r\n"
         "X-Who-header: whovALUE\r\n"
         "DATE: 2023-12-16T12:04:45\r\n"
@@ -871,7 +934,7 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
     ]
     expected_data = (
         "MIME-Version: 1.0\r\n"
-        "Message-ID:  <message-test-idRANDOMVALUES@testing.com>\r\n"
+        "Message-ID: <message-test-idRANDOMVALUES@testing.com>\r\n"
         "X-FAKE-Header: HVALue\r\n"
         "X-Who-header: whovALUE\r\n"
         "DATE: 2023-12-16T12:04:45\r\n"
@@ -1142,3 +1205,53 @@ def test_handle_attached_email_with_incorrect_from_header_fixes_malformed_header
     result = handle_attached_email_with_incorrect_from_header(message)
 
     assert result["From"] == "Task One Test <info@test.com>"
+
+
+def test_fetch_attachments_for_message_output(mocker):
+    """
+    Given:
+        - The command and args are set for the ews-get-attachment command.
+    When:
+        - Calling the main function
+    Then:
+        - Attachments are fetched and parsed as expected.
+        - The output is returned in the correct format.
+    """
+    from EWSO365 import main
+    from EWSApiModule import CustomDomainOAuth2Credentials
+
+    from CommonServerPython import CommandResults
+
+    client = TestNormalCommands.MockClient()
+    client.credentials = MagicMock(spec=CustomDomainOAuth2Credentials)
+    client.account.primary_smtp_address = "mock_primary_address"
+    item_id = "mock_item_id"
+
+    mock_file_attachment = MagicMock(spec=FileAttachment)
+    mock_file_attachment.name = "mock_file_attachment"
+    mock_file_attachment.content = "mock file content"
+    mock_file_attachment.content_id = "mock_file_id"
+    mock_item_attachment = MagicMock(spec=ItemAttachment)
+    mock_item_attachment.name = "item_attachment_mock"
+    mock_item_attachment.content_id = "mock_item_id"
+    mock_item_attachment.item.mime_content = "mock mime content"
+    mock_attachments = [mock_file_attachment, mock_item_attachment]
+
+    mocker.patch.object(demisto, "args", return_value={"item_id": item_id})
+    mocker.patch.object(demisto, "command", return_value="ews-get-attachment")
+    mocker.patch.object(demisto, "params", return_value={})
+    mocker.patch("EWSO365.get_client_from_params", return_value=client)
+    mocker.patch.object(client, "get_attachments_for_item", return_value=mock_attachments)
+    mocker.patch("EWSO365.fileResult", side_effect=lambda attach_name, data: {"File": attach_name, "content": data})
+    return_results_mock = mocker.patch("EWSO365.return_results")
+
+    main()
+
+    assert return_results_mock
+    results = return_results_mock.call_args.args[0]
+    assert results[0].get("File") == "mock_file_id-attachmentName-mock_file_attachment"
+    assert results[0].get("content") == "mock file content"
+    assert isinstance(results[1], CommandResults)
+    assert results[1].outputs.get("attachmentName") == "mock_item_id-attachmentName-item_attachment_mock"
+    assert results[2].get("File") == "mock_item_id-attachmentName-item_attachment_mock.eml"
+    assert results[2].get("content") == "mock mime content"

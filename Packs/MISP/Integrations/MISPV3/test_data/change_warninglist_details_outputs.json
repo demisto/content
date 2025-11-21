@@ -1,0 +1,29 @@
+{
+    "ID": 1,
+    "Name": "Hello, this world has changed!",
+    "Type": "string",
+    "Description": "Changed yet agaaaaaaaaaaaain!",
+    "Version": 42,
+    "Enabled": true,
+    "Default": true,
+    "Category": "false_positive",
+    "Attributes": [
+        "md5",
+        "sha1",
+        "sha256"
+    ],
+    "Entries": [
+        {
+            "Comment": null,
+            "ID": 123,
+            "Value": "8.8.8.8",
+            "WarninglistID": 1
+        },
+        {
+            "Comment": null,
+            "ID": 456,
+            "Value": "www.example.com",
+            "WarninglistID": 1
+        }
+    ]
+}

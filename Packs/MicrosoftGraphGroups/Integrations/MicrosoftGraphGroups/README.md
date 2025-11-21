@@ -1,5 +1,5 @@
 <p>
-Azure Active Directory Groups enables you to create and manage different types of groups and group functionality according to your requirements.
+Entra ID Groups integration (formely Azure Active Directory Groups) enables you to create and manage different types of groups and group functionality according to your requirements.
 
 This integration was integrated and tested with version 1.0 of Microsoft Graph Groups API
 </p>
@@ -23,14 +23,14 @@ Group properties and owners cannot be updated and groups cannot be deleted.
 <li>msgraph-groups-delete-group</li>
 <li>msgraph-groups-create-group</strong></li>
 
-<h2>Configure Azure Active Directory Groups on Cortex XSOAR</h2>
+<h2>Configure Entra ID Groups on Cortex XSOAR</h2>
 
 <li>Manage the organization groups.</li>
 
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-  <li>Search for Azure Active Directory Groups.</li>
+  <li>Search for Entra ID Groups.</li>
   <li>
     Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
     <ul>

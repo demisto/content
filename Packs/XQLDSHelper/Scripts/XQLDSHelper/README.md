@@ -1,8 +1,8 @@
 Run an XQL query and creates an entry for the General Purpose Dynamic Section to display a graph or table widget based on the results.
 The query is executed by the `xdr-xql-generic-query` and the `xdr-xql-get-query-results` command.
 
-
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,8 +10,8 @@ The query is executed by the `xdr-xql-generic-query` and the `xdr-xql-get-query-
 | Script Type | python3 |
 | Tags | Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -31,39 +31,42 @@ The query is executed by the `xdr-xql-generic-query` and the `xdr-xql-get-query-
 | polling_interval | The polling interval \(in seconds\) to wait for results \(Default = 10\). |
 | query_timeout_duration | The maximum duration (in seconds) allowed for an XQL query to complete after it has started \(Default = 60\). |
 | context_data | The custom context data is merged with the current context data for use. |
+| output_recordset | Set to true to return the recordset in the outputs context; otherwise, set to false. |
 | xql_query_instance | The name of the integration instance to execute xdr-xql-generic-query and xdr-xql-get-query-results. |
-
 
 ### Query Execution Timeout and Retry Limits
 
 Due to limitations on the number of XQL queries that can run in parallel, the script will poll at intervals of `retry_interval` seconds until the query becomes available to execute, with a maximum of `max_retries` attempts.
 Once the query starts running, it may take some time to return results. During this period, the script will continue polling at intervals of `polling_interval` seconds while waiting for the results. If the results are not returned within the `query_timeout_duration` seconds, the query will be treated as an error.
 
-
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | XQLDSHelper.QueryParams | The query parameters. | unknown |
 | XQLDSHelper.QueryHash | The hash value of the query parameters. | string |
+| XQLDSHelper.RequestURL | The URL path, including query parameters, used to search datasets in the XQL builder. | string |
+| XQLDSHelper.ResultURL | The URL path used to get the results of an executed query in the XQL builder. | string |
+| XQLDSHelper.ExecutionID | The unique execution ID for the request query. | string |
+| XQLDSHelper.RecordSet | The record set retrieved by the XQL query. | unknown |
 | XQLDSHelper.Entry | The entry data for the general dynamic section. | unknown |
 
-
 ## Structure of the templates
+
 ---
 
 The data provided to `templates` depends on the parameter specified in `templates_type`.
 
- - templates_type: `raw`
-   * Specifies the list of templates directly. The details will be provided later.
+- templates_type: `raw`
+  - Specifies the list of templates directly. The details will be provided later.
 
- - templates_type: `base64`
-   * Specifies the list of templates encoded directly in base64. The details will be provided later.
+- templates_type: `base64`
+  - Specifies the list of templates encoded directly in base64. The details will be provided later.
 
- - templates_type: `list`
-   * Specifies the name of a list managed in the `Lists` of Cortex XSIAM/XSOAR. The list of templates is retrieved from it.
-
+- templates_type: `list`
+  - Specifies the name of a list managed in the `Lists` of Cortex XSIAM/XSOAR. The list of templates is retrieved from it.
 
 The list of templates must be either a dictionary or a serialized JSON string.
 It can contain multiple templates, and a summary of the structure is provided below.
@@ -122,7 +125,14 @@ The summary of the template structure in the templates is provided below.
         "latest_time": "<latest time>",
         "round_time": <round time>
       },
-      "conditions": <conditions>
+      "conditions": <conditions>,
+      "locking": {
+        "module": "<locking module>",
+        "name": "<name of lock>",
+        "info": "<info for lock>",
+        "timeout": <timeout>,
+        "using": "<instance name>"
+      }
     },
     "entry": {
       "type": "<widget type>",
@@ -140,7 +150,9 @@ The summary of the template structure in the templates is provided below.
 ```
 
 ### Node: config
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .config.variable_substitution.opening | [Optional] The opening marker of the enclosure for variable substitution. It overrides the opening marker specified in the `variable_substitution` parameter of the arguments. | String |
@@ -200,9 +212,10 @@ Below is a sample of the `config` node.
 `.filters`, `.remove-null`, and `.default` settings under `content`, `alert`, and `incident` can help minimize the data used for Variable Substitution and provide default values.
 Using Variable Substitution to pass the entire data to variables like `${.=val.username}` is time-consuming. By using these settings to minimize the data and define default values, you can reduce the need to pass the entire data, thereby improving processing performance.
 
-
 ### Node: query
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .query.xql | The XQL query string to retrieve the record set to create an entry. | String |
@@ -213,15 +226,21 @@ Using Variable Substitution to pass the entire data to variables like `${.=val.u
 | .query.time_range.round_time.earliest_time | [Optional] The value (in seconds) used to round down the base time for `earliest_time`. | String or Number |
 | .query.time_range.round_time.latest_time | [Optional] The value (in seconds) used to round down the base time for `latest_time`. | String or Number |
 | .query.conditions | [Optional] Conditions for executing XQL: it will only be executed if the conditions evaluate to true or are not specified. If the conditions evaluate to false, the `.entry.default` will be applied if it is specified and the conditions defined for it are satisfied, otherwise, an empty record set will be returned. | Any |
+| .query.locking.module | [Optional] The locking module to use. Must be either `core-lock` or `demisto-lock` \(Default = core-lock\). | String |
+| .query.locking.name | [Optional] The lock name passed as the `name` parameter to the `core-lock-get` command. | String |
+| .query.locking.info | [Optional] Additional information provided for the lock instance via the `info` parameter of the `core-lock-get` command. | String |
+| .query.locking.timeout | [Optional] The timeout value (in seconds) passed to the `timeout` parameter of the `core-lock-get` command. | String or Number |
+| .query.locking.using | [Optional] The name of the Core Lock integration instance to execute the `core-lock-get` and `core-lock-release`. | String |
 
 This node supports [Variable Substitution](#variable-substitution) for all parameters.
 
-
 #### Node: .query.conditions
+
 The `.query.conditions` are evaluated as either true or false. The values of the conditions can be of any type in JSON (null, boolean, number, string, list, or dictionary).
 `null`, `false` (of type boolean or string), `0` (of type number), and an empty string (i.e., a string with 0 length) will be treated as false. All other values will be treated as true for primitive data types.
 
 A list or dictionary can represent a logical expression.
+
 - **A list represents an `OR` condition**, where each element in the list is treated as a separate condition.
   For example, the list `[X, Y, Z]` is evaluated as `X OR Y OR Z`.
   If any of the elements are true, the entire expression is considered true.
@@ -238,11 +257,13 @@ A list or dictionary can represent a logical expression.
   Condition-X: Condition-Y
 }
 ```
+
 This dictionary is evaluated as `(Condition-A AND Condition-B) OR (Condition-X AND Condition-Y)`.
 If any of the individual `AND` conditions evaluate to true, the entire dictionary expression will be true.
 If the dictionary is empty, it is treated as false.
 
 In addition, a dictionary can be nested. For example, consider the following dictionary:
+
 ```
 {
   Condition-A: {
@@ -253,11 +274,13 @@ In addition, a dictionary can be nested. For example, consider the following dic
   }
 }
 ```
+
 This dictionary is evaluated as `Condition-A AND Condition-B AND (Condition-X OR Condition-Y)`.
 
-
 ### Node: entry
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .entry.type | The name of the entry type, which must be one of the following: [markdown](#node-entrymarkdown), [markdown-table](#node-entrymarkdown-table), [number](#node-entrynumber), [number-trend](#node-entrynumber-trend), [pie](#node-entrypie), [line](#node-entryline), [single-bar](#node-entrysingle-bar), [stacked-bar](#node-entrystacked-bar) or [duration](#node-entryduration). | String |
@@ -288,9 +311,10 @@ The `.entry.type` specifies the type of the entry, as shown below.
 
 This node supports [Variable Substitution](#variable-substitution) for all parameters.
 
-
 #### Node: entry.markdown
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .text | The markdown text to display. | String |
@@ -309,9 +333,10 @@ A sample structure of `markdown` in an entry node is shown below.
 }
 ```
 
-
 #### Node: entry.markdown-table
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .title | [Optional] The title of the markdown table. | String |
@@ -320,7 +345,6 @@ A sample structure of `markdown` in an entry node is shown below.
 | .columns | [Optional] A list of table columns in the specified order. If not specified, all fields in the record set are displayed in the table. | List |
 | .columns.field | [Optional] The name of the field used to display the field value. | String |
 | .columns.label | [Optional] The label for the column. If not specified, the field name is used as the label. | String |
-
 
 A sample structure of `markdown-table` in an entry node is shown below.
 
@@ -382,9 +406,10 @@ The table will be created as shown below:
 | dns-base | 847200 |
 | incomplete | 2479222 |
 
-
 #### Node: entry.number
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .field | The name of the field used to display the field value. | String |
@@ -446,9 +471,10 @@ The widget will be displayed as shown below.
 
 The record set must contain at most one record for the number widget entry. An error is raised if it contains more than one record.
 
-
 #### Node: entry.number-trend
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .prev-field | The name of the field used to track the value before the change or update. | String |
@@ -509,23 +535,22 @@ That is intended to create a number-trend widget from the record set, as shown b
 | --- | --- |
 | 1000 | 2000 |
 
-
 The widget will be displayed as shown below.
 
 ![Number Trend](../../doc_files/number-trend.png)
 
 The record set must contain at most one record for the number-trend widget entry. An error is raised if it contains more than one record.
 
-
 #### Node: entry.pie
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .group | Specifies `records` or `fields`. The details will be provided later in this section. | String |
 | .records | [Group-dependent parameters] This node is required only when `records` is set in `.group`. | Dict |
 | .fields | [Group-dependent parameters] This node is required only when `fields` is set in `.group`. | Dict |
 | .params | [Optional] The parameters provided to `Contents.params` in the widget entry. | Dict |
-
 
 > .group
 
@@ -558,7 +583,6 @@ In this case, the settings must be configured under the `.records` node, as show
 | .records.sort.by | [Optional] The name of the field by which to sort the record set. If not specified, the value of `.records.data-field` will be used by default. | String |
 | .records.sort.order | [Optional] The sort order. Specifies either `asc` (default) for ascending or `desc` for descending. | String |
 
-
 Below is a sample XQL query and the corresponding `records` structure in the entry node.
 
 ```
@@ -588,7 +612,6 @@ This is a sample pie chart created using those settings.
 
 ![Dynamic-Pie](../../doc_files/pie-dynamic.png)
 
-
 When specifying `fields` for `.group`, it indicates that each field's value is represented as a separate slice in the pie chart.
 In this case, the values for each field are displayed individually, and each field is associated with its own distinct legend label.
 
@@ -608,7 +631,6 @@ In this case, the settings must be configured under the `.fields` node, as shown
 | .fields | A dictionary that defines the fields used for the pie chart slices, where each key represents a field name. | Dict |
 | .fields.&lt;field-name&gt;.label | [Optional] The label to be displayed in the legend for the slices. If not specified, the field name will be used as the label. | String |
 | .fields.&lt;field-name&gt;.color | [Optional] [Optional] The color palette for the slices. If not specified, the default color will be applied. | String |
-
 
 Below is a sample XQL query and the corresponding `fields` structure in the entry node.
 
@@ -660,6 +682,7 @@ For more details, refer to the Cortex XSIAM/XSOAR admin guide.
 ```
 
 ---
+
 #### Tips: Sorting Fields by Value in .group = "fields"
 
 When specifying `fields` for `.group`, each slice is plotted in the order defined in `.fields`.
@@ -671,6 +694,7 @@ dataset = panw_ngfw_traffic_raw
 | dedup session_id
 | comp sum(bytes_sent) as total_bytes_sent, sum(bytes_received) as total_bytes_received
 ```
+
 ```
 "pie": {
   "group": "fields",
@@ -720,9 +744,10 @@ To plot these fields ordered by total bytes, use `.group` = `records` with the f
 }
 ```
 
-
 #### Node: entry.line
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .x.by | The name of the field by which values are aggregated into groups for the X-axis (e.g., time) of the line chart. | String |
@@ -824,7 +849,6 @@ In this case, the settings must be configured under the `.y.fields` node, as sho
 | .y.fields.&lt;field-name&gt;.label | [Optional] The label to be displayed in the legend for the series. If not specified, the field name will be used as the label. | String |
 | .y.fields.&lt;field-name&gt;.color | [Optional] [Optional] The color palette for the series. If not specified, the default color will be applied. | String |
 
-
 Below is a sample XQL query and the corresponding `fields` structure in the entry node.
 
 ```
@@ -885,16 +909,16 @@ For more details, refer to the Cortex XSIAM/XSOAR admin guide.
 }
 ```
 
-
 #### Node: entry.single-bar
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .group | Specifies `records` or `fields`. The details will be provided later in this section. | String |
 | .records | [Group-dependent parameters] This node is required only when `records` is set in `.group`. | Dict |
 | .fields | [Group-dependent parameters] This node is required only when `fields` is set in `.group`. | Dict |
 | .params | [Optional] The parameters provided to `Contents.params` in the widget entry. | Dict |
-
 
 > .group
 
@@ -926,7 +950,6 @@ In this case, the settings must be configured under the `.records` node, as show
 | .records.colors | [Optional] The color configuration for each bar. For more details, see [.colors](#common-node-colors). | List, Dict, or String |
 | .records.sort.by | [Optional] The name of the field by which to sort the record set. If not specified, the value of `.records.data-field` will be used by default. | String |
 | .records.sort.order | [Optional] The sort order. Specifies either `asc` (default) for ascending or `desc` for descending. | String |
-
 
 Below is a sample XQL query and the corresponding `records` structure in the entry node.
 
@@ -960,7 +983,6 @@ This is a sample single-bar chart created using those settings.
 
 ![Dynamic-Single-Bar](../../doc_files/single-bar-dynamic.png)
 
-
 When specifying `fields` for `.group`, it indicates that each field's value is represented as a separate bar in the single-bar chart.
 In this case, the values for each field are displayed individually, and each field is associated with its own distinct legend label.
 
@@ -980,7 +1002,6 @@ In this case, the settings must be configured under the `.fields` node, as shown
 | .fields | A dictionary that defines the fields used for the single-bar chart groups, where each key represents a field name. | Dict |
 | .fields.&lt;field-name&gt;.label | [Optional] The label to be displayed in the legend for the bars. If not specified, the field name will be used as the label. | String |
 | .fields.&lt;field-name&gt;.color | [Optional] [Optional] The color palette for the bars. If not specified, the default color will be applied. | String |
-
 
 Below is a sample XQL query and the corresponding `fields` structure in the entry node.
 
@@ -1032,6 +1053,7 @@ For more details, refer to the Cortex XSIAM/XSOAR admin guide.
 ```
 
 ---
+
 #### Tips: Sorting Fields by Value in .group = "fields"
 
 When specifying `fields` for `.group`, each bar is plotted in the order defined in `.fields`.
@@ -1043,6 +1065,7 @@ dataset = panw_ngfw_traffic_raw
 | dedup session_id
 | comp sum(bytes_sent) as total_bytes_sent, sum(bytes_received) as total_bytes_received
 ```
+
 ```
 "single-bar": {
   "group": "fields",
@@ -1092,9 +1115,10 @@ To plot these fields ordered by total bytes, use `.group` = `records` with the f
 }
 ```
 
-
 #### Node: entry.stacked-bar
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .x.by | The name of the field by which values are aggregated into groups for the X-axis (e.g., time) of the stacked-bar chart. | String |
@@ -1199,7 +1223,6 @@ In this case, the settings must be configured under the `.y.fields` node, as sho
 | .y.fields.&lt;field-name&gt;.label | [Optional] The label to be displayed in the legend for the groups. If not specified, the field name will be used as the label. | String |
 | .y.fields.&lt;field-name&gt;.color | [Optional] [Optional] The color palette for the groups. If not specified, the default color will be applied. | String |
 
-
 Below is a sample XQL query and the corresponding `fields` structure in the entry node.
 
 ```
@@ -1263,9 +1286,10 @@ For more details, refer to the Cortex XSIAM/XSOAR admin guide.
 }
 ```
 
-
 #### Node: entry.duration
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .field | The name of the field whose value specifies the duration, and the value must be in seconds. | String |
@@ -1309,9 +1333,10 @@ The widget will be displayed as shown below.
 
 The record set must contain at most one record for the duration widget entry. An error is raised if it contains more than one record.
 
-
 #### Node: entry.default
+
 ---
+
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | .scope | [Optional] A list of scope. The possible values are `no_recordset` and `query_skipped,` which indicate when no record set is available or when a query is skipped, respectively (Default = ["no_recordset", "query_skipped"]). | String or List |
@@ -1322,8 +1347,9 @@ The record set must contain at most one record for the duration widget entry. An
 The default entry is a fallback value. Instead of creating an entry from the query results,
 it is used to display a message indicating that the query was not executed or that no record set is available.
 It will be applied if either of the following conditions is met:
- - `query_skipped` is included in the `.scope`, and the `.query.conditions` in the `query` node evaluates to false.
- - `no_recordset` is included in the `.scope`, and no record set is returned by the XQL query.
+
+- `query_skipped` is included in the `.scope`, and the `.query.conditions` in the `query` node evaluates to false.
+- `no_recordset` is included in the `.scope`, and no record set is returned by the XQL query.
 
 The `.no_recordset`, `.query_skipped` and `.entry` must be of type `str` or `dict`.
 If it is of type `str`, it represents markdown text to be displayed as an entry, as shown below:
@@ -1339,18 +1365,16 @@ If it is of type `str`, it represents markdown text to be displayed as an entry,
 
 If it is of type `dict`, the value is returned as-is.
 
-
 #### Common Node: .colors
+
 ---
 
 The `colors` node configures color palettes for each slice, series, or group in the graph chart.
 The value can be of type `str`, `dict`, or `list`.
 
-
 ##### .colors (str) - specified color
 
 When the value is of type `str`, it specifies the color applied to all items (slice, series, or group).
-
 
 ```
 "colors": "rgb(0, 144, 255)"
@@ -1375,7 +1399,6 @@ For example, in the provided configuration:
 The category `dns-base` will be colored `rgb(0, 144, 255)`, `incomplete` will be colored `rgb(255, 144, 0)`, and `ssl` will be colored `rgb(255, 0, 144)`.
 If a category is not specified in the mapping, it will use the default color scheme.
 
-
 ##### .colors (list) - color order
 
 When the value is of type `list`, it represents an array of colors that will be applied sequentially to each item (slice, series, or group) in the chart.
@@ -1383,6 +1406,7 @@ The colors in the list are applied in the order they appear, starting with the f
 If the number of items exceeds the number of colors in the list, the default color scheme will be applied.
 
 For example, in the provided configuration:
+
 ```
 "colors": [
   "rgb(0, 144, 255)",
@@ -1402,14 +1426,13 @@ For example, in the provided configuration:
 The colors will be applied to the chart items in the following order: `rgb(0, 144, 255)` for the first item, `rgb(20, 144, 255)` for the second item, and so on.
 If there are more than 11 items in the chart, the default color scheme will be applied for the remaining items.
 
-
-
 ## Variable Substitution
 
 Variable Substitution is a syntax used to dynamically replace variables within a string. It enables the insertion of values from Lists, Context Data, Alert Context (Cortex XSIAM), Incident Context (Cortex XSOAR) or Extended Variables, into predefined templates.
 By default, a variable is enclosed by `${` and `}`, and those symbols can be changed using the `.config.variable_substitution` in the template or the `variable_substitution` argument parameter.
 
 e.g.
+
 ```
 | filter action_remote_ip = "${alert.remoteip}"
 ```
@@ -1417,40 +1440,43 @@ e.g.
 The syntax supports the [DT expression](https://xsoar.pan.dev/docs/integrations/dt), allowing you to make template text more flexible and customizable.
 
 e.g.
+
 ```
 | filter action_remote_ip = "${alert.remoteip=>val ? val[0] : "255.255.255.255"}"
 ```
 
 Variables can be replaced by the standard Cortex XSIAM/XSOAR DT expression.
 
- - ${&lt;context-path&gt;}
- - ${lists.&lt;list-name&gt;}
- - ${alert.&lt;alert-field&gt;}
- - ${incident.&lt;incident-field&gt;}
+- ${&lt;context-path&gt;}
+- ${lists.&lt;list-name&gt;}
+- ${alert.&lt;alert-field&gt;}
+- ${incident.&lt;incident-field&gt;}
 
 In addition, it supports extended variables that start with `.`.
+<!-- markdownlint-disable MD005 -->
 
- - ${.recordset}
-   * It refers to the record set retrieved by the XQL query.
+- ${.recordset}
+  - It refers to the record set retrieved by the XQL query.
 
- - ${.query.string}
-   * It refers to the query string used in the XQL query.
+- ${.query.string}
+  - It refers to the query string used in the XQL query.
 
- - ${.query.timeframe.from}
-   * It refers to the start time of the time frame in ISO 8601 time format in UTC applied in the XQL query.
+- ${.query.timeframe.from}
+  - It refers to the start time of the time frame in ISO 8601 time format in UTC applied in the XQL query.
 
- - ${.query.timeframe.to}
-   * It refers to the end time of the time frame in ISO 8601 time format in UTC applied in the XQL query
+- ${.query.timeframe.to}
+  - It refers to the end time of the time frame in ISO 8601 time format in UTC applied in the XQL query
 
- - ${.query.execution_id}
-   * It refers to the unique execution ID for the request query.
+- ${.query.execution_id}
+  - It refers to the unique execution ID for the request query.
 
- - ${.query.request_url}
-   * It refers to the URL path, including query parameters, used to search datasets in the XQL builder. (e.g., /xql/xql-search?phrase=dataset%3Dxdr_data&timeframe=%7B%22from%22%3A%201734190414000%2C%20%22to%22%3A%201734276814000%7D)
+- ${.query.request_url}
+  - It refers to the URL path, including query parameters, used to search datasets in the XQL builder. (e.g., /xql/xql-search?phrase=dataset%3Dxdr_data&timeframe=%7B%22from%22%3A%201734190414000%2C%20%22to%22%3A%201734276814000%7D)
 
- - ${.query.result_url}
-   * It refers to the URL path used to get the results of an executed query in the XQL builder. (e.g., /xql/xql-search/1234567890abcd_123456_inv)
+- ${.query.result_url}
+  - It refers to the URL path used to get the results of an executed query in the XQL builder. (e.g., /xql/xql-search/1234567890abcd_123456_inv)
 
+<!-- markdownlint-enable MD005 -->
 
 ## Caching
 
@@ -1458,12 +1484,11 @@ When caching is enabled, data is stored in the context data and retrieved from i
 It is managed under the `XQLDSHelperCache.<template-name>` path within the context data.
 Caching can be controlled by the `cache_type` argument parameter.
 
- - cache_type: `recordset`
-   * All the record sets retrieved from the query are stored in the cache. Entries will be correctly created even when only the parameters in the "entry" are modified, as they are rebuilt from the raw record sets in the cache, provided the query parameters remain unchanged.
+- cache_type: `recordset`
+  - All the record sets retrieved from the query are stored in the cache. Entries will be correctly created even when only the parameters in the "entry" are modified, as they are rebuilt from the raw record sets in the cache, provided the query parameters remain unchanged.
 
- - cache_type: `entry`
-   * Only entry data is stored in the cache. The same entry is returned if the query parameters remain unchanged. This option helps minimize the cache data size. However, if only the parameters within the entry are modified (for example, if the 'colors' parameter is modified), the correct entry cannot be retrieved, as it does not re-query the record set to create a new entry with the updated settings.
-
+- cache_type: `entry`
+  - Only entry data is stored in the cache. The same entry is returned if the query parameters remain unchanged. This option helps minimize the cache data size. However, if only the parameters within the entry are modified (for example, if the 'colors' parameter is modified), the correct entry cannot be retrieved, as it does not re-query the record set to create a new entry with the updated settings.
 
 ## Record Limit for Query Results
 
@@ -1481,13 +1506,21 @@ dataset = panw_ngfw_traffic_raw
 | limit 240 // to allow retrieving up to 10 apps x 24 hours of records, as the default limit is 100.
 ```
 
+## Locking Queries
+
+In Cortex XSIAM and Cortex XDR, the number of concurrent XQL query executions via the REST API is limited to four.
+Submitting more queries than this may lead to errors.
+The script XQLDSHelper supports retry logic and can wait until execution becomes possible, but by holding onto an execution slot it might impact other playbooks running queries in parallel.
+To prevent this, exclusive locking is supported via the Core Lock or Demisto Lock mechanism.
+When `.query.locking` is enabled, XQLDSHelper acquires a lock during query execution and releases it afterward.
+This ensures that multiple queries do not run concurrently and allows coordinated execution alongside other playbooks.
 
 ## Sample Content Bundle
 
 To assist you more effectively, we’ve provided sample automation scripts with List data, including template data and XQL query strings, in a content bundle.
 You can conveniently download them using the link below.
 
- - [XQLDS_Sample_content-bundle.tar.gz](https://github.com/demisto/content/tree/master/Packs/XQLDSHelper/Scripts/XQLDSHelper/test_data/XQLDS_Sample_content-bundle.tar.gz)
+- [XQLDS_Sample_content-bundle.tar.gz](https://github.com/demisto/content/tree/master/Packs/XQLDSHelper/Scripts/XQLDSHelper/test_data/XQLDS_Sample_content-bundle.tar.gz)
 
 Once you've imported the bundle into your Cortex XSIAM or XSOAR instance, you will see lists starting with `XQLDS_Sample_` in the `Lists` menu for template data and XQL queries, and automation scripts starting with `XQLDS_Sample_` in the `Scripts` menu for displaying widgets in the General Purpose Dynamic Section.
 `XQLDS_Sample_Templates` in the `Lists` is the main template used by the automation scripts. You can refer to it to deepen your understanding of the template structure.

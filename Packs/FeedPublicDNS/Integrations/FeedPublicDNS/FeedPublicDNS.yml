@@ -124,7 +124,7 @@ script:
       name: limit
     description: Gets indicators from the feed.
     name: public-dns-get-indicators
-  dockerimage: demisto/netutils:1.0.0.118055
+  dockerimage: demisto/netutils:1.0.0.3562043
   feed: true
   runonce: false
   script: '-'
@@ -133,6 +133,6 @@ script:
 tests:
 - Public_DNS_Feed_Test
 fromversion: 5.5.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

@@ -4,6 +4,8 @@ from collections import defaultdict
 from collections.abc import Callable
 from copy import deepcopy
 from mimetypes import guess_type
+from urllib.parse import urlparse
+
 
 import demistomock as demisto  # noqa: F401
 from bs4 import BeautifulSoup
@@ -112,7 +114,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=headers)
 
     @abstractmethod
-    def test_instance_connection(self) -> None:
+    def jira_test_instance_connection(self) -> None:
         """This method is used to test the connectivity of each instance, each child will implement
         their own connectivity test
         """
@@ -151,6 +153,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             ok_codes=ok_codes,
             files=files,
             headers=request_headers,
+            with_metrics=True,
         )
 
     def get_headers_with_access_token(self, headers: dict[str, str] | None = None) -> dict[str, str]:
@@ -261,8 +264,14 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         # content in HTML format, using a 3rd party package, rather than complex format.
         # We also supply the fields: *all to return all the fields from an issue (specifically the field that holds
         # data about the attachments in the issue), otherwise, it won't get returned in the query.
+        if self.api_version == "2" or "startAt" in query_params:
+            # Use old endpoint for backwards compatibility and for on-prem instances
+            url_suffix = f"rest/api/{self.api_version}/search"
+        else:
+            url_suffix = f"rest/api/{self.api_version}/search/jql"
+
         query_params |= {"expand": "renderedFields,transitions,names", "fields": ["*all"]}
-        return self.http_request(method="GET", url_suffix=f"rest/api/{self.api_version}/search", params=query_params)
+        return self.http_request(method="GET", url_suffix=url_suffix, params=query_params)
 
     # Board Requests
     def get_issues_from_backlog(
@@ -462,7 +471,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         )
 
     # Issue Fields Requests
-    def get_issue_fields(self) -> List[Dict[str, Any]]:
+    def get_issue_fields(self) -> list[Dict[str, Any]]:
         """This method is in charge of returning system and custom issue fields
 
         Returns:
@@ -757,7 +766,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         )
 
     # Attachments Requests
-    def upload_attachment(self, issue_id_or_key: str, files: Dict[str, Any] | None = None) -> List[Dict[str, Any]]:
+    def upload_attachment(self, issue_id_or_key: str, files: Dict[str, Any] | None = None) -> list[Dict[str, Any]]:
         """This method is in charge of uploading an attachment to an issue.
 
         Args:
@@ -819,7 +828,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
 
     # User Requests
     @abstractmethod
-    def get_id_by_attribute(self, attribute: str, max_results: int) -> List[Dict[str, Any]]:
+    def get_id_by_attribute(self, attribute: str, max_results: int) -> list[Dict[str, Any]]:
         """This method is in charge of returning a list of users that match the attribute.
 
         Args:
@@ -907,7 +916,7 @@ class JiraCloudClient(JiraBaseClient):
             pat=pat,
         )
 
-    def test_instance_connection(self) -> None:
+    def jira_test_instance_connection(self) -> None:
         self.get_user_info()
 
     def oauth_start(self) -> str:
@@ -916,7 +925,7 @@ class JiraCloudClient(JiraBaseClient):
     def oauth_complete(self, code: str) -> None:
         self.oauth2_retrieve_access_token(code=code)
 
-    def oauth2_start(self, scopes: List[str]) -> str:
+    def oauth2_start(self, scopes: list[str]) -> str:
         """This function is in charge of returning the URL that the user will use in order to authenticate
         himself and be redirected to the callback URL in order to retrieve the authorization code.
 
@@ -999,6 +1008,17 @@ class JiraCloudClient(JiraBaseClient):
         """
         return self.http_request(method="GET", url_suffix="rest/api/3/project/search", params=query_params)
 
+    def get_jira_base_url(self) -> str:
+        """
+        Fetches the Jira UI base URL from the serverInfo endpoint.
+        Requires the client to have a `get` method for REST calls.
+
+        Returns:
+            str: The Jira UI base URL (e.g., https://yourcompany.atlassian.net)
+        """
+        server_info = self.http_request(method="GET", url_suffix="rest/api/3/serverInfo")
+        return server_info["baseUrl"]
+
     def issues_to_backlog(self, board_id: str, json_data: Dict[str, Any]) -> requests.Response:
         """This method is in charge of moving issues, back to backlog of their board.
 
@@ -1042,7 +1062,7 @@ class JiraCloudClient(JiraBaseClient):
         )
 
     # User Requests
-    def get_id_by_attribute(self, attribute: str, max_results: int = DEFAULT_PAGE_SIZE) -> List[Dict[str, Any]]:
+    def get_id_by_attribute(self, attribute: str, max_results: int = DEFAULT_PAGE_SIZE) -> list[Dict[str, Any]]:
         query = {"query": attribute, "maxResults": max_results}
         return self.http_request(method="GET", url_suffix=f"rest/api/{self.api_version}/user/search", params=query)
 
@@ -1177,7 +1197,7 @@ class JiraOnPremClient(JiraBaseClient):
         integration_context |= new_authorization_context
         set_integration_context(integration_context)
 
-    def test_instance_connection(self) -> None:
+    def jira_test_instance_connection(self) -> None:
         self.get_user_info()
 
     def get_attachment_content(self, attachment_id: str = "", attachment_content_url: str = "") -> str:
@@ -1189,11 +1209,11 @@ class JiraOnPremClient(JiraBaseClient):
 
     # User Requests
 
-    def get_id_by_attribute(self, attribute: str, max_results: int = DEFAULT_PAGE_SIZE) -> List[Dict[str, Any]]:
+    def get_id_by_attribute(self, attribute: str, max_results: int = DEFAULT_PAGE_SIZE) -> list[Dict[str, Any]]:
         query = {"username": attribute, "maxResults": max_results}
         return self.http_request(method="GET", url_suffix=f"rest/api/{self.api_version}/user/search", params=query)
 
-    def get_all_projects(self) -> List[Dict[str, Any]]:
+    def get_all_projects(self) -> list[Dict[str, Any]]:
         """Returns all projects which are found in the Jira instance
 
         Returns:
@@ -1201,7 +1221,7 @@ class JiraOnPremClient(JiraBaseClient):
         """
         return self.http_request(method="GET", url_suffix="rest/api/2/project")
 
-    def issue_get_forms(self, issue_id: str) -> List:
+    def issue_get_forms(self, issue_id: str) -> list:
         """Retrieve forms' data for a specified issue_id
 
         :param issue_id: Issue to pull forms for
@@ -1233,6 +1253,12 @@ class JiraIssueFieldsParser:
     The issue_data: Dict[str, Any] is the full issue object that is returned from the API, which holds all the data about the
     issue.
     """
+
+    @staticmethod
+    def get_value_from_context(context_method, issue_data: Dict[str, Any]) -> Any:
+        """Extracts the value from the result of a context method."""
+        context_dict = context_method(issue_data)
+        return next(iter(context_dict.values()))
 
     @staticmethod
     def get_id_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
@@ -1267,7 +1293,7 @@ class JiraIssueFieldsParser:
         return {"Created": demisto.get(issue_data, "fields.created", "") or ""}
 
     @staticmethod
-    def get_labels_context(issue_data: Dict[str, Any]) -> Dict[str, List[str]]:
+    def get_labels_context(issue_data: Dict[str, Any]) -> Dict[str, list[str]]:
         return {"Labels": demisto.get(issue_data, "fields.labels", []) or []}
 
     @staticmethod
@@ -1317,8 +1343,8 @@ class JiraIssueFieldsParser:
         return {"Description": description_text, "RawDescription": description_raw}
 
     @staticmethod
-    def get_attachments_context(issue_data: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]:
-        attachments: List[Dict[str, Any]] = [
+    def get_attachments_context(issue_data: Dict[str, Any]) -> Dict[str, list[Dict[str, Any]]]:
+        attachments: list[Dict[str, Any]] = [
             {
                 "id": attachment.get("id"),
                 "filename": attachment.get("filename"),
@@ -1330,8 +1356,8 @@ class JiraIssueFieldsParser:
         return {"Attachments": attachments}
 
     @staticmethod
-    def get_subtasks_context(issue_data: Dict[str, Any]) -> Dict[str, List[Dict[str, str]]]:
-        subtasks: List[Dict[str, str]] = []
+    def get_subtasks_context(issue_data: Dict[str, Any]) -> Dict[str, list[Dict[str, str]]]:
+        subtasks: list[Dict[str, str]] = []
         subtasks.extend(
             {"id": subtask.get("id", "") or "", "key": subtask.get("key", "") or ""}
             for subtask in demisto.get(issue_data, "fields.subtasks", [])
@@ -1339,7 +1365,7 @@ class JiraIssueFieldsParser:
         return {"Subtasks": subtasks}
 
     @staticmethod
-    def get_components_context(issue_data: Dict[str, Any]) -> Dict[str, List[str]]:
+    def get_components_context(issue_data: Dict[str, Any]) -> Dict[str, list[str]]:
         components = [(component.get("name") or "") for component in (demisto.get(issue_data, "fields.components") or [])]
         return {"Components": components}
 
@@ -1391,7 +1417,7 @@ class JiraIssueFieldsParser:
 
     @classmethod
     def get_issue_fields_context_from_id(
-        cls, issue_data: Dict[str, Any], issue_fields_ids: List[str], issue_fields_id_to_name_mapping: Dict[str, str]
+        cls, issue_data: Dict[str, Any], issue_fields_ids: list[str], issue_fields_id_to_name_mapping: Dict[str, str]
     ) -> Dict[str, Any]:
         """This method is in charge of receiving the issue object from the API, and parse the fields that are found
         in the constant ISSUE_FIELDS_ID_TO_CONTEXT's keys to human readable outputs, and parse the corresponding fields
@@ -1433,7 +1459,7 @@ def get_project_id_from_name(client: JiraBaseClient, project_name: str) -> str:
     Returns:
         str: The project id corresponding to the project name.
     """
-    queried_projects: List[Dict[str, Any]] = []
+    queried_projects: list[Dict[str, Any]] = []
     if isinstance(client, JiraCloudClient):
         query_params = {"query": f"{project_name}"}
         cloud_res = client.run_project_query(query_params=query_params)
@@ -1474,26 +1500,39 @@ def prepare_pagination_args(page: int | None = None, page_size: int | None = Non
         return {"start_at": DEFAULT_PAGE, "max_results": limit}
 
 
-def create_query_params(jql_query: str, start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
+def create_query_params(
+    jql_query: str, start_at: int | None = None, max_results: int | None = None, next_page_token: str = ""
+) -> Dict[str, Any]:
     """Create the query parameters when issuing a query.
 
     Args:
         jql_query (str): The JQL query. The Jira Query Language string, used to search for issues in a project using
         SQL-like syntax.
-        start_at (int | None, optional): The starting index of the returned issues. Defaults to None.
+        start_at (int | None, optional): The starting index of the returned issues. Defaults to None. (Deprecated, kept for BC)
         max_results (int | None, optional): The maximum number of issues to return per page. Defaults to None.
+        next_page_token (str | None, optional): A token to the next page from a previous query.
 
     Returns:
         Dict[str, Any]: The query parameters to be sent when issuing a query request to the API.
     """
-    start_at = start_at or 0
     max_results = max_results or DEFAULT_PAGE_SIZE
-    demisto.debug(f"Querying with: {jql_query}\nstart_at: {start_at}\nmax_results: {max_results}\n")
-    return {
+    demisto.debug(
+        f"Querying with: {jql_query}\n"
+        f"next_page_token: {next_page_token}\n"
+        f"max_results: {max_results}\n"
+        f"startAt: {start_at}"
+    )
+    query = {
         "jql": jql_query,
-        "startAt": start_at,
         "maxResults": max_results,
     }
+    if next_page_token:
+        query["nextPageToken"] = next_page_token
+    elif start_at:
+        # Old endpoint call, kept for backwards compatibility and on-prem
+        query["startAt"] = start_at
+
+    return query
 
 
 def get_issue_fields_id_to_name_mapping(client: JiraBaseClient) -> Dict[str, str]:
@@ -1532,7 +1571,7 @@ def create_files_to_upload(file_mime_type: str, file_name: str, file_bytes: byte
         tuple([Dict[tuple(str, bytes, str)]], str): The dift is The file object of new attachment (file name, content in
         bytes, mime type), and the str is the mime type to upload with the file.
     """
-    # guess_type can return a None mime type if the type can’t be guessed (missing or unknown suffix). In this case, we should use
+    # guess_type can return a None mime type if the type can't be guessed (missing or unknown suffix). In this case, we should use
     # a default mime type
     mime_type_to_upload = file_mime_type if file_mime_type else guess_type(file_name)[0] or "application-type"
     demisto.debug(f"In create_files_to_upload {mime_type_to_upload=}")
@@ -1618,29 +1657,41 @@ def create_issue_fields(
             raise DemistoException("issue_json must be in a valid json format") from e
 
     for issue_arg, value in issue_args.items():
-        parsed_value: Any = ""  # This is used to hold any parsed arguments passed from the user, e.g the labels
-        # argument is provided as a string in CSV format, and the API expects to receive a list of labels.
+        if issue_arg == "status":
+            demisto.debug(f"Ignoring 'status' argument: '{value}'. Use a dedicated command for status transitions.")
+            continue
+
+        final_value: Any = value
+        parsed = False  # Flag to indicate if we have already parsed the value
+
         if issue_arg == "labels":
-            parsed_value = argToList(value)
+            final_value = argToList(value)
+            parsed = True
         elif issue_arg == "components":
-            parsed_value = [{"name": component} for component in argToList(value)]
+            final_value = [{"name": component} for component in argToList(value)]
+            parsed = True
         elif issue_arg in ["description", "environment"]:
-            parsed_value = text_to_adf(value) if isinstance(client, JiraCloudClient) else value
-        elif not (isinstance(value, dict | list)):
-            # If the value is not a list or a dictionary, we will try to parse it as a json object.
+            final_value = text_to_adf(value) if isinstance(client, JiraCloudClient) else value
+            parsed = True
+
+        # Only attempt to parse as JSON if it's a string and hasn't been parsed by a specific rule above.
+        if not parsed and isinstance(value, str):
             try:
-                parsed_value = json.loads(value)
+                final_value = json.loads(value)
             except (json.JSONDecodeError, TypeError):
-                pass  # Some values should not be in a JSON format so it makes sense for them to fail parsing.
+                # If it's not a valid JSON, we stick with the original string value held in final_value
+                pass
+
         dotted_string = issue_fields_mapper.get(issue_arg, "")
         if not dotted_string and issue_arg.startswith("customfield"):
-            # This is used to deal with the case when the user creates a custom incident field, using
-            # the custom fields of Jira.
             dotted_string = f"fields.{issue_arg}"
 
-        issue_fields |= create_fields_dict_from_dotted_string(
-            issue_fields=issue_fields, dotted_string=dotted_string, value=parsed_value or value
-        )
+        if dotted_string:
+            issue_fields |= create_fields_dict_from_dotted_string(
+                issue_fields=issue_fields, dotted_string=dotted_string, value=final_value
+            )
+        else:
+            demisto.debug(f"WARNING: Skipping field '{issue_arg}' because it was not found in the issue fields mapper.")
     return issue_fields
 
 
@@ -1712,8 +1763,8 @@ def text_to_adf(text: str) -> Dict[str, Any]:
 
 
 def get_specific_fields_ids(
-    issue_data: Dict[str, Any], specific_fields: List[str], issue_fields_id_to_name_mapping: Dict[str, str]
-) -> List[str]:
+    issue_data: Dict[str, Any], specific_fields: list[str], issue_fields_id_to_name_mapping: Dict[str, str]
+) -> list[str]:
     """This function is in charge of returning the ids of the issue fields that are specified in the
     specific_fields argument, which can hold the display name OR the id of the issue field. This will
     help map the issue fields (whether their display names or ids) that the user enters, to their respective id, so it
@@ -1731,7 +1782,7 @@ def get_specific_fields_ids(
     """
     if "all" in specific_fields:
         # By design, if the user enters `all`, then we return the ids of all the issue fields.
-        all_issue_fields_ids: List[str] = list(issue_data.get("fields", {}).keys())
+        all_issue_fields_ids: list[str] = list(issue_data.get("fields", {}).keys())
         if "comment" in all_issue_fields_ids:
             # Since the `comment` field needs further parsing, it is advised that the user calls the command
             # !jira-get-comments if they want the content of the comments.
@@ -1741,8 +1792,8 @@ def get_specific_fields_ids(
     issue_fields_name_to_id_mapping = {
         issue_name.lower(): issue_id for issue_id, issue_name in issue_fields_id_to_name_mapping.items()
     }
-    issue_fields_ids: List[str] = []
-    wrong_issue_fields_ids: List[str] = []
+    issue_fields_ids: list[str] = []
+    wrong_issue_fields_ids: list[str] = []
     for specific_field in specific_fields:
         if specific_field in issue_fields_id_to_name_mapping:
             # This means an id was given
@@ -1772,7 +1823,7 @@ def get_specific_fields_ids(
 
 def create_issue_md_and_outputs_dict(
     issue_data: Dict[str, Any],
-    specific_issue_fields: List[str] | None = None,
+    specific_issue_fields: list[str] | None = None,
     issue_fields_id_to_name_mapping: Dict[str, str] | None = None,
 ) -> tuple[Dict[str, Any], Dict[str, Any]]:
     """Creates the markdown and outputs dictionaries (context outputs) of the issue object that is returned from the API,
@@ -1899,19 +1950,24 @@ def apply_issue_transition(
         DemistoException: If the given transition was not found or not valid.
 
     Returns:
-        Any: Raw response of the API request.
+        requests.Response: Raw response of the API request.
     """
     res_transitions = client.get_transitions(issue_id_or_key=issue_id_or_key)
     all_transitions = res_transitions.get("transitions", [])
     transitions_name = [transition.get("name", "") for transition in all_transitions]
     for i, transition in enumerate(transitions_name):
         if transition.lower() == transition_name.lower():
-            json_data = {"transition": {"id": str(all_transitions[i].get("id", ""))}} | issue_fields
-            return client.transition_issue(issue_id_or_key=issue_id_or_key, json_data=json_data)
+            json_data = {"transition": {"id": str(all_transitions[i].get("id", ""))}}
+            if issue_fields:
+                json_data.update(issue_fields)
+            demisto.debug(f"Final JSON payload for transition API call: {json_data}")
+            res = client.transition_issue(issue_id_or_key=issue_id_or_key, json_data=json_data)
+            return res
+
     raise DemistoException(f'Transition "{transition_name}" not found. \nValid transitions are: {transitions_name} \n')
 
 
-def get_issue_forms(client: JiraOnPremClient, issue_id: str) -> tuple[List, List]:
+def get_issue_forms(client: JiraOnPremClient, issue_id: str) -> tuple[list, list]:
     """Gets the forms from the client and processes them into a usable JSON format.
 
     :param client: Client to make the API call with
@@ -2009,7 +2065,7 @@ def add_link_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandRes
     return CommandResults(readable_output=human_readable, raw_response=res)
 
 
-def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[CommandResults] | CommandResults:
+def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> list[CommandResults] | CommandResults:
     """This command is in charge of issuing a query on issues.
 
     Args:
@@ -2021,14 +2077,34 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Co
     """
     jql_query = args.get("query", "")
     start_at = arg_to_number(args.get("start_at", ""))
+    next_page_token = args.get("next_page_token", "")
     max_results = arg_to_number(args.get("max_results", DEFAULT_PAGE_SIZE)) or DEFAULT_PAGE_SIZE
     headers = args.get("headers", "")
     specific_fields = argToList(args.get("fields", ""))
-    query_params = create_query_params(jql_query=jql_query, start_at=start_at, max_results=max_results)
-    res = client.run_query(query_params=query_params)
+
+    if client.api_version == "2" and next_page_token:
+        raise DemistoException("The next_page_token argument is not supported for Jira OnPrem instances.")
+
+    query_params = create_query_params(
+        jql_query=jql_query, start_at=start_at, max_results=max_results, next_page_token=next_page_token
+    )
+
+    try:
+        res = client.run_query(query_params=query_params)
+
+    except DemistoException as e:
+        if start_at and "Error in API call [410]" in str(e):
+            # Old endpoint was used but is already removed in this jira instance
+            demisto.debug(f"Got error when using old query issues endpoint. Error message: {str(e)}")
+            raise DemistoException(
+                "The start_at argument is no longer supported in this Jira instance." "Please use next_page_token instead."
+            )
+        else:
+            raise e
+
     if issues := res.get("issues", []):
         issue_fields_id_to_name_mapping = res.get("names", {}) or {}
-        command_results: List[CommandResults] = []
+        command_results: list[CommandResults] = []
         for issue in issues:
             markdown_dict, outputs = create_issue_md_and_outputs_dict(
                 issue_data=issue,
@@ -2049,11 +2125,20 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Co
                     raw_response=issue,
                 ),
             )
+
+        if next_page_token := res.get("nextPageToken", ""):
+            command_results.append(
+                CommandResults(
+                    outputs_prefix="Jira.Query.nextPageToken",
+                    outputs=next_page_token,
+                    readable_output=f"Use the next_page_token argument to fetch the next page. Token: {next_page_token}",
+                )
+            )
         return command_results
     return CommandResults(readable_output="No issues matched the query.")
 
 
-def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[CommandResults]:
+def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> list[CommandResults]:
     """This command is in charge of returning the data of a specific issue.
 
     Args:
@@ -2072,9 +2157,9 @@ def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Comm
     expand_links = argToBoolean(args.get("expand_links", False))
     specific_fields = argToList(args.get("fields", ""))
     res = client.get_issue(issue_id_or_key=issue_id_or_key)
-    responses: List[Dict[str, Any]] = [res]
+    responses: list[Dict[str, Any]] = [res]
     responses.extend(get_expanded_issues(client=client, issue=res, expand_links=expand_links))
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
     if get_attachments:
         download_issue_attachments_to_war_room(client=client, issue=res)
     for response in responses:
@@ -2098,6 +2183,39 @@ def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Comm
             )
         )
     return command_results
+
+
+def get_remote_data_preview_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of returning the data of a specific issue and formatting it specifically for an issue preview
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If neither an issue id nor a key was supplied.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
+    issue_id_or_key = get_issue_id_or_key(issue_id=args.get("id", ""), issue_key=args.get("issue_key", ""))
+    issue = client.get_issue(issue_id_or_key=issue_id_or_key)
+    context_methods = {
+        "id": JiraIssueFieldsParser.get_id_context,
+        "title": JiraIssueFieldsParser.get_description_context,
+        "description": JiraIssueFieldsParser.get_summary_context,
+        "status": JiraIssueFieldsParser.get_status_context,
+        "assignee": JiraIssueFieldsParser.get_assignee_context,
+        "creation_date": JiraIssueFieldsParser.get_created_date_context,
+        "severity": JiraIssueFieldsParser.get_priority_context,
+    }
+
+    qa_preview_data = {
+        attr: JiraIssueFieldsParser.get_value_from_context(method, issue) for attr, method in context_methods.items()
+    }
+
+    qa_preview = QuickActionPreview(**qa_preview_data)
+    return CommandResults(outputs_prefix="QuickActionPreview", outputs=qa_preview.to_context(), outputs_key_field="id")
 
 
 def get_create_metadata_issue_types_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
@@ -2220,7 +2338,7 @@ def download_issue_attachments_to_war_room(client: JiraBaseClient, issue: Dict[s
         return_results(create_file_info_from_attachment(client=client, attachment_id=attachment.get("id")))
 
 
-def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any], expand_links: bool = False) -> List[Dict[str, Any]]:
+def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any], expand_links: bool = False) -> list[Dict[str, Any]]:
     """Returns a list of subtasks and linked issues corresponding to the given issue.
 
     Args:
@@ -2231,7 +2349,7 @@ def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any], expand_li
     Returns:
         List[Dict[str, Any]]:  A list of subtasks and linked issues corresponding to the given issue.
     """
-    responses: List[Dict[str, Any]] = []
+    responses: list[Dict[str, Any]] = []
     if expand_links:
         responses.extend(
             client.get_issue(full_issue_url=sub_task.get("self", "")) for sub_task in issue.get("fields", {}).get("subtasks", [])
@@ -2244,17 +2362,21 @@ def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any], expand_li
     return responses
 
 
-def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+def create_issue_command(
+    client: JiraBaseClient, args: Dict[str, str], is_quick_action: bool = False, server_url: str = ""
+) -> list[CommandResults]:
     """This command is in charge of creating a new issue.
 
     Args:
         client (JiraBaseClient): The Jira client.
         args (Dict[str, str]): The arguments supplied by the user.
+        is_quick_action (bool): Whether the command is a Quick Action command or not. Defaults to False
 
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
 
+    results = []
     # Validate that no more args are sent when the issue_json arg is used
     if "issue_json" in args and len(args) > 1:
         raise DemistoException(
@@ -2271,15 +2393,40 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     if "summary" not in issue_fields.get("fields", {}):
         raise DemistoException("The summary argument must be provided.")
     res = client.create_issue(json_data=issue_fields)
-    outputs = {"Id": res.get("id", ""), "Key": res.get("key", "")}
-    markdown_dict = outputs | {"Ticket Link": res.get("self", ""), "Project Key": res.get("key", "").split("-")[0]}
-    return CommandResults(
+
+    ticket_id = res.get("id") or res.get("ticket_id")
+    ticket_key = res.get("key", "")
+
+    if isinstance(client, JiraCloudClient):
+        ui_base_url = client.get_jira_base_url()
+    else:
+        ui_base_url = server_url
+    ticket_url = f"{ui_base_url}/browse/{ticket_key}"
+
+    mirror_obj = MirrorObject(object_url=ticket_url, object_id=ticket_id, object_name=ticket_key).to_context()
+
+    outputs = {"Id": res.get("id", ""), "Key": ticket_key}
+    markdown_dict = outputs | {"Ticket Link": res.get("self", ""), "Project Key": ticket_key.split("-")[0]}
+    ticket_results = CommandResults(
         outputs_prefix="Ticket",
         outputs=outputs,
         outputs_key_field="Id",
         readable_output=tableToMarkdown(name=f'Issue {outputs.get("Key", "")}', t=markdown_dict),
         raw_response=res,
     )
+    results.append(ticket_results)
+
+    if is_quick_action:
+        demisto.results(
+            {
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["text"],
+                "Contents": "MirrorObject created successfully.",
+                "ExtendedPayload": {"MirrorObject": mirror_obj},
+            }
+        )
+
+    return results
 
 
 def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
@@ -2481,7 +2628,7 @@ def get_comments_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
         return CommandResults(readable_output="No comments were found in the ticket")
 
 
-def create_comments_command_results(comments_response: List[Dict[str, Any]], issue_id_or_key: str) -> tuple[str, Dict[str, Any]]:
+def create_comments_command_results(comments_response: list[Dict[str, Any]], issue_id_or_key: str) -> tuple[str, Dict[str, Any]]:
     """Returns the human readable and context output of the get_comments_command.
 
     Args:
@@ -2586,9 +2733,12 @@ def add_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
     visibility = args.get(
         "visibility",
     )
+    internal = argToBoolean(args.get("internal_comment", "false"))
     payload = {"body": text_to_adf(text=comment) if isinstance(client, JiraCloudClient) else comment}
     if visibility:
         payload["visibility"] = {"type": "role", "value": visibility}
+    if internal:
+        payload["properties"] = [{"key": "sd.public.comment", "value": {"internal": True}}]  # type: ignore
     res = client.add_comment(issue_id_or_key=issue_id_or_key, json_data=payload)
     markdown_dict = {
         "Comment": BeautifulSoup(res.get("renderedBody", ""), features="html.parser").get_text()
@@ -2615,7 +2765,7 @@ def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> Com
     """
     issue_id_or_key = get_issue_id_or_key(issue_id=args.get("issue_id", ""), issue_key=args.get("issue_key", ""))
     res = client.get_transitions(issue_id_or_key=issue_id_or_key)
-    transitions_names: List[str] = [transition.get("name", "") for transition in res.get("transitions", [])]
+    transitions_names: list[str] = [transition.get("name", "") for transition in res.get("transitions", [])]
     readable_output = tableToMarkdown("List Transitions:", transitions_names, headers=["Transition Names"])
     outputs: Dict[str, Any] = {"Transitions": {"transitions": transitions_names, "ticketId": issue_id_or_key}}
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
@@ -2672,7 +2822,7 @@ def upload_file_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
         client=client, entry_id=entry_id, attachment_name=attachment_name, issue_id_or_key=issue_id_or_key
     )
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
-    markdown_dict: List[Dict[str, str]] = []
+    markdown_dict: list[Dict[str, str]] = []
     for attachment_entry in res:
         attachment_dict = {
             "Attachment Link": attachment_entry.get("self", ""),
@@ -2685,7 +2835,7 @@ def upload_file_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
 
 def upload_XSOAR_attachment_to_jira(
     client: JiraBaseClient, entry_id: str, issue_id_or_key: str, attachment_name: str | None = None
-) -> List[Dict[str, Any]]:
+) -> list[Dict[str, Any]]:
     """Uploads the given attachment (identified by the entry_id), to the jira issue
     that corresponds to the key or id issue_id_or_key.
 
@@ -2719,7 +2869,7 @@ def upload_XSOAR_attachment_to_jira(
             return client.upload_attachment(issue_id_or_key=issue_id_or_key, files=files)
 
 
-def issue_get_attachment_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Dict[str, Any]]:
+def issue_get_attachment_command(client: JiraBaseClient, args: Dict[str, str]) -> list[Dict[str, Any]]:
     """This command is in charge of getting an attachment's content that is found in an issue.
 
     Args:
@@ -2730,7 +2880,7 @@ def issue_get_attachment_command(client: JiraBaseClient, args: Dict[str, str]) -
         Dict[str, Any]: A dictionary the represents file entries to be returned to the user.
     """
     attachments_ids = argToList(args.get("attachment_id", ""))
-    files_result: List[Dict[str, Any]] = [
+    files_result: list[Dict[str, Any]] = [
         create_file_info_from_attachment(client=client, attachment_id=attachment_id) for attachment_id in attachments_ids
     ]
     return files_result
@@ -2785,7 +2935,7 @@ def list_fields_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
     # Since the API does not support pagination, and the issue fields returned can carry hundreds of entries,
     # we decided to do the pagination manually.
     fields_entry = res[start_at : start_at + max_results]
-    markdown_dict: List[Dict[str, Any]] = [
+    markdown_dict: list[Dict[str, Any]] = [
         {
             "Id": field.get("id", ""),
             "Name": field.get("name", ""),
@@ -2822,7 +2972,7 @@ def get_id_by_attribute_command(client: JiraBaseClient, args: Dict[str, str]) ->
         return CommandResults(readable_output=f"No Account ID was found for attribute: {attribute}.")
     outputs = {"Attribute": attribute}
     is_jira_cloud = isinstance(client, JiraCloudClient)
-    account_ids: List[str] = []
+    account_ids: list[str] = []
 
     if len(res) == 1:
         # Since we compare the given attribute to the email address in order to retrieve the account id, and the email address
@@ -2910,7 +3060,7 @@ def sprint_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> 
 
 
 def create_sprint_issues_command_results(
-    board_id: str, issues: List[Dict[str, Any]], sprint_id: str, res: Dict[str, Any]
+    board_id: str, issues: list[Dict[str, Any]], sprint_id: str, res: Dict[str, Any]
 ) -> CommandResults:
     """Create the CommandResults of the sprint_issues_list_command.
 
@@ -2998,7 +3148,7 @@ def epic_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> Co
         return CommandResults(readable_output=f"No child issues were found for epic {epic_id_or_key}")
 
 
-def create_epic_issues_command_results(issues: List[Dict[str, Any]], epic_id_or_key: str, res: Dict[str, Any]) -> CommandResults:
+def create_epic_issues_command_results(issues: list[Dict[str, Any]], epic_id_or_key: str, res: Dict[str, Any]) -> CommandResults:
     """Creates the CommandResults of the epic_issues_list_command.
 
     Args:
@@ -3169,7 +3319,7 @@ def board_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandR
         page_size=arg_to_number(arg=args.get("page_size", None)),
         limit=arg_to_number(arg=args.get("limit", None)),
     )
-    boards: List[Dict[str, Any]] = []
+    boards: list[Dict[str, Any]] = []
     if board_id:
         res = client.get_board(board_id=board_id)
         boards = [res]
@@ -3381,7 +3531,7 @@ def oauth_complete_command(client: JiraBaseClient, args: Dict[str, Any]) -> Comm
     )
 
 
-def test_authorization(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+def jira_test_authorization(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
     """This command is used to test the connectivity of the Jira instance configured.
 
     Args:
@@ -3391,17 +3541,30 @@ def test_authorization(client: JiraBaseClient, args: Dict[str, Any]) -> CommandR
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    client.test_instance_connection()
+    client.jira_test_instance_connection()
     return CommandResults(readable_output="Successful connection.")
 
 
-def test_module(client: JiraBaseClient) -> str:
-    """This method will return an error since in order for the user to test the connectivity of the instance,
-    they have to run a separate command, therefore, pressing the `test` button on the configuration screen will
-    show them the steps in order to test the instance.
+def jira_test_module(client: JiraBaseClient, params: Dict[str, Any]) -> str:
     """
+    Tests for basic configuration issues in the instance.
+    Tests the connectivity for basic authentication methods, otherwise provides users with further authentication instructions.
+    """
+    url = params.get("server_url", "").rstrip("/")
+    cloudid = params.get("cloud_id")
+
+    if is_jira_cloud_url(url) and not cloudid:
+        raise DemistoException(
+            "Cloud ID is required for Jira Cloud instances. Refer to the integration help section for more information."
+        )
+    if cloudid and url != "https://api.atlassian.com/ex/jira":
+        raise DemistoException(
+            "Jira Cloud instances must use the default Server URL: `https://api.atlassian.com/ex/jira`."
+            " Please update the Server URL in the instance configuration."
+        )
+
     if client.is_basic_auth or client.is_pat_auth:
-        client.test_instance_connection()  # raises on failure
+        client.jira_test_instance_connection()  # raises on failure
         return "ok"
     else:
         raise DemistoException(
@@ -3409,7 +3572,7 @@ def test_module(client: JiraBaseClient) -> str:
             " and complete the process in the URL that is returned. You will then be redirected"
             " to the callback URL. Copy the authorization code found in the query parameter"
             " `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish"
-            " the process."
+            " the process. Then you can test it by running the `!jira-oauth-test` command."
         )
 
 
@@ -3433,6 +3596,35 @@ def get_smallest_id_offset_for_query(client: JiraBaseClient, query: str) -> tupl
     return res, None
 
 
+def parse_issue_times_for_next_run(
+    issue_id: int,
+    issue_created_time: str,
+    issue_updated_time: str,
+    dateparser_settings: dict | None,
+) -> tuple[str, str]:
+    """Parses the the Jira issue created and updated timestamps based on the date parser settings (if given) and formats both
+    in the default date format. This makes sure queries by time are not affected by timezone.
+
+    Args:
+        issue_id (int): ID of the Jira issue.
+        issue_created_time (str): Time of creation of the Jira issue.
+        issue_updated_time (str): Time of last update of the Jira issue.
+        dateparser_settings (dict | None): Optional configured settings to use in `dateparser.parse()`.
+
+    Returns:
+        tuple[str, str]: Parsed and formatted created and updated Jira issue timestamps.
+    """
+    demisto.debug(f"Converting time fields for issue {issue_id}. Created: {issue_created_time}, updated: {issue_updated_time}.")
+
+    converted_created_time = convert_string_date_to_specific_format(issue_created_time, dateparser_settings=dateparser_settings)
+    demisto.debug(f"Converted created time for {issue_id} to: {converted_created_time} using settings {dateparser_settings}.")
+
+    converted_updated_time = convert_string_date_to_specific_format(issue_updated_time, dateparser_settings=dateparser_settings)
+    demisto.debug(f"Converted created time for {issue_id} to: {converted_updated_time} using settings {dateparser_settings}.")
+
+    return converted_created_time, converted_updated_time
+
+
 # Fetch Incidents
 def fetch_incidents(
     client: JiraBaseClient,
@@ -3448,7 +3640,7 @@ def fetch_incidents(
     comment_tag_to_jira: str,
     attachment_tag_from_jira: str,
     attachment_tag_to_jira: str,
-) -> List[Dict[str, Any]]:
+) -> list[Dict[str, Any]]:
     """This function is the entry point of fetching incidents.
 
     Args:
@@ -3472,12 +3664,12 @@ def fetch_incidents(
         List[Dict[str, Any]]: A list of incidents.
     """
     last_run = demisto.getLastRun()
-    demisto.debug(f"last_run: {last_run}" if last_run else "last_run is empty")
+    demisto.debug(f"Got last run: {last_run}")
     # This list will hold all the ids of the issues that were fetched in the last fetch, to eliminate fetching duplicate
     # incidents. Since when we get the list from the last run, all the values in the list are strings, and we may need them
     # to be integers (if we want to use the issues' ids in the query, they must be passed on as integers and not strings),
     # we convert the list to hold integer values
-    last_fetch_issue_ids: List[int] = convert_list_of_str_to_int(last_run.get("issue_ids", []))
+    last_fetch_issue_ids: list[int] = convert_list_of_str_to_int(last_run.get("issue_ids", []))
     last_fetch_id = last_run.get("id", id_offset)
     if last_fetch_id in [0, "0"] and issue_field_to_fetch_from == "id":
         # If last_fetch_id is equal to zero, and the user wants to fetch using the issue ID, then we automatically
@@ -3491,6 +3683,18 @@ def fetch_incidents(
             if last_fetch_id
             else "No smallest ID found since the fetch query returns 0 results"
         )
+    # Jira timestamp filters work based on the user timezone, so we need to convert the first fetch interval timezone accordingly
+    # To stay backwards compatible, convert timezone if empty last run (first fetch) or if 'convert_timezone' in last run is True
+    dateparser_settings: dict | None
+    if not last_run or last_run.get("convert_timezone"):
+        user_timezone = get_cached_user_timezone(client=client)
+        demisto.debug(f"Converting updated and created timestamps to user timezone: {user_timezone} for setting next run.")
+        dateparser_settings = {"TIMEZONE": user_timezone}
+    else:
+        demisto.debug("Skipping timezone conversion of updated and created timestamps keeping then unchanged.")
+        dateparser_settings = None
+
+    first_fetch_interval = convert_string_date_to_specific_format(first_fetch_interval, dateparser_settings=dateparser_settings)
     new_fetch_created_time = last_fetch_created_time = last_run.get("created_date", "")
     new_fetch_updated_time = last_fetch_updated_time = last_run.get("updated_date", "")
     incidents: List[Dict[str, Any]] = []
@@ -3501,12 +3705,12 @@ def fetch_incidents(
         last_fetch_id=last_fetch_id,
         last_fetch_created_time=last_fetch_created_time,
         last_fetch_updated_time=last_fetch_updated_time,
-        first_fetch_interval=convert_string_date_to_specific_format(string_date=first_fetch_interval),
+        first_fetch_interval=first_fetch_interval,
         issue_ids_to_exclude=last_fetch_issue_ids,
     )
     demisto.debug(f"The fetch query: {fetch_incidents_query}" if fetch_incidents_query else "No fetch query created")
     query_params = create_query_params(jql_query=fetch_incidents_query, max_results=max_fetch_incidents)
-    new_issue_ids: List[int] = []
+    new_issue_ids: list[int] = []
     demisto.debug(f"Running the query with the following parameters {query_params}")
     try:
         if query_res := client.run_query(query_params=query_params):
@@ -3514,22 +3718,22 @@ def fetch_incidents(
                 demisto.debug(f"Creating an incident for Jira issue: {issue}")
 
                 issue_id: int = int(issue.get("id"))  # The ID returned by the API is an integer
-                demisto.debug(f"Creating an incident for Jira issue with ID: {issue_id}")
+                demisto.debug(f"Creating an incident for Jira issue: {issue_id}")
                 new_issue_ids.append(issue_id)
                 last_fetch_id = issue_id
-                demisto.debug(f"Incident we got so far: {new_issue_ids}")
-                new_fetch_created_time = convert_string_date_to_specific_format(
-                    string_date=demisto.get(issue, "fields.created") or ""
-                )
-                demisto.debug(f"Converted created time to {new_fetch_created_time}")
-                new_fetch_updated_time = convert_string_date_to_specific_format(
-                    string_date=demisto.get(issue, "fields.updated") or ""
-                )
-                demisto.debug(f"Converted updated time to {new_fetch_updated_time}")
-                demisto.debug("Starting to parse custom fields.")
+                demisto.debug(f"Incidents we got so far: {new_issue_ids}")
 
+                demisto.debug(f"Starting to parse created and updated fields of issue: {issue_id}")
+                new_fetch_created_time, new_fetch_updated_time = parse_issue_times_for_next_run(
+                    issue_id=issue_id,
+                    issue_created_time=demisto.get(issue, "fields.created") or "",
+                    issue_updated_time=demisto.get(issue, "fields.updated") or "",
+                    dateparser_settings=dateparser_settings,
+                )
+
+                demisto.debug(f"Starting to parse custom fields of issue: {issue_id}")
                 parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get("names", {}))
-                demisto.debug("Finished parsing custom fields. Starting build an incident")
+                demisto.debug(f"Finished parsing custom fields of issue: {issue_id}. Starting to build an incident")
 
                 incidents.append(
                     create_incident_from_issue(
@@ -3544,10 +3748,10 @@ def fetch_incidents(
                         attachment_tag_to_jira=attachment_tag_to_jira,
                     )
                 )
-                demisto.debug("Finished building incident.")
+                demisto.debug(f"Finished building incident for issue: {issue_id}")
 
     except Exception as e:
-        demisto.debug("Failure detected: {e}.")
+        demisto.debug(f"Failure detected: {e}.")
 
         if "Issue does not exist" in str(e) and issue_field_to_fetch_from == "id" and str(id_offset) == str(last_fetch_id):
             # If entered here, this means the user wants to fetch using the issue ID, and has given an incorrect issue ID
@@ -3572,16 +3776,17 @@ def fetch_incidents(
         issue_field_to_fetch_from == "updated date" and new_fetch_updated_time == last_fetch_updated_time
     ):
         new_issue_ids.extend(last_fetch_issue_ids)
-    demisto.debug("Setting last run.")
 
-    demisto.setLastRun(
-        {
-            "issue_ids": new_issue_ids or last_fetch_issue_ids,
-            "id": last_fetch_id,
-            "created_date": new_fetch_created_time or last_fetch_created_time,
-            "updated_date": new_fetch_updated_time or last_fetch_updated_time,
-        }
-    )
+    next_run = {
+        "issue_ids": new_issue_ids or last_fetch_issue_ids,
+        "id": last_fetch_id,
+        "created_date": new_fetch_created_time or last_fetch_created_time,
+        "updated_date": new_fetch_updated_time or last_fetch_updated_time,
+        "convert_timezone": bool(dateparser_settings),
+    }
+    demisto.debug(f"Setting next run: {next_run}")
+    demisto.setLastRun(next_run)
+
     return incidents
 
 
@@ -3602,7 +3807,7 @@ def parse_custom_fields(issue: Dict[str, Any], issue_fields_id_to_name_mapping: 
             )
 
 
-def convert_list_of_str_to_int(list_to_convert: List[str] | List[int]) -> List[int]:
+def convert_list_of_str_to_int(list_to_convert: list[str] | list[int]) -> list[int]:
     """This function converts a list of strings to a list of integers.
 
     Args:
@@ -3614,7 +3819,7 @@ def convert_list_of_str_to_int(list_to_convert: List[str] | List[int]) -> List[i
     Returns:
         List[int]: A list of integers
     """
-    converted_list: List[int] = []
+    converted_list: list[int] = []
     for item in list_to_convert:
         try:
             converted_list.append(int(item))
@@ -3630,7 +3835,7 @@ def create_fetch_incidents_query(
     last_fetch_created_time: str,
     last_fetch_updated_time: str,
     first_fetch_interval: str,
-    issue_ids_to_exclude: List[int],
+    issue_ids_to_exclude: list[int],
 ) -> str:
     """This is in charge of returning the query to use to fetch the appropriate incidents.
     NOTE: It is important to add 'ORDER BY {the issue field to fetch from} ASC' in order to retrieve the data in ascending order,
@@ -3653,32 +3858,27 @@ def create_fetch_incidents_query(
         str: The query to use to fetch the appropriate incidents.
     """
     issue_field_in_fetch_query_error_message = "The issue field to fetch by cannot be in the fetch query"
-    if issue_field_to_fetch_from in fetch_query:
+    tokens = re.findall(r"\w+", fetch_query)
+    if issue_field_to_fetch_from in tokens:
         raise DemistoException(issue_field_in_fetch_query_error_message)
     error_message = f"Could not create the proper fetch query for the issue field {issue_field_to_fetch_from}"
     exclude_issue_ids_query = f" AND ID NOT IN ({', '.join(map(str, issue_ids_to_exclude))}) " if issue_ids_to_exclude else " "
     if issue_field_to_fetch_from == "id":
-        if "id" not in fetch_query:
-            return f"{fetch_query} AND id >= {last_fetch_id}{exclude_issue_ids_query}ORDER BY id ASC"
-        error_message = f"{error_message}\n{issue_field_in_fetch_query_error_message}"
+        return f"{fetch_query} AND id >= {last_fetch_id}{exclude_issue_ids_query}ORDER BY id ASC"
     elif issue_field_to_fetch_from == "created date":
-        if "created" not in fetch_query:
-            return (
-                f'{fetch_query} AND created >= "{last_fetch_created_time or first_fetch_interval}"{exclude_issue_ids_query}'
-                "ORDER BY created ASC"
-            )
-        error_message = f"{error_message}\n{issue_field_in_fetch_query_error_message}"
+        return (
+            f'{fetch_query} AND created >= "{last_fetch_created_time or first_fetch_interval}"{exclude_issue_ids_query}'
+            "ORDER BY created ASC"
+        )
     elif issue_field_to_fetch_from == "updated date":
-        if "updated" not in fetch_query:
-            return (
-                f'{fetch_query} AND updated >= "{last_fetch_updated_time or first_fetch_interval}"{exclude_issue_ids_query}'
-                "ORDER BY updated ASC"
-            )
-        error_message = f"{error_message}\n{issue_field_in_fetch_query_error_message}"
+        return (
+            f'{fetch_query} AND updated >= "{last_fetch_updated_time or first_fetch_interval}"{exclude_issue_ids_query}'
+            "ORDER BY updated ASC"
+        )
     raise DemistoException(error_message)
 
 
-def get_comments_entries_for_fetched_incident(client: JiraBaseClient, issue_id_or_key: str) -> List[Dict[str, str]]:
+def get_comments_entries_for_fetched_incident(client: JiraBaseClient, issue_id_or_key: str) -> list[Dict[str, str]]:
     """Return the comments' entries, for a fetched incident.
 
     Args:
@@ -3688,7 +3888,7 @@ def get_comments_entries_for_fetched_incident(client: JiraBaseClient, issue_id_o
     Returns:
         List[Dict[str, Any]]: The comment entries for a fetched or mirrored incident.
     """
-    comments_entries: List[Dict[str, str]] = []
+    comments_entries: list[Dict[str, str]] = []
     get_comments_response = client.get_comments(issue_id_or_key=issue_id_or_key)
     if comments_response := get_comments_response.get("comments", []):
         for comment_response in comments_response:
@@ -3699,10 +3899,10 @@ def get_comments_entries_for_fetched_incident(client: JiraBaseClient, issue_id_o
 
 def get_attachments_entries_for_fetched_incident(
     client: JiraBaseClient,
-    attachments_metadata: List[Dict[str, Any]],
+    attachments_metadata: list[Dict[str, Any]],
     incident_modified_date: datetime | None = None,
     user_timezone_name: str = "",
-) -> List[Dict[str, Any]]:
+) -> list[Dict[str, Any]]:
     """Return the attachments' entries for a fetched and mirrored incident
 
     Args:
@@ -3715,8 +3915,8 @@ def get_attachments_entries_for_fetched_incident(
     Returns:
         List[Dict[str, Any]]: The attachment entries for a fetched or mirrored incident.
     """
-    attachment_ids: List[str] = []
-    attachments_entries: List[Dict[str, Any]] = []
+    attachment_ids: list[str] = []
+    attachments_entries: list[Dict[str, Any]] = []
     for attachment_metadata in attachments_metadata:
         if (
             incident_modified_date
@@ -3793,7 +3993,7 @@ def create_incident_from_issue(
 
     severity = get_jira_issue_severity(issue_field_priority=demisto.get(issue, "fields.priority") or {})
 
-    attachments: List[Dict[str, Any]] = []
+    attachments: list[Dict[str, Any]] = []
     if fetch_attachments:
         demisto.debug(f"Fetching attachment for {issue_id}.")
         attachments = get_fetched_attachments(client=client, issue=issue)
@@ -3830,7 +4030,7 @@ def create_incident_from_issue(
     }
 
 
-def get_fetched_attachments(client: JiraBaseClient, issue: Dict[str, Any]) -> List[Dict[str, Any]]:
+def get_fetched_attachments(client: JiraBaseClient, issue: Dict[str, Any]) -> list[Dict[str, Any]]:
     """This function is in charge of fetching the attachments when fetching an incident if the user configured to fetch
     the attachments.
 
@@ -3841,7 +4041,7 @@ def get_fetched_attachments(client: JiraBaseClient, issue: Dict[str, Any]) -> Li
     Returns:
         List[Dict[str, Any]]: The attachments' entries to return as part of the incident.
     """
-    attachments: List[Dict[str, Any]] = []
+    attachments: list[Dict[str, Any]] = []
     demisto.debug("Fetching attachments")
     attachments_entries = get_attachments_entries_for_fetched_incident(
         client=client,
@@ -3855,7 +4055,7 @@ def get_fetched_attachments(client: JiraBaseClient, issue: Dict[str, Any]) -> Li
     return attachments
 
 
-def get_fetched_comments(client: JiraBaseClient, issue_id: str) -> List[Dict[str, str]]:
+def get_fetched_comments(client: JiraBaseClient, issue_id: str) -> list[Dict[str, str]]:
     """This function is in charge of fetching the comments when fetching an incident if the user configured to fetch
     the comments.
 
@@ -3958,6 +4158,43 @@ def get_user_timezone(client: JiraBaseClient) -> str:
     return timezone_name
 
 
+def get_cached_user_timezone(client: JiraBaseClient) -> str:
+    """Tries to get user timezone from integration context. If not exists, it sends a request to API to get the timezone from
+    user info.
+
+    Args:
+        client (JiraBaseClient): The Jira client (either Cloud or OnPrem).
+
+    Returns:
+        str: The timezone of the Jira user.
+    """
+    integration_context = get_integration_context()
+
+    if user_timezone := integration_context.get("user_timezone"):
+        demisto.debug(f"Got user timezone: {user_timezone} from integration context")
+        return user_timezone
+
+    demisto.debug("Getting user timezone from Jira client")
+    user_timezone = get_user_timezone(client)
+    integration_context["user_timezone"] = user_timezone
+    demisto.debug(f"Setting user timezone: {user_timezone} in integration context")
+    set_integration_context(integration_context)
+    return user_timezone
+
+
+def remove_from_integration_context(key_to_remove: str) -> None:
+    """Removes a key from the integration context dictionary.
+
+    Args:
+        key_to_remove (str): The key to remove.
+    """
+    integration_context = get_integration_context()
+    if not integration_context:
+        return
+    updated_integration_context = {key: value for key, value in integration_context.items() if key != key_to_remove}
+    set_integration_context(updated_integration_context)
+
+
 def get_system_timezone() -> Any:
     """Returns the system's timezone.
     This will also print to the debug console the system timezone.
@@ -3986,7 +4223,7 @@ def get_modified_remote_data_command(client: JiraBaseClient, args: Dict[str, Any
     last_update_date: str = remote_args.last_update
     modified_issues_ids = []
     try:
-        user_timezone_name = get_user_timezone(client=client)
+        user_timezone_name = get_cached_user_timezone(client=client)
         modified_issues_ids = get_modified_issue_ids(
             client=client,
             last_update_date=last_update_date,
@@ -3998,7 +4235,7 @@ def get_modified_remote_data_command(client: JiraBaseClient, args: Dict[str, Any
         return GetModifiedRemoteDataResponse(modified_issues_ids)
 
 
-def get_modified_issue_ids(client: JiraBaseClient, last_update_date: str, timezone_name: str) -> List:
+def get_modified_issue_ids(client: JiraBaseClient, last_update_date: str, timezone_name: str) -> list:
     last_update = convert_string_date_to_specific_format(last_update_date, dateparser_settings={"TIMEZONE": timezone_name})
     demisto.debug(f"Performing get-modified-remote-data command. Last update is: {last_update}")
     query_params = create_query_params(jql_query=f'updated > "{last_update}"', max_results=100)
@@ -4037,7 +4274,7 @@ def get_remote_data_command(
         GetRemoteDataResponse: Structured incident response.
     """
     updated_incident: Dict[str, Any] = {}
-    parsed_entries: List[Dict[str, Any]] = []
+    parsed_entries: list[Dict[str, Any]] = []
     parsed_args = GetRemoteDataArgs(args)
     try:
         issue_id = parsed_args.remote_incident_id
@@ -4051,7 +4288,7 @@ def get_remote_data_command(
         demisto.debug(f"Raw issue response: {issue}")
         issue["parsedDescription"] = JiraIssueFieldsParser.get_description_context(issue).get("Description") or ""
         issue |= add_extracted_data_to_incident(issue=issue)
-        user_timezone_name = get_user_timezone(client=client)
+        user_timezone_name = get_cached_user_timezone(client=client)
         _ = get_system_timezone()
         demisto.debug(f'Issue modified date in Jira: {dateparser.parse(demisto.get(issue, "fields.updated"))}')
         demisto.debug(f"Incident Last update time: {dateparser.parse(parsed_args.last_update)}")
@@ -4104,7 +4341,7 @@ def get_updated_remote_data(
     incident_modified_date: datetime | None,
     fetch_attachments: bool,
     fetch_comments: bool,
-) -> List[Dict[str, Any]]:
+) -> list[Dict[str, Any]]:
     """This function is in charge of returning the parsed entries of the updated incident, while updating
     the content of updated_incident, which is in charge of holding the updated data of the incident (since arguments
     are passed by reference, we can update the object in this function, and the changes to the object will be reflected
@@ -4128,7 +4365,7 @@ def get_updated_remote_data(
     Returns:
         List[Dict[str, Any]]:  Parsed entries of the updated incident, which will be supplied to the class GetRemoteDataResponse.
     """
-    parsed_entries: List[Dict[str, Any]] = []
+    parsed_entries: list[Dict[str, Any]] = []
     demisto.debug(f"Update incident, Incident name: Jira issue {issue.get('id')}Reason: Issue modified in remote")
     # Close incident if the Jira issue gets resolved, or its status gets updated to Done.
     if mirror_resolved_issue and (closed_issue := handle_incoming_resolved_issue(updated_incident)):
@@ -4222,7 +4459,7 @@ def handle_incoming_resolved_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     return closing_entry
 
 
-def issue_get_forms_command(client: JiraBaseClient, args: Dict[str, Any]) -> List[CommandResults]:
+def issue_get_forms_command(client: JiraBaseClient, args: Dict[str, Any]) -> list[CommandResults]:
     """Retrieves all forms, including corresponding questions and answers, for a specified issue.
 
     :param client: The Jira client to use for making the API calls
@@ -4354,6 +4591,18 @@ def update_remote_system_command(
     entries = remote_args.entries
     remote_id = remote_args.remote_incident_id
     delta = remote_args.delta
+    parsed_delta = {}
+    if isinstance(delta, dict):
+        parsed_delta = delta
+    elif isinstance(delta, str) and delta:
+        demisto.debug(f"Received delta as a string: '{delta}'. Attempting to parse as JSON.")
+        try:
+            parsed_delta = json.loads(delta)
+        except json.JSONDecodeError as e:
+            demisto.error(f"Error: Could not decode delta string into JSON for incident {remote_id}. Error: {e}")
+    elif delta:
+        demisto.error(f"Delta was of an unexpected type: {type(delta)}. Resetting to empty dict.")
+    delta = parsed_delta
     demisto.debug(
         f"Update remote system check if need to update: remoteId: {remote_id}, incidentChanged: "
         f"{remote_args.incident_changed}, data:"
@@ -4361,19 +4610,40 @@ def update_remote_system_command(
     )
     try:
         if delta and remote_args.incident_changed:
-            demisto.debug(f"Got the following delta object: {delta}")
             demisto.debug(f"Got the following delta keys {list(delta.keys())} to update JiraV3 Incident {remote_id}")
-            # take the val from data as it's the updated value
             delta = {k: remote_args.data.get(k) for k in delta}
-            demisto.debug(f"Sending the following data to edit the issue with: {delta}")
-            if issue_fields := create_issue_fields(
-                client=client,
-                issue_args=delta,
-                issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER,
-            ):
-                demisto.debug(f"Updating the issue with the following issue fields: {issue_fields}")
-                client.edit_issue(issue_id_or_key=remote_id, json_data=issue_fields)
-                demisto.debug("Updated the fields of the remote system successfully")
+            demisto.debug(f"Sending the following data to edit/transition the issue with: {delta}")
+
+            # If the status has changed, we must use a transition call.
+            if "status" in delta:
+                # Separate the fields to edit from the status itself.
+                fields_to_edit = {k: v for k, v in delta.items() if k != "status"}
+                issue_fields_payload = {}
+
+                if fields_to_edit:
+                    issue_fields_payload = create_issue_fields(
+                        client=client,
+                        issue_args=fields_to_edit,
+                        issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER,
+                    )
+
+                demisto.debug(f"Transitioning issue to '{delta['status']}' and updating fields: {issue_fields_payload}")
+
+                apply_issue_transition(client=client, issue_id_or_key=remote_id, transition_name=delta["status"], issue_fields={})
+                if issue_fields_payload:
+                    client.edit_issue(issue_id_or_key=remote_id, json_data=issue_fields_payload)
+
+                demisto.debug("Transitioned the issue and updated fields successfully in a single call.")
+            else:
+                issue_fields = create_issue_fields(
+                    client=client,
+                    issue_args=delta,
+                    issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER,
+                )
+                if issue_fields.get("fields"):
+                    demisto.debug(f"Updating the issue with the following issue fields: {issue_fields}")
+                    client.edit_issue(issue_id_or_key=remote_id, json_data=issue_fields)
+                    demisto.debug("Updated the fields of the remote system successfully")
 
         else:
             demisto.debug(f"Skipping updating remote incident fields [{remote_id}] as it is neither new nor changed")
@@ -4404,8 +4674,19 @@ def update_remote_system_command(
             demisto.debug("Updated the entries (attachments and/or comments) of the remote system successfully")
     except Exception as e:
         demisto.error(f"Error in Jira outgoing mirror for incident {remote_args.remote_incident_id} \nError message: {e!s}")
+        return_error(f"Error in Jira outgoing mirror for incident {remote_args.remote_incident_id}", error=e)
     finally:
         return remote_id
+
+
+def jira_rest_timezone_cache_command() -> CommandResults:
+    """Removes the cached Jira user timezone used for fetching incidents and mirroring from the integration context.
+
+    Returns:
+        CommandResults: Command results with a human readable output message.
+    """
+    remove_from_integration_context(key_to_remove="user_timezone")
+    return CommandResults(readable_output="The Jira user timezone was successfully cleared from the cache")
 
 
 def map_v2_args_to_v3(args: Dict[str, Any]) -> Dict[str, Any]:
@@ -4473,6 +4754,59 @@ def validate_auth_params(username: str, api_key: str, client_id: str, client_sec
         raise DemistoException("To use OAuth 2.0, the 'Client ID' and 'Client Secret' parameters are mandatory.")
 
 
+def is_jira_cloud_url(url: str) -> bool:
+    """
+    Check if the given URL is a Jira Cloud Server URL.
+
+    Args:
+        url (str): The URL to parse.
+
+    Returns:
+        bool: True if the URL is a Jira Cloud URL, False otherwise.
+    """
+    try:
+        hostname = urlparse(url).hostname or ""
+        return hostname.endswith((".atlassian.net", ".atlassian.com"))
+
+    except (ValueError, AttributeError):
+        return False
+
+
+def add_config_error_messages(err: str, cloud_id: str, server_url: str) -> str:
+    """
+    Provide additional information for error messages that result from incorrect configurations.
+
+        Args:
+            err (str): The original error message.
+            cloud_id (str): The cloud ID.
+            server_url (str): The server URL.
+
+        Returns:
+            str: The error message with additional information if applicable.
+    """
+
+    if "404" in err and cloud_id and server_url.rstrip("/") != "https://api.atlassian.com/ex/jira":
+        err = f"""
+(Error 404) Jira Cloud instances must use the default Server URL: `https://api.atlassian.com/ex/jira`.
+Update the Server URL in the instance configuration and try again.
+
+
+Original error: {err}
+            """
+
+    elif "410" in err and not cloud_id and is_jira_cloud_url(server_url):
+        err = f"""
+(Error 410) The requested endpoint has been removed from Jira On-Prem.
+This appears to be a Jira Cloud instance. Please update the Cloud ID in the instance configuration and try again.
+Refer to the integration help section for more information.
+
+
+Original error: {err}
+            """
+
+    return err
+
+
 def main():  # pragma: no cover
     params: Dict[str, Any] = demisto.params()
     args = map_v2_args_to_v3(demisto.args())
@@ -4522,11 +4856,10 @@ def main():  # pragma: no cover
     commands: Dict[str, Callable] = {
         "jira-oauth-start": ouath_start_command,
         "jira-oauth-complete": oauth_complete_command,
-        "jira-oauth-test": test_authorization,
+        "jira-oauth-test": jira_test_authorization,
         "jira-get-comments": get_comments_command,
         "jira-get-issue": get_issue_command,
         "jira-create-issue": create_issue_command,
-        "jira-create-issue-quick-action": create_issue_command,
         "jira-issue-assign": update_issue_assignee_command,
         "jira-edit-issue": edit_issue_command,
         "jira-delete-issue": delete_issue_command,
@@ -4560,6 +4893,7 @@ def main():  # pragma: no cover
         "jira-get-user-info": get_user_info_command,
         "jira-create-metadata-field-list": get_create_metadata_field_command,
         "jira-create-metadata-issue-types-list": get_create_metadata_issue_types_command,
+        "get-remote-data-preview": get_remote_data_preview_command,
     }
     try:
         client: JiraBaseClient
@@ -4593,7 +4927,7 @@ def main():  # pragma: no cover
         demisto.debug(f"The configured Jira client is: {type(client)}")
 
         if command == "test-module":
-            return_results(test_module(client=client))
+            return_results(jira_test_module(client=client, params=params))
         elif command in commands:
             return_results(commands[command](client, args))
         elif command == "fetch-incidents":
@@ -4615,7 +4949,7 @@ def main():  # pragma: no cover
                 ),
             )
 
-        elif demisto.command() == "get-remote-data":
+        elif command == "get-remote-data":
             return_results(
                 get_remote_data_command(
                     client=client,
@@ -4627,11 +4961,13 @@ def main():  # pragma: no cover
                     fetch_comments=fetch_comments,
                 )
             )
-        elif demisto.command() == "get-modified-remote-data":
+        elif command == "get-modified-remote-data":
             return_results(get_modified_remote_data_command(client=client, args=args))
-        elif demisto.command() == "get-mapping-fields":
+        elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command(client=client))
-        elif demisto.command() == "update-remote-system":
+        elif command == "jira-create-issue-quick-action":
+            return_results(create_issue_command(client=client, args=args, is_quick_action=True, server_url=server_url))
+        elif command == "update-remote-system":
             return_results(
                 update_remote_system_command(
                     client=client,
@@ -4640,11 +4976,19 @@ def main():  # pragma: no cover
                     attachment_tag_to_jira=attachment_tag_to_jira,
                 )
             )
+        elif command == "jira-reset-timezone-cache":
+            return_results(jira_rest_timezone_cache_command())
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as e:
-        return_error(str(e))
+        err = add_config_error_messages(str(e), cloud_id, server_url)
+        return_error(err)
+
+    finally:
+        # XSUP-57873
+        client._return_execution_metrics_results()
+        client.execution_metrics.metrics = None
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

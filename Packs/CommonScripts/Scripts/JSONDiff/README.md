@@ -3,6 +3,7 @@
 This script compares two JSON files and returns their differences, such as added, removed, or changed fields, in a structured format.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,6 +12,7 @@ This script compares two JSON files and returns their differences, such as added
 | Cortex XSOAR Version | 6.1.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +21,7 @@ This script compares two JSON files and returns their differences, such as added
 | new_json | The second JSON object to compare. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -28,9 +31,11 @@ This script compares two JSON files and returns their differences, such as added
 | JSONDiff.removed | List of fields that were removed from the first JSON. | Array |
 
 ## Example
+
 ---
 
-### Input:
+### Input
+
 ```json
 {
   "old_json": "{\"a\": 1, \"b\": 2}",

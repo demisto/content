@@ -1,4 +1,7 @@
 category: Network Security
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Palo Alto Networks Enterprise DLP
   version: -1
@@ -9,18 +12,22 @@ configuration:
   required: true
   type: 9
   displaypassword: Refresh Token
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Long running instance
   name: longRunning
   type: 8
   required: false
+  section: Collect
 - display: DLP Regions
   name: dlp_regions
   type: 16
@@ -35,21 +42,25 @@ configuration:
   - IN 
   - JP
   required: false
+  section: Collect
 - display: Data profiles to allow exemption
   name: dlp_exemptible_list
   type: 0
   additionalinfo: A comma-separated list of data profile names to request an exemption. Use "*" to allow everything.
   required: false
+  section: Collect
 - display: Bot Message
   name: dlp_slack_message
   type: 12
   additionalinfo: The message to send to the user to ask for feedback.
   defaultvalue: Hi $user🔔, \n\n*We need your feedback:* \n\nYour activity on *$app_name* was blocked due to company policy. The data in this activity contains sensitive information which violates *$data_profile_name* policy.\n\nfilename - *$file_name* \n\n $snippets\n\n
   required: false
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 description: Palo Alto Networks Enterprise DLP discovers and protects company data across every data channel and repository. Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.
 display: Palo Alto Networks Enterprise DLP
 name: Palo Alto Networks Enterprise DLP
@@ -153,7 +164,7 @@ script:
   - name: pan-dlp-reset-last-run
     arguments: []
     description: Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.12.5490952
   isFetchSamples: true
   longRunning: true
   script: '-'

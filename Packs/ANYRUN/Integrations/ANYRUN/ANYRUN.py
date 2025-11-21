@@ -842,6 +842,8 @@ def run_analysis(args):
             args["env_version"] = "8.1"
         elif env_version == "windows 10":
             args["env_version"] = "10"
+        elif env_version == "windows 11":
+            args["env_version"] = "11"
         else:
             args["env_version"] = "7"
         if obj_ext_cmd and (obj_type == "file" or obj_type == "download"):

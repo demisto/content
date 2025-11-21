@@ -1,12 +1,10 @@
 import json
 import os
-from typing import Any
 from unittest.mock import ANY
 from urllib.parse import unquote
 
 import demistomock as demisto
 import pytest
-from _pytest.python_api import raises
 from CommonServerPython import (
     CommandResults,
     DemistoException,
@@ -22,6 +20,25 @@ from test_data import input_data
 
 RETURN_ERROR_TARGET = "CrowdStrikeFalcon.return_error"
 SERVER_URL = "https://4.4.4.4"
+
+
+def create_empty_last_run(length: int) -> list[dict]:
+    """
+    Creates an empty last_run data structure for fetch operations.
+
+    The last_run object is defined as a list of dictionaries.
+    Each index in the list represents a different fetch type.
+
+    The length parameter varies depending on the platform:
+    - XSOAR length constant - TOTAL_FETCH_TYPE_XSOAR
+    - XSIAM length constant - TOTAL_FETCH_TYPE_XSIAM
+    Args:
+        length (int): Number of fetch types to initialize
+
+    Returns:
+        list[dict]: A list of empty dictionaries representing the last_run state
+    """
+    return [{} for _ in range(length)]
 
 
 def load_json(file: str):
@@ -1829,6 +1846,114 @@ def test_refresh_session(requests_mock, mocker):
     assert results["HumanReadable"] == f"CrowdStrike Session Refreshed: {session_id}"
 
 
+class TestFetchFunctionsTimestampFormatting:
+    """
+    Test class for verifying timestamp formatting in fetch functions before calling update_last_run_object.
+    All the tests verify that detection["occurred"] timestamps are converted to the correct
+    date format before being passed to the update_last_run_object function.
+    """
+
+    @pytest.fixture(autouse=True)
+    def setup_common_mocks(self, mocker):
+        """Setup common mocks used across all test methods."""
+        # CommonServerPython.update_last_run_object only formats detection["occurred"] field when offset is zero
+        mocker.patch("CrowdStrikeFalcon.calculate_new_offset", return_value=0)
+        mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", False)
+
+    def test_fetch_endpoint_incidents__update_last_run_object(self, mocker):
+        from CrowdStrikeFalcon import fetch_endpoint_incidents
+
+        mocker.patch("CrowdStrikeFalcon.get_incidents_ids", return_value={"resources": ["123"]})
+
+        # Mock API response with microsecond precision timestamp that needs conversion
+        mocker.patch(
+            "CrowdStrikeFalcon.get_incidents_entities",
+            return_value={"resources": [{"start": "2024-02-13T09:24:00.841616429Z", "incident_id": "123"}]},
+        )
+
+        try:
+            # Execute the function, it should handle timestamp formatting internally before calling update_last_run_object
+            fetch_endpoint_incidents({}, None, False)
+        except Exception as e:
+            pytest.fail(f"Unexpected error during fetch_endpoint_incidents with non-zero offset: {str(e)}")
+
+    def test_fetch_endpoint_detections__update_last_run_object(self, mocker):
+        from CrowdStrikeFalcon import fetch_endpoint_detections
+
+        mocker.patch("CrowdStrikeFalcon.get_fetch_detections", return_value={})
+
+        # Mock API response with microsecond precision timestamp that needs conversion
+        mocker.patch(
+            "CrowdStrikeFalcon.get_detections_entities",
+            return_value={"resources": [{"created_timestamp": "2024-02-13T09:24:00.841616429Z", "composite_id": "123"}]},
+        )
+
+        try:
+            # Execute the function, it should handle timestamp formatting internally before calling update_last_run_object
+            fetch_endpoint_detections({}, None, False)
+        except Exception as e:
+            pytest.fail(f"Unexpected error during fetch_endpoint_detections with non-zero offset: {str(e)}")
+
+    def test_fetch_endpoint_detections__is_detection_occurred_before_fetch_time(self, mocker):
+        """
+        Tests that detection["created_timestamp"] timestamps are filtered out if they are not after the start_fetch_time.
+        Given:
+            start_fetch_time is "2025-07-25T01:01:00.000000000Z"
+            Two detections with created_timestamps, one is before the start_fetch_time and the other is not.
+        When:
+            Fetching endpoint detections
+        Then:
+            Only the detection that occurred after the start_fetch_time is returned.
+        """
+        from CrowdStrikeFalcon import fetch_endpoint_detections
+
+        mocked_res = [
+            {"created_timestamp": "2025-07-25T23:59:59.999999Z", "composite_id": "123"},
+            {"created_timestamp": "2025-07-24T01:01:00.000001Z", "composite_id": "456"},
+        ]
+        mocker.patch("CrowdStrikeFalcon.get_fetch_detections", return_value={})
+        mocker.patch(
+            "CrowdStrikeFalcon.get_detections_entities",
+            return_value={"resources": mocked_res},
+        )
+
+        start_fetch_time = "2025-07-25T01:01:00.000000000Z"
+
+        results, _ = fetch_endpoint_detections({"time": start_fetch_time}, 2, False)
+        assert len(results) == 1
+        assert results[0]["occurred"] == mocked_res[0]["created_timestamp"]
+
+    @pytest.mark.parametrize(
+        "product_type, detection_name_prefix",
+        [
+            ("ods", "On-Demand Scans Detection"),
+            ("ofp", "OFP Detection"),
+            ("idp", "IDP Detection"),
+            ("ngsiem", "NGSIEM Detection"),
+            ("thirdparty", "Third Party Detection"),
+        ],
+    )
+    def test_fetch_detections_by_product_type__update_last_run_object(self, mocker, product_type, detection_name_prefix):
+        from CrowdStrikeFalcon import fetch_detections_by_product_type
+
+        mocker.patch("CrowdStrikeFalcon.get_detections_ids", return_value={"resources": ["123"]})
+
+        # Mock API response with microsecond precision timestamp that needs conversion
+        mocker.patch(
+            "CrowdStrikeFalcon.get_detection_entities",
+            return_value={
+                "resources": [{"created_timestamp": "2024-02-13T09:24:00.841616429Z", "composite_id": "123", "name": "name123"}]
+            },
+        )
+
+        try:
+            # Execute the function, it should handle timestamp formatting internally before calling update_last_run_object
+            fetch_detections_by_product_type({}, 0, product_type, "", "", detection_name_prefix, "created_timestamp")
+
+        except Exception as e:
+            pytest.fail(f"Unexpected error during fetch_endpoint_detections with non-zero offset: {str(e)}")
+
+
 class TestFetch:
     """Test the logic of the fetch"""
 
@@ -1872,7 +1997,11 @@ class TestFetch:
             The `first_behavior_time` doesn't change and an `offset` of 2 is added.
 
         """
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
+
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(last_run_object, index=LastRunIndex.DETECTIONS, data={"time": "2020-09-04T09:16:10Z"})
+        set_last_run_per_type(last_run_object, index=LastRunIndex.INCIDENTS, data={"time": "2020-09-04T09:22:10Z"})
 
         mocker.patch.object(demisto, "params", return_value={})
         mocker.patch.object(
@@ -1886,17 +2015,8 @@ class TestFetch:
                 "incident_offset": 4,
             },
         )
-        fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0] == [
-            {"time": "2020-09-04T09:16:10Z"},
-            {"time": "2020-09-04T09:22:10Z"},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-        ]
+        fetch_items()
+        assert demisto.setLastRun.mock_calls[0][1][0] == last_run_object
 
     @freeze_time("2020-09-04T09:16:10Z")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
@@ -1909,8 +2029,17 @@ class TestFetch:
         Then:
             The `first_behavior_time` changes and no `offset` is added.
         """
+
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
+
         mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
-        mocker.patch.object(demisto, "getLastRun", return_value=[{"time": "2020-09-04T09:16:10.000000Z", "offset": 2}, {}, {}])
+
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(
+            last_run_object, index=LastRunIndex.DETECTIONS, data={"time": "2020-09-04T09:16:10.000000Z", "offset": 2}
+        )
+
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(
             f"{SERVER_URL}/detects/entities/summaries/GET/v1",
@@ -1924,10 +2053,9 @@ class TestFetch:
                 ],
             },
         )
-        from CrowdStrikeFalcon import fetch_incidents
 
-        fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0][0] == {
+        fetch_items()
+        assert demisto.setLastRun.mock_calls[0][1][0][LastRunIndex.DETECTIONS] == {
             "time": "2020-09-04T09:16:11.000000Z",
             "limit": 2,
             "offset": 0,
@@ -1947,6 +2075,8 @@ class TestFetch:
             - In the next call, the offset will be reset to 0 and the last time will be the latest detection time
 
         """
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
+
         mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
         # mock the total number of detections to be 4, so offset will be set
         requests_mock.get(
@@ -1954,7 +2084,12 @@ class TestFetch:
             json={"resources": ["ldt:1", "ldt:2"], "meta": {"pagination": {"total": 4}}},
         )
 
-        mocker.patch.object(demisto, "getLastRun", return_value=[{"time": "2020-09-04T09:16:10.000000Z", "offset": 0}, {}, {}])
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(
+            last_run_object, index=LastRunIndex.DETECTIONS, data={"time": "2020-09-04T09:16:10.000000Z", "offset": 0}
+        )
+
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(
             f"{SERVER_URL}/detects/entities/summaries/GET/v1",
@@ -1968,9 +2103,8 @@ class TestFetch:
                 ],
             },
         )
-        from CrowdStrikeFalcon import fetch_incidents
 
-        fetch_incidents()
+        fetch_items()
         # the offset should be increased to 2, and the time should be stay the same
         expected_last_run = {
             "time": "2020-09-04T09:16:10.000000Z",
@@ -1978,14 +2112,17 @@ class TestFetch:
             "offset": 2,
             "found_incident_ids": {"Detection ID: ldt:1": 1599210970},
         }
-        assert demisto.setLastRun.mock_calls[0][1][0][0] == expected_last_run
+        assert demisto.setLastRun.mock_calls[0][1][0][LastRunIndex.DETECTIONS] == expected_last_run
 
         requests_mock.get(
             f"{SERVER_URL}/detects/queries/detects/v1",
             json={"resources": ["ldt:3", "ldt:4"], "meta": {"pagination": {"total": 4}}},
         )
 
-        mocker.patch.object(demisto, "getLastRun", return_value=[expected_last_run, {}, {}])
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(last_run_object, index=LastRunIndex.DETECTIONS, data=expected_last_run)
+
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
 
         requests_mock.post(
             f"{SERVER_URL}/detects/entities/summaries/GET/v1",
@@ -2000,9 +2137,9 @@ class TestFetch:
             },
         )
 
-        fetch_incidents()
+        fetch_items()
         # the offset should be 0 because all detections were fetched, and the time should update to the latest detection
-        assert demisto.setLastRun.mock_calls[1][1][0][0] == {
+        assert demisto.setLastRun.mock_calls[1][1][0][LastRunIndex.DETECTIONS] == {
             "time": "2020-09-04T09:16:13.000000Z",
             "limit": 2,
             "offset": 0,
@@ -2021,22 +2158,68 @@ class TestFetch:
 
         """
         mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value=[
-                {
-                    "time": "2020-09-04T09:16:10Z",
-                },
-                {},
-                {},
-            ],
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(
+            last_run_object,
+            index=LastRunIndex.DETECTIONS,
+            data={
+                "time": "2020-09-04T09:16:10Z",
+            },
         )
-        incidents = fetch_incidents()
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
+        _, incidents = fetch_items()
         for incident in incidents:
             assert '"incident_type": "detection"' in incident.get("rawJSON", "")
+
+    @pytest.mark.parametrize(
+        "detection_type, expected_name",
+        [
+            ("ngsiem", "NGSIEM Detection"),
+            ("thirdparty", "Third Party Detection"),
+        ],
+    )
+    def test_fetch_type_no_legacy_version(self, requests_mock, mocker, detection_type, expected_name):
+        from CrowdStrikeFalcon import fetch_items, NGSIEM_DETECTION_FETCH_TYPE, THIRD_PARTY_DETECTION_FETCH_TYPE
+
+        # Get the actual constants based on the parameter
+        fetch_type = NGSIEM_DETECTION_FETCH_TYPE if detection_type == "ngsiem" else THIRD_PARTY_DETECTION_FETCH_TYPE
+
+        mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", False)
+        mocker.patch.object(
+            demisto, "params", return_value={"fetch_incidents_or_detections": [fetch_type], "legacy_version": False}
+        )
+
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+
+        requests_mock.get(
+            f"{SERVER_URL}/alerts/queries/alerts/v2",
+            json={"resources": [f"a:{detection_type}:1", f"a:{detection_type}:2"], "meta": {"pagination": {"total": 2}}},
+        )
+        requests_mock.post(
+            f"{SERVER_URL}/alerts/entities/alerts/v2",
+            json={
+                "resources": [
+                    {
+                        "composite_id": f"a:{detection_type}:1",
+                        "created_timestamp": "2025-03-11T16:45:21.571614153Z",
+                        "start_time": "2025-03-11T15:46:00.426Z",
+                    },
+                    {
+                        "composite_id": f"a:{detection_type}:2",
+                        "created_timestamp": "2025-03-11T16:45:21.571614153Z",
+                        "start_time": "2025-03-11T15:46:00.426Z",
+                    },
+                ]
+            },
+        )
+
+        _, incidents = fetch_items()
+        assert len(incidents) == 2
+
+        for incident in incidents:
+            assert expected_name in incident.get("name", "")
 
     @pytest.mark.parametrize(
         "expected_name, fetch_incidents_or_detections,incidents_len",
@@ -2073,9 +2256,11 @@ class TestFetch:
 
         """
         mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        mocker.patch.object(demisto, "getLastRun", return_value=[{"time": "2020-09-04T09:16:10Z"}, {}, {}])
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(last_run_object, index=LastRunIndex.DETECTIONS, data={"time": "2020-09-04T09:16:10Z"})
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
 
         requests_mock.get(
             f"{SERVER_URL}/incidents/queries/incidents/v1",
@@ -2121,17 +2306,18 @@ class TestFetch:
             },
         )
 
-        incidents = fetch_incidents()
-        assert len(incidents) == incidents_len
+        _, items = fetch_items()
+        assert len(items) == incidents_len
 
+        # Detection type stored before Incidents in the list
         if incidents_len == 4:
-            assert "Incident ID:" in incidents[0]["name"]
-            assert "Incident ID:" in incidents[1]["name"]
-            assert "Detection ID:" in incidents[2]["name"]
-            assert "Detection ID:" in incidents[3]["name"]
+            assert "Detection ID:" in items[0]["name"]
+            assert "Detection ID:" in items[1]["name"]
+            assert "Incident ID:" in items[2]["name"]
+            assert "Incident ID:" in items[3]["name"]
         else:
-            assert expected_name in incidents[0]["name"]
-            assert expected_name in incidents[1]["name"]
+            assert expected_name in items[0]["name"]
+            assert expected_name in items[1]["name"]
 
 
 class TestIncidentFetch:
@@ -2168,7 +2354,7 @@ class TestIncidentFetch:
             The offset is deleted from the lastRun
         """
 
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items
 
         mocker.patch.object(demisto, "params", return_value={})
         mocker.patch.object(
@@ -2176,22 +2362,26 @@ class TestIncidentFetch:
             "getLastRun",
             return_value=[{"time": "2020-09-04T09:16:10Z", "offset": 2}, {"time": "2020-09-04T09:22:10Z", "offset": 4}],
         )
-        fetch_incidents()
+        fetch_items()
         assert demisto.setLastRun.mock_calls[0][1][0] == [{"time": "2020-09-04T09:16:10Z"}, {"time": "2020-09-04T09:22:10Z"}]
 
     @freeze_time("2020-08-26 17:22:13 UTC")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
+
         mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
-        mocker.patch.object(demisto, "getLastRun", return_value=[{}, {"time": "2020-09-04T09:16:10Z", "offset": 2}, {}])
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(last_run_object, index=LastRunIndex.INCIDENTS, data={"time": "2020-09-04T09:16:10Z", "offset": 2})
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
+
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(
             f"{SERVER_URL}/incidents/entities/incidents/GET/v1",
             json={"resources": [{"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z"}]},
         )
-        from CrowdStrikeFalcon import fetch_incidents
 
-        fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0][1] == {
+        fetch_items()
+        assert demisto.setLastRun.mock_calls[0][1][0][LastRunIndex.INCIDENTS] == {
             "time": "2020-09-04T09:16:11Z",
             "limit": 2,
             "offset": 0,
@@ -2211,14 +2401,17 @@ class TestIncidentFetch:
             - In the next call, the offset will be reset to 0 and the last time will be the latest detection time
 
         """
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
+
         mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
         # mock the total number of detections to be 4, so offset will be set
         requests_mock.get(
             f"{SERVER_URL}/incidents/queries/incidents/v1",
             json={"resources": ["ldt:1", "ldt:2"], "pagination": {"meta": {"total": 4}}},
         )
-
-        mocker.patch.object(demisto, "getLastRun", return_value=[{}, {"time": "2020-09-04T09:16:10Z", "offset": 0}, {}])
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(last_run_object, index=LastRunIndex.INCIDENTS, data={"time": "2020-09-04T09:16:10Z", "offset": 0})
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(
             f"{SERVER_URL}/incidents/entities/incidents/GET/v1",
@@ -2226,9 +2419,8 @@ class TestIncidentFetch:
                 "resources": [{"incident_id": "ldt:1", "start": "2020-09-04T09:16:11Z", "max_severity_displayname": "Low"}],
             },
         )
-        from CrowdStrikeFalcon import fetch_incidents
 
-        fetch_incidents()
+        fetch_items()
         # the offset should be increased to 2, and the time should be stay the same
         expected_last_run = {
             "time": "2020-09-04T09:16:10Z",
@@ -2236,14 +2428,17 @@ class TestIncidentFetch:
             "offset": 2,
             "found_incident_ids": {"Incident ID: ldt:1": 1599210970},
         }
-        assert demisto.setLastRun.mock_calls[0][1][0][1] == expected_last_run
+        assert demisto.setLastRun.mock_calls[0][1][0][LastRunIndex.INCIDENTS] == expected_last_run
 
         requests_mock.get(
             f"{SERVER_URL}/incidents/queries/incidents/v1",
             json={"resources": ["ldt:3", "ldt:4"], "meta": {"pagination": {"total": 4}}},
         )
 
-        mocker.patch.object(demisto, "getLastRun", return_value=[{}, expected_last_run, {}])
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(last_run_object, index=LastRunIndex.INCIDENTS, data=expected_last_run)
+
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
 
         requests_mock.post(
             f"{SERVER_URL}/incidents/entities/incidents/GET/v1",
@@ -2252,9 +2447,9 @@ class TestIncidentFetch:
             },
         )
 
-        fetch_incidents()
+        fetch_items()
         # the offset should be 0 because all detections were fetched, and the time should update to the latest detection
-        assert demisto.setLastRun.mock_calls[1][1][0][1] == {
+        assert demisto.setLastRun.mock_calls[1][1][0][LastRunIndex.INCIDENTS] == {
             "time": "2020-09-04T09:16:13Z",
             "limit": 2,
             "offset": 0,
@@ -2270,22 +2465,42 @@ class TestIncidentFetch:
         Then:
             "incident_type": "incident" is in raw result returned by the indicator
         """
-        mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value=[
-                {},
-                {
-                    "time": "2020-09-04T09:16:10Z",
-                },
-            ],
-        )
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        incidents = fetch_incidents()
+        mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(
+            last_run_object,
+            index=LastRunIndex.INCIDENTS,
+            data={
+                "time": "2020-09-04T09:16:10Z",
+            },
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
+
+        _, incidents = fetch_items()
         for incident in incidents:
             assert '"incident_type": "incident"' in incident.get("rawJSON", "")
+
+    def test_last_run_uses_param(self, mocker: MockerFixture):
+        """
+        Given:
+            Old getLastRun which holds `limit`.
+        When:
+            A new lastRun is created.
+        Then:
+            The new limit should be based on the parameters and mot the old limit.
+        """
+        from CrowdStrikeFalcon import fetch_detections_by_product_type
+
+        mocker.patch("CrowdStrikeFalcon.INCIDENTS_PER_FETCH", 20)
+        mocker.patch("CrowdStrikeFalcon.get_fetch_run_time_range", return_value=(None,) * 2)
+        mocker.patch("CrowdStrikeFalcon.get_detections_ids", return_value={})
+        mock_func = mocker.patch("CrowdStrikeFalcon.update_last_run_object")
+
+        fetch_detections_by_product_type({"limit": 10}, 0, "", "", "", "", "")
+
+        assert mock_func.call_args.kwargs["fetch_limit"] == 20
 
 
 def get_fetch_data():
@@ -3859,7 +4074,7 @@ def test_add_error_message(failed_devices, all_requested_devices, expected_resul
 def test_add_error_message_raise_error(failed_devices, all_requested_devices):
     from CrowdStrikeFalcon import add_error_message
 
-    with raises(DemistoException, match=f"CrowdStrike Falcon The command was failed with the errors: {failed_devices}"):
+    with pytest.raises(DemistoException, match=f"CrowdStrike Falcon The command was failed with the errors: {failed_devices}"):
         add_error_message(failed_devices, all_requested_devices)
 
 
@@ -4073,6 +4288,8 @@ def test_find_incident_type():
 
     assert find_incident_type(input_data.remote_incident_id) == IncidentType.INCIDENT
     assert find_incident_type(input_data.remote_detection_id) == IncidentType.LEGACY_ENDPOINT_DETECTION
+    assert find_incident_type(input_data.remote_ngsiem_detection_id) == IncidentType.NGSIEM
+    assert find_incident_type(input_data.remote_third_party_detection_id) == IncidentType.THIRD_PARTY
     assert find_incident_type("") is None
 
 
@@ -4158,6 +4375,9 @@ def test_get_remote_detection_data_for_multiple_types__idp(mocker):
         "incident_type": "IDP detection",
         "status": "closed",
         "id": "ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56",
+        "assigned_to_uid": "1",
+        "comments": [{"falcon_user_id": "1", "timestamp": "2025-06-10T10:39:02.408980782Z", "value": "1"}],
+        "tags": ["tag"],
     }
 
 
@@ -4205,6 +4425,106 @@ def test_get_remote_detection_data_for_multiple_types__endpoint_detection(mocker
     assert mirrored_data == detection_entity
     assert detection_type == "Detection"
     assert updated_object == {"incident_type": "detection", "status": "new", "severity": 90}
+
+
+@pytest.mark.parametrize(
+    "detection_type, incident_type, entity_modifications",
+    [
+        ("ngsiem", "ngsiem_detection", {}),
+        ("ofp", "OFP detection", {"type": "ofp", "product": "epp"}),
+    ],
+)
+def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, incident_type, entity_modifications):
+    """
+    Given
+        - an endpoint detection ID on the remote system
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
+    """
+    from CrowdStrikeFalcon import get_remote_detection_data_for_multiple_types
+
+    detection_entity = input_data.response_ngsiem_detection.copy()
+    detection_entity.update(entity_modifications)
+
+    mocker.patch("CrowdStrikeFalcon.get_detection_entities", return_value={"resources": [detection_entity.copy()]})
+    mocker.patch.object(demisto, "debug", return_value=None)
+
+    mirrored_data, updated_object, returned_detection_type = get_remote_detection_data_for_multiple_types(
+        input_data.remote_ngsiem_detection_id
+    )
+
+    assert mirrored_data == detection_entity
+    assert returned_detection_type == detection_type
+    assert updated_object == {
+        "incident_type": incident_type,
+        "status": mirrored_data["status"],
+        "severity": mirrored_data["severity"],
+        "tactic": mirrored_data["tactic"],
+        "technique": mirrored_data["technique"],
+        "composite_id": mirrored_data["composite_id"],
+        "display_name": mirrored_data["display_name"],
+        "tags": mirrored_data["tags"],
+        "comments": mirrored_data["comments"],
+        "assigned_to_uid": mirrored_data["assigned_to_uid"],
+    }
+
+
+@pytest.mark.parametrize(
+    "function_name, num_ids, expected_calls",
+    [
+        # These are two different functions - calling both of them to verify the call architecture applies to both.
+        ("get_detections_entities", 0, 0),  # Edge case: no IDs
+        ("get_detections_entities", 500, 1),  # Less than the limit
+        ("get_detections_entities", 1000, 1),  # Exactly the limit
+        ("get_detections_entities", 1001, 2),  # More than the limit (specific request)
+        ("get_detections_entities", 2500, 3),  # More than the limit (many calls)
+        ("get_detection_entities", 0, 0),
+        ("get_detection_entities", 500, 1),
+        ("get_detection_entities", 1000, 1),
+        ("get_detection_entities", 1001, 2),
+        ("get_detection_entities", 2500, 3),
+    ],
+)
+def test_get_detections_entities_batches_requests(mocker, function_name, num_ids, expected_calls):
+    """
+    Given
+        - Number of ID's to fetch from the CrowdStrike Falcon Entity API.
+    When
+        - Running fetch detections entities functions with the ID's list
+    Then
+        - Return the number of calls to http_request based on the number of IDs provided.
+        - Return the number of resources based on the number of IDs provided.
+    """
+    import CrowdStrikeFalcon
+
+    mock_http_request = mocker.patch.object(CrowdStrikeFalcon, "http_request")
+
+    # Configure a side effect to return responses with the correct number of resources
+    def side_effect(method, url, data):
+        data_dict = json.loads(data)
+        ids_in_batch = data_dict.get("composite_ids") or data_dict.get("ids")
+        return {"meta": {"trace_id": "test_trace"}, "resources": [{"id": i} for i in ids_in_batch]}
+
+    mock_http_request.side_effect = side_effect
+
+    # Get the function to test dynamically
+    function_to_test = getattr(CrowdStrikeFalcon, function_name)
+
+    # Load and slice the IDs list from the JSON file
+    id_list_full = load_json("./test_data/mock_detections_id_list.json").get("Ids", {})[:num_ids]
+    detections_ids = id_list_full[:num_ids]
+
+    # Call the function with the mock IDs
+    result = function_to_test(detections_ids)
+
+    # Check that the number of http_request calls matches the expectation
+    assert mock_http_request.call_count == expected_calls
+
+    # Check that the number of resources returned matches the number of IDs
+    if "resources" in result:
+        assert len(result["resources"]) == num_ids
 
 
 @pytest.mark.parametrize("updated_object, entry_content, close_incident", input_data.set_xsoar_incident_entries_args)
@@ -6182,10 +6502,32 @@ class TestCSFalconResolveIdentityDetectionCommand:
         assert isinstance(command_results.readable_output, str)
         assert "Mobile Detection(s) 1, 2 were successfully updated" in command_results.readable_output
 
+    def test_handle_resolve_detections(self, mocker: MockerFixture):
+        """
+        Given:
+            - Arguments for the handle_resolve_detections function.
+        When:
+            - Calling the handle_resolve_detections function.
+        Then:
+            - Verify that the http_request function is called once with the correct arguments.
+            - Validate the error message when assigning both assign_to_name and assign_to_user_id.
+        """
+        from CrowdStrikeFalcon import handle_resolve_detections
+
+        http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
+        args = {"assign_to_name": "name"}
+        handle_resolve_detections(args, "")
+        assert http_request_mocker.call_count == 1
+
+        with pytest.raises(ValueError) as e:
+            args = {"assign_to_name": "name", "assign_to_user_id": "id"}
+            handle_resolve_detections(args, "")
+        assert "Only one of the arguments assign_to_uuid, assign_to_name, assign_to_user_id should be provided." in str(e)
+
 
 class TestIOAFetch:
     # Since this integration fetches multiple incidents, the last run object contains a list of
-    # last run objects for each incident type, for IOA, that is the 5th position
+    # last run objects for each incident type, for IOA, that is the 6th position
     @pytest.mark.parametrize(
         "fetch_query, error_message",
         [
@@ -6221,22 +6563,22 @@ class TestIOAFetch:
         Then
             - Validate that the last fetch query is used in the current run, and the next token is added to the API call.
         """
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
         fetch_query = "cloud_provider=aws"
         last_fetch_query = f"{fetch_query}&date_time_since=some_time"
         ioa_next_token = "dummy_token"
-        last_run_object: list[dict[str, Any]] = [
-            {},
-            {},
-            {},
-            {},
-            {
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+
+        set_last_run_per_type(
+            last_run_object,
+            index=LastRunIndex.IOA,
+            data={
                 "ioa_next_token": ioa_next_token,
                 "last_fetch_query": last_fetch_query,
                 "last_date_time_since": "2023-01-01T00:00:00Z",
             },
-        ]
+        )
         mocker.patch.object(
             demisto,
             "params",
@@ -6244,7 +6586,7 @@ class TestIOAFetch:
         )
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
         http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
-        fetch_incidents()
+        fetch_items()
         assert last_fetch_query in http_request_mocker.call_args_list[0][1].get("url_suffix")
         assert f"next_token={ioa_next_token}" in http_request_mocker.call_args_list[0][1].get("url_suffix")
 
@@ -6257,15 +6599,14 @@ class TestIOAFetch:
         Then
             - Validate that an error is thrown if the last fetch filter is an empty string.
         """
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        last_run_object: list[dict[str, Any]] = [
-            {},
-            {},
-            {},
-            {},
-            {"ioa_next_token": "dummy_token", "last_fetch_query": "", "last_date_time_since": "2023-01-01T00:00:00Z"},
-        ]
+        last_run_object = [{} for _ in range(TOTAL_FETCH_TYPE_XSOAR)]
+        set_last_run_per_type(
+            last_run_object,
+            index=LastRunIndex.IOA,
+            data={"ioa_next_token": "dummy_token", "last_fetch_query": "", "last_date_time_since": "2023-01-01T00:00:00Z"},
+        )
         mocker.patch.object(
             demisto,
             "params",
@@ -6274,7 +6615,7 @@ class TestIOAFetch:
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
         mocker.patch("CrowdStrikeFalcon.http_request")
         with pytest.raises(DemistoException) as e:
-            fetch_incidents()
+            fetch_items()
         assert "Last fetch query must not be empty when doing pagination" in str(e)
 
     def test_fetch_query_without_pagination(self, mocker: MockerFixture):
@@ -6286,11 +6627,12 @@ class TestIOAFetch:
         Then
             - Validate that the passed date_date_since date is appended to the supplied fetch query.
         """
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
         last_date_time_since = "2023-01-01T00:00:00Z"
         fetch_query = "cloud_provider=aws"
-        last_run_object: list[dict[str, Any]] = [{}, {}, {}, {}, {"last_date_time_since": last_date_time_since}]
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(last_run_object, index=LastRunIndex.IOA, data={"last_date_time_since": last_date_time_since})
         mocker.patch.object(
             demisto,
             "params",
@@ -6298,7 +6640,7 @@ class TestIOAFetch:
         )
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
         http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
-        fetch_incidents()
+        fetch_items()
         assert fetch_query in http_request_mocker.call_args_list[0][1].get("url_suffix")
         assert f"date_time_since={last_date_time_since}" in http_request_mocker.call_args_list[0][1].get("url_suffix")
 
@@ -6375,9 +6717,10 @@ class TestIOAFetch:
         # and once we enter the for loop to go over the fetched events, '2' will not get picked up, since it
         # was already fetched, therfore, we check that in the returned incidents object, only the event with id '3'
         # was added as an incident
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        last_run_object: list[dict[str, Any]] = [{}, {}, {}, {}, {"last_event_ids": ["1", "2"]}]
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(last_run_object, index=LastRunIndex.IOA, data={"last_event_ids": ["1", "2"]})
         mocker.patch.object(
             demisto,
             "params",
@@ -6396,7 +6739,7 @@ class TestIOAFetch:
             ),
         )
         mocker.patch("CrowdStrikeFalcon.reformat_timestamp", return_value="2023-01-01T00:00:00Z")
-        fetched_incidents = fetch_incidents()
+        _, fetched_incidents = fetch_items()
         assert len(fetched_incidents) == 1
         rawJSON = json.loads(fetched_incidents[0].get("rawJSON"))
         assert rawJSON.get("incident_type") == "ioa_events"
@@ -6416,9 +6759,10 @@ class TestIOAFetch:
         # which can span on many fetches. We will have ids in last_event_ids (['1']), and configure that we are
         # doing pagination, and that we fetched event '2', and in the new returned last run, the key last_event_ids
         # has a value of ['1', '2']
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        last_run_object: list[dict[str, Any]] = [{}, {}, {}, {}, {"last_event_ids": ["1"]}]
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(last_run_object, index=LastRunIndex.IOA, data={"last_event_ids": ["1"]})
         mocker.patch.object(
             demisto,
             "params",
@@ -6431,8 +6775,8 @@ class TestIOAFetch:
         )
         mocker.patch("CrowdStrikeFalcon.reformat_timestamp", return_value="2023-01-01T00:00:00Z")
         set_last_run_mocker = mocker.patch.object(demisto, "setLastRun", side_effect=demisto.setLastRun)
-        fetch_incidents()
-        assert set_last_run_mocker.call_args_list[0][0][0][4].get("last_event_ids") == ["2", "1"]
+        fetch_items()
+        assert set_last_run_mocker.call_args_list[0][0][0][LastRunIndex.IOA].get("last_event_ids") == ["2", "1"]
 
     def test_save_fetched_events_when_starting_pagination(self, mocker: MockerFixture):
         """
@@ -6447,15 +6791,14 @@ class TestIOAFetch:
         # Make sure that we save all the events that have been fetched before when starting the pagination process.
         # We will have ids in last_event_ids (['1']), and configure that we are, doing pagination, and that we fetched event '2',
         # and in the new returned last run, the key last_event_ids has a value of ['1', '2']
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        last_run_object: list[dict[str, Any]] = [
-            {},
-            {},
-            {},
-            {},
-            {"last_event_ids": ["1"], "ioa_next_token": "next_token", "last_fetch_query": "cloud_provider=aws"},
-        ]
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(
+            last_run_object,
+            index=LastRunIndex.IOA,
+            data={"last_event_ids": ["1"], "ioa_next_token": "next_token", "last_fetch_query": "cloud_provider=aws"},
+        )
         mocker.patch.object(
             demisto,
             "params",
@@ -6468,8 +6811,8 @@ class TestIOAFetch:
         )
         mocker.patch("CrowdStrikeFalcon.reformat_timestamp", return_value="2023-01-01T00:00:00Z")
         set_last_run_mocker = mocker.patch.object(demisto, "setLastRun", side_effect=demisto.setLastRun)
-        fetch_incidents()
-        assert set_last_run_mocker.call_args_list[0][0][0][4].get("last_event_ids") == ["2", "1"]
+        fetch_items()
+        assert set_last_run_mocker.call_args_list[0][0][0][LastRunIndex.IOA].get("last_event_ids") == ["2", "1"]
 
     def test_fetch_ioa_events(self, mocker: MockerFixture):
         """
@@ -6485,20 +6828,19 @@ class TestIOAFetch:
                 4. The fetched event ids are saved.
         """
         # A successful fetch of incidents
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        last_run_object: list[dict[str, Any]] = [
-            {},
-            {},
-            {},
-            {},
-            {
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(
+            last_run_object,
+            index=LastRunIndex.IOA,
+            data={
                 "last_event_ids": ["1"],
                 "ioa_next_token": "next_token",
                 "last_fetch_query": "last_dummy_query",
                 "last_date_time_since": "2022-01-01T00:00:00Z",
             },
-        ]
+        )
         mocker.patch.object(
             demisto,
             "params",
@@ -6516,8 +6858,8 @@ class TestIOAFetch:
             ),
         )
         set_last_run_mocker = mocker.patch.object(demisto, "setLastRun", side_effect=demisto.setLastRun)
-        fetched_incidents = fetch_incidents()
-        assert set_last_run_mocker.call_args_list[0][0][0][4] == {
+        _, fetched_incidents = fetch_items()
+        assert set_last_run_mocker.call_args_list[0][0][0][LastRunIndex.IOA] == {
             "ioa_next_token": "new_next_token",
             "last_date_time_since": "2024-01-01T00:00:00Z",
             "last_fetch_query": "last_dummy_query",
@@ -6528,7 +6870,7 @@ class TestIOAFetch:
 
 class TestIOMFetch:
     # Since this integration fetches multiple incidents, the last run object contains a list of
-    # last run objects for each incident type, for IOM, that is the 4th position
+    # last run objects for each incident type, for IOM, that is the 7th position
     def test_validate_iom_fetch_query(self):
         """
         Given:
@@ -6553,22 +6895,22 @@ class TestIOMFetch:
         Then
             - Validate that the last fetch query is used in the current run, and the next token is added to the API call.
         """
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
         fetch_filter = "cloud_provider: 'aws'"
         last_fetch_filter = f"scan_time: some_time+{fetch_filter}"
         iom_next_token = "dummy_token"
-        last_run_object: list[dict[str, Any]] = [
-            {},
-            {},
-            {},
-            {
+
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(
+            last_run_object,
+            index=LastRunIndex.IOM,
+            data={
                 "iom_next_token": iom_next_token,
                 "last_fetch_filter": last_fetch_filter,
                 "last_scan_time": "2023-01-01T00:00:00.000000Z",
             },
-            {},
-        ]
+        )
         mocker.patch.object(
             demisto,
             "params",
@@ -6576,7 +6918,7 @@ class TestIOMFetch:
         )
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
         http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
-        fetch_incidents()
+        fetch_items()
         assert http_request_mocker.call_args_list[0][1].get("params").get("filter") == last_fetch_filter
         assert http_request_mocker.call_args_list[0][1].get("params").get("next_token") == iom_next_token
 
@@ -6589,15 +6931,14 @@ class TestIOMFetch:
         Then
             - Validate that an error is thrown if the last fetch filter is an empty string.
         """
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        last_run_object: list[dict[str, Any]] = [
-            {},
-            {},
-            {},
-            {"iom_next_token": "dummy_token", "last_fetch_filter": "", "last_scan_time": "2023-01-01T00:00:00.000000Z"},
-            {},
-        ]
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(
+            last_run_object,
+            index=LastRunIndex.IOM,
+            data={"iom_next_token": "dummy_token", "last_fetch_filter": "", "last_scan_time": "2023-01-01T00:00:00.000000Z"},
+        )
         mocker.patch.object(
             demisto,
             "params",
@@ -6609,7 +6950,7 @@ class TestIOMFetch:
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
         mocker.patch("CrowdStrikeFalcon.http_request")
         with pytest.raises(DemistoException) as e:
-            fetch_incidents()
+            fetch_items()
         assert "Last fetch filter must not be empty when doing pagination" in str(e)
 
     def test_fetch_query_without_pagination_and_not_first_run(self, mocker: MockerFixture):
@@ -6621,11 +6962,12 @@ class TestIOMFetch:
         Then
             - Validate that we append the last_scan_time date, while using '>' in the fetch query.
         """
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
         last_scan_time = "2023-01-01T00:00:00.000000Z"
         fetch_filter = "cloud_provider: 'aws'"
-        last_run_object: list[dict[str, Any]] = [{}, {}, {}, {"last_scan_time": last_scan_time}, {}]
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(last_run_object, index=LastRunIndex.IOM, data={"last_scan_time": last_scan_time})
         mocker.patch.object(
             demisto,
             "params",
@@ -6633,7 +6975,7 @@ class TestIOMFetch:
         )
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
         http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
-        fetch_incidents()
+        fetch_items()
         assert f"scan_time: >'{last_scan_time}'+{fetch_filter}" == http_request_mocker.call_args_list[0][1].get("params").get(
             "filter"
         )
@@ -6648,12 +6990,12 @@ class TestIOMFetch:
         Then
             - Validate that we append the last_scan_time date, while using '>=' in the fetch query.
         """
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR
 
         # The date configured in @freeze_time minues 3 days, which is the default FETCH_TIME
         last_scan_time = "2023-01-01T00:00:00.000000Z"
         fetch_filter = "cloud_provider: 'aws'"
-        last_run_object: list[dict[str, Any]] = [{}, {}, {}, {}, {}]
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
         mocker.patch.object(
             demisto,
             "params",
@@ -6661,7 +7003,7 @@ class TestIOMFetch:
         )
         mocker.patch.object(demisto, "getLastRun", return_value=last_run_object)
         http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
-        fetch_incidents()
+        fetch_items()
         assert f"scan_time: >='{last_scan_time}'+{fetch_filter}" == http_request_mocker.call_args_list[0][1].get("params").get(
             "filter"
         )
@@ -6737,9 +7079,10 @@ class TestIOMFetch:
         # and once we enter the for loop to go over the fetched resources, '2' will not get picked up, since it
         # was already fetched, therfore, we check that in the returned incidents object, only the resource with id '3'
         # was added as an incident
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        last_run_object: list[dict[str, Any]] = [{}, {}, {}, {"last_resource_ids": ["1", "2"]}, {}]
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(last_run_object, index=LastRunIndex.IOM, data={"last_resource_ids": ["1", "2"]})
         mocker.patch.object(
             demisto,
             "params",
@@ -6760,7 +7103,7 @@ class TestIOMFetch:
             ],
         )
         mocker.patch("CrowdStrikeFalcon.reformat_timestamp", return_value="2023-01-01T00:00:00.00Z")
-        fetched_incidents = fetch_incidents()
+        _, fetched_incidents = fetch_items()
         assert len(fetched_incidents) == 1
         rawJSON = json.loads(fetched_incidents[0].get("rawJSON"))
         assert rawJSON.get("incident_type") == "iom_configurations"
@@ -6780,9 +7123,10 @@ class TestIOMFetch:
         # which can span on many fetches. We will have ids in last_resource_ids (['1']), and configure that we are
         # doing pagination, and that we fetched resource '2', and in the new returned last run, the key last_resource_ids
         # has a value of ['1', '2']
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, LastRunIndex, TOTAL_FETCH_TYPE_XSOAR, set_last_run_per_type
 
-        last_run_object: list[dict[str, Any]] = [{}, {}, {}, {"last_resource_ids": ["1"]}, {}]
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(last_run_object, index=LastRunIndex.IOM, data={"last_resource_ids": ["1"]})
         mocker.patch.object(
             demisto,
             "params",
@@ -6796,8 +7140,8 @@ class TestIOMFetch:
         mocker.patch("CrowdStrikeFalcon.get_iom_resources", return_value=[{"id": "2", "scan_time": "2023-01-01T00:00:00.00Z"}])
         mocker.patch("CrowdStrikeFalcon.reformat_timestamp", return_value="2023-01-01T00:00:00.00Z")
         set_last_run_mocker = mocker.patch.object(demisto, "setLastRun", side_effect=demisto.setLastRun)
-        fetch_incidents()
-        assert set_last_run_mocker.call_args_list[0][0][0][3].get("last_resource_ids") == ["2", "1"]
+        fetch_items()
+        assert set_last_run_mocker.call_args_list[0][0][0][LastRunIndex.IOM].get("last_resource_ids") == ["2", "1"]
 
     def test_save_fetched_resources_when_starting_pagination(self, mocker: MockerFixture):
         """
@@ -6812,15 +7156,14 @@ class TestIOMFetch:
         # Make sure that we save all the resources that have been fetched before when starting the pagination process.
         # We will have ids in last_resource_ids (['1']), and configure that we are, doing pagination, and that we fetched
         # resource '2', and in the new returned last run, the key last_resource_ids has a value of ['1', '2']
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        last_run_object: list[dict[str, Any]] = [
-            {},
-            {},
-            {},
-            {"last_resource_ids": ["1"], "iom_next_token": "next_token", "last_fetch_filter": "previous_filter"},
-            {},
-        ]
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(
+            last_run_object,
+            index=LastRunIndex.IOM,
+            data={"last_resource_ids": ["1"], "iom_next_token": "next_token", "last_fetch_filter": "previous_filter"},
+        )
         mocker.patch.object(
             demisto,
             "params",
@@ -6834,8 +7177,8 @@ class TestIOMFetch:
         mocker.patch("CrowdStrikeFalcon.get_iom_resources", return_value=[{"id": "2", "scan_time": "2023-01-01T00:00:00.00Z"}])
         mocker.patch("CrowdStrikeFalcon.reformat_timestamp", return_value="2023-01-01T00:00:00.00Z")
         set_last_run_mocker = mocker.patch.object(demisto, "setLastRun", side_effect=demisto.setLastRun)
-        fetch_incidents()
-        assert set_last_run_mocker.call_args_list[0][0][0][3].get("last_resource_ids") == ["2", "1"]
+        fetch_items()
+        assert set_last_run_mocker.call_args_list[0][0][0][LastRunIndex.IOM].get("last_resource_ids") == ["2", "1"]
 
     def test_fetch_iom_events(self, mocker: MockerFixture):
         """
@@ -6851,20 +7194,19 @@ class TestIOMFetch:
                 4. The fetched resource ids are saved.
         """
         # A successful fetch of incidents
-        from CrowdStrikeFalcon import fetch_incidents
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
 
-        last_run_object: list[dict[str, Any]] = [
-            {},
-            {},
-            {},
-            {
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(
+            last_run_object,
+            index=LastRunIndex.IOM,
+            data={
                 "last_resource_ids": ["1"],
                 "iom_next_token": "next_token",
                 "last_fetch_filter": "last_dummy_filter",
                 "last_scan_time": "2022-01-01T00:00:00.00Z",
             },
-            {},
-        ]
+        )
         mocker.patch.object(
             demisto,
             "params",
@@ -6884,8 +7226,8 @@ class TestIOMFetch:
             ],
         )
         set_last_run_mocker = mocker.patch.object(demisto, "setLastRun", side_effect=demisto.setLastRun)
-        fetched_incidents = fetch_incidents()
-        assert set_last_run_mocker.call_args_list[0][0][0][3] == {
+        _, fetched_incidents = fetch_items()
+        assert set_last_run_mocker.call_args_list[0][0][0][LastRunIndex.IOM] == {
             "iom_next_token": "new_next_token",
             "last_scan_time": "2024-01-01T00:00:00.000000Z",
             "last_fetch_filter": "last_dummy_filter",
@@ -7233,19 +7575,21 @@ def test_error_handler():
 
 
 @pytest.mark.parametrize(
-    "Legacy_version, url_suffix, expected_len",
+    "Legacy_version, url_suffix, expected_len, filter_args",
     [
         (
             False,
-            "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27",
+            "alerts/queries/alerts/v2?filter=product%3A%27ngsiem%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27",
             3,
+            "product:'ngsiem'+created_timestamp:>'2024-06-19T15:25:00Z'",
         ),
-        (True, "/detects/queries/detects/v1", 3),
+        (False, "alerts/queries/alerts/v2?filter=", 3, None),
+        (True, "/detects/queries/detects/v1", 3, "product:'epp'+type:'ldt'"),
     ],
 )
-def test_get_detection___url_and_params(mocker, Legacy_version, url_suffix, expected_len):
+def test_get_detection___url_and_params(mocker, Legacy_version, url_suffix, expected_len, filter_args):
     """
-        Given:
+    Given:
         - The `Legacy_version` flag
     When:
         - Invoking `get_fetch_detections` with various input parameters
@@ -7254,10 +7598,15 @@ def test_get_detection___url_and_params(mocker, Legacy_version, url_suffix, expe
 
     Test Scenarios:
         1. When `Legacy_version` is False, the `url_suffix` should be:
-           "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27"
-           since all parameters are part of the URL and are URL-encoded, and the expected len should be 2 since no parameters
-           are passed.
-        2. When `Legacy_version` is True, the `url_suffix` should be:
+           "alerts/queries/alerts/v2?filter=product%3A%27ngsiem%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27"
+           since all parameters are part of the URL and are URL-encoded, aand the expected len is 3 since all the
+           provided parameters are passed under 'parameters'
+        2. When `Legacy_version` is False, the `url_suffix` should be:
+           "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%"
+           filter
+           since all parameters are part of the URL and are URL-encoded, and the expected len is 3 since all the
+           provided parameters are passed under 'parameters'
+        3. When `Legacy_version` is True, the `url_suffix` should be:
            "/detects/queries/detects/v1" and the expected len is 3 since all the
            provided parameters are passed under 'parameters'.
     """
@@ -7266,9 +7615,7 @@ def test_get_detection___url_and_params(mocker, Legacy_version, url_suffix, expe
     mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", Legacy_version)
     http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
 
-    get_detections(
-        last_behavior_time="2024-06-19T15:25:00Z", behavior_id=123, filter_arg="created_timestamp:>'2024-06-19T15:25:00Z'"
-    )
+    get_detections(last_behavior_time="2024-06-19T15:25:00Z", behavior_id=123, filter_arg=filter_args)
     assert http_request_mocker.call_args_list[0][0][1] == url_suffix
     assert len(http_request_mocker.call_args_list[0][0]) == expected_len
 
@@ -7298,17 +7645,114 @@ def test_resolve_detection(mocker, Legacy_version, tag, url_suffix, data):
         - Running resolve_detection
     Then:
         - Validate that the correct url_suffix is used
-            case 1: Legacy_version is False, the url_suffix should be alerts/entities/alerts/v2
-            case 2: Legacy_version is True, the url_suffix should be /detects/entities/detects/v1
+            case 1: Legacy_version is False, the url_suffix should be alerts/entities/alerts/v3
+            case 2: Legacy_version is True, the url_suffix should be /detects/entities/detects/v2
     """
     from CrowdStrikeFalcon import resolve_detection
 
     mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", Legacy_version)
     http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
 
-    resolve_detection(ids=["123"], status="resolved", assigned_to_uuid="123", show_in_ui="True", comment="comment", tag=tag)
+    resolve_detection(
+        ids=["123"], status="resolved", assigned_to_uuid="123", username=None, show_in_ui="True", comment="comment", tag=tag
+    )
     assert http_request_mocker.call_args_list[0][0][1] == url_suffix
     assert http_request_mocker.call_args_list[0][1]["data"] == data
+
+
+def test_resolve_detection_username_not_legacy(mocker):
+    """
+    Given:
+        - A username is provided to assign detection to
+    When:
+        - Running resolve_detection not in legacy mode
+    Then:
+        - The username to uuid function should not be called and data containing the username should be sent
+    """
+    from CrowdStrikeFalcon import resolve_detection_command
+
+    mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", False)
+    translate_username_mocker = mocker.patch("CrowdStrikeFalcon.get_username_uuid")
+    http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
+    mocker.patch("CrowdStrikeFalcon.demisto.args", return_value={"ids": ["123"], "username": "username"})
+
+    expected_data = json.dumps(
+        {"action_parameters": [{"name": "assign_to_user_id", "value": "username"}], "composite_ids": ["123"]}
+    )
+
+    resolve_detection_command()
+    assert not translate_username_mocker.called
+    assert http_request_mocker.call_args_list[0][1]["data"] == expected_data
+
+
+def test_resolve_detection_username_legacy(mocker):
+    """
+    Given:
+        - A username is provided to assign detection to
+    When:
+        - Running resolve_detection in legacy mode
+    Then:
+        - The username to uuid function should called and data containing the provided_uuid should be sent
+    """
+    from CrowdStrikeFalcon import resolve_detection_command
+
+    mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
+    translate_username_mocker = mocker.patch("CrowdStrikeFalcon.get_username_uuid", return_value="user_123")
+    http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
+    mocker.patch("CrowdStrikeFalcon.demisto.args", return_value={"ids": ["123"], "username": "username"})
+
+    expected_data = json.dumps({"ids": ["123"], "assigned_to_uuid": "user_123"})
+
+    resolve_detection_command()
+    assert translate_username_mocker.calledwith("username")
+    assert http_request_mocker.call_args_list[0][1]["data"] == expected_data
+
+
+def test_resolve_incident_username_not_legacy(mocker):
+    """
+    Given:
+        - A username is provided to assign incident to
+    When:
+        - Running resolve_incident_command not in legacy mode
+    Then:
+        - The username to uuid function should not be called and data containing the username should be sent
+    """
+    from CrowdStrikeFalcon import resolve_incident_command
+
+    mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", False)
+    translate_username_mocker = mocker.patch("CrowdStrikeFalcon.get_username_uuid")
+    http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
+    mocker.patch("CrowdStrikeFalcon.demisto.args", return_value={"ids": ["123"], "user_name": "username"})
+
+    expected_action_parameters = {"action_parameters": [{"name": "update_assigned_to_v2", "value": "username"}], "ids": ["123"]}
+
+    resolve_incident_command(ids=["123"], user_name="username")
+    assert not translate_username_mocker.called
+    assert http_request_mocker.call_args_list[0][1]["json"] == expected_action_parameters
+
+
+def test_resolve_incident_username_legacy(mocker):
+    """
+    Given:
+        - A username is provided to assign incident to
+    When:
+        - Running resolve_incident_command in legacy mode
+    Then:
+        - The username to uuid function should be called and data containing the provided_uuid should be sent
+    """
+    from CrowdStrikeFalcon import resolve_incident_command
+
+    mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
+    translate_username_mocker = mocker.patch("CrowdStrikeFalcon.get_username_uuid", return_value="user_123")
+    http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
+    mocker.patch("CrowdStrikeFalcon.demisto.args", return_value={"ids": ["123"], "user_name": "username"})
+
+    expected_action_parameters = {"action_parameters": [{"name": "update_assigned_to_v2", "value": "user_123"}], "ids": ["123"]}
+
+    resolve_incident_command(ids=["123"], user_name="username")
+    assert translate_username_mocker.called
+    translate_username_mocker.assert_called_with(username="username")
+    assert http_request_mocker.call_args_list[0][1]["json"] == expected_action_parameters
 
 
 @pytest.mark.parametrize(
@@ -7663,3 +8107,119 @@ def test_enrich_groups_no_resources(mocker):
     mocker.patch.object(CrowdStrikeFalcon, "http_request", return_value={"resources": None})
 
     assert CrowdStrikeFalcon.enrich_groups(group_ids) == {}
+
+
+@pytest.mark.parametrize("command", ["fetch-events", "fetch-incidents"])
+def test_fetch_items_reads_last_run_indexes_correctly(mocker, command):
+    """
+    Ensure that fetch_events correctly accesses each index of last_run based on its data type.
+
+    Each index in last_run is mocked with the appropriate identifiers.
+    The test verifies that these identifiers appear in the same order in the last_run output,
+    indicating correct index usage within the function.
+    """
+    from CrowdStrikeFalcon import fetch_items, LastRunIndex, TOTAL_FETCH_TYPE_XSIAM, TOTAL_FETCH_TYPE_XSOAR, set_last_run_per_type
+
+    last_run_size = TOTAL_FETCH_TYPE_XSIAM if command == "fetch-events" else TOTAL_FETCH_TYPE_XSOAR
+    last_run_identifiers = create_empty_last_run(last_run_size)
+
+    set_last_run_per_type(last_run_identifiers, index=LastRunIndex.DETECTIONS, data={"Detection ID:": 1})
+    set_last_run_per_type(last_run_identifiers, index=LastRunIndex.INCIDENTS, data={"Incident ID:": 2})
+    set_last_run_per_type(last_run_identifiers, index=LastRunIndex.IDP_DETECTIONS, data={"IDP ID:": 3})
+    set_last_run_per_type(last_run_identifiers, index=LastRunIndex.MOBILE_DETECTIONS, data={"Mobile ID:": 4})
+    set_last_run_per_type(last_run_identifiers, index=LastRunIndex.ON_DEMAND_DETECTIONS, data={"ODS ID:": 5})
+    set_last_run_per_type(last_run_identifiers, index=LastRunIndex.OFP_DETECTION, data={"OFP ID:": 6})
+
+    if command == "fetch-incidents":
+        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.IOM, data={"IOM ID:": 7})
+        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.IOA, data={"IOA ID:": 8})
+        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.THIRD_PARTY_DETECTIONS, data={"THIRD PARTY ID:": 9})
+        set_last_run_per_type(last_run_identifiers, index=LastRunIndex.NGSIEM_DETECTIONS, data={"NGSIEM ID:": 10})
+
+    # Create a copy to avoid reference issues
+    last_run_identifiers_copy = list(last_run_identifiers)
+
+    mocker.patch("CrowdStrikeFalcon.demisto.getLastRun", return_value=last_run_identifiers_copy)
+    mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={})
+
+    last_run_identifiers_result, _ = fetch_items(command=command)
+
+    # Verify that fetch_events refers to the correctly indexes for each type by last_run object.
+    assert last_run_identifiers_result == last_run_identifiers
+
+
+def test_is_detection_occurred_before_fetch_time():
+    """
+    Given:
+        - A detection with a created timestamp.
+        - A start time for fetching.
+    When:
+        - Running is_detection_occurred_before_fetch_time.
+    Then:
+        - Validate that the function returns True if the detection was before the start time, False otherwise.
+    """
+    from CrowdStrikeFalcon import is_detection_occurred_before_fetch_time
+
+    detection = {"created_timestamp": "2020-05-16T17:30:38Z"}
+    start_fetch_time = "2020-05-17T17:30:38Z"
+    assert is_detection_occurred_before_fetch_time(detection["created_timestamp"], start_fetch_time)
+
+    detection = {"created_timestamp": "2020-05-17T17:30:38Z"}
+    start_fetch_time = "2020-05-17T17:30:38Z"
+    assert not is_detection_occurred_before_fetch_time(detection["created_timestamp"], start_fetch_time)
+
+
+def test_http_request_is_time_sensitive_timeout_and_retries(mocker):
+    """
+    Given:
+        - is_time_sensitive() returns True or False
+        - get_token_flag is True or False
+    When:
+        - Running http_request function
+    Then:
+        - Validate that when is_time_sensitive()=True: retries=0 and timeout=15
+        - Validate that when is_time_sensitive()=False: retries=0 and timeout=60 (default)
+        - Validate that when get_token_flag=False: retries=5 and timeout=60
+    """
+    from CrowdStrikeFalcon import http_request
+    from requests import Response
+
+    res_200 = Response()
+    res_200.status_code = 200
+    res_200._content = b'{"result": "success"}'
+
+    mocker.patch.object(demisto, "params", return_value={"url": SERVER_URL, "proxy": True})
+    mocker.patch("CrowdStrikeFalcon.get_token", return_value="test_token")
+
+    # Test case 1: is_time_sensitive()=True should set retries=0 and timeout=15
+    mock_generic_http_request = mocker.patch("CrowdStrikeFalcon.generic_http_request", side_effect=[res_200])
+    mocker.patch("CrowdStrikeFalcon.is_time_sensitive", return_value=True)
+
+    http_request(method="GET", url_suffix="/test", no_json=True)
+
+    assert mock_generic_http_request.call_count == 1
+    call_args = mock_generic_http_request.call_args[1]  # kwargs
+    assert call_args["retries"] == 0, f"Expected retries=0 when is_time_sensitive=True, got {call_args['retries']}"
+    assert call_args["timeout"] == 15, f"Expected timeout=15 when is_time_sensitive=True, got {call_args['timeout']}"
+
+    # Test case 2: is_time_sensitive()=False should set retries=0 and timeout=60
+    mock_generic_http_request = mocker.patch("CrowdStrikeFalcon.generic_http_request", side_effect=[res_200])
+    mocker.patch("CrowdStrikeFalcon.is_time_sensitive", return_value=False)
+
+    http_request(method="GET", url_suffix="/test", no_json=True)
+
+    assert mock_generic_http_request.call_count == 1
+    call_args = mock_generic_http_request.call_args[1]  # kwargs
+    assert call_args["retries"] == 0, f"Expected retries=0 when is_time_sensitive=False, got {call_args['retries']}"
+    assert call_args["timeout"] == 60, f"Expected timeout=60 when is_time_sensitive=False, got {call_args['timeout']}"
+
+    # Test case 3: get_token_flag=False should set retries=5 and timeout=60
+    mock_generic_http_request = mocker.patch("CrowdStrikeFalcon.generic_http_request", side_effect=[res_200])
+    mocker.patch("CrowdStrikeFalcon.is_time_sensitive", return_value=False)
+
+    http_request(method="GET", url_suffix="/test", get_token_flag=False, no_json=True)
+
+    assert mock_generic_http_request.call_count == 1
+    call_args = mock_generic_http_request.call_args[1]  # kwargs
+    assert call_args["retries"] == 5, f"Expected retries=5 when get_token_flag=False, got {call_args['retries']}"
+    assert call_args["timeout"] == 60, f"Expected timeout=60 when get_token_flag=False, got {call_args['timeout']}"

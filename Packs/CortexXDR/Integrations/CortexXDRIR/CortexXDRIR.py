@@ -191,7 +191,7 @@ def validate_custom_close_reasons_mapping(mapping: str, direction: str):
             )
 
 
-def handle_excluded_data_from_alerts_param(excluded_alert_fields: list = []) -> Tuple[list, bool]:
+def handle_excluded_data_from_alerts_param(excluded_alert_fields: list = []) -> tuple[list, bool]:
     """handles the excluded_alert_fields parameter
 
     Args:
@@ -349,10 +349,7 @@ class Client(CoreClient):
         :param alerts_limit: Maximum number alerts to get
         :return:
         """
-        request_data = {
-            "incident_id": incident_id,
-            "alerts_limit": alerts_limit,
-        }
+        request_data = {"incident_id": incident_id, "alerts_limit": alerts_limit, "full_alert_fields": True}
         if excluded_alert_fields:
             request_data["alert_fields_to_exclude"] = excluded_alert_fields
         if remove_nulls_from_alerts:
@@ -367,6 +364,8 @@ class Client(CoreClient):
         )
 
         incident = reply.get("reply")
+
+        set_sorted_paths_and_names(incident)
         # workaround for excluding fields which is not supported with the get_incident_extra_data endpoint
         if exclude_artifacts:
             for field in FIELDS_TO_EXCLUDE:
@@ -449,6 +448,7 @@ class Client(CoreClient):
                 "field": "creation_time",
                 "keyword": "asc",
             },
+            "full_alert_fields": True,
         }
         filters: list[dict] = []
         if incident_id_list:
@@ -485,8 +485,9 @@ class Client(CoreClient):
             headers=self.headers,
             timeout=self.timeout,
         )
-        reply = res.get("reply", {})
 
+        reply = res.get("reply", {})
+        set_sorted_paths_and_names(reply)
         if ALERTS_LIMIT_PER_INCIDENTS < 0:
             ALERTS_LIMIT_PER_INCIDENTS = arg_to_number(reply.get("alerts_limit_per_incident")) or 50
             demisto.debug(f"Setting alerts limit per incident to {ALERTS_LIMIT_PER_INCIDENTS}")
@@ -515,6 +516,69 @@ class Client(CoreClient):
         if "reply" not in response or "alerts_ids" not in response["reply"]:
             raise DemistoException(f"Parse Error. Response not in format, can't find reply key. The response {response}.")
         return response["reply"]["alerts_ids"]
+
+
+def extract_paths_and_names(paths: list) -> tuple:
+    """
+    Takes the output of map_file_path_to_file_name and returns two lists.
+
+    :param file_mapping: Dictionary mapping file names to file paths
+    :return: Tuple containing (list of file paths, list of file names)
+    """
+    from pathlib import PureWindowsPath, PurePosixPath
+
+    if not paths:
+        return [], []
+
+    file_mapping = {p: (PureWindowsPath(p).name if "\\" in p else PurePosixPath(p).name) for p in paths}
+
+    file_paths = list(file_mapping.keys())
+    file_names = list(file_mapping.values())
+
+    return file_paths, file_names
+
+
+def set_sorted_paths_and_names(reply: dict):
+    """
+    Processes file paths in alerts data and sorts them with corresponding file names.
+
+    Handles two different response formats:
+    - Single incident response from incidents/get_incident_extra_data endpoint
+    - Multiple incidents response from incidents/get_multiple_incidents_extra_data endpoint
+
+    For each alert found, extracts file paths and updates the alert data with sorted
+    file paths and corresponding file names.
+
+    :param reply: Response dictionary containing either single incident or multiple incidents data
+    :return: None (modifies the reply dictionary in-place)
+    """
+    alerts_data = reply.get("alerts", {}).get("data", [])
+    if alerts_data:
+        update_alerts_file_data(alerts_data)
+
+    else:
+        incidents = reply.get("incidents", [])
+
+        for incident in incidents:
+            alerts_data = incident.get("alerts", {}).get("data", [])
+            update_alerts_file_data(alerts_data)
+
+
+def update_alerts_file_data(alerts_data):
+    """
+    Updates alert data with sorted file paths and corresponding file names.
+
+    Iterates through alert data and processes file paths for each alert, replacing
+    the original file paths with sorted paths and adding corresponding file names.
+
+    :param alerts_data: List of alert dictionaries containing file path data
+    :return: None (modifies the alerts_data list in-place)
+    """
+    for alert in alerts_data:
+        alert_paths = alert.get("action_file_path", [])
+        paths, names = extract_paths_and_names(alert_paths)
+        alert["action_file_path"] = paths
+        alert["action_file_name"] = names
 
 
 def get_headers(params: dict) -> dict:
@@ -670,6 +734,7 @@ def get_incident_extra_data_command(client, args):
         excluded_alert_fields=alert_fields_to_exclude,
         remove_nulls_from_alerts=drop_nulls,
     )
+
     if not raw_incident:
         raise DemistoException(f"Incident {incident_id} is not found")
     if isinstance(raw_incident, list):

@@ -1,6 +1,7 @@
 import mimetypes
 import re
 from collections.abc import Callable, Iterable
+from urllib.parse import quote
 
 import demistomock as demisto  # noqa: F401
 
@@ -9,6 +10,8 @@ import urllib3
 from CommonServerPython import *  # noqa: F401
 
 urllib3.disable_warnings()
+
+from datetime import datetime
 
 DEFAULT_FETCH_TIME = "10 minutes"
 MAX_RETRY = 9
@@ -27,6 +30,7 @@ DATE_FORMAT_OPTIONS = {
     "dd.MM.yyyy": "%d.%m.%Y %H:%M:%S",
     "yyyy-MM-dd": "%Y-%m-%d %H:%M:%S",
     "mmm-dd-yyyy": "%b-%d-%Y %H:%M:%S",
+    "yyyy-MMM-dd": "%Y-%b-%d %H:%M:%S",
 }
 
 TICKET_STATES = {
@@ -63,7 +67,6 @@ TICKET_STATES = {
     SIR_INCIDENT: {"3": "Closed", "7": "Cancelled", "10": "Draft", "16": "Analysis", "18": "Contain", "19": "Eradicate"},
 }
 
-
 TICKET_TYPE_TO_CLOSED_STATE = {
     INCIDENT: "7",
     "problem": "4",
@@ -73,7 +76,6 @@ TICKET_TYPE_TO_CLOSED_STATE = {
     "sc_req_item": "3",
     SIR_INCIDENT: "3",
 }
-
 
 TICKET_APPROVAL = {
     "sc_req_item": {
@@ -175,7 +177,6 @@ SNOW_ARGS = [
 ]
 
 SIR_OUT_FIELDS = ["attack_vector", "affected_user", "change_request", "incident", "parent_security_incident", "substate"]
-
 
 # Every table in ServiceNow should have those fields
 DEFAULT_RECORD_FIELDS = {
@@ -402,7 +403,6 @@ def get_ticket_human_readable(tickets, ticket_type: str, additional_fields: list
         priority = ticket.get("priority", "")
         if priority:
             hr["Priority"] = TICKET_PRIORITY.get(priority, priority)
-
         state = ticket.get("state", "")
         if state:
             mapped_state = state
@@ -625,6 +625,7 @@ class Client(BaseClient):
         look_back: int = 0,
         use_display_value: bool = False,
         display_date_format: str = "",
+        jwt_params: dict | None = None,
     ):
         """
 
@@ -656,6 +657,7 @@ class Client(BaseClient):
         self._password = password
         self._proxies = handle_proxy(proxy_param_name="proxy", checkbox_default_value=False)
         self.use_oauth = bool(oauth_params)
+        self.use_jwt = bool(jwt_params)
         self.fetch_time = fetch_time
         self.timestamp_field = timestamp_field
         self.ticket_type = ticket_type
@@ -683,7 +685,9 @@ class Client(BaseClient):
                 verify=oauth_params.get("verify", False),
                 proxy=oauth_params.get("proxy", False),
                 headers=oauth_params.get("headers", ""),
+                jwt_params=jwt_params,
             )
+
         else:
             self._auth = (self._username, self._password)
 
@@ -769,7 +773,7 @@ class Client(BaseClient):
                         proxies=self._proxies,
                     )
         except Exception as err:
-            raise Exception(f"Failed to upload file - {str(err)}")
+            raise Exception(f"Failed to upload file - {err!s}")
 
     def _send_regular_request(self, url: str, method: str, headers: dict, body: dict, params: dict) -> requests.Response:
         if self.use_oauth:
@@ -877,8 +881,8 @@ class Client(BaseClient):
                         else:
                             raise Exception(
                                 f"ServiceNow Error: {message}, details: {details}"
-                                f" Got status code {res.status_code} with url {url} with body {str(res.content)}"
-                                f" with response headers {str(res.headers)}"
+                                f" Got status code {res.status_code} with url {url} with body {res.content!s}"
+                                f" with response headers {res.headers!s}"
                             )
                     else:
                         raise Exception(f"ServiceNow Error: {error}")
@@ -887,8 +891,8 @@ class Client(BaseClient):
                 return json_res
             else:
                 raise Exception(
-                    f"Got status code {res.status_code} with url {url} with body {str(res.content)}"
-                    f" with response headers {str(res.headers)}"
+                    f"Got status code {res.status_code} with url {url} with body {res.content!s}"
+                    f" with response headers {res.headers!s}"
                 )
         return json_res
 
@@ -1066,6 +1070,7 @@ class Client(BaseClient):
             Response from API.
         """
         body = generate_body(fields, custom_fields)
+
         query_params = {"sysparm_input_display_value": input_display_value}
         return self.send_request(f"table/{table_name}", "POST", params=query_params, body=body)
 
@@ -1261,6 +1266,10 @@ class Client(BaseClient):
         """
         return self.send_request(f"change/{sys_id}/task", "GET", cr_api=True)
 
+    @property
+    def base_url(self):
+        return self._base_url
+
 
 def get_ticket_command(client: Client, args: dict):
     """Get a ticket.
@@ -1390,12 +1399,13 @@ def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, 
     return human_readable, entry_context, result, True
 
 
-def create_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+def create_ticket_command(client: Client, args: dict, is_quick_action: bool = False) -> tuple[str, dict, dict, bool]:
     """Create a ticket.
 
     Args:
         client: Client object with request.
         args: Usually demisto.args()
+        is_quick_action: Whether the command is a quick action
 
     Returns:
         Demisto Outputs.
@@ -1456,16 +1466,38 @@ def create_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, 
     else:
         additional_fields_keys = list(args.keys())
 
+    instance_url = client.base_url.replace("/api/now/", "/")
+
+    ticket_type = ticket.get("sys_class_name")
+    ticket_sys_id = ticket.get("sys_id")
+    ticket_name = ticket.get("number")
+
+    target_uri_path = f"{ticket_type}.do?sys_id={ticket_sys_id}"
+
+    encoded_uri = quote(target_uri_path)
+
+    ticket_url = f"{instance_url}nav_to.do?uri={encoded_uri}"
+    mirror_obj = MirrorObject(object_url=ticket_url, object_id=ticket_sys_id, object_name=ticket_name).to_context()
+
     created_ticket_context = get_ticket_context(ticket, additional_fields_keys)
     entry_context = {
         "Ticket(val.ID===obj.ID)": created_ticket_context,
         "ServiceNow.Ticket(val.ID===obj.ID)": created_ticket_context,
     }
+    if is_quick_action:
+        demisto.results(
+            {
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["text"],
+                "Contents": "MirrorObject created successfully.",
+                "ExtendedPayload": {"MirrorObject": mirror_obj},
+            }
+        )
 
     return human_readable, entry_context, result, True
 
 
-def delete_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+def delete_ticket_command(client: Client, args: dict) -> CommandResults:
     """Delete a ticket.
 
     Args:
@@ -1473,14 +1505,28 @@ def delete_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, 
         args: Usually demisto.args()
 
     Returns:
-        Demisto Outputs.
+        CommandResults object.
     """
     ticket_id = str(args.get("id", ""))
     ticket_type = client.get_table_name(str(args.get("ticket_type", "")))
 
     result = client.delete(ticket_type, ticket_id)
 
-    return f"Ticket with ID {ticket_id} was successfully deleted.", {}, result, True
+    demisto.debug(f"Ticket deletion result: {result}")
+    is_success = result == ""
+
+    if is_success:
+        human_readable = f"Ticket with ID {ticket_id} was successfully deleted from {ticket_type} table."
+    else:
+        human_readable = f"Failed to delete ticket {ticket_id} from {ticket_type} table. Record may not exist."
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix="ServiceNow.Ticket",
+        outputs_key_field="ID",
+        outputs={"ID": ticket_id, "DeleteMessage": human_readable},
+        raw_response=result,
+    )
 
 
 def query_tickets_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
@@ -1661,7 +1707,6 @@ def upload_file_command(client: Client, args: dict) -> tuple[str, dict, dict, bo
     if not result or "result" not in result or not result["result"]:
         raise Exception("Unable to upload file.")
     uploaded_file_resp = result.get("result", {})
-
     hr_ = {
         "Filename": uploaded_file_resp.get("file_name"),
         "Download link": uploaded_file_resp.get("download_link"),
@@ -1681,7 +1726,7 @@ def upload_file_command(client: Client, args: dict) -> tuple[str, dict, dict, bo
     return human_readable, entry_context, result, True
 
 
-def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict[Any, Any], dict, bool]:
     """Deletes an attachment file.
     Note: This function exclusively returns 404 error responses,
     while all other types of errors are managed within the send_request function.
@@ -2704,7 +2749,7 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]
     Test the instance configurations when using basic authorization.
     """
     # Notify the user that test button can't be used when using OAuth 2.0:
-    if client.use_oauth:
+    if client.use_oauth and not client.use_jwt:
         raise Exception(
             "Test button cannot be used when using OAuth 2.0. Please use the !servicenow-oauth-login "
             "command followed by the !servicenow-oauth-test command to test the instance."
@@ -2835,6 +2880,69 @@ def get_timezone_offset(ticket: dict, display_date_format: str):
         raise Exception(f"Failed to convert {utc_time} to datetime object. ERROR: {e}")
     offset = utc_time - local_time_dt
     return offset
+
+
+def get_remote_data_preview_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    get-remote-data-preview command: Returns a standardized preview of a ServiceNow ticket.
+
+    Args:
+        client: XSOAR client to use.
+        args: Dictionary containing command arguments:
+            id (str): The ServiceNow ticket number or sys_id to retrieve the preview for.
+        params: Dictionary containing integration parameters.
+
+    Returns:
+        CommandResults: Object containing the QuickActionPreview data formatted for XSOAR context.
+
+    Raises:
+        ValueError: If the 'id' argument is missing.
+        DemistoException: If the ticket cannot be found in ServiceNow.
+    """
+    ticket_id = args.get("id")
+    if not ticket_id:
+        raise ValueError("ServiceNow Ticket ID ('id') is required for preview.")
+
+    demisto.debug(f"Getting preview for ServiceNow ticket {ticket_id=}")
+
+    ticket_type = client.ticket_type
+    try:
+        result = client.get(ticket_type, ticket_id, use_display_value=True)
+    except Exception as e:
+        raise DemistoException(f"Failed to fetch ticket {ticket_id} from ServiceNow. Error: {e}")
+
+    if not result or "result" not in result:
+        raise DemistoException(f"Ticket {ticket_id=} was not found in ServiceNow (result empty or missing).")
+
+    if isinstance(result["result"], list):
+        if len(result["result"]) == 0:
+            raise DemistoException(f"Ticket {ticket_id=} was not found in ServiceNow (result list empty).")
+        ticket_data = result["result"][0]
+    else:
+        ticket_data = result["result"]
+
+    if not ticket_data:
+        raise DemistoException(f"Ticket data for {ticket_id=} is empty after fetch.")
+
+    demisto.debug(f"Raw ticket data for preview: {ticket_data}")
+
+    key_map = {
+        "id": "number",
+        "title": "short_description",
+        "description": "description",
+        "status": "state",
+        "assignee": "assigned_to",
+        "creation_date": "sys_created_on",
+        "severity": "priority",
+    }
+
+    qa_preview_data = {new_key: ticket_data.get(old_key, {}).get("display_value") for new_key, old_key in key_map.items()}
+
+    qa_preview = QuickActionPreview(**qa_preview_data)
+
+    return CommandResults(
+        outputs_prefix="QuickActionPreview", outputs=qa_preview.to_context(), outputs_key_field="id", raw_response=result
+    )
 
 
 def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) -> Union[list[dict[str, Any]], str]:
@@ -3032,6 +3140,261 @@ def converts_close_code_or_state_to_close_reason(
     return "Other"
 
 
+def pre_process_parsed_args(parsed_args: UpdateRemoteSystemArgs) -> UpdateRemoteSystemArgs:
+    """
+    Pre-processes the parsed arguments to ensure they are in the correct format.
+    Args:
+        parsed_args (UpdateRemoteSystemArgs): The parsed arguments to pre-process.
+
+    Returns:
+        UpdateRemoteSystemArgs: The pre-processed arguments.
+    """
+    if isinstance(parsed_args.delta, str) and parsed_args.delta:
+        demisto.debug(f"Delta argument was a string, attempting to parse as JSON: {parsed_args.delta}")
+        try:
+            parsed_args.delta = json.loads(parsed_args.delta.replace("'", '"'))
+        except json.JSONDecodeError as e:
+            raise ValueError(f"The 'delta' argument is a malformed string and could not be parsed as JSON. Error: {e}")
+    if parsed_args.data is None:
+        demisto.debug("The 'data' argument was missing. Defaulting to an empty dictionary.")
+        parsed_args.data = {}
+    if not parsed_args.delta:
+        parsed_args.delta = {}
+    if parsed_args.delta:
+        demisto.debug(f"Got the following delta {parsed_args.delta}")
+        demisto.debug(
+            f"The following keys appear in data but not in delta {set(parsed_args.data.keys()) - set(parsed_args.delta.keys())}"
+        )
+    return parsed_args
+
+
+def add_default_closure_fields_to_delta(
+    delta: dict,
+    close_code: str = "Resolved by caller",
+    close_notes: str = "This is the resolution note required by ServiceNow to move the incident to the Resolved state.",
+):
+    """
+    Modifies the delta dictionary by adding default values for the state, close_code and close_notes keys if they are missing.
+
+    Args:
+        delta: The delta dictionary to be modified.
+        state: The state to be used if the state key is missing in the delta dictionary.
+        close_code: The close code to be used if the close_code key is missing in the delta dictionary.
+        Defaults to "Resolved by caller".
+        close_notes: The close notes to be used if the close_notes key is missing in the delta dictionary.
+         Defaults to "This is the resolution note required by ServiceNow to move the incident to the Resolved state.".
+
+    Returns:
+        The modified delta dictionary.
+    """
+    delta.setdefault("close_code", close_code)
+    delta.setdefault("close_notes", close_notes)
+    return delta
+
+
+def set_state_according_to_closure_case_and_ticket_type(
+    parsed_args: UpdateRemoteSystemArgs, closure_case: str, ticket_type: str, close_custom_state: Optional[str]
+) -> UpdateRemoteSystemArgs:
+    """
+    Pre-process the parsed arguments to close an incident.
+
+    Args:
+        parsed_args (UpdateRemoteSystemArgs): The parsed arguments.
+        closure_case (str): The case to close the incident. Can be "closed" or "resolved".
+        ticket_type (str): The type of the ticket.
+        close_custom_state (str): The custom state to use if given.
+
+    Returns:
+        UpdateRemoteSystemArgs: The pre-processed parsed arguments.
+    """
+    if parsed_args.inc_status == IncidentStatus.DONE:
+        demisto.debug("Modifying incident status by closure case")
+        if closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}:
+            demisto.debug("Setting state to 3 for sc_task, sc_req_item, SIR_INCIDENT and closing case.")
+            parsed_args.delta["state"] = "3"
+        # These ticket types are closed by changing their state.
+        if closure_case == "closed" and ticket_type == INCIDENT:
+            demisto.debug("Setting state to 7 for incident and closing case closed.")
+            parsed_args.delta["state"] = "7"  # Closing incident ticket.
+        elif closure_case == "resolved" and ticket_type == INCIDENT:
+            demisto.debug("Setting state to 6 for incident and closing case resolved.")
+            parsed_args.delta["state"] = "6"  # resolving incident ticket.
+        if close_custom_state:  # Closing by custom state
+            demisto.debug(f"Closing by custom state = {close_custom_state}")
+            parsed_args.delta["state"] = close_custom_state
+    return parsed_args
+
+
+def update_incident_closure_fields(
+    parsed_args: UpdateRemoteSystemArgs, fields: dict, ticket_type: str, is_custom_close: bool
+) -> dict:
+    """
+    Handle closing fields of an incident.
+
+    If the ticket type is not incident and the closing state is "7 - Closed" and no custom state is given,
+    convert the closing state to the right one to close the ticket/incident via XSOAR.
+
+    Args:
+        parsed_args (UpdateRemoteSystemArgs): The parsed arguments.
+        fields (dict): The fields to update.
+        ticket_type (str): The type of the ticket.
+        is_custom_close (Optional[str]):  Whether the incident is closed by a custom state.
+
+    Returns:
+        dict: The fields to update, excluding "closed_at" and "resolved_at".
+    """
+    if parsed_args.delta.get("state") == "7 - Closed" and not is_custom_close:
+        fields["state"] = TICKET_TYPE_TO_CLOSED_STATE[ticket_type]
+
+    excluded_fields = {"closed_at", "resolved_at"}
+    return {key: val for key, val in fields.items() if key not in excluded_fields}
+
+
+def handle_missing_custom_state(client: Client, fields: dict, ticket_id: str, ticket_type: str) -> dict:
+    """
+    When the user specifies a custom state that does not exist, this function is called.
+    It will send a second request to the server with the default closed state.
+
+    Args:
+        client (Client): The client to use.
+        fields (dict): The fields to update.
+        ticket_id (str): The ID of the ticket to update.
+        ticket_type (str): The type of the ticket to update.
+
+    Returns:
+        dict: The result of the update request.
+    """
+
+    fields["state"] = TICKET_TYPE_TO_CLOSED_STATE[ticket_type]
+    demisto.debug(
+        f"Given custom state doesn't exist - Sending second update request to server with "
+        f"default closed state: {ticket_type}, {ticket_id}, {fields}"
+    )
+    result = client.update(ticket_type, ticket_id, fields)
+    return result
+
+
+def set_default_fields(
+    parsed_args: UpdateRemoteSystemArgs, ticket_type: str, close_custom_state: Optional[str]
+) -> UpdateRemoteSystemArgs:
+    """
+    Set default closure fields of an incident if missing.
+
+    If the incident state is 7 (closed) or 6 (resolved), or the custom state is given and the ticket type is incident,
+    add default values for the close_code and close_notes fields
+    if they are missing in the delta dictionary.
+
+    Args:
+        parsed_args (UpdateRemoteSystemArgs): The parsed arguments, containing the delta and other information.
+        ticket_type(str): The type of the ticket to update.
+        close_custom_state (Optional[str]): The custom state to use when closing the ticket.
+
+    Returns:
+        UpdateRemoteSystemArgs: The parsed arguments with default closure fields if they were missing.
+    """
+    state = parsed_args.delta.get("state")
+    if (state in {"7", "6"}) or (ticket_type == "incident" and close_custom_state and state == close_custom_state):
+        demisto.debug(
+            f"State {state} is 7 or 6 or custom {close_custom_state} and ticket type is incident - Setting default "
+            f"closure fields if missing"
+        )
+        parsed_args.delta = add_default_closure_fields_to_delta(parsed_args.delta)
+    return parsed_args
+
+
+def update_remote_system_on_incident_change(
+    client: Client,
+    parsed_args: UpdateRemoteSystemArgs,
+    ticket_type: str,
+    closure_case: str,
+    close_custom_state: Optional[str],
+    ticket_id: str,
+):
+    """
+    Update a ServiceNow ticket based on the delta received from XSOAR.
+
+    Args:
+        client: The ServiceNow client to use.
+        parsed_args: The parsed arguments, containing the delta and other information.
+        ticket_type: The type of ticket to update.
+        closure_case: How to close the ticket (e.g. "closed", "resolved", etc.).
+        close_custom_state: The custom state to use when closing the ticket.
+        ticket_id: The ID of the ticket to update.
+    """
+    is_custom_close: bool = bool((parsed_args.inc_status == IncidentStatus.DONE) and close_custom_state)
+    demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
+    parsed_args = set_state_according_to_closure_case_and_ticket_type(parsed_args, closure_case, ticket_type, close_custom_state)
+    parsed_args = set_default_fields(parsed_args, ticket_type, close_custom_state)
+    fields = get_ticket_fields(parsed_args.delta, ticket_type=ticket_type)
+    demisto.debug(f"all fields= {fields}")
+    if closure_case:
+        fields = update_incident_closure_fields(parsed_args, fields, ticket_type, is_custom_close)
+    demisto.debug(f"Sending update request to server {ticket_type}, {ticket_id}, {fields}")
+    result = client.update(ticket_type, ticket_id, fields)
+
+    # Handle case of custom state doesn't exist, reverting to the original close state
+    if is_custom_close and demisto.get(result, "result.state") != close_custom_state:
+        result = handle_missing_custom_state(client, fields, ticket_id, ticket_type)
+
+    demisto.info(f"Ticket Update result {result}")
+
+
+def update_remote_system_with_entries(client, entries, params, ticket_id, ticket_type):
+    """
+    Updates the remote system with the provided entries by mirroring files and adding comments or work notes.
+
+    Args:
+        client: The client instance used to interact with the remote system.
+        entries: A list of entries to be mirrored to the remote system.
+        params: A dictionary containing parameters for entry handling, such as tags for comments and work notes.
+        ticket_id: The ID of the ticket in the remote system to update.
+        ticket_type: The type of the ticket in the remote system.
+
+    The function mirrors files by uploading them to the remote system and adds comments or work notes based on the entry tags.
+    If a file upload fails, an error message is added as a comment in the remote system.
+    """
+
+    demisto.debug(f"New entries {entries}")
+
+    for entry in entries:
+        demisto.debug(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
+        # Mirroring files as entries
+        if is_entry_type_mirror_supported(entry.get("type")):
+            path_res = demisto.getFilePath(entry.get("id"))
+            full_file_name = path_res.get("name")
+            file_name, file_extension = os.path.splitext(full_file_name)
+            if not file_extension:
+                file_extension = ""
+            if params.get("file_tag_from_service_now") not in entry.get("tags", []):
+                try:
+                    client.upload_file(
+                        ticket_id, entry.get("id"), file_name + "_mirrored_from_xsoar" + file_extension, ticket_type
+                    )
+                except Exception as e:
+                    demisto.error(f"An attempt to mirror a file has failed. entry_id={entry.get('id')}, {file_name=}\n{e}")
+                    text_for_snow_comment = (
+                        "An attempt to mirror a file from Cortex XSOAR was failed."
+                        f"\nFile name: {file_name}\nError from integration: {e}"
+                    )
+                    client.add_comment(ticket_id, ticket_type, "comments", text_for_snow_comment)
+        else:
+            # Mirroring comment and work notes as entries
+            tags = entry.get("tags", [])
+            key = ""
+            if params.get("work_notes_tag") in tags:
+                key = "work_notes"
+            elif params.get("comment_tag") in tags:
+                key = "comments"
+            # Sometimes user is an empty str, not None, therefore nothing is displayed in ServiceNow
+            user = entry.get("user", "dbot") or "dbot"
+            if str(entry.get("format")) == "html":
+                contents = str(entry.get("contents", ""))
+                text = f"({user}): <br/><br/>[code]{contents} <br/><br/>[/code] Mirrored from Cortex XSOAR"
+            else:
+                text = f"({user}): {entry.get('contents', '')!s}\n\n Mirrored from Cortex XSOAR"
+            client.add_comment(ticket_id, ticket_type, key, text)
+
+
 def update_remote_system_command(client: Client, args: dict[str, Any], params: dict[str, Any]) -> str:
     """
     This command pushes local changes to the remote system.
@@ -3049,100 +3412,20 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
 
     """
     parsed_args = UpdateRemoteSystemArgs(args)
-    if parsed_args.delta:
-        demisto.debug(f'Got the following delta {parsed_args.delta}')
-        demisto.debug('The following keys appears in data but not in delta '
-                      f'{set(parsed_args.data.keys())-set(parsed_args.delta.keys())}')
-
+    parsed_args = pre_process_parsed_args(parsed_args)
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
+
     closure_case = get_closure_case(params)
     demisto.debug(f"closure case= {closure_case}")
-    is_custom_close = False
     close_custom_state = params.get("close_custom_state", None)
     demisto.debug(f"state will change to= {parsed_args.delta.get('state')}")
+
     if parsed_args.incident_changed:
-        demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
-        if parsed_args.inc_status == IncidentStatus.DONE:
-            demisto.debug("Closing incident by closure case")
-            if closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}:
-                parsed_args.delta["state"] = "3"
-            # These ticket types are closed by changing their state.
-            if closure_case == "closed" and ticket_type == INCIDENT:
-                parsed_args.delta["state"] = "7"  # Closing incident ticket.
-            elif closure_case == "resolved" and ticket_type == INCIDENT:
-                parsed_args.delta["state"] = "6"  # resolving incident ticket.
-            if close_custom_state:  # Closing by custom state
-                demisto.debug(f"Closing by custom state = {close_custom_state}")
-                is_custom_close = True
-                parsed_args.delta["state"] = close_custom_state
-
-        fields = get_ticket_fields(parsed_args.delta, ticket_type=ticket_type)
-        demisto.debug(f"all fields= {fields}")
-        if closure_case:
-            # Convert the closing state to the right one if the ticket type is not incident in order to close the
-            # ticket/incident via XSOAR
-            if parsed_args.delta.get("state") == "7 - Closed" and not is_custom_close:
-                fields["state"] = TICKET_TYPE_TO_CLOSED_STATE[ticket_type]
-
-            fields = {key: val for key, val in fields.items() if key != "closed_at" and key != "resolved_at"}
-
-        demisto.debug(f"Sending update request to server {ticket_type}, {ticket_id}, {fields}")
-        result = client.update(ticket_type, ticket_id, fields)
-
-        # Handle case of custom state doesn't exist, reverting to the original close state
-        if is_custom_close and demisto.get(result, "result.state") != close_custom_state:
-            fields["state"] = TICKET_TYPE_TO_CLOSED_STATE[ticket_type]
-            demisto.debug(
-                f"Given custom state doesn't exist - Sending second update request to server with "
-                f"default closed state: {ticket_type}, {ticket_id}, {fields}"
-            )
-            result = client.update(ticket_type, ticket_id, fields)
-
-        demisto.info(f"Ticket Update result {result}")
-
+        update_remote_system_on_incident_change(client, parsed_args, ticket_type, closure_case, close_custom_state, ticket_id)
     entries = parsed_args.entries
     if entries:
-        demisto.debug(f"New entries {entries}")
-
-        for entry in entries:
-            demisto.debug(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
-            # Mirroring files as entries
-            if is_entry_type_mirror_supported(entry.get("type")):
-                path_res = demisto.getFilePath(entry.get("id"))
-                full_file_name = path_res.get("name")
-                file_name, file_extension = os.path.splitext(full_file_name)
-                if not file_extension:
-                    file_extension = ""
-                if params.get("file_tag_from_service_now") not in entry.get("tags", []):
-                    try:
-                        client.upload_file(
-                            ticket_id, entry.get("id"), file_name + "_mirrored_from_xsoar" + file_extension, ticket_type
-                        )
-                    except Exception as e:
-                        demisto.error(f"An attempt to mirror a file has failed. entry_id={entry.get('id')}, {file_name=}\n{e}")
-                        text_for_snow_comment = (
-                            "An attempt to mirror a file from Cortex XSOAR was failed."
-                            f"\nFile name: {file_name}\nError from integration: {e}"
-                        )
-                        client.add_comment(ticket_id, ticket_type, "comments", text_for_snow_comment)
-            else:
-                # Mirroring comment and work notes as entries
-                tags = entry.get("tags", [])
-                key = ""
-                if params.get("work_notes_tag") in tags:
-                    key = "work_notes"
-                elif params.get("comment_tag") in tags:
-                    key = "comments"
-                # Sometimes user is an empty str, not None, therefore nothing is displayed in ServiceNow
-                user = entry.get("user", "dbot") or "dbot"
-                if str(entry.get("format")) == "html":
-                    contents = str(entry.get("contents", ""))
-                    text = f"({user}): <br/><br/>[code]{contents} <br/><br/>[/code] Mirrored from Cortex XSOAR"
-                else:
-                    text = f"({user}): {entry.get('contents', '')!s}\n\n Mirrored from Cortex XSOAR"
-                client.add_comment(ticket_id, ticket_type, key, text)
-
+        update_remote_system_with_entries(client, entries, params, ticket_id, ticket_type)
     return ticket_id
 
 
@@ -3477,6 +3760,7 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
+
     command = demisto.command()
     demisto.debug(f"Executing command {command}")
 
@@ -3484,8 +3768,14 @@ def main():
     args = demisto.args()
     verify = not params.get("insecure", False)
     use_oauth = params.get("use_oauth", False)
+    use_jwt = params.get("use_jwt", False)
     oauth_params = {}
-
+    # use jwt only with OAuth
+    if use_jwt and use_oauth:
+        raise ValueError("Please choose only one authentication method (OAuth or JWT)")
+    elif use_jwt:
+        use_oauth = True
+    jwt_params: dict = {}
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
         username = ""
         password = ""
@@ -3501,6 +3791,17 @@ def main():
             "proxy": params.get("proxy"),
             "use_oauth": use_oauth,
         }
+        if use_jwt:
+            if not params.get("private_key") or not params.get("kid") or not params.get("sub"):
+                raise Exception("When using JWT, fill private key, kid and sub fields.")
+            jwt_params = {
+                "private_key": params.get("private_key", {}).get("password"),
+                "kid": params.get("kid"),
+                "sub": params.get("sub"),
+                "iss": params.get("iss", client_id),
+                "aud": client_id,
+            }
+
     else:  # use basic authentication
         username = params.get("credentials", {}).get("identifier")
         password = params.get("credentials", {}).get("password")
@@ -3587,6 +3888,7 @@ def main():
             look_back=look_back,
             use_display_value=use_display_value,
             display_date_format=display_date_format,
+            jwt_params=jwt_params,
         )
         commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any], bool]]] = {
             "test-module": test_module,
@@ -3594,8 +3896,6 @@ def main():
             "servicenow-oauth-login": login_command,
             "servicenow-update-ticket": update_ticket_command,
             "servicenow-create-ticket": create_ticket_command,
-            "servicenow-create-ticket-quick-action": create_ticket_command,
-            "servicenow-delete-ticket": delete_ticket_command,
             "servicenow-query-tickets": query_tickets_command,
             "servicenow-add-link": add_link_command,
             "servicenow-add-comment": add_comment_command,
@@ -3623,10 +3923,14 @@ def main():
             demisto.incidents(incidents)
         elif command == "servicenow-get-ticket":
             demisto.results(get_ticket_command(client, args))
+        elif command == "servicenow-delete-ticket":
+            return_results(delete_ticket_command(client, args))
         elif command == "servicenow-generic-api-call":
             return_results(generic_api_call_command(client, args))
         elif command == "get-remote-data":
             return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
+        elif command == "get-remote-data-preview":
+            return_results(get_remote_data_preview_command(client, demisto.args()))
         elif command == "update-remote-system":
             return_results(update_remote_system_command(client, demisto.args(), demisto.params()))
         elif command == "get-mapping-fields":
@@ -3641,6 +3945,9 @@ def main():
             return_results(get_ticket_notes_command(client, args, params))
         elif command == "servicenow-get-ticket-attachments":
             return_results(get_attachment_command(client, args))
+        elif command == "servicenow-create-ticket-quick-action":
+            md_, ec_, raw_response, ignore_auto_extract = create_ticket_command(client, args, is_quick_action=True)
+            return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)

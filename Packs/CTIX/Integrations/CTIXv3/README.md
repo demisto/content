@@ -3,7 +3,6 @@ This integration was integrated and tested with version 3.0.0 of CTIX
 
 ## Configure CTIX in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Endpoint URL | Enter the endpoint URL of your CTIX Instance. | True |
@@ -14,7 +13,6 @@ This integration was integrated and tested with version 3.0.0 of CTIX
 | Fetch incidents |  | False |
 | Incidents Fetch Interval |  | False |
 | Incident type |  | False |
-
 
 ## Commands
 

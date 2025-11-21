@@ -1,6 +1,7 @@
 Deprecated. Use RetrievePlaybookDependencies instead. Retrieves all Playbook (and Sub-Playbook) names and Integrations for a provided Playbook name
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,6 +9,7 @@ Deprecated. Use RetrievePlaybookDependencies instead. Retrieves all Playbook (an
 | Script Type | python3 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -15,6 +17,7 @@ Deprecated. Use RetrievePlaybookDependencies instead. Retrieves all Playbook (an
 | playbook_name | Name of Playbook |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -23,6 +26,7 @@ Deprecated. Use RetrievePlaybookDependencies instead. Retrieves all Playbook (an
 | RetrievePlaybooksAndIntegrations.Integrations | Names of all Integrations used | Unknown |
 
 ### Troubleshooting
-Multi-tenant environments should be configured with the Cortex Rest API instance when using this 
-automation. Make sure the *Use tenant* parameter (in the Cortex Rest API integration) is checked 
+
+Multi-tenant environments should be configured with the Cortex Rest API instance when using this
+automation. Make sure the *Use tenant* parameter (in the Cortex Rest API integration) is checked
 to ensure that API calls are made to the current tenant instead of the master tenant.
