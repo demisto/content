@@ -16,6 +16,7 @@ import base64
 from cyberintegrations.exception import ConnectionException
 from cyberintegrations.cyberintegrations import Parser
 from cyberintegrations.const import TechnicalConsts
+import re
 
 # Disable insecure warnings
 urllib3_disable_warnings(InsecureRequestWarning)
@@ -209,7 +210,7 @@ class Client(BaseClient):
             "reject": False
         }
         approve_status = approve_statuses.get(status)
-        response = self.poller.search_feed_by_id(collection_name=Endpoints.VIOLATION.value, feed_id=feed_id)
+        response = self.poller.search_feed_by_id(feed_id)
         demisto.debug('change_violation_status', approve_status, response.raw_dict.get('violation', {}).get(
             'status', None), response.raw_dict.get('violation', {}).get('approveState', None))
         violation_status = response.raw_dict.get('violation', {}).get('status', None)
@@ -240,7 +241,10 @@ class Client(BaseClient):
             except Exception as e:
                 demisto.debug(f"get_brands failed: {e}")
                 return []
-        demisto.debug(f"DRPPoller.get_brands is not available; returning empty list. Library version: {TechnicalConsts.library_version}")
+        demisto.debug(
+            "DRPPoller.get_brands is not available; returning empty list. "
+            f"Library version: {TechnicalConsts.library_version}"
+        )
         return []
 
     def get_formatted_subscriptions(self) -> list[str]:
@@ -250,7 +254,10 @@ class Client(BaseClient):
             except Exception as e:
                 demisto.debug(f"get_subscriptions failed: {e}")
                 return []
-        demisto.debug(f"DRPPoller.get_subscriptions is not available; returning empty list. Library version: {TechnicalConsts.library_version}")
+        demisto.debug(
+            "DRPPoller.get_subscriptions is not available; returning empty list. "
+            f"Library version: {TechnicalConsts.library_version}"
+        )
         return []
 
     def get_file(self, file_sha: str) -> tuple[bytes, str] | None:
@@ -275,9 +282,7 @@ class Client(BaseClient):
         return data
 
     def get_violation_by_id(self, violation_id: str) -> Parser:
-        results = self.poller.search_feed_by_id(
-            collection_name=Endpoints.VIOLATION.value, feed_id=violation_id
-        )
+        results = self.poller.search_feed_by_id(violation_id)
         return results
 
     def get_formatted_violation_by_id(
