@@ -16,6 +16,11 @@ configuration:
   name: insecure
   type: 8
   required: false
+- display: External API Key
+  name: externalApiKey
+  type: 8
+  required: false
+  additionalinfo: For Silverfort 5.3 and above, you must include the external API Key for external calls
 description: Use the Silverfort integration to get and update Silverfort risk severity.
 display: Silverfort
 name: Silverfort
