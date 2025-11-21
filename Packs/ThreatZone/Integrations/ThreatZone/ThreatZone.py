@@ -1,7 +1,7 @@
 import json
 import shutil
 from contextlib import closing
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -65,217 +65,6 @@ DETAIL_SECTIONS = (
     ("Analysis Artifacts", "artifacts", "additionalFiles"),
     ("Extracted Configurations", "extractedConfigs", "extractedConfigs"),
 )
-
-DETAIL_TABLE_LABELS = {
-    "Indicators": "INDICATORS",
-    "Indicators of Compromise": "INDICATORS OF COMPROMISE",
-    "Matched YARA Rules": "MATCHED YARA RULES",
-    "Analysis Artifacts": "ANALYSIS ARTIFACTS",
-    "Extracted Configurations": "EXTRACTED CONFIGURATIONS",
-}
-
-
-def _sanitize_text(value: Any) -> str:
-    """Normalize values rendered inside War Room tables."""
-    text = str(value)
-    for token in ("\r\n", "\n", "\r"):
-        text = text.replace(token, " ")
-    for token in ("<br />", "<br/>", "<br>"):
-        text = text.replace(token, " ")
-    return text
-
-
-def _is_empty_value(value: Any) -> bool:
-    """Return True when a ThreatZone field is effectively empty."""
-    return value in (None, "", []) or value == {} or value == ()
-
-
-def _format_bullet_section(values: List[Any], formatter: Callable[[Any], str]) -> str:
-    """Render a list of values as a compact, single-line string."""
-    if not values:
-        return "No data returned."
-
-    lines = [_sanitize_text(formatter(item)) for item in values]
-    return "; ".join(lines)
-
-
-def _format_comma_separated(values: List[Any], formatter: Callable[[Any], str]) -> str:
-    """Render a list of values as a comma separated string."""
-    if not values:
-        return ""
-
-    items = [_sanitize_text(formatter(item)) for item in values]
-    return ", ".join(items)
-
-
-def _summarize_indicator_item(item: Any) -> str:
-    """Return a concise string for a dynamic indicator entry."""
-    if isinstance(item, dict):
-        name = item.get("name") or item.get("indicator") or item.get("description") or "Indicator"
-        details: List[str] = []
-        category = item.get("category")
-        if not _is_empty_value(category):
-            details.append(str(category))
-        score = item.get("score")
-        if score is not None:
-            details.append(f"score {score}")
-        level = item.get("level")
-        if not _is_empty_value(level):
-            details.append(str(level))
-        suffix = f" ({', '.join(details)})" if details else ""
-        return _sanitize_text(f"{name}{suffix}")
-    return _sanitize_text(item)
-
-
-def _summarize_ioc_item(item: Any) -> str:
-    """Return a concise string for an IOC entry."""
-    if isinstance(item, dict):
-        indicator_value = (
-            item.get("value") or item.get("indicator") or item.get("indicator_value") or item.get("name") or "IOC"
-        )
-        indicator_type = item.get("type") or item.get("indicatorType")
-        suffix = f" ({indicator_type})" if indicator_type else ""
-        return _sanitize_text(f"{indicator_value}{suffix}")
-    return _sanitize_text(item)
-
-
-def _summarize_yara_item(item: Any) -> str:
-    """Return a concise string for a matched YARA rule."""
-    if isinstance(item, dict):
-        rule_name = item.get("rule") or item.get("name") or item.get("id") or "Rule"
-        rule_type = item.get("type") or item.get("classification")
-        suffix = f" ({rule_type})" if rule_type else ""
-        return _sanitize_text(f"{rule_name}{suffix}")
-    return _sanitize_text(item)
-
-
-def _summarize_artifact_item(item: Any) -> str:
-    """Return a concise string for an artifact entry."""
-    if isinstance(item, dict):
-        for key in ("path", "name", "filename", "id"):
-            value = item.get(key)
-            if not _is_empty_value(value):
-                return _sanitize_text(value)
-        for value in item.values():
-            if isinstance(value, str) and not _is_empty_value(value):
-                return _sanitize_text(value)
-        return "Artifact"
-    return _sanitize_text(item)
-
-
-def _summarize_config_item(item: Any) -> str:
-    """Return a concise string for a configuration extractor entry."""
-    if isinstance(item, dict):
-        key = item.get("key") or item.get("name")
-        value = item.get("value")
-        if not _is_empty_value(key) and not _is_empty_value(value):
-            return _sanitize_text(f"{key}: {value}")
-        if not _is_empty_value(key):
-            return _sanitize_text(key)
-        if not _is_empty_value(value):
-            return _sanitize_text(value)
-        # Fall back to the first string value for readability.
-        for entry_value in item.values():
-            if isinstance(entry_value, str) and not _is_empty_value(entry_value):
-                return _sanitize_text(entry_value)
-        return "Configuration result"
-    return _sanitize_text(item)
-
-
-def summarize_indicators_section(section_data: Any) -> str:
-    """Summarize indicators into a markdown-friendly preview."""
-    indicators: List[Any] = []
-    if isinstance(section_data, list):
-        indicators = section_data
-    elif isinstance(section_data, dict):
-        possible_list = section_data.get("indicators")
-        if isinstance(possible_list, list):
-            indicators = possible_list
-
-    if not indicators:
-        return "No data returned."
-    return _format_bullet_section(indicators, _summarize_indicator_item)
-
-
-def summarize_iocs_section(section_data: Any) -> str:
-    """Summarize IOCs into a markdown-friendly preview."""
-    if isinstance(section_data, dict):
-        lines: List[str] = []
-        for key, values in section_data.items():
-            if isinstance(values, list) and values:
-                formatted_values = _format_comma_separated(values, _summarize_ioc_item)
-                if formatted_values:
-                    lines.append(f"{_sanitize_text(key)}: {formatted_values}")
-            elif not _is_empty_value(values):
-                lines.append(f"{_sanitize_text(key)}: {_sanitize_text(values)}")
-        return "; ".join(lines) or "No data returned."
-
-    if isinstance(section_data, list):
-        return _format_bullet_section(section_data, _summarize_ioc_item)
-
-    return "No data returned."
-
-
-def summarize_yara_section(section_data: Any) -> str:
-    """Summarize matched YARA rules into a markdown-friendly preview."""
-    if isinstance(section_data, dict):
-        lines: List[str] = []
-        for key, value in section_data.items():
-            if isinstance(value, list) and value:
-                formatted_values = _format_comma_separated(value, _summarize_yara_item)
-                if formatted_values:
-                    lines.append(f"{_sanitize_text(key)}: {formatted_values}")
-            elif not _is_empty_value(value):
-                lines.append(f"{_sanitize_text(key)}: {_sanitize_text(value)}")
-        return "; ".join(lines) or "No data returned."
-
-    if isinstance(section_data, list):
-        return _format_bullet_section(section_data, _summarize_yara_item)
-
-    return "No data returned."
-
-
-def summarize_artifacts_section(section_data: Any) -> str:
-    """Summarize analysis artifacts into a markdown-friendly preview."""
-    if isinstance(section_data, dict):
-        possible_list = section_data.get("artifacts")
-        if isinstance(possible_list, list):
-            section_data = possible_list
-        else:
-            return "No data returned."
-
-    if isinstance(section_data, list):
-        return _format_bullet_section(section_data, _summarize_artifact_item)
-
-    return "No data returned."
-
-
-def summarize_configs_section(section_data: Any) -> str:
-    """Summarize configuration extractor results into a markdown-friendly preview."""
-    if isinstance(section_data, dict):
-        lines: List[str] = []
-        for key, value in section_data.items():
-            if isinstance(value, list) and value:
-                formatted_values = _format_comma_separated(value, _summarize_config_item)
-                if formatted_values:
-                    lines.append(f"{_sanitize_text(key)}: {formatted_values}")
-            elif not _is_empty_value(value):
-                lines.append(f"{_sanitize_text(key)}: {_sanitize_text(value)}")
-        return "; ".join(lines) or "No data returned."
-
-    if isinstance(section_data, list):
-        return _format_bullet_section(section_data, _summarize_config_item)
-
-    return "No data returned."
-
-
-DETAIL_SUMMARIZERS: Dict[str, Callable[[Any], str]] = {
-    "Indicators": summarize_indicators_section,
-    "Indicators of Compromise": summarize_iocs_section,
-    "Matched YARA Rules": summarize_yara_section,
-    "Analysis Artifacts": summarize_artifacts_section,
-    "Extracted Configurations": summarize_configs_section,
-}
 
 
 def is_archive_filename(filename: str) -> bool:
@@ -350,6 +139,20 @@ def parse_int_argument(arg_value: Optional[str], argument_name: str) -> Optional
         return int(arg_value)
     except (TypeError, ValueError) as exc:
         raise DemistoException(f"{argument_name} argument must be an integer.") from exc
+
+
+def resolve_private_flag(private_arg: Optional[str]) -> bool:
+    """Return the privacy flag, defaulting to True when it is not provided."""
+    if private_arg is None:
+        return True
+    return argToBoolean(private_arg)
+
+
+def resolve_extension_check(scan_type: str, extension_check_arg: Optional[str]) -> bool:
+    """Return the extensionCheck flag with deterministic defaults per scan type."""
+    if extension_check_arg is not None:
+        return argToBoolean(extension_check_arg)
+    return scan_type != "static-scan"
 
 
 """ CLIENT CLASS """
@@ -554,8 +357,13 @@ def translate_score(
     score: Optional[int],
 ) -> int:
     """Translate ThreatZone threat level to DBot score enum."""
-    if score is None:
+    if score is None or isinstance(score, bool):
         return Common.DBotScore.NONE
+    if not isinstance(score, int):
+        try:
+            score = int(score)
+        except (TypeError, ValueError):
+            return Common.DBotScore.NONE
     if score == 0:
         return Common.DBotScore.NONE
     if score == 1:
@@ -565,6 +373,24 @@ def translate_score(
     if score >= 3:
         return Common.DBotScore.BAD
     return Common.DBotScore.NONE
+
+
+def normalize_level_value(level_value: Any) -> tuple[Optional[int], str]:
+    """Return numeric threat level and human-readable label."""
+    level_map = {0: "Not Measured", 1: "Informative", 2: "Suspicious", 3: "Malicious"}
+    level_int: Optional[int] = None
+    if level_value is not None and not isinstance(level_value, bool):
+        try:
+            level_int = int(level_value)
+        except (TypeError, ValueError):
+            level_int = None
+    label = level_map.get(level_int)
+    if not label:
+        if level_value is None:
+            label = "Unknown"
+        else:
+            label = str(level_value)
+    return level_int, label
 
 
 def get_reputation_reliability(reliability):
@@ -666,6 +492,48 @@ def render_section_markdown(title: str, data: Any) -> str:
         return f"{title}\n```json\n{serialized}\n```"
 
 
+def select_report_section(reports: Dict[str, Any]) -> tuple[str, Dict[str, Any]]:
+    """Return the enabled report type and its section from the submission payload."""
+    for name in ("dynamic", "static", "cdr", "urlAnalysis"):
+        section = reports.get(name) or {}
+        if section.get("enabled"):
+            return name, section
+    raise DemistoException("No enabled report found for the submission.")
+
+
+def build_submission_info(
+    report_type: str,
+    report_section: Dict[str, Any],
+    private_flag: Any,
+    file_name: Optional[str],
+    analyzed_url: Optional[str],
+) -> Dict[str, Any]:
+    """Assemble the INFO structure for the summary output."""
+    submission_info: Dict[str, Any] = {"private": private_flag}
+    if file_name:
+        submission_info["file_name"] = file_name
+    if analyzed_url:
+        submission_info["url"] = analyzed_url
+    if report_type == "urlAnalysis":
+        general_info = report_section.get("generalInfo") or {}
+        if general_info.get("domain"):
+            submission_info["domain"] = general_info.get("domain")
+        if general_info.get("websiteTitle"):
+            submission_info["website_title"] = general_info.get("websiteTitle")
+    return submission_info
+
+
+def build_detail_markdown(result: Dict[str, Any], report_section: Dict[str, Any]) -> str:
+    """Create markdown blocks for inline detail previews."""
+    detail_blocks: List[str] = []
+    for title, top_level_key, report_key in DETAIL_SECTIONS:
+        section_data = result.get(top_level_key)
+        if section_data is None and isinstance(report_section, dict):
+            section_data = report_section.get(report_key)
+        detail_blocks.append(render_section_markdown(title, section_data))
+    return "\n".join(detail_blocks)
+
+
 def build_section_command_results(uuid: str, prefix: str, title: str, data: Any) -> CommandResults:
     """Build a CommandResults object for a submission section."""
     readable_output = render_section_markdown(title, data)
@@ -697,25 +565,18 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> List[Union[Co
         raise DemistoException("uuid argument is required.")
 
     result = client.threatzone_get({"uuid": uuid})
-    stats = {
+    status_labels = {
         1: "File received",
         2: "Submission is accepted",
         3: "Submission is running",
         4: "Submission VM is ready",
         5: "Submission is finished",
     }
-    levels = {0: "Not Measured", 1: "Informative", 2: "Suspicious", 3: "Malicious"}
 
     reports = result.get("reports") or {}
-    report_type = next(
-        (name for name in ("dynamic", "static", "cdr", "urlAnalysis") if reports.get(name, {}).get("enabled")), None
-    )
-    if report_type is None:
-        raise DemistoException("No enabled report found for the submission.")
-
-    report_section = reports.get(report_type) or {}
-    status = report_section.get("status")
-    if status == 0:
+    report_type, report_section = select_report_section(reports)
+    status_value = report_section.get("status")
+    if status_value == 0:
         raise DemistoException(
             "Submission is declined by the scanner. "
             "The file may be corrupted or the analyzer encountered an unrecoverable error."
@@ -734,16 +595,63 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> List[Union[Co
     if not analyzed_url and report_type == "urlAnalysis":
         general_info = report_section.get("generalInfo") or {}
         analyzed_url = general_info.get("url") or general_info.get("URL")
-    level = result.get("level")
-    private_flag = result.get("private")
 
-    threat_level_readable = levels.get(level, str(level) if level is not None else "Unknown")
-    status_readable = stats.get(status, f"Status {status}" if status is not None else "Unknown")
+    level_int, level_label = normalize_level_value(result.get("level"))
+    private_flag = result.get("private")
+    status_readable = status_labels.get(
+        status_value, f"Status {status_value}" if status_value is not None else "Unknown"
+    )
     analysis_type_label = "URL Analysis" if report_type == "urlAnalysis" else report_type
+
+    summary_info = build_submission_info(report_type, report_section, private_flag, file_name, analyzed_url)
+    summary_output: Dict[str, Any] = {
+        "TYPE": analysis_type_label,
+        "STATUS": status_readable,
+        "MD5": md5,
+        "SHA1": sha1,
+        "SHA256": sha256,
+        "LEVEL": level_int,
+        "LEVEL_LABEL": level_label,
+        "INFO": summary_info,
+        "UUID": submission_uuid,
+        "REPORT": report_section,
+    }
+    result["Summary"] = summary_output
+
+    include_details = argToBoolean(args.get("details", "false"))
+    warnings: List[str] = []
+    if status_value and status_value != 5:
+        warnings.append(
+            f"Submission status is '{status_labels.get(status_value, status_value)}'; some sections may not yet be available."
+        )
+
+    indicator_value = sha256 or analyzed_url
+    indicator_type = "file" if sha256 else "url"
+    indicator_obj = None
+    if indicator_value:
+        try:
+            indicator_obj = generate_indicator(
+                indicator_value,
+                summary_output,
+                indicator_type,
+                score=level_int,
+            )
+        except DemistoException as exc:
+            warnings.append(f"indicator-generation: {exc}")
+            demisto.debug(f"ThreatZone indicator generation failed: {exc}")
+
+    sanitized_file: Optional[dict] = None
+    if report_type == "cdr" and status_value == 5 and download_sanitized:
+        try:
+            sanitized_file = threatzone_get_sanitized_file(client, {"uuid": submission_uuid})
+        except DemistoException as exc:
+            warnings.append(f"sanitized-download: {exc}")
+            demisto.debug(f"ThreatZone sanitized download failed: {exc}")
+
     readable_summary: Dict[str, Any] = {
         "ANALYSIS TYPE": analysis_type_label,
         "STATUS": status_readable,
-        "THREAT_LEVEL": threat_level_readable,
+        "THREAT_LEVEL": level_label,
         "PRIVATE": private_flag,
         "UUID": submission_uuid,
     }
@@ -758,90 +666,19 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> List[Union[Co
     if sha256:
         readable_summary["SHA256"] = sha256
 
-    submission_info: Dict[str, Any] = {"private": private_flag}
-    if file_name:
-        submission_info["file_name"] = file_name
-    if analyzed_url:
-        submission_info["url"] = analyzed_url
-    if report_type == "urlAnalysis":
-        general_info = report_section.get("generalInfo") or {}
-        if general_info.get("domain"):
-            submission_info["domain"] = general_info.get("domain")
-        if general_info.get("websiteTitle"):
-            submission_info["website_title"] = general_info.get("websiteTitle")
-
-    summary_output: Dict[str, Any] = {
-        "TYPE": analysis_type_label,
-        "STATUS": status_readable,
-        "MD5": md5,
-        "SHA1": sha1,
-        "SHA256": sha256,
-        "LEVEL": threat_level_readable,
-        "INFO": submission_info,
-        "UUID": submission_uuid,
-        "REPORT": report_section,
-    }
-    result["Summary"] = summary_output
-
-    include_details = argToBoolean(args.get("details", "false"))
-
-    warnings: List[str] = []
-    if status and status != 5:
-        warnings.append(
-            f"Submission status is '{stats.get(status, status)}'; some sections may not yet be available."
-        )
-
-    indicator_value = sha256 or analyzed_url
-    indicator_level = level if isinstance(level, int) else None
-    indicator_type = "file" if sha256 else "url"
-    indicator_obj = None
-    if indicator_value:
-        try:
-            indicator_obj = generate_indicator(
-                indicator_value,
-                summary_output,
-                indicator_type,
-                score=indicator_level,
-            )
-        except DemistoException as exc:
-            warnings.append(f"indicator-generation: {exc}")
-            demisto.debug(f"ThreatZone indicator generation failed: {exc}")
-
-    sanitized_file: Optional[dict] = None
-    if report_type == "cdr" and status == 5 and download_sanitized:
-        try:
-            sanitized_file = threatzone_get_sanitized_file(client, {"uuid": submission_uuid})
-        except DemistoException as exc:
-            warnings.append(f"sanitized-download: {exc}")
-            demisto.debug(f"ThreatZone sanitized download failed: {exc}")
-
-    readable_rows = {
-        key: _sanitize_text(value) if isinstance(value, str) else value for key, value in readable_summary.items()
-    }
-    if include_details:
-        for title, top_level_key, report_key in DETAIL_SECTIONS:
-            section_data = result.get(top_level_key)
-            if _is_empty_value(section_data) and isinstance(report_section, dict):
-                section_data = report_section.get(report_key)
-
-            summarizer = DETAIL_SUMMARIZERS.get(title)
-            detail_value = (
-                summarizer(section_data)
-                if summarizer
-                else ("No data returned." if _is_empty_value(section_data) else str(section_data))
-            )
-            label = DETAIL_TABLE_LABELS.get(title, title.upper())
-            readable_rows[label] = _sanitize_text(detail_value)
-
-    summary_table = tableToMarkdown("Submission Result", readable_rows, removeNull=True)
+    summary_table = tableToMarkdown("Submission Result", readable_summary, removeNull=True)
+    detail_markdown = build_detail_markdown(result, report_section) if include_details else ""
+    readable_output = summary_table
+    if detail_markdown:
+        readable_output = f"{readable_output}\n{detail_markdown}"
     if warnings:
         warning_lines = "\n".join(f"- {warning}" for warning in warnings)
-        summary_table = f"{summary_table}\n\n### Additional Data Notes\n{warning_lines}"
+        readable_output = f"{readable_output}\n\n### Additional Data Notes\n{warning_lines}"
 
     command_results: List[Union[CommandResults, dict]] = [
         CommandResults(
             outputs_prefix="ThreatZone.Submission",
-            readable_output=summary_table,
+            readable_output=readable_output,
             outputs_key_field="uuid",
             outputs=result,
             raw_response=result,
@@ -1013,7 +850,7 @@ def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> Li
     timeout_value = parse_int_argument(args.get("timeout"), "timeout")
     environment = args.get("environment")
     work_path = args.get("work_path")
-    private_value = argToBoolean(args.get("private", "true"))
+    private_value = resolve_private_flag(args.get("private"))
 
     default_analyze_config: List[Dict[str, Any]] = []
     if environment:
@@ -1100,14 +937,11 @@ def threatzone_static_cdr_upload_sample(client: Client, args: dict[str, Any]) ->
     file_name = encode_file_name(original_file_name)
     file_path = file_obj["path"]
 
-    private_flag = argToBoolean(args.get("private", "false"))
+    private_flag = resolve_private_flag(args.get("private"))
     is_public = not private_flag
     payload: Dict[str, Any] = {"isPublic": as_api_bool(is_public)}
-
-    extension_check_arg = args.get("extension_check")
-    if extension_check_arg is not None:
-        extension_check = argToBoolean(extension_check_arg)
-        payload["extensionCheck"] = as_api_bool(extension_check)
+    extension_check = resolve_extension_check(scan_type, args.get("extension_check"))
+    payload["extensionCheck"] = as_api_bool(extension_check)
 
     if entrypoint := args.get("entrypoint"):
         payload["entrypoint"] = entrypoint
@@ -1137,8 +971,7 @@ def threatzone_submit_url_analysis(client: Client, args: dict[str, Any]) -> List
         raise DemistoException("url argument is required.")
 
     payload: Dict[str, Any] = {"url": analyzed_url}
-    if args.get("private") is not None:
-        payload["private"] = as_api_bool(argToBoolean(args.get("private", "false")))
+    payload["private"] = resolve_private_flag(args.get("private"))
 
     result = client.threatzone_submit_url(payload)
     readable = {"Message": result.get("message"), "UUID": result.get("uuid"), "URL": analyzed_url}

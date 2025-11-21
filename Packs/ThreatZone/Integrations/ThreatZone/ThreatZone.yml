@@ -179,7 +179,7 @@ script:
       - "true"
       - "false"
       description: If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission.
-      defaultValue: "false"
+      defaultValue: "true"
     - name: extension_check
       required: false
       auto: PREDEFINED
@@ -223,7 +223,7 @@ script:
       - "true"
       - "false"
       description: If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission.
-      defaultValue: "false"
+      defaultValue: "true"
     - name: extension_check
       required: false
       auto: PREDEFINED
@@ -267,7 +267,7 @@ script:
       - "true"
       - "false"
       description: Mark the submission as workspace-private.
-      defaultValue: "false"
+      defaultValue: "true"
     outputs:
     - contextPath: ThreatZone.Submission.URL.UUID
       description: UUID of the URL submission.
