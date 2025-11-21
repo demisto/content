@@ -902,7 +902,7 @@ def fetch_incidents(
         )
 
         alert["doc_markdown"] = readable_output
-        alert = remove_empty_elements(alert)
+        alert = remove_empty_elements_for_hr(alert)
         alert_incidents.append(
             {
                 "name": alert.get("title", ""),

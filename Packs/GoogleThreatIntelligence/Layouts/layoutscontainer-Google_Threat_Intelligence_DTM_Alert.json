@@ -692,7 +692,7 @@
                                 "fieldId": "gtidtmalertdocrawtext",
                                 "height": 106,
                                 "id": "29f03690-a07d-11f0-8cd2-49d371b27357",
-                                "index": 10,
+                                "index": 9,
                                 "listId": "ff69y8rnqm-field-changed-ff69y8rnqm-03f99140-87d0-11f0-a75c-67351ad19894",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -702,7 +702,7 @@
                                 "fieldId": "gtidtmalertdocbody",
                                 "height": 106,
                                 "id": "2df89f70-a07d-11f0-8cd2-49d371b27357",
-                                "index": 11,
+                                "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -776,9 +776,17 @@
                                 "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "gtidtmalertemailsentat",
+                                "height": 22,
+                                "id": "e9ad56a0-c6ef-11f0-8379-63a85976e01b",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 2
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,

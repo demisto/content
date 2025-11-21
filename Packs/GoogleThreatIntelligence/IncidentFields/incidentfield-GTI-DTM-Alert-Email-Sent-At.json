@@ -6,7 +6,7 @@
     "ownerOnly": false,
     "description": "Timestamp when the alert email was sent.",
     "cliName": "gtidtmalertemailsentat",
-    "type": "date",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,

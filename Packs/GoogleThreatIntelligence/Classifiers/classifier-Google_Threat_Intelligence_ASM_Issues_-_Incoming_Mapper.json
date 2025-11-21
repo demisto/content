@@ -183,7 +183,11 @@
                     }
                 },
                 "Incident Link": {
-                    "simple": "incident_link"
+                    "complex": {
+						"filters": [],
+						"root": "incident_link",
+						"transformers": []
+					}
                 },
                 "Tags": {
                     "complex": {
@@ -221,7 +225,11 @@
                     }
                 },
                 "occurred": {
-                    "simple": "first_seen"
+                    "complex": {
+						"filters": [],
+						"root": "first_seen",
+						"transformers": []
+					}
                 }
             }
         },

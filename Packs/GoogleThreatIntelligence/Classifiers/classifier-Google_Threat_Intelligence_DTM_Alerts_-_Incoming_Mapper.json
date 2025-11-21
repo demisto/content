@@ -345,7 +345,11 @@
                     }
                 },
                 "occurred": {
-                    "simple": "created_at"
+                    "complex": {
+						"filters": [],
+						"root": "created_at",
+						"transformers": []
+					}
                 }
             }
         },
