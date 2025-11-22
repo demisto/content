@@ -1,0 +1,53 @@
+{
+    "name": "Twilio SendGrid",
+    "description": "Twilio SendGrid is a cloud-based email platform designed to help businesses send and manage both transactional and marketing emails reliably and at scale. This pack provides event collection capabilities for email activity data.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2024-11-20T00:00:00Z",
+    "categories": [
+        "Email"
+    ],
+    "tags": [
+        "Email",
+        "SendGrid",
+        "Twilio",
+        "Event Collector"
+    ],
+    "useCases": [
+        "Email Security",
+        "Email Activity Monitoring",
+        "Email Analytics"
+    ],
+    "keywords": [
+        "email",
+        "sendgrid",
+        "twilio",
+        "email activity",
+        "transactional email",
+        "marketing email"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "dependencies": {},
+    "displayedImages": [],
+    "githubUser": [],
+    "certification": "certified",
+    "hidden": false,
+    "serverMinVersion": "8.4.0",
+    "modules": [
+        "xsiam",
+        "agentix",
+        "C1",
+        "C3",
+        "X0",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
+}

@@ -1,0 +1,93 @@
+category: Analytics & SIEM
+commonfields:
+  id: Twilio SendGrid Event Collector
+  version: -1
+sectionorder:
+- Connect
+- Collect
+configuration:
+- display: Server URL
+  name: server_url
+  defaultvalue: api.sendgrid.com
+  type: 0
+  required: true
+  section: Connect
+- display: API Secret Key
+  name: api_key
+  type: 4
+  required: true
+  section: Connect
+- additionalinfo: Maximum number of email activity messages to fetch per API call (1-1000).
+  defaultvalue: '10000'
+  display: Maximum Email Activity Messages per fetch
+  name: max_fetch
+  type: 0
+  required: false
+  section: Collect
+- defaultvalue: '1'
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  section: Collect
+  advanced: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+description: Use this integration to fetch email activity events from Twilio SendGrid as Cortex XSIAM events.
+display: Twilio SendGrid Event Collector
+name: Twilio SendGrid Event Collector
+script:
+  commands:
+  - name: twilio-sendgrid-get-events
+    description: Returns email activity events from Twilio SendGrid. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
+    arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - description: Maximum number of events to retrieve (1-1000). Default is 1000.
+      name: limit
+      defaultValue: '10000'
+      required: false
+    - description: Start time for event retrieval. Supports relative times (e.g., "3 days") or ISO format (e.g., "2024-01-15T00:00:00Z").
+      name: from_date
+      required: false
+    - description: End time for event retrieval. Supports relative times or ISO format.
+      name: to_date
+      required: false
+  dockerimage: demisto/python3:3.10.14.95956
+  isfetchevents: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 8.4.0
+marketplaces:
+- marketplacev2
+- platform
+tests:
+- No tests
+supportedModules:
+- xsiam
+- agentix
+- C1
+- C3
+- X0
+- X1
+- X3
+- X5
+- ENT_PLUS
