@@ -15,6 +15,10 @@ BASE_URL = "https://prod-us.tas.crtx.paloaltonetworks.com"
 INDICATORS_ENDPOINT = "/api/v1/feeds/indicators"
 THREAT_OBJECTS_ENDPOINT = "/api/v1/feeds/threat_objects"
 
+# Retry configuration
+RETRY_COUNT = 5
+STATUS_CODES_TO_RETRY = list(range(429, 600))
+
 # Mapping from API indicator types to XSOAR indicator types
 INDICATOR_TYPE_MAPPING = {
     "ip": FeedIndicatorType.IP,
@@ -56,6 +60,27 @@ VALID_REGIONS = {
 }
 
 
+def unit42_error_handler(res: requests.Response):
+    """
+    Custom error handler for Unit 42 API requests.
+    Extracts and logs X-Request-ID header for failed requests (4xx/5xx errors).
+
+    Args:
+        res: Response object from failed request
+
+    Returns:
+        Error message string including X-Request-ID if available
+    """
+    request_id = res.headers.get("X-Request-ID", "N/A")
+    demisto.debug(f"{INTEGRATION_NAME} API Error - X-Request-ID: {request_id}, Status: {res.status_code}, URL: {res.url}")
+
+    error_msg = f"Error in API request [Status: {res.status_code}]\n"
+    error_msg += f"[X-Request-ID: {request_id}]\n"
+    error_msg += f"Response text - {res.text}"
+
+    return_error(error_msg)
+
+
 class Client(BaseClient):
     def __init__(self, headers, verify=False, proxy=False):
         """Implements class for Unit 42 feed.
@@ -95,8 +120,14 @@ class Client(BaseClient):
         if next_page_token:
             params["page_token"] = next_page_token
 
-        response = self._http_request(method="GET", url_suffix=INDICATORS_ENDPOINT, params=params)
-
+        response = self._http_request(
+            method="GET",
+            url_suffix=INDICATORS_ENDPOINT,
+            params=params,
+            error_handler=unit42_error_handler,
+            retries=RETRY_COUNT,
+            status_list_to_retry=STATUS_CODES_TO_RETRY,
+        )
         return response
 
     def get_threat_objects(self, limit: int = API_LIMIT, next_page_token: str | None = None) -> dict:
@@ -115,8 +146,14 @@ class Client(BaseClient):
         if next_page_token:
             params["page_token"] = next_page_token
 
-        response = self._http_request(method="GET", url_suffix=THREAT_OBJECTS_ENDPOINT, params=params)
-
+        response = self._http_request(
+            method="GET",
+            url_suffix=THREAT_OBJECTS_ENDPOINT,
+            params=params,
+            error_handler=unit42_error_handler,
+            retries=RETRY_COUNT,
+            status_list_to_retry=STATUS_CODES_TO_RETRY,
+        )
         return response
 
 
