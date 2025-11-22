@@ -1,0 +1,174 @@
+category: Utilities
+commonfields:
+  id: CrowdStrikeFalconMCP
+  version: -1
+configuration:
+  - display: Server API Region
+    name: api_region
+    options:
+    - US-1
+    - US-2
+    - EU-1
+    - US-GOV
+    required: true
+    default: US-1
+    type: 15
+  - name: credentials
+    type: 9
+    display: Client ID
+    displaypassword: Client Secret
+    section: Connect
+    required: true
+  - display: Enabled Modules
+    name: enabled_modules
+    type: 16
+    section: Connect
+    options:
+    - hosts
+    - idp
+    - intel
+    - detections
+    - serverless
+    - cloud
+    - sensorusage
+    - spotlight
+    - discover
+    - incidents
+    additionalinfo: If no modules are selected all modules will be enabled.
+    advanced: true
+description: Use this integration to connect securely with a CrowdStrike Falcon MCP Model Context Protocol (MCP) server and access its tools in real time.
+display: CrowdStrike Falcon MCP
+name: CrowdStrikeFalconMCP
+script:
+  commands:
+  - arguments: []
+    description: Retrieves a list of available tools in the CrowdStrike Falcon MCP server.
+    name: list-tools
+    outputs:
+    - contextPath: ListTools.Tools.annotations
+      description: The annotations of the tool.
+      type: Unknown
+    - contextPath: ListTools.Tools.description
+      description: The description of the tool.
+      type: String
+    - contextPath: ListTools.Tools.icons
+      description: The icons associated with the tool.
+      type: Unknown
+    - contextPath: ListTools.Tools.inputSchema.properties.ids.description
+      description: The description of the input parameter 'ids'.
+      type: String
+    - contextPath: ListTools.Tools.inputSchema.properties.ids.items.type
+      description: The type of items in the 'ids' input parameter.
+      type: String
+    - contextPath: ListTools.Tools.inputSchema.properties.ids.title
+      description: The title of the 'ids' input parameter.
+      type: String
+    - contextPath: ListTools.Tools.inputSchema.properties.ids.type
+      description: The type of the 'ids' input parameter.
+      type: String
+    - contextPath: ListTools.Tools.inputSchema.properties.include_hidden.default
+      description: The default value for the 'include_hidden' input parameter.
+      type: Boolean
+    - contextPath: ListTools.Tools.inputSchema.properties.include_hidden.description
+      description: The description of the 'include_hidden' input parameter.
+      type: String
+    - contextPath: ListTools.Tools.inputSchema.properties.include_hidden.title
+      description: The title of the 'include_hidden' input parameter.
+      type: String
+    - contextPath: ListTools.Tools.inputSchema.properties.include_hidden.type
+      description: The type of the 'include_hidden' input parameter.
+      type: String
+    - contextPath: ListTools.Tools.inputSchema.required
+      description: The required input parameters.
+      type: String
+    - contextPath: ListTools.Tools.inputSchema.title
+      description: The title of the input schema.
+      type: String
+    - contextPath: ListTools.Tools.inputSchema.type
+      description: The type of the input schema.
+      type: String
+    - contextPath: ListTools.Tools.meta
+      description: Metadata about the tool.
+      type: Unknown
+    - contextPath: ListTools.Tools.name
+      description: The name of the tool.
+      type: String
+    - contextPath: ListTools.Tools.outputSchema.properties.result.anyOf.items.additionalProperties
+      description: Additional properties for the result items in the output schema.
+      type: Boolean
+    - contextPath: ListTools.Tools.outputSchema.properties.result.anyOf.items.type
+      description: The type of items in the result of the output schema.
+      type: String
+    - contextPath: ListTools.Tools.outputSchema.properties.result.anyOf.type
+      description: The type of the result in the output schema.
+      type: String
+    - contextPath: ListTools.Tools.outputSchema.properties.result.anyOf.additionalProperties
+      description: Additional properties for the result in the output schema.
+      type: Boolean
+    - contextPath: ListTools.Tools.outputSchema.properties.result.title
+      description: The title of the result in the output schema.
+      type: String
+    - contextPath: ListTools.Tools.outputSchema.required
+      description: The required fields in the output schema.
+      type: String
+    - contextPath: ListTools.Tools.outputSchema.title
+      description: The title of the output schema.
+      type: String
+    - contextPath: ListTools.Tools.outputSchema.type
+      description: The type of the output schema.
+      type: String
+    - contextPath: ListTools.Tools.title
+      description: The title of the tool.
+      type: Unknown
+  - arguments:
+    - name: name
+      description: The name of the tool to call.
+      required: true
+    - name: arguments
+      description: Parameters for the tool execution.
+    description: Calls a specific tool on the CrowdStrike Falcon MCP server with optional input parameters.
+    name: call-tool
+    outputs:
+    - contextPath: CallTool.Tool.content.annotations
+      description: The annotations of the tool content.
+      type: Unknown
+    - contextPath: CallTool.Tool.content.meta
+      description: Metadata about the tool content.
+      type: Unknown
+    - contextPath: CallTool.Tool.content.text
+      description: The text content returned by the tool.
+      type: String
+    - contextPath: CallTool.Tool.content.type
+      description: The type of content returned by the tool.
+      type: String
+    - contextPath: CallTool.Tool.isError
+      description: Indicates if the tool call resulted in an error.
+      type: Boolean
+    - contextPath: CallTool.Tool.meta
+      description: Metadata about the tool call.
+      type: Unknown
+    - contextPath: CallTool.Tool.structuredContent
+      description: The structured content returned by the tool.
+      type: Unknown
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: devdemisto/mcp:1.0.0.5924451
+  ismcp: true
+fromversion: 6.1.0
+tests:
+- No tests (auto formatted)
+supportedModules:
+- C3
+- X0
+- X1
+- X3
+- X5
+- ENT_PLUS
+- exposure_management
+- cloud
+- cloud_runtime_security
+- agentix
+- cloud_posture
+- xsiam
+- edr
