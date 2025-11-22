@@ -1,0 +1,61 @@
+{
+    "aggregated_score": 90,
+    "assigned_user_mail": "john.doe@example.com",
+    "assigned_user_pretty_name": "John Doe",
+    "case_domain": "test.domain.com",
+    "case_id": "12345",
+    "case_name": "Test Case",
+    "case_sources": [
+        "source1",
+        "source2"
+    ],
+    "creation_time": "2023-01-01T00:00:00Z",
+    "critical_severity_issue_count": 2,
+    "custom_fields": {
+        "custom_field1": "value1"
+    },
+    "description": "Test Description",
+    "high_severity_issue_count": 3,
+    "hosts": [
+        "host1",
+        "host2"
+    ],
+    "issue_categories": [
+        "malware",
+        "phishing"
+    ],
+    "issue_count": 10,
+    "issues_grouping_status": "ACTIVE",
+    "low_severity_issue_count": 2,
+    "manual_score": 88,
+    "med_severity_issue_count": 3,
+    "mitre_tactics_ids_and_names": [
+        "TA0001",
+        "TA0002"
+    ],
+    "mitre_techniques_ids_and_names": [
+        "T1001",
+        "T1002"
+    ],
+    "modification_time": "2023-01-02T00:00:00Z",
+    "original_tags": [
+        "original_tag1",
+        "original_tag2"
+    ],
+    "predicted_score": 92,
+    "resolve_comment": "Issue resolved successfully",
+    "resolved_timestamp": "2023-01-03T00:00:00Z",
+    "rule_based_score": 85,
+    "severity": "high",
+    "starred": true,
+    "status": "open",
+    "tags": [
+        "current_tag1",
+        "current_tag2"
+    ],
+    "users": [
+        "user1",
+        "user2"
+    ],
+    "wildfire_hits": 5
+}

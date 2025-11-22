@@ -4774,3 +4774,24 @@ def test_create_appsec_issues_filter_and_tables_no_matching_table():
 
     with pytest.raises(DemistoException, match="No matching issue type found for the given filter combination"):
         create_appsec_issues_filter_and_tables(args)
+
+
+def test_map_case_format():
+    """Test cases for the map_case_format function"""
+
+    from CortexPlatformCore import map_case_format
+
+    @pytest.mark.parametrize("input_data", ["not a list", [], None])
+    def test_map_case_format_invalid_input(input_data):
+        result = map_case_format(input_data)
+        assert result == {}
+
+    # Test with complete case data mapping
+    def test_map_case_format_complete_mapping():
+        case_data = load_test_data("./TestData/case_raw_format.json")
+
+        result = map_case_format(case_data)
+
+        expected = load_test_data("./TestData/case_expected_format.json")
+
+        assert result == expected

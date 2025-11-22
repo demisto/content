@@ -1045,7 +1045,7 @@ def get_cases_command(client, args):
     filter_builder.add_field(CASE_FIELDS["case_domain"], FilterType.EQ, argToList(args.get("case_domain")))
     filter_builder.add_field(CASE_FIELDS["case_name"], FilterType.CONTAINS, argToList(args.get("case_name")))
     filter_builder.add_field(CASE_FIELDS["case_description"], FilterType.CONTAINS, argToList(args.get("case_description")))
-    filter_builder.add_field(CASE_FIELDS["starred"], FilterType.EQ, argToList(args.get("starred")))
+    filter_builder.add_field(CASE_FIELDS["starred"], FilterType.EQ, [argToBoolean(x) for x in argToList(args.get("starred"))])
     filter_builder.add_field(CASE_FIELDS["asset_ids"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_ids")))
     filter_builder.add_field(CASE_FIELDS["asset_groups"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_groups")))
     filter_builder.add_field(CASE_FIELDS["hosts"], FilterType.CASE_HOST_EQ, argToList(args.get("hosts")))
