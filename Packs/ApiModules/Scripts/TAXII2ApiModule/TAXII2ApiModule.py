@@ -549,14 +549,14 @@ class XSOAR2STIXParser:
                     elif stix_ioc:
                         iocs.append(stix_ioc)
 
-        demisto.info(f"create_indicators {len(iocs)=}")
+        demisto.info(f"T2API: indicators count: {len(iocs)}")
         if (
             not is_manifest
             and iocs
             and is_demisto_version_ge("6.6.0")
             and (relationships := self.create_relationships_objects(iocs, extensions))
         ):
-            demisto.info(f"create_indicators {len(relationships)=}")
+            demisto.info(f"T2API: indicators count: {len(relationships)}")
             total += len(relationships)
             iocs.extend(relationships)
             iocs = sorted(iocs, key=lambda k: k["modified"])

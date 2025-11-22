@@ -54,8 +54,11 @@ TAXII_REQUIRED_FILTER_FIELDS = {
 TAXII_V20_REQUIRED_FILTER_FIELDS = {"tags", "identity_class"}
 TAXII_V21_REQUIRED_FILTER_FIELDS = {"ismalwarefamily", "published"}
 SEARCH_AFTER_KEY_NAME = "search_after_cache"
-RELATIONSHIPS_THRESHOLD = 0.9
-PAGE_SIZE = int(int(demisto.params().get("res_size",2000)) * RELATIONSHIPS_THRESHOLD)
+
+# we want to save extra space in the response for relationships items without exceed the limit.
+# so if the res size is 100 - the indicators query limit is 90.
+STIX_PERCENTAGE = 0.9
+PAGE_SIZE = int(int(demisto.params().get("res_size", 2000)) * STIX_PERCENTAGE)
 
 """ TAXII2 Server """
 
@@ -297,7 +300,6 @@ class TAXII2Server:
             query=query, types=types, added_after=added_after, limit=limit, offset=offset, collection_id=collection_id
         )
 
-
         first_added = None
         last_added = None
         limited_extensions = None
@@ -306,6 +308,7 @@ class TAXII2Server:
             # returns the iocs without calculate offset
             objects = iocs
             limited_iocs = iocs
+            demisto.info(f"T2S: total IOCs fetched for collection {collection_id} : {(offset + limit) * STIX_PERCENTAGE}")
         else:
             limited_iocs = iocs[offset : offset + limit]
             if iocs and not limited_iocs:
@@ -313,8 +316,7 @@ class TAXII2Server:
             objects = limited_iocs
 
         if len(objects) < len(iocs):
-            demisto.info(f"T2S: WARNING: number of IOCs is higher than limit {len(objects)=} {len(iocs)=}")
-
+            demisto.info(f"T2S: WARNING: number of created IOCs is higher than limit {len(objects)=} {len(iocs)=}")
 
         if SERVER.has_extension:
             limited_extensions = get_limited_extensions(limited_iocs, extensions)
@@ -331,9 +333,7 @@ class TAXII2Server:
             response = {
                 "objects": objects,
             }
-
-            demisto.info(f"T2S: total IOCs fetched  {(offset + limit) * RELATIONSHIPS_THRESHOLD}")
-            if total > (offset + limit) * RELATIONSHIPS_THRESHOLD:
+            if total > (offset + limit) * STIX_PERCENTAGE:
                 response["more"] = True
                 response["next"] = str(limit + offset)
 
@@ -625,7 +625,7 @@ def search_indicators(field_filters: Optional[str], query: str, limit: int, sear
 
 
 def find_indicators(
-    query: str, types: list, added_after, limit: int, offset: int, is_manifest: bool = False, collection_id=None
+    query: str, types: list, added_after, limit: int, offset: int, is_manifest: bool = False, collection_id: str = None
 ) -> tuple:
     """
     Args:
@@ -635,21 +635,22 @@ def find_indicators(
         limit: response items limit
         offset: response offset
         is_manifest: whether this call is for manifest or indicators
+        collection_id: collection id to query it objects
 
     Returns: Created indicators and its extensions.
     """
     new_query = create_query(query, types, added_after)
-    limit = PAGE_SIZE
     new_limit = offset + limit
     field_filters = set_field_filters(is_manifest)
     use_search_after = False
+    limit = PAGE_SIZE
 
-    # remove old search_after values from the context
+    # remove old search_after values from the context cache
     integration_context = get_integration_context(True)
     remove_old_cache(integration_context)
 
     # check if there is a search_after value for this collection with this offset
-    search_after_offset = int(offset * RELATIONSHIPS_THRESHOLD)
+    search_after_offset = int(offset * STIX_PERCENTAGE)
     if integration_context.get(SEARCH_AFTER_KEY_NAME, {}).get(collection_id, {}).get(str(search_after_offset)):
         search_after = integration_context[SEARCH_AFTER_KEY_NAME][collection_id][str(search_after_offset)]
         indicator_searcher = search_indicators(field_filters, new_query, limit, search_after["search_after"])
@@ -666,33 +667,30 @@ def find_indicators(
     )
     iocs, extensions, total = XSOAR2STIXParser_client.create_indicators(indicator_searcher, is_manifest)
 
-
+    # in case search_after_param returns in the query result - save it to the cache for the next request
     if indicator_searcher._search_after_param:
-
         if SEARCH_AFTER_KEY_NAME not in integration_context:
             integration_context[SEARCH_AFTER_KEY_NAME] = {}
-
         if collection_id not in integration_context.get(SEARCH_AFTER_KEY_NAME):
             integration_context[SEARCH_AFTER_KEY_NAME][collection_id] = {}
-
         # Set the value
-        integration_context[SEARCH_AFTER_KEY_NAME][collection_id][str(indicator_searcher._total_iocs_fetched + search_after_offset)] = {
+        integration_context[SEARCH_AFTER_KEY_NAME][collection_id][
+            str(indicator_searcher._total_iocs_fetched + search_after_offset)
+        ] = {
             "search_after": indicator_searcher._search_after_param,
             "last_updated": datetime.now(timezone.utc).isoformat(),
         }
 
-        demisto.info(f"{integration_context=}")
-
         set_integration_context(integration_context)
-
+        demisto.info(f"{integration_context=}")
     return iocs, extensions, total, use_search_after
 
 
 def remove_old_cache(integration_context: dict) -> None:
-    """Remove expired entries from cache['search_after_cache'] if older than 24 hours."""
+    """Remove expired entries from cache['search_after_cache'] if older than cache_duration_hours."""
     now = datetime.now(timezone.utc)
-    expiry_time = timedelta(hours=48)
-
+    cache_duration_hours = int(demisto.params().get("cache_duration_hours", 48))
+    expiry_time = timedelta(hours=cache_duration_hours)
 
     search_cache = integration_context.get(SEARCH_AFTER_KEY_NAME)
     if not isinstance(search_cache, dict):
@@ -1155,8 +1153,7 @@ def main():  # pragma: no cover
         elif command == "taxii-server-info":
             integration_context = get_integration_context(True)
             return_results(get_server_info_command(integration_context))
-        # TODO: remove
-        elif command == "taxii-delete-context":
+        elif command == "taxii-delete-search-after-cache":
             integration_context = get_integration_context(True)
             integration_context.pop(SEARCH_AFTER_KEY_NAME, None)
             set_integration_context(integration_context)
