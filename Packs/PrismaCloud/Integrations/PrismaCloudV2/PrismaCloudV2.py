@@ -868,7 +868,7 @@ class Client(BaseClient):
         sort_direction: Optional[str] = None,
         sort_field: Optional[str] = None,
         include_resource_json: Optional[str] = "true",
-        heuristic_search: Optional[str] = "true"
+        heuristic_search: Optional[str] = "true",
     ):
         total_items = []
         page_count = 1
@@ -881,8 +881,9 @@ class Client(BaseClient):
                 "timeRange": time_range,
                 "withResourceJson": include_resource_json,
                 "heuristicSearch": heuristic_search,
-            })
-        
+            }
+        )
+
         first_page_response = self._http_request("POST", "search/config", json_data=data)
         first_page_data = first_page_response.get("data", {})
 
@@ -904,7 +905,7 @@ class Client(BaseClient):
             page_limit -= len(items)
             total_items.extend(items)
 
-            next_page_token = response.get("nextPageToken","")
+            next_page_token = response.get("nextPageToken", "")
 
         return total_items
 
@@ -2243,7 +2244,7 @@ def alert_remediate_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query = args.get("query")
-    heuristic_search = args.get("heuristic_search", "true") # doc is bool bot hre is str????
+    heuristic_search = args.get("heuristic_search", "true")
     limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
     time_filter = handle_time_filter(
         base_case=TIME_FILTER_BASE_CASE,
@@ -2267,14 +2268,7 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
         f" {include_additional_resource_fields=}, {heuristic_search=}"
     )
     response_items = client.config_search_request(
-        time_filter,
-        str(query),
-        limit,
-        search_id,
-        sort_direction,
-        sort_field,
-        include_resource_json,
-        heuristic_search
+        time_filter, str(query), limit, search_id, sort_direction, sort_field, include_resource_json, heuristic_search
     )
     if not include_additional_resource_fields:
         remove_additional_resource_fields(response_items)
@@ -2301,7 +2295,7 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
     command_results = CommandResults(
         outputs_prefix="PrismaCloud.Config",
         outputs_key_field="assetId",
-        readable_output=f'Showing {len(response_items)} results:\n'
+        readable_output=f"Showing {len(response_items)} results:\n"
         + tableToMarkdown(
             "Configuration Details:", response_items, headers=headers, removeNull=True, headerTransform=pascalToSpace
         ),
