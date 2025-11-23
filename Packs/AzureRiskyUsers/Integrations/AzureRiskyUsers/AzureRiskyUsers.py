@@ -1,4 +1,4 @@
-from typing import Callable
+from collections.abc import Callable
 from urllib.parse import parse_qs, urlparse
 
 import demistomock as demisto  # noqa: F401
@@ -178,7 +178,10 @@ class Client:
             Response (dict): API response from AzureRiskyUsers.
         """
         res: requests.Response = self.ms_client.http_request(
-            method="POST", url_suffix="identityProtection/riskyUsers/confirmCompromised", json_data={"userIds": user_ids}, resp_type="response"
+            method="POST",
+            url_suffix="identityProtection/riskyUsers/confirmCompromised",
+            json_data={"userIds": user_ids},
+            resp_type="response",
         )
         if res.status_code != 204:
             raise DemistoException(f"Unable to confirm risky user:\n{res.text}")
@@ -192,8 +195,11 @@ class Client:
         Returns:
             Response (dict): API response from AzureRiskyUsers.
         """
-        res: requests.Response =  self.ms_client.http_request(
-            method="POST", url_suffix="identityProtection/riskyUsers/confirmSafe", json_data={"userIds": user_ids}, resp_type="response"
+        res: requests.Response = self.ms_client.http_request(
+            method="POST",
+            url_suffix="identityProtection/riskyUsers/confirmSafe",
+            json_data={"userIds": user_ids},
+            resp_type="response",
         )
         if res.status_code != 204:
             raise DemistoException(f"Unable to confirm risky user:\n{res.text}")
@@ -638,35 +644,32 @@ def risk_detection_get_command(client: Client, args: dict[str, Any]) -> CommandR
 
 
 def risky_users_confirm(client: Client, args: dict[str, Any], confirm_func: Callable, verdict: str) -> list[CommandResults]:
-
     error_outputs = []
     success_outputs = []
     results = []
-    
+
     for user in argToList(args["user"]):
         try:
             user_id = client.upn_to_user_id(user) if is_upn(user) else user
             confirm_func(user_ids=[user_id])
-            success_outputs.append({'User': user})
+            success_outputs.append({"User": user})
         except Exception as e:
-            error_outputs.append({'User': user, 'Error': str(e)})
+            error_outputs.append({"User": user, "Error": str(e)})
 
     if success_outputs:
         results.append(
-            CommandResults(
-                readable_output=tableToMarkdown(f"Successfully confirmed users as {verdict}.", success_outputs)
-            )
+            CommandResults(readable_output=tableToMarkdown(f"Successfully confirmed users as {verdict}.", success_outputs))
         )
-    
+
     if error_outputs:
         results.append(
             CommandResults(
                 readable_output=tableToMarkdown(f"Unable to confirmed users as {verdict}.", error_outputs),
                 entry_type=EntryType.ERROR,
-                content_format=EntryFormat.MARKDOWN
+                content_format=EntryFormat.MARKDOWN,
             )
         )
-    
+
     return results
 
 

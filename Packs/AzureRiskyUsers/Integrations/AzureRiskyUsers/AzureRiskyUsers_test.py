@@ -467,7 +467,7 @@ def test_risky_users_confirm_compromise_command(mocker):
      - Ensure client.confirm_compromised_request is called with the correct user IDs.
      - Ensure the readable output is as expected.
     """
-    from AzureRiskyUsers import risky_users_confirm_compromise_command, tableToMarkdown
+    from AzureRiskyUsers import risky_users_confirm, tableToMarkdown
 
     mock_client_instance = mock_client()
     mocker.patch.object(mock_client_instance, "upn_to_user_id", side_effect=lambda x: f"id_{x}")
@@ -476,14 +476,15 @@ def test_risky_users_confirm_compromise_command(mocker):
     users_to_compromise = ["user1@example.com", "user2@example.com"]
     args = {"user": users_to_compromise}
 
-    result = risky_users_confirm_compromise_command(mock_client_instance, args)
+    result = risky_users_confirm(mock_client_instance, args, mock_client_instance.confirm_compromised_request, "compromised")
 
-    mock_client_instance.upn_to_user_id.assert_has_calls([
-        mocker.call("user1@example.com"),
-        mocker.call("user2@example.com")
-    ])
-    mock_client_instance.confirm_compromised_request.assert_called_once_with(user_ids=["id_user1@example.com", "id_user2@example.com"])
-    assert result.readable_output == tableToMarkdown("Successfully confirmed users as compromised.", {"User": users_to_compromise})
+    mock_client_instance.upn_to_user_id.assert_has_calls([mocker.call("user1@example.com"), mocker.call("user2@example.com")])
+    mock_client_instance.confirm_compromised_request.assert_called_once_with(
+        user_ids=["id_user1@example.com", "id_user2@example.com"]
+    )
+    assert result.readable_output == tableToMarkdown(
+        "Successfully confirmed users as compromised.", {"User": users_to_compromise}
+    )
 
 
 def test_risky_users_confirm_safe_command(mocker):
@@ -498,8 +499,8 @@ def test_risky_users_confirm_safe_command(mocker):
      - Ensure client.confirm_safe_request is called with the correct user IDs.
      - Ensure the readable output is as expected.
     """
-    from AzureRiskyUsers import risky_users_confirm_safe_command, tableToMarkdown
-    
+    from AzureRiskyUsers import risky_users_confirm, tableToMarkdown
+
     mock_client_instance = mock_client()
     mocker.patch.object(mock_client_instance, "upn_to_user_id", side_effect=lambda x: f"id_{x}")
     mocker.patch.object(mock_client_instance, "confirm_safe_request")
@@ -507,11 +508,8 @@ def test_risky_users_confirm_safe_command(mocker):
     users_to_safe = ["user3@example.com", "user4@example.com"]
     args = {"user": users_to_safe}
 
-    result = risky_users_confirm_safe_command(mock_client_instance, args)
+    result = risky_users_confirm(mock_client_instance, args, mock_client_instance.confirm_safe_request, "safe")
 
-    mock_client_instance.upn_to_user_id.assert_has_calls([
-        mocker.call("user3@example.com"),
-        mocker.call("user4@example.com")
-    ])
+    mock_client_instance.upn_to_user_id.assert_has_calls([mocker.call("user3@example.com"), mocker.call("user4@example.com")])
     mock_client_instance.confirm_safe_request.assert_called_once_with(user_ids=["id_user3@example.com", "id_user4@example.com"])
     assert result.readable_output == tableToMarkdown("Successfully confirmed users as safe.", {"User": users_to_safe})
