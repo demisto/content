@@ -2653,7 +2653,7 @@ script:
     - contextPath: GCP.Compute.Networks.selfLink
       description: Server-defined URL for the resource.
       type: string
-    - contextPath: GCP.Compute.Networks.auto_create_sub_networks
+    - contextPath: GCP.Compute.Networks.autoCreateSubnetworks
       description: When set to true, the VPC network is created in "auto" mode. When set to false, the VPC network is created in "custom" mode.
       type: boolean
     - contextPath: GCP.Compute.Networks.subnetworks
