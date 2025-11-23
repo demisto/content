@@ -132,7 +132,7 @@ class Client:
                 "sysparm_display_value": "false",
                 "sysparm_limit": limit,
                 "sysparm_offset": offset,
-                # Use timestamp-based query with descending ordering (newest first) to match 
+                # Use timestamp-based query with descending ordering (newest first) to match
                 # current implementation for the other event types.
                 "sysparm_query": f"ORDERBYDESCsys_created_on^sys_created_on>{from_time}",
             }
