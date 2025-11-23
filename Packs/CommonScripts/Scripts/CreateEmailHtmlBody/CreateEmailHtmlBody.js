@@ -144,7 +144,7 @@ try {
     // Find and process placeholders
     let html = res[0].Contents || '';
     const placeholderRegex = /\${(.+?)}/g;
-    const fieldMap = {};
+    let fieldMap = {};
     let match;
     
     // Reset regex lastIndex to ensure we catch all matches
