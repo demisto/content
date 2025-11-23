@@ -4,7 +4,6 @@ from collections import defaultdict
 import re
 from typing import Any
 
-
 OKTA_BRAND = "Okta v2"
 MS_GRAPH_BRAND = "Microsoft Graph User"
 GSUITE_BRAND = "GSuiteAdmin"
@@ -474,11 +473,12 @@ def run_command(
 ):
     clear_user_sessions_command = Command(
         name=COMMANDS_BY_BRAND[brand],
-        args={ARG_NAME_BY_BRAND[brand]: user_id},
+        args={ARG_NAME_BY_BRAND[brand]: user_id, "raw_response": 'true'},
         brand=brand,
     )
     if clear_user_sessions_command.is_valid_args():
         readable_outputs, _, error_message = clear_user_sessions(clear_user_sessions_command)
+        demisto.debug(f"clear_user_sessions results: {readable_outputs=}, {error_message=}")
         results_for_verbose.extend(readable_outputs)
         if not error_message:
             clear_session_results.append((brand, "Success", f"User session was cleared for {user_name or user_id}"))
