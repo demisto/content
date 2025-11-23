@@ -15,6 +15,9 @@ COMMANDS_BY_BRAND = {
     GSUITE_BRAND: "gsuite-user-signout",
 }
 ARG_NAME_BY_BRAND = {OKTA_BRAND: "userId", MS_GRAPH_BRAND: "user", GSUITE_BRAND: "user_key"}
+USER_NOT_FOUND_ERROR_TYPE = "NOT_FOUND"
+AUTH_AUTHZ_ERROR_TYPE = "AUTH_AUTHZ"
+GENERAL_ERROR_TYPE = "GENERAL_ERROR"
 
 
 class Command:
@@ -326,95 +329,143 @@ def create_readable_output(outputs: list):
 
     return readable_output
 
-
-def is_content_error(entry: dict) -> bool:
+def _get_content_lower(entry: Dict[str, Any]) -> Optional[str]:
     """
-    Check if an entry contains error indicators in its Content field using pattern matching.
-
-    This function examines the Content field of an entry to identify potential error conditions
-    that might not be captured by the standard Type field check. Uses regular expressions
-    to match error patterns with dynamic content.
+    Extracts content from the entry, performs basic validation, and converts it to lowercase.
 
     Args:
-        entry (dict): The entry dictionary to check for error content.
+        entry (dict): The entry dictionary.
 
     Returns:
-        bool: True if the entry content indicates an error, False otherwise.
+        Optional[str]: The lowercase content string, or None if invalid or empty.
     """
-    content = entry.get("Contents", "") or entry.get("Content", "")
+    # Prefer "Contents" but fall back to "Content"
+    content = entry.get("Contents") or entry.get("Content")
 
     if not content or not isinstance(content, str):
-        return False
+        return None
 
     # Convert to lowercase for case-insensitive matching
-    content_lower = content.lower()
+    return content.lower()
 
-    # Error patterns using regular expressions to handle dynamic content
-    error_patterns = [
-        r"user\s+.*?\s+does\s+not\s+exist",  # "User <id> does not exist"
-        r"user\s+.*?\s+not\s+found",  # "User <id> not found"
-        r"user\s+.*?\s+is\s+invalid",  # "User <id> is invalid"
-        r"could\s+not\s+find\s+user\s+.*",  # "Could not find user <id>"
-        r"no\s+user\s+found\s+.*",  # "No user found with id <id>"
-        r"invalid\s+user\s+.*",  # "Invalid user <id>"
-        r"user\s+.*?\s+lookup\s+failed",  # "User <id> lookup failed"
-        r"username\s+.*?\s+not\s+found",  # "Username <name> not found"
-        r"user\s+id\s+.*?\s+not\s+found",  # "User ID <id> not found"
-        r"access\s+denied\s+.*",  # "Access denied for user <id>"
-        r"permission\s+denied\s+.*",  # "Permission denied for <user>"
-        r"unauthorized\s+.*",  # "Unauthorized access for <user>"
-        r"authentication\s+failed\s+.*",  # "Authentication failed for <user>"
-        r"forbidden\s+.*",  # "Forbidden access for <user>"
-        r"bad\s+request\s+.*",  # "Bad request for user <id>"
-        r"invalid\s+request\s+.*",  # "Invalid request for <user>"
-        r"invalid\s+credentials\s+.*",  # "Invalid credentials for <user>"
-        r"failed\s+to\s+.*\s+user",  # "Failed to find user", "Failed to authenticate user"
-        r"error\s*:\s*.*user.*",  # "Error: user related message"
-        r"exception\s*:\s*.*user.*",  # "Exception: user related message"
-        r"unable\s+to\s+.*\s+user",  # "Unable to find user", "Unable to authenticate user"
-        r"session\s+.*\s+not\s+found",  # "Session <id> not found"
-        r"session\s+.*\s+expired",  # "Session <id> expired"
-        r"session\s+.*\s+invalid",  # "Session <id> invalid"
-        r".*\s+does\s+not\s+have\s+.*\s+permission",  # "<user> does not have <action> permission"
-        r"account\s+.*\s+disabled",  # "Account <id> disabled"
-        r"account\s+.*\s+suspended",  # "Account <id> suspended"
-        r"account\s+.*\s+not\s+found",  # "Account <id> not found"
+
+def is_not_found_error(content_lower: str) -> bool:
+    """
+    Checks for patterns indicating a user, account, or session was not found.
+    """
+
+    not_found_patterns = [
+        r".*404.*",                     # Matches any string containing "404"
+        r".*resource\s+not\s+found.*",  # Matches any string containing "resource not found"
+        r".*user\s+.*?\s+does\s+not\s+exist",
+        r".*user\s+.*?\s+not\s+found",
+        r".*user\s+.*?\s+is\s+invalid",
+        r".*could\s+not\s+find\s+user\s+.*",
+        r".*no\s+user\s+found\s+.*",
+        r".*invalid\s+user\s+.*",
+        r".*user\s+.*?\s+lookup\s+failed",
+        r".*username\s+.*?\s+not\s+found",
+        r".*user\s+id\s+.*?\s+not\s+found",
+        r".*session\s+.*\s+not\s+found",
+        r".*account\s+.*\s+not\s+found"
     ]
-
-    # Simple string patterns (no regex needed)
-    simple_error_indicators = [
-        "error:",
-        "failed:",
-        "exception:",
-        "access denied",
-        "permission denied",
-        "unauthorized",
-        "authentication failed",
-        "forbidden",
-        "bad request",
-        "invalid request",
-        "invalid credentials",
-        "user does not exist",
-        "user not found",
-        "invalid user",
-        "could not find user",
-        "no user found",
-        "user lookup failed",
-        "username not found",
-        "user id not found",
-    ]
-
-    # Check regex patterns
-    for pattern in error_patterns:
+    for pattern in not_found_patterns:
         if re.search(pattern, content_lower):
             return True
 
-    # Check simple string patterns
-    for indicator in simple_error_indicators:
-        if indicator in content_lower:
+    return False
+
+
+def is_auth_authz_error(content_lower: str) -> bool:
+    """
+    Checks for patterns indicating authentication or authorization failure (access, permission, credentials).
+    """
+    auth_authz_patterns = [
+        # Auth/Authz Regex Patterns
+        r".*access\s+denied\s+.*",  # "Access denied for user <id>"
+        r".*permission\s+denied\s+.*",  # "Permission denied for <user>"
+        r".*unauthorized\s+.*",  # "Unauthorized access for <user>"
+        r".*authentication\s+failed\s+.*",  # "Authentication failed for <user>"
+        r".*forbidden\s+.*",  # "Forbidden access for <user>"
+        r".*invalid\s+credentials\s+.*",  # "Invalid credentials for <user>"
+        r".*session\s+.*\s+expired",  # "Session <id> expired"
+        r".*session\s+.*\s+invalid",  # "Session <id> invalid"
+        r".*\s+does\s+not\s+have\s+.*\s+permission",  # "<user> does not have <action> permission"
+        r".*account\s+.*\s+disabled",  # "Account <id> disabled"
+        r".*account\s+.*\s+suspended",  # "Account <id> suspended"
+
+        # Simple string indicators that are NOT covered by the regex above (e.g., a pure single word)
+        r"access denied",  # Added as a simple match in case it's not followed by dynamic content
+        r"permission denied",
+        r"unauthorized",
+        r"authentication failed",
+        r"forbidden",
+        r"invalid credentials",
+    ]
+
+    for pattern in auth_authz_patterns:
+        # Note: We use re.search here, which handles both simple strings and complex regex
+        if re.search(pattern, content_lower):
             return True
 
     return False
+
+
+def is_general_error(content_lower: str) -> bool:
+    """
+    Checks for general error, exception, or bad/invalid request patterns.
+    """
+    general_patterns = [
+        # General Error Regex Patterns
+        r".*bad\s+request\s+.*",  # "Bad request for user <id>"
+        r".*invalid\s+request\s+.*",  # "Invalid request for <user>"
+        r".*failed\s+to\s+.*\s+user",  # "Failed to find user", "Failed to authenticate user"
+        r".*error\s*:\s*.*",  # "error: user related message"
+        r".*exception\s*:\s*.*",  # "exception: user related message"
+        r".*unable\s+to\s+.*\s+user",  # "Unable to find user", "Unable to authenticate user"
+
+        # Simple string indicators (must not duplicate those in Auth/Authz)
+        r"error:",
+        r"failed:",
+        r"exception:",
+        r"bad request",
+        r"invalid request",
+    ]
+
+    for pattern in general_patterns:
+        if re.search(pattern, content_lower):
+            return True
+
+    return False
+
+def check_content_error_type(entry: Dict[str, Any]) -> Optional[str]:
+    """
+    Checks if an entry contains error indicators and returns the type of error.
+
+    Args:
+        entry (dict): The entry dictionary to check.
+
+    Returns:
+        Optional[str]: A string indicating the error type ("NOT_FOUND", "AUTH_AUTHZ", "GENERAL_ERROR"), or None.
+    """
+    content_lower = _get_content_lower(entry)
+
+    if content_lower is None:
+        return None
+
+    # 1. Check for Not Found errors first, as they are very specific
+    if is_not_found_error(content_lower):
+        return USER_NOT_FOUND_ERROR_TYPE
+
+    # 2. Check for Authentication/Authorization errors next
+    if is_auth_authz_error(content_lower):
+        return AUTH_AUTHZ_ERROR_TYPE
+
+    # 3. Check for general/catch-all errors last
+    if is_general_error(content_lower):
+        return GENERAL_ERROR_TYPE
+
+    return None
 
 
 def is_error_enhanced(entry: dict) -> bool:
@@ -431,8 +482,13 @@ def is_error_enhanced(entry: dict) -> bool:
     if is_error(entry):
         return True
 
-    # Then check the content for error indicators
-    return is_content_error(entry)
+    # check_content_error_type returns a string (e.g., "NOT_FOUND") if an error is found,
+    # and None if no error is found.
+    error_type = check_content_error_type(entry)
+
+    # If error_type is a non-empty string, it evaluates to True. If it is None,
+    # it evaluates to False.
+    return bool(error_type)
 
 
 def get_error_enhanced(entry: dict) -> str:
@@ -449,19 +505,22 @@ def get_error_enhanced(entry: dict) -> str:
     Raises:
         ValueError: If no error is detected in the entry.
     """
-    try:
-        # First try the standard get_error function
-        return get_error(entry)
-    except ValueError:
-        # If standard get_error fails, check if we can extract error from content
-        if is_content_error(entry):
-            content = entry.get("Contents", "") or entry.get("Content", "")
-            if not content:
-                return "Unknown error occurred"
-            return content.strip()
-        else:
-            # If no error is detected, raise the original ValueError
-            raise ValueError("execute_command_result has no error entry. before using get_error_enhanced use is_error_enhanced")
+    content = entry.get("Contents") or entry.get("Content")
+    content_lower = content.lower()
+    # 1. Check for Not Found errors first, as they are very specific
+    if is_not_found_error(content_lower):
+        return "User not found."
+
+    # 2. Check for Authentication/Authorization errors next
+    if is_auth_authz_error(content_lower):
+        return "Authentication failed."
+
+    # 3. Check for general/catch-all errors last
+    elif is_error_enhanced(entry):
+        return f"Unknown error occurred: {content.strip()}"
+
+    # If no error is detected, raise the original ValueError
+    raise ValueError("execute_command result has no error entry. before using get_error_enhanced use is_error_enhanced")
 
 
 def run_command(
@@ -473,12 +532,11 @@ def run_command(
 ):
     clear_user_sessions_command = Command(
         name=COMMANDS_BY_BRAND[brand],
-        args={ARG_NAME_BY_BRAND[brand]: user_id, "raw_response": 'true'},
+        args={ARG_NAME_BY_BRAND[brand]: user_id},
         brand=brand,
     )
     if clear_user_sessions_command.is_valid_args():
         readable_outputs, _, error_message = clear_user_sessions(clear_user_sessions_command)
-        demisto.debug(f"clear_user_sessions results: {readable_outputs=}, {error_message=}")
         results_for_verbose.extend(readable_outputs)
         if not error_message:
             clear_session_results.append((brand, "Success", f"User session was cleared for {user_name or user_id}"))
@@ -549,19 +607,19 @@ def main():
             if okta_v2_id:
                 run_command(okta_v2_id, results_for_verbose, clear_session_results, OKTA_BRAND, user_name)
             elif OKTA_BRAND in brands:
-                clear_session_results.append((OKTA_BRAND, "Failed", "Username not found or no integration configured."))
+                clear_session_results.append((OKTA_BRAND, "Failed", "User not found or no integration configured."))
 
             # Microsoft Graph User
             if microsoft_graph_id:
                 run_command(microsoft_graph_id, results_for_verbose, clear_session_results, MS_GRAPH_BRAND, user_name)
             elif MS_GRAPH_BRAND in brands:
-                clear_session_results.append((MS_GRAPH_BRAND, "Failed", "Username not found or no integration configured."))
+                clear_session_results.append((MS_GRAPH_BRAND, "Failed", "User not found or no integration configured."))
 
             # GSuiteAdmin
             if gsuite_id:
                 run_command(gsuite_id, results_for_verbose, clear_session_results, GSUITE_BRAND, user_name)
             elif GSUITE_BRAND in brands:
-                clear_session_results.append((GSUITE_BRAND, "Failed", "Username not found or no integration configured."))
+                clear_session_results.append((GSUITE_BRAND, "Failed", "User not found or no integration configured."))
 
             for brand, result, message in clear_session_results:
                 user_output = {
