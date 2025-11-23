@@ -315,4 +315,4 @@ marketplaces:
 - platform
 - marketplacev2
 tests:
-- FileEnrichment - Test
+- FileEnrichment-Test
