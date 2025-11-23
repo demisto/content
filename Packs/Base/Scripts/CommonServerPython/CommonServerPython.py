@@ -8530,7 +8530,7 @@ def safe_strptime(date_str, datetime_format, strptime=datetime.strptime):
 
     :type strptime: ``Callable``
     :param strptime: The function to use for parsing the date string (optional)
-    
+
     :return: The parsed datetime object
     :rtype: ``datetime.datetime``
     """
