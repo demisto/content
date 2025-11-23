@@ -895,7 +895,7 @@ def fetch_incidents(proxies):
     last_fetch = last_run.get("time") or FETCH_TIME
 
     es = elasticsearch_builder(proxies)
-    time_range_dict = get_time_range(time_range_start=last_fetch)
+    time_range_dict = get_time_range(last_fetch=last_fetch, time_range_start=FETCH_TIME)
 
     if RAW_QUERY:
         response = execute_raw_query(es, RAW_QUERY)
