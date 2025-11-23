@@ -1615,7 +1615,6 @@ def test_summarize_command_results_appends_unsupported_enrichment_row(module_fac
         assert "Unsupported Command" in (row.get("Message") or "")
 
 
-
 # -- Context Mapping --
 @pytest.mark.parametrize(
     "mapping, entry, expected",

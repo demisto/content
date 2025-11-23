@@ -1,7 +1,7 @@
-id: f285fec7-5943-4c5b-80f1-c33a915027ff
+id: FileEnrichment - Test
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: FileEnrichment-Test
+name: FileEnrichment - Test
 starttaskid: "0"
 tasks:
   "0":
