@@ -440,6 +440,8 @@ def is_error_enhanced(entry: dict) -> bool:
         return True
 
     content_lower = _get_content_lower(entry)
+    if not content_lower:
+        return False
     return is_not_found_error(content_lower) or is_auth_authz_error(content_lower) or is_general_error(content_lower)
 
 
@@ -457,8 +459,11 @@ def get_error_enhanced(entry: dict) -> str:
     Raises:
         ValueError: If no error is detected in the entry.
     """
-    content = entry.get("Contents") or entry.get("Content")
-    content_lower = _get_content_lower(entry)
+    if not is_error_enhanced(entry):
+        # If no error is detected, raise the original ValueError
+        raise ValueError("execute_command result has no error entry. before using get_error_enhanced use is_error_enhanced")
+
+    content_lower:str = _get_content_lower(entry) # if content lower was None, is_error_enhanced would have been false
     # 1. Check for Not Found errors first, as they are very specific
     if is_not_found_error(content_lower):
         return "User not found."
@@ -467,12 +472,11 @@ def get_error_enhanced(entry: dict) -> str:
     if is_auth_authz_error(content_lower):
         return "Authentication failed."
 
-    # 3. Check for general/catch-all errors last
-    elif is_error_enhanced(entry):
-        return f"Unknown error occurred: {content.strip()}"
+    # 3. Resolve to general error
+    content = entry.get("Contents") or entry.get("Content")
+    return f"Unknown error occurred: {content.strip()}"
 
-    # If no error is detected, raise the original ValueError
-    raise ValueError("execute_command result has no error entry. before using get_error_enhanced use is_error_enhanced")
+
 
 
 def run_command(
