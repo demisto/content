@@ -1013,22 +1013,3 @@ def test_org_get_by_id_command(mocker, grafana_client):
     args = {"org_id": "114"}
     org_get_by_id_command(grafana_client, args)
     http_request.assert_called_with("GET", "api/orgs/114", headers=None)
-
-
-from CommonServerPython import tableToMarkdown
-
-
-def test_tabletomarkdown():
-    res1 = {"dummy_key1": {"dummy_key2": "dummy_value"}}
-    res2 = {"dummy_key1": ["dummy_value", "a", "b"]}
-
-    # To make is_auto_json_transform work with nested values,
-    # explicitly specify headers to prevent single-key extraction
-    a = tableToMarkdown("TABLE 1", t=res1, is_auto_json_transform=True)
-    b = tableToMarkdown("TABLE 2", t=res1, is_auto_json_transform=False)
-    c = tableToMarkdown("TABLE 3", t=res2, is_auto_json_transform=False)
-
-    print("done")
-
-
-
