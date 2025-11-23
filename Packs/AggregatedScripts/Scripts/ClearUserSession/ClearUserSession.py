@@ -370,11 +370,7 @@ def is_not_found_error(content_lower: str) -> bool:
         r".*session\s+.*\s+not\s+found",
         r".*account\s+.*\s+not\s+found",
     ]
-    for pattern in not_found_patterns:
-        if re.search(pattern, content_lower):
-            return True
-
-    return False
+    return any(re.search(pattern, content_lower) for pattern in not_found_patterns)
 
 
 def is_auth_authz_error(content_lower: str) -> bool:
@@ -403,12 +399,7 @@ def is_auth_authz_error(content_lower: str) -> bool:
         r"invalid credentials",
     ]
 
-    for pattern in auth_authz_patterns:
-        # Note: We use re.search here, which handles both simple strings and complex regex
-        if re.search(pattern, content_lower):
-            return True
-
-    return False
+    return any(re.search(pattern, content_lower) for pattern in auth_authz_patterns)
 
 
 def is_general_error(content_lower: str) -> bool:
@@ -431,41 +422,7 @@ def is_general_error(content_lower: str) -> bool:
         r"invalid request",
     ]
 
-    for pattern in general_patterns:
-        if re.search(pattern, content_lower):
-            return True
-
-    return False
-
-
-def check_content_error_type(entry: Dict[str, Any]) -> Optional[str]:
-    """
-    Checks if an entry contains error indicators and returns the type of error.
-
-    Args:
-        entry (dict): The entry dictionary to check.
-
-    Returns:
-        Optional[str]: A string indicating the error type ("NOT_FOUND", "AUTH_AUTHZ", "GENERAL_ERROR"), or None.
-    """
-    content_lower = _get_content_lower(entry)
-
-    if content_lower is None:
-        return None
-
-    # 1. Check for Not Found errors first, as they are very specific
-    if is_not_found_error(content_lower):
-        return USER_NOT_FOUND_ERROR_TYPE
-
-    # 2. Check for Authentication/Authorization errors next
-    if is_auth_authz_error(content_lower):
-        return AUTH_AUTHZ_ERROR_TYPE
-
-    # 3. Check for general/catch-all errors last
-    if is_general_error(content_lower):
-        return GENERAL_ERROR_TYPE
-
-    return None
+    return any(re.search(pattern, content_lower) for pattern in general_patterns)
 
 
 def is_error_enhanced(entry: dict) -> bool:
@@ -482,13 +439,8 @@ def is_error_enhanced(entry: dict) -> bool:
     if is_error(entry):
         return True
 
-    # check_content_error_type returns a string (e.g., "NOT_FOUND") if an error is found,
-    # and None if no error is found.
-    error_type = check_content_error_type(entry)
-
-    # If error_type is a non-empty string, it evaluates to True. If it is None,
-    # it evaluates to False.
-    return bool(error_type)
+    content_lower = _get_content_lower(entry)
+    return is_not_found_error(content_lower) or is_auth_authz_error(content_lower) or is_general_error(content_lower)
 
 
 def get_error_enhanced(entry: dict) -> str:
