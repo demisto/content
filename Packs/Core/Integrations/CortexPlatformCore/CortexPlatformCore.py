@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 import dateparser
 from enum import Enum
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -449,7 +450,7 @@ class Client(CoreClient):
             url_suffix="/v1/issues/fix/trigger_fix_pull_request",
         )
 
-    def get_appsec_suggested_fix(self, issue_id: str) -> dict | None:
+    def get_appsec_suggested_fix(self, issue_id: str):
         reply = self._http_request(
             method="GET",
             headers=self._headers,
@@ -474,7 +475,7 @@ class Client(CoreClient):
         )
 
 
-def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommendation: dict, issue_id: str) -> tuple[list, dict]:
+def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     """
     Append Application Security - related suggestions to the recommendation data.
 
@@ -488,23 +489,74 @@ def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommenda
     Returns:
         tuple[list, dict]: Updated headers and recommendation including AppSec additions.
     """
+    recommendation = {}
     manual_fix = issue.get("extended_fields", {}).get("action")
     recommendation["remediation"] = manual_fix if manual_fix else recommendation.get("remediation")
     fix_suggestion = client.get_appsec_suggested_fix(issue_id)
     demisto.debug(f"AppSec fix suggestion: {fix_suggestion}")
 
     # Avoid situations where existingCodeBlock is dirty, leaving suggestedCodeBlock empty.
-    if fix_suggestion and fix_suggestion.get("suggestedCodeBlock"):
+    if fix_suggestion and isinstance(fix_suggestion, dict) and fix_suggestion.get("suggestedCodeBlock"):
         recommendation.update(
             {
                 "existing_code_block": fix_suggestion.get("existingCodeBlock", ""),
                 "suggested_code_block": fix_suggestion.get("suggestedCodeBlock", ""),
             }
         )
-        headers.append("existing_code_block")
-        headers.append("suggested_code_block")
 
-    return headers, recommendation
+    return recommendation
+
+
+def clone_client(original_client):
+    """
+    Create a new client instance for thread-safe execution.
+    """
+    return Client(
+        base_url=original_client._base_url,
+        verify=original_client._verify,
+        headers=original_client._headers,
+        timeout=original_client.timeout,
+    )
+
+
+def process_issue_recommendation(original_client, issue):
+    """
+    Process a single issue: get playbook and AppSec suggestions.
+    """
+    try:
+        client = clone_client(original_client)
+        current_issue_id = issue.get("internal_id")
+        demisto.debug(f"recommendations: Starting to search issue recommendations for {current_issue_id}.")
+        
+        # Build final recommendation
+        recommendation = {
+            "issue_id": current_issue_id,
+            "issue_name": issue.get("alert_name"),
+            "severity": issue.get("severity"),
+            "description": issue.get("alert_description"),
+            "remediation": issue.get("remediation")
+        }
+
+        # Get playbook suggestions
+        playbook_response = client.get_playbook_suggestion_by_issue(current_issue_id)
+        demisto.debug(f"recommendations: Playbook response for {current_issue_id}: {playbook_response}.")
+        if playbook_response and isinstance(playbook_response, dict) and "reply" in playbook_response.keys():
+            playbook_suggestions = playbook_response.get("reply", {})
+            recommendation["playbook_suggestions"] = playbook_suggestions
+        
+        # if issue.get("alert_source") in APPSEC_SOURCES:
+        #     demisto.debug(f"recommendations: fetching for appsec suggestion in {current_issue_id}")
+        #     appsec_recommendation = get_appsec_suggestion(
+        #         client, issue, current_issue_id
+        #     )
+        #     demisto.debug(f"recommendations: AppSec recommendations for {current_issue_id}: {appsec_recommendation}.")
+        #     if appsec_recommendation:
+        #         recommendation.update(appsec_recommendation)
+
+        return recommendation
+    
+    except Exception as e:
+        raise DemistoException(f"Failed to process issue {issue.get('internal_id')}: {str(e)}")
 
 
 def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
@@ -512,17 +564,17 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     Get comprehensive recommendations for an issue, including remediation steps and playbook suggestions.
     Retrieves issue data with remediation field using the generic /api/webapp/get_data endpoint.
     """
-    issue_id = args.get("issue_id")
-    if not issue_id:
+    issue_ids = argToList(args.get("issue_ids"))
+    if not issue_ids:
         raise DemistoException("issue_id is required.")
 
     filter_builder = FilterBuilder()
-    filter_builder.add_field("internal_id", FilterType.EQ, issue_id)
+    filter_builder.add_field("internal_id", FilterType.EQ, issue_ids)
 
     request_data = build_webapp_request_data(
         table_name="ALERTS_VIEW_TABLE",
         filter_dict=filter_builder.to_dict(),
-        limit=1,
+        limit=50, ###################
         sort_field="source_insert_ts",
         sort_order="DESC",
         on_demand_fields=[],
@@ -534,51 +586,126 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     issue_data = reply.get("DATA", [])
 
     if not issue_data:
-        raise DemistoException(f"No issue found with ID: {issue_id}")
+        raise DemistoException(f"No issues found with IDs: {issue_ids}")
 
-    issue = issue_data[0]
+    # issue = issue_data[0]
 
-    # Get playbook suggestions
-    playbook_response = client.get_playbook_suggestion_by_issue(issue_id)
-    playbook_suggestions = playbook_response.get("reply", {})
-    demisto.debug(f"{playbook_response=}")
+    # # Get playbook suggestions
+    # playbook_response = client.get_playbook_suggestion_by_issue(issue_id)
+    # playbook_suggestions = playbook_response.get("reply", {})
+    # demisto.debug(f"{playbook_response=}")
 
-    recommendation = {
-        "issue_id": issue.get("internal_id") or issue_id,
-        "issue_name": issue.get("alert_name"),
-        "severity": issue.get("severity"),
-        "description": issue.get("alert_description"),
-        "remediation": issue.get("remediation"),
-        "playbook_suggestions": playbook_suggestions,
-    }
+    # recommendation = {
+    #     "issue_id": issue.get("internal_id") or issue_id,
+    #     "issue_name": issue.get("alert_name"),
+    #     "severity": issue.get("severity"),
+    #     "description": issue.get("alert_description"),
+    #     "remediation": issue.get("remediation"),
+    #     "playbook_suggestions": playbook_suggestions,
+    # }
 
-    headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
+    # headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
 
-    if issue.get("alert_source") in APPSEC_SOURCES:
-        headers, recommendation = get_appsec_suggestion(client, headers, issue, recommendation, issue_id)
+    # if issue.get("alert_source") in APPSEC_SOURCES:
+    #     headers, recommendation = get_appsec_suggestion(client, headers, issue, recommendation, issue_id)
 
-    readable_output = tableToMarkdown(
-        f"Issue Recommendations for {issue_id}",
-        [recommendation],
+    # readable_output = tableToMarkdown(
+    #     f"Issue Recommendations for {issue_id}",
+    #     [recommendation],
+    #     headerTransform=string_to_table_header,
+    #     headers=headers,
+    # )
+
+    # if playbook_suggestions:
+    #     readable_output += "\n" + tableToMarkdown(
+    #         "Playbook Suggestions",
+    #         playbook_suggestions,
+    #         headerTransform=string_to_table_header,
+    #     )
+
+    # return CommandResults(
+    #     readable_output=readable_output,
+    #     outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.IssueRecommendations",
+    #     outputs_key_field="issue_id",
+    #     outputs=recommendation,
+    #     raw_response=response,
+    # )
+    headers = [
+        "issue_id",
+        "issue_name",
+        "severity",
+        "description",
+        "remediation",
+        "playbook_suggestions",
+        "existing_code_block",
+        "suggested_code_block"
+    ]
+    all_recommendations = []
+    
+     # Parallel processing of issues
+    max_workers = min(10, len(issue_data))  # avoid overloading backend
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(process_issue_recommendation, client, issue) for issue in issue_data]
+        for future in as_completed(futures):
+            recommendation = future.result()
+            all_recommendations.append(recommendation)
+    
+    # for issue in issue_data:
+    #     current_issue_id = issue.get("internal_id")
+        
+    #     # Get playbook suggestions
+    #     playbook_response = client.get_playbook_suggestion_by_issue(current_issue_id)
+    #     playbook_suggestions = playbook_response.get("reply", {})
+    #     demisto.debug(f"{playbook_response=}")
+
+    #     recommendation = {
+    #         "issue_id": current_issue_id,
+    #         "issue_name": issue.get("alert_name"),
+    #         "severity": issue.get("severity"),
+    #         "description": issue.get("alert_description"),
+    #         "remediation": issue.get("remediation"),
+    #         "playbook_suggestions": playbook_suggestions,
+    #     }
+
+    #     headers = [
+    #         "issue_id",
+    #         "issue_name",
+    #         "severity",
+    #         "description",
+    #         "remediation",
+    #         "playbook_suggestions",
+    #         "existing_code_block",
+    #         "suggested_code_block"
+    #     ]
+
+    #     if issue.get("alert_source") in APPSEC_SOURCES:
+    #         headers, recommendation = get_appsec_suggestion(client, headers, issue, recommendation, current_issue_id)
+
+    #     issue_readable_output = tableToMarkdown(
+    #         f"Issue Recommendations for {current_issue_id}",
+    #         [recommendation],
+    #         headerTransform=string_to_table_header,
+    #         headers=headers,
+    #     )
+        
+    #     all_recommendations.append(recommendation)
+    #     all_readable_outputs.append(issue_readable_output)
+
+    # Combine all readable outputs
+    issue_readable_output = tableToMarkdown(
+        f"Issue Recommendations for {issue_ids}",
+        all_recommendations,
         headerTransform=string_to_table_header,
         headers=headers,
     )
-
-    if playbook_suggestions:
-        readable_output += "\n" + tableToMarkdown(
-            "Playbook Suggestions",
-            playbook_suggestions,
-            headerTransform=string_to_table_header,
-        )
-
+  
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=issue_readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.IssueRecommendations",
         outputs_key_field="issue_id",
-        outputs=recommendation,
+        outputs=all_recommendations,
         raw_response=response,
     )
-
 
 def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
     """
