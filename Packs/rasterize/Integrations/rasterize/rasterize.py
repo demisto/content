@@ -139,6 +139,25 @@ def excepthook_recv_loop(args: threading.ExceptHookArgs) -> None:
             demisto.info(f"Unsuppressed Exception in _recv_loop: {args.exc_type=}, empty exc_value")
 
 
+def safe_tab_cleanup(operation, operation_name="operation", suppress_json_errors=True):
+    """
+    Safely execute tab cleanup operations, suppressing expected JSON decode errors from Chrome.
+    
+    Args:
+        operation: Callable to execute
+        operation_name: Name of the operation for logging
+        suppress_json_errors: Whether to suppress JSONDecodeError (default: True)
+    """
+    try:
+        operation()
+    except json.JSONDecodeError:
+        # Chrome often returns malformed JSON during cleanup - operation usually succeeds despite error
+        if not suppress_json_errors:
+            demisto.debug(f"JSONDecodeError during {operation_name} (operation likely succeeded)")
+    except Exception as ex:
+        demisto.info(f"Failed to {operation_name}: {str(ex)}")
+
+
 class TabLifecycleManager:
     def __init__(self, browser, chrome_port, offline_mode):
         self.browser = browser
@@ -179,21 +198,12 @@ class TabLifecycleManager:
             # Suppressing exceptions that might happen after the tab was closed.
             threading.excepthook = excepthook_recv_loop
 
-            try:
-                time.sleep(TAB_CLOSE_WAIT_TIME)  # pylint: disable=E9003
-                self.tab.Page.disable()
-            except Exception as ex:
-                demisto.info(f"TabLifecycleManager, __exit__, {self.chrome_port=}, failed to disable page due to {ex}")
-
-            try:
-                self.tab.stop()
-            except Exception as ex:
-                demisto.info(f"TabLifecycleManager, __exit__, {self.chrome_port=}, failed to stop tab {tab_id} due to {ex}")
-
-            try:
-                self.browser.close_tab(tab_id)
-            except Exception as ex:
-                demisto.info(f"TabLifecycleManager, __exit__, {self.chrome_port=}, failed to close tab {tab_id} due to {ex}")
+            time.sleep(TAB_CLOSE_WAIT_TIME)  # pylint: disable=E9003
+            
+            # Use safe cleanup wrapper to handle Chrome's malformed JSON responses
+            safe_tab_cleanup(lambda: self.tab.Page.disable(), "disable page")
+            safe_tab_cleanup(lambda: self.tab.stop(), f"stop tab {tab_id}")
+            safe_tab_cleanup(lambda: self.browser.close_tab(tab_id), f"close tab {tab_id}")
 
             time.sleep(TAB_CLOSE_WAIT_TIME)  # pylint: disable=E9003
 
