@@ -125,7 +125,7 @@ script:
       description: The username (samAccountName) of the user to modify.
       prettyname: Run action on
       prettypredefined:
-        User from the issue: ${issue.original_alert_json.raw_abioc.event.xdm.source.user.username}
+        Actor effective username: ${issue.matching_info.actor_effective_username}
     - name: base-dn
       prettyname: Base DN
       description: Root (for example, DC=domain,DC=com).
@@ -292,7 +292,7 @@ script:
       required: true
       prettyname: Run action on
       prettypredefined:
-        User from the issue: ${issue.original_alert_json.raw_abioc.event.xdm.source.user.username}
+        Actor effective username: ${issue.matching_info.actor_effective_username}
     - name: base-dn
       prettyname: Base DN
       description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance is used.
