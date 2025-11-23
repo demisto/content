@@ -35,12 +35,10 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/networkSecurityGroups/securityRules/read": [
         "azure-nsg-security-rule-update",
         "azure-nsg-security-rule-create",
-        "azure-nsg-security-rule-update-quick-action",
     ],
     "Microsoft.Network/networkSecurityGroups/securityRules/write": [
         "azure-nsg-security-rule-update",
         "azure-nsg-security-rule-create",
-        "azure-nsg-security-rule-update-quick-action",
     ],
     "Microsoft.Network/networkSecurityGroups/securityRules/delete": [
         "azure-nsg-security-rule-delete",
@@ -4027,7 +4025,6 @@ def main():  # pragma: no cover
             "azure-vm-instance-details-get": get_vm_command,
             "azure-vm-network-interface-details-get": get_network_interface_command,
             "azure-vm-public-ip-details-get": get_public_ip_details_command,
-            "azure-nsg-security-rule-update-quick-action": update_security_rule_command,
             "azure-webapp-assign-managed-identity-quick-action": webapp_update_command,
             "azure-storage-allow-access-quick-action": storage_account_update_command,
             "azure-webapp-set-http2-quick-action": set_webapp_config_command,
