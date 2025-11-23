@@ -153,7 +153,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: devdemisto/mcp:1.0.0.5924451
+  dockerimage: devdemisto/falcon-mcp:1.0.0.5963631
   ismcp: true
 fromversion: 6.1.0
 tests:
