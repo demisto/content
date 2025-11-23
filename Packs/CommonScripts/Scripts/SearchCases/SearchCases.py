@@ -41,25 +41,9 @@ def get_case_extra_data(args):
     case_extra_data = execute_command("core-get-case-extra-data", args)
     demisto.debug(f"After calling core-get-case-extra-data, {case_extra_data=}")
     issue_ids = extract_ids(case_extra_data)
-    case_data = case_extra_data.get("case", {})
-    notes = case_data.get("notes")
-    xdr_url = case_data.get("xdr_url")
-    starred_manually = case_data.get("starred_manually")
-    manual_description = case_data.get("manual_description")
-    detection_time = case_data.get("detection_time")
-    manual_description = case_extra_data.get("manual_description")
     network_artifacts = case_extra_data.get("network_artifacts")
     file_artifacts = case_extra_data.get("file_artifacts")
-    extra_data = {
-        "issue_ids": issue_ids,
-        "network_artifacts": network_artifacts,
-        "file_artifacts": file_artifacts,
-        "notes": notes,
-        "detection_time": detection_time,
-        "xdr_url": xdr_url,
-        "starred_manually": starred_manually,
-        "manual_description": manual_description,
-    }
+    extra_data = {"issue_ids": issue_ids, "network_artifacts": network_artifacts, "file_artifacts": file_artifacts}
     return extra_data
 
 
@@ -71,42 +55,6 @@ def add_cases_extra_data(case_data):
         case.update({"CaseExtraData": extra_data})
 
     return case_data
-
-
-def prepare_time_range(args: dict, start_key: str, end_key: str, gte_key: str, lte_key: str, time_type: str):
-    """
-    Prepare and validate start and end time parameters for a specific time range type.
-
-    Args:
-        args (dict): Dictionary containing time parameters
-        start_key (str): Key for start time in args
-        end_key (str): Key for end time in args
-        gte_key (str): Key to set for greater-than-or-equal time
-        lte_key (str): Key to set for less-than-or-equal time
-        time_type (str): Type of time for error messages (e.g., "creation", "modification")
-
-    Raises:
-        DemistoException: If end_time is provided without start_time
-    """
-    start_time = args.get(start_key, "")
-    end_time = args.get(end_key, "")
-
-    if end_time and not start_time:
-        raise DemistoException(f"When {time_type} end time is provided {time_type}_start_time must be provided as well.")
-
-    if start_time := dateparser.parse(start_time):
-        start_time = start_time.strftime("%Y-%m-%dT%H:%M:%S")
-
-    if end_time := dateparser.parse(end_time):
-        end_time = end_time.strftime("%Y-%m-%dT%H:%M:%S")
-
-    if start_time and not end_time:
-        # Set end_time to default now.
-        end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-
-    if start_time and end_time:
-        args[gte_key] = start_time
-        args[lte_key] = end_time
 
 
 def prepare_start_end_time(args: dict):
@@ -131,10 +79,25 @@ def prepare_start_end_time(args: dict):
         - Setting end_time to current time if only start_time is provided
 
     """
-    prepare_time_range(args, "creation_start_time", "creation_end_time", "gte_creation_time", "lte_creation_time", "creation")
-    prepare_time_range(
-        args, "modification_start_time", "modification_end_time", "gte_modification_time", "lte_modification_time", "modification"
-    )
+    start_time = args.get("start_time", "")
+    end_time = args.get("end_time", "")
+
+    if end_time and not start_time:
+        raise DemistoException("When end time is provided start_time must be provided as well.")
+
+    if start_time := dateparser.parse(start_time):
+        start_time = start_time.strftime("%Y-%m-%dT%H:%M:%S")
+
+    if end_time := dateparser.parse(end_time):
+        end_time = end_time.strftime("%Y-%m-%dT%H:%M:%S")
+
+    if start_time and not end_time:
+        # Set end_time to default now.
+        end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+
+    if start_time and end_time:
+        args["gte_creation_time"] = start_time
+        args["lte_creation_time"] = end_time
 
 
 def main():  # pragma: nocover
@@ -143,12 +106,11 @@ def main():  # pragma: nocover
     """
     args: dict = demisto.args()
     prepare_start_end_time(args)
-    args["limit"] = args.pop("page_size", 60)
+    args["limit"] = args.pop("page_size", 100)
     try:
         demisto.debug(f"Calling core-get-cases with arguments: {args}")
-        results: dict = demisto.executeCommand("core-get-cases", args)  # type: ignore
-        demisto.debug(f"core-get-cases command results: {results}")
-        resultsContent = demisto.get(results[0], "Contents")
+        results: dict = demisto.executeCommand("core-get-cases", args)[0]  # type: ignore
+        demisto.debug(f"core-get-cases command results {results}")
 
         if is_error(results):
             error = get_error(results)
@@ -157,10 +119,11 @@ def main():  # pragma: nocover
 
         # In case enriched case data was requested
         if argToBoolean(args.get("get_enriched_case_data", "false")):
-            if isinstance(resultsContent, dict):
-                resultsContent = [resultsContent]
+            raw_response_search_cases = results.get("Contents", {})
+            if isinstance(raw_response_search_cases, dict):
+                raw_response_search_cases = [raw_response_search_cases]
 
-            case_extra_data = add_cases_extra_data(resultsContent)
+            case_extra_data = add_cases_extra_data(raw_response_search_cases)
 
             return_results(
                 CommandResults(
@@ -172,15 +135,7 @@ def main():  # pragma: nocover
                 )
             )
 
-        return_results(
-            CommandResults(
-                readable_output=tableToMarkdown("Cases", resultsContent, headerTransform=string_to_table_header),
-                outputs_prefix="Core.Case",
-                outputs_key_field="case_id",
-                outputs=resultsContent,
-                raw_response=resultsContent,
-            )
-        )
+        return_results(results)
 
     except DemistoException as error:
         return_error(f"Failed to execute SearchCases. Error:\n{error}", error)

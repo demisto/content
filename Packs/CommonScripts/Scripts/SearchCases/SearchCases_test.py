@@ -10,7 +10,7 @@ def test_prepare_start_end_time_normal(monkeypatch):
     WHEN prepare_start_end_time is called
     THEN it sets gte_creation_time and lte_creation_time correctly in the args dict
     """
-    args = {"creation_start_time": "2025-09-01T12:00:00", "creation_end_time": "2025-09-02T13:00:00"}
+    args = {"start_time": "2025-09-01T12:00:00", "end_time": "2025-09-02T13:00:00"}
     prepare_start_end_time(args)
     assert args["gte_creation_time"] == "2025-09-01T12:00:00"
     assert args["lte_creation_time"] == "2025-09-02T13:00:00"
@@ -22,7 +22,7 @@ def test_prepare_start_end_time_end_without_start():
     WHEN prepare_start_end_time is called
     THEN it raises DemistoException because start_time is required if end_time is provided
     """
-    args = {"creation_end_time": "2025-09-02T13:00:00"}
+    args = {"end_time": "2025-09-02T13:00:00"}
     with pytest.raises(DemistoException):
         prepare_start_end_time(args)
 
@@ -33,7 +33,7 @@ def test_prepare_start_end_time_only_start(monkeypatch):
     WHEN prepare_start_end_time is called
     THEN it sets gte_creation_time and lte_creation_time (lte_creation_time defaults to now)
     """
-    args = {"creation_start_time": "2025-09-01T12:00:00"}
+    args = {"start_time": "2025-09-01T12:00:00"}
     monkeypatch.setattr("SearchCases.datetime", datetime)
     prepare_start_end_time(args)
     assert "gte_creation_time" in args
@@ -58,7 +58,7 @@ def test_prepare_start_end_time_unparseable():
     WHEN prepare_start_end_time is called
     THEN it does not set gte_creation_time or lte_creation_time
     """
-    args = {"creation_start_time": "not-a-date", "creation_end_time": "also-not-a-date"}
+    args = {"start_time": "not-a-date", "end_time": "also-not-a-date"}
     prepare_start_end_time(args)
     assert "gte_creation_time" not in args
     assert "lte_creation_time" not in args
@@ -70,7 +70,7 @@ def test_prepare_start_end_time_only_end():
     WHEN prepare_start_end_time is called
     THEN it raises DemistoException because start_time is required if end_time is provided
     """
-    args = {"creation_end_time": "2025-09-02T13:00:00"}
+    args = {"end_time": "2025-09-02T13:00:00"}
     try:
         prepare_start_end_time(args)
     except DemistoException as e:
@@ -83,7 +83,7 @@ def test_prepare_start_end_time_relative(monkeypatch):
     WHEN prepare_start_end_time is called
     THEN it sets gte_creation_time and lte_creation_time in the args dict
     """
-    args = {"creation_start_time": "1 day ago", "creation_end_time": "now"}
+    args = {"start_time": "1 day ago", "end_time": "now"}
     prepare_start_end_time(args)
     assert "gte_creation_time" in args
     assert "lte_creation_time" in args
@@ -95,7 +95,7 @@ def test_main_success(mocker):
     WHEN main is called
     THEN return_results is called with the expected output
     """
-    mock_args = {"creation_start_time": "2025-09-01T12:00:00", "creation_end_time": "2025-09-02T13:00:00", "page_size": 5}
+    mock_args = {"start_time": "2025-09-01T12:00:00", "end_time": "2025-09-02T13:00:00", "page_size": 5}
     mocker.patch("demistomock.args", return_value=mock_args.copy())
     mocker.patch(
         "demistomock.executeCommand",
@@ -119,7 +119,7 @@ def test_main_error(mocker):
     WHEN main is called
     THEN return_error is called
     """
-    mock_args = {"creation_start_time": "2025-09-01T12:00:00", "creation_end_time": "2025-09-02T13:00:00", "page_size": 5}
+    mock_args = {"start_time": "2025-09-01T12:00:00", "end_time": "2025-09-02T13:00:00", "page_size": 5}
     mocker.patch("demistomock.args", return_value=mock_args.copy())
     mocker.patch(
         "demistomock.executeCommand",
