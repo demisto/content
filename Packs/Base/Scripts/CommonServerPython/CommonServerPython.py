@@ -2398,12 +2398,10 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         return mdResult
 
     if not headers and isinstance(t, dict) and len(t.keys()) == 1:
-        # in case of a single key, transform to preserve key-value structure
-        key = list(t.keys())[0]
-        value = list(t.values())[0]
-        # Transform to a two-column format to avoid header-data mismatch
-        t = [{"Key": key, "Value": value}]
-        headers = [key, "Value"]
+        # in case of a single key, create a column table where each element is in a different row.
+        headers = list(t.keys())
+        if isinstance(list(t.values())[0], list):
+            t = list(t.values())[0]
 
     if not isinstance(t, list):
         t = [t]
