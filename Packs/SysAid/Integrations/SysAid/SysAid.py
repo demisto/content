@@ -652,7 +652,7 @@ def get_service_record_update_time(service_record: dict[str, Any], use_classic_d
     """
     Parse the update_time from a SysAid service record.
 
-    SysAid Classic sends dates in non-ISO format which can be ambiguous when day <= 12.
+    The SysAid Classic version sends dates in non-ISO format, instead of the declared ISO format, which can be ambiguous when day <= 12.
     For example, "05/11/2025" could be May 11 or November 5.
 
     This function uses smart detection based on SysAid's configuration:
