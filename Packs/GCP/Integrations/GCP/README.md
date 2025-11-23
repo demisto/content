@@ -1257,21 +1257,21 @@ Returns the specified instance group. Gets a list of available instance groups b
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.InstanceGroups.id | string | The unique identifier for the resource. This identifier is defined by the server. |
-| GCP.Compute.InstanceGroups.creationTimestamp | string | The creation timestamp for this instance group in RFC3339 text format. |
-| GCP.Compute.InstanceGroups.name | string | The name of the instance group. The name must be 1\-63 characters long, and comply with RFC1035. |
-| GCP.Compute.InstanceGroups.description | string | An optional description of this resource. Provide this property when you create the resource. |
-| GCP.Compute.InstanceGroups.namedPorts | string | Assigns a name to a port number. |
-| GCP.Compute.InstanceGroups.namedPorts.name | string | The name for this named port. The name must be 1\-63 characters long, and comply with RFC1035. |
-| GCP.Compute.InstanceGroups.namedPorts.port | string | The port number, which can be a value between 1 and 42. |
-| GCP.Compute.InstanceGroups.network | string | The URL of the network to which all instances in the instance group belong. |
-| GCP.Compute.InstanceGroups.fingerprint | string | The fingerprint of the named ports. The system uses this fingerprint to detect conflicts when multiple users change the named ports concurrently. |
-| GCP.Compute.InstanceGroups.zone | string | The URL of the zone where the instance group is located \(for zonal resources\). |
-| GCP.Compute.InstanceGroups.selfLink | string | The URL for this instance group. The server generates this URL. |
-| GCP.Compute.InstanceGroups.size | string | The total number of instances in the instance group. |
-| GCP.Compute.InstanceGroups.region | string | The URL of the region where the instance group is located \(for regional resources\). |
-| GCP.Compute.InstanceGroups.subnetwork | string | The URL of the subnetwork to which all instances in the instance group belong |
-| GCP.Compute.InstanceGroups.kind | string |  The resource type, which is always compute\#instanceGroup for instance groups. |
+| GCP.Compute.instance_groups.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.instance_groups.creationTimestamp | string | The creation timestamp for this instance group in RFC3339 text format. |
+| GCP.Compute.instance_groups.name | string | The name of the instance group. The name must be 1\-63 characters long, and comply with RFC1035. |
+| GCP.Compute.instance_groups.description | string | An optional description of this resource. Provide this property when you create the resource. |
+| GCP.Compute.instance_groups.namedPorts | string | Assigns a name to a port number. |
+| GCP.Compute.instance_groups.namedPorts.name | string | The name for this named port. The name must be 1\-63 characters long, and comply with RFC1035. |
+| GCP.Compute.instance_groups.namedPorts.port | string | The port number, which can be a value between 1 and 42. |
+| GCP.Compute.instance_groups.network | string | The URL of the network to which all instances in the instance group belong. |
+| GCP.Compute.instance_groups.fingerprint | string | The fingerprint of the named ports. The system uses this fingerprint to detect conflicts when multiple users change the named ports concurrently. |
+| GCP.Compute.instance_groups.zone | string | The URL of the zone where the instance group is located \(for zonal resources\). |
+| GCP.Compute.instance_groups.selfLink | string | The URL for this instance group. The server generates this URL. |
+| GCP.Compute.instance_groups.size | string | The total number of instances in the instance group. |
+| GCP.Compute.instance_groups.region | string | The URL of the region where the instance group is located \(for regional resources\). |
+| GCP.Compute.instance_groups.subnetwork | string | The URL of the subnetwork to which all instances in the instance group belong |
+| GCP.Compute.instance_groups.kind | string |  The resource type, which is always compute\#instanceGroup for instance groups. |
 
 ### gcp-compute-region-get
 
@@ -1437,7 +1437,7 @@ Creates a network in the specified project using the data included in the reques
 | GCP.Compute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GCP.Compute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
 
-### gcp-compute-get-network
+### gcp-compute-network-get
 
 ***
 Returns the specified network.
@@ -1462,7 +1462,7 @@ Returns the specified network.
 | GCP.Compute.Networks.description | string | An optional description of this resource. Provide this property when you create the resource. |
 | GCP.Compute.Networks.gatewayIPv4 | string | The gateway address for default routing out of the network. This value is read only and is selected by GCP. |
 | GCP.Compute.Networks.selfLink | string | Server\-defined URL for the resource. |
-| GCP.Compute.Networks.autoCreateSubnetworks | boolean | When set to true, the VPC network is created in &quot;auto&quot; mode. When set to false, the VPC network is created in &quot;custom&quot; mode. |
+| GCP.Compute.Networks.auto_create_sub_networks | boolean | When set to true, the VPC network is created in &quot;auto&quot; mode. When set to false, the VPC network is created in &quot;custom&quot; mode. |
 | GCP.Compute.Networks.subnetworks | string | Server\-defined fully\-qualified URLs for all subnetworks in this VPC network. |
 | GCP.Compute.Networks.peerings | string |  A list of network peerings for the resource. |
 | GCP.Compute.Networks.peerings.name | string | Name of this peering. Provided by the client when the peering is created. The name must comply with RFC1035. Specifically, the name must be 1\-63 characters long and match regular expression \[a\-z\]\(\[\-a\-z0\-9\]\*\[a\-z0\-9\]\)? which means the first character must be a lowercase letter, and all the following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
