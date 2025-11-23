@@ -349,7 +349,7 @@ script:
       isArray: True
     description: Confirms user(s) as safe (post-investigation).
     name: azure-risky-users-confirm-safe
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.5490413
   runonce: false
   script: '-'
   subtype: python3

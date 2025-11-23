@@ -479,10 +479,10 @@ def test_risky_users_confirm_compromise_command(mocker):
     result = risky_users_confirm(mock_client_instance, args, mock_client_instance.confirm_compromised_request, "compromised")
 
     mock_client_instance.upn_to_user_id.assert_has_calls([mocker.call("user1@example.com"), mocker.call("user2@example.com")])
-    mock_client_instance.confirm_compromised_request.assert_called_once_with(
-        user_ids=["id_user1@example.com", "id_user2@example.com"]
+    mock_client_instance.confirm_compromised_request.assert_has_calls(
+        [mocker.call(user_ids=["id_user1@example.com"]), mocker.call(user_ids=["id_user2@example.com"])]
     )
-    assert result.readable_output == tableToMarkdown(
+    assert result[0].readable_output == tableToMarkdown(
         "Successfully confirmed users as compromised.", {"User": users_to_compromise}
     )
 
@@ -511,5 +511,7 @@ def test_risky_users_confirm_safe_command(mocker):
     result = risky_users_confirm(mock_client_instance, args, mock_client_instance.confirm_safe_request, "safe")
 
     mock_client_instance.upn_to_user_id.assert_has_calls([mocker.call("user3@example.com"), mocker.call("user4@example.com")])
-    mock_client_instance.confirm_safe_request.assert_called_once_with(user_ids=["id_user3@example.com", "id_user4@example.com"])
-    assert result.readable_output == tableToMarkdown("Successfully confirmed users as safe.", {"User": users_to_safe})
+    mock_client_instance.confirm_safe_request.assert_has_calls(
+        [mocker.call(user_ids=["id_user3@example.com"]), mocker.call(user_ids=["id_user4@example.com"])]
+    )
+    assert result[0].readable_output == tableToMarkdown("Successfully confirmed users as safe.", {"User": users_to_safe})

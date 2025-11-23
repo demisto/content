@@ -571,7 +571,7 @@ Confirms user(s) as safe (post-investigation).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | A comma-separated list of User IDs or UPNs of the user(s) to confirm as safe. Results may not be immediately visible due to processing delays in Azure. | Required | 
+| user | A comma-separated list of User IDs or UPNs of the user(s) to confirm as safe. Results may not be immediately visible due to processing delays in Azure. | Required |
 
 #### Context Output
 
@@ -583,7 +583,8 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-> ### Successfully confirmed users as safe.
+> ### Successfully confirmed users as safe
+>
 > |User|
 > |---|
 > | name1@test.com |
@@ -614,7 +615,8 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-> ### Successfully confirmed users as compromised.
+> ### Successfully confirmed users as compromised
+>
 > |User|
 > |---|
 > | name1@test.com |
