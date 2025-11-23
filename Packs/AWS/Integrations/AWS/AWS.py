@@ -3816,6 +3816,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-network-acl-create": EC2.create_network_acl_command,
     "aws-ec2-ipam-discovered-public-addresses-get": EC2.get_ipam_discovered_public_addresses_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
+    "aws-eks-enable-control-plane-logging-quick-action": EKS.update_cluster_config_command,
+    "aws-eks-disable-public-access-quick-action": EKS.update_cluster_config_command,
     "aws-eks-cluster-describe": EKS.describe_cluster_command,
     "aws-eks-access-policy-associate": EKS.associate_access_policy_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,

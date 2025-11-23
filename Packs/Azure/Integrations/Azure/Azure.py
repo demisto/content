@@ -75,17 +75,37 @@ PERMISSIONS_TO_COMMANDS = {
     ],
     "Microsoft.Authorization/policyAssignments/read": [
         "azure-policy-assignment-create",
+        "azure-policy-assignment-create-quick-action",
     ],
     "Microsoft.Authorization/policyAssignments/write": [
         "azure-policy-assignment-create",
+        "azure-policy-assignment-create-quick-action",
     ],
-    "Microsoft.DBforPostgreSQL/servers/read": ["azure-postgres-server-update"],
-    "Microsoft.DBforPostgreSQL/servers/write": ["azure-postgres-server-update"],
+    "Microsoft.DBforPostgreSQL/servers/read": [
+        "azure-postgres-server-update",
+        "azure-postgres-server-update-ssl-enforcement-quick-action",
+    ],
+    "Microsoft.DBforPostgreSQL/servers/write": [
+        "azure-postgres-server-update",
+        "azure-postgres-server-update-ssl-enforcement-quick-action",
+    ],
     "Microsoft.DBforPostgreSQL/servers/configurations/read": [
         "azure-postgres-config-set",
+        "azure-postgres-config-set-disconnection-logging-quick-action"
+        "azure-postgres-config-set-checkpoint-logging-quick-action",
+        "azure-postgres-config-set-connection-throttling-quick-action",
+        "azure-postgres-config-set-session-connection-logging-quick-action",
+        "azure-postgres-config-set-log-retention-period-quick-action",
+        "azure-postgres-config-set-statement-logging-quick-action",
     ],
     "Microsoft.DBforPostgreSQL/servers/configurations/write": [
         "azure-postgres-config-set",
+        "azure-postgres-config-set-disconnection-logging-quick-action"
+        "azure-postgres-config-set-checkpoint-logging-quick-action",
+        "azure-postgres-config-set-connection-throttling-quick-action",
+        "azure-postgres-config-set-session-connection-logging-quick-action",
+        "azure-postgres-config-set-log-retention-period-quick-action",
+        "azure-postgres-config-set-statement-logging-quick-action",
     ],
     "Microsoft.Web/sites/config/read": [
         "azure-webapp-config-set",
@@ -742,8 +762,14 @@ class AzureClient:
         try:
             return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
         except Exception as e:
-            if "400" in str(e) or "bad request" in str(e) and "intercepted by proxydome" in str(e):
-                raise DemistoException("The request was intercepted by proxydome.")
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{name}",
+                resource_type="Policy Assignment",
+                api_function_name="create_policy_assignment",
+                subscription_id=self.subscription_id,
+                resource_group_name=self.resource_group_name,
+            )
 
     def set_postgres_config(
         self, server_name: str, subscription_id: str, resource_group_name: str, configuration_name: str, source: str, value: str
@@ -4047,6 +4073,14 @@ def main():  # pragma: no cover
             "azure-acr-disable-public-private-access-quick-action": acr_update_command,
             "azure-acr-disable-authentication-as-arm-quick-action": acr_update_command,
             "azure-acr-disable-anonymous-pull-quick-action": acr_update_command,
+            "azure-policy-assignment-create-quick-action": create_policy_assignment_command,
+            "azure-postgres-config-set-disconnection-logging-quick-action": set_postgres_config_command,
+            "azure-postgres-config-set-checkpoint-logging-quick-action": set_postgres_config_command,
+            "azure-postgres-config-set-connection-throttling-quick-action": set_postgres_config_command,
+            "azure-postgres-config-set-session-connection-logging-quick-action": set_postgres_config_command,
+            "azure-postgres-config-set-log-retention-period-quick-action": set_postgres_config_command,
+            "azure-postgres-config-set-statement-logging-quick-action": set_postgres_config_command,
+            "azure-postgres-server-update-ssl-enforcement-quick-action": postgres_server_update_command,
         }
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
