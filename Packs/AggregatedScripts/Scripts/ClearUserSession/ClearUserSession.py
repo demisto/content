@@ -474,7 +474,7 @@ def get_error_enhanced(entry: dict) -> str:
 
     # 3. Resolve to general error
     content = entry.get("Contents") or entry.get("Content")
-    return f"Unknown error occurred: {content.strip()}"
+    return f"Unknown error occurred: {content}"
 
 
 def run_command(
