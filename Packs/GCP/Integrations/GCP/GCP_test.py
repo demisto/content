@@ -4983,8 +4983,8 @@ class TestGCPComputeNetworkInsert:
         """
         Given: A mocked GCP Compute service environment with a string 'false' value for auto_create_sub_networks.
         When: gcp_compute_network_insert is called with auto_create_sub_networks set to the string "false".
-        Then: The function should create a network with auto_create_sub_networks converted to boolean False, and verify the correct
-        API call.
+        Then: The function should create a network with auto_create_sub_networks converted to boolean False, and
+        verify the correct API call.
         """
         from GCP import GCPServices
         from GCP import gcp_compute_network_insert
