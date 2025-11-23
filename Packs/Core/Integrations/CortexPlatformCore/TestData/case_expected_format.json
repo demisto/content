@@ -1,5 +1,14 @@
 {
     "aggregated_score": 90,
+    "asset_accounts": [],
+    "asset_categories": [],
+    "asset_classes": [],
+    "asset_group_ids": [],
+    "asset_ids": [],
+    "asset_names": [],
+    "asset_providers": [],
+    "asset_regions": [],
+    "asset_types": [],
     "assigned_user_mail": "john.doe@example.com",
     "assigned_user_pretty_name": "John Doe",
     "case_domain": "test.domain.com",
@@ -16,6 +25,7 @@
     },
     "description": "Test Description",
     "high_severity_issue_count": 3,
+    "host_count": 2,
     "hosts": [
         "host1",
         "host2"
@@ -28,6 +38,7 @@
     "issues_grouping_status": "ACTIVE",
     "low_severity_issue_count": 2,
     "manual_score": 88,
+    "manual_severity": null,
     "med_severity_issue_count": 3,
     "mitre_tactics_ids_and_names": [
         "TA0001",
@@ -53,6 +64,7 @@
         "current_tag1",
         "current_tag2"
     ],
+    "user_count": 2,
     "users": [
         "user1",
         "user2"

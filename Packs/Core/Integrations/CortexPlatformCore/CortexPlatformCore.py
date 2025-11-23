@@ -13,7 +13,7 @@ INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
-MAX_GET_CASES_LIMIT = 60
+MAX_GET_CASES_LIMIT = 100
 
 CASE_FIELDS = {
     "case_id_list": "CASE_ID",
@@ -928,6 +928,79 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def extract_ids(case_extra_data: dict) -> list:
+    """
+    Extract a list of IDs from a command result.
+
+    Args:
+        command_res: The result of a command. It can be either a dictionary or a list.
+        field_name: The name of the field that contains the ID.
+
+    Returns:
+        A list of the IDs extracted from the command result.
+    """
+    if not case_extra_data:
+        return []
+
+    field_name = "issue_id"
+    issues = case_extra_data.get("issues", {})
+    issues_data = issues.get("data", {}) if issues else {}
+    issue_ids = [c.get(field_name) for c in issues_data if isinstance(c, dict) and field_name in c]
+    demisto.debug(f"Extracted issue ids: {issue_ids}")
+    return issue_ids
+
+
+def get_case_extra_data(client, args):
+    """
+    Calls the core-get-case-extra-data command and parses the output to a standard structure.
+
+    Args:
+        args: The arguments to pass to the core-get-case-extra-data command.
+
+    Returns:
+        A dictionary containing the case data with the following keys:
+            issue_ids: A list of IDs of issues in the case.
+            network_artifacts: A list of network artifacts in the case.
+            file_artifacts: A list of file artifacts in the case.
+    """
+    demisto.debug(f"Calling core-get-case-extra-data, {args=}")
+    # Set the base URL for this API call to use the public API v1 endpoint
+    client._base_url = "api/webapp/public_api/v1"
+    case_extra_data = get_extra_data_for_case_id_command(client, args).outputs
+    demisto.debug(f"After calling core-get-case-extra-data, {case_extra_data=}")
+    issue_ids = extract_ids(case_extra_data)
+    case_data = case_extra_data.get("case", {})
+    notes = case_data.get("notes")
+    xdr_url = case_data.get("xdr_url")
+    starred_manually = case_data.get("starred_manually")
+    manual_description = case_data.get("manual_description")
+    detection_time = case_data.get("detection_time")
+    manual_description = case_extra_data.get("manual_description")
+    network_artifacts = case_extra_data.get("network_artifacts")
+    file_artifacts = case_extra_data.get("file_artifacts")
+    extra_data = {
+        "issue_ids": issue_ids,
+        "network_artifacts": network_artifacts,
+        "file_artifacts": file_artifacts,
+        "notes": notes,
+        "detection_time": detection_time,
+        "xdr_url": xdr_url,
+        "starred_manually": starred_manually,
+        "manual_description": manual_description,
+    }
+    return extra_data
+
+
+def add_cases_extra_data(client, case_data):
+    # for each case id in the entry context, get the case extra data
+    for case in case_data:
+        case_id = case.get("case_id")
+        extra_data = get_case_extra_data(client, {"case_id": case_id, "limit": 1000})
+        case.update({"CaseExtraData": extra_data})
+
+    return case_data
+
+
 def map_case_format(case_list):
     """
     Maps a list of case data from the API response format to a standardized internal format.
@@ -981,7 +1054,6 @@ def map_case_format(case_list):
             "mitre_techniques_ids_and_names": case_data.get("MITRE_TECHNIQUES"),
             "mitre_tactics_ids_and_names": case_data.get("MITRE_TACTICS"),
             "manual_severity": case_data.get("USER_SEVERITY"),
-            "starred_manually": case_data.get("CASE_STARRED"),
             "host_count": len(case_data.get("HOSTS", []) or []),
             "user_count": len(case_data.get("USERS", []) or []),
             "asset_accounts": case_data.get("UAI_ASSET_ACCOUNTS", []),
@@ -1068,19 +1140,9 @@ def get_cases_command(client, args):
     demisto.debug(f"Case data after mapping and formatting: {data}")
 
     filter_count = int(reply.get("FILTER_COUNT", "0"))
-    returned_count = min(int(filter_count), limit)
+    returned_count = len(data)
 
     command_results = []
-
-    command_results.append(
-        CommandResults(
-            readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
-            outputs_key_field="case_id",
-            outputs=data,
-            raw_response=data,
-        )
-    )
 
     command_results.append(
         CommandResults(
@@ -1088,6 +1150,34 @@ def get_cases_command(client, args):
             outputs={"filter_count": filter_count, "returned_count": returned_count},
         )
     )
+
+    # In case enriched case data was requested
+    if argToBoolean(args.get("get_enriched_case_data", "false")):
+        if isinstance(data, dict):
+            data = [data]
+
+        case_extra_data = add_cases_extra_data(client, data)
+
+        command_results.append(
+            CommandResults(
+                readable_output=tableToMarkdown("Cases", case_extra_data, headerTransform=string_to_table_header),
+                outputs_prefix="Core.Case",
+                outputs_key_field="case_id",
+                outputs=case_extra_data,
+                raw_response=case_extra_data,
+            )
+        )
+
+    else:
+        command_results.append(
+            CommandResults(
+                readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
+                outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+                outputs_key_field="case_id",
+                outputs=data,
+                raw_response=data,
+            )
+        )
 
     return command_results
 

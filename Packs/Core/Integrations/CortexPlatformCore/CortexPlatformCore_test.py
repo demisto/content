@@ -383,8 +383,8 @@ def test_get_cases_command_case_id_as_int(mocker: MockerFixture):
 
     args = {"case_id_list": 1}
     result = get_cases_command(client, args)
-    assert result[0].outputs[0].get("case_id") == "1"
-    assert result[0].readable_output.startswith("table")
+    assert result[1].outputs[0].get("case_id") == "1"
+    assert result[1].readable_output.startswith("table")
 
 
 def test_replace_substring_string():
@@ -4776,22 +4776,225 @@ def test_create_appsec_issues_filter_and_tables_no_matching_table():
         create_appsec_issues_filter_and_tables(args)
 
 
-def test_map_case_format():
-    """Test cases for the map_case_format function"""
-
+@pytest.mark.parametrize("input_data", ["not a list", [], None])
+def test_map_case_format_invalid_input(input_data):
+    """
+    Given:
+        Invalid input data (not a list, empty list, or None).
+    When:
+        The map_case_format function is called.
+    Then:
+        An empty dictionary should be returned.
+    """
     from CortexPlatformCore import map_case_format
 
-    @pytest.mark.parametrize("input_data", ["not a list", [], None])
-    def test_map_case_format_invalid_input(input_data):
-        result = map_case_format(input_data)
-        assert result == {}
+    result = map_case_format(input_data)
+    assert result == {}
 
-    # Test with complete case data mapping
-    def test_map_case_format_complete_mapping():
-        case_data = load_test_data("./TestData/case_raw_format.json")
 
-        result = map_case_format(case_data)
+def test_map_case_format_complete_mapping():
+    """
+    Given:
+        Valid case data in raw format.
+    When:
+        The map_case_format function is called.
+    Then:
+        The case data should be correctly mapped to the expected format.
+    """
+    from CortexPlatformCore import map_case_format
 
-        expected = load_test_data("./TestData/case_expected_format.json")
+    case_data = [load_test_data("./TestData/case_raw_format.json")]
+    result = sorted(map_case_format(case_data))
+    expected = sorted([load_test_data("./TestData/case_expected_format.json")])
 
-        assert result == expected
+    assert result == expected
+
+
+@pytest.mark.parametrize("case_extra_data", [{}, None])
+def test_extract_ids_empty_case_extra_data(case_extra_data):
+    """
+    Given:
+        Empty or None case extra data.
+    When:
+        The extract_ids function is called.
+    Then:
+        An empty list should be returned.
+    """
+    from CortexPlatformCore import extract_ids
+
+    result = extract_ids(case_extra_data)
+    assert result == []
+
+
+def test_extract_ids_multiple_valid_issues():
+    """
+    Given:
+        Case extra data containing multiple valid issues with issue_ids.
+    When:
+        The extract_ids function is called.
+    Then:
+        A list containing all issue_ids should be returned.
+    """
+
+    from CortexPlatformCore import extract_ids
+
+    case_extra_data: dict = {
+        "issues": {
+            "data": [
+                {"issue_id": "12345", "title": "Test Issue 1"},
+                {"issue_id": "67890", "title": "Test Issue 2"},
+                {"issue_id": "11111", "title": "Test Issue 3"},
+            ]
+        }
+    }
+    result = extract_ids(case_extra_data)
+    assert result == ["12345", "67890", "11111"]
+
+
+def test_get_case_extra_data_with_all_fields_present(mocker):
+    """
+    Given:
+        A mock client and case data with all possible fields present.
+    When:
+        The get_case_extra_data function is called.
+    Then:
+        All fields should be correctly extracted and returned in the result.
+    """
+    from CortexPlatformCore import get_case_extra_data
+
+    mock_client = mocker.Mock()
+    mock_client._base_url = "original_url"
+
+    mock_case_data = {
+        "case": {
+            "notes": "Test notes",
+            "xdr_url": "https://example.com/xdr",
+            "starred_manually": True,
+            "manual_description": "Case manual description",
+            "detection_time": "2023-01-01T00:00:00Z",
+        },
+        "manual_description": "Global manual description",
+        "network_artifacts": [{"id": "net1", "type": "ip"}],
+        "file_artifacts": [{"id": "file1", "hash": "abc123"}],
+    }
+
+    mock_command_result = mocker.Mock()
+    mock_command_result.outputs = mock_case_data
+
+    mocker.patch("CortexPlatformCore.get_extra_data_for_case_id_command", return_value=mock_command_result)
+    mocker.patch("CortexPlatformCore.extract_ids", return_value=["issue1", "issue2"])
+
+    args = {"case_id": "123"}
+    result = get_case_extra_data(mock_client, args)
+
+    assert mock_client._base_url == "api/webapp/public_api/v1"
+    assert result["issue_ids"] == ["issue1", "issue2"]
+    assert result["network_artifacts"] == [{"id": "net1", "type": "ip"}]
+    assert result["file_artifacts"] == [{"id": "file1", "hash": "abc123"}]
+    assert result["notes"] == "Test notes"
+    assert result["xdr_url"] == "https://example.com/xdr"
+    assert result["starred_manually"] is True
+    assert result["manual_description"] == "Global manual description"
+    assert result["detection_time"] == "2023-01-01T00:00:00Z"
+
+
+def test_get_case_extra_data_client_base_url_modification(mocker):
+    """
+    Given:
+        A mock client with an original base URL.
+    When:
+        The get_case_extra_data function is called.
+    Then:
+        The client's base URL should be modified to "api/webapp/public_api/v1".
+    """
+    from CortexPlatformCore import get_case_extra_data
+
+    mock_client = mocker.Mock()
+    original_url = "https://original.api.endpoint"
+    mock_client._base_url = original_url
+
+    mock_command_result = mocker.Mock()
+    mock_command_result.outputs = {}
+
+    mocker.patch("CortexPlatformCore.get_extra_data_for_case_id_command", return_value=mock_command_result)
+    mocker.patch("CortexPlatformCore.extract_ids", return_value=[])
+
+    args = {"case_id": "url_test"}
+    get_case_extra_data(mock_client, args)
+
+    assert mock_client._base_url == "api/webapp/public_api/v1"
+
+
+def test_add_cases_extra_data_single_case(mocker):
+    """
+    Given:
+        A mock client and a list containing a single case.
+    When:
+        The add_cases_extra_data function is called.
+    Then:
+        A list with one case containing extra data should be returned and get_case_extra_data should be called once.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
+    mock_get_case_extra_data.return_value = {"extra_field": "extra_value"}
+
+    case_data: list[dict] = [{"case_id": "123", "title": "Test Case"}]
+    result = add_cases_extra_data(mock_client, case_data)
+
+    assert len(result) == 1
+    assert result[0]["case_id"] == "123"
+    assert result[0]["CaseExtraData"] == {"extra_field": "extra_value"}
+    mock_get_case_extra_data.assert_called_once_with(mock_client, {"case_id": "123", "limit": 1000})
+
+
+def test_add_cases_extra_data_multiple_cases(mocker):
+    """
+    Given:
+        A mock client and a list containing multiple cases.
+    When:
+        The add_cases_extra_data function is called.
+    Then:
+        A list with all cases containing their respective extra data should be
+        returned and get_case_extra_data should be called for each case.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
+    mock_get_case_extra_data.side_effect = [{"extra_field1": "value1"}, {"extra_field2": "value2"}, {"extra_field3": "value3"}]
+
+    case_data = [
+        {"case_id": "123", "title": "Case 1"},
+        {"case_id": "456", "title": "Case 2"},
+        {"case_id": "789", "title": "Case 3"},
+    ]
+    result = add_cases_extra_data(mock_client, case_data)
+
+    assert len(result) == 3
+    assert result[0]["CaseExtraData"] == {"extra_field1": "value1"}
+    assert result[1]["CaseExtraData"] == {"extra_field2": "value2"}
+    assert result[2]["CaseExtraData"] == {"extra_field3": "value3"}
+    assert mock_get_case_extra_data.call_count == 3
+
+
+def test_add_cases_extra_data_empty_list(mocker):
+    """
+    Given:
+        A mock client and an empty case list.
+    When:
+        The add_cases_extra_data function is called.
+    Then:
+        An empty list should be returned and get_case_extra_data should not be called.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
+
+    case_data = []
+    result = add_cases_extra_data(mock_client, case_data)
+
+    assert result == []
+    mock_get_case_extra_data.assert_not_called()

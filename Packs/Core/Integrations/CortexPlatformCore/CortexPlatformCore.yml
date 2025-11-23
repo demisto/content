@@ -1924,7 +1924,6 @@ script:
             - High
             - Medium
             - Low
-
     - arguments:
         - name: case_id_list
           description: A comma-separated list of case IDs to filter by.
@@ -1944,8 +1943,8 @@ script:
         - defaultValue: '0'
           description: Page number (for pagination). The default is 0 (the first page).
           name: page
-        - defaultValue: '60'
-          description: Maximum number of cases to return per page. The default and maximum value is 60.
+        - defaultValue: '100'
+          description: Maximum number of cases to return per page. The default and maximum value is 100.
           name: limit
         - description: A comma-separated list of domains to filter cases by.
           isArray: true
@@ -1978,9 +1977,6 @@ script:
         - description: A comma-separated list of hosts to filter cases by.
           isArray: true
           name: hosts
-        - description: A comma-separated list of tags to filter cases by.
-          isArray: true
-          name: tags
         - description: A comma-separated list of assignee names or emails to filter cases by.
           name: assignee
         - auto: PREDEFINED
@@ -2006,6 +2002,13 @@ script:
           name: since_creation_time
         - description: Filters for returned cases that were modified on or after the specified date range, for example, 1 month, 2 days, 1 hour, and so on.
           name: since_modification_time
+        - auto: PREDEFINED
+          description: Whether to include enriched case data in the response. Recommended for up to 10 cases.
+          name: get_enriched_case_data
+          defaultValue: 'false'
+          predefined:
+            - 'true'
+            - 'false'
       name: core-get-cases
       description: Get case information based on the specified filters.
       outputs:
@@ -2111,6 +2114,30 @@ script:
         - contextPath: Core.Case.custom_fields
           description: Custom fields for the case with standardized lowercase, whitespace-free names.
           type: Unknown
+        - contextPath: Core.Case.CaseExtraData.issue_ids
+          description: List of issue IDs associated with the case.
+          type: Array
+        - contextPath: Core.Case.CaseExtraData.file_artifacts
+          description: File artifacts associated with the case.
+          type: Array
+        - contextPath: Core.Case.CaseExtraData.network_artifacts
+          description: Network artifacts associated with the case.
+          type: Array
+        - contextPath: Core.Case.CaseExtraData.starred_manually
+          description: True if the case was starred manually; false if starred by rules.
+          type: Boolean
+        - contextPath: Core.Case.CaseExtraData.xdr_url
+          description: URL to view the case in Cortex XDR.
+          type: String
+        - contextPath: Core.Case.CaseExtraData.manual_description
+          description: Description manually provided by the user.
+          type: String
+        - contextPath: Core.Case.CaseExtraData.notes
+          description: The notes related to the case.
+          type: String
+        - contextPath: Core.Case.CaseExtraData.detection_time
+          description: The timestamp when the first issue was detected in the case.
+          type: Date
         - contextPath: Core.CasesMetadata.returned_count
           description: The actual number of cases that match all filter criteria and returned in this specific response.
           type: String
