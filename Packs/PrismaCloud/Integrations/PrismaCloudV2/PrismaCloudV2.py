@@ -891,7 +891,7 @@ class Client(BaseClient):
         total_items.extend(items)
         demisto.debug(f"POST search/config - {len(items)} items were fetched from page {page_count}")
 
-        page_limit = limit - len(items)
+        page_limit = limit - len(items) if limit is not None else 0
         next_page_token = first_page_data.get("nextPageToken")
 
         while next_page_token and page_limit:
