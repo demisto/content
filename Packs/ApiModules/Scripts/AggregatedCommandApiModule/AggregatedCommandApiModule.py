@@ -1142,40 +1142,63 @@ def map_back_to_input(values: list[str], mapping: dict[str, str]) -> str:
     return ""
 
 
-def extract_indicators(data: list[str], type: str) -> tuple[list[str], str]:
+def extract_indicators(
+    data: list[str],
+    indicator_type: str,
+    mark_mismatched_type_as_invalid: bool = False,
+) -> tuple[list[str], list[str], str]:
     """
-    Extract indicators from the provided `self.data` list from the relevant type.
-    Use `extractIndicators` command to extract the input.
-    args:
-        data (list[str]): List of the indicators
-        type (str): The type of the indicator
+    Extract indicators from the provided input list for a specific indicator type,
+    using the `extractIndicators` command.
+
+    Args:
+        data (list[str]): Raw input values to validate/extract.
+        indicator_type (str): Expected indicator type (e.g., "url", "file").
+        mark_mismatched_type_as_invalid (bool): When True, inputs that are only
+            extracted as a different type (e.g., Domain instead of URL) are
+            treated as invalid for this call.
+
     Returns:
-        list[str]: list of extracted indicators.
-        str: human readable of the command.
+        tuple[list[str], list[str], str]:
+            - list[str]: Deduplicated list of extracted indicators of the requested type.
+            - list[str]: List of invalid inputs (no indicators, or wrong type when flag is on).
+            - str: Human-readable markdown summary of the extraction per input.
+
     Raises:
-        DemistoException | ValueError
+        DemistoException: If the extractIndicators command fails.
+        ValueError: If no valid indicators of the requested type are found at all.
     """
     if not data:
         raise ValueError("No data provided to enrich")
 
-    demisto.debug("Validating input using extract indicator")
-    results = execute_command("extractIndicators", {"text": data}, extract_contents=False)
+    valid_indicators: list[str] = []
+    invalid_inputs: list[str] = []
+    result_context: list[dict[str, str]] = []
+    hr:str = "\n\n#### Result for name=extractIndicators"
 
-    if not results:
-        raise DemistoException("Failed to Validate input using extract indicator.")
+    expected_type_lower = indicator_type.lower()
 
-    result_context = results[0].get("EntryContext", {}).get("ExtractedIndicators", {})
-    demisto.debug(f"Result context: {result_context}")
-    extracted_indicators = set(
-        next(
-            (indicators for indicator_type, indicators in result_context.items() if indicator_type.lower() == type.lower()),
-            [],
-        )
-    )
-    if not extracted_indicators:
+    for raw in data:
+        demisto.debug(f"Validating input '{raw}' using extractIndicators")
+        # Call extractIndicators per input – one-by-one
+        results = execute_command("extractIndicators", {"text": raw}, extract_contents=False)
+
+        extracted_ctx = results[0].get("EntryContext", {}).get("ExtractedIndicators", {}) or {}
+        result_context.append(extracted_ctx)
+        demisto.debug(f"extractIndicators context for '{raw}': {extracted_ctx}")
+        if not extracted_ctx:
+            invalid_inputs.append(raw)
+        # All indicators extracted for the expected type]
+        lower_extarcted = {current_type.lower(): indicator_list for current_type, indicator_list in extracted_ctx.items()}
+        current_type_extracted_indicators = lower_extarcted.pop(expected_type_lower) if expected_type_lower in lower_extarcted else []
+        if (not current_type_extracted_indicators) or (mark_mismatched_type_as_invalid and lower_extarcted):
+            invalid_inputs.append(raw)
+        valid_indicators.extend(current_type_extracted_indicators)
+        hr += f"\n\nargs='text': {data}\n\n" + tableToMarkdown(name="Extracted Indicators: ", t=extracted_ctx)
+    
+    if not valid_indicators:
         raise ValueError("No valid indicators found in the input data.")
-    hr = f"\n\n#### Result for name=extractIndicators args='text': {data}\n\n"
-    return list(extracted_indicators), hr + tableToMarkdown(name="Extracted Indicators: ", t=result_context)
+    return valid_indicators, invalid_inputs, hr
 
 
 def deep_merge_in_place(dst: dict, src: dict) -> None:

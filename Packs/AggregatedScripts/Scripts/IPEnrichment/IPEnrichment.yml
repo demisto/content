@@ -50,10 +50,10 @@ args:
   defaultValue: 'false'
 comment: This script gathers IP reputation data from multiple integrations and returns an IP entity with consolidated information in the context.
 commonfields:
-  id: ip-enrichment
+  id: ip-enrichment-v2
   version: -1
 enabled: false
-name: ip-enrichment
+name: ip-enrichment-v2
 outputs:
 # IPEnrichment
 - contextPath: IPEnrichment.Value
