@@ -450,6 +450,9 @@ script:
     - contextPath: Gmail.Body
       description: The content of the email.
       type: string
+    - contextPath: Gmail.Attachments
+      description: The attachments of the email. Includes ID and Name fields.
+      type: Unknown
     - contextPath: Gmail.Attachments.ID
       description: The email attachment ID (as appear in gmail).
       type: Unknown
@@ -1738,7 +1741,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.4418335
+  dockerimage: demisto/google-api-py3:1.0.0.5220244
   isfetch: true
   runonce: false
   script: '-'
