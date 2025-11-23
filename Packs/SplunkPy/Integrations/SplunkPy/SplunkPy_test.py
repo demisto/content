@@ -793,40 +793,37 @@ class TestFetchRemovingIrrelevantIncidents:
         - Make sure that incidents within the DAYLIGHT_SAVING_TIME_DELTA buffer are kept in cache
         - This prevents duplicate incidents during clock changes
         """
-        from SplunkPy import UserMappingObject, remove_irrelevant_incident_ids, DAYLIGHT_SAVING_TIME_DELTA
+        from SplunkPy import remove_irrelevant_incident_ids
 
         # Setup: Create a scenario where an incident is just outside the normal window
         # but within the DST delta buffer
         window_start_time = "2024-03-10T10:00:00"  # DST transition date example
         window_end_time = "2024-03-10T12:00:00"
-        
+
         # Incident that occurred 59 minutes before window start (within 1-hour DST buffer)
         incident_within_dst_buffer = "2024-03-10T09:01:00"
-        
+
         # Incident that occurred 61 minutes before window start (outside DST buffer)
         incident_outside_dst_buffer = "2024-03-10T08:59:00"
-        
+
         last_run_fetched_ids = {
             "incident_within_buffer": {"occurred_time": incident_within_dst_buffer},
             "incident_outside_buffer": {"occurred_time": incident_outside_dst_buffer},
         }
 
         # Execute the function
-        filtered_ids = remove_irrelevant_incident_ids(
-            last_run_fetched_ids, window_start_time, window_end_time
-        )
+        filtered_ids = remove_irrelevant_incident_ids(last_run_fetched_ids, window_start_time, window_end_time)
 
         # Verify: Incident within DST buffer should be kept
-        assert "incident_within_buffer" in filtered_ids, \
-            "Incident within DAYLIGHT_SAVING_TIME_DELTA should be kept in cache"
-        
+        assert "incident_within_buffer" in filtered_ids, "Incident within DAYLIGHT_SAVING_TIME_DELTA should be kept in cache"
+
         # Verify: Incident outside DST buffer should be removed
-        assert "incident_outside_buffer" not in filtered_ids, \
-            "Incident outside DAYLIGHT_SAVING_TIME_DELTA should be removed from cache"
-        
+        assert (
+            "incident_outside_buffer" not in filtered_ids
+        ), "Incident outside DAYLIGHT_SAVING_TIME_DELTA should be removed from cache"
+
         # Verify the kept incident has the correct structure
         assert filtered_ids["incident_within_buffer"]["occurred_time"] == incident_within_dst_buffer
-
 
 
 class TestFetchForLateIndexedEvents:
