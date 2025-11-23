@@ -176,9 +176,8 @@ class Client:
             stderr=subprocess.PIPE,
         )
 
-        await self._monitor_server_startup()
-
         try:
+            await self._monitor_server_startup()
             yield
         finally:
             if self.process.poll() is None:
@@ -199,7 +198,7 @@ class Client:
                 raise RuntimeError("Server process exited before startup")
             text = line.decode(errors="ignore").strip()
 
-            route_server_log(f"{SERVER_LOG_PREFIX} {text}")
+            route_server_log(f"{SERVER_LOG_PREFIX}{text}")
 
             if startup_keyword in text:
                 break
