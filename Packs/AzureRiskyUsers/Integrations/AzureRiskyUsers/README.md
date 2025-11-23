@@ -571,7 +571,7 @@ Confirms user(s) as safe (post-investigation).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User ID or UPN of the user(s) to confirm as safe. Supports an array of values. | Required | 
+| user | A comma-separated list of User IDs or UPNs of the user(s) to confirm as safe. Results may not be immediately visible due to processing delays in Azure. | Required | 
 
 #### Context Output
 
@@ -602,7 +602,7 @@ Confirms user(s) as compromised.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User ID or UPN of the user(s) to confirm as compromised. Supports an array of values. | Required | 
+| user | A comma-separated list of User IDs or UPNs of the user(s) to confirm as compromised. Results may not be immediately visible due to processing delays in Azure. | Required |
 
 #### Context Output
 

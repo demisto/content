@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Callable
 from urllib.parse import parse_qs, urlparse
 
 import demistomock as demisto  # noqa: F401
@@ -103,20 +103,16 @@ class Client:
         else:  # Device Code Flow
             return "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
 
-    def upn_to_user_id(self, user_id_or_upn: str) -> str:
-        """Retrieves the user ID of a user.
+    def upn_to_user_id(self, upn: str) -> str:
+        """Retrieves the user ID of a user by their UPN.
 
         Args:
-            user_id_or_upn (str): A user ID or UPN
+            upn (str): A UPN
 
         Returns:
             str: The user ID
         """
-        return (
-            self.ms_client.http_request(method="GET", url_suffix=f"users/{user_id_or_upn}")["id"]
-            if "@" in user_id_or_upn
-            else user_id_or_upn
-        )
+        return self.ms_client.http_request(method="GET", url_suffix=f"users/{upn}")["id"]
 
     def risky_users_list_request(
         self,
@@ -254,6 +250,19 @@ class Client:
             Response (dict): API response from AzureRiskyUsers.
         """
         return self.ms_client.http_request(method="GET", url_suffix=f"/identityProtection/riskDetections/{id}")
+
+
+def is_upn(user_id_or_upn: str) -> bool:
+    """Checks if the given string is likely a User Principal Name (UPN).
+
+    Args:
+        user_id_or_upn (str): The string to check, which could be a user ID (GUID)
+                               or a User Principal Name (UPN).
+
+    Returns:
+        bool: True if the string appears to be a UPN, False otherwise.
+    """
+    return "@" in user_id_or_upn
 
 
 def update_query(query: str, filter_name: str, filter_value: str | None, filter_operator: str):
@@ -628,26 +637,37 @@ def risk_detection_get_command(client: Client, args: dict[str, Any]) -> CommandR
     )
 
 
-def risky_users_confirm_compromise_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    users = argToList(args["user"])
-    parsed_users = list(map(client.upn_to_user_id, users))
+def risky_users_confirm(client: Client, args: dict[str, Any], confirm_func: Callable, verdict: str) -> list[CommandResults]:
 
-    client.confirm_compromised_request(user_ids=parsed_users)
+    error_outputs = []
+    success_outputs = []
+    results = []
+    
+    for user in argToList(args["user"]):
+        try:
+            user_id = client.upn_to_user_id(user) if is_upn(user) else user
+            confirm_func(user_ids=[user_id])
+            success_outputs.append({'User': user})
+        except Exception as e:
+            error_outputs.append({'User': user, 'Error': str(e)})
 
-    return CommandResults(
-        readable_output=tableToMarkdown("Successfully confirmed users as compromised.", {"User": users})
-    )
-
-
-def risky_users_confirm_safe_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    users =  argToList(args["user"])
-    parsed_users = list(map(client.upn_to_user_id, users))
-
-    client.confirm_safe_request(user_ids=parsed_users)
-
-    return CommandResults(
-        readable_output=tableToMarkdown("Successfully confirmed users as safe.", {"User": users})
-    )
+    if success_outputs:
+        results.append(
+            CommandResults(
+                readable_output=tableToMarkdown(f"Successfully confirmed users as {verdict}.", success_outputs)
+            )
+        )
+    
+    if error_outputs:
+        results.append(
+            CommandResults(
+                readable_output=tableToMarkdown(f"Unable to confirmed users as {verdict}.", error_outputs),
+                entry_type=EntryType.ERROR,
+                content_format=EntryFormat.MARKDOWN
+            )
+        )
+    
+    return results
 
 
 def test_module(client: Client):
@@ -738,9 +758,9 @@ def main():
         elif command == "azure-risky-users-risk-detection-get":
             return_results(risk_detection_get_command(client, args))
         elif command == "azure-risky-users-confirm-compromise":
-            return_results(risky_users_confirm_compromise_command(client, args))
+            return_results(risky_users_confirm(client, args, client.confirm_compromised_request, "compromised"))
         elif command == "azure-risky-users-confirm-safe":
-            return_results(risky_users_confirm_safe_command(client, args))
+            return_results(risky_users_confirm(client, args, client.confirm_safe_request, "safe"))
         else:
             raise NotImplementedError(f"{command} command is not implemented.")
 
