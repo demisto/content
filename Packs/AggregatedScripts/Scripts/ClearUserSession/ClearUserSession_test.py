@@ -322,7 +322,9 @@ def test_run_execute_command_error(mocker: MockerFixture):
     assert human_readable == ""
     assert len(errors) == 1
     assert isinstance(errors[0], CommandResults)
-    mock_prepare_human_readable.assert_called_once_with("test-command", {"arg1": "value1"}, "Unknown error occurred: Error occurred", is_error=True)
+    mock_prepare_human_readable.assert_called_once_with(
+        "test-command", {"arg1": "value1"}, "Unknown error occurred: Error occurred", is_error=True
+    )
     demisto.debug.assert_called_with("Finished executing command: test-command")
 
 

@@ -329,6 +329,7 @@ def create_readable_output(outputs: list):
 
     return readable_output
 
+
 def _get_content_lower(entry: Dict[str, Any]) -> Optional[str]:
     """
     Extracts content from the entry, performs basic validation, and converts it to lowercase.
@@ -355,7 +356,7 @@ def is_not_found_error(content_lower: str) -> bool:
     """
 
     not_found_patterns = [
-        r".*404.*",                     # Matches any string containing "404"
+        r".*404.*",  # Matches any string containing "404"
         r".*resource\s+not\s+found.*",  # Matches any string containing "resource not found"
         r".*user\s+.*?\s+does\s+not\s+exist",
         r".*user\s+.*?\s+not\s+found",
@@ -367,7 +368,7 @@ def is_not_found_error(content_lower: str) -> bool:
         r".*username\s+.*?\s+not\s+found",
         r".*user\s+id\s+.*?\s+not\s+found",
         r".*session\s+.*\s+not\s+found",
-        r".*account\s+.*\s+not\s+found"
+        r".*account\s+.*\s+not\s+found",
     ]
     for pattern in not_found_patterns:
         if re.search(pattern, content_lower):
@@ -393,7 +394,6 @@ def is_auth_authz_error(content_lower: str) -> bool:
         r".*\s+does\s+not\s+have\s+.*\s+permission",  # "<user> does not have <action> permission"
         r".*account\s+.*\s+disabled",  # "Account <id> disabled"
         r".*account\s+.*\s+suspended",  # "Account <id> suspended"
-
         # Simple string indicators that are NOT covered by the regex above (e.g., a pure single word)
         r"access denied",  # Added as a simple match in case it's not followed by dynamic content
         r"permission denied",
@@ -423,7 +423,6 @@ def is_general_error(content_lower: str) -> bool:
         r".*error\s*:\s*.*",  # "error: user related message"
         r".*exception\s*:\s*.*",  # "exception: user related message"
         r".*unable\s+to\s+.*\s+user",  # "Unable to find user", "Unable to authenticate user"
-
         # Simple string indicators (must not duplicate those in Auth/Authz)
         r"error:",
         r"failed:",
@@ -437,6 +436,7 @@ def is_general_error(content_lower: str) -> bool:
             return True
 
     return False
+
 
 def check_content_error_type(entry: Dict[str, Any]) -> Optional[str]:
     """
@@ -506,7 +506,7 @@ def get_error_enhanced(entry: dict) -> str:
         ValueError: If no error is detected in the entry.
     """
     content = entry.get("Contents") or entry.get("Content")
-    content_lower = content.lower()
+    content_lower = _get_content_lower(entry)
     # 1. Check for Not Found errors first, as they are very specific
     if is_not_found_error(content_lower):
         return "User not found."
