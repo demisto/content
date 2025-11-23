@@ -191,7 +191,7 @@ class Client:
     async def _monitor_server_startup(self):
         assert self.process.stdout is not None
         stdout = self.process.stdout
-        startup_keyword = "Starting streamable-http server on"
+        startup_keyword = "StreamableHTTP session manager started"
 
         while True:
             line = await asyncio.to_thread(stdout.readline)
