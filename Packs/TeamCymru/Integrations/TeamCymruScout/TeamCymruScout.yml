@@ -5,6 +5,9 @@ name: Team Cymru Scout
 display: Team Cymru Scout
 category: Data Enrichment & Threat Intelligence
 description: Team Cymru's Scout integration with Palo Alto XSOAR helps streamline incident triage and accelerate threat response by providing domain and threat intelligence data.
+sectionorder:
+- Connect
+- Collect
 configuration:
 - additionalinfo: The authentication type used for secure communication with the Team Cymru Scout platform.
   defaultvalue: API Key
@@ -15,18 +18,21 @@ configuration:
   - Basic Auth
   type: 15
   required: true
+  section: Connect
 - displaypassword: API Key
   additionalinfo: "The API key used for secure communication with the Team Cymru Scout platform. Required if \"API Key\" as Authentication Type is selected."
   name: api_key
   hiddenusername: true
   type: 9
   required: false
+  section: Connect
 - display: Username
   displaypassword: Password
   additionalinfo: "The username and password used for secure communication with the Team Cymru Scout platform. Required if \"Basic Auth\" as Authentication Type is selected."
   name: basic_auth
   type: 9
   required: false
+  section: Connect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -41,27 +47,38 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
+  section: Collect
 - defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of enrichment.
   display: Create relationships
   name: create_relationships
   type: 8
   required: false
+  section: Collect
+- name: use_foundation_api
+  display: Use Foundation API for IP enrichment
+  additionalinfo: 'Enable this parameter to allow the use of Foundation API for the "ip" command. If not selected, then "ip" command will utilize the Scout details API endpoint.'
+  defaultvalue: 'false'
+  type: 8
+  required: false
+  section: Collect
 - name: proxy
   display: Use system proxy settings
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   defaultvalue: 'false'
   type: 8
   required: false
+  section: Connect
 script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: false
   commands:
   - name: scout-api-usage
@@ -106,6 +123,14 @@ script:
       description: "Relative offset in days from the current time. It cannot exceed the maximum range of 30 days.\n\nNote: This will take priority over start_date and end_date if all three are passed."
     - name: size
       description: "The maximum number of records to return.\n\nNote: The maximum allowed size is 1000."
+    - auto: PREDEFINED
+      name: force_use_scout_details_api
+      required: false
+      description: If set to yes, it will forcefully use the Scout Details API endpoint, overriding the "Use Foundation API for IP enrichment" parameter in the integration configuration.
+      defaultValue: 'No'
+      predefined:
+      - Yes
+      - No
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -1025,6 +1050,39 @@ script:
     - contextPath: TeamCymruScout.IP.summary.fingerprints.top_fingerprints.count
       description: 'The count of the fingerprint.'
       type: Number
+    - contextPath: TeamCymruScout.IP.country_code
+      description: 'The country code.'
+      type: String
+    - contextPath: TeamCymruScout.IP.as_info.asn
+      description: 'The autonomous system number.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.as_info.as_name
+      description: 'The autonomous system name.'
+      type: String
+    - contextPath: TeamCymruScout.IP.insights.overall_rating
+      description: 'The overall rating for the IP address.'
+      type: String
+    - contextPath: TeamCymruScout.IP.insights.insights.rating
+      description: 'The individual insight rating for the IP address.'
+      type: String
+    - contextPath: TeamCymruScout.IP.insights.insights.message
+      description: 'The individual insight message for the IP address.'
+      type: String
+    - contextPath: TeamCymruScout.IP.tags.id
+      description: 'The ID of the tag.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.tags.name
+      description: 'The name of the tag.'
+      type: String
+    - contextPath: TeamCymruScout.IP.tags.children.id
+      description: 'The ID of the child tag.'
+      type: Number
+    - contextPath: TeamCymruScout.IP.tags.children.name
+      description: 'The name of the child tag.'
+      type: String
+    - contextPath: TeamCymruScout.IP.tags.children.children
+      description: 'The children of the child tag.'
+      type: Unknown
   - name: scout-indicator-search
     description: Return the summary information available for the given domain or IP address using Scout query language.
     arguments:
