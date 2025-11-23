@@ -78,7 +78,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  defaultvalue: false
+  defaultvalue: "false"
 description: Use the Prisma Cloud Compute integration to fetch incidents from your Prisma Cloud Compute environment.
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
