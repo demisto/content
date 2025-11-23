@@ -576,7 +576,7 @@ def fetch_findings(
         }
     new_last_run["late_indexed_pagination"] = False
     # Need to fetch again this "window" to be sure no "late" indexed events are missed
-    if num_of_dropped >= FETCH_LIMIT and "`findings`" in fetch_query:
+    if num_of_dropped >= FETCH_LIMIT and "`notable`" in fetch_query:
         demisto.debug('Need to fetch this "window" again to make sure no "late" indexed events are missed')
         new_last_run["late_indexed_pagination"] = True
     # If we are in the process of checking late indexed events, and len(fetch_incidents) == FETCH_LIMIT,
@@ -742,7 +742,7 @@ class Finding:
         if ENABLED_ENRICHMENTS:
             raise Exception(
                 "When using the enrichment mechanism, an event_id field is needed, and thus, "
-                "one must use a fetch query of the following format: search `findings` .......\n"
+                "one must use a fetch query of the following format: search `notable` .......\n"
                 "Please re-edit the fetchQuery parameter in the integration configuration, reset "
                 "the fetch mechanism using the splunk-reset-enriching-fetch-mechanism command and "
                 "run the fetch again."
@@ -1835,7 +1835,8 @@ def get_splunk_notes_data(
     # Build the complete search query
     or_clause_str = " OR ".join(or_clauses)
     search_query = (
-        f'search index=_audit source=mc_notes earliest={last_update_splunk_timestamp} ({or_clause_str}) '
+        # f'search index=_audit source=mc_notes earliest={last_update_splunk_timestamp} ({or_clause_str}) '
+        f'search index=_audit source=mc_notes earliest=-7d ({or_clause_str}) '
         f'| rex "(?<timestamp>[\\d.]+),(?<id>[\\w-]+),(?<user>[\\w_]+),(?<model>[\\w]+),(?<command>[\\w]+),(?<diff>.+)" '
         f'| dedup id '
         f'| table id, diff'
@@ -2044,11 +2045,11 @@ def get_modified_remote_data_command(
     last_update_splunk_timestamp = original_last_update - SPLUNK_INDEXING_TIME
     
     # Query the audit index to get modified findings
-    # This query extracts last_modified_timestamp and finding_id from the audit logs,
-    # sorts by timestamp (descending), deduplicates by finding_id, and returns all relevant fields
+    # This query extracts last_modified_timestamp and rule_id from the audit logs,
+    # sorts by timestamp (descending), deduplicates by rule_id, and returns all relevant fields
     mirror_in_search = (
-        f'index=_audit source=notable_update_rest_handler earliest={last_update_splunk_timestamp} '
-        f'| eval last_modified_timestamp = _time" '
+        f'search index=_audit source=notable_update_rest_handler earliest={last_update_splunk_timestamp} '
+        f'| eval last_modified_timestamp = _time '
         f'| sort last_modified_timestamp DESC '
         f'| dedup rule_id '
         f'| table last_modified_timestamp, rule_id, owner, status, disposition, urgency, sensitivity'
@@ -3713,11 +3714,11 @@ def test_module(service: client.Service, params: dict) -> None:
 
                 if EVENT_ID not in item:
                     if MIRROR_DIRECTION.get(params.get("mirror_direction", "")):
-                        return_error("Cannot mirror incidents if fetch query does not use the `findings` macro.")
+                        return_error("Cannot mirror incidents if fetch query does not use the `notable` macro.")
                     if ENABLED_ENRICHMENTS:
                         return_error(
                             "When using the enrichment mechanism, an event_id field is needed, and thus, "
-                            "one must use a fetch query of the following format: search `findings` .......\n"
+                            "one must use a fetch query of the following format: search `notable` .......\n"
                             "Please re-edit the fetchQuery parameter in the integration configuration, reset "
                             "the fetch mechanism using the splunk-reset-enriching-fetch-mechanism command and "
                             "run the fetch again."
