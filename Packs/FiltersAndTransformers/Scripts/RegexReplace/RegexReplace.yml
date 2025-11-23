@@ -53,6 +53,7 @@ name: RegexReplace
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
+isllm: false
 subtype: python3
 tags:
 - transformer
