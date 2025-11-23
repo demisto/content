@@ -1169,6 +1169,63 @@ script:
     - name: resources_vpc_config
       description: "A JSON representation of the VPC configuration used by the cluster control plane. For example \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
       required: false
+  - name: aws-eks-enable-control-plane-logging-quick-action
+    description: Enables control plane logging for an EKS cluster.
+    prettyname: Enable Control Plane Logging
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: cluster_name
+        prettyname: EKS Cluster
+        description: The name of the Amazon EKS cluster to update.
+        required: true
+        prettypredefined:
+          EKS Cluster: ${asset.xdm.asset.name}
+      - name: logging
+        description: "Enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs. By default, cluster control plane logs aren’t exported to CloudWatch Logs. For example \"{'clusterLogging': [{'types': ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'], 'enabled': true}]}\"."
+        defaultValue: '{"clusterLogging":[{"types":["api","audit","authenticator","controllerManager","scheduler"],"enabled":true}]}'
+        hidden: true
+
+  - name: aws-eks-disable-public-access-quick-action
+    description: Disables public access to the EKS cluster's API endpoint, making it only accessible from within the cluster's VPC.
+    prettyname: Set EKS Cluster to Private
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: cluster_name
+        prettyname: EKS Cluster
+        description: The name of the Amazon EKS cluster to update.
+        required: true
+        prettypredefined:
+          EKS Cluster: ${asset.xdm.asset.name}
+      - name: resources_vpc_config
+        description: "A JSON representation of the VPC configuration used by the cluster control plane. For example \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
+        defaultValue: '{"endpointPublicAccess": false, "endpointPrivateAccess": true}'
+        hidden: true
 
   - name: aws-eks-cluster-describe
     description: Describes an Amazon EKS cluster.
@@ -2625,7 +2682,6 @@ script:
     - name: instance_id
       description: 'The ID of the instance.'
       required: true
-
     - description: Whether IMDSv2 is required.
       auto: PREDEFINED
       name: http_tokens
@@ -5406,7 +5462,7 @@ script:
       description: The reason for the function’s current state.
       type: String
     - contextPath: AWS.Lambda.FunctionConfig.StateReasonCode
-      description: The reason code for the function’s current state. 
+      description: The reason code for the function’s current state.
       type: String
     - contextPath: AWS.Lambda.FunctionConfig.LastUpdateStatus
       description: The status of the last update that was performed on the function.
@@ -5617,7 +5673,7 @@ script:
     description: Returns the resource-based IAM policy for a Lambda function.
     outputs:
       - contextPath: AWS.Lambda.Policy.Version
-        description: The policy version. 
+        description: The policy version.
         type: Date
       - contextPath: AWS.Lambda.Policy.Id
         description: The identifier of the policy.
@@ -6668,7 +6724,7 @@ script:
       - ENABLED
       - DISABLED
     outputs: []
-    
+
   isfetch: false
   runonce: false
   script: '-'

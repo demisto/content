@@ -2493,90 +2493,6 @@ script:
       name: subscription_id
       type: String
       required: true
-      prettyname: Subscription ID
-      prettypredefined:
-        Subscription ID: ${asset.xdm.asset.realm}
-    - description: The name of the resource group.
-      name: resource_group_name
-      type: String
-      required: true
-      prettyname: Resource Group
-      prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
-    - description: The name of the security group.
-      name: security_group_name
-      required: true
-      prettyname: Logic App Name
-      prettypredefined:
-        Logic App Name: ${asset.xdm.asset.raw_fields.Platform Discovery.name}
-    - description: Name of the NSG rule to update.
-      name: security_rule_name
-      required: true
-      prettyname: NSG Rule
-      prettypredefined:
-        NSG Rule: ${asset.xdm.asset.raw_fields.Platform Discovery.properties.securityRules.name}
-    - auto: PREDEFINED
-      description: Whether to allow or deny network traffic.
-      name: access
-      predefined:
-      - Deny
-      defaultValue: Deny
-    description: "Revokes an NSG rule's access setting it to Deny, effectively blocking traffic defined by that rule's properties."
-    name: azure-nsg-security-rule-update-quick-action
-    prettyname: Revoke NSG Rule to Stop Traffic
-    quickaction: true
-    hidden: true
-    outputs:
-    - contextPath: Azure.NSGRule.name
-      description: The rule's name.
-      type: String
-    - contextPath: Azure.NSGRule.id
-      description: The rule's ID.
-      type: String
-    - contextPath: Azure.NSGRule.etag
-      description: The rule's ETag.
-      type: String
-    - contextPath: Azure.NSGRule.type
-      description: The rule's type.
-      type: String
-    - contextPath: Azure.NSGRule.provisioningState
-      description: The rule's provisioning state.
-      type: String
-    - contextPath: Azure.NSGRule.protocol
-      description: The protocol. Can be "TCP", "UDP", "ICMP", "*".
-      type: String
-    - contextPath: Azure.NSGRule.sourcePortRange
-      description: For a single port, the source port or a range of ports. Note that for multiple ports, `sourcePortRanges` will appear instead.
-      type: String
-    - contextPath: Azure.NSGRule.sourcePortRanges
-      description: For multiple ports, a list of these ports. Note that for single ports, `sourcePortRange` will appear instead.
-      type: String
-    - contextPath: Azure.NSGRule.destinationPortRange
-      description: For a single port, the destination port or range of ports. Note that for multiple ports, `destinationPortRanges` will appear instead.
-      type: String
-    - contextPath: Azure.NSGRule.destinationPortRanges
-      description: For multiple ports, a list of destination ports. Note that for single ports, `destinationPortRange` will appear instead.
-      type: String
-    - contextPath: Azure.NSGRule.sourceAddressPrefix
-      description: The source address.
-      type: String
-    - contextPath: Azure.NSGRule.destinationAddressPrefix
-      description: The destination address.
-      type: String
-    - contextPath: Azure.NSGRule.access
-      description: The rule's access. Can be "Allow" or "Deny".
-      type: String
-    - contextPath: Azure.NSGRule.priority
-      description: The rule's priority, ranging from 100 to 4096.  
-      type: Number
-    - contextPath: Azure.NSGRule.direction
-      description: The rule's direction. Can be "Inbound" or "Outbound".
-      type: String
-  - arguments:
-    - description: The subscription ID.
-      name: subscription_id
-      type: String
-      required: true
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
       prettyname: Subscription ID
@@ -5482,6 +5398,370 @@ script:
     - contextPath: Azure.ACR.type
       description: The type of the resource.
       type: String
+  - arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      type: String
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: name
+      description: Policy assignment name.
+      defaultValue: SecurityCenterBuiltIn
+      hidden: true
+    - name: scope
+      type: string
+      description: Scope for the policy assignment.
+      required: true
+      prettyname: Scope
+      prettypredefined:
+        Scope: ${asset.xdm.asset.raw_fields.Platform Discovery.properties.scope}
+    - name: policy_definition_id
+      type: string
+      description: The ID of the policy definition or policy set definition being assigned.
+      hidden: true
+      defaultValue: 1f3afdf9-d0c9-4c3d-847f-89da613e70a8
+    - name: parameters
+      description: JSON object of policy parameter values.
+      defaultValue: |
+        {
+          "jitNetworkAccessMonitoringEffect": { "value": "AuditIfNotExists" },
+          "gcLinuxDiskEncryptionMonitoringEffect": { "value": "AuditIfNotExists" },
+          "gcWindowsDiskEncryptionMonitoringEffect": { "value": "AuditIfNotExists" },
+          "systemUpdatesV2MonitoringEffect": { "value": "AuditIfNotExists" }
+        }
+      hidden: true
+    name: azure-policy-assignment-create-quick-action
+    description: |
+      Applies Microsoft Defender for Cloud built-in recommendations by creating a policy assignment
+      for the SecurityCenterBuiltIn initiative. This sets the following policies to 'AuditIfNotExists':
+      disk encryption monitoring (Windows and Linux), system updates monitoring, and JIT network access monitoring.
+      Rules for adaptive application controls, endpoint protection, and security configuration are excluded.   
+    prettyname: Apply MS Defender Policy
+    quickaction: true
+    hidden: true
+    outputs:
+    - contextPath: Azure.PolicyAssignment.ID
+      description: The resource ID of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Name
+      description: The name of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Type
+      description: The type of the resource (e.g., 'Microsoft.Authorization/policyAssignments').
+      type: string
+    - contextPath: Azure.PolicyAssignment.Location
+      description: The location of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Identity
+      description: The managed identity associated with the policy assignment.
+    - contextPath: Azure.PolicyAssignment.Properties.DisplayName
+      description: The display name of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.Description
+      description: The description of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.PolicyDefinitionId
+      description: The ID of the policy definition or policy set definition being assigned.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.Scope
+      description: The scope of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.NotScopes
+      description: The list of scopes that are excluded from the policy assignment.
+    - contextPath: Azure.PolicyAssignment.Properties.Parameters
+      description: The parameter values for the assigned policy rule.
+    - contextPath: Azure.PolicyAssignment.Properties.Metadata
+      description: The metadata associated with the policy assignment.
+    - contextPath: Azure.PolicyAssignment.Properties.EnforcementMode
+      description: The policy assignment enforcement mode (e.g., 'Default' or 'DoNotEnforce').
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.latestDefinitionVersion
+      description: The latest version of the policy definition available. This is only present if requested via the $expand query parameter.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.NonComplianceMessages
+      description: The messages that describe why a resource is non-compliant with the policy.
+    - contextPath: Azure.PolicyAssignment.Properties.DefinitionVersion
+      description: The version of the policy definition to use.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.Overrides
+      description: The policy property value overrides.
+    - contextPath: Azure.PolicyAssignment.Properties.ResourceSelectors
+      description: The resource selectors to filter policies by resource properties.
+    - contextPath: Azure.PolicyAssignment.SystemData
+      description: The system metadata relating to this resource.
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: log_disconnections
+    - name: value
+      type: string
+      description: 'Value of the configuration.'
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-config-set-disconnection-logging-quick-action
+    prettyname: Enable Disconnection Logging on PostgreSQL
+    hidden: true
+    quickaction: true
+    description: Enables logging of client disconnections on the PostgreSQL server.
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'log_checkpoints'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-config-set-checkpoint-logging-quick-action
+    prettyname: Enable PostgreSQL Checkpoint Logging
+    hidden: true
+    quickaction: true
+    description: Enables checkpoint logging on the PostgreSQL server.
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'connection_throttling'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-config-set-connection-throttling-quick-action
+    prettyname: Enable Connection Throttling on PostgreSQL
+    hidden: true
+    quickaction: true
+    description: Enables connection throttling on the PostgreSQL server. This enables the PostgreSQL database to set the verbosity of logged messages allowing generation of query and error logs with respect to concurrent connections.
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'log_connections'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-config-set-session-connection-logging-quick-action
+    prettyname: Enable Session Connection Logging on PostgreSQL
+    hidden: true
+    quickaction: true
+    description: Enables logging of client connections on the PostgreSQL.
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'log_retention_days'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: '4'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-config-set-log-retention-period-quick-action
+    prettyname: Set Postgres Log Retention
+    hidden: true
+    quickaction: true
+    description: 'Sets the log retention period for the PostgreSQL server to 4 days. NOTE: The recommended log retention period can be any value from 4 to 7 days.'
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'log_duration'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-config-set-statement-logging-quick-action
+    prettyname: Enable Postgres Statement Logging
+    hidden: true
+    quickaction: true
+    description: Enables logging of statement execution duration on the PostgreSQL server to help with performance analysis.
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: String
+      required: true
+      description: The resource group name.
+      prettyname: Resource Group
+    - name: server_name
+      type: String
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: ssl_enforcement
+      type: String
+      description: Whether to enable SSL authentication when connecting to the server.
+      defaultValue: Enabled
+      hidden: true
+    name: azure-postgres-server-update-ssl-enforcement-quick-action
+    description: Enforces SSL/TLS connections for the PostgreSQL server to reject unencrypted traffic.
+    outputs: [] # No outputs are returned in the response.
+    hidden: true
+    quickaction: true
+    prettyname: Enable SSL on Postgres Server
   isfetch: false
   runonce: false
   script: '-'
