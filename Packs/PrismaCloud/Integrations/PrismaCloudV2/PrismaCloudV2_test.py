@@ -308,8 +308,11 @@ def test_config_search_command(mocker, prisma_cloud_v2_client):
     """
     from PrismaCloudV2 import config_search_command
 
-    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request")
+    mock_response = {"totalRows": 0, "items": [], "heuristicSearch": True, "preview": False}
+    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request", return_value=mock_response)
+
     args = {"query": "config from cloud.resource where cloud.region = 'AWS Ohio' ", "limit": "1"}
+
     config_search_command(prisma_cloud_v2_client, args)
     http_request.assert_called_with(
         "POST",
