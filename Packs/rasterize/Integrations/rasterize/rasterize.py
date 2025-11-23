@@ -123,39 +123,26 @@ class RasterizeType(Enum):
     JSON = "json"
 
 
+# endregion
+
+# region utility classes
+
+
 def excepthook_recv_loop(args: threading.ExceptHookArgs) -> None:
     """
-    Suppressing exceptions that might happen after the tab was closed or during network event handling.
+    Suppressing exceptions that might happen after the tab was closed.
     """
     demisto.debug(f"excepthook_recv_loop, {args.exc_type=}")
     exc_value = args.exc_value
     if args.exc_type in [json.decoder.JSONDecodeError, websocket._exceptions.WebSocketConnectionClosedException]:
-        demisto.debug(f"Suppressed Exception in _recv_loop: {args.exc_type=}, {exc_value=}")
+        # Suppress
+        demisto.debug(f"Suppressed Exception in _recv_loop: {args.exc_type=}")
     else:
         demisto.info(f"Unsuppressed Exception in _recv_loop: {args.exc_type=}")
         if exc_value:
             demisto.info(f"Unsuppressed Exception in _recv_loop: {args.exc_type=}, {exc_value=}")
         else:
             demisto.info(f"Unsuppressed Exception in _recv_loop: {args.exc_type=}, empty exc_value")
-
-
-def safe_tab_cleanup(operation, operation_name="operation", suppress_json_errors=True):
-    """
-    Safely execute tab cleanup operations, suppressing expected JSON decode errors from Chrome.
-    
-    Args:
-        operation: Callable to execute
-        operation_name: Name of the operation for logging
-        suppress_json_errors: Whether to suppress JSONDecodeError (default: True)
-    """
-    try:
-        operation()
-    except json.JSONDecodeError:
-        # Chrome often returns malformed JSON during cleanup - operation usually succeeds despite error
-        if not suppress_json_errors:
-            demisto.debug(f"JSONDecodeError during {operation_name} (operation likely succeeded)")
-    except Exception as ex:
-        demisto.info(f"Failed to {operation_name}: {str(ex)}")
 
 
 class TabLifecycleManager:
@@ -198,12 +185,21 @@ class TabLifecycleManager:
             # Suppressing exceptions that might happen after the tab was closed.
             threading.excepthook = excepthook_recv_loop
 
-            time.sleep(TAB_CLOSE_WAIT_TIME)  # pylint: disable=E9003
-            
-            # Use safe cleanup wrapper to handle Chrome's malformed JSON responses
-            safe_tab_cleanup(lambda: self.tab.Page.disable(), "disable page")
-            safe_tab_cleanup(lambda: self.tab.stop(), f"stop tab {tab_id}")
-            safe_tab_cleanup(lambda: self.browser.close_tab(tab_id), f"close tab {tab_id}")
+            try:
+                time.sleep(TAB_CLOSE_WAIT_TIME)  # pylint: disable=E9003
+                self.tab.Page.disable()
+            except Exception as ex:
+                demisto.info(f"TabLifecycleManager, __exit__, {self.chrome_port=}, failed to disable page due to {ex}")
+
+            try:
+                self.tab.stop()
+            except Exception as ex:
+                demisto.info(f"TabLifecycleManager, __exit__, {self.chrome_port=}, failed to stop tab {tab_id} due to {ex}")
+
+            try:
+                self.browser.close_tab(tab_id)
+            except Exception as ex:
+                demisto.info(f"TabLifecycleManager, __exit__, {self.chrome_port=}, failed to close tab {tab_id} due to {ex}")
 
             time.sleep(TAB_CLOSE_WAIT_TIME)  # pylint: disable=E9003
 
@@ -363,27 +359,20 @@ class PychromeEventHandler:
 
     def network_request_will_be_sent(self, documentURL: str, **kwargs):
         """Triggered when a request is sent by the browser, catches mailto URLs."""
-        try:
-            demisto.debug(
-                f"PychromeEventHandler.network_request_will_be_sent, documentURL={documentURL}, "
-                f"tab_id={self.tab.id}, path={self.path}"
-            )
-            self.document_url = documentURL
-            self.is_mailto = documentURL.lower().startswith("mailto:")
-            self.is_private_network_url = is_private_network(documentURL)
-            demisto.debug(f"Private network URL check for documentURL={documentURL}: {self.is_private_network_url}")
-            demisto.debug(f"mailto URL check for documentURL={documentURL}: {self.is_mailto}")
-            request_url = kwargs.get("request", {}).get("url", "")
+        demisto.debug(f"PychromeEventHandler.network_request_will_be_sent, {documentURL=}, {self.tab.id=}, {self.path=}")
+        self.document_url = documentURL
+        self.is_mailto = documentURL.lower().startswith("mailto:")
+        self.is_private_network_url = is_private_network(documentURL)
+        demisto.debug(f"Private network URL check for {documentURL=}: {self.is_private_network_url}")
+        demisto.debug(f"mailto URL check for {documentURL=}: {self.is_mailto}")
+        request_url = kwargs.get("request", {}).get("url", "")
 
-            if any(value in request_url for value in BLOCKED_URLS):
-                demisto.info(
-                    f"The following URL is blocked. Consider updating the 'List of domains to block' parameter:{request_url}"
-                )
-                self.tab.Fetch.enable()
-                demisto.debug(f"Fetch events enabled. tab_id={self.tab.id}, path={self.path}")
-        except Exception as ex:
-            # Suppress any exceptions in this callback to prevent breaking the event loop
-            demisto.debug(f"Exception in network_request_will_be_sent: {ex}")
+        if any(value in request_url for value in BLOCKED_URLS):
+            demisto.info(
+                f"The following URL is blocked. Consider updating the 'List of domains to block' parameter:{request_url}"
+            )
+            self.tab.Fetch.enable()
+            demisto.debug(f"Fetch events enabled. {self.tab.id=}, {self.path=}")
 
     def handle_request_paused(self, **kwargs):
         request_id = kwargs.get("requestId")
@@ -806,29 +795,19 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
     tab_event_handler, tab_ready_event = setup_tab_event(browser, tab, path, navigation_timeout)
 
     try:
-        demisto.info(f"Starting tab navigation to given path: {path} on tab_id={str(tab.id)}")
+        demisto.info(f"Starting tab navigation to given path: {path} on {tab.id=}")
 
-        try:
-            allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
-            demisto.debug(
-                f"allTimeSamplingProfile before navigation allTimeSamplingProfile={allTimeSamplingProfile} "
-                f"on tab.id={tab.id}, path={path}"
-            )
-        except (json.JSONDecodeError, Exception) as ex:
-            demisto.debug(f"Failed to get allTimeSamplingProfile: {ex}")
-
-        try:
-            heapUsage = tab.Runtime.getHeapUsage()
-            demisto.debug(f"heapUsage before navigation heapUsage={heapUsage} on tab.id={tab.id}, path={path}")
-        except (json.JSONDecodeError, Exception) as ex:
-            demisto.debug(f"Failed to get heapUsage: {ex}")
+        allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
+        demisto.debug(f"allTimeSamplingProfile before navigation {allTimeSamplingProfile=} on {tab.id=}, {path=}")
+        heapUsage = tab.Runtime.getHeapUsage()
+        demisto.debug(f"heapUsage before navigation {heapUsage=} on {tab.id=}, {path=}")
 
         if navigation_timeout > 0:
             tab.Page.navigate(url=path, _timeout=navigation_timeout)
         else:
             tab.Page.navigate(url=path)
 
-        demisto.debug(f"Waiting for tab_ready_event on tab_id={str(tab.id)}, {path=}")
+        demisto.debug(f"Waiting for tab_ready_event on {tab.id=}, {path=}")
 
         if not tab_ready_event.wait(navigation_timeout):
             return_warning(
@@ -836,28 +815,19 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
                 f" some content might be missing .\n{path=}"
             )
 
-        demisto.debug(f"After waiting for tab_ready_event on tab_id={str(tab.id)}, {path=}")
+        demisto.debug(f"After waiting for tab_ready_event on {tab.id=}, {path=}")
 
         if wait_time > 0:
-            demisto.info(f"Sleeping before capturing screenshot, {wait_time=}, tab_id={str(tab.id)}, {path=}")
+            demisto.info(f"Sleeping before capturing screenshot, {wait_time=}, {tab.id=}, {path=}")
         else:
-            demisto.debug(f"Not sleeping before capturing screenshot, {wait_time=}. tab_id={str(tab.id)}, {path=}")
+            demisto.debug(f"Not sleeping before capturing screenshot, {wait_time=}. {tab.id=}, {path=}")
         time.sleep(wait_time)  # pylint: disable=E9003
-        demisto.debug(f"Navigated to {path=} on tab_id={str(tab.id)}")
+        demisto.debug(f"Navigated to {path=} on {tab.id=}")
 
-        try:
-            allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
-            demisto.debug(
-                f"allTimeSamplingProfile after navigation allTimeSamplingProfile={allTimeSamplingProfile} on tab.id={tab.id}"
-            )
-        except (json.JSONDecodeError, Exception) as ex:
-            demisto.debug(f"Failed to get allTimeSamplingProfile after navigation: {ex}")
-
-        try:
-            heapUsage = tab.Runtime.getHeapUsage()
-            demisto.debug(f"heapUsage after navigation heapUsage={heapUsage} on tab.id={tab.id}")
-        except (json.JSONDecodeError, Exception) as ex:
-            demisto.debug(f"Failed to get heapUsage after navigation: {ex}")
+        allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
+        demisto.debug(f"allTimeSamplingProfile after navigation {allTimeSamplingProfile=} on {tab.id=}")
+        heapUsage = tab.Runtime.getHeapUsage()
+        demisto.debug(f"heapUsage after navigation {heapUsage=} on {tab.id=}")
 
     except pychrome.exceptions.TimeoutException as ex:
         return_error(f"Navigation timeout: {ex} thrown while trying to navigate to {path}, {tab.id=}")
@@ -974,20 +944,10 @@ def screenshot_image(
     else:
         demisto.info(f"Screenshot image of {path=} on {tab.id=}, not available after {operation_time} seconds.")
 
-    try:
-        allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
-        demisto.debug(
-            f"allTimeSamplingProfile after screenshot allTimeSamplingProfile={allTimeSamplingProfile} "
-            f"on tab.id={tab.id}, path={path}"
-        )
-    except (json.JSONDecodeError, Exception) as ex:
-        demisto.debug(f"Failed to get allTimeSamplingProfile after screenshot: {ex}")
-    
-    try:
-        heapUsage = tab.Runtime.getHeapUsage()
-        demisto.debug(f"heapUsage after screenshot heapUsage={heapUsage} on tab.id={tab.id}, path={path}")
-    except (json.JSONDecodeError, Exception) as ex:
-        demisto.debug(f"Failed to get heapUsage after screenshot: {ex}")
+    allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
+    demisto.debug(f"allTimeSamplingProfile after screenshot {allTimeSamplingProfile=} on {tab.id=}, {path=}")
+    heapUsage = tab.Runtime.getHeapUsage()
+    demisto.debug(f"heapUsage after screenshot {heapUsage=} on {tab.id=}, {path=}")
 
     captured_image = base64.b64decode(screenshot_data)
     if not captured_image:
@@ -1669,102 +1629,73 @@ def _extract_html_content(tab: pychrome.Tab) -> str:
     """
     js_code = r"""
 (function() {
+    // Pre-compile tag sets for faster lookups
+    const SKIP_TAGS = new Set(['nav', 'header', 'footer', 'aside', 'script', 'style', 'noscript']);
+    const SKIP_ROLES = new Set(['navigation', 'banner', 'contentinfo', 'complementary']);
+    const CONTAINER_TAGS = new Set(['div', 'section', 'article', 'main']);
+    const LIST_TAGS = new Set(['ul', 'ol']);
+    
+    // Heading regex compiled once
+    const HEADING_REGEX = /^h[1-6]$/;
+
     function shouldSkipElement(element) {
-        // Skip navigation, headers, footers, sidebars, and other non-content elements
         const tag = element.tagName.toLowerCase();
+        if (SKIP_TAGS.has(tag)) return true;
+        
         const role = element.getAttribute('role');
-
-        // Skip by tag name - these are always non-content
-        if (['nav', 'header', 'footer', 'aside', 'script', 'style', 'noscript'].includes(tag)) {
-            return true;
-        }
-
-        // Skip by ARIA role - these are semantic navigation markers
-        if (['navigation', 'banner', 'contentinfo', 'complementary'].includes(role)) {
-            return true;
-        }
-
-        // Don't skip by class/id - too aggressive and filters out main content
-        // Many sites use navigation-related words in content container classes
-
-        return false;
+        return role && SKIP_ROLES.has(role);
     }
 
     function extractText(element, depth = 0) {
+        if (shouldSkipElement(element)) return '';
+        
         let text = '';
+        const nodes = element.childNodes;
+        const len = nodes.length;
 
-        // Skip navigation and other non-content elements
-        if (shouldSkipElement(element)) {
-            return '';
-        }
-
-        for (let node of element.childNodes) {
-            if (node.nodeType === Node.TEXT_NODE) {
-                let content = node.textContent.trim();
+        for (let i = 0; i < len; i++) {
+            const node = nodes[i];
+            const nodeType = node.nodeType;
+            
+            if (nodeType === 3) { // TEXT_NODE
+                const content = node.textContent.trim();
                 if (content) text += content + ' ';
-            } else if (node.nodeType === Node.ELEMENT_NODE) {
-                // Skip this element if it's navigation
-                if (shouldSkipElement(node)) {
-                    continue;
-                }
+            } else if (nodeType === 1) { // ELEMENT_NODE
+                if (shouldSkipElement(node)) continue;
 
-                let tag = node.tagName.toLowerCase();
+                const tag = node.tagName.toLowerCase();
 
-                // Handle links - convert to markdown format
                 if (tag === 'a') {
-                    let href = node.getAttribute('href');
-                    let linkText = node.textContent.trim();
+                    const href = node.getAttribute('href');
+                    const linkText = node.textContent.trim();
                     if (href && linkText) {
-                        // Make relative URLs absolute
-                        if (href.startsWith('/') && !href.startsWith('//')) {
-                            href = window.location.origin + href;
-                        } else if (href.startsWith('./')) {
-                            href = window.location.origin + window.location.pathname.replace(/[^/]*$/, '') + href.substring(2);
-                        } else if (!href.startsWith('http') && !href.startsWith('mailto:') && !href.startsWith('#')) {
-                            href = window.location.origin + '/' + href;
-                        }
-
-                        text += '[' + linkText + '](' + href + ') ';
+                        // Keep URLs as-is (relative or absolute)
+                        text += '[' + linkText + '](' + href + ')';
                     } else if (linkText) {
-                        text += linkText + ' ';
+                        text += linkText;
                     }
-                }
-                // Handle headings - preserve hierarchy
-                else if (tag.match(/^h[1-6]$/)) {
-                    let level = parseInt(tag[1]);
-                    let heading = node.textContent.trim();
+                } else if (HEADING_REGEX.test(tag)) {
+                    const level = parseInt(tag[1], 10);
+                    const heading = extractText(node, depth + 1).trim();
                     if (heading) {
                         text += '\n\n' + '#'.repeat(level) + ' ' + heading + '\n\n';
                     }
-                }
-                // Handle paragraphs
-                else if (tag === 'p') {
-                    let para = extractText(node, depth + 1).trim();
+                } else if (tag === 'p') {
+                    const para = extractText(node, depth + 1).trim();
                     if (para) text += para + '\n\n';
-                }
-                // Handle lists
-                else if (tag === 'li') {
-                    let item = extractText(node, depth + 1).trim();
+                } else if (tag === 'li') {
+                    const item = extractText(node, depth + 1).trim();
                     if (item) text += '* ' + item + '\n';
-                }
-                else if (tag === 'ul' || tag === 'ol') {
+                } else if (LIST_TAGS.has(tag)) {
                     text += '\n' + extractText(node, depth + 1) + '\n';
-                }
-                // Handle line breaks
-                else if (tag === 'br') {
+                } else if (tag === 'br') {
                     text += '\n';
-                }
-                // Handle horizontal rules
-                else if (tag === 'hr') {
+                } else if (tag === 'hr') {
                     text += '\n---\n';
-                }
-                // Handle main content containers
-                else if (['div', 'section', 'article', 'main'].includes(tag)) {
-                    let content = extractText(node, depth + 1).trim();
+                } else if (CONTAINER_TAGS.has(tag)) {
+                    const content = extractText(node, depth + 1).trim();
                     if (content) text += content + '\n';
-                }
-                // Recursively process other elements
-                else {
+                } else {
                     text += extractText(node, depth + 1);
                 }
             }
@@ -1774,8 +1705,12 @@ def _extract_html_content(tab: pychrome.Tab) -> str:
     }
 
     let content = extractText(document.body || document.documentElement);
-    // Clean up excessive whitespace
-    content = content.replace(/ +/g, ' ').replace(/\n\n\n+/g, '\n\n').trim();
+    // Clean up excessive whitespace - remove extra spaces and normalize line breaks
+    // First normalize spaces (including before punctuation)
+    content = content.replace(/ +/g, ' ')           // Multiple spaces to single space
+                     .replace(/ ([.,;:!?)])/g, '$1') // Remove space before punctuation
+                     .replace(/\n\n\n+/g, '\n\n')    // Multiple newlines to double newline
+                     .trim();
     return content;
 })();
 """
