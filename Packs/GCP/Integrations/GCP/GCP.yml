@@ -2228,7 +2228,7 @@ script:
       description: Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
       type: string
     - contextPath: GCP.Compute.Networks.description
-      description: An optional description of this resource. Provide this property when you create the resource.
+      description: An optional description of this resource.
       type: string
     - contextPath: GCP.Compute.Networks.gatewayIPv4
       description: The gateway address for default routing out of the network. This value is read only and is selected by GCP.
@@ -2236,7 +2236,7 @@ script:
     - contextPath: GCP.Compute.Networks.selfLink
       description: Server-defined URL for the resource.
       type: string
-    - contextPath: GCP.Compute.Networks.auto_create_sub_networks
+    - contextPath: GCP.Compute.Networks.autoCreateSubnetworks
       description: When set to true, the VPC network is created in "auto" mode. When set to false, the VPC network is created in "custom" mode.
       type: boolean
     - contextPath: GCP.Compute.Networks.subnetworks
@@ -2294,7 +2294,7 @@ script:
       description: Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
       type: string
     - contextPath: GCP.Compute.Images.description
-      description: An optional description of this resource. Provide this property when you create the resource.
+      description: An optional description of this resource.
       type: string
     - contextPath: GCP.Compute.Images.sourceType
       description: The type of the image used to create this disk. The default and only value is RAW.
@@ -2515,49 +2515,49 @@ script:
     description: Returns the specified instance group.
     name: gcp-compute-instance-group-get
     outputs:
-    - contextPath: GCP.Compute.instance_groups.id
+    - contextPath: GCP.Compute.InstanceGroups.id
       description: The unique identifier for the resource. This identifier is defined by the server.
       type: string
-    - contextPath: GCP.Compute.instance_groups.creationTimestamp
+    - contextPath: GCP.Compute.InstanceGroups.creationTimestamp
       description: The creation timestamp for this instance group in RFC3339 text format.
       type: string
-    - contextPath: GCP.Compute.instance_groups.name
+    - contextPath: GCP.Compute.InstanceGroups.name
       description: The name of the instance group. The name must be 1-63 characters long, and comply with RFC1035.
       type: string
-    - contextPath: GCP.Compute.instance_groups.description
-      description: An optional description of this resource. Provide this property when you create the resource.
+    - contextPath: GCP.Compute.InstanceGroups.description
+      description: An optional description of this resource.
       type: string
-    - contextPath: GCP.Compute.instance_groups.namedPorts
+    - contextPath: GCP.Compute.InstanceGroups.namedPorts
       description: Assigns a name to a port number.
       type: string
-    - contextPath: GCP.Compute.instance_groups.namedPorts.name
+    - contextPath: GCP.Compute.InstanceGroups.namedPorts.name
       description: The name for this named port. The name must be 1-63 characters long, and comply with RFC1035.
       type: string
-    - contextPath: GCP.Compute.instance_groups.namedPorts.port
+    - contextPath: GCP.Compute.InstanceGroups.namedPorts.port
       description: The port number, which can be a value between 1 and 65535.
       type: string
-    - contextPath: GCP.Compute.instance_groups.network
+    - contextPath: GCP.Compute.InstanceGroups.network
       description: The URL of the network to which all instances in the instance group belong.
       type: string
-    - contextPath: GCP.Compute.instance_groups.fingerprint
+    - contextPath: GCP.Compute.InstanceGroups.fingerprint
       description: The fingerprint of the named ports. The system uses this fingerprint to detect conflicts when multiple users change the named ports concurrently.
       type: string
-    - contextPath: GCP.Compute.instance_groups.zone
+    - contextPath: GCP.Compute.InstanceGroups.zone
       description: The URL of the zone where the instance group is located (for zonal resources).
       type: string
-    - contextPath: GCP.Compute.instance_groups.selfLink
+    - contextPath: GCP.Compute.InstanceGroups.selfLink
       description: The URL for this instance group. The server generates this URL.
       type: string
-    - contextPath: GCP.Compute.instance_groups.size
+    - contextPath: GCP.Compute.InstanceGroups.size
       description: The total number of instances in the instance group.
       type: string
-    - contextPath: GCP.Compute.instance_groups.region
+    - contextPath: GCP.Compute.InstanceGroups.region
       description: The URL of the region where the instance group is located (for regional resources).
       type: string
-    - contextPath: GCP.Compute.instance_groups.subnetwork
+    - contextPath: GCP.Compute.InstanceGroups.subnetwork
       description: The URL of the subnetwork to which all instances in the instance group belong.
       type: string
-    - contextPath: GCP.Compute.instance_groups.kind
+    - contextPath: GCP.Compute.InstanceGroups.kind
       description: ' The resource type, which is always compute#instance_group for instance groups.'
       type: string
 
@@ -2645,7 +2645,7 @@ script:
       description: Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
       type: string
     - contextPath: GCP.Compute.Networks.description
-      description: An optional description of this resource. Provide this property when you create the resource.
+      description: An optional description of this resource.
       type: string
     - contextPath: GCP.Compute.Networks.gatewayIPv4
       description: The gateway address for default routing out of the network. This value is read only and is selected by GCP.
@@ -3073,7 +3073,7 @@ script:
         description: The name of the resource, provided by the client when first creating it. The name must be 1–63 characters long and comply with RFC1035. It must match the regular expression [a-z]([-a-z0-9]*[a-z0-9])?, meaning the first character must be a lowercase letter, and all following characters can be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
         type: string
       - contextPath: GCP.Compute.Instances.description
-        description: An optional description of this resource. Provide this property when you create the resource.
+        description: An optional description of this resource.
         type: string
       - contextPath: GCP.Compute.Instances.tags
         description: Tags to apply to this instance. Tags identify valid sources or targets for network firewalls and are specified by the client during instance creation. Tags can later be modified using the setTags method. Each tag must comply with RFC1035. Multiple tags can be specified via the tags.items field.

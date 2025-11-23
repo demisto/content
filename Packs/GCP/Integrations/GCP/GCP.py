@@ -2742,7 +2742,7 @@ def gcp_compute_network_insert(creds: Credentials, args: dict[str, Any]) -> Comm
         config["description"] = args.get("description")
 
     # Auto-create subnets (default to True)
-    auto_create_sub_networks = argToBoolean(args.get("autoCreateSubnetworks", True))
+    auto_create_sub_networks = argToBoolean(args.get("auto_create_sub_networks", True))
     if auto_create_sub_networks is not None:
         config["autoCreateSubnetworks"] = auto_create_sub_networks
     else:

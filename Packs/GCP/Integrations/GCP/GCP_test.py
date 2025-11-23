@@ -4981,9 +4981,9 @@ class TestGCPComputeNetworkInsert:
 
     def test_gcp_compute_network_insert_auto_create_subnets_false_string(self, mocker):
         """
-        Given: A mocked GCP Compute service environment with a string 'false' value for autoCreateSubnetworks.
-        When: gcp_compute_network_insert is called with autoCreateSubnetworks set to the string "false".
-        Then: The function should create a network with autoCreateSubnetworks converted to boolean False, and verify the correct
+        Given: A mocked GCP Compute service environment with a string 'false' value for auto_create_sub_networks.
+        When: gcp_compute_network_insert is called with auto_create_sub_networks set to the string "false".
+        Then: The function should create a network with auto_create_sub_networks converted to boolean False, and verify the correct
         API call.
         """
         from GCP import GCPServices
@@ -5000,7 +5000,7 @@ class TestGCPComputeNetworkInsert:
 
         mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
-        args = {"name": "test-network", "autoCreateSubnetworks": "false", "project_id": "test-project"}
+        args = {"name": "test-network", "auto_create_sub_networks": "false", "project_id": "test-project"}
 
         gcp_compute_network_insert(mock_creds, args)
 
@@ -5039,9 +5039,9 @@ class TestGCPComputeNetworkInsert:
 
     def test_gcp_compute_network_insert_auto_create_subnets_boolean_false(self, mocker):
         """
-        Given: A mocked GCP Compute service environment with a boolean False value for autoCreateSubnetworks.
-        When: gcp_compute_network_insert is called with autoCreateSubnetworks set to boolean False.
-        Then: The function should create a network with autoCreateSubnetworks as False, and verify the correct API call.
+        Given: A mocked GCP Compute service environment with a boolean False value for auto_create_sub_networks.
+        When: gcp_compute_network_insert is called with auto_create_sub_networks set to boolean False.
+        Then: The function should create a network with auto_create_sub_networks as False, and verify the correct API call.
         """
         from GCP import GCPServices
         from GCP import gcp_compute_network_insert
@@ -5057,7 +5057,7 @@ class TestGCPComputeNetworkInsert:
 
         mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
-        args = {"name": "test-network", "autoCreateSubnetworks": False, "project_id": "test-project"}
+        args = {"name": "test-network", "auto_create_sub_networks": False, "project_id": "test-project"}
 
         gcp_compute_network_insert(mock_creds, args)
 
@@ -5124,7 +5124,7 @@ class TestGCPComputeNetworkInsert:
     def test_gcp_compute_network_insert_all_options(self, mocker):
         """
         Given: A mocked GCP Compute service environment with all network configuration options specified.
-        When: gcp_compute_network_insert is called with name, description, autoCreateSubnetworks set to "false", and
+        When: gcp_compute_network_insert is called with name, description, auto_create_sub_networks set to "false", and
         routing_config_routing_mode set to "GLOBAL".
         Then: The function should create a network with all specified configurations, verify the correct API call with
         proper parameter conversion, and return operation details including progress.
@@ -5153,7 +5153,7 @@ class TestGCPComputeNetworkInsert:
         args = {
             "name": "FULL-Test-Network",
             "description": "Complete test network",
-            "autoCreateSubnetworks": "false",
+            "auto_create_sub_networks": "false",
             "routing_config_routing_mode": "GLOBAL",
             "project_id": "full-test-project",
         }
