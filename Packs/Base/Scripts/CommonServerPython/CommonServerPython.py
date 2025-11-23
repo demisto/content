@@ -2398,9 +2398,12 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         return mdResult
 
     if not headers and isinstance(t, dict) and len(t.keys()) == 1:
-        # in case of a single key, create a column table where each element is in a different row.
-        headers = list(t.keys())
-        t = list(t.values())[0]
+        # in case of a single key, transform to preserve key-value structure
+        key = list(t.keys())[0]
+        value = list(t.values())[0]
+        # Transform to a two-column format to avoid header-data mismatch
+        t = [{"Key": key, "Value": value}]
+        headers = [key, "Value"]
 
     if not isinstance(t, list):
         t = [t]
@@ -8518,16 +8521,16 @@ def response_to_context(reponse_obj, user_predefiend_keys=None):
 def safe_strptime(date_str, datetime_format, strptime=datetime.strptime):
     """
     Parses a date string to a datetime object, handling cases where the microsecond component is missing.
-    
+
     :type date_str: ``str``
     :param date_str: The date string to parse (required)
-    
+
     :type datetime_format: ``str``
     :param datetime_format: The format of the date string (required)
-    
+
     :type strptime: ``Callable``
     :param strptime: The function to use for parsing the date string (optional)
-    
+
     :return: The parsed datetime object
     :rtype: ``datetime.datetime``
     """
@@ -9456,7 +9459,7 @@ if 'requests' in sys.modules:
                 than :attr:`Retry.BACKOFF_MAX`.
 
                 By default, backoff_factor set to 5
-                
+
             :type backoff_jitter ``float``
             :param backoff_jitter: the sleep (backoff factor) is extended by
                 random.uniform(0, {backoff jitter})
