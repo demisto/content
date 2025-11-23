@@ -450,9 +450,12 @@ script:
     - contextPath: Gmail.Body
       description: The content of the email.
       type: string
-    - contextPath: Gmail.Attachments
-      description: Attachment details. Attachments IDs are separated by commas.
-      type: unknown
+    - contextPath: Gmail.Attachments.ID
+      description: The email attachment ID (as appear in gmail).
+      type: Unknown
+    - contextPath: Gmail.Attachments.Name
+      description: The email attachment name.
+      type: Unknown
     - contextPath: Gmail.Headers
       description: All headers of a specific email (list).
       type: unknown
