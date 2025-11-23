@@ -463,7 +463,7 @@ def get_error_enhanced(entry: dict) -> str:
         # If no error is detected, raise the original ValueError
         raise ValueError("execute_command result has no error entry. before using get_error_enhanced use is_error_enhanced")
 
-    content_lower:str = _get_content_lower(entry) # if content lower was None, is_error_enhanced would have been false
+    content_lower = str(_get_content_lower(entry))  # if content lower was None, is_error_enhanced would have been false
     # 1. Check for Not Found errors first, as they are very specific
     if is_not_found_error(content_lower):
         return "User not found."
@@ -475,8 +475,6 @@ def get_error_enhanced(entry: dict) -> str:
     # 3. Resolve to general error
     content = entry.get("Contents") or entry.get("Content")
     return f"Unknown error occurred: {content.strip()}"
-
-
 
 
 def run_command(
