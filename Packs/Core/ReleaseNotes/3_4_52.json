@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "**Important Note**: The following playbook **CNetcat Makes or Gets Connections** have been moved to the 'Cortex Response And Remediation' pack. Make sure to update the *Cortex Response And Remediation* pack to the latest version in order to use the playbook.\n"
+}
