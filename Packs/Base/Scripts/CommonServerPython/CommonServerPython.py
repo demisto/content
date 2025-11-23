@@ -8530,7 +8530,7 @@ def safe_strptime(date_str, datetime_format, strptime=datetime.strptime):
 
     :type strptime: ``Callable``
     :param strptime: The function to use for parsing the date string (optional)
-
+    
     :return: The parsed datetime object
     :rtype: ``datetime.datetime``
     """
@@ -9459,7 +9459,7 @@ if 'requests' in sys.modules:
                 than :attr:`Retry.BACKOFF_MAX`.
 
                 By default, backoff_factor set to 5
-                
+
             :type backoff_jitter ``float``
             :param backoff_jitter: the sleep (backoff factor) is extended by
                 random.uniform(0, {backoff jitter})
