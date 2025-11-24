@@ -281,7 +281,7 @@ create_client_header_args = [case_basic_auth, case_auth_token_only, case_context
 audit_logs_page1_response = {
     "appliances": [
         {
-            "applianceuuid": f"app-a{i}", 
+            "applianceuuid": f"app-a{i}",
             "startTime": (datetime(2025, 1, 1, 0, 0, 0, tzinfo=UTC) + timedelta(seconds=i)).strftime(EVENT_DATE_FORMAT),
         }
         for i in range(DEFAULT_AUDIT_LOGS_PAGE_SIZE)
@@ -290,7 +290,7 @@ audit_logs_page1_response = {
 audit_logs_page2_response = {
     "appliances": [
         {
-            "applianceuuid": f"app-b{j}", 
+            "applianceuuid": f"app-b{j}",
             "startTime": (datetime(2025, 1, 1, 1, 0, 0, tzinfo=UTC) + timedelta(seconds=j)).strftime(EVENT_DATE_FORMAT),
         }
         for j in range(DEFAULT_AUDIT_LOGS_PAGE_SIZE)
