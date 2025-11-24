@@ -516,6 +516,91 @@ def test_fetch_incidents_exits_when_time_diff_less_than_1_microsecond(client, mo
     assert updated_last_run["ioc_domain_matches"]["index"] == 2
 
 
+def test_fetch_incidents_exits_when_time_diff_less_than_1_microsecond_with_last_run(client, mocker):
+    """
+    Test that fetch_incidents exits the while loop early when the time difference is less than 1 microsecond.
+    """
+    from GoogleSecOps import datetime, fetch_incidents, timedelta
+
+    with open("test_data/fetch_incidents_response.json") as f:
+        responses = json.loads(f.read())
+
+    params = {"first_fetch": "2025-07-20T00:00:00Z", "max_fetch": 2000}
+    last_run = {"ioc_domain_matches": {"previous_artifact_values": ["0.0.0.0 - 3rd Party", "0.0.0.1 - 3rd Party"], "index": 5}}
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+
+    # Patch datetime.now()
+    mock_now = mocker.patch("GoogleSecOps.datetime")
+
+    t1 = datetime(2025, 7, 20, 0, 0, 0, 0) + timedelta(microseconds=1)
+
+    mock_now.now.return_value = t1
+    mock_now.strptime = datetime.strptime
+    mock_now.strftime = datetime.strftime
+
+    mocker.patch("GoogleSecOps.get_informal_time", return_value="10 minutes ago")
+
+    class MockResponse:
+        def __init__(self, response_data):
+            self.status_code = 200
+            self.text = json.dumps(response_data)
+
+        def json(self):
+            return json.loads(self.text)
+
+    client.http_client.request.return_value = MockResponse(responses["api_call"])
+
+    incidents, updated_last_run = fetch_incidents(client, params)
+    assert len(incidents) == 0
+    assert updated_last_run["ioc_domain_matches"]["index"] == 1
+    assert "end_time" not in updated_last_run["ioc_domain_matches"]
+    assert updated_last_run["ioc_domain_matches"]["start_time"] == "2025-07-20T00:00:00.000001Z"
+
+
+def test_fetch_incidents_exits_when_time_diff_less_than_1_microsecond_with_last_run_and_more_data_available(client, mocker):
+    """
+    Test that fetch_incidents exits the while loop early when the time difference is less than 1 microsecond
+    and more data is available.
+    """
+    from GoogleSecOps import datetime, fetch_incidents, timedelta
+
+    with open("test_data/fetch_incidents_response.json") as f:
+        responses = json.loads(f.read())
+
+    params = {"first_fetch": "2025-07-20T00:00:00Z", "max_fetch": 2000}
+    last_run = {"ioc_domain_matches": {"previous_artifact_values": ["0.0.0.0 - 3rd Party", "0.0.0.1 - 3rd Party"], "index": 3}}
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+
+    # Patch datetime.now()
+    mock_now = mocker.patch("GoogleSecOps.datetime")
+
+    t1 = datetime(2025, 7, 20, 0, 0, 0, 0) + timedelta(microseconds=1)
+
+    mock_now.now.return_value = t1
+    mock_now.strptime = datetime.strptime
+    mock_now.strftime = datetime.strftime
+
+    mocker.patch("GoogleSecOps.get_informal_time", return_value="10 minutes ago")
+
+    class MockResponse:
+        def __init__(self, response_data):
+            self.status_code = 200
+            self.text = json.dumps(response_data)
+
+        def json(self):
+            data = json.loads(self.text)
+            data.update({"moreDataAvailable": True})
+            return data
+
+    client.http_client.request.return_value = MockResponse(responses["api_call"])
+
+    incidents, updated_last_run = fetch_incidents(client, params)
+    assert len(incidents) == 0
+    assert updated_last_run["ioc_domain_matches"]["index"] == 4
+    assert updated_last_run["ioc_domain_matches"]["end_time"] == "2025-07-20T00:00:00.000001Z"
+    assert updated_last_run["ioc_domain_matches"]["start_time"] == "2025-07-20T00:00:00.000000Z"
+
+
 def test_list_rules_command(client):
     """When valid response comes in gcb-list-rules command it should respond with result."""
     from GoogleSecOps import gcb_list_rules_command

@@ -13,6 +13,7 @@ from google.oauth2 import service_account
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+IOC_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 STATUS_LIST_TO_RETRY = [429] + list(range(500, 600))
@@ -1024,7 +1025,8 @@ def get_informal_time(date: str) -> str:
     :rtype: str
     """
     current_time = datetime.utcnow()
-    previous_time = parse_date_string(date)
+    date_format = DATE_FORMAT if "." in date else IOC_DATE_FORMAT
+    previous_time = parse_date_string(date, date_format=date_format)
 
     total_time = (current_time - previous_time).total_seconds()
 
@@ -4223,8 +4225,20 @@ def fetch_incidents(client_obj, params: dict[str, Any], is_test: bool = False) -
     multiline_logs_for_list(duplicate_artifacts, "Duplicate Artifacts: ")
     last_run.update({"previous_artifact_values": previous_artifact_values})
 
+    start_time_obj = datetime.strptime(delayed_start_time, DATE_FORMAT)
+    end_time_obj = datetime.strptime(end_time, DATE_FORMAT)
+    is_diff_one_microsecond = False
+    time_diff = end_time_obj - start_time_obj
+    # Check if time difference is less than 1 microsecond
+    if time_diff.total_seconds() <= 0.000001:
+        is_diff_one_microsecond = True
+
+    demisto.debug(
+        f"Fetch IoCs: Checking last run update condition - is_diff_one_microsecond={is_diff_one_microsecond}, "
+        f"more_data_available={more_data_available}, page_size={page_size}"
+    )
     # Update start_time and index if moreDataAvailable is false and no incidents are fetched
-    if not incidents and not more_data_available:
+    if not incidents and (not more_data_available or (is_diff_one_microsecond and page_size == MAX_IOCS_FETCH_SIZE)):
         demisto.debug("Fetch IoCs: All IoCs for the current time interval have been fetched.")
         last_run.pop("end_time", None)
         last_run.update({"start_time": end_time, "index": 1})
