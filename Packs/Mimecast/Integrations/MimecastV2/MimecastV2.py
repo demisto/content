@@ -308,6 +308,11 @@ def list_held_messages_request(args):
     to_date = arg_to_datetime(args.get("to_date")).isoformat() if args.get("to_date") else None  # type: ignore
     value = args.get("value", "")
     field_name = args.get("field_name", "")
+
+    # Backward compatibility: map old 'reason_code' to new 'reasonCode'
+    if field_name == "reason_code":
+        field_name = "reasonCode"
+
     limit = arg_to_number(args.get("limit")) or 20
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
