@@ -1226,3 +1226,33 @@ def test_health_check_credentials_creation_failure(mocker):
     assert result.connector_id == connector_id
     assert "Invalid token format" in result.message
     assert result.error_type == "Connectivity Error"
+
+
+def test_health_check_service_multiple_failures(mocker):
+    """
+    Given: Valid credentials but services fail with errors
+    When: health_check is called and service tests fail with errors
+    Then: The function should return a list of HealthCheckError
+    """
+    from GCP import health_check
+
+    # Mock shared credentials
+    shared_creds = {"access_token": "valid-token-123"}
+    project_id = "test-project"
+    connector_id = "connector-123"
+
+    # Mock service test failure (permission related - should be ignored)
+    mock_service_results = [
+        ("compute", True, ""),
+        ("storage", False, "Request is prohibited by organization's policy"),
+        ("container", False, "Request is prohibited by organization's policy"),
+    ]
+
+    mocker.patch("GCP.GCPServices.test_all_services", return_value=mock_service_results)
+
+    # Execute the function
+    result = health_check(shared_creds, project_id, connector_id)
+
+    # Should return a list of HealthCheckError
+    assert isinstance(result, list)
+    assert len(result) == 2

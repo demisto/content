@@ -1129,7 +1129,7 @@ def health_check(shared_creds: dict, project_id: str, connector_id: str) -> Heal
         connector_id (str): The connector ID for the Cloud integration.
 
     Returns:
-        HealthCheckError or None: HealthCheckError if there's an issue, None if successful.
+        HealthCheckError or a list of HealthCheckError or None: A list of HealthCheckError if there's at least one issue, None if successful.
     """
     try:
         token = shared_creds.get("access_token")
@@ -1145,14 +1145,17 @@ def health_check(shared_creds: dict, project_id: str, connector_id: str) -> Heal
         )
     # Perform sample check on GCP services
     service_results = GCPServices.test_all_services(creds, project_id)
+    errors_list = []
     for _, success, error_message in service_results:
         if not success and "Permission" not in error_message:
-            return HealthCheckError(
+            errors_list.append(HealthCheckError(
                 account_id=project_id,
                 connector_id=connector_id,
                 message=f"Sample check failed for account {project_id}. Error: {error_message}",
                 error_type=ErrorType.CONNECTIVITY_ERROR,
-            )
+            ))
+    if errors_list:
+        return errors_list
     return None
 
 
