@@ -7,12 +7,7 @@ from keepercommander import api, crypto, utils
 from keepercommander.auth.login_steps import DeviceApprovalChannel, LoginStepDeviceApproval, LoginStepPassword
 from keepercommander.loginv3 import InvalidDeviceToken, LoginV3API, LoginV3Flow
 from keepercommander.params import KeeperParams
-from keepercommander.proto.APIRequest_pb2 import (
-    DEVICE_APPROVAL_REQUIRED,
-    LOGGED_IN,
-    REDIRECT_CLOUD_SSO,
-    REQUIRES_AUTH_HASH,
-)
+from keepercommander.proto import APIRequest_pb2
 
 """ CONSTANTS """
 
@@ -256,7 +251,7 @@ class Client:
         resp = self.save_device_tokens(
             encrypted_device_token=encryptedDeviceToken,
         )
-        if resp.loginState == DEVICE_APPROVAL_REQUIRED:
+        if resp.loginState == APIRequest_pb2.DEVICE_APPROVAL_REQUIRED:
             # client goes to “standard device approval”
             device_approval.send_push(
                 self.keeper_params,
@@ -264,9 +259,9 @@ class Client:
                 encryptedDeviceToken,
                 resp.encryptedLoginToken,
             )
-        elif resp.loginState == REQUIRES_AUTH_HASH:
+        elif resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:
             raise DemistoException(DEVICE_ALREADY_REGISTERED)
-        elif resp.loginState == REDIRECT_CLOUD_SSO:
+        elif resp.loginState == APIRequest_pb2.REDIRECT_CLOUD_SSO:
             raise DemistoException(SSO_REDIRECT)
         else:
             raise DemistoException(f"Unknown login state {resp.loginState}")
@@ -288,12 +283,12 @@ class Client:
             DemistoException: When trying to verify the device registration, and an error occurs.
         """
         resp = LoginV3API.startLoginMessage(self.keeper_params, encrypted_device_token)
-        if resp.loginState == REQUIRES_AUTH_HASH:
+        if resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:
             salt = api.get_correct_salt(resp.salt)
             password_step = self.PasswordStep(salt_bytes=salt.salt, salt_iterations=salt.iterations)
             verify_password_response = password_step.verify_password(self.keeper_params, encrypted_login_token)
             # Disabling pylint due to external class declaration
-            if verify_password_response.loginState == LOGGED_IN:
+            if verify_password_response.loginState == APIRequest_pb2.LOGGED_IN:  # pylint: disable=no-member
                 LoginV3Flow.post_login_processing(self.keeper_params, verify_password_response)
             else:
                 raise DemistoException(
