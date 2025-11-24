@@ -351,6 +351,31 @@ script:
     - contextPath: InfoFile.Type
       description: The type of the image/pdf file.
       type: string
+  - arguments:
+    - default: true
+      description: The URL to extract text content from. Must be the full URL, including the http prefix.
+      name: url
+      required: true
+      isArray: true
+    - description: Time in seconds to wait before extracting content.
+      name: wait_time
+    - description: Maximum time to wait for a page to load (in seconds).
+      name: max_page_load_time
+    - defaultValue: 600px
+      description: The page width, for example, 600px. Specify with or without the px suffix.
+      name: width
+    - defaultValue: 800px
+      description: The page height, for example, 800px. Specify with or without the px suffix.
+      name: height
+    description: Extracts structured text content from web pages in markdown format.
+    name: rasterize-extract
+    outputs:
+    - contextPath: Rasterize.URL
+      description: The final URL after any redirects.
+      type: string
+    - contextPath: Rasterize.Content
+      description: The extracted markdown-formatted text content.
+      type: string
   dockerimage: demisto/chromium:141.0.7390.5492271
   runonce: false
   script: "-"

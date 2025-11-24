@@ -119,6 +119,7 @@ class RasterizeType(Enum):
     PNG = "png"
     PDF = "pdf"
     JSON = "json"
+    TEXT = "text"  # Added for structured extraction
 
 
 # endregion
@@ -385,7 +386,155 @@ class PychromeEventHandler:
 
 
 # endregion
+_EXTRACTION_JAVASCRIPT = """
+(function() {
+    // --- Configuration ---
+    const MAIN_CONTENT_SELECTORS = 'main, article, .main-content, .post, .entry, .container';
+    const IGNORE_SELECTORS = 'nav, header, footer, aside, script, style, noscript, form, iframe, button, [role="navigation"], [role="banner"], [role="contentinfo"], [role="complementary"], .sidebar, #comments, .comment-area';
 
+    // --- 1. Find and Clean Main Content ---
+    const mainElement = document.querySelector(MAIN_CONTENT_SELECTORS) || document.body;
+
+    // Remove noise elements before traversal.
+    mainElement.querySelectorAll(IGNORE_SELECTORS).forEach(el => el.remove());
+
+    const markdownOutput = [];
+
+    // --- 2. Single-Pass Traversal for Structure ---
+    function traverse(node) {
+        if (node.nodeType === 3) { // TEXT_NODE
+            const text = node.textContent.trim();
+            if (text) markdownOutput.push(text);
+        } else if (node.nodeType === 1) { // ELEMENT_NODE
+            const tag = node.tagName.toLowerCase();
+            const children = Array.from(node.childNodes);
+
+            let [prefix, suffix, skipChildren] = ['', '', false];
+
+            switch (tag) {
+                case 'h1':
+                case 'h2':
+                case 'h3':
+                case 'h4':
+                case 'h5':
+                case 'h6':
+                    const level = parseInt(tag[1], 10);
+                    [prefix, suffix] = [`\\n\\n${'#'.repeat(level)} `, '\\n\\n'];
+                    break;
+                case 'p':
+                case 'div': 
+                    [prefix, suffix] = ['\\n\\n', '\\n\\n'];
+                    break;
+                case 'li':
+                    const listSymbol = node.parentNode.tagName.toLowerCase() === 'ol' ? `${Array.from(node.parentNode.children).indexOf(node) + 1}. ` : '* ';
+                    prefix = `\\n${listSymbol}`;
+                    break;
+                case 'a':
+                    const href = node.getAttribute('href');
+                    const text = node.textContent.trim();
+                    if (href && text && !href.toLowerCase().startsWith('mailto:')) {
+                        prefix = `[${text}](${href})`;
+                        skipChildren = true;
+                    } else if (text) {
+                        prefix = text;
+                        skipChildren = true;
+                    }
+                    break;
+                case 'strong':
+                case 'b':
+                    [prefix, suffix] = ['**', '**'];
+                    break;
+                case 'br':
+                case 'hr':
+                    prefix = '\\n';
+                    break;
+                case 'pre':
+                    prefix = '\\n\\n```\\n';
+                    suffix = '\\n```\\n\\n';
+                    break;
+            }
+
+            markdownOutput.push(prefix);
+
+            if (!skipChildren) {
+                children.forEach(traverse);
+            }
+
+            markdownOutput.push(suffix);
+        }
+    }
+
+    traverse(mainElement);
+
+    // --- 3. Final Cleanup ---
+    let finalContent = markdownOutput.join(' ').trim();
+
+    // Standardize whitespace and clean up newlines.
+    finalContent = finalContent.replace(/ +/g, ' '); 
+    finalContent = finalContent.replace(/\\n\\n\\n+/g, '\\n\\n');
+    finalContent = finalContent.replace(/[ \\t]*\\n[ \\t]*/g, '\\n');
+    finalContent = finalContent.trim(); 
+
+    return finalContent;
+})();
+"""
+
+
+# Assuming the JavaScript constant _EXTRACTION_JAVASCRIPT is defined as you provided (returns only the content string)
+
+def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tuple[str, str]:
+    """
+    Executes the JavaScript to extract ONLY the structured content string.
+
+    Returns:
+        tuple[str, str]: A tuple containing:
+            - str: The structured Markdown content string.
+            - str: The final URL navigated to (as auxiliary data).
+    """
+    demisto.debug(f"Executing content-only extraction for tab {tab.id}")
+
+    # 1. Fetch the final URL directly from the browser's frame tree,
+    #    as the JS is no longer returning it in the payload.
+    try:
+        frame_tree_result = tab.Page.getFrameTree()
+        final_url = frame_tree_result.get("frameTree", {}).get("frame", {}).get("url", "N/A")
+    except Exception as ex:
+        demisto.debug(f"Could not get frame URL: {ex}")
+        final_url = "N/A"
+
+    try:
+        # 2. Execute the JavaScript expecting only the content string back
+        result = tab.Runtime.evaluate(
+            expression=_EXTRACTION_JAVASCRIPT,
+            returnByValue=True,
+            _timeout=navigation_timeout
+        )
+
+        # 3. Extract the content string directly from the result's value field
+        content_string = result.get("result", {}).get("value", "")
+
+        if not content_string:
+            raise DemistoException("Extraction failed: Received empty content string from JavaScript execution.")
+
+        # 4. The return must now be (Content String, final_url) instead of (JSON String, final_url)
+        # The content string now represents the full "data" returned.
+        return content_string, final_url
+
+    except Exception as ex:
+        demisto.error(f"Failed to extract structured content from tab {tab.id}: {ex}")
+
+        # If the main extraction failed, try to get the current URL again
+        try:
+            final_url_on_error = tab.Page.getFrameTree().get("frameTree", {}).get("frame", {}).get("url", "N/A")
+        except:
+            final_url_on_error = final_url
+
+        return f"Extraction Error: {ex}", final_url_on_error
+
+
+# endregion
+
+# region utility functions
 
 def count_running_chromes(port) -> int:
     try:
@@ -1029,6 +1178,41 @@ def screenshot_pdf(
     return ret_value, None
 
 
+def extract_text_content(
+    browser: pychrome.Browser, tab: pychrome.Tab, path: str, wait_time: int, navigation_timeout: int
+):  # pragma: no cover
+    """Extracts structured text content from a web page using Chrome browser.
+
+    Args:
+        browser: The Chrome browser instance.
+        tab: The Chrome tab instance.
+        path: The URL or file path to extract content from.
+        wait_time: Time to wait before extracting content.
+        navigation_timeout: Maximum time to wait for page load.
+
+    Returns:
+        tuple: A tuple containing:
+            - str: The extracted content string.
+            - str: The final URL navigated to.
+
+    Raises:
+        DemistoException: If the URL is a mailto or private network URL.
+    """
+    tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
+
+    if tab_event_handler.is_mailto or tab_event_handler.is_private_network_url:
+        error_msg = f'Cannot rasterize "mailto:" or private network URLs. URL: {tab_event_handler.document_url}'
+        demisto.info(f"Blocked URL for text extraction - {error_msg}, tab_id={tab.id}")
+        return None, error_msg
+
+    demisto.debug(f"Executing extract_content_from_tab for TEXT, {path=}, {tab.id=}")
+
+    # Extract content and final URL
+    extracted_content, final_url = extract_content_from_tab(tab, navigation_timeout)
+
+    return extracted_content, final_url
+
+
 def rasterize_thread(
     browser: pychrome.Browser,
     chrome_port,
@@ -1080,6 +1264,13 @@ def rasterize_thread(
                 include_url=include_url,
                 include_source=True,
             )
+
+        elif rasterize_type == RasterizeType.TEXT or str(rasterize_type).lower() == RasterizeType.TEXT.value:
+            demisto.debug(f"Executing extract_text_content for TEXT, {path=}, {tab.id=}")
+            return extract_text_content(
+                browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout
+            )
+
         else:
             raise DemistoException(f"Unsupported rasterization type: {rasterize_type}.")
 
@@ -1613,6 +1804,104 @@ def rasterize_command():  # pragma: no cover
             demisto.results(res)
 
 
+def rasterize_extract_command():  # pragma: no cover
+    """Extracts structured text content from web pages.
+
+    This command uses Chrome browser to navigate to URLs and extract their text content
+    in a structured markdown format. It processes multiple URLs concurrently and returns
+    the extracted content along with metadata.
+
+    Args:
+        None (uses demisto.args() internally)
+
+    Command Arguments:
+        url: Single URL or list of URLs to extract content from
+        wait_time: Time in seconds to wait before extracting content (default: DEFAULT_WAIT_TIME)
+        max_page_load_time: Maximum time to wait for page load (default: DEFAULT_PAGE_LOAD_TIME)
+        width: Browser window width (default: DEFAULT_WIDTH)
+        height: Browser window height (default: DEFAULT_HEIGHT)
+
+    Returns:
+        None (uses return_results() to output CommandResults)
+
+    Outputs:
+        For each URL, returns a CommandResults with:
+        - URL: The final URL after any redirects
+        - Content: The extracted markdown-formatted text content
+
+    Raises:
+        Errors are handled internally and returned as CommandResults with ERROR entry type
+    """
+    args = demisto.args()
+    urls = demisto.getArg("url")
+    urls = process_urls(urls)
+
+    width, height = get_width_height(demisto.args())
+    wait_time = int(args.get("wait_time", DEFAULT_WAIT_TIME))
+    navigation_timeout = int(args.get("max_page_load_time", DEFAULT_PAGE_LOAD_TIME))
+
+    demisto.info(f"Starting rasterize-extract for URLs: {urls}")
+
+    # Call perform_rasterize with TEXT type
+    # Output format is a list of tuples: (extracted_content_string, final_url)
+    rasterize_output = perform_rasterize(
+        path=urls,
+        rasterize_type=RasterizeType.TEXT,
+        wait_time=wait_time,
+        navigation_timeout=navigation_timeout,
+        width=width,
+        height=height,
+    )
+
+    results = []
+
+    for index, url in enumerate(urls):
+        result_tuple = rasterize_output[index]
+
+        # Handle errors returned from perform_rasterize
+        if isinstance(result_tuple, str):
+            error_msg = result_tuple
+            results.append(
+                CommandResults(
+                    readable_output=f"Error rasterizing {url!r}:\n{error_msg}",
+                    entry_type=EntryType.ERROR,
+                )
+            )
+            continue
+
+        extracted_content, final_url = result_tuple
+
+        # Handle extraction failure that returns an error string inside the tuple
+        if isinstance(extracted_content, str) and extracted_content.startswith("Extraction Error:"):
+            results.append(
+                CommandResults(
+                    readable_output=f"Error extracting content from {url!r}:\n{extracted_content}",
+                    entry_type=EntryType.ERROR,
+                )
+            )
+            continue
+
+        # Outputs for Context
+        outputs = {
+            "URL": final_url,
+            "Content": extracted_content
+        }
+
+        # Human Readable Output
+        hro = f"### Content Extracted from: {final_url}\n---\n{extracted_content}"
+
+        results.append(
+            CommandResults(
+                outputs=outputs,
+                readable_output=hro,
+                outputs_prefix="Rasterize",
+                outputs_key_field="URL",
+            )
+        )
+
+    return_results(results)
+
+
 # endregion
 
 
@@ -1659,6 +1948,9 @@ def main():  # pragma: no cover
 
         elif demisto.command() == "rasterize":
             rasterize_command()
+
+        elif demisto.command() == "rasterize-extract":
+            rasterize_extract_command()
 
         else:
             raise NotImplementedError(f"command {command} is not supported")
