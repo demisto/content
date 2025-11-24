@@ -26,7 +26,7 @@ def cve_enrichment_script(
     Returns:
         CommandResults: The enriched CVE data.
     """
-    cve_list, hr = extract_indicators(cve_list, "cve")
+    cve_list = extract_indicators(cve_list, "cve")
 
     indicator_mapping = {
         "ID": "ID",
@@ -75,15 +75,12 @@ def cve_enrichment_script(
         commands=commands,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
-        final_context_path="CVEEnrichment(val.Value && val.Value == obj.Value)",
+        final_context_path="CVEEnrichment",
         args=demisto.args(),
         data=cve_list,
         indicator=cve_indicator,
     )
-    command_result = cve_reputation.run()
-    if verbose:
-        command_result.readable_output = (command_result.readable_output or "") + hr
-    return command_result
+    return cve_reputation.run()
 
 
 """ MAIN FUNCTION """

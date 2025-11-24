@@ -36,8 +36,8 @@ def ip_enrichment_script(
           - passthrough results (e.g., Core endpoint data, prevalence)
     """
     demisto.debug("Extracting indicators")
-    ip_list, invalid_ip_list, entries, hr = extract_indicators(ip_list, "ip", mark_mismatched_type_as_invalid=True)
-    demisto.debug(f"Invalid List: {invalid_ip_list}")
+    ip_instances, extract_verbose = extract_indicators(ip_list, "ip", mark_mismatched_type_as_invalid=True)
+    demisto.debug(f"Invalid List: {ip_list}")
 
     indicator_mapping = {
         "Address": "Address",
@@ -48,7 +48,7 @@ def ip_enrichment_script(
         "Score": "Score",
     }
 
-    ip_indicator = Indicator(
+    ip_indicator = IndicatorSchema(
         type="ip",
         value_field="Address",
         context_path_prefix="IP",
@@ -117,15 +117,13 @@ def ip_enrichment_script(
         commands=commands,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
-        final_context_path="IPEnrichment(val.Value && val.Value == obj.Value)",
+        final_context_path="IPEnrichment",
         args=args,
         data=ip_list,
         indicator=ip_indicator,
+        verbose_outputs=[extract_verbose],
     )
-    command_result = ip_enrichment.run()
-    if verbose:
-        command_result.readable_output = (command_result.readable_output or "") + hr
-    return command_result
+    return ip_enrichment.run()
 
 
 """ MAIN FUNCTION """

@@ -25,7 +25,7 @@ def domain_enrichment_script(
         CommandResults: The results of the command.
     """
     demisto.debug("Extracting indicators")
-    domain_list, hr = extract_indicators(domain_list, "domain")
+    domain_list = extract_indicators(domain_list, "domain")
     demisto.debug(f"Data list after extract_indicators: {domain_list}")
     # Mapping for the final indicator objects (what you want to surface on each result)
     indicator_mapping = {
@@ -95,15 +95,12 @@ def domain_enrichment_script(
         commands=commands,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
-        final_context_path="DomainEnrichment(val.Value && val.Value == obj.Value)",
+        final_context_path="DomainEnrichment",
         args=demisto.args(),
         data=domain_list,
         indicator=domain_indicator,
     )
-    command_result = domain_reputation.run()
-    if verbose:
-        command_result.readable_output = (command_result.readable_output or "") + hr
-    return command_result
+    return domain_reputation.run()
 
 
 """ MAIN FUNCTION """
