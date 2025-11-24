@@ -225,7 +225,7 @@ class Client(BaseClient):
             page_number (int, optional): The page number (zero-based)
 
         Returns:
-            dict: The threat details with pagination tet
+            dict: The threat details with pagination
         """
         headers = self._headers
         params = assign_params(subtenant=subtenant, pageSize=page_size, pageNumber=page_number)
