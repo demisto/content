@@ -405,7 +405,7 @@ class ContextBuilder:
         if self.tim_context:
             indicator_list = self.create_indicator()
             self.enrich_final_indicator(indicator_list)
-            final_context[self.final_context_path] = indicator_list
+            final_context[f"{self.final_context_path}(val.Value && val.Value == obj.Value)"] = indicator_list
         if self.dbot_context:
             final_context[Common.DBotScore.CONTEXT_PATH] = self.dbot_context
         final_context.update(self.other_context)
@@ -1142,16 +1142,11 @@ def map_back_to_input(values: list[str], mapping: dict[str, str]) -> str:
     return ""
 
 
-def extract_indicators(data: list[str], type: str) -> tuple[list[str], str]:
+def extract_indicators(data: list[str], type: str) -> list[str]:
     """
-    Extract indicators from the provided `self.data` list from the relevant type.
-    Use `extractIndicators` command to extract the input.
-    args:
-        data (list[str]): List of the indicators
-        type (str): The type of the indicator
-    Returns:
-        list[str]: list of extracted indicators.
-        str: human readable of the command.
+    Validate the provided `self.data` list to ensure all items are valid indicators
+    of the configured `self.indicator.type`.
+    Use `extractIndicators` command to validate the input.
     Raises:
         DemistoException | ValueError
     """
@@ -1174,8 +1169,7 @@ def extract_indicators(data: list[str], type: str) -> tuple[list[str], str]:
     )
     if not extracted_indicators:
         raise ValueError("No valid indicators found in the input data.")
-    hr = f"\n\n#### Result for name=extractIndicators args='text': {data}\n\n"
-    return list(extracted_indicators), hr + tableToMarkdown(name="Extracted Indicators: ", t=result_context)
+    return list(extracted_indicators)
 
 
 def deep_merge_in_place(dst: dict, src: dict) -> None:
