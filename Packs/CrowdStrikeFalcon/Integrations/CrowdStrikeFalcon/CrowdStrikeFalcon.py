@@ -3324,7 +3324,9 @@ def fetch_cnapp_incidents(cnapp_last_run):
     look_back = params.get("look_back")
     fetch_query = params.get("cnapp_detection_fetch_query", "")
     limit = (min(int(params.get("limit", 100)), 100))
-    validate_cnapp_fetch_query(cnapp_fetch_query=fetch_query)
+    if "last_seen" in fetch_query:
+        raise DemistoException("last_seen is not allowed as part of the CNAPP fetch query.")
+
     filter_arg = ""
     if not cnapp_last_run:
         last_seen = reformat_timestamp(
@@ -3954,58 +3956,9 @@ def create_iom_filter(
     return filter
 
 
-def create_cnapp_filter(
-    is_paginating: bool, last_fetch_filter: str, last_scan_time: str, first_fetch_timestamp: str, configured_fetch_query: str
-) -> str:
-    """Retrieve the IOM filter that will be used in the current fetch round.
-
-    Args:
-        is_paginating (bool): Whether we are doing pagination or not.
-        last_fetch_filter (str): The last fetch filter that was used in the previous round.
-        last_scan_time (str): The last scan time.
-        first_fetch_timestamp (str): The first fetch timestamp.
-        configured_fetch_query (str): The fetched query configured by the user.
-
-    Raises:
-        DemistoException: If paginating and last filter is an empty string.
-
-    Returns:
-        str: The IOM filter that will be used in the current fetch.
-    """
-    filter = "scan_time:"
-    if is_paginating:
-        if not last_fetch_filter:
-            raise DemistoException("Last fetch filter must not be empty when doing pagination")
-        # Doing pagination, we need to use the same fetch query as the previous round
-        filter = last_fetch_filter
-        demisto.debug(f"Doing pagination, using the same query as the previous round. Filter is {filter}")
-    else:
-        # If entered here, that means we aren't doing pagination
-        if last_scan_time == first_fetch_timestamp:
-            # First fetch, we want to include resources with a scan time
-            # EQUAL or GREATER than the first fetch timestamp
-            filter = f"{filter} >='{last_scan_time}'"
-            demisto.debug(f"First fetch, looking for scan time >= {last_scan_time=}. Filter is {filter}")
-        else:
-            # Not first fetch, we only want to include resources with a scan time
-            # GREATER than the last configured scan time, to prevent duplicates.
-            filter = f"{filter} >'{last_scan_time}'"
-            demisto.debug(f"Not first fetch, only looking for scan time > {last_scan_time=}. Filter is {filter}")
-    if configured_fetch_query and not is_paginating:
-        # If the user entered a fetch query, then append it to the filter
-        demisto.debug("User entered fetch query, appending to filter")
-        filter = f"{filter}+{configured_fetch_query}"
-    return filter
-
-
 def validate_iom_fetch_query(iom_fetch_query: str) -> None:
     if "scan_time" in iom_fetch_query:
         raise DemistoException("scan_time is not allowed as part of the IOM fetch query.")
-
-
-def validate_cnapp_fetch_query(cnapp_fetch_query: str) -> None:
-    if "last_seen" in cnapp_fetch_query:
-        raise DemistoException("last_seen is not allowed as part of the CNAPP fetch query.")
 
 
 def add_seconds_to_date(date: str, seconds_to_add: int, date_format: str) -> str:
