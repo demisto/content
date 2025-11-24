@@ -1,14 +1,20 @@
 name: indicators-enrichment
-comment: "Automatically enriches indicators from a provided list or a block of free text. This script detects the indicator type and runs the correct underlying enrichment script. Currently supports: IP, URL, Domain, CVE, and File."
+comment: "Enriches indicators from a provided list or a block of free text. This script detects the indicator type and runs the correct underlying enrichment script. Currently supports: IP, URL, Domain, CVE, and File."
 commonfields:
   id: indicators-enrichment
   version: -1
 
 # ------------------ Input Arguments -----------------------
 args:
-- name: indicators_list
-  description: "A list of indicators, delimited by a space-comma-space ( , ) OR a single pipe (|)."
-  required: false
+- description: |
+    Accepts a list of indicators to enrich.
+    - From CLI: Provide a comma-separated list.  
+      If an indicator contains a comma, wrap the indicators in a JSON array.  
+      Example: "[\"https://example.com/search?tags=red,yellow,green\", \"https://example2.com\"]".
+    - From Context: Pass JSON arrays directly, without modification.
+  name: indicators_list
+  required: true
+  isArray: true
 - name: text
   description: "Free text to be parsed for indicators. The script will run !extractIndicators to retrieve the underlying indicators within the text."
   required: false
@@ -17,14 +23,6 @@ args:
     - 'true': enrich using enabled external integrations (e.g., VirusTotal (API v3), AlienVault OTX v2) and run internal commands.
     - 'false': use only existing TIM data and run internal commands; skip external integrations.
     If the 'brands' argument is provided, this flag is ignored and enrichment/internal commands will run only on the brands provided."
-  auto: PREDEFINED
-  predefined:
-  - 'true'
-  - 'false'
-  defaultValue: 'false'
-  required: false
-- name: verbose
-  description: "Weather to retrieve a human-readable entry for each command; if false, only the final result is summarized and errors are suppressed."
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -61,7 +59,7 @@ args:
   defaultValue: 'false'
   required: false
 - name: ignore_indicator_limit
-  description: "By default, the script enforces a 1000 indicator limit to maintain performance. If more than 1000 unique indicators are found, the script will stop and return an error. Set this argument to true to bypass this limit and process all found indicators. Note: Bypassing the limit is not recommended as it may impact performance."
+  description: "By default, the script enforces a 100 indicator limit to maintain performance. If more than 100 unique indicators are found, the script will stop and return an error. Set this argument to true to bypass this limit and process all found indicators. Note: Bypassing the limit is not recommended as it may impact performance."
   auto: PREDEFINED
   predefined:
   - 'true'
