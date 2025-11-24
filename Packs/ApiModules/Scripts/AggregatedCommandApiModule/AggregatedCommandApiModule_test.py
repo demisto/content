@@ -2,7 +2,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import DemistoException, entryTypes, Common
 from AggregatedCommandApiModule import *
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, timezone
 
 
 # =================================================================================================
@@ -167,7 +167,7 @@ def test_extract_input_success_sets_data(mocker, data, indicator_type, extracted
         "AggregatedCommandApiModule.execute_command",
         return_value=[{"EntryContext": {"ExtractedIndicators": extracted}}],
     )
-    data, _ = extract_indicators(data, indicator_type)
+    data = extract_indicators(data, indicator_type)
     assert set(data) == expected_set
 
 
@@ -620,7 +620,7 @@ def test_build_preserves_exception_keys_when_empty():
     indicator = Indicator(
         type="url", value_field="Data", context_path_prefix="URL(", context_output_mapping={"Score": "Score", "CVSS": "CVSS"}
     )
-    builder = ContextBuilder(indicator=indicator, final_context_path="Test.Path(val.Value && val.Value == obj.Value)")
+    builder = ContextBuilder(indicator=indicator, final_context_path="Test.Path")
 
     # TIM entry where TIM has no CVSS and explicit None ModifiedTime
     tim_ctx = {"v1": [{"Brand": "TIM", "Score": 2, "ModifiedTime": None, "CVSS": None, "Status": None}]}
@@ -654,7 +654,7 @@ def test_build_extract_tim_score():
         context_path_prefix="Test(",
         context_output_mapping={"Score": "Score"},
     )
-    builder = ContextBuilder(indicator=indicator_with_score, final_context_path="Test.Path(val.Value && val.Value == obj.Value)")
+    builder = ContextBuilder(indicator=indicator_with_score, final_context_path="Test.Path")
 
     # Only the TIM scores (5 and 3) should be considered => max is 5
     tim_ctx = {
@@ -689,7 +689,7 @@ def test_build_enriches_final_indicators_correctly(results, expected_max, expect
     Then:
         - The final output is enriched with the correct MaxScore and MaxVerdict.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path(val.Value && val.Value == obj.Value)")
+    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
 
     tim_ctx = {"indicator1": results}
     builder.add_tim_context(tim_ctx, dbot_scores=[])
@@ -730,7 +730,7 @@ def test_build_assembles_all_context_types():
     Then:
         - The final context should contain all three types of data in the correct paths.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path(val.Value && val.Value == obj.Value)")
+    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
 
     # Add all types of context
     builder.add_tim_context(
@@ -1481,7 +1481,7 @@ def test_get_indicator_status_from_ioc_various(module_factory, has_manual, modif
         - Else STALE (including invalid/no modifiedTime).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
 
     def iso(dt: datetime) -> str:
         # Code under test accepts 'Z' or '+00:00'; it replaces Z → +00:00, so we emit 'Z' here.
@@ -1515,7 +1515,7 @@ def test_get_indicator_status_from_ioc_boundary_freshness_window(module_factory)
         - Returns FRESH at the boundary (minus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     boundary_time = now - STATUS_FRESHNESS_WINDOW + timedelta(hours=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
@@ -1532,7 +1532,7 @@ def test_get_indicator_status_from_ioc_boundary_stale(module_factory):
         - Returns STALE at the boundary (plus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     boundary_time = now - STATUS_FRESHNESS_WINDOW - timedelta(seconds=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
