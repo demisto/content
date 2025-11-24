@@ -5,8 +5,7 @@ ignore=PB114,PB115
 ignore=BA124
 
 [file:PrismaAccessEgressIPFeed.yml]
-ignore=BA124
-ignore=IN122
+ignore=BA124,IN122
 
 [known_words]
 sase
