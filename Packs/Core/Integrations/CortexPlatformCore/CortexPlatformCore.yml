@@ -2268,6 +2268,16 @@ script:
         - contextPath: Core.AppsecIssue.backlog_status
           description: The backlog status of the issue.
           type: String
+    - name: core-run-playbook
+      description: Run a playbook with specified playbook ID and issue IDs.
+      arguments:
+        - name: playbook_id
+          description: The ID of the playbook to run.
+          required: true
+        - name: issue_ids
+          description: The IDs of the issues to process with the playbook.
+          required: true
+          isArray: true
   runonce: false
   script: "-"
   subtype: python3
