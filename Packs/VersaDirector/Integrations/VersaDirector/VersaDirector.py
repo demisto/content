@@ -1973,7 +1973,7 @@ def auth_test_command(client: Client, args: dict[str, Any]):
     # test connectivity with chosen authentication method
     message = test_connectivity(client)
     if message == "ok" and (headers := client._headers):
-        if "Bearer" in headers.get("Authorization", {}):
+        if "Bearer" in headers.get("Authorization", ""):
             message = "Auth Token "
         else:
             message = "Basic "
