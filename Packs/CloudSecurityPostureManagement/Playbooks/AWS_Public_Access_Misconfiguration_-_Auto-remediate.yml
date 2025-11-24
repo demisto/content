@@ -200,7 +200,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 2200
+          "y": 2210
         }
       }
   "23":
@@ -268,7 +268,7 @@ tasks:
       {
         "position": {
           "x": 1135,
-          "y": 2190
+          "y": 2210
         }
       }
   "34":
@@ -304,7 +304,7 @@ tasks:
       {
         "position": {
           "x": 1695,
-          "y": 2190
+          "y": 2210
         }
       }
   "37":
@@ -531,7 +531,7 @@ tasks:
         your account, the playbook will exit with no action.
       id: 212b271e-ad6b-49d4-8173-a7a61ba65308
       iscommand: false
-      name: Notify Stakeholders - issue resolved
+      name: Notify Stakeholders
       playbookId: Notify Stakeholders
       type: playbook
       version: -1
