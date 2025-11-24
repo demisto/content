@@ -1981,7 +1981,8 @@ script:
       - subject
       - sender
       - recipient
-      - reason_code
+      - reasonCode
+      - senderIP
     - name: page_size
       description: Number of results per page to display.
       defaultValue: ""
@@ -3414,7 +3415,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.5490952
 tests:
 - Mimecast test
 - Mimecast Test api 2.0
