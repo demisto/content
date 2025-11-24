@@ -122,7 +122,6 @@ class BreachRxClient:
         severities = self.get_incident_severities()
         types = self.get_incident_types()
 
-        # Create GraphQLRequest with variables
         request = create_incident_mutation
         request.variable_values = {"severity": severities[0]["name"], "name": name, "type": types[0]["name"], "description": description}
         return self.client.execute(request)["createIncident"]
