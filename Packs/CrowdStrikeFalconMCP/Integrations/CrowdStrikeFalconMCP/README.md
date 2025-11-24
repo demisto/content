@@ -1,5 +1,4 @@
 Use this integration to connect securely with a CrowdStrike Falcon MCP Model Context Protocol (MCP) server and access its tools in real time.
-This integration was integrated and tested with version xx of CrowdStrikeFalconMCP.
 
 ## Configure CrowdStrike Falcon MCP in Cortex
 

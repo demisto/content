@@ -3,10 +3,13 @@
     "description": "Integrate Cortex XSOAR with CrowdStrike Falcon via the Management Control Plane (MCP) server to automate CrowdStrike Falcon operations.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
+    "fromVersion": "8.13.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": [],
+    "categories": [
+        "Cloud Security"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
@@ -14,12 +17,8 @@
         "platform"
     ],
     "supportedModules": [
-        "C1",
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
         "agentix",
+        "cloud_posture",
         "xsiam"
     ]
 }
