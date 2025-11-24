@@ -2,7 +2,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import DemistoException, entryTypes, Common
 from AggregatedCommandApiModule import *
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, timezone
 
 
 # =================================================================================================
@@ -589,7 +589,7 @@ def test_add_tim_context():
     Then:
         - The internal state should be updated with the provided data.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path(val.Value && val.Value == obj.Value)")
+    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
     tim_ctx = {"indicator1": [{"Brand": "brandA", "data": "value"}]}
     dbot_list = [make_dbot("indicator1", "brandA", 2)]
 
@@ -608,7 +608,7 @@ def test_add_other_commands_results():
     Then:
         - The internal other_context dictionary should be correctly updated.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path(val.Value && val.Value == obj.Value)")
+    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
 
     builder.add_other_commands_results({"Command1": {"data": "value1"}})
     builder.add_other_commands_results({"Command2": {"data": "value2"}})
@@ -711,7 +711,7 @@ def test_build_without_tim_context_carries_dbot_and_other():
     Then:
         - Final context contains DBot + Other but no TIM key.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Final.Path(val.Value && val.Value == obj.Value)")
+    builder = ContextBuilder(indicator=default_indicator, final_context_path="Final.Path")
     builder.add_tim_context({}, dbot_scores=[make_dbot("ind1", "V", 1)])
     builder.add_other_commands_results({"K1": {"v": 2}})
 
@@ -1481,7 +1481,7 @@ def test_get_indicator_status_from_ioc_various(module_factory, has_manual, modif
         - Else STALE (including invalid/no modifiedTime).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
 
     def iso(dt: datetime) -> str:
         # Code under test accepts 'Z' or '+00:00'; it replaces Z → +00:00, so we emit 'Z' here.
@@ -1515,7 +1515,7 @@ def test_get_indicator_status_from_ioc_boundary_freshness_window(module_factory)
         - Returns FRESH at the boundary (minus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     boundary_time = now - STATUS_FRESHNESS_WINDOW + timedelta(hours=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
@@ -1532,7 +1532,7 @@ def test_get_indicator_status_from_ioc_boundary_stale(module_factory):
         - Returns STALE at the boundary (plus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     boundary_time = now - STATUS_FRESHNESS_WINDOW - timedelta(seconds=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
