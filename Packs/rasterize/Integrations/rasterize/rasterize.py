@@ -390,7 +390,9 @@ _EXTRACTION_JAVASCRIPT = """
 (function() {
     // --- Configuration ---
     const MAIN_CONTENT_SELECTORS = 'main, article, .main-content, .post, .entry, .container';
-    const IGNORE_SELECTORS = 'nav, header, footer, aside, script, style, noscript, form, iframe, button, [role="navigation"], [role="banner"], [role="contentinfo"], [role="complementary"], .sidebar, #comments, .comment-area';
+    const IGNORE_SELECTORS = 'nav, header, footer, aside, script, style, noscript, form, iframe, button, '
+        + '[role="navigation"], [role="banner"], [role="contentinfo"], [role="complementary"], '
+        + '.sidebar, #comments, .comment-area';
 
     // --- 1. Find and Clean Main Content ---
     const mainElement = document.querySelector(MAIN_CONTENT_SELECTORS) || document.body;
@@ -422,11 +424,13 @@ _EXTRACTION_JAVASCRIPT = """
                     [prefix, suffix] = [`\\n\\n${'#'.repeat(level)} `, '\\n\\n'];
                     break;
                 case 'p':
-                case 'div': 
+                case 'div':
                     [prefix, suffix] = ['\\n\\n', '\\n\\n'];
                     break;
                 case 'li':
-                    const listSymbol = node.parentNode.tagName.toLowerCase() === 'ol' ? `${Array.from(node.parentNode.children).indexOf(node) + 1}. ` : '* ';
+                    const listSymbol = node.parentNode.tagName.toLowerCase() === 'ol'
+                        ? `${Array.from(node.parentNode.children).indexOf(node) + 1}. `
+                        : '* ';
                     prefix = `\\n${listSymbol}`;
                     break;
                 case 'a':
@@ -470,10 +474,10 @@ _EXTRACTION_JAVASCRIPT = """
     let finalContent = markdownOutput.join(' ').trim();
 
     // Standardize whitespace and clean up newlines.
-    finalContent = finalContent.replace(/ +/g, ' '); 
+    finalContent = finalContent.replace(/ +/g, ' ');
     finalContent = finalContent.replace(/\\n\\n\\n+/g, '\\n\\n');
     finalContent = finalContent.replace(/[ \\t]*\\n[ \\t]*/g, '\\n');
-    finalContent = finalContent.trim(); 
+    finalContent = finalContent.trim();
 
     return finalContent;
 })();
@@ -514,14 +518,7 @@ def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tupl
 
     except Exception as ex:
         demisto.error(f"Failed to extract structured content from tab {tab.id}: {ex}")
-
-        # If the main extraction failed, try to get the current URL again
-        try:
-            final_url_on_error = tab.Page.getFrameTree().get("frameTree", {}).get("frame", {}).get("url", "N/A")
-        except:
-            final_url_on_error = final_url
-
-        return f"Extraction Error: {ex}", final_url_on_error
+        return f"Extraction Error: {str(ex)}", final_url
 
 
 # endregion
@@ -1199,7 +1196,6 @@ def extract_text_content(
 
     demisto.debug(f"Executing extract_content_from_tab for TEXT, {path=}, {tab.id=}")
 
-    # Extract content and final URL
     extracted_content, final_url = extract_content_from_tab(tab, navigation_timeout)
 
     return extracted_content, final_url
