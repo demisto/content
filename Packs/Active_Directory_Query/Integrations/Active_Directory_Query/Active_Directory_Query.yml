@@ -292,6 +292,7 @@ script:
   - name: ad-enable-account
     quickaction: false
     quickaction:platform: true
+    prettyname: Enable User Account [ActiveDirectory]
     arguments:
     - name: username
       prettyname: Run action on
