@@ -1165,11 +1165,12 @@ def test_health_check_service_connectivity_failure(mocker):
 
     # Should return HealthCheckError for service connectivity failure
     assert result is not None
-    assert result.account_id == project_id
-    assert result.connector_id == connector_id
-    assert "Sample check failed" in result.message
-    assert "Network timeout occurred" in result.message
-    assert result.error_type == "Connectivity Error"
+    assert len(result) == 1
+    assert result[0].account_id == project_id
+    assert result[0].connector_id == connector_id
+    assert "Sample check failed" in result[0].message
+    assert "Network timeout occurred" in result[0].message
+    assert result[0].error_type == "Connectivity Error"
 
 
 def test_health_check_service_permission_failure_ignored(mocker):
