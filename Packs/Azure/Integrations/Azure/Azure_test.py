@@ -53,7 +53,6 @@ from Azure import (
     STORAGE_DATE_FORMAT,
     get_command_and_token_scopes,
     create_set_tags_request_body,
-    transform_response_to_context_format,
 )
 from MicrosoftApiModule import Resources
 from requests import Response
@@ -2886,20 +2885,6 @@ def test_storage_container_property_get_command(mocker, client, mock_params):
     # Configure the client method to return this mock response
     mocker.patch.object(client, "get_storage_container_properties_request", return_value=mock_response)
 
-    # Mock the transform_response_to_context_format function to return expected properties
-    expected_properties = {
-        "content_length": "0",
-        "etag": "0x8DB7F5589F2DC4A",
-        "last_modified": "Wed, 14 Aug 2024 10:00:00 GMT",
-        "date": "Wed, 14 Aug 2024 10:05:00 GMT",
-        "request_id": "req-id-12345",
-        "lease_status": "unlocked",
-        "lease_state": "available",
-        "has_immutability_policy": "false",
-        "has_legal_hold": "false",
-    }
-    mocker.patch("Azure.transform_response_to_context_format", return_value=expected_properties)
-
     # Mock the convert_dict_time_format function to avoid actual date conversion
     mocker.patch("Azure.convert_dict_time_format")
 
@@ -3155,16 +3140,6 @@ def test_storage_container_blob_property_get_command(mocker, client, mock_params
     mock_response.headers = mock_headers
     mocker.patch.object(client, "storage_container_blob_property_get_request", return_value=mock_response)
 
-    # Mock transform_response_to_context_format
-    mock_properties = {
-        "content_length": "1024",
-        "content_type": "text/plain",
-        "etag": "0x8D8B92EFCFD9B41",
-        "last_modified": "Wed, 14 Aug 2024 10:00:00 GMT",
-        "creation_time": "Wed, 14 Aug 2024 09:00:00 GMT",
-    }
-    mocker.patch("Azure.transform_response_to_context_format", return_value=mock_properties)
-
     # Mock convert_dict_time_format
     mocker.patch("Azure.convert_dict_time_format")
 
@@ -3176,9 +3151,6 @@ def test_storage_container_blob_property_get_command(mocker, client, mock_params
 
     # Verify client.storage_container_blob_property_get_request was called with correct parameters
     client.storage_container_blob_property_get_request.assert_called_once_with("testcontainer", "testblob.txt", "testaccount")
-
-    # Verify transform_response_to_context_format was called
-    Azure.transform_response_to_context_format.assert_called_once()
 
     # Verify convert_dict_time_format was called
     Azure.convert_dict_time_format.assert_called_once()
@@ -3192,7 +3164,6 @@ def test_storage_container_blob_property_get_command(mocker, client, mock_params
     assert "Blob" in result.outputs
     assert result.outputs["Blob"]["name"] == "testblob.txt"
     assert "Property" in result.outputs["Blob"]
-    assert result.outputs["Blob"]["Property"] == mock_properties
 
 
 def test_storage_container_blob_property_set_command(mocker, client, mock_params):
@@ -4118,48 +4089,3 @@ def test_create_set_tags_request_body():
     else:
         assert tag1.find("Value").text == "value2"
 
-
-def test_transform_response_to_context_format():
-    """
-    Given: A dictionary of response headers and a list of keys
-    When: The transform_response_to_context_format function is called
-    Then: The function should return a transformed dictionary with proper formatting
-    """
-    # Test data
-    data = {
-        "X-Ms-Version": "2023-11-03",
-        "X-Ms-Request-Id": "12345",
-        "Content-Type": "application/xml",
-        "X-Ms-Creation-Time": "Wed, 17 Nov 2025 09:30:00 GMT",
-        "X-Ms-Blob-Type": "BlockBlob",
-    }
-
-    keys = ["X-Ms-Version", "X-Ms-Request-Id", "X-Ms-Creation-Time", "X-Ms-Blob-Type"]
-
-    # Call the function
-    result = transform_response_to_context_format(data, keys)
-
-    # Verify the result
-    expected = {
-        "version": "2023-11-03",
-        "request_id": "12345",
-        "creation_time": "Wed, 17 Nov 2025 09:30:00 GMT",
-        "blob_type": "BlockBlob",
-    }
-
-    assert result == expected
-
-    # Test with hyphens in header names
-    data_with_hyphens = {
-        "X-Ms-Content-Type": "application/json",
-        "X-Ms-Content-Length": "1024",
-        "X-Ms-Content-MD5": "abcdef123456",
-    }
-
-    keys_with_hyphens = ["X-Ms-Content-Type", "X-Ms-Content-Length", "X-Ms-Content-MD5"]
-
-    result_with_hyphens = transform_response_to_context_format(data_with_hyphens, keys_with_hyphens)
-
-    expected_with_hyphens = {"content_type": "application/json", "content_length": "1024", "content_md5": "abcdef123456"}
-
-    assert result_with_hyphens == expected_with_hyphens
