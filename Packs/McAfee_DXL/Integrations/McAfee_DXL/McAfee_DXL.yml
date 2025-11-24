@@ -126,7 +126,7 @@ script:
       - KNOWN_TRUSTED
       - KNOWN_TRUSTED_INSTALLER
       required: true
-    - description: The topic for which to publish the 'dxl-push-domain'.
+    - description: The topic for which to publish the 'dxl-push-domain' test.
       name: topic
     description: The push domain to the DXL fabric.
     name: dxl-push-domain
