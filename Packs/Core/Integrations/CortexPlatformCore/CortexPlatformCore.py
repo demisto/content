@@ -26,6 +26,7 @@ CASE_FIELDS = {
     "asset_ids": "UAI_ASSET_IDS",
     "asset_groups": "UAI_ASSET_GROUP_IDS",
     "assignee": "ASSIGNED_USER_PRETTY",
+    "assignee_email": "ASSIGNED_USER",
     "name": "CONTAINS",
     "description": "DESCRIPTION",
     "last_updated": "LAST_UPDATE_TIME",
@@ -407,6 +408,26 @@ def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
                 new_key = key.replace(original, new)
                 data[new_key] = data.pop(key)
     return data
+
+
+def determine_assignee_filter_field(assignee: str) -> str:
+    """
+    Determine whether the assignee should be filtered by email or pretty name.
+
+    Args:
+        assignee (str): The assignee value to filter on.
+
+    Returns:
+        str: The appropriate field to filter on based on the input.
+    """
+    if not assignee:
+        return CASE_FIELDS["assignee"]
+    elif "@" in assignee:
+        # If the assignee contains '@', use the email field
+        return CASE_FIELDS["assignee_email"]
+    else:
+        # Otherwise, use the pretty name field
+        return CASE_FIELDS["assignee"]
 
 
 def issue_to_alert(args: dict | str) -> dict | str:
@@ -1121,7 +1142,9 @@ def get_cases_command(client, args):
     filter_builder.add_field(CASE_FIELDS["asset_ids"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_ids")))
     filter_builder.add_field(CASE_FIELDS["asset_groups"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_groups")))
     filter_builder.add_field(CASE_FIELDS["hosts"], FilterType.CASE_HOST_EQ, argToList(args.get("hosts")))
-    filter_builder.add_field(CASE_FIELDS["assignee"], FilterType.CONTAINS, argToList(args.get("assignee")))
+    filter_builder.add_field(
+        determine_assignee_filter_field(args.get("assignee")), FilterType.CONTAINS, argToList(args.get("assignee"))
+    )
 
     request_data = build_webapp_request_data(
         table_name=CASES_TABLE,
@@ -1151,8 +1174,9 @@ def get_cases_command(client, args):
         )
     )
 
+    get_enriched_case_data = argToBoolean(args.get("get_enriched_case_data", "false"))
     # In case enriched case data was requested
-    if argToBoolean(args.get("get_enriched_case_data", "false")):
+    if get_enriched_case_data and len(data) <= 10:
         if isinstance(data, dict):
             data = [data]
 
@@ -1169,6 +1193,14 @@ def get_cases_command(client, args):
         )
 
     else:
+        if get_enriched_case_data:
+            command_results.append(
+                CommandResults(
+                    readable_output="Cannot retrieve enriched case data for more than 10 cases. Only standard case data will be shown."
+                    "Try using a more specific query, for example specific case IDs you want to get enriched data for."
+                )
+            )
+
         command_results.append(
             CommandResults(
                 readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
