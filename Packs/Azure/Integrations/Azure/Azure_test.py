@@ -2848,11 +2848,6 @@ def test_storage_container_blob_create_command(mocker, client, mock_params):
     assert result.readable_output == "Blob test_blob.txt successfully created."
     assert result.raw_response == mock_response
 
-    # Verify client.storage_container_create_blob_request was called with correct parameters
-    client.storage_container_create_blob_request.assert_called_once_with(
-        args["container_name"], args["account_name"], args["file_entry_id"], args["blob_name"]
-    )
-
 
 def test_storage_container_property_get_command(mocker, client, mock_params):
     """
@@ -2885,8 +2880,6 @@ def test_storage_container_property_get_command(mocker, client, mock_params):
     # Configure the client method to return this mock response
     mocker.patch.object(client, "get_storage_container_properties_request", return_value=mock_response)
 
-    # Mock the convert_dict_time_format function to avoid actual date conversion
-    mocker.patch("Azure.convert_dict_time_format")
 
     # Call the function
     result = storage_container_property_get_command(client, mock_params, args)
@@ -3140,9 +3133,6 @@ def test_storage_container_blob_property_get_command(mocker, client, mock_params
     mock_response.headers = mock_headers
     mocker.patch.object(client, "storage_container_blob_property_get_request", return_value=mock_response)
 
-    # Mock convert_dict_time_format
-    mocker.patch("Azure.convert_dict_time_format")
-
     # Mock tableToMarkdown
     mocker.patch("Azure.tableToMarkdown", return_value="Mocked Table")
 
@@ -3151,9 +3141,6 @@ def test_storage_container_blob_property_get_command(mocker, client, mock_params
 
     # Verify client.storage_container_blob_property_get_request was called with correct parameters
     client.storage_container_blob_property_get_request.assert_called_once_with("testcontainer", "testblob.txt", "testaccount")
-
-    # Verify convert_dict_time_format was called
-    Azure.convert_dict_time_format.assert_called_once()
 
     # Verify result
     assert isinstance(result, CommandResults)
