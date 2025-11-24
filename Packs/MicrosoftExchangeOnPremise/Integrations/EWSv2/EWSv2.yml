@@ -13,14 +13,14 @@ configuration:
   section: Connect
 - display: Email address from which to fetch incidents
   name: defaultTargetMailbox
-  required: true
+  required: false
   type: 0
   additionalinfo: Mailbox to run commands on and to fetch incidents from.
   section: Collect
 - defaultvalue: Inbox
   display: Name of the folder from which to fetch incidents (supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing)
   name: folder
-  required: true
+  required: false
   type: 0
   section: Collect
 - defaultvalue: 'false'

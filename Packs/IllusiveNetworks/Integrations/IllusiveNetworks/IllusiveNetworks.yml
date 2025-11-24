@@ -52,7 +52,7 @@ configuration:
   - 'True'
   - 'False'
   - ALL
-  required: true
+  required: false
   type: 15
   section: Collect
 description: The Illusive Attack Management API allows customers to retrieve detected incidents with a forensics timeline, attack surface insights, collect forensics on-demand, and manage a variety of operations with regard to deceptive entities, deception policies, and more.

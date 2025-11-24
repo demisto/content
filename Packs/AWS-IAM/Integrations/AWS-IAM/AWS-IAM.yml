@@ -38,7 +38,7 @@ configuration:
   - us-gov-east-1
   - us-gov-west-1
   type: 15
-  section: Collect
+  section: Connect
   advanced: true
   required: true
 - display: Role Session Duration

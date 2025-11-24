@@ -27,7 +27,7 @@ configuration:
 - defaultvalue: 'C - Fairly reliable'
   display: Source Reliability
   name: integrationReliability
-  required: true
+  required: false
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data.
   options:

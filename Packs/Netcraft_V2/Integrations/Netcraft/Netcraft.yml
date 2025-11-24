@@ -59,7 +59,7 @@ configuration:
   name: first_fetch
   type: 0
   section: Collect
-  required: true
+  required: false
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval

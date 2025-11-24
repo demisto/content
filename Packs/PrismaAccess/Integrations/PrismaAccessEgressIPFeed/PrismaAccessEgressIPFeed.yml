@@ -32,7 +32,7 @@ configuration:
   defaultvalue: all
   type: 15
   section: Collect
-  required: true
+  required: false
   options:
   - all
   - remote_network
@@ -45,7 +45,7 @@ configuration:
   defaultvalue: all
   type: 15
   section: Collect
-  required: true
+  required: false
   options:
   - all
   - active
@@ -78,7 +78,7 @@ configuration:
   defaultvalue: A - Completely reliable
   type: 15
   section: Collect
-  required: true
+  required: false
   options:
   - A - Completely reliable
   - B - Usually reliable
