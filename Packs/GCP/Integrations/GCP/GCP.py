@@ -2925,7 +2925,7 @@ def main():  # pragma: no cover
             "gcp-storage-bucket-policy-delete-make-gcp-bucket-private-quick-action": storage_bucket_policy_delete,
             # Quick Actions - Subnet Update
             "gcp-compute-subnet-update-enable-gcp-subnet-flow-logs-quick-action": compute_subnet_update,
-            "gcp-compute-subnet-update-enable-private-access-quick-action": compute_subnet_update,
+            "gcp-compute-enable-private-ip-access-on-subnet-quick-action": compute_subnet_update,
             # Quick Actions - Container Cluster Security
             "gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action": container_cluster_security_update,  # noqa E501
             "gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action": container_cluster_security_update,  # noqa E501

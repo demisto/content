@@ -890,7 +890,7 @@ script:
         description: The description of the subnet.
         type: String
 
-  - name: gcp-compute-subnet-update-enable-private-access-quick-action
+  - name: gcp-compute-enable-private-ip-access-on-subnet-quick-action
     description: Enables Private Google Access on a GCP subnet.
     prettyname: Enable Private IP Access on Subnet
     quickaction: true

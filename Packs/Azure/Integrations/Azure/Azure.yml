@@ -3397,7 +3397,7 @@ script:
       description: If set to 'true', allows public access to all blobs or containers in the storage account.
       name: allow_blob_public_access
       defaultValue: 'false'
-    name: azure-storage-disable-public-access-quick-action
+    name: azure-storage-disable-storage-account-public-access-quick-action
     description: "Disables public access to blobs for the storage account, blocking anonymous/public read access to containers and blobs."
     prettyname: Disable Storage Account Public Access
     hidden: true
@@ -4982,7 +4982,7 @@ script:
       defaultValue: AzureActiveDirectory
       hidden: true
     description: Sets the data access authentication mode for the managed disk to Azure Active Directory.
-    name: azure-disk-set-data-access-aad-quick-action
+    name: azure-disk-set-data-access-ad-quick-action
     prettyname: Set Disk Data Access to AD
     hidden: true
     quickaction: true
