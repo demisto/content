@@ -26,7 +26,7 @@ This authentication method is based on the **Username** and **Password** paramet
 
    **Note**: If client credentials are not provided as command arguments, an attempt will be made to use the specified configuration parameters.
 
-   The new Auth Token along with all of its relevant information will be saved in the internal integration context.
+   The new Auth Token and all related information will be saved in the internal integration context.
 3. Uncheck the **Use Basic Authentication** checkbox (if checked) and, optionally, clear the previously specified **Username** and **Password** parameter fields.
 
 ##### If *Client ID* and *Client Secret* are NOT available
