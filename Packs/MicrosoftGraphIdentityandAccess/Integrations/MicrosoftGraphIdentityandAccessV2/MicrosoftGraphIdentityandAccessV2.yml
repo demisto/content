@@ -353,12 +353,9 @@ script:
     - contextPath: MSGraph.identityProtection.risks.location.state
       description: State of the sign-in.
       type: string
-    - contextPath: MSGraph.identityProtection.risks.location.geoCoordinates.longitude
+    - contextPath: MSGraph.identityProtection.risks.location.geoCoordinates
       description: Longitude of the sign-in.
-      type: string
-    - contextPath: MSGraph.identityProtection.risks.location.geoCoordinates.latitude
-      description: Latitude of the sign-in.
-      type: string
+      type: object
     - contextPath: MSGraph.identityProtection.risks.location.countryOrRegion
       description: Country or region of the sign-in.
       type: string
