@@ -46,7 +46,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Citrix cloud services simplify delivery and management of Citrix technologies.
+description: Citrix cloud services simplify the delivery and management of Citrix technologies.
 display: Citrix Cloud
 name: CitrixCloud
 script:
