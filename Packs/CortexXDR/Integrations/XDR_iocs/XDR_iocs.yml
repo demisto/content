@@ -54,6 +54,7 @@ configuration:
   display: Overriding severity value
   name: severity
   required: false
+  defaultvalue: low
   type: 15
   options:
   - info
