@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "agent-as-content-updated-schema"
+  CURRENT_BRANCH_NAME: $INFRA_BRANCH
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "agent-as-content-updated-schema"
+    ref: $INFRA_BRANCH
     project: "${CI_PROJECT_NAMESPACE}/infra"
