@@ -1811,27 +1811,22 @@ def test_module(client: Client, api_key: str, api_secret: str) -> str:
 
 
 def get_request_error_message(err) -> str:
-    if not hasattr(err, 'res') or err.res is None:
-        demisto.debug(f"The error does not have a response object")
+    if not hasattr(err, "res") or err.res is None:
+        demisto.debug("The error does not have a response object")
         return str(err)
 
-    if hasattr(err.res, 'json'):
+    if hasattr(err.res, "json"):
         demisto.debug("The error type is: JSON with error dict")
         try:
             error_dict = err.res.json()
-            return (
-                error_dict.get("errorMessage") or 
-                error_dict.get("message") or 
-                error_dict.get("error") or
-                str(error_dict)
-            )
+            return error_dict.get("errorMessage") or error_dict.get("message") or str(json.dumps(error_dict))
         except (ValueError, json.JSONDecodeError):
             demisto.debug("Failed to parse JSON response, falling back to text")
 
-    if hasattr(err.res, 'text'):
+    if hasattr(err.res, "text"):
         demisto.debug("The error type is: Text response")
         return f"HTTP {err.res.status_code}: {err.res.text or err.res.reason}"
-        
+
     return str(err)
 
 
