@@ -177,10 +177,6 @@
             "mandatory": false,
             "display_name": "CrowdStrike Falcon Intel"
         },
-        "SlashNextPhishingIncidentResponse": {
-            "mandatory": false,
-            "display_name": "SlashNext Phishing Incident Response"
-        },
         "ThreatMiner": {
             "mandatory": false,
             "display_name": "ThreatMiner"
