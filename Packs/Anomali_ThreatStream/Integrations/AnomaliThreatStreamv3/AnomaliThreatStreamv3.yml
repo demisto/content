@@ -6458,7 +6458,7 @@ script:
       description: JSON data of edits to be made {"is_public":false,"circles":[12866]}.
     name: threatstream-edit-classification
     description: Edit the values for observable that have been cloned.
-  dockerimage: demisto/py3-tools:1.0.0.4592568
+  dockerimage: demisto/py3-tools:1.0.0.5984007
   runonce: false
   script: '-'
   subtype: python3
