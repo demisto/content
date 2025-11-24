@@ -36,7 +36,7 @@ def ip_enrichment_script(
           - passthrough results (e.g., Core endpoint data, prevalence)
     """
     demisto.debug("Extracting indicators")
-    ip_list, invalid_ip_list, hr = extract_indicators(ip_list, "ip", mark_mismatched_type_as_invalid=True)
+    ip_list, invalid_ip_list, entries, hr = extract_indicators(ip_list, "ip", mark_mismatched_type_as_invalid=True)
     demisto.debug(f"Invalid List: {invalid_ip_list}")
 
     indicator_mapping = {
