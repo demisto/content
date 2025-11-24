@@ -36,7 +36,7 @@ ruff = "*"  # See `.pre-commit-config-template` for version used in pre-commit. 
 [tool.poetry.group.typing.dependencies]
 types-tqdm = "^4.66.0.2"
 types-requests = "2.28.11"
-types-mock = "^4.0.15"
+types-mock = "^5.2.0"
 types-setuptools = "^69.2.0.20240317"
 types-ujson = "^5.6.0.0"
 types-decorator = "^5.1.8"
