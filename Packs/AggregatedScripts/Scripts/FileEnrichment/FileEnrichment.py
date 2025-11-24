@@ -119,7 +119,6 @@ def file_enrichment_script(
     return file_reputation.run()
 
 
-
 """ MAIN FUNCTION """
 
 
