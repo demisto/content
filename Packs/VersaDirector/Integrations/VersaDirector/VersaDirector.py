@@ -1469,7 +1469,7 @@ class Client(BaseClient):
 def request_access_token(
     server_url: str, verify: bool, proxy: bool, username: str, password: str, client_id: str, client_secret: str
 ):
-    token_request_body = {
+    request_body = {
         "client_id": client_id,
         "client_secret": client_secret,
         "username": username,
@@ -1477,14 +1477,19 @@ def request_access_token(
         "grant_type": "password",
     }
     return generic_http_request(
-        "POST", server_url=server_url, url_suffix="auth/token", verify=verify, proxy=proxy, json_data=token_request_body
+        "POST",
+        server_url=server_url,
+        url_suffix="auth/token",
+        verify=verify,
+        proxy=proxy,
+        json_data=request_body,
     )
 
 
 def request_auth_credentials(
     server_url: str, verify: bool, proxy: bool, access_token: str, client_name: str, client_description: str
 ):
-    admin_clients_request_body = {
+    request_body = {
         "name": client_name,
         "description": client_description,
         "expires_at": "",
@@ -1512,7 +1517,7 @@ def request_auth_credentials(
         verify=verify,
         proxy=proxy,
         headers=headers,
-        json_data=admin_clients_request_body,
+        json_data=request_body,
     )
 
 
