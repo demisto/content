@@ -23,6 +23,7 @@ urllib3.disable_warnings()
 VENDOR = "CrowdStrike"
 PRODUCT = "Falcon_Event"
 INTEGRATION_NAME = "CrowdStrike Falcon"
+IS_FETCH_EVENTS = False
 
 # Incidents Type names - use for debugging and context save.
 IDP_DETECTION = "IDP detection"
@@ -40,7 +41,7 @@ IDP_DETECTION_FETCH_TYPE = "IDP Detection"
 MOBILE_DETECTION_FETCH_TYPE = "Mobile Detection"
 ON_DEMAND_SCANS_DETECTION_TYPE = "On-Demand Scans Detection"
 OFP_DETECTION_TYPE = "OFP Detection"
-CNAPP_DETECTION_TYPE = "CNAPP detection"
+CNAPP_DETECTION_TYPE = "CNAPP Detection"
 IOM_FETCH_TYPE = "Indicator of Misconfiguration"
 IOA_FETCH_TYPE = "Indicator of Attack"
 NGSIEM_DETECTION_FETCH_TYPE = "NGSIEM Detection"
@@ -3333,7 +3334,7 @@ def fetch_cnapp_incidents(cnapp_last_run):
     # # in the new version we need to add the product type to the filter to the url as encoded string
 
     response = http_request("GET", endpoint_url, params)
-    demisto.info(f"[test] {response}")
+    demisto.info(f"[test] {response=}")
     # demisto.debug(f"CrowdStrikeFalconMsg: Getting {product_type} detections from {endpoint_url} with {params=}. {response=}.\
     #     {LEGACY_VERSION=}")
 
@@ -3445,7 +3446,7 @@ def set_last_run_per_type(last_run: list, index: LastRunIndex, data: dict, is_fe
         demisto.debug("CrowdStrikeFalconMsg: set_last_run_per_type2")
         return_error(f"Invalid data type : last_run is a list of dictionary, expected dictionary, got {type(data).__name__}")
     demisto.debug("CrowdStrikeFalconMsg: set_last_run_per_type3")
-    last_run_length = TOTAL_FETCH_TYPE_XSIAM if is_fetch_events else TOTAL_FETCH_TYPE_XSOAR
+    last_run_length = TOTAL_FETCH_TYPE_XSOAR
     demisto.debug("CrowdStrikeFalconMsg: set_last_run_per_type4")
     if index >= last_run_length:
         return_error(f"Invalid last_run index {index}, cannot exceed {last_run_length - 1}")
@@ -3489,7 +3490,7 @@ def fetch_items(command="fetch-incidents"):
     Returns:
         tuple: (last_run, items) where last_run is the updated state and items are the fetched incidents/events
     """
-
+    global IS_FETCH_EVENTS
     is_fetch_events = command == "fetch-events"
     items = []
     params = demisto.params()
