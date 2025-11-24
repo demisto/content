@@ -9631,8 +9631,7 @@ if 'requests' in sys.modules:
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
             """
-
-            demisto.error("inside http request")
+            
             # Time-Sensitive command Logic
             request_timeout = timeout
             request_retries = retries
