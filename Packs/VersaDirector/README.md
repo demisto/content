@@ -23,4 +23,4 @@ Versa Director is a virtualization and service creation platform that simplifies
 
 _For more information, visit [Versa Networks](https://versa-networks.com/products/components/)_
 
-![Versa Director](https://versa-networks.com/products/components/)
+[Versa Director](https://versa-networks.com/products/components/)
