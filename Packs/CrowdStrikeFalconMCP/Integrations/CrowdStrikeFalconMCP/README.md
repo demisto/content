@@ -35,24 +35,13 @@ Retrieves a list of available tools in the CrowdStrike Falcon MCP server.
 | ListTools.Tools.annotations | Unknown | The annotations of the tool. |
 | ListTools.Tools.description | String | The description of the tool. |
 | ListTools.Tools.icons | Unknown | The icons associated with the tool. |
-| ListTools.Tools.inputSchema.properties.ids.description | String | The description of the input parameter 'ids'. |
-| ListTools.Tools.inputSchema.properties.ids.items.type | String | The type of items in the 'ids' input parameter. |
-| ListTools.Tools.inputSchema.properties.ids.title | String | The title of the 'ids' input parameter. |
-| ListTools.Tools.inputSchema.properties.ids.type | String | The type of the 'ids' input parameter. |
-| ListTools.Tools.inputSchema.properties.include_hidden.default | Boolean | The default value for the 'include_hidden' input parameter. |
-| ListTools.Tools.inputSchema.properties.include_hidden.description | String | The description of the 'include_hidden' input parameter. |
-| ListTools.Tools.inputSchema.properties.include_hidden.title | String | The title of the 'include_hidden' input parameter. |
-| ListTools.Tools.inputSchema.properties.include_hidden.type | String | The type of the 'include_hidden' input parameter. |
+| ListTools.Tools.inputSchema.properties | Unknown | The properties of the input schema for each tool. |
 | ListTools.Tools.inputSchema.required | String | The required input parameters. |
 | ListTools.Tools.inputSchema.title | String | The title of the input schema. |
 | ListTools.Tools.inputSchema.type | String | The type of the input schema. |
 | ListTools.Tools.meta | Unknown | Metadata about the tool. |
 | ListTools.Tools.name | String | The name of the tool. |
-| ListTools.Tools.outputSchema.properties.result.anyOf.items.additionalProperties | Boolean | Additional properties for the result items in the output schema. |
-| ListTools.Tools.outputSchema.properties.result.anyOf.items.type | String | The type of items in the result of the output schema. |
-| ListTools.Tools.outputSchema.properties.result.anyOf.type | String | The type of the result in the output schema. |
-| ListTools.Tools.outputSchema.properties.result.anyOf.additionalProperties | Boolean | Additional properties for the result in the output schema. |
-| ListTools.Tools.outputSchema.properties.result.title | String | The title of the result in the output schema. |
+| ListTools.Tools.outputSchema.properties.result | Unknown | The result of the tool execution. |
 | ListTools.Tools.outputSchema.required | String | The required fields in the output schema. |
 | ListTools.Tools.outputSchema.title | String | The title of the output schema. |
 | ListTools.Tools.outputSchema.type | String | The type of the output schema. |

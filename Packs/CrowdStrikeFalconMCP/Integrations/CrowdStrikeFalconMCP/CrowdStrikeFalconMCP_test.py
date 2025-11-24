@@ -15,6 +15,22 @@ import subprocess
 from unittest.mock import Mock, AsyncMock
 from CommonServerPython import EntryType, DemistoException
 
+
+import sys
+
+if sys.version_info < (3, 11):  # noqa: UP036
+    # ExceptionGroup is new in Python 3.11, so we define it for older versions for testing purposes
+    class ExceptionGroup(Exception):
+        def __init__(self, message, exceptions):
+            super().__init__(message)
+            self.exceptions = exceptions
+
+    class BaseExceptionGroup(BaseException):
+        def __init__(self, message, exceptions):
+            super().__init__(message)
+            self.exceptions = exceptions
+
+
 FALCON_BASE_API_URL = "https://api.crowdstrike.com"
 
 

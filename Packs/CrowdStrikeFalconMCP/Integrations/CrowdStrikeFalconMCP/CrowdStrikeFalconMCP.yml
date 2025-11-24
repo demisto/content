@@ -13,7 +13,7 @@ configuration:
     - EU-1
     - US-GOV
     required: true
-    default: US-1
+    defaultvalue: US-1
     section: Connect
     type: 15
   - name: credentials
@@ -57,30 +57,9 @@ script:
     - contextPath: ListTools.Tools.icons
       description: The icons associated with the tool.
       type: Unknown
-    - contextPath: ListTools.Tools.inputSchema.properties.ids.description
-      description: The description of the input parameter 'ids'.
-      type: String
-    - contextPath: ListTools.Tools.inputSchema.properties.ids.items.type
-      description: The type of items in the 'ids' input parameter.
-      type: String
-    - contextPath: ListTools.Tools.inputSchema.properties.ids.title
-      description: The title of the 'ids' input parameter.
-      type: String
-    - contextPath: ListTools.Tools.inputSchema.properties.ids.type
-      description: The type of the 'ids' input parameter.
-      type: String
-    - contextPath: ListTools.Tools.inputSchema.properties.include_hidden.default
-      description: The default value for the 'include_hidden' input parameter.
-      type: Boolean
-    - contextPath: ListTools.Tools.inputSchema.properties.include_hidden.description
-      description: The description of the 'include_hidden' input parameter.
-      type: String
-    - contextPath: ListTools.Tools.inputSchema.properties.include_hidden.title
-      description: The title of the 'include_hidden' input parameter.
-      type: String
-    - contextPath: ListTools.Tools.inputSchema.properties.include_hidden.type
-      description: The type of the 'include_hidden' input parameter.
-      type: String
+    - contextPath: ListTools.Tools.inputSchema.properties
+      description: The properties of the input schema for each tool.
+      type: Unknown
     - contextPath: ListTools.Tools.inputSchema.required
       description: The required input parameters.
       type: String
