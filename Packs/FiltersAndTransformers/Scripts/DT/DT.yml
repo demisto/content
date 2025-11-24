@@ -22,4 +22,4 @@ isllm: false
 tests:
 - No tests - script used for testing
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.12.11.4095827
+dockerimage: demisto/python3:3.12.12.5490952
