@@ -55,11 +55,11 @@ Updates the specified firewall rule with the data included in the request.
 | GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete, and so on. |
 | GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created. |
 | GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
-| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING RUNNING or DONE. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING or DONE. |
 | GCP.Compute.Operations.statusMessage | string | An optional textual description of the current status of the operation. |
 | GCP.Compute.Operations.user | string | The user who requested the operation, for example, EMAILADDRESS. |
 | GCP.Compute.Operations.progress | number | An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses. |
-| GCP.Compute.Operations.insertTime | string | The time that this operation was requested. This value is in RFC3339 text format. |
+| GCP.Compute.Operations.insertTime | string | The time the operation was requested, in RFC3339 text format. |
 | GCP.Compute.Operations.startTime | string | The time that this operation was started by the server. This value is in RFC3339 text format. |
 | GCP.Compute.Operations.endTime | string | The time that this operation was completed. This value is in RFC3339 text format. |
 | GCP.Compute.Operations.error | string | If errors are generated during processing of the operation, this field will be populated. |
@@ -274,11 +274,11 @@ Sets the service account for a GCP Compute Engine VM instance. The instance must
 | GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete, and so on. |
 | GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created. |
 | GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
-| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING RUNNING or DONE. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING or DONE. |
 | GCP.Compute.Operations.statusMessage | string | An optional textual description of the current status of the operation. |
 | GCP.Compute.Operations.user | string | The user who requested the operation, for example, EMAILADDRESS. |
 | GCP.Compute.Operations.progress | number | An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses. |
-| GCP.Compute.Operations.insertTime | string | The time that this operation was requested. This value is in RFC3339 text format. |
+| GCP.Compute.Operations.insertTime | string | The time the operation was requested, in RFC3339 text format. |
 | GCP.Compute.Operations.startTime | string | The time that this operation was started by the server. This value is in RFC3339 text format. |
 | GCP.Compute.Operations.endTime | string | The time that this operation was completed. This value is in RFC3339 text format. |
 | GCP.Compute.Operations.error | string | If errors are generated during processing of the operation, this field will be populated. |
@@ -318,7 +318,7 @@ Removes the service account associated with a GCP Compute Engine VM instance. Th
 | GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete, and so on. |
 | GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created. |
 | GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
-| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING RUNNING or DONE. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING or DONE. |
 | GCP.Compute.Operations.statusMessage | string | An optional textual description of the current status of the operation. |
 | GCP.Compute.Operations.user | string | The user who requested the operation, for example, EMAILADDRESS. |
 | GCP.Compute.Operations.progress | number | An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses. |
@@ -421,3 +421,748 @@ Stops a running instance, shutting it down cleanly, and allows you to restart th
 | GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not configurable as a field in the request body. |
 | GCP.Compute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GCP.Compute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
+
+### gcp-compute-instances-list
+
+***
+Retrieves the list of instances in the specified zone.
+
+#### Base Command
+
+`gcp-compute-instances-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| zone | The name of the zone for this request. | Required |
+| filters | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance. | Optional |
+| limit | The maximum number of results per page that should be returned. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
+| order_by | Sorts list results in a specific order. By default, results are returned in alphanumerical order based on the resource name.  You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". | Optional |
+| page_token | Specifies a page token. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Instances.kind | String | Type of the resource.Always compute\#instance for instances. |
+| GCP.Compute.Instances.id | String | The unique identifier of the resource. |
+| GCP.Compute.Instances.creationTimestamp | String | Creation timestamp in RFC3339 text format. |
+| GCP.Compute.Instances.name | String | The name of the resource, provided by the client when the resource is first created. |
+| GCP.Compute.Instances.description | String | An optional description for this resource. |
+| GCP.Compute.Instances.tags | String | Tags to apply to this instance. |
+| GCP.Compute.Instances.machineType | String | Full or partial URL of the machine type resource to use for this instance, in the format: zones/zone/machineTypes/machine-type. |
+| GCP.Compute.Instances.status | String | The status of the instance. |
+| GCP.Compute.Instances.statusMessage | String | An optional, human-readable explanation of the status. |
+| GCP.Compute.Instances.zone | String | URL of the zone where the instance resides. |
+| GCP.Compute.Instances.canIpForward | String | Allows this instance to send and receive packets with non-matching destination or source IPs. |
+| GCP.Compute.Instances.networkInterfaces | Object | An array of network configurations for the instance. |
+| GCP.Compute.Instances.disks | Object | Array of disks associated with the instance. |
+| GCP.Compute.Instances.metadata | Object | The metadata key/value pairs assigned to the instance. |
+| GCP.Compute.Instances.serviceAccounts | Object | A list of service accounts, with their specified scopes, authorized for the instance. |
+| GCP.Compute.Instances.selfLink | String | Server-defined URL for the resource. |
+| GCP.Compute.Instances.scheduling | Object | Sets the scheduling options for the instance. |
+| GCP.Compute.Instances.cpuPlatform | String | The CPU platform used by the instance. |
+| GCP.Compute.Instances.labels | String | Labels to apply to the instance. |
+| GCP.Compute.Instances.labelFingerprint | String | A fingerprint for this request, which is essentially a hash of the label's contents and used for optimistic locking. |
+| GCP.Compute.Instances.instanceEncryptionKey | Object | Encrypts suspended data for an instance with a customer-managed encryption key. |
+| GCP.Compute.Instances.minCpuPlatform | String | Specifies a minimum CPU platform for the VM instance. |
+| GCP.Compute.Instances.guestAccelerators | Object | A list of the type and count of accelerator cards attached to the instance. |
+| GCP.Compute.Instances.startRestricted | Boolean | Indicates whether a VM has been restricted from starting because Compute Engine detected suspicious activity. |
+| GCP.Compute.Instances.deletionProtection | Boolean | Whether the resource should be protected against deletion. |
+| GCP.Compute.Instances.resourcePolicies | String | Resource policies applied to this instance. |
+| GCP.Compute.Instances.sourceMachineImage | String | Source machine image. |
+| GCP.Compute.Instances.reservationAffinity | Object | Specifies the reservations that the instance can consume from. |
+| GCP.Compute.Instances.hostname | String | Specifies the hostname of the instance. |
+| GCP.Compute.Instances.displayDevice | Object | Enables display device for the instance. |
+| GCP.Compute.Instances.shieldedInstanceConfig | Object |  |
+| GCP.Compute.Instances.sourceMachineImageEncryptionKey | Object | The source machine image encryption key used when creating an instance from a machine image. |
+| GCP.Compute.Instances.confidentialInstanceConfig | Object |  |
+| GCP.Compute.Instances.fingerprint | String | Specifies a fingerprint for this resource, which is essentially a hash of the instance's contents and used for optimistic locking. |
+| GCP.Compute.Instances.privateIpv6GoogleAccess | String | The private IPv6 Google access type for the VM. |
+| GCP.Compute.Instances.advancedMachineFeatures | Object | Controls for advanced machine-related behavior features. |
+| GCP.Compute.Instances.lastStartTimestamp | String | Last start timestamp in RFC3339 text format. |
+| GCP.Compute.Instances.lastStopTimestamp | String | Last stop timestamp in RFC3339 text format. |
+| GCP.Compute.Instances.lastSuspendedTimestamp | String | Last suspended timestamp in RFC3339 text format. |
+| GCP.Compute.Instances.satisfiesPzs | String |  |
+| GCP.Compute.Instances.satisfiesPzi | String |  |
+| GCP.Compute.Instances.resourceStatus | Object | The resource status. |
+| GCP.Compute.Instances.networkPerformanceConfig | Object | Network performance configuration. |
+| GCP.Compute.Instances.keyRevocationActionType | String | KeyRevocationActionType of the instance. |
+| GCP.Compute.InstancesNextPageToken | String | The token used to retrieve the next page of results for list requests. |
+| GCP.Compute.InstancesSelfLink | String | Server-defined URL for the resource. |
+| GCP.Compute.InstancesWarning | Object | Informational warning message. |
+
+### gcp-compute-instance-labels-set
+
+***
+Sets labels on an instance.
+
+#### Base Command
+
+`gcp-compute-instance-labels-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| instance | Name of the instance resource to return. | Required |
+| project_id | GCP project ID. | Required |
+| zone | The name of the zone for this request. | Required |
+| labels | An object containing a list of "key": value pairs, without spaces. Example: key=abc,value=123;key=ABC,value=321. | Required |
+| label_fingerprint | Fingerprint of the previous set of labels for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change labels. | Required |
+| add_labels | Whether to add the new labels to the existing ones or override the previous labels with the news. True - add, False - override. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.name | string | Name of the resource. |
+| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
+| GCP.Compute.Operations.clientOperationId | string | The value of requestId if you provided it in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. For snapshot-creation operations, this points to the persistent disk from which the snapshot was created. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING or DONE. |
+| GCP.Compute.Operations.statusMessage | string | An optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | User who requested the operation, for example, EMAILADDRESS. |
+| GCP.Compute.Operations.progress | number | An optional progress indicator ranging from 0 to 100. It does not need to be linear or support any specific granularity of operations. This indicator should not be used to estimate completion time. The value should monotonically increase as the operation progresses. |
+| GCP.Compute.Operations.insertTime | string | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | string | The time that the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | string | The time that the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error | string | If errors are generated during processing of the operation, this field will be populated. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | If the operation fails, this field contains the HTTP error status code that was returned. For example, a 404 means the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | string | If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | Server-defined URL for the resource. |
+| GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
+| GCP.Compute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
+
+### gcp-compute-instance-get
+
+***
+Returns the specified Instance resource. To get a list of available instances, make a list() request.
+
+#### Base Command
+
+`gcp-compute-instance-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| zone | The name of the zone for this request. | Required |
+| instance | Name of the instance resource to return. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Instances.id | string | The unique identifier for the resource, defined by the server. |
+| GCP.Compute.Instances.creationTimestamp | string | Creation timestamp in RFC3339 text format. |
+| GCP.Compute.Instances.name | string | The name of the resource, provided by the client when first creating it. The name must be 1–63 characters long and comply with RFC1035. It must match the regular expression \[a-z\]\(\[-a-z0-9\]\*\[a-z0-9\]\)?, meaning the first character must be a lowercase letter, and all following characters can be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
+| GCP.Compute.Instances.description | string | An optional description of this resource. Provide this property when you create the resource. |
+| GCP.Compute.Instances.tags | string | Tags to apply to this instance. Tags identify valid sources or targets for network firewalls and are specified by the client during instance creation. Tags can later be modified using the setTags method. Each tag must comply with RFC1035. Multiple tags can be specified via the tags.items field. |
+| GCP.Compute.Instances.tags.items | string | An array of tags. Each tag must be 1-63 characters long, and comply with RFC1035. |
+| GCP.Compute.Instances.tags.fingerprint | string | Specifies a fingerprint for this request, which is essentially a hash of the tags contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update tags. You must always provide an up-to-date fingerprint hash in order to update or change tags. |
+| GCP.Compute.Instances.machineType | string | Full or partial URL of the machine type resource to use for this instance, in the format: zones/zone/machineTypes/machine-type. This is provided by the client when the instance is created. |
+| GCP.Compute.Instances.status | string | The status of the instance. One of the following values: PROVISIONING, STAGING, RUNNING, STOPPING, STOPPED, SUSPENDING, SUSPENDED, and TERMINATED. |
+| GCP.Compute.Instances.statusMessage | string | An optional, human-readable explanation of the status. |
+| GCP.Compute.Instances.zone | string | URL of the zone where the instance resides. This field must be specified in the HTTP request URL and cannot be set in the request body. |
+| GCP.Compute.Instances.canIpForward | boolean | Allows this instance to send and receive packets with non-matching destination or source IPs. This is required if you plan to use this instance to forward routes. |
+| GCP.Compute.Instances.networkInterfaces | string | An array of network configurations for this instance. These specify how interfaces are configured to interact with other network services, such as connecting to the internet. Multiple interfaces are supported per instance. |
+| GCP.Compute.Instances.networkInterfaces.network | string | URL of the network resource for this instance. When creating an instance, if neither the network nor the subnetwork is specified, the default network global/networks/default is used; if the network is not specified but the subnetwork is specified, the network is inferred. |
+| GCP.Compute.Instances.networkInterfaces.subnetwork | string | The URL of the Subnetwork resource for this instance. For legacy networks, do not provide this property. For auto subnet networks, specifying the subnetwork is optional. For custom subnet networks, this field must be specified. If provided, the subnetwork can be a full or partial URL. |
+| GCP.Compute.Instances.networkInterfaces.networkIP | string | An IPv4 internal network address to assign to the instance for this network interface. If not specified by the user, an unused internal IP is assigned by the system. |
+| GCP.Compute.Instances.networkInterfaces.name | string |  The name of the network interface, generated by the server. For network devices, these are eth0, eth1, etc. |
+| GCP.Compute.Instances.networkInterfaces.accessConfigs | string | An array of configurations for this interface. Currently, only one access config, ONE_TO_ONE_NAT, is supported. If there are no accessConfigs specified, then the instance will have no external internet access. |
+| GCP.Compute.Instances.networkInterfaces.aliasIpRanges | string | An array of alias IP ranges for this network interface. Can only be specified for network interfaces on subnet-mode networks. |
+| GCP.Compute.Instances.networkInterfaces.fingerprint | string | Fingerprint hash of the contents stored in this network interface. This field is ignored when inserting an instance or adding a network interface. To update the network interface, an up-to-date fingerprint must be provided; otherwise, the request fails with error 412 conditionNotMet. |
+| GCP.Compute.Instances.networkInterfaces.kind | string | Type of the resource. Always compute\#networkInterface for network interfaces. |
+| GCP.Compute.Instances.disks | string | Array of disks associated with this instance. Persistent disks must be created before you can assign them. |
+| GCP.Compute.Instances.disks.type | string | Specifies the type of the disk, either SCRATCH or PERSISTENT. If not specified, the default is PERSISTENT. |
+| GCP.Compute.Instances.disks.mode | string | The mode in which to attach this disk, either READ_WRITE or READ_ONLY. If not specified, the default is to attach the disk in READ_WRITE mode. |
+| GCP.Compute.Instances.disks.source | string | Specifies a valid partial or full URL to an existing Persistent Disk resource. When creating a new instance, one of initializeParams.sourceImage or disks.source is required except for local SSD. |
+| GCP.Compute.Instances.disks.deviceName | string | Specifies a unique device name of your choice that is reflected into the /dev/disk/by-id/google-\* tree of a Linux operating system running within the instance. This name can be used to reference the device for mounting, resizing, and other operations from within the instance. |
+| GCP.Compute.Instances.disks.index | number | A zero-based index for this disk, where 0 is reserved for the boot disk. Each attached disk on an instance has a unique index number. |
+| GCP.Compute.Instances.disks.boot | boolean | Indicates that this is a boot disk. The VM uses the first partition of the disk as its root filesystem. |
+| GCP.Compute.Instances.disks.initializeParams | string | Specifies parameters for a new disk to be created with the instance. Use initialization parameters to create boot disks or local SSDs attached to the instance. |
+| GCP.Compute.Instances.disks.autoDelete | boolean | Specifies whether the disk is auto-deleted when the instance is deleted \(not when the disk is detached\). |
+| GCP.Compute.Instances.disks.licenses | string |  Any valid publicly visible licenses. |
+| GCP.Compute.Instances.disks.interface | string | Specifies the disk interface for attaching this disk, either SCSI or NVME. The default is SCSI. Persistent disks must use SCSI; attaching a persistent disk with any other interface will fail. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI versus NVMe, see Local SSD performance. |
+| GCP.Compute.Instances.disks.guestOsFeatures | string | A list of features to enable on the guest operating system. Applicable only for bootable images. Read Enabling guest operating system features to see a list of available options. |
+| GCP.Compute.Instances.disks.diskEncryptionKey | Object | Encrypts or decrypts a disk using a customer-supplied encryption key. |
+| GCP.Compute.Instances.disks.kind | string | Type of the resource. Always compute\#attachedDisk for attached disks. |
+| GCP.Compute.Instances.metadata | string | The metadata key/value pairs assigned to the instance. This includes custom metadata and predefined keys. |
+| GCP.Compute.Instances.metadata.fingerprint | string | Specifies a fingerprint for this request, which is a hash of the metadata contents used for optimistic locking. The fingerprint is generated by Compute Engine and changes after every metadata update. You must provide an up-to-date fingerprint to modify metadata; otherwise, the request fails with error 412 conditionNotMet. |
+| GCP.Compute.Instances.metadata.items | string | Array of key/value pairs. The total size of all keys and values must be less than 512 KB. |
+| GCP.Compute.Instances.metadata.kind | string | Type of the resource. Always compute\#metadata for metadata. |
+| GCP.Compute.Instances.serviceAccounts | string | A list of service accounts, with their specified scopes, authorized for the instance. Only one service account per VM instance is supported. |
+| GCP.Compute.Instances.serviceAccounts.email | string | Email address of the service account. |
+| GCP.Compute.Instances.serviceAccounts.scopes | string | The list of scopes to be made available for this service account. |
+| GCP.Compute.Instances.selfLink | string | Server-defined URL for the resource. |
+| GCP.Compute.Instances.scheduling | string | Sets the scheduling options for the instance. |
+| GCP.Compute.Instances.scheduling.onHostMaintenance | string | Defines the maintenance behavior for this instance. For standard instances, the default behavior is MIGRATE. For preemptible instances, the default and only possible behavior is TERMINATE. For more information, see Setting Instance Scheduling Options. |
+| GCP.Compute.Instances.scheduling.automaticRestart | boolean | Specifies whether the instance should be automatically restarted if it is terminated by Compute Engine \(not terminated by a user\). You can only set the automatic restart option for standard instances. Preemptible instances cannot be automatically restarted. |
+| GCP.Compute.Instances.scheduling.preemptible | boolean | Defines whether the instance is preemptible. This can only be set during instance creation, it cannot be set or changed after the instance has been created. |
+| GCP.Compute.Instances.scheduling.nodeAffinities | string | A set of node affinity and anti-affinity. |
+| GCP.Compute.Instances.cpuPlatform | string | The CPU platform used by the instance. |
+| GCP.Compute.Instances.labels | string | Labels to apply to the instance. These can be later modified by the setLabels method. |
+| GCP.Compute.Instances.labels.key | string | The label key. |
+| GCP.Compute.Instances.labels.value | string | The label value. |
+| GCP.Compute.Instances.labelFingerprint | string | A fingerprint for this request, which is essentially a hash of the labels contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up-to-date fingerprint hash in order to update or change labels. |
+| GCP.Compute.Instances.minCpuPlatform | string | Specifies a minimum CPU platform for the VM instance. Applicable values are the friendly names of CPU platforms, such as minCpuPlatform: "Intel Haswell" or minCpuPlatform: "Intel Sandy Bridge". |
+| GCP.Compute.Instances.guestAccelerators | string | A list of the type and count of accelerator cards attached to the instance. |
+| GCP.Compute.Instances.guestAccelerators.acceleratorType | string | Full or partial URL of the accelerator type resource to attach to this instance. For example: projects/my-project/zones/us-central1-c/acceleratorTypes/nvidia-tesla-p100. When creating an instance template, specify only the accelerator name. |
+| GCP.Compute.Instances.guestAccelerators.acceleratorCount | string | The number of the guest accelerator cards exposed to the instance. |
+| GCP.Compute.Instances.startRestricted | boolean | Indicates whether a VM has been restricted from starting because Compute Engine detected suspicious activity. |
+| GCP.Compute.Instances.deletionProtection | boolean | Whether the resource should be protected against deletion. |
+| GCP.Compute.Instances.hostname | string | Hostname. |
+| GCP.Compute.Instances.kind | string | Type of the resource. Always compute\#instance for instances. |
+
+### gcp-storage-bucket-list
+
+***
+Retrieves the list of buckets in the project associated with the client.
+
+#### Base Command
+
+`gcp-storage-bucket-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| limit | Maximum number of buckets to return. | Optional |
+| prefix | Filter results to buckets whose names begin with this prefix. | Optional |
+| page_token | Token for pagination. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.Bucket.id | String | The unique identifier for the bucket. |
+| GCP.Storage.Bucket.name | String | The name of the bucket. |
+| GCP.Storage.Bucket.kind | String | The type of resource \(for example, storage\#bucket\). |
+| GCP.Storage.Bucket.location | String | The location of the bucket. |
+| GCP.Storage.Bucket.locationType | String | The type of location \(for example, multi-region\). |
+| GCP.Storage.Bucket.projectNumber | String | The GCP project number associated with the bucket. |
+| GCP.Storage.Bucket.storageClass | String | The storage class of the bucket. |
+| GCP.Storage.Bucket.rpo | String | The recovery point objective setting of the bucket. |
+| GCP.Storage.Bucket.etag | String | The HTTP entity tag of the bucket. |
+| GCP.Storage.Bucket.generation | String | The generation number of the bucket. |
+| GCP.Storage.Bucket.metageneration | String | The metageneration number of the bucket. |
+| GCP.Storage.Bucket.timeCreated | Date | The time the bucket was created. |
+| GCP.Storage.Bucket.timeUpdated | Date | The time the bucket was last updated. |
+| GCP.Storage.Bucket.selfLink | String | The link to the bucket resource on the GCP API. |
+
+#### Example
+
+``` !gcp-storage-bucket-list project_id="my-project" limit="10" prefix="logs-" ```
+
+### gcp-storage-bucket-get
+
+***
+Retrieves information about a specific bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket to retrieve. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.Bucket.id | String | The unique identifier for the bucket. |
+| GCP.Storage.Bucket.name | String | The name of the bucket. |
+| GCP.Storage.Bucket.kind | String | The type of resource \(for example, storage\#bucket\). |
+| GCP.Storage.Bucket.location | String | The location of the bucket. |
+| GCP.Storage.Bucket.locationType | String | The type of location \(for example, multi-region\). |
+| GCP.Storage.Bucket.projectNumber | String | The GCP project number associated with the bucket. |
+| GCP.Storage.Bucket.storageClass | String | The storage class of the bucket. |
+| GCP.Storage.Bucket.rpo | String | The recovery point objective setting of the bucket. |
+| GCP.Storage.Bucket.etag | String | The HTTP entity tag of the bucket. |
+| GCP.Storage.Bucket.generation | String | The generation number of the bucket. |
+| GCP.Storage.Bucket.metageneration | String | The metageneration number of the bucket. |
+| GCP.Storage.Bucket.timeCreated | Date | The time the bucket was created. |
+| GCP.Storage.Bucket.timeUpdated | Date | The time the bucket was last updated. |
+| GCP.Storage.Bucket.selfLink | String | The link to the bucket resource on the GCP API. |
+
+### gcp-storage-bucket-objects-list
+
+***
+Retrieves the list of objects in a bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-objects-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket to list objects from. | Required |
+| prefix | Filter results to objects whose names begin with this prefix. | Optional |
+| delimiter | Delimiter to use for grouping objects. For example delimiter="/" Returns results in a directory-like mode, with / being a common value for the delimiter. | Optional |
+| limit | Maximum number of objects to return. | Optional |
+| page_token | Token for pagination. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketObject.id | String | The unique identifier for the object. |
+| GCP.Storage.BucketObject.name | String | The name of the object. |
+| GCP.Storage.BucketObject.kind | String | The type of resource \(for example, storage\#object\). |
+| GCP.Storage.BucketObject.bucket | String | The name of the bucket containing the object. |
+| GCP.Storage.BucketObject.contentType | String | The MIME type of the object. |
+| GCP.Storage.BucketObject.size | Number | The size of the object in bytes. |
+| GCP.Storage.BucketObject.crc32c | String | The CRC32C checksum of the object. |
+| GCP.Storage.BucketObject.md5Hash | String | The MD5 hash of the object. |
+| GCP.Storage.BucketObject.etag | String | The HTTP entity tag of the object. |
+| GCP.Storage.BucketObject.generation | String | The generation number of the object. |
+| GCP.Storage.BucketObject.metageneration | String | The metageneration number of the object. |
+| GCP.Storage.BucketObject.storageClass | String | The storage class of the object. |
+| GCP.Storage.BucketObject.mediaLink | String | The link for downloading the object content. |
+| GCP.Storage.BucketObject.selfLink | String | The link to the object resource in the GCP API. |
+| GCP.Storage.BucketObject.timeCreated | Date | The time when the object was created. |
+| GCP.Storage.BucketObject.timeFinalized | Date | The time when the object was finalized. |
+| GCP.Storage.BucketObject.timeStorageClassUpdated | Date | The time when the object's storage class was last updated. |
+| GCP.Storage.BucketObject.updated | Date | The time when the object was last modified. |
+
+#### Example
+
+``` !gcp-storage-bucket-objects-list project_id="my-project" bucket_name="my-bucket" prefix="reports/" delimiter="/" limit="50" ```
+
+### gcp-storage-bucket-policy-list
+
+***
+Retrieves the IAM policy for a bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-policy-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket to retrieve IAM policy from. | Required |
+| requested_policy_version | The IAM policy version to be returned. If the optionsRequestedPolicyVersion is for an older version that doesn't support part of the requested IAM policy, the request fails. Required to be 3 or greater for buckets with IAM Conditions. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketPolicy.version | Number | IAM policy version. |
+| GCP.Storage.BucketPolicy.etag | String | ETag of the IAM policy. |
+| GCP.Storage.BucketPolicy.bindings | List | List of role bindings for the bucket. |
+| GCP.Storage.BucketPolicy.resourceId | String | Resource ID of the updated IAM policy. e.g. projects/_/buckets/BUCKET_NAME. |
+
+#### Example
+
+``` !gcp-storage-bucket-policy-list project_id="my-project" bucket_name="my-bucket" requested_policy_version="3" ```
+
+### gcp-storage-bucket-policy-set
+
+***
+Sets the IAM policy for a bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-policy-set`
+
+#### Usage
+
+- **add=false**: Replaces the entire bucket IAM policy with the JSON provided in `policy`.
+- **add=true**: Reads the current bucket policy (getIamPolicy), merges the provided `bindings` per role (deduplicates members), and updates the bucket policy (setIamPolicy) while preserving other top-level fields.
+
+> Warning: Use this command with extreme caution. Running it without explicitly merging (i.e., with `add=false`) will overwrite the bucket's existing IAM policy with the provided `policy`. If you intend to keep current bindings and add new ones, use `add=true`.
+
+#### Policy structure
+
+- **bindings**: Array of binding objects. Each binding:
+  - **role**: String. For example, `roles/storage.objectViewer`, `roles/storage.admin`.
+  - **members**: Array of strings. Allowed formats:
+    - `user:<email>` (e.g., `user:alice@example.com`)
+    - `group:<email>`
+    - `serviceAccount:<email>`
+    - `domain:<domain>` (e.g., `domain:example.com`)
+    - `allUsers` | `allAuthenticatedUsers`
+- **version**: Number. Required to be `3` or greater if any binding includes `condition`.
+- **etag**: String. Recommended for replace flow (`add=false`) to avoid overwriting concurrent updates.
+- Optional fields like `kind`, `resourceId` may appear in responses but are not required in requests.
+
+Notes:
+
+- For `add=true` (merge), only a valid `bindings` array is required; other top-level fields are taken from the existing policy.
+- For `add=false` (replace), the provided object becomes the entire policy on the bucket.
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket to set IAM policy on. | Required |
+| policy | JSON string representing the IAM policy to set. | Required |
+| add | When true, merges the provided policy bindings into the current bucket policy (per role, deduplicating members) by first calling getIamPolicy and then setIamPolicy with the merged result. When false, replaces the entire policy with the provided JSON via setIamPolicy.<br/>. Possible values are: true, false. Default is false.  | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketPolicy.version | Number | IAM policy version after update. |
+| GCP.Storage.BucketPolicy.etag | String | ETag of the updated IAM policy. |
+| GCP.Storage.BucketPolicy.bindings | List | List of role bindings for the bucket. |
+
+#### Examples
+
+- Replace entire policy (`add=false`):
+
+``` !gcp-storage-bucket-policy-set project_id="my-project" bucket_name="my-bucket-name" add="false" policy=`{"kind": "storage#policy", "resourceId": "projects/_/buckets/my-bucket-name", "version": 1, "etag": "CAY=", "bindings":[{"role":"roles/storage.objectViewer","members":["allUsers"]}]}` ```
+
+- Merge bindings into existing policy (`add=true`):
+
+``` !gcp-storage-bucket-policy-set project_id="my-project" bucket_name="my-bucket-name" add="true" policy=`{"bindings":[{"role":"roles/storage.objectViewer","members":["user:alice@example.com"]}]}` ```
+
+### gcp-storage-bucket-object-policy-list
+
+***
+Retrieves the IAM policy for a specific object in a bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-object-policy-list`
+
+> Note: If Uniform Bucket-Level Access (UBLA) is enabled on the bucket, object-level ACLs are not available. In that case, this command returns the bucket-level IAM policy under `GCP.Storage.BucketObjectPolicy`.
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket containing the object. | Required |
+| object_name | Name of the object to retrieve IAM policy from. | Required |
+| generation | Generation of the object. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketObjectPolicy.bucketName | String | Name of the bucket containing the object. |
+| GCP.Storage.BucketObjectPolicy.objectName | String | Name of the object. |
+| GCP.Storage.BucketObjectPolicy.bindings | List | List of role bindings for the object. |
+
+#### Example
+
+``` !gcp-storage-bucket-object-policy-list project_id="my-project" bucket_name="my-bucket" object_name="path/to/object.txt" ```
+
+### gcp-storage-bucket-object-policy-set
+
+***
+Sets the IAM policy for a specific object in a bucket.
+
+#### Base Command
+
+`gcp-storage-bucket-object-policy-set`
+
+> Note: If UBLA is enabled on the bucket, the command does not modify object ACLs and instead returns guidance to manage permissions via the bucket IAM policy.
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| bucket_name | Name of the bucket containing the object. | Required |
+| object_name | Name of the object to set IAM policy on. | Required |
+| policy | JSON string representing the IAM policy to set. | Required |
+| generation | Generation of the object. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketObjectPolicy.version | Number | IAM policy version after update. |
+| GCP.Storage.BucketObjectPolicy.etag | String | ETag of the updated IAM policy. |
+| GCP.Storage.BucketObjectPolicy.bindings | Unknown | List of role bindings for the object. |
+
+### gcp-compute-firewall-insert
+
+***
+Creates a new firewall rule in the specified project.
+
+#### Base Command
+
+`gcp-compute-firewall-insert`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| resource_name | Name of the firewall rule to create. | Required |
+| description | An optional description for the firewall rule. | Optional |
+| network | URL of the network, e.g., global/networks/default. | Optional |
+| priority | Priority 0-65535. Default 1000. | Optional |
+| direction | Direction of traffic to which this firewall applies. Default INGRESS. Possible values are: INGRESS, EGRESS. Default is INGRESS. | Optional |
+| allowed | ALLOW rules in tuples, e.g., ipprotocol=tcp,ports=443;ipprotocol=tcp,ports=80. | Optional |
+| denied | DENY rules in tuples, e.g., ipprotocol=tcp,ports=22,443. | Optional |
+| source_ranges | Comma-separated CIDRs for INGRESS. | Optional |
+| destination_ranges | Comma-separated CIDRs for EGRESS. | Optional |
+| source_tags | Comma-separated instance tags to match as source. | Optional |
+| target_tags | Comma-separated tags to apply this rule to. | Optional |
+| source_service_accounts | Comma-separated service accounts for source. | Optional |
+| target_service_accounts | Comma-separated service accounts to target. | Optional |
+| log_config_enable | Enable firewall logging. Possible values are: true, false. | Optional |
+| disabled | Whether this firewall rule is disabled. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | Unique identifier for the operation resource, defined by the server. |
+| GCP.Compute.Operations.name | String | Name of the operation resource. |
+| GCP.Compute.Operations.kind | String | Type of the resource, for example compute\#operation. |
+| GCP.Compute.Operations.operationType | String | Type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | Current status of the operation. |
+| GCP.Compute.Operations.progress | Number | Progress of the operation as a percentage between 0 and 100. |
+| GCP.Compute.Operations.targetId | String | Unique target ID of the resource affected by the operation. |
+| GCP.Compute.Operations.targetLink | String | URL of the target resource modified by the operation. |
+| GCP.Compute.Operations.selfLink | String | Server-defined URL for the operation resource. |
+| GCP.Compute.Operations.insertTime | Date | The time when the operation resource was created. |
+| GCP.Compute.Operations.startTime | Date | The time when the operation started running. |
+| GCP.Compute.Operations.user | String | The user account that performed the operation. |
+
+### gcp-compute-firewall-list
+
+***
+Lists firewall rules in the specified project.
+
+#### Base Command
+
+`gcp-compute-firewall-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
+| page_token | Token for pagination. | Optional |
+| filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/firewalls/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Firewall.id | String | Unique identifier for the firewall rule. |
+| GCP.Compute.Firewall.name | String | Name of the firewall rule. |
+| GCP.Compute.Firewall.kind | String | Type of the resource \(for example, compute\#firewall\). |
+| GCP.Compute.Firewall.description | String | Description of the firewall rule. |
+| GCP.Compute.Firewall.direction | String | Direction of traffic for the rule \(INGRESS or EGRESS\). |
+| GCP.Compute.Firewall.disabled | Boolean | Indicates whether the firewall rule is disabled. |
+| GCP.Compute.Firewall.priority | Number | Priority value of the firewall rule. |
+| GCP.Compute.Firewall.network | String | The network URL this firewall rule applies to. |
+| GCP.Compute.Firewall.selfLink | String | Server-defined URL for the resource. |
+| GCP.Compute.Firewall.creationTimestamp | Date | The creation timestamp of the firewall rule. |
+| GCP.Compute.Firewall.logConfig.enable | Boolean | Indicates whether logging is enabled for the firewall rule. |
+| GCP.Compute.Firewall.sourceRanges | Unknown | List of source IP ranges that the rule applies to. |
+| GCP.Compute.Firewall.targetTags | Unknown | List of target instance tags to which the rule applies. |
+| GCP.Compute.FirewallNextToken | String | Next page token for pagination. |
+
+### gcp-compute-firewall-get
+
+***
+Retrieves a specific firewall rule by name.
+
+#### Base Command
+
+`gcp-compute-firewall-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| resource_name | Firewall rule name. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Firewall.name | string | Firewall rule name. |
+| GCP.Compute.Firewall.network | string | Network URL for the firewall rule. |
+| GCP.Compute.Firewall.direction | string | Direction of traffic \(INGRESS/EGRESS\). |
+| GCP.Compute.Firewall.priority | number | Priority of the rule. |
+| GCP.Compute.Firewall.allowed | Unknown | Allowed tuples. |
+| GCP.Compute.Firewall.denied | Unknown | Denied tuples. |
+| GCP.Compute.Firewall.targetTags | Unknown | Target instance tags. |
+
+### gcp-compute-snapshots-list
+
+***
+Lists snapshots in the specified project.
+
+#### Base Command
+
+`gcp-compute-snapshots-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
+| page_token | Token for pagination. | Optional |
+| filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/snapshots/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Snapshot.id | String | Unique identifier for the snapshot resource. |
+| GCP.Compute.Snapshot.name | String | Name of the snapshot resource. |
+| GCP.Compute.Snapshot.kind | String | Type of the resource, for example compute\#snapshot. |
+| GCP.Compute.Snapshot.status | String | Current status of the snapshot, such as READY or FAILED. |
+| GCP.Compute.Snapshot.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
+| GCP.Compute.Snapshot.architecture | String | CPU architecture of the source disk, for example X86_64. |
+| GCP.Compute.Snapshot.creationTimestamp | Date | The time when the snapshot was created. |
+| GCP.Compute.Snapshot.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
+| GCP.Compute.Snapshot.diskSizeGb | Number | Size of the snapshot in gigabytes. |
+| GCP.Compute.Snapshot.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
+| GCP.Compute.Snapshot.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
+| GCP.Compute.Snapshot.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
+| GCP.Compute.Snapshot.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
+| GCP.Compute.Snapshot.licenses | Unknown | List of license URLs associated with the snapshot. |
+| GCP.Compute.Snapshot.selfLink | String | Server-defined URL for the snapshot resource. |
+| GCP.Compute.Snapshot.sourceDisk | String | URL of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshot.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshot.storageBytes | Number | Total storage size of the snapshot in bytes. |
+| GCP.Compute.Snapshot.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
+| GCP.Compute.Snapshot.storageLocations | Unknown | List of storage locations for the snapshot. |
+| GCP.Compute.SnapshotNextToken | String | Next page token for pagination. |
+
+### gcp-compute-snapshot-get
+
+***
+Retrieves details for a specific snapshot.
+
+#### Base Command
+
+`gcp-compute-snapshot-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| resource_name | Snapshot name. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Snapshot.id | String | Unique identifier for the snapshot resource. |
+| GCP.Compute.Snapshot.name | String | Name of the snapshot resource. |
+| GCP.Compute.Snapshot.kind | String | Type of the resource, for example compute\#snapshot. |
+| GCP.Compute.Snapshot.status | String | Current status of the snapshot, such as READY or FAILED. |
+| GCP.Compute.Snapshot.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
+| GCP.Compute.Snapshot.architecture | String | CPU architecture of the source disk, for example X86_64. |
+| GCP.Compute.Snapshot.creationTimestamp | Date | The time when the snapshot was created. |
+| GCP.Compute.Snapshot.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
+| GCP.Compute.Snapshot.diskSizeGb | Number | Size of the snapshot in gigabytes. |
+| GCP.Compute.Snapshot.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
+| GCP.Compute.Snapshot.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
+| GCP.Compute.Snapshot.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
+| GCP.Compute.Snapshot.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
+| GCP.Compute.Snapshot.licenses | Unknown | List of license URLs associated with the snapshot. |
+| GCP.Compute.Snapshot.selfLink | String | Server-defined URL for the snapshot resource. |
+| GCP.Compute.Snapshot.sourceDisk | String | URL of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshot.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshot.storageBytes | Number | Total storage size of the snapshot in bytes. |
+| GCP.Compute.Snapshot.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
+| GCP.Compute.Snapshot.storageLocations | Unknown | List of storage locations for the snapshot. |
+
+### gcp-compute-instances-aggregated-list-by-ip
+
+***
+Aggregated list of instances across all zones; can be filtered by internal or external IP.
+
+#### Base Command
+
+`gcp-compute-instances-aggregated-list-by-ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| ip_address | The IP address to search for. | Required |
+| match_external | If true, match against external NAT IPs; otherwise internal NIC IPs. Possible values are: true, false. | Optional |
+| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
+| page_token | Token for pagination. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Instance.name | string | Instance name. |
+| GCP.Compute.Instance.id | string | Instance ID. |
+| GCP.Compute.Instance.zone | string | Instance zone URL. |
+| GCP.Compute.Instance.status | string | Instance status. |
+| GCP.Compute.Instance.networkInterfaces | Unknown | Network interfaces of the instance. |
+
+### gcp-compute-network-tag-set
+
+***
+Adds a network tag to a VM instance (merges with existing tags).
+
+#### Base Command
+
+`gcp-compute-network-tag-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | GCP project ID. | Required |
+| zone | Zone of the VM (e.g., us-central1-a). | Required |
+| resource_name | Instance name. | Required |
+| tag | Tag to add. | Required |
+| tags_fingerprint | Fingerprint of the previous set of tags for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change tags. To retrieve the fingerprint use the command gcp-compute-instance-get. | Required |
+| add_tag | If true, adds the tag to the existing tags; otherwise, overrides them. The default is true. Possible values are: true, false. Default is true. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | Operation ID. |
+| GCP.Compute.Operations.name | string | Operation name. |
+| GCP.Compute.Operations.status | string | Current operation status \(e.g., RUNNING, DONE\). |
+| GCP.Compute.Operations.operationType | string | Type of operation being performed. |
+| GCP.Compute.Operations.progress | number | Operation progress percentage \(0-100\). |
+| GCP.Compute.Operations.user | string | User or service account that initiated the operation. |
+| GCP.Compute.Operations.targetLink | string | Full URL of the target resource for this operation. |
+| GCP.Compute.Operations.targetId | string | Target resource ID. |
+| GCP.Compute.Operations.zone | string | Zone where the operation is performed. |
+| GCP.Compute.Operations.insertTime | string | Time when the operation was inserted. |
+| GCP.Compute.Operations.startTime | string | Time when the operation started. |
+| GCP.Compute.Operations.selfLink | string | URL for this operation resource. |
+| GCP.Compute.Operations.kind | string | Type of the resource \(e.g., compute\#operation\). |
