@@ -205,15 +205,6 @@ script:
     - contextPath: Okta.Metadata.x-rate-limit-reset
       description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
       type: Number
-    - contextPath: Okta.Metadata.x-rate-limit-limit
-      description: The rate limit ceiling that’s applicable for the current request.
-      type: Number
-    - contextPath: Okta.Metadata.x-rate-limit-remaining
-      description: The amount of requests left for the current rate-limit window.
-      type: Number
-    - contextPath: Okta.Metadata.x-rate-limit-reset
-      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
-      type: Number
   - arguments:
     - description: The user ID.
       name: userId
@@ -494,15 +485,6 @@ script:
     - contextPath: Account.ManagerEmail
       description: The manager email.
       type: String
-    - contextPath: Okta.Metadata.x-rate-limit-limit
-      description: The rate limit ceiling that’s applicable for the current request.
-      type: Number
-    - contextPath: Okta.Metadata.x-rate-limit-remaining
-      description: The amount of requests left for the current rate-limit window.
-      type: Number
-    - contextPath: Okta.Metadata.x-rate-limit-reset
-      description: The time at which the rate limit resets, specified in UTC epoch time (in seconds).
-      type: Number
     - contextPath: Okta.Metadata.x-rate-limit-limit
       description: The rate limit ceiling that’s applicable for the current request.
       type: Number
