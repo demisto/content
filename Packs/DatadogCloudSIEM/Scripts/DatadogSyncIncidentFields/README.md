@@ -1,4 +1,4 @@
-This script synchronizes Datadog Cloud SIEM V2 security signal data with XSOAR incident fields. It retrieves the latest security signal information from Datadog and updates the incident with current field values, owner information, and closure state.
+This script synchronizes Datadog Cloud SIEM security signal data with XSOAR incident fields. It retrieves the latest security signal information from Datadog and updates the incident with current field values, owner information, and closure state.
 
 ## Dependencies
 
