@@ -123,7 +123,12 @@ class BreachRxClient:
         types = self.get_incident_types()
 
         request = create_incident_mutation
-        request.variable_values = {"severity": severities[0]["name"], "name": name, "type": types[0]["name"], "description": description}
+        request.variable_values = {
+            "severity": severities[0]["name"],
+            "name": name,
+            "type": types[0]["name"],
+            "description": description,
+        }
         return self.client.execute(request)["createIncident"]
 
     def get_incident(self, name: Optional[str], identifier: Optional[str]):
@@ -151,7 +156,9 @@ def test_module(client: BreachRxClient):
         raise Exception("Authorization Error: make sure your API Key and Secret Key are correctly set")
 
 
-def create_incident_command(client: BreachRxClient, incident_name: str| None = None, description: str| None = None) -> CommandResults:
+def create_incident_command(
+    client: BreachRxClient, incident_name: str | None = None, description: str | None = None
+) -> CommandResults:
     if not incident_name:
         incident_name = demisto.incident().get("name")
     if not description:
@@ -174,7 +181,7 @@ def create_incident_command(client: BreachRxClient, incident_name: str| None = N
 
 
 def get_incident_actions_command(
-    client: BreachRxClient, incident_name: str| None = None, incident_identifier: str| None = None
+    client: BreachRxClient, incident_name: str | None = None, incident_identifier: str | None = None
 ) -> Union[CommandResults, str]:
     incidents = demisto.dt(demisto.context(), "BreachRx.Incident")
 
@@ -214,7 +221,7 @@ def get_incident_actions_command(
 
 
 def import_incident_command(
-    client: BreachRxClient, incident_name: str| None = None, incident_identifier: str| None = None
+    client: BreachRxClient, incident_name: str | None = None, incident_identifier: str | None = None
 ) -> Union[CommandResults, str]:
     incident = client.get_incident(incident_name, incident_identifier)
 
@@ -231,7 +238,7 @@ def import_incident_command(
 
 
 def get_incident_command(
-    client: BreachRxClient, incident_name: str| None = None, incident_identifier: str| None = None
+    client: BreachRxClient, incident_name: str | None = None, incident_identifier: str | None = None
 ) -> Union[CommandResults, str]:
     incident = client.get_incident(incident_name, incident_identifier)
 
@@ -266,7 +273,7 @@ def main() -> None:  # pragma: no cover
         params = demisto.params()
         args = demisto.args()
         command = demisto.command()
-        
+
         base_url = params["api_url"]
         org_name = params["url"].split(".")[0].replace("https://", "")
         api_key = params.get("credentials", {}).get("identifier")
