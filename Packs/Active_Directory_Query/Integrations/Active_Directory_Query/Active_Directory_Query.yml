@@ -115,10 +115,10 @@ script:
   type: python
   subtype: python3
   commands:
-  - name: ad-expire-password-quickaction
+  - name: ad-expire-password
     prettyname: Force Password Reset [ActiveDirectory]
-    quickaction: true
-    hidden: true
+    quickaction: false
+    quickaction:platform: true
     arguments:
     - name: username
       required: true
@@ -128,16 +128,6 @@ script:
         Actor effective username: ${issue.matching_info.actor_effective_username}
     - name: base-dn
       prettyname: Base DN
-      description: Root (for example, DC=domain,DC=com).
-    description: Expires the password of an Active Directory user.
-    compliantpolicies:
-    - User Soft Remediation
-  - name: ad-expire-password
-    arguments:
-    - name: username
-      required: true
-      description: The username (samAccountName) of the user to modify.
-    - name: base-dn
       description: Root (for example, DC=domain,DC=com).
     description: Expires the password of an Active Directory user.
     compliantpolicies:
@@ -282,10 +272,10 @@ script:
       required: true
       description: "The attribute value to update."
     description: Updates attributes of an existing Active Directory contact.
-  - name: ad-disable-account-quickaction
+  - name: ad-disable-account
+    quickaction: false
+    quickaction:platform: true
     prettyname: Disable User Account [ActiveDirectory]
-    quickaction: true
-    hidden: true
     arguments:
     - description: "The username of the account to disable (sAMAccountName)."
       name: username
@@ -295,16 +285,6 @@ script:
         Actor effective username: ${issue.matching_info.actor_effective_username}
     - name: base-dn
       prettyname: Base DN
-      description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance is used.
-    description: Disables an Active Directory user account.
-    compliantpolicies:
-    - User Hard Remediation
-  - name: ad-disable-account
-    arguments:
-    - description: "The username of the account to disable (sAMAccountName)."
-      name: username
-      required: true
-    - name: base-dn
       description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance is used.
     description: Disables an Active Directory user account.
     compliantpolicies:
