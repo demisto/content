@@ -2,7 +2,7 @@
     "name": "Google SecOps",
     "description": "Retrieve Google SecOps detections, impacted assets, IOC matches, and 3P alerts to enrich your XSOAR workflows.",
     "support": "partner",
-    "currentVersion": "5.0.2",
+    "currentVersion": "5.0.3",
     "certification": "certified",
     "author": "Google",
     "url": "https://go.chronicle.security/contact",
@@ -56,10 +56,6 @@
         "AutoFocus": {
             "mandatory": false,
             "display_name": "AutoFocus"
-        },
-        "SlashNextPhishingIncidentResponse": {
-            "mandatory": false,
-            "display_name": "SlashNext Phishing Incident Response"
         },
         "ThreatExchange": {
             "mandatory": false,
@@ -292,7 +288,6 @@
         "RecordedFuture",
         "DomainTools",
         "AutoFocus",
-        "SlashNextPhishingIncidentResponse",
         "ThreatExchange",
         "SANS",
         "XForceExchange",
