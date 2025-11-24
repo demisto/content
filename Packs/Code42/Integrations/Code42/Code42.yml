@@ -322,6 +322,45 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
+  - name: code42-download-file-by-xfc-id
+    description: Downloads a file from Incydr using the XFC Event ID.
+    arguments:
+      - description: The XFC Event ID of the file to download.
+        name: xfc_id
+        required: true
+      - description: The filename to save the file as.
+        name: filename
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
   - name: code42-watchlists-list
     description: List all existing watchlists in your environment.
     outputs:
@@ -453,7 +492,7 @@ script:
       - all
       - incident
       - searches
-  dockerimage: demisto/py42:1.0.0.3708131
+  dockerimage: demisto/py42:1.0.0.5470953
   isfetch: true
   runonce: false
   script: '-'

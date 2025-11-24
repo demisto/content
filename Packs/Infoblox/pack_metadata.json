@@ -1,8 +1,8 @@
 {
     "name": "Infoblox NIOS",
-    "description": "Infoblox is a comprehensive solution that consolidates DNS, DHCP, and IP address management into a single platform. It is designed to simplify network management by automating these critical functions and providing a centralized console for managing them.",
+    "description": "Infoblox NIOS is a comprehensive solution that consolidates DNS, DHCP, and IP address management into a single platform. It is designed to simplify network management by automating these critical functions and providing a centralized console for managing them.",
     "support": "partner",
-    "currentVersion": "1.1.12",
+    "currentVersion": "2.0.0",
     "author": "Infoblox Inc.",
     "url": "https://support.infoblox.com/",
     "email": "support@infoblox.com",
@@ -10,8 +10,8 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": ["Network","Security"],
+    "useCases": ["Network Security"],
     "keywords": [
         "Infoblox",
         "NIOS",
