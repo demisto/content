@@ -74,6 +74,9 @@
                 },
                 "GIB DRP HTML Images": {
                     "simple": "images"
+                },
+                "occurred": {
+                    "simple": "detected"
                 }
             }
         }

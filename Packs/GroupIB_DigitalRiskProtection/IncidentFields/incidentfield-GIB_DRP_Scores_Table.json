@@ -1,5 +1,8 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB DRP Violation"
+    ],
     "caseInsensitive": true,
     "cliName": "gibdrpscorestable",
     "closeForm": false,
