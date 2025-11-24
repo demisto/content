@@ -480,8 +480,6 @@ _EXTRACTION_JAVASCRIPT = """
 """
 
 
-# Assuming the JavaScript constant _EXTRACTION_JAVASCRIPT is defined as you provided (returns only the content string)
-
 def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tuple[str, str]:
     """
     Executes the JavaScript to extract ONLY the structured content string.
@@ -493,8 +491,6 @@ def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tupl
     """
     demisto.debug(f"Executing content-only extraction for tab {tab.id}")
 
-    # 1. Fetch the final URL directly from the browser's frame tree,
-    #    as the JS is no longer returning it in the payload.
     try:
         frame_tree_result = tab.Page.getFrameTree()
         final_url = frame_tree_result.get("frameTree", {}).get("frame", {}).get("url", "N/A")
@@ -503,21 +499,17 @@ def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tupl
         final_url = "N/A"
 
     try:
-        # 2. Execute the JavaScript expecting only the content string back
         result = tab.Runtime.evaluate(
             expression=_EXTRACTION_JAVASCRIPT,
             returnByValue=True,
             _timeout=navigation_timeout
         )
 
-        # 3. Extract the content string directly from the result's value field
         content_string = result.get("result", {}).get("value", "")
 
         if not content_string:
             raise DemistoException("Extraction failed: Received empty content string from JavaScript execution.")
 
-        # 4. The return must now be (Content String, final_url) instead of (JSON String, final_url)
-        # The content string now represents the full "data" returned.
         return content_string, final_url
 
     except Exception as ex:
@@ -1842,8 +1834,6 @@ def rasterize_extract_command():  # pragma: no cover
 
     demisto.info(f"Starting rasterize-extract for URLs: {urls}")
 
-    # Call perform_rasterize with TEXT type
-    # Output format is a list of tuples: (extracted_content_string, final_url)
     rasterize_output = perform_rasterize(
         path=urls,
         rasterize_type=RasterizeType.TEXT,
@@ -1858,7 +1848,6 @@ def rasterize_extract_command():  # pragma: no cover
     for index, url in enumerate(urls):
         result_tuple = rasterize_output[index]
 
-        # Handle errors returned from perform_rasterize
         if isinstance(result_tuple, str):
             error_msg = result_tuple
             results.append(
@@ -1871,7 +1860,6 @@ def rasterize_extract_command():  # pragma: no cover
 
         extracted_content, final_url = result_tuple
 
-        # Handle extraction failure that returns an error string inside the tuple
         if isinstance(extracted_content, str) and extracted_content.startswith("Extraction Error:"):
             results.append(
                 CommandResults(
@@ -1881,19 +1869,15 @@ def rasterize_extract_command():  # pragma: no cover
             )
             continue
 
-        # Outputs for Context
         outputs = {
             "URL": final_url,
             "Content": extracted_content
         }
 
-        # Human Readable Output
-        hro = f"### Content Extracted from: {final_url}\n---\n{extracted_content}"
-
         results.append(
             CommandResults(
                 outputs=outputs,
-                readable_output=hro,
+                readable_output=f"### Content Extracted from: {final_url}\n---\n{extracted_content}",
                 outputs_prefix="Rasterize",
                 outputs_key_field="URL",
             )
