@@ -16,3 +16,5 @@ ignore=BA101
 [file:playbook-Prisma_Access_-_Connection_Health_Check.yml]
 ignore=GR107
 
+[file:Packs/PrismaAccess/Integrations/PrismaAccessEgressIPFeed/PrismaAccessEgressIPFeed.yml]
+ignore=IN122

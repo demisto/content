@@ -1,6 +1,9 @@
 [file:README.md]
 ignore=RM104
 
+[file:Packs/ANYRUN/Integrations/AnyRunFeed/AnyRunFeed.yml]
+ignore=IN122
+
 [known_words]
 Ubuntu
 VM
