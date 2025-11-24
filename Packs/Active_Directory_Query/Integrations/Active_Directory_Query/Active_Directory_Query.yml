@@ -290,11 +290,17 @@ script:
     compliantpolicies:
     - User Hard Remediation
   - name: ad-enable-account
+    quickaction: false
+    quickaction:platform: true
     arguments:
     - name: username
+      prettyname: Run action on
+      prettypredefined:
+        Actor effective username: ${issue.matching_info.actor_effective_username}
       required: true
       description: "The username of the account to enable (sAMAccountName)."
     - name: base-dn
+      prettyname: Base DN
       description: Root. For example, DC=domain,DC=com). By default, the Base DN configured for the instance is used.
     - name: restore_user
       auto: PREDEFINED
