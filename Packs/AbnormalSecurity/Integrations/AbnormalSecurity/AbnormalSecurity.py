@@ -222,7 +222,7 @@ class Client(BaseClient):
             threat_id (str): The ID of the threat to get details for
             subtenant (str, optional): The subtenant ID
             page_size (int, optional): The number of items per page
-            page_number (int, optional): The page number (zero-based)
+            page_number (int, optional): The page number (zero-based) test
 
         Returns:
             dict: The threat details with pagination
