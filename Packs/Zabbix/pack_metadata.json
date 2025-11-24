@@ -1,7 +1,7 @@
 {
     "name": "Zabbix",
     "description": "Allow integration with Zabbix api.",
-    "support": "developer",
+    "support": "community",
     "currentVersion": "1.0.37",
     "author": "Henrique Caires",
     "url": "https://support.zabbix.com/secure/Dashboard.jspa",

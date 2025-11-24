@@ -1,7 +1,6 @@
-from freezegun import freeze_time
-import pytest
-
 import MimecastV2
+import pytest
+from freezegun import freeze_time
 
 from CommonServerPython import *
 
@@ -494,6 +493,54 @@ def test_list_held_messages_command(mocker):
     assert response.outputs == mock_response.get("data")
     assert response.outputs_prefix == "Mimecast.HeldMessage"
     assert response.outputs_key_field == "id"
+
+
+@pytest.mark.parametrize(
+    "field_name,expected_field_name",
+    [
+        ("all", "all"),
+        ("subject", "subject"),
+        ("sender", "sender"),
+        ("recipient", "recipient"),
+        ("reasonCode", "reasonCode"),
+        ("senderIP", "senderIP"),
+        ("reason_code", "reasonCode"),  # Backward compatibility: old value should be converted
+    ],
+)
+def test_list_held_messages_all_field_names(mocker, field_name, expected_field_name):
+    """
+    Test that all valid field_name options are accepted and processed correctly, including backward compatibility.
+
+    Given:
+        - Arguments with different field_name values (all, subject, sender, recipient, reasonCode, senderIP, reason_code).
+
+    When:
+        - Running list_held_messages_request function.
+
+    Then:
+        - Ensure each field_name is accepted and passed correctly to the API.
+        - Ensure backward compatibility: 'reason_code' is automatically converted to 'reasonCode'.
+    """
+    args = {
+        "admin": "true",
+        "from_date": "2023-01-01T00:00:00+0000",
+        "to_date": "2023-12-31T23:59:59+0000",
+        "value": "test_value",
+        "field_name": field_name,
+        "limit": "10",
+    }
+
+    mock_response = ([{"id": "123", "subject": "test"}], 1)
+    mock_request = mocker.patch.object(MimecastV2, "request_with_pagination", return_value=mock_response)
+
+    # Call the function
+    result = MimecastV2.list_held_messages_request(args)
+
+    # Verify the field_name is used correctly
+    call_args = mock_request.call_args
+    data_param = call_args[1]["data"][0]
+    assert data_param["searchBy"]["fieldName"] == expected_field_name
+    assert result == mock_response
 
 
 REJECT_HOLD_MESSAGE = [
