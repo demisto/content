@@ -2747,16 +2747,10 @@ def storage_container_property_get_command(client: AzureClient, params: dict, ar
     response = client.get_storage_container_properties_request(account_name, container_name)
     raw_response = response.headers
     raw_response = dict(raw_response)  # Convert raw_response from 'CaseInsensitiveDict' to 'dict'
-
-    response_headers = list(raw_response.keys())
     outputs = {}
 
-    properties = transform_response_to_context_format(raw_response, response_headers)
-
     outputs["name"] = container_name
-    outputs["Property"] = properties
-
-    convert_dict_time_format(outputs["Property"], ["last_modified", "date"], STORAGE_DATE_FORMAT)
+    outputs["Property"] = raw_response
 
     readable_output = tableToMarkdown(
         f"Container {container_name} Properties:",
@@ -3022,16 +3016,10 @@ def storage_container_blob_property_get_command(client: AzureClient, params: dic
 
     raw_response = response.headers  # type: ignore[attr-defined]
     raw_response = dict(raw_response)  # Convert raw_response from 'CaseInsensitiveDict' to 'dict'
-
-    response_headers = list(raw_response.keys())
     outputs = {}
 
-    properties = transform_response_to_context_format(raw_response, response_headers)
-
     outputs["name"] = container_name
-    outputs["Blob"] = {"name": blob_name, "Property": properties}
-
-    convert_dict_time_format(outputs["Blob"]["Property"], ["creation_time", "last_modified", "date"], STORAGE_DATE_FORMAT)
+    outputs["Blob"] = {"name": blob_name, "Property": raw_response}
 
     readable_output = tableToMarkdown(
         f"Blob {blob_name} Properties:",
@@ -3118,21 +3106,6 @@ def storage_container_block_public_access_command(client: AzureClient, params: d
         readable_output=f"Public access to container '{container_name}' has been successfully blocked",
     )
     return command_results
-
-
-def transform_response_to_context_format(data: dict, keys: list) -> dict:
-    """
-    Transform API response data to suitable context data.
-    Remove 'x-ms' prefix and replace '-' to '_' for more readable and conventional variables.
-    Args:
-        data (dict): Data to exchange.
-        keys (list): Keys to filter.
-
-    Returns:
-        dict: Processed data.
-
-    """
-    return {key.replace("X-Ms-", "").replace("-", "_").lower(): value for key, value in data.items() if key in keys}
 
 
 def create_policy_assignment_command(client: AzureClient, params: dict, args: dict):
