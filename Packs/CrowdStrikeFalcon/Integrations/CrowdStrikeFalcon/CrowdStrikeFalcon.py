@@ -75,6 +75,13 @@ MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_INCIDENT_PER_API_CALL = 500  # fetch limit for get ids call - incidents
+CNAPP_SEVERITY_MAPPING = {
+    "informational": 1,
+    "low": 2,
+    "Medium": 3,
+    "High": 4,
+    "Critical": 5
+}
 
 BYTE_CREDS = f"{CLIENT_ID}:{SECRET}".encode()
 
@@ -3308,77 +3315,71 @@ def fetch_iom_incidents(iom_last_run):
 
 def fetch_cnapp_incidents(cnapp_last_run):
 
-        # look_back=look_back,
-        # detections_type=CNAPP_DETECTION,
-        # product_type="cnapp",
-        # detection_name_prefix=CNAPP_DETECTION_TYPE,
-        # start_time_key="created_timestamp",
-        # is_fetch_events=is_fetch_events,
-    demisto.debug("Fetching CNAPP detection")
+    detections: List = []
+    demisto.debug("Fetching CNAPP detections")
     demisto.debug(f"{cnapp_last_run=}")
-    fetch_query = demisto.params().get("cnapp_detection_fetch_query", "")
-    validate_cnapp_fetch_query(cnapp_fetch_query=fetch_query)
+    offset = int(cnapp_last_run.get("offset", 0))
     
+    params = demisto.params()
+    look_back = params.get("look_back")
+    fetch_query = params.get("cnapp_detection_fetch_query", "")
+    limit = (min(int(params.get("limit", 100)), 100))
+    validate_cnapp_fetch_query(cnapp_fetch_query=fetch_query)
+    filter_arg = ""
     if not cnapp_last_run:
         last_seen = reformat_timestamp(
         time=FETCH_TIME, date_format=DATE_FORMAT, dateparser_settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True}
     )
     else:
-        # TODO: implement logic for extracting last_seen
-        pass
-    # params = {"sort": "last_seen.asc", "offset": offset, "filter": filter_arg}
-    params = {"sort": "last_seen.asc"}
-    # if limit:
-    #     params["limit"] = limit
+        last_seen = cnapp_last_run.get("last_seen", "")
+    filter = f"last_seen:>'{last_seen}'"
+    if filter_arg:
+        filter = f"{filter}&{filter_arg}"
+    params = {"sort": "last_seen.asc", "offset": offset, "limit": limit, "filter": filter}
     endpoint_url = "/container-security/combined/container-alerts/v1"
-    # # in the new version we need to add the product type to the filter to the url as encoded string
 
     response = http_request("GET", endpoint_url, params)
     demisto.info(f"[test] {response=}")
-    # demisto.debug(f"CrowdStrikeFalconMsg: Getting {product_type} detections from {endpoint_url} with {params=}. {response=}.\
-    #     {LEGACY_VERSION=}")
+    cnapp_detections = response.get("resources", [])
+    total_detections = demisto.get(response, "meta.pagination.total")
+    # CNAPP_SEVERITY_MAPPING
+    
+    offset = calculate_new_offset(offset, len(cnapp_detections), total_detections)
+    demisto.debug(f"CrowdStrikeFalconMsg: Total fetched CNAPP detections: {len(cnapp_detections)}")
+    if offset:
+        if offset + limit > MAX_FETCH_SIZE:
+            demisto.debug(
+                f"CrowdStrikeFalconMsg: The new {offset=} + {limit=} reached "
+                f"{MAX_FETCH_SIZE}, resetting the offset to 0"
+            )
+            offset = 0
+        demisto.debug(f"CrowdStrikeFalconMsg: The new CNAPP offset is {offset}")
+        
+    if cnapp_detections:
+        for detection in cnapp_detections:
+            detection["incident_type"] = CNAPP_DETECTION_TYPE
+            detection_to_context = detection_to_incident_context(
+                detection, detection_name_prefix, start_time_key, is_fetch_events=is_fetch_events
+            )
+            detections.append(detection_to_context)
+        detections = filter_incidents_by_duplicates_and_limit(
+            incidents_res=detections, last_run=cnapp_last_run, fetch_limit=INCIDENTS_PER_FETCH, id_field="name"
+        )
 
-    # return response
-
-    # last_resource_ids, cnapp_next_token, last_scan_time, first_fetch_timestamp = get_current_fetch_data(
-    #     last_run_object=cnapp_last_run,
-    #     date_format=IOM_DATE_FORMAT,
-    #     last_date_key="last_seen",
-    #     next_token_key="cnapp_next_token",
-    #     last_fetched_ids_key="last_resource_ids",
-    # )
-    # filter = create_cnapp_filter(
-    #     is_paginating=bool(cnapp_next_token),
-    #     last_fetch_filter=cnapp_last_run.get("last_fetch_filter", ""),
-    #     last_scan_time=last_scan_time,
-    #     first_fetch_timestamp=first_fetch_timestamp,
-    #     configured_fetch_query=fetch_query,
-    # )
-    # demisto.debug(f"IOM {filter=}")
-    # iom_resource_ids, iom_new_next_token = iom_ids_pagination(
-    #     filter=filter, iom_next_token=cnapp_next_token, fetch_limit=INCIDENTS_PER_FETCH, api_limit=500
-    # )
-    # demisto.debug(f'Fetched the following CNAPP resource IDS: {", ".join(iom_resource_ids)}')
-    # iom_incidents, fetched_resource_ids, new_scan_time = parse_ioa_iom_incidents(
-    #     fetched_data=get_iom_resources(iom_resource_ids=iom_resource_ids),
-    #     last_date=last_scan_time,
-    #     last_fetched_ids=last_resource_ids,
-    #     date_key="scan_time",
-    #     id_key="id",
-    #     date_format=IOM_DATE_FORMAT,
-    #     is_paginating=bool(iom_new_next_token or iom_next_token),
-    #     to_incident_context=iom_resource_to_incident,
-    #     incident_type="iom_configurations",
-    # )
-
-    iom_last_run = {
-        "iom_next_token": iom_new_next_token,
-        "last_scan_time": new_scan_time,
-        "last_fetch_filter": filter,
-        "last_resource_ids": fetched_resource_ids or last_resource_ids,
-    }
-
-    return iom_incidents, iom_last_run
+    new_last_run = update_last_run_object(
+        last_run=cnapp_last_run,
+        incidents=detections,
+        fetch_limit=limit,
+        start_fetch_time=start_fetch_time,
+        end_fetch_time=end_fetch_time,
+        look_back=look_back,
+        created_time_field="occurred",
+        id_field="name",
+        date_format=DETECTION_DATE_FORMAT,
+        new_offset=offset,
+    )
+    demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch {CNAPP_DETECTION_TYPE}. Fetched {len(detections)}")
+    return detections, new_last_run
 
 
 def fetch_ioa_incidents(ioa_last_run):
