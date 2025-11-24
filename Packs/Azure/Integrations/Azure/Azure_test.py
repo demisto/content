@@ -2880,7 +2880,6 @@ def test_storage_container_property_get_command(mocker, client, mock_params):
     # Configure the client method to return this mock response
     mocker.patch.object(client, "get_storage_container_properties_request", return_value=mock_response)
 
-
     # Call the function
     result = storage_container_property_get_command(client, mock_params, args)
 
@@ -4075,4 +4074,3 @@ def test_create_set_tags_request_body():
         assert tag1.find("Value").text == "value1"
     else:
         assert tag1.find("Value").text == "value2"
-
