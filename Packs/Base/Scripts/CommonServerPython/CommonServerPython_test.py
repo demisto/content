@@ -10743,7 +10743,7 @@ class TestTimeSensitive:
         client._time_sensitive_total_timeout = 15
         client._time_sensitive_deadline = 115  # 100 + 15
 
-        with pytest.raises(DemistoException, match="Time-sensitive command budget .* exceeded before API call"):
+        with pytest.raises(DemistoException, match="Time-sensitive command execution time limit .* reached before performing the API request"):
             client._http_request('get', 'test')
 
     def test_http_request_time_sensitive_timeout_during_call(self, mocker):
@@ -10766,5 +10766,5 @@ class TestTimeSensitive:
         mocker.patch.object(client, '_session')
         client._session.request.side_effect = requests.exceptions.ConnectTimeout
 
-        with pytest.raises(DemistoException, match="Time-sensitive command budget .* exceeded"):
+        with pytest.raises(DemistoException, match="Time-sensitive command execution time limit .* exceeded"):
             client._http_request('get', 'test')
