@@ -48,10 +48,6 @@
             "mandatory": false,
             "display_name": "Symantec Deepsight Intelligence (Beta)"
         },
-        "SlashNextPhishingIncidentResponse": {
-            "mandatory": false,
-            "display_name": "SlashNext Phishing Incident Response"
-        },
         "PassiveTotal": {
             "mandatory": false,
             "display_name": "PassiveTotal"
@@ -194,7 +190,6 @@
         "Maltiverse",
         "XForceExchange",
         "Symantec_Deepsight",
-        "SlashNextPhishingIncidentResponse",
         "PassiveTotal",
         "isight",
         "APIVoid",

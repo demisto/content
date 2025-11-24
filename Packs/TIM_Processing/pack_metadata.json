@@ -134,10 +134,6 @@
             "mandatory": false,
             "display_name": "TruSTAR"
         },
-        "SlashNextPhishingIncidentResponse": {
-            "mandatory": false,
-            "display_name": "SlashNext Phishing Incident Response"
-        },
         "AbuseDB": {
             "mandatory": false,
             "display_name": "AbuseIPDB"
