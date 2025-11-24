@@ -704,10 +704,8 @@ def get_service_record_update_time(service_record: dict[str, Any], use_classic_d
                 # Standard parsing for ISO format (new SysAid) when classic mode disabled
                 demisto.debug(f"Standard ISO format parsing for: {occurred}")
                 iso_parsed = dateparser.parse(occurred, settings={"TIMEZONE": "UTC"})
-                if iso_parsed:
-                    demisto.debug(f"Successfully parsed: {iso_parsed}")
-                else:
-                    demisto.debug(f"Failed to parse: {occurred}")
+                msg = f"Successfully parsed: {iso_parsed}" if iso_parsed else f"Failed to parse: {occurred}"
+                demisto.debug(msg)
                 return iso_parsed
 
     demisto.debug(f'The service record with ID {service_record["id"]} does not have a modify time (update_time).')
