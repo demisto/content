@@ -71,7 +71,7 @@ configuration:
   section: Collect
 - display: Sync Query
   name: query
-  required: false
+  required: true
   type: 0
   additionalinfo: The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR.
   defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
@@ -106,7 +106,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
+  required: true
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
