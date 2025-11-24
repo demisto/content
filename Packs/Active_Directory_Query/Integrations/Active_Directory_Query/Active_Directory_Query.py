@@ -1864,7 +1864,7 @@ def main():
         elif command == "ad-modify-password-never-expire":
             set_password_not_expire(default_base_dn)
 
-        elif command in ("ad-expire-password", "ad-expire-password-quickaction"):
+        elif command == "ad-expire-password":
             expire_user_password(default_base_dn)
 
         elif command == "ad-set-new-password":
@@ -1873,7 +1873,7 @@ def main():
         elif command == "ad-unlock-account":
             unlock_account(default_base_dn)
 
-        elif command in ("ad-disable-account", "ad-disable-account-quickaction"):
+        elif command == "ad-disable-account":
             disable_user(default_base_dn, default_page_size)
 
         elif command == "ad-enable-account":
