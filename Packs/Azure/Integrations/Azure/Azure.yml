@@ -732,9 +732,13 @@ script:
     - description: The storage account name.
       name: account_name
       required: true
-    - description: Wether to append tags to the existing tags or not. Default is false.
+    - auto: PREDEFINED
+      description: Wether to append tags to the existing tags or not. Default is false.
       name: append
       defaultValue: False
+      predefined:
+      - 'true'
+      - 'false'
     description: Updates the tags for the specified Blob. The command can replace the entire tags of the Blob and can be used to remove tags.
     name: azure-storage-container-blob-tag-set
 

@@ -2755,7 +2755,6 @@ def storage_container_property_get_command(client: AzureClient, params: dict, ar
     readable_output = tableToMarkdown(
         f"Container {container_name} Properties:",
         outputs.get("Property"),
-        headers=["last_modified", "etag", "lease_status", "lease_state", "has_immutability_policy", "has_legal_hold"],
         headerTransform=string_to_table_header,
         removeNull=True,
     )
@@ -2845,7 +2844,7 @@ def storage_container_blob_create_command(client: AzureClient, params: dict, arg
         container_name, account_name, file_entry_id, file_name, system_file_path
     )  # noqa: E501
 
-    command_results = CommandResults(readable_output=f"Blob {blob_name} successfully created.", raw_response=response)
+    command_results = CommandResults(readable_output=f"Blob {file_name} successfully created.", raw_response=response)
 
     return command_results
 
