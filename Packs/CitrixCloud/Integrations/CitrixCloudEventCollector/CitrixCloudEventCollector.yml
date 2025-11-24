@@ -52,10 +52,7 @@ name: CitrixCloud
 script:
   commands:
   - name: citrix-cloud-get-events
-    description: |-
-      Returns system log events extracted from Citrix.
-      This command is used for developing/debugging and is to be used with caution, 
-      as it can create events, leading to events duplication and API request limitation exceeding.
+    description: Returns system log events extracted from Citrix.This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
     arguments:
     - name: should_push_events
       auto: PREDEFINED
