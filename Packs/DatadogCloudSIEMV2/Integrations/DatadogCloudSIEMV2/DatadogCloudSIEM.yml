@@ -112,8 +112,8 @@ configuration:
     additionalinfo: When selected, archiving the Datadog security signal is mirrored in XSOAR and closes the XSOAR incident.
     required: false
     section: Collect
-description: Datadog Cloud SIEM V2 integration for XSOAR provides security signal management capabilities. This integration allows you to retrieve, filter, and manage security signals from Datadog's Cloud SIEM platform, enabling security teams to investigate threats, manage signal triage states, and assign signals to team members. Supports incoming mirroring of signals to XSOAR incidents.
-display: Datadog Cloud SIEM V2
+description: Datadog Cloud SIEM integration for XSOAR provides security signal management capabilities. This integration allows you to retrieve, filter, and manage security signals from Datadog's Cloud SIEM platform, enabling security teams to investigate threats, manage signal triage states, and assign signals to team members. Supports incoming mirroring of signals to XSOAR incidents.
+display: Datadog Cloud SIEM
 name: DatadogCloudSIEMV2
 script:
   commands:
@@ -121,7 +121,7 @@ script:
         - description: The unique identifier of the security signal to retrieve. If not provided, will attempt to get it from the current incident.
           name: signal_id
       name: datadog-signal-get
-      description: Get a specific security signal by ID from Datadog Cloud SIEM V2.
+      description: Get a specific security signal by ID from Datadog Cloud SIEM .
       outputs:
         - contextPath: Datadog.SecuritySignal.id
           description: The unique identifier of the security signal.
@@ -216,7 +216,7 @@ script:
         - description: Maximum number of results to return. If page_size is specified, limit is ignored. Default is 50.
           name: limit
       name: datadog-signal-list
-      description: Get a list of security signals from Datadog Cloud SIEM V2 with optional filtering and pagination.
+      description: Get a list of security signals from Datadog Cloud SIEM  with optional filtering and pagination.
       outputs:
         - contextPath: Datadog.SecuritySignal.id
           description: The unique identifier of the security signal.
@@ -302,7 +302,7 @@ script:
         - description: Comment about the state change (used when changing state to archived).
           name: archive_comment
       name: datadog-signal-update
-      description: Update a security signal's assignee and/or state in Datadog Cloud SIEM V2. Can update assignee only, state only, or both in a single command.
+      description: Update a security signal's assignee and/or state in Datadog Cloud SIEM . Can update assignee only, state only, or both in a single command.
       outputs:
         - contextPath: Datadog.SecuritySignal.id
           description: The unique identifier of the security signal.
@@ -365,7 +365,7 @@ script:
         - description: The unique identifier of the security rule to retrieve. If not provided, will attempt to get it from the current incident.
           name: rule_id
       name: datadog-rule-get
-      description: Get a specific security monitoring rule by ID from Datadog Cloud SIEM V2.
+      description: Get a specific security monitoring rule by ID from Datadog Cloud SIEM .
       outputs:
         - contextPath: Datadog.SecurityRule.id
           description: The unique identifier of the security rule.
@@ -419,7 +419,7 @@ script:
         - description: The ID of the security rule to list suppressions for. If not provided, will attempt to get it from the current incident.
           name: rule_id
       name: datadog-rule-suppression-list
-      description: List all suppressions affecting a specific security monitoring rule in Datadog Cloud SIEM V2.
+      description: List all suppressions affecting a specific security monitoring rule in Datadog Cloud SIEM .
       outputs:
         - contextPath: Datadog.SecuritySuppression.id
           description: The unique identifier of the suppression.
@@ -467,7 +467,7 @@ script:
           name: comment
           required: true
       name: datadog-signal-comment-add
-      description: Add a comment to a security signal in Datadog Cloud SIEM V2.
+      description: Add a comment to a security signal in Datadog Cloud SIEM .
       outputs:
         - contextPath: Datadog.SecurityComment.id
           description: The unique identifier of the comment.
@@ -491,7 +491,7 @@ script:
         - description: The event ID of the security signal to list comments for. If not provided, will attempt to get it from the current incident.
           name: event_id
       name: datadog-signal-comment-list
-      description: List all comments for a security signal in Datadog Cloud SIEM V2.
+      description: List all comments for a security signal in Datadog Cloud SIEM .
       outputs:
         - contextPath: Datadog.SecurityComment.id
           description: The unique identifier of the comment.
@@ -534,7 +534,7 @@ script:
         - description: Maximum number of results to return. Default is 50.
           name: limit
       name: datadog-logs-query
-      description: Query logs in Datadog Cloud SIEM V2 with optional filtering for security investigations.
+      description: Query logs in Datadog Cloud SIEM  with optional filtering for security investigations.
       outputs:
         - contextPath: Datadog.Log.id
           description: The unique identifier of the log entry.
@@ -567,7 +567,7 @@ script:
           description: The raw log object returned by the API.
           type: Unknown
     - name: datadog-security-filter-list
-      description: List all security filters from Datadog Cloud SIEM V2. Security filters control which logs are indexed and analyzed by the Cloud SIEM platform.
+      description: List all security filters from Datadog Cloud SIEM . Security filters control which logs are indexed and analyzed by the Cloud SIEM platform.
       outputs:
         - contextPath: Datadog.SecurityFilter.id
           description: The unique identifier of the security filter.
@@ -594,7 +594,7 @@ script:
           description: The raw filter object returned by the API.
           type: Unknown
     - name: datadog-signal-notification-rule-list
-      description: List all signal notification rules from Datadog Cloud SIEM V2. Signal notification rules define how and when security signals should trigger notifications to specified channels (e.g., email, Slack, PagerDuty).
+      description: List all signal notification rules from Datadog Cloud SIEM . Signal notification rules define how and when security signals should trigger notifications to specified channels (e.g., email, Slack, PagerDuty).
       outputs:
         - contextPath: Datadog.SecurityNotificationRule.id
           description: The unique identifier of the notification rule.
@@ -645,7 +645,7 @@ script:
         - description: The unique identifier of the security signal to get investigation for. If not provided, will attempt to get it from the current incident.
           name: signal_id
       name: datadog-bitsai-get-investigation
-      description: Get the BitsAI investigation for a security signal from Datadog Cloud SIEM V2. BitsAI provides AI-powered analysis and investigation steps for security signals.
+      description: Get the BitsAI investigation for a security signal from Datadog Cloud SIEM . BitsAI provides AI-powered analysis and investigation steps for security signals.
       outputs:
         - contextPath: Datadog.SecurityInvestigation.signal_id
           description: The unique identifier of the security signal being investigated.
@@ -679,7 +679,7 @@ script:
         - description: Page number to retrieve. Default is 1.
           name: page_number
       name: datadog-risk-scores-list
-      description: List risk scores from Datadog Cloud SIEM V2. Risk scores provide a quantitative assessment of security risks associated with entities in your environment.
+      description: List risk scores from Datadog Cloud SIEM . Risk scores provide a quantitative assessment of security risks associated with entities in your environment.
       outputs:
         - contextPath: Datadog.SecurityRiskInsights.id
           description: The unique identifier of the entity.

@@ -502,7 +502,7 @@
     },
     "group": "incident",
     "id": "Datadog Cloud SIEM V2 Layout",
-    "name": "Datadog Cloud SIEM V2 Layout",
+    "name": "Datadog Cloud SIEM Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.8.0"

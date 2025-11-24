@@ -1,6 +1,6 @@
 {
-    "name": "Datadog Cloud SIEM",
-    "description": "Datadog is an observability service for cloud-scale applications, providing monitoring of servers, databases, tools, and services, through a SaaS-based data analytics platform",
+    "name": "Datadog",
+    "description": "Deprecated. Datadog is an observability service for cloud-scale applications, providing monitoring of servers, databases, tools, and services, through a SaaS-based data analytics platform",
     "support": "xsoar",
     "currentVersion": "1.0.17",
     "author": "Cortex XSOAR",

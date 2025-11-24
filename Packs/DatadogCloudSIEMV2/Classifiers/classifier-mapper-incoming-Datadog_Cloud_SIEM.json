@@ -1,8 +1,8 @@
 {
     "id": "Datadog Cloud SIEM V2 - Incoming Mapper",
-    "name": "Datadog Cloud SIEM V2 - Incoming Mapper",
+    "name": "Datadog Cloud SIEM - Incoming Mapper",
     "type": "mapping-incoming",
-    "description": "Maps incoming Datadog Cloud SIEM V2 security signals to XSOAR incident fields",
+    "description": "Maps incoming Datadog Cloud SIEM security signals to XSOAR incident fields",
     "mapping": {
         "Datadog Cloud SIEM V2": {
             "dontMapEventToLabels": false,

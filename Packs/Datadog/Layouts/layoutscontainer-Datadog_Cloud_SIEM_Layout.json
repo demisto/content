@@ -1,5 +1,5 @@
 {
-    "description": "Datadog Cloud SIEM Incident Layout",
+    "description": "Datadog Incident Layout",
     "detailsV2": {
         "tabs": [
             {
@@ -311,7 +311,7 @@
     },
     "group": "incident",
     "id": "Datadog Cloud SIEM Layout",
-    "name": "Datadog Cloud SIEM Layout",
+    "name": "Datadog Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.8.0"

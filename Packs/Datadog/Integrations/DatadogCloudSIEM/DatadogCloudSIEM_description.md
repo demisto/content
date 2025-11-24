@@ -1,10 +1,10 @@
-# Datadog Cloud SIEM
+# Datadog
 
 Datadog is an observability service for cloud-scale applications, providing monitoring of servers, databases, tools, and services, through a SaaS-based data analytics platform.
 
 The SaaS platform integrates and automates infrastructure monitoring, application performance monitoring and log management to provide unified, real-time observability of our customers' entire technology stack.
 
-## How to get a Datadog Cloud SIEM Credentials 
+## How to get a Datadog Credentials 
 ### Create Datadog API Key.
 
 1. Navigate to **Account** > **Organization Settings** > **API Keys** and click **New Key**.  
