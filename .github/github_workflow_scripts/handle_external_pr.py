@@ -465,7 +465,7 @@ def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number
     return content_reviewer
 
 
-def replace_to_related_in_pr_body(pr: PullRequest) -> str:
+def replace_fixes_to_related_in_pr_body(pr: PullRequest) -> str:
     """
     Replace any 'fixes:' or 'fixed:' keywords in the PR body with 'relates: link to the issue'.
     If none are found, append 'relates: link to the issue' at the end of the PR body.
@@ -599,7 +599,7 @@ def main():
     print(f'{t.cyan}Assigned and requested review from "{",".join(reviewers)}" to the PR{t.normal}')
 
     # replace to Related field instead of Fixes
-    replace_to_related_in_pr_body(pr)
+    replace_fixes_to_related_in_pr_body(pr)
 
     # create welcome comment (only users who contributed through Github need to have that contribution form filled)
     message_to_send = WELCOME_MSG if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR else WELCOME_MSG_WITH_GFORM
