@@ -53,8 +53,7 @@ configuration:
 - additionalinfo: When the `override severity` parameter is set to True, the severity level chosen here will be used for all indicators. Otherwise, the severity level of the indicator will be used.
   display: Overriding severity value
   name: severity
-  required: false
-  defaultvalue: low
+  required: true
   type: 15
   options:
   - info
