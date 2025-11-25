@@ -1318,6 +1318,21 @@ class EC2:
         kwargs["FromPort"] = arg_to_number(args.get("from_port"))
         kwargs["ToPort"] = arg_to_number(args.get("to_port"))
 
+        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+            """Parse port argument which can be a single port or range (min-max)."""
+            if not port:
+                return None, None
+
+            if "-" in port:
+                from_port, to_port = port.split("-", 1)
+                return int(from_port.strip()), int(to_port.strip())
+            else:
+                _port: int = int(port.strip())
+                return _port, _port
+
+        if args.get("port") and (not args.get("from_port") and not args.get("to_port")):
+            kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
+
         if ip_permissions := args.get("ip_permissions"):
             try:
                 kwargs["IpPermissions"] = json.loads(ip_permissions)
@@ -1353,9 +1368,24 @@ class EC2:
         2. Full mode: using ip_permissions for complex configurations
         """
 
+        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+            """Parse port argument which can be a single port or range (min-max)."""
+            if not port:
+                return None, None
+
+            if "-" in port:
+                from_port, to_port = port.split("-", 1)
+                return int(from_port.strip()), int(to_port.strip())
+            else:
+                _port: int = int(port.strip())
+                return _port, _port
+
         kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
         kwargs["FromPort"] = arg_to_number(args.get("from_port"))
         kwargs["ToPort"] = arg_to_number(args.get("to_port"))
+
+        if args.get("port") and (not args.get("from_port") and not args.get("to_port")):
+            kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
 
         if ip_permissions := args.get("ip_permissions"):
             try:
@@ -1392,6 +1422,18 @@ class EC2:
         2) Simple mode: protocol, port, cidr → build IpPermissions
         """
 
+        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+            """Parse port argument which can be a single port or range (min-max)."""
+            if not port:
+                return None, None
+
+            if "-" in port:
+                from_port, to_port = port.split("-", 1)
+                return int(from_port.strip()), int(to_port.strip())
+            else:
+                _port: int = int(port.strip())
+                return _port, _port
+
         group_id = args.get("group_id")
         ip_permissions_arg = args.get("ip_permissions")
 
@@ -1406,6 +1448,10 @@ class EC2:
             proto = args.get("protocol")
             from_port = arg_to_number(args.get("from_port"))
             to_port = arg_to_number(args.get("to_port"))
+
+            # If 'port' argument is provided, override from_port and to_port
+            if args.get("port") and (not args.get("from_port") and not args.get("to_port")):
+                from_port, to_port = parse_port_range(args.get("port", ""))
             cidr = args.get("cidr")
             ip_perms = [
                 {"IpProtocol": proto, "FromPort": from_port, "ToPort": to_port, "IpRanges": [{"CidrIp": cidr}] if cidr else None}
