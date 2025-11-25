@@ -36,9 +36,10 @@ def ip_enrichment_script(
           - passthrough results (e.g., Core endpoint data, prevalence)
     """
     demisto.debug("Extracting indicators")
-    ip_instances, extract_verbose = extract_indicators(ip_list, "ip", mark_mismatched_type_as_invalid=True)
-    demisto.debug(f"Invalid List: {ip_list}")
-
+    ip_instances, extract_verbose = create_and_extract_indicators(ip_list, "ip", mark_mismatched_type_as_invalid=True)
+    valid_inputs = [ip_instance.extracted_value
+                    for ip_instance in ip_instances
+                    if ip_instance.extracted_value]
     indicator_mapping = {
         "Address": "Address",
         "Source": "Source",
@@ -48,7 +49,7 @@ def ip_enrichment_script(
         "Score": "Score",
     }
 
-    ip_indicator = IndicatorSchema(
+    ip_indicator_schema = IndicatorSchema(
         type="ip",
         value_field="Address",
         context_path_prefix="IP",
@@ -60,7 +61,7 @@ def ip_enrichment_script(
     command_batch1: list[Command] = [
         Command(
             name="CreateNewIndicatorsOnly",
-            args={"indicator_values": ip_list, "type": "IP"},
+            args={"indicator_values": valid_inputs, "type": "IP"},
             command_type=CommandType.BUILTIN,
             context_output_mapping=None,
             ignore_using_brand=True,
@@ -73,7 +74,7 @@ def ip_enrichment_script(
     command_batch2.append(
         Command(
             name="get-endpoint-data",
-            args={"endpoint_ip": ip_list},
+            args={"endpoint_ip": valid_inputs},
             command_type=CommandType.INTERNAL,
             brand="Core",
             context_output_mapping={ENDPOINT_PATH: ENDPOINT_PATH},
@@ -85,7 +86,7 @@ def ip_enrichment_script(
         command_batch2.append(
             Command(
                 name="core-get-IP-analytics-prevalence",
-                args={"ip_address": ip_list},
+                args={"ip_address": valid_inputs},
                 command_type=CommandType.INTERNAL,
                 brand="Cortex Core - IR",
                 context_output_mapping={"Core.AnalyticsPrevalence.Ip": "Core.AnalyticsPrevalence.Ip"},
@@ -96,7 +97,7 @@ def ip_enrichment_script(
     command_batch2.append(
         Command(
             name="enrichIndicators",
-            args={"indicatorsValues": ip_list},
+            args={"indicatorsValues": valid_inputs},
             command_type=CommandType.EXTERNAL,
         )
     )
@@ -119,8 +120,8 @@ def ip_enrichment_script(
         external_enrichment=external_enrichment,
         final_context_path="IPEnrichment",
         args=args,
-        data=ip_list,
-        indicator=ip_indicator,
+        indicator_instances=ip_instances,
+        indicator_schema=ip_indicator_schema,
         verbose_outputs=[extract_verbose],
     )
     return ip_enrichment.run()
