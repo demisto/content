@@ -2011,7 +2011,7 @@ script:
             - 'true'
             - 'false'
         - description: A comma-separated list of tags to filter cases by.
-          name: tags
+          name: tag
       name: core-get-cases
       description: Get case information based on the specified filters.
       outputs:

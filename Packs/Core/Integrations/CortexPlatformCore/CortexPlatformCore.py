@@ -42,6 +42,11 @@ CASE_STATUS = {
     "resolved": "STATUS_025_RESOLVED",
 }
 
+CASE_TAGS = {
+    "DOM:Security": "DOM:1",
+    "DOM:Posture": "DOM:5",
+}
+
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
     "asset_types": "xdm.asset.type.name",
@@ -1126,7 +1131,7 @@ def get_cases_command(client, args):
 
     status_values = [CASE_STATUS[status] for status in argToList(args.get("status"))]
     severity_values = [CASE_SEVERITY[severity] for severity in argToList(args.get("severity"))]
-
+    tag_values = [CASE_TAGS.get(tag, tag) for tag in argToList(args.get("tag"))]
     filter_builder = FilterBuilder()
     filter_builder.add_time_range_field(CASE_FIELDS["creation_time"], gte_creation_time, lte_creation_time)
     filter_builder.add_time_range_field(CASE_FIELDS["last_updated"], gte_modification_time, lte_modification_time)
@@ -1142,13 +1147,16 @@ def get_cases_command(client, args):
     filter_builder.add_field(CASE_FIELDS["asset_ids"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_ids")))
     filter_builder.add_field(CASE_FIELDS["asset_groups"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_groups")))
     filter_builder.add_field(CASE_FIELDS["hosts"], FilterType.CASE_HOST_EQ, argToList(args.get("hosts")))
-    filter_builder.add_field(CASE_FIELDS["tags"], FilterType.ARRAY_CONTAINS, argToList(args.get("tags")))
+    filter_builder.add_field(CASE_FIELDS["tags"], FilterType.ARRAY_CONTAINS, tag_values)
     filter_builder.add_field_with_mappings(
-        determine_assignee_filter_field(args.get("assignee")), FilterType.CONTAINS, argToList(args.get("assignee")), {
+        determine_assignee_filter_field(args.get("assignee")),
+        FilterType.CONTAINS,
+        argToList(args.get("assignee")),
+        {
             "unassigned": FilterType.IS_EMPTY,
             "assigned": FilterType.NIS_EMPTY,
-        },)
-    
+        },
+    )
 
     request_data = build_webapp_request_data(
         table_name=CASES_TABLE,
