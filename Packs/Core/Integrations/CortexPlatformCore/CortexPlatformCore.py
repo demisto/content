@@ -35,6 +35,10 @@ APPSEC_SOURCES = [
     "CAS_CI_CD_RISK_SCANNER",
     "CAS_DRIFT_SCANNER",
 ]
+CLOUDSEC_SOURCES = [
+    "ATTACK_PATH",
+    "CSPM_SCANNER"
+]
 WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
     "core-search-asset-groups",
@@ -457,6 +461,14 @@ class Client(CoreClient):
             full_url=f"/api/webapp/public_api/appsec/v1/issues/fix/{issue_id}/fix_suggestion",
         )
         return reply
+    
+    def get_cloudsec_remediation(self, issue_id, asset_id):
+        self._http_request(
+            method="GET",
+            headers=self._headers,
+            full_url=f"/api/cloudsec/v1/issue/{issue_id}/remediation?asset_id={asset_id}",
+        )
+        return reply
 
     def create_policy(self, policy_payload: str) -> dict:
         """
@@ -504,6 +516,19 @@ def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
             }
         )
 
+    return recommendation
+
+def get_cloudsec_suggestion(client, issue, issue_id):
+    recommendation = {}
+    asset_ids = issue.get("asset_ids") 
+    if not asset_ids or (isinstance(asset_ids, list) and len(asset_ids) > 0 ):
+        return recommendation
+    
+    cloudsec_remediation = client.get_cloudsec_remediation(issue_id, asset_ids[0])
+    if isinstance(cloudsec_remediation, list) and len(cloudsec_remediation) > 0:
+        remediation = cloudsec_remediation[0].get("recommendation")
+        recommendation["remediation"] = remediation
+    
     return recommendation
 
 
@@ -635,62 +660,48 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         "issue_name",
         "severity",
         "description",
-        "remediation",
-        "playbook_suggestions",
-        "existing_code_block",
-        "suggested_code_block"
+        "remediation"
     ]
+    append_appsec_headers = False
+    append_playbook_suggestion_header = False
     all_recommendations = []
     
-     # Parallel processing of issues
-    max_workers = min(10, len(issue_data))  # avoid overloading backend
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(process_issue_recommendation, client, issue) for issue in issue_data]
-        for future in as_completed(futures):
-            recommendation = future.result()
-            all_recommendations.append(recommendation)
+    for issue in issue_data:
+        current_issue_id = issue.get("internal_id")
+        
+        # Get playbook suggestions
+        playbook_response = client.get_playbook_suggestion_by_issue(current_issue_id)
+        playbook_suggestions = playbook_response.get("reply", {})
+        demisto.debug(f"{playbook_response=}")
+        if playbook_suggestions:
+            append_playbook_suggestion_header = True
+
+        recommendation = {
+            "issue_id": current_issue_id,
+            "issue_name": issue.get("alert_name"),
+            "severity": issue.get("severity"),
+            "description": issue.get("alert_description"),
+            "remediation": issue.get("remediation"),
+            "playbook_suggestions": playbook_suggestions,
+        }
+
+        if issue.get("alert_source") in APPSEC_SOURCES:
+            appsec_recommendation = get_appsec_suggestion(client, issue, current_issue_id)
+            recommendation = recommendation.update(appsec_recommendation)
+            append_appsec_headers = True
+            
+        elif issue.get("alert_source") in CLOUDSEC_SOURCES:
+            cloudsec_recommendation = get_cloudsec_suggestion(client, issue, recommendation)
+            recommendation = recommendation.update(cloudsec_recommendation)
+            
+        all_recommendations.append(recommendation)
+
+    if append_appsec_headers:
+        headers.extend(["existing_code_block", "suggested_code_block"])
     
-    # for issue in issue_data:
-    #     current_issue_id = issue.get("internal_id")
-        
-    #     # Get playbook suggestions
-    #     playbook_response = client.get_playbook_suggestion_by_issue(current_issue_id)
-    #     playbook_suggestions = playbook_response.get("reply", {})
-    #     demisto.debug(f"{playbook_response=}")
-
-    #     recommendation = {
-    #         "issue_id": current_issue_id,
-    #         "issue_name": issue.get("alert_name"),
-    #         "severity": issue.get("severity"),
-    #         "description": issue.get("alert_description"),
-    #         "remediation": issue.get("remediation"),
-    #         "playbook_suggestions": playbook_suggestions,
-    #     }
-
-    #     headers = [
-    #         "issue_id",
-    #         "issue_name",
-    #         "severity",
-    #         "description",
-    #         "remediation",
-    #         "playbook_suggestions",
-    #         "existing_code_block",
-    #         "suggested_code_block"
-    #     ]
-
-    #     if issue.get("alert_source") in APPSEC_SOURCES:
-    #         headers, recommendation = get_appsec_suggestion(client, headers, issue, recommendation, current_issue_id)
-
-    #     issue_readable_output = tableToMarkdown(
-    #         f"Issue Recommendations for {current_issue_id}",
-    #         [recommendation],
-    #         headerTransform=string_to_table_header,
-    #         headers=headers,
-    #     )
-        
-    #     all_recommendations.append(recommendation)
-    #     all_readable_outputs.append(issue_readable_output)
-
+    if append_playbook_suggestion_header:
+        headers.append("playbook_suggestions")
+    
     # Combine all readable outputs
     issue_readable_output = tableToMarkdown(
         f"Issue Recommendations for {issue_ids}",
@@ -706,6 +717,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         outputs=all_recommendations,
         raw_response=response,
     )
+
 
 def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
     """
