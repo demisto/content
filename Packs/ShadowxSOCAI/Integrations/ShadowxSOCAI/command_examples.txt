@@ -1,0 +1,8 @@
+!shadowx-submit-task log="failed login from 1.1.1.1" ip_addr="192.168.1.100" user_name="svc-admin" policy_id="cf85454c-7374-4106-8995-62ca68f8e651" wait_seconds=10
+!shadowx-get-task task_id="f3f46d7e-4932-4b4a-9220-9fd9a6a4ad02"
+
+
+!shadowx-submit-task log="Multiple failed login attempts detected from 203.0.113.45 to server DC01" ip_addr="203.0.113.45" user_name="test-user"  wait_seconds=10
+
+
+!shadowx-submit-task log="Event ID: 10 Log Name: Microsoft-Windows-Sysmon/Operational Source: Microsoft-Windows-Sysmon Event Type: Process accessed Description: Process accessed UtcTime: 2024-02-07 12:34:56.789 ProcessGuid: {A98268C1-9C2E-5ACD-0000-0010396CAB00} 42077031150 69862403410 ProcessId: 4520 TargetProcessGuid: {A98268C1-9C2E-5ACD-0000-0010396CAB00} TargetProcessId: 488 GrantedAccess: 0x1F0FFF CallTrace: C:\\Windows\\SYSTEM32\\ntdll.dll+|C:\\Windows\\System32\\KERNELBASE.dll+|C:\\Tools\\kedi.exe+ SourceImage: C:\\Tools\\kedi.exe TargetImage: C:\\Windows\\system32\\lsass.exe" ip_addr="203.0.113.45" user_name="test-user" wait_seconds=90

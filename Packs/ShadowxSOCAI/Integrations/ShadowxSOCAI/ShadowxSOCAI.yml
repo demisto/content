@@ -4,49 +4,26 @@ commonfields:
 name: ShadowxSOCAI
 display: ShadowX SOCAI
 category: Analytics & SIEM
-description: ShadowX SOCAI filters sensitive data in security logs, analyzes them with GenAI (e.g. ChatGPT, Gemini, Claude), and returns enriched guidance such as AI response, recommendation, risk/result classification, and prediction score. Supports API Key (JSON /Api/ endpoints) and cookie (HTML) modes.
+description: Analyze security logs with ShadowX SOCAI and return AI-driven guidance and scores (API Key mode only).
 fromversion: 6.10.0
 
 configuration:
-# Base URL
 - display: Server URL (e.g., https://app.shadowx.ai)
   name: url
   type: 0
   required: true
 
-# API Key (Bearer) mode
-- displaypassword: API Key (recommended). If set, email/password are ignored.
+- displaypassword: API Key (service token)
   name: credentials_api
   type: 9
   hiddenusername: true
-  required: false
-
-- display: API Submission Path (optional)
-  name: api_submission_path
+  required: true
+  
+- display: Subject 
+  name: subject
   type: 0
-  required: false
-  defaultvalue: /Api/SecurityTasks/Create
-
-- display: API Check Path Format
-  name: api_check_path_format
-  type: 0
-  required: false
-  defaultvalue: /Api/SecurityTasks/Details?taskID={task_id}
-  additionalinfo: "Must include {task_id} (e.g., /Api/SecurityTasks/Details?taskID={task_id})"
-
-# Cookie (HTML) mode
-- display: User Email (cookie mode)
-  name: user_email
-  type: 0
-  required: false
-
-- displaypassword: User Password (cookie mode)
-  name: credentials_cookie
-  type: 9
-  hiddenusername: true
-  required: false
-
-# Optional defaults used in the submitted task payload
+  required: true
+  
 - display: AI Driver ID (GUID)
   name: ai_driver_id
   type: 0
@@ -68,7 +45,6 @@ configuration:
   required: false
   defaultvalue: XSOAR submit
 
-# Network settings
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -79,147 +55,123 @@ configuration:
   type: 8
   required: false
 
+
 script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.11.10.116949
-  script: '-'
-
   commands:
   - name: shadowx-submit-task
-    description: Submit a log to ShadowX SOCAI for analysis. Supports API Key (Bearer) mode or cookie (HTML) mode. In API Key mode, you can optionally poll until completion and get the parsed result back immediately.
+    description: Submit a security log to ShadowX SOCAI. Optional polling via wait_seconds.
     arguments:
     - name: log
       required: true
-      description: The log content to send for analysis.
+      description: Raw log / event text.
     - name: ip_addr
-      required: false
-      description: Optional IP address associated with the log.
-    - name: user_name
-      required: false
-      description: Optional username associated with the log (used as Subject in cookie mode).
+      description: Related IP address.
+    - name: subject
+      description: Subject for the task (e.g., username, asset, etc.).
     - name: policy_id
-      required: false
-      description: Policy ID to apply for analysis (overrides instance setting).
+      description: Overrides the instance's default policy ID for this task.
     - name: wait_seconds
-      required: false
-      description: Seconds to wait/poll for completion in API Key mode (0 = do not poll).
+      description: If > 0, poll until completion or timeout.
     - name: interval_seconds
-      required: false
-      description: Poll interval in seconds (API key mode). Default 30.
+      description: Poll interval (seconds). Default 30.
+    examples: |
+      !shadowx-submit-task log="failed login from 1.1.1.1" ip_addr="192.168.1.100" user_name="svc-admin" wait_seconds=10
+      !shadowx-submit-task log="Multiple failed login attempts detected..." ip_addr="203.0.113.45" user_name="test-user"  wait_seconds=10
     outputs:
-    - contextPath: ShadowxSOCAI.TaskSubmit
-      description: Response after task submission.
-      type: Unknown
     - contextPath: ShadowxSOCAI.TaskSubmit.TaskId
-      description: The created task id (if available).
-      type: String
+      type: string
+      description: Submitted task ID.
     - contextPath: ShadowxSOCAI.TaskSubmit.TaskURL
-      description: Direct link to the task in the ShadowX UI.
-      type: String
-    - contextPath: ShadowxSOCAI.TaskResult
-      description: Final task result if wait_seconds > 0 (API Key mode).
-      type: Unknown
+      type: string
+      description: Task URL in ShadowX.
     - contextPath: ShadowxSOCAI.TaskResult.TaskId
-      description: Task id.
-      type: String
-    - contextPath: ShadowxSOCAI.TaskResult.TaskURL
-      description: Direct link to the task in the ShadowX UI.
-      type: String
+      type: string
+      description: Task ID (when polled to completion).
     - contextPath: ShadowxSOCAI.TaskResult.TaskName
+      type: string
       description: Task name.
-      type: String
     - contextPath: ShadowxSOCAI.TaskResult.AssignedUserName
-      description: Assigned user name.
-      type: String
+      type: string
+      description: The username assigned to the task in ShadowX.
     - contextPath: ShadowxSOCAI.TaskResult.AIDriverName
-      description: AI driver name.
-      type: String
+      type: string
+      description: The name of the AI driver used for analysis.
     - contextPath: ShadowxSOCAI.TaskResult.PolicyName
-      description: Policy name.
-      type: String
+      type: string
+      description: Name of the policy applied.
     - contextPath: ShadowxSOCAI.TaskResult.Subject
-      description: Task subject.
-      type: String
+      type: string
+      description: The subject of the task.
     - contextPath: ShadowxSOCAI.TaskResult.SecurityLog
-      description: Original security log.
-      type: String
+      type: string
+      description: The original security log submitted.
     - contextPath: ShadowxSOCAI.TaskResult.SanitizedLog
-      description: Sanitized log.
-      type: String
+      type: string
+      description: The log after sanitization.
     - contextPath: ShadowxSOCAI.TaskResult.Response
-      description: AI response.
-      type: String
+      type: string
+      description: The full AI-generated response.
     - contextPath: ShadowxSOCAI.TaskResult.Recommendation
-      description: AI recommendation.
-      type: String
+      type: string
+      description: The AI-generated recommendation.
     - contextPath: ShadowxSOCAI.TaskResult.Status
-      description: Task status.
-      type: String
+      type: string
+      description: The final status of the task (e.g., Completed).
     - contextPath: ShadowxSOCAI.TaskResult.RiskSeverity
-      description: Risk / result classification.
-      type: String
+      type: string
+      description: The calculated risk severity (e.g., High).
     - contextPath: ShadowxSOCAI.TaskResult.PredictionScore
-      description: Prediction score.
-      type: String
+      type: number
+      description: The numeric prediction score.
 
   - name: shadowx-get-task
-    description: Get task details by Task ID (API Key mode). Parses the result and (if running inside an incident) updates incident custom fields.
+    description: Fetch task details by ID (API Key mode).
     arguments:
     - name: task_id
       required: true
-      description: Task GUID.
+      description: Task GUID returned by shadowx-submit-task.
+    examples: |
+      !shadowx-get-task task_id="f3f46d7e-4932-4b4a-9220-9fd9a6a4ad02"
     outputs:
-    - contextPath: ShadowxSOCAI.TaskResult
-      description: Task details (parsed).
-      type: Unknown
     - contextPath: ShadowxSOCAI.TaskResult.TaskId
-      description: Task id.
-      type: String
-    - contextPath: ShadowxSOCAI.TaskResult.TaskURL
-      description: Direct link to the task in the UI.
-      type: String
+      type: string
+      description: The unique ID of the task.
     - contextPath: ShadowxSOCAI.TaskResult.TaskName
-      description: Task name.
-      type: String
+      type: string
+      description: The name of the task.
     - contextPath: ShadowxSOCAI.TaskResult.AssignedUserName
-      description: Assigned user name.
-      type: String
+      type: string
+      description: The username assigned to the task in ShadowX.
     - contextPath: ShadowxSOCAI.TaskResult.AIDriverName
-      description: AI driver name.
-      type: String
+      type: string
+      description: The name of the AI driver used for analysis.
     - contextPath: ShadowxSOCAI.TaskResult.PolicyName
-      description: Policy name.
-      type: String
+      type: string
+      description: Name of the policy applied.
     - contextPath: ShadowxSOCAI.TaskResult.Subject
-      description: Task subject.
-      type: String
+      type: string
+      description: The subject of the task.
     - contextPath: ShadowxSOCAI.TaskResult.SecurityLog
-      description: Original security log.
-      type: String
+      type: string
+      description: The original security log submitted.
     - contextPath: ShadowxSOCAI.TaskResult.SanitizedLog
-      description: Sanitized log.
-      type: String
+      type: string
+      description: The log after sanitization.
     - contextPath: ShadowxSOCAI.TaskResult.Response
-      description: AI response.
-      type: String
+      type: string
+      description: The full AI-generated response.
     - contextPath: ShadowxSOCAI.TaskResult.Recommendation
-      description: AI recommendation.
-      type: String
+      type: string
+      description: The AI-generated recommendation.
     - contextPath: ShadowxSOCAI.TaskResult.Status
-      description: Task status.
-      type: String
+      type: string
+      description: The final status of the task (e.g., Completed).
     - contextPath: ShadowxSOCAI.TaskResult.RiskSeverity
-      description: Risk / result classification.
-      type: String
+      type: string
+      description: The calculated risk severity (e.g., High).
     - contextPath: ShadowxSOCAI.TaskResult.PredictionScore
-      description: Prediction score.
-      type: String
-
-  - name: shadowx-help
-    description: Show usage instructions for ShadowX SOCAI.
-    arguments: []
-    outputs: []
-
-tests:
-- No tests (auto formatted)
+      type: number
+      description: The numeric prediction score.
