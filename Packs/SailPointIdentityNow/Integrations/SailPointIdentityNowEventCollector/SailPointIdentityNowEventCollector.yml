@@ -16,7 +16,7 @@ configuration:
   type: 9
   required: true
   displaypassword: Client Secret
-  section: Collect
+  section: Connect
 - defaultvalue: 50000
   section: Collect
   display: Max number of events per fetch

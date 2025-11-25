@@ -78,7 +78,7 @@ configuration:
   name: selected_event_types
   type: 16
   section: Collect
-  required: true
+  required: false
   options:
   - Audit Logs
   - Activity Logs

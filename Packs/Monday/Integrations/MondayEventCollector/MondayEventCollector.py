@@ -1115,8 +1115,9 @@ def fetch_events() -> tuple[dict, list]:
     last_run_audit_logs = last_run.get(AUDIT_LOGS_TYPE, {})
     last_run_activity_logs = last_run.get(ACTIVITY_LOGS_TYPE, {})
 
-    selected_event_types = params.get("selected_event_types", "")
-    demisto.debug(f"{DEBUG_PREFIX}Selected event types: {selected_event_types}")
+    selected_event_types = params.get("selected_event_types", "") or "Audit Logs,Activity Logs"
+    demisto.debug(f"{DEBUG_PREFIX}Selected event types: {selected_event_types} "
+                 f"({'configured' if params.get('selected_event_types') else 'default'})")
 
     if AUDIT_LOGS_TYPE in selected_event_types:
         demisto.debug(f"{DEBUG_PREFIX}Start fetch Audit Logs, Current Audit Logs last_run object:\n{last_run_audit_logs}")

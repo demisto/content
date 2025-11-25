@@ -384,9 +384,19 @@ def main() -> None:
     client_secret: str = params.get("credentials", {}).get("password", "")
     base_url: str = params.get("url", "").rstrip("/")
     verify_certificate = not params.get("insecure", False)
+    event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["File"]))
+    
+    # Get fetch limits with defaults
     max_fetch_file_events = arg_to_number(params.get("max_file_events_per_fetch")) or DEFAULT_FILE_EVENTS_MAX_FETCH
     max_fetch_audit_events = arg_to_number(params.get("max_audit_events_per_fetch")) or DEFAULT_AUDIT_EVENTS_MAX_FETCH
-    event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["File"]))
+    
+    # Log configuration
+    if "File" in event_types_to_fetch:
+        demisto.debug(f"max_file_events_per_fetch: {max_fetch_file_events} "
+                     f"({'configured' if params.get('max_file_events_per_fetch') else 'default'})")
+    if "Audit" in event_types_to_fetch:
+        demisto.debug(f"max_audit_events_per_fetch: {max_fetch_audit_events} "
+                     f"({'configured' if params.get('max_audit_events_per_fetch') else 'default'})")
     command = demisto.command()
     demisto.info(f"Command being called is {command}")
     try:
