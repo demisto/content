@@ -1409,3 +1409,129 @@ def test_fetch_incidents_not_fetching_held_messages(mocker):
             }
         ]
     )
+
+
+def test_get_message_body_content_request_with_mailbox(mocker):
+    """
+    Test case for get_message_body_content_request with mailbox parameter.
+
+    Given:
+        - message_id, message_context set to 'DELIVERED', message_type, and mailbox parameter.
+
+    When:
+        - get_message_body_content_request is called.
+
+    Then:
+        - Ensure the mailbox is included in the request payload.
+        - Ensure the API request is made with the correct data.
+    """
+    message_id = "test_message_id"
+    message_context = "DELIVERED"
+    message_type = "html"
+    mailbox = "user@example.com"
+
+    mock_response = type('obj', (object,), {'content': b'test content'})()
+    http_request_mock = mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+
+    result = MimecastV2.get_message_body_content_request(message_id, message_context, message_type, mailbox=mailbox)
+
+    # Verify the API was called with the correct data
+    call_args = http_request_mock.call_args
+    assert call_args[0][0] == "POST"
+    assert call_args[0][1] == "/api/archive/get-message-part"
+    payload = call_args[0][2]
+    assert payload["data"][0]["id"] == message_id
+    assert payload["data"][0]["context"] == message_context
+    assert payload["data"][0]["type"] == message_type
+    assert payload["data"][0]["mailbox"] == mailbox
+    assert result == b'test content'
+
+
+def test_get_message_body_content_request_without_mailbox_delivered():
+    """
+    Test case for get_message_body_content_request without mailbox when context is DELIVERED.
+
+    Given:
+        - message_id, message_type, and message_context set to 'DELIVERED', but no mailbox parameter.
+
+    When:
+        - get_message_body_content_request is called.
+
+    Then:
+        - Ensure a ValueError is raised with the appropriate error message.
+    """
+    message_id = "test_message_id"
+    message_context = "DELIVERED"
+    message_type = "html"
+
+    with pytest.raises(ValueError, match="The 'mailbox' parameter is required when context is set to 'DELIVERED'"):
+        MimecastV2.get_message_body_content_request(message_id, message_context, message_type)
+
+
+def test_get_message_body_content_request_without_mailbox_received(mocker):
+    """
+    Test case for get_message_body_content_request without mailbox when context is RECEIVED.
+
+    Given:
+        - message_id, message_type, and message_context set to 'RECEIVED', no mailbox parameter.
+
+    When:
+        - get_message_body_content_request is called.
+
+    Then:
+        - Ensure the request is made successfully without requiring mailbox.
+        - Ensure mailbox is not included in the request payload.
+    """
+    message_id = "test_message_id"
+    message_context = "RECEIVED"
+    message_type = "html"
+
+    mock_response = type('obj', (object,), {'content': b'test content'})()
+    http_request_mock = mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
+
+    result = MimecastV2.get_message_body_content_request(message_id, message_context, message_type)
+
+    # Verify the API was called with the correct data
+    call_args = http_request_mock.call_args
+    assert call_args[0][0] == "POST"
+    assert call_args[0][1] == "/api/archive/get-message-part"
+    payload = call_args[0][2]
+    assert payload["data"][0]["id"] == message_id
+    assert payload["data"][0]["context"] == message_context
+    assert payload["data"][0]["type"] == message_type
+    assert "mailbox" not in payload["data"][0]
+    assert result == b'test content'
+
+
+def test_get_message_command_with_mailbox(mocker):
+    """
+    Test case for get_message command with mailbox parameter.
+
+    Given:
+        - messageID, type, context set to 'DELIVERED', and mailbox in args.
+
+    When:
+        - get_message command is called.
+
+    Then:
+        - Ensure the mailbox parameter is passed to get_message_body_content_request.
+    """
+    args = {
+        "messageID": "test_message_id",
+        "context": "DELIVERED",
+        "type": "html",
+        "part": "message",
+        "mailbox": "user@example.com"
+    }
+
+    mock_content = b'test content'
+    get_message_body_mock = mocker.patch.object(
+        MimecastV2, "get_message_body_content_request", return_value=mock_content
+    )
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch("MimecastV2.fileResult", return_value={"Type": 1, "File": "test"})
+
+    MimecastV2.get_message()
+
+    # Verify get_message_body_content_request was called with mailbox
+    get_message_body_mock.assert_called_once_with("test_message_id", "DELIVERED", "html", "user@example.com")
