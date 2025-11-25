@@ -1,11 +1,11 @@
 args:
-- description: entryID for telemetry log
+- description: entryID for telemetry log.
   name: entryID
-comment: Read Telemtry log
+comment: Read Telemtry log.
 commonfields:
   id: HealthCheckReadTemeletryLog
   version: -1
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.5490952
 enabled: true
 name: HealthCheckReadTemeletryLog
 runas: DBotWeakRole
@@ -17,3 +17,4 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+toversion: 7.99.99
