@@ -1807,14 +1807,14 @@ def get_detection_entities(incidents_ids: list):
     """
     combined_resources = []
 
-    url = f"/alerts/entities/alerts/v2"
+    url = "/alerts/entities/alerts/v2"
 
     for i in range(0, len(incidents_ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
         batch_ids = incidents_ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
 
         ids_json = {"composite_ids": batch_ids}
         demisto.debug(f"In get_detection_entities: Getting detection entities from\
-            {url_endpoint_version} with {ids_json=} and with batch_ids len {len(batch_ids)}.")
+            {url} with {ids_json=} and with batch_ids len {len(batch_ids)}.")
 
         # Make the API call with the current batch.
         raw_res = http_request("POST", url, data=json.dumps(ids_json))
