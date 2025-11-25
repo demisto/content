@@ -93,7 +93,7 @@ RES_EXAMPLE = {
             "Parameters": [{"Name": "Name", "Value": "Value"}],
         },
     ],
-    "ContinuationToken": "W3sidG9rZW4iOiIrUklEOn5ETFZkQU9QMGprZFk4Q1lBQUFBQUFBPT0jUlQ6MSNUUkM6NSNSVEQ6Zms2aVNVYWlBVWNSZmFPNTJnWTdCVE14TXpZdU1qSXVNakZWTVRvN01URTdOamd2T2pZMk9EUTZPbHNBI0lTVjoyI0lFTzo2NTU2NyNRQ0Y6OCIsInJhbmdlIjp7Im1pbiI6IiIsIm1heCI6IkZGIn19XQ==",
+    "ContinuationToken": "ContinuationToken",
     "TotalItems": 4,
 }
 
