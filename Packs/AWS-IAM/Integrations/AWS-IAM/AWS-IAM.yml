@@ -1280,7 +1280,7 @@ script:
     description: Create/update password policy.
     execution: true
     name: aws-iam-update-account-password-policy
-  - name: aws-iam-update-account-password-policy-quick-action
+  - name: aws-iam-account-password-policy-update-quick-action
     description: Updates the password policy to require a minimum length of 14 characters, at least one lowercase letter, one uppercase letter, one symbol. Allows users to reset password, disallow reuse of the last 24 passwords and set password expiration to 90 days. It runs the aws-iam-update-account-password-policy CLI command in your AWS environment and requires the 'iam:UpdateAccountPasswordPolicy' permission.
     prettyname: Apply IAM Password Policy
     hidden: true
