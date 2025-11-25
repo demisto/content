@@ -1977,7 +1977,8 @@ script:
         - description: A comma-separated list of hosts to filter cases by.
           isArray: true
           name: hosts
-        - description: A comma-separated list of assignee names or emails to filter cases by.
+        - description: |-
+            A comma-separated list of assignee names or emails to filter cases by. Use the special values: "assigned" - to get all cases with assignees, "unassigned" - to get cases with no assignees.
           name: assignee
         - auto: PREDEFINED
           description: Filter cases by whether they are starred or not.
@@ -2009,6 +2010,8 @@ script:
           predefined:
             - 'true'
             - 'false'
+        - description: A comma-separated list of tags to filter cases by.
+          name: tags
       name: core-get-cases
       description: Get case information based on the specified filters.
       outputs:

@@ -13,7 +13,6 @@ INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
-MAX_GET_CASES_LIMIT = 100
 
 CASE_FIELDS = {
     "case_id_list": "CASE_ID",
@@ -32,6 +31,7 @@ CASE_FIELDS = {
     "last_updated": "LAST_UPDATE_TIME",
     "hosts": "HOSTS",
     "starred": "CASE_STARRED",
+    "tags": "CURRENT_TAGS",
 }
 
 CASE_SEVERITY = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
@@ -1106,10 +1106,10 @@ def get_cases_command(client, args):
         List of mapped case objects containing case details and metadata.
     """
     page = arg_to_number(args.get("page")) or 0
-    limit = arg_to_number(args.get("limit")) or MAX_GET_CASES_LIMIT
+    limit = arg_to_number(args.get("limit")) or MAX_GET_INCIDENTS_LIMIT
 
-    limit = page * MAX_GET_CASES_LIMIT + limit
-    page = page * MAX_GET_CASES_LIMIT
+    limit = page * MAX_GET_INCIDENTS_LIMIT + limit
+    page = page * MAX_GET_INCIDENTS_LIMIT
 
     sort_by_modification_time = args.get("sort_by_modification_time")
     sort_by_creation_time = args.get("sort_by_creation_time")
@@ -1142,9 +1142,13 @@ def get_cases_command(client, args):
     filter_builder.add_field(CASE_FIELDS["asset_ids"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_ids")))
     filter_builder.add_field(CASE_FIELDS["asset_groups"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_groups")))
     filter_builder.add_field(CASE_FIELDS["hosts"], FilterType.CASE_HOST_EQ, argToList(args.get("hosts")))
-    filter_builder.add_field(
-        determine_assignee_filter_field(args.get("assignee")), FilterType.CONTAINS, argToList(args.get("assignee"))
-    )
+    filter_builder.add_field(CASE_FIELDS["tags"], FilterType.ARRAY_CONTAINS, argToList(args.get("tags")))
+    filter_builder.add_field_with_mappings(
+        determine_assignee_filter_field(args.get("assignee")), FilterType.CONTAINS, argToList(args.get("assignee")), {
+            "unassigned": FilterType.IS_EMPTY,
+            "assigned": FilterType.NIS_EMPTY,
+        },)
+    
 
     request_data = build_webapp_request_data(
         table_name=CASES_TABLE,
