@@ -6823,4 +6823,3 @@ def test_handle_port_range_with_port_range_single_dash():
     args = {"port": "80-80"}
     result = handle_port_range(args)
     assert result == (80, 80)
-
