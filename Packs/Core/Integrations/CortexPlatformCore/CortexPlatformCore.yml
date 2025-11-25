@@ -2269,7 +2269,7 @@ script:
           description: The backlog status of the issue.
           type: String
     - name: core-update-case
-      description: Updates the properties of a case.
+      description: Updates the properties of a case. This command does not provide an explicit indication of success.
       arguments:
         - name: case_id
           description: The ID of the case to update.
@@ -2335,7 +2335,85 @@ script:
         - name: custom_fields
           description: Custom fields for the case.
           type: String
-
+      outputs:
+        - contextPath: Core.Case.modifiedBy
+          description: User who last modified the case.
+          type: String
+        - contextPath: Core.Case.notes
+          description: Notes associated with the case.
+          type: String
+        - contextPath: Core.Case.userSeverity
+          description: User-defined severity for the case.
+          type: String
+        - contextPath: Core.Case.name.isUser
+          description: Whether the case name is user-defined.
+          type: Boolean
+        - contextPath: Core.Case.name.value
+          description: The name of the case.
+          type: String
+        - contextPath: Core.Case.creationTime
+          description: The creation time of the case in milliseconds.
+          type: Number
+        - contextPath: Core.Case.lastUpdateTime
+          description: The last update time of the case in milliseconds.
+          type: Number
+        - contextPath: Core.Case.topCounters.HOSTS
+          description: Number of hosts in the case.
+          type: Number
+        - contextPath: Core.Case.topCounters.MAL_ARTIFACTS
+          description: Number of malicious artifacts in the case.
+          type: Number
+        - contextPath: Core.Case.topCounters.USERS
+          description: Number of users in the case.
+          type: Number
+        - contextPath: Core.Case.assigned.mail
+          description: Email address of the assigned user.
+          type: String
+        - contextPath: Core.Case.assigned.pretty
+          description: Display name of the assigned user.
+          type: String
+        - contextPath: Core.Case.internalStatus
+          description: Internal status of the case.
+          type: String
+        - contextPath: Core.Case.status.resolveComment
+          description: Comment when resolving the case.
+          type: String
+        - contextPath: Core.Case.status.resolve_reason
+          description: Reason for resolving the case.
+          type: String
+        - contextPath: Core.Case.status.value
+          description: Status value of the case.
+          type: String
+        - contextPath: Core.Case.severityCounters.SEV_020_LOW
+          description: Number of low severity alerts in the case.
+          type: Number
+        - contextPath: Core.Case.severityCounters.SEV_030_MEDIUM
+          description: Number of medium severity alerts in the case.
+          type: Number
+        - contextPath: Core.Case.severityCounters.SEV_040_HIGH
+          description: Number of high severity alerts in the case.
+          type: Number
+        - contextPath: Core.Case.severityCounters.SEV_050_CRITICAL
+          description: Number of critical severity alerts in the case.
+          type: Number
+        - contextPath: Core.Case.caseDomain
+          description: Domain of the case.
+          type: String
+        - contextPath: Core.Case.groupingStatus.pretty
+          description: Pretty display of grouping status.
+          type: String
+        - contextPath: Core.Case.groupingStatus.raw
+          description: Raw grouping status value.
+          type: String
+        - contextPath: Core.Case.groupingStatus.reason
+          description: Reason for the grouping status.
+          type: String
+        - contextPath: Core.Case.tags.tag_id
+          description: Tag ID associated with the case.
+          type: String
+        - contextPath: Core.Case.tags.tag_name
+          description: Tag name associated with the case.
+          type: String
 
 
   runonce: false

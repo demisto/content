@@ -1894,7 +1894,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     custom_fields = args.get("custom_fields", "")
     
     if resolve_reason or resolve_all_alerts or resolved_comment and not status == "resolved":
-        raise ValueError("In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the status must be set to 'resolved'")
+        raise ValueError("In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to 'resolved'")
         
     # Build request_data with mapped and filtered values
     request_data = {"request_data": {
@@ -1942,9 +1942,16 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     
     response = client.update_case(request_data)
     reply = response.get("reply", {})
-    
+    reply.pop("layoutId", None)
+    reply.pop("layoutRuleName", None)
+    reply.pop("sourcesList", None)
+    reply.pop("score", {}).pop("previous_score_source", None)
+    reply.pop("score", {}).pop("previous_score", None)
+    if "incidentDomain" in reply:
+        reply["caseDomain"] = reply.pop("incidentDomain")
+
     return CommandResults(
-        readable_output=f"Case {case_id} successfully updated.",
+        readable_output=tableToMarkdown("Case", reply, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
         outputs_key_field="case_id",
         outputs=reply,
