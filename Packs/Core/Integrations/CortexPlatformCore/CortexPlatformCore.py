@@ -643,8 +643,11 @@ class Client(CoreClient):
             url_suffix="/public_api/appsec/v1/policies",
         )
         
-    def update_case(self, request_data):
-        return self._http_request(
+    def update_case(self, request_data, case_ids):
+        results = []
+        for case_id in case_ids:
+            request_data['request_data']['case_id'] = case_id
+            results.append(self._http_request(
             method="POST",
             url_suffix="/case/set_data",
             headers={
@@ -652,7 +655,7 @@ class Client(CoreClient):
                 "Content-Type": "application/json",
             },
             json_data=request_data,
-        )
+        ))
 
 
 def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommendation: dict, issue_id: str) -> tuple[list, dict]:
@@ -1880,7 +1883,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     """
     Updates a case with new information based on provided arguments.
     """
-    case_id = args.get("case_id")
+    case_ids = argToList(args.get("case_id"))
     case_name = args.get("case_name", "")
     description = args.get("description", "")
     assignee = args.get("assignee", "")
@@ -1899,7 +1902,6 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     # Build request_data with mapped and filtered values
     request_data = {"request_data": {
         "newIncidentInterface": True,
-        "case_id": case_id,
         **{
             "caseName": case_name if case_name else None,
         },
@@ -1939,22 +1941,25 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     }
     }
     
-    
-    response = client.update_case(request_data)
-    reply = response.get("reply", {})
-    reply.pop("layoutId", None)
-    reply.pop("layoutRuleName", None)
-    reply.pop("sourcesList", None)
-    reply.pop("score", {}).pop("previous_score_source", None)
-    reply.pop("score", {}).pop("previous_score", None)
-    if "incidentDomain" in reply:
-        reply["caseDomain"] = reply.pop("incidentDomain")
+    response = client.update_case(request_data, case_ids)
 
+    replies = []
+    for resp in response:
+        reply = resp.get("reply", {})
+        reply.pop("layoutId", None)
+        reply.pop("layoutRuleName", None)
+        reply.pop("sourcesList", None)
+        reply.pop("score", {}).pop("previous_score_source", None)
+        reply.pop("score", {}).pop("previous_score", None)
+        if "incidentDomain" in reply:
+            reply["caseDomain"] = reply.pop("incidentDomain")
+        replies.append(reply)
+    
     return CommandResults(
-        readable_output=tableToMarkdown("Case", reply, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
         outputs_key_field="case_id",
-        outputs=reply,
+        outputs=replies,
         raw_response=response)
             
 

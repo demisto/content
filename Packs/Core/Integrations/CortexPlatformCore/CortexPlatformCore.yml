@@ -2272,8 +2272,9 @@ script:
       description: Updates the properties of a case. This command does not provide an explicit indication of success.
       arguments:
         - name: case_id
-          description: The ID of the case to update.
+          description: A comma-separated list of case IDs to update.
           required: true
+          isArray: true
           type: String
         - name: case_name
           description: The new name for the case.
