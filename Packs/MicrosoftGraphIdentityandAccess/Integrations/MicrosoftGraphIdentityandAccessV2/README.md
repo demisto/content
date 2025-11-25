@@ -510,8 +510,7 @@ Retrieve the properties of a collection of riskDetection objects.
 | MSGraph.identityProtection.risks.ipAddress | string | Provides the IP address of the client from where the risk occurred. |
 | MSGraph.identityProtection.risks.location.city | string | City of the sign-in. |
 | MSGraph.identityProtection.risks.location.countryOrRegion | string | Country or region of the sign-in. |
-| MSGraph.identityProtection.risks.location.geoCoordinates.latitude | string | Latitude of the sign-in. |
-| MSGraph.identityProtection.risks.location.geoCoordinates.longitude | string | Longitude of the sign-in. |
+| MSGraph.identityProtection.risks.location.geoCoordinates | object | GPS coordinates of the sign-in. |
 | MSGraph.identityProtection.risks.location.state | string | State of the sign-in. |
 | MSGraph.identityProtection.risks.activityDateTime | string | Date and time that the risky activity occurred. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. |
 | MSGraph.identityProtection.risks.detectedDateTime | string | Date and time that the risk was detected. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. |
