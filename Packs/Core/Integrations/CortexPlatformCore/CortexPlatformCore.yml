@@ -2269,7 +2269,6 @@ script:
           description: The backlog status of the issue.
           type: String
     - name: core-run-playbook
-      isInternal: true
       description: Run a playbook with specified playbook ID and issue IDs.
       arguments:
         - name: playbook_id

@@ -603,7 +603,7 @@ class Client(CoreClient):
         """
         return self._http_request(
             method="POST",
-            full_url="/inv-playbook/new",
+            url_suffix="/inv-playbook/new",
             headers={
                 **self._headers,
                 "Content-Type": "application/json",
@@ -1855,7 +1855,6 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
         # Empty response indicates success for all issues
         return CommandResults(
             readable_output=f"Playbook '{playbook_id}' executed successfully for all issue IDs: {', '.join(issue_ids)}",
-            raw_response=response,
         )
 
     # Non-empty response contains error messages for specific issue IDs
@@ -1865,11 +1864,6 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
         error_messages.append(f"Issue ID {issue_id}: {error_message}")
 
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
-
-    # return CommandResults(
-    #         readable_output = f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages),
-    #         raw_response=response
-    #     )
 
 
 def main():  # pragma: no cover
