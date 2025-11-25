@@ -856,7 +856,7 @@ script:
       name: account_name
       required: true
     description: Block public access to a container.
-    name: azure-storage-container-block-public-access
+    name: azure-storage-container-public-access-block
 
   - arguments:
     - name: name
