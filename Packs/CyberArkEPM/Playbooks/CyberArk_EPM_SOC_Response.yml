@@ -52,6 +52,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Checks the severity of the incident and activates the appropriate risk plan.
     nexttasks:
       High Risk Plan:
       - "3"
