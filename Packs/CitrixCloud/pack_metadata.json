@@ -1,6 +1,6 @@
 {
     "name": "Citrix cloud",
-    "description": "Integration for Citrix cloud.",
+    "description": "Integrations for Citrix cloud.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
