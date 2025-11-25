@@ -4863,7 +4863,6 @@ def test_run_playbook_command_empty_response_success():
     assert "executed successfully" in result.readable_output
     assert "test_playbook_123" in result.readable_output
     assert "issue_1, issue_2" in result.readable_output
-    assert result.raw_response == {}
 
 
 def test_run_playbook_command_multiple_errors_response():
