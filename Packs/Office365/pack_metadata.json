@@ -7,18 +7,26 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM"
+        "Analytics & SIEM",
+        "Cloud Services",
+        "Cloud Security"
     ],
     "tags": [
         "Network",
-        "Security"
+        "Security",
+        "Email",
+        "Compliance"
     ],
     "useCases": [
-        "Network Security"
+        "Network Security",
+        "Compliance"
     ],
     "keywords": [
         "office",
-        "365"
+        "365",
+        "Audit",
+        "msft",
+        "ms"
     ],
     "dependencies": {
         "CloudIncidentResponse": {

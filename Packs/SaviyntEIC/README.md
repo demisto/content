@@ -14,7 +14,7 @@ It manages and secures all user and non-human access across hybrid IT environmen
 * Data modeling rules to normalize Saviynt Enterprise Identity Cloud logs that are ingested via _SaviyntEICEventCollector_ integration to Cortex XSIAM.
 * Querying ingested logs in XQL Search using the _saviynt_eic_raw_ dataset.
 
-## Supported Log Categoty
+## Supported Log Category
 
 * Audit
 
