@@ -1,0 +1,215 @@
+id: Doppel Screenshot Preview
+version: -1
+name: Doppel Screenshot Preview
+description: Previews the Doppel Screenshot URL to an actual image in the Incident War Room
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e519b1ba-2c26-4296-8204-7e849fb4a4d3
+    type: start
+    task:
+      id: e519b1ba-2c26-4296-8204-7e849fb4a4d3
+      version: -1
+      name: ""
+      description: Start Playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f9bab09f-a5e5-44a2-81cd-cc10c71b8a9f
+    type: condition
+    task:
+      id: f9bab09f-a5e5-44a2-81cd-cc10c71b8a9f
+      version: -1
+      name: Check if Screenshot URL is present
+      description: Check whether if screenshot url is present in the Doppel Alert
+      type: condition
+      iscommand: false
+      brand: Rasterize
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.screenshot_url
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d2b2432b-58ca-4689-8e63-9842cb56b207
+    type: regular
+    task:
+      id: d2b2432b-58ca-4689-8e63-9842cb56b207
+      version: -1
+      name: Preview URL
+      description: Previews the Doppel Screenshot URL to an actual image in the Incident
+        War Room
+      script: '|||rasterize'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      url:
+        simple: ${inputs.screenshot_url}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 51e056ae-acd8-4794-bef2-188d959770a8
+    type: title
+    task:
+      id: 51e056ae-acd8-4794-bef2-188d959770a8
+      version: -1
+      name: Done
+      description: No URL is present in the Doppel Alert
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    defaultassigneecomplex: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 586fea0a-5698-4260-968a-c9c38b4afaf9
+    type: condition
+    task:
+      id: 586fea0a-5698-4260-968a-c9c38b4afaf9
+      version: -1
+      name: Is Doppel Instance enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: Doppel
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_yes": 0.46
+    },
+    "paper": {
+      "dimensions": {
+        "height": 890,
+        "width": 840,
+        "x": 180,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: screenshot_url
+  value:
+    simple: ${incident.doppelscreenshoturl}
+  required: false
+  description: ""
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - screenshot_url
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+quiet: true
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
