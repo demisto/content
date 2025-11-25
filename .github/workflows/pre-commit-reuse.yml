@@ -15,7 +15,7 @@ jobs:
       uses: Gr1N/setup-poetry@v9
 
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
