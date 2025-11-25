@@ -461,27 +461,29 @@ def get_error_enhanced(entry: dict) -> str:
 def run_command(
     user_id: str,
     results_for_verbose: list[CommandResults],
-    clear_session_results: list[tuple[str, str, str]],
     brand: str,
     user_name: Optional[str] = None,
-):
+) -> tuple[str, str, str]:
     clear_user_sessions_command = Command(
         name=COMMANDS_BY_BRAND[brand],
         args={ARG_NAME_BY_BRAND[brand]: user_id},
         brand=brand,
     )
-    if clear_user_sessions_command.is_valid_args():
-        readable_outputs, _, error_message = clear_user_sessions(clear_user_sessions_command)
-        results_for_verbose.extend(readable_outputs)
-        if not error_message:
-            clear_session_results.append((brand, "Success", f"User session was cleared for {user_name or user_id}"))
-        else:
-            failed_message = f"{brand}: {error_message.lstrip('#').strip()}"
-            demisto.debug(
-                f"Failed to clear sessions for {brand} user with ID {user_id}. "
-                f"Error message: {error_message}. Response details: {readable_outputs}."
-            )
-            clear_session_results.append((brand, "Failed", failed_message))
+    if not clear_user_sessions_command.is_valid_args():
+        return brand, "Failed", "Missing arguments"
+    readable_outputs, _, error_message = clear_user_sessions(clear_user_sessions_command)
+    results_for_verbose.extend(readable_outputs)
+
+    if not error_message:
+        return brand, "Success", f"User session was cleared for {user_name or user_id}"
+
+    failed_message = f"{brand}: {error_message.lstrip('#').strip()}"
+    demisto.debug(
+        f"Failed to clear sessions for {brand} user with ID {user_id}. "
+        f"Error message: {error_message}. Response details: {readable_outputs}."
+    )
+    return brand, "Failed", failed_message
+
 
 
 """ MAIN FUNCTION """
@@ -498,71 +500,74 @@ def main():
         results_for_verbose: list[CommandResults] = []
         filtered_users_names, outputs = remove_system_user(users_names, brands)
 
-        for user_id in user_ids_arg:
-            clear_session_results: list[tuple[str, str, str]] = []
-            for brand in brands:
-                run_command(user_id, results_for_verbose, clear_session_results, brand)
-            for brand, result, message in clear_session_results:
-                user_output = {"Message": message, "Result": result, "Brand": brand, "UserId": user_id, "UserName": ""}
-                outputs.append(user_output)
-
-        command_results_list: list[CommandResults] = []
-
-        # get ID for users
-        get_user_data_command = Command(
-            name="get-user-data",
-            args={"user_name": filtered_users_names, "brands": brands},
-        )
-
+        # Step 1: Get user IDs for usernames if any usernames provided
+        users_ids = {}
         if filtered_users_names:
+            get_user_data_command = Command(
+                name="get-user-data",
+                args={"user_name": filtered_users_names, "brands": brands},
+            )
             readable_outputs, users_ids = get_user_data(get_user_data_command)
             results_for_verbose.extend(readable_outputs)
-        else:
-            users_ids = {}
-            demisto.debug(f"{filtered_users_names=} -> {users_ids=}")
 
+        demisto.debug(f"{filtered_users_names=} -> {users_ids=}")
+
+        # Step 2: Create mapping of (user_id, brand) -> username
+        # This handles cases where same user_id exists across brands with different usernames
+        user_id_brand_to_username = {}
+        processed_user_ids = set()
+
+        # Add user_ids provided directly (no username, applies to all brands)
+        for user_id in user_ids_arg:
+            processed_user_ids.add(user_id)
+            for brand in brands:
+                user_id_brand_to_username[(user_id, brand)] = ""
+
+        # Add user_ids from translated usernames
         for user_name in filtered_users_names:
-            #################################
-            ### Running for a single user ###
-            #################################
-            okta_v2_id = get_user_id(users_ids, OKTA_BRAND, user_name)
-            microsoft_graph_id = get_user_id(users_ids, MS_GRAPH_BRAND, user_name)
-            gsuite_id = get_user_id(users_ids, GSUITE_BRAND, user_name)
+            for brand in brands:
+                user_id = get_user_id(users_ids, brand, user_name)
+                if user_id:
+                    # Only add if this (user_id, brand) combination hasn't been processed
+                    if (user_id, brand) not in user_id_brand_to_username:
+                        user_id_brand_to_username[(user_id, brand)] = user_name
+                        processed_user_ids.add(user_id)
+                else:
+                    outputs.append({
+                        "Message": "User not found or no integration configured.",
+                        "Result": "Failed",
+                        "Brand": brand,
+                        "UserId": "",
+                        "UserName": user_name,
+                    })
 
-            # check if we already ran commands for this user with user_id provided in the script's argument
-            if okta_v2_id in user_ids_arg or microsoft_graph_id in user_ids_arg or gsuite_id in user_ids_arg:
-                used_id = okta_v2_id or microsoft_graph_id or gsuite_id
-                demisto.debug(f"Skipping user with {user_name=}. Already performed action for that user using their id {used_id}")
-                continue
+        # Step 3: Process each unique (user_id, brand) combination
+        user_results = {}  # Track results per user_id to group output
 
-            demisto.debug(f"Start getting user account data for user: {user_name=}")
+        for (user_id, brand), associated_username in user_id_brand_to_username.items():
+            if brand not in brands:
+                continue  # Skip brands not requested
 
-            clear_session_results = []
-            # Okta v2
-            if okta_v2_id:
-                run_command(okta_v2_id, results_for_verbose, clear_session_results, OKTA_BRAND, user_name)
-            elif OKTA_BRAND in brands:
-                clear_session_results.append((OKTA_BRAND, "Failed", "User not found or no integration configured."))
+            if user_id not in user_results:
+                user_results[user_id] = []
 
-            # Microsoft Graph User
-            if microsoft_graph_id:
-                run_command(microsoft_graph_id, results_for_verbose, clear_session_results, MS_GRAPH_BRAND, user_name)
-            elif MS_GRAPH_BRAND in brands:
-                clear_session_results.append((MS_GRAPH_BRAND, "Failed", "User not found or no integration configured."))
+            # Use the user_id directly since we already have the brand-specific mapping
+            clear_session_results = run_command(user_id, results_for_verbose, brand, associated_username)
 
-            # GSuiteAdmin
-            if gsuite_id:
-                run_command(gsuite_id, results_for_verbose, clear_session_results, GSUITE_BRAND, user_name)
-            elif GSUITE_BRAND in brands:
-                clear_session_results.append((GSUITE_BRAND, "Failed", "User not found or no integration configured."))
+            user_results[user_id].append(clear_session_results)
 
+        # Step 4: Generate outputs from collected results
+        for user_id, clear_session_results in user_results.items():
             for brand, result, message in clear_session_results:
+                # Find the username for this user_id and brand combination
+                associated_username = user_id_brand_to_username.get((user_id, brand), "")
+
                 user_output = {
                     "Message": message,
                     "Result": result,
                     "Brand": brand,
-                    "UserId": get_user_id(users_ids, brand, user_name),
-                    "UserName": user_name,
+                    "UserId": user_id,
+                    "UserName": associated_username,
                 }
                 outputs.append(user_output)
 
@@ -571,7 +576,10 @@ def main():
         ##############################
 
         if verbose:
+            command_results_list: list[CommandResults] = []
             command_results_list.extend(results_for_verbose)
+        else:
+            command_results_list: list[CommandResults] = []
 
         command_results_list.append(
             CommandResults(
