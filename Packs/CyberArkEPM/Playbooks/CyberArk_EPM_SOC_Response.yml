@@ -1,6 +1,5 @@
 id: CyberArk EPM SOC Response
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: CyberArk EPM SOC Response
 description: Activates a CyberArk EPM SOC risk plan for a specified endpoint, based
   on the incident severity. Endpoint name and external IP are taken from the incident
@@ -202,4 +201,3 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 sourceplaybookid: e78740e3-c7c4-4f56-81ec-7879abc846ec
-dirtyInputs: true
