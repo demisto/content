@@ -584,7 +584,6 @@ class TestArcherV2:
             pytest.param('{"Device Name":"Laptop\\t#406"}', "Laptop\t#406", id="Tab"),
             pytest.param('{"Device Name":"I \\u2764 Tech"}', "I \u2764 Tech", id="Unicode"),
             pytest.param('{"Device Name":"Generic Tablet 2025"}', "Generic Tablet 2025", id="No special characters"),
-            # Test case from XSUP-59455: Invalid \u sequence (not followed by 4 hex digits)
             pytest.param('{"Device Name":"Path: \\user\\123"}', "Path: \\user\\123", id="Invalid unicode escape - user path"),
             pytest.param(
                 '{"Device Name":"C:\\users\\file.txt"}', "C:\\users\\file.txt", id="Invalid unicode escape - Windows path"
