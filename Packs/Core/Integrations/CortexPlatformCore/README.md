@@ -881,6 +881,7 @@ Retrieves application security issues based on specified filters.
 | Core.AppsecIssue.backlog_status | String | The backlog status of the issue. |
 
 ### core-run-playbook
+
 ***
 Run a playbook with specified playbook ID and issue IDs.
 
@@ -894,4 +895,3 @@ Run a playbook with specified playbook ID and issue IDs.
 | --- | --- | --- |
 | playbook_id | The ID of the playbook to run. | Required |
 | issue_ids | The IDs of the issues to process with the playbook. | Required |
-
