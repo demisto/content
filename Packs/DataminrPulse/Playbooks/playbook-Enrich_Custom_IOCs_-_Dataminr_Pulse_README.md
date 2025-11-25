@@ -1,4 +1,4 @@
-This playbook will enrich the Dataminr Pulse Incident IOCs with custom reputation commands.
+This playbook will enrich the Dataminr Pulse ReGenAI Incident's IOCs using custom reputation commands.
 
 ## Dependencies
 

@@ -1,7 +1,7 @@
 id: Update Live Briefs - Dataminr Pulse
 version: -1
 name: Update Live Briefs - Dataminr Pulse
-description: This playbook will update the old Dataminr Pulse incidents with the latest briefs.
+description: This playbook will update the previously fetched Dataminr Pulse ReGenAI incidents with the latest briefs.
 starttaskid: "0"
 tasks:
   "0":

@@ -1,4 +1,4 @@
-This playbook will update the old Dataminr Pulse incidents with the latest briefs.
+This playbook will update the previously fetched Dataminr Pulse ReGenAI incidents with the latest briefs.
 
 ## Dependencies
 

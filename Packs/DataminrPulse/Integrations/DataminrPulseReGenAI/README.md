@@ -218,9 +218,25 @@ Note: The "from" and "to" arguments should not be included on the first executio
 | DataminrPulse.Alerts.publicPost.channels | String | The channels or platforms where the post appeared. |
 | DataminrPulse.Alerts.publicPost.media.type | String | The type of attached media. |
 | DataminrPulse.Alerts.publicPost.media.href | String | The media hyperlink. |
+| DataminrPulse.Alerts.publicPost.englishText | String | The english text of the public post. |
+| DataminrPulse.Alerts.eventCorroboration.timestamp | String | The timestamp of the event corroboration. |
+| DataminrPulse.Alerts.eventCorroboration.summary.title | String | The title of the event corroboration summary. |
+| DataminrPulse.Alerts.eventCorroboration.summary.content | String | The content of the event corroboration summary. |
 | DataminrPulse.Alerts.estimatedEventLocation.name | String | The estimated name or location of the event. |
 | DataminrPulse.Alerts.estimatedEventLocation.coordinates | Number | The coordinates of the estimated event location. |
 | DataminrPulse.Alerts.estimatedEventLocation.probabilityRadius | Number | The probability radius of the estimated location. |
+| DataminrPulse.Alerts.assetsMatched.locationAssets.name | String | The name of the customer location asset. |
+| DataminrPulse.Alerts.assetsMatched.locationAssets.lng | Number | The longitude of the asset. |
+| DataminrPulse.Alerts.assetsMatched.locationAssets.lat | Number | The latitude of the asset. |
+| DataminrPulse.Alerts.assetsMatched.locationAssets.distanceFromEventLocation | Number | The distance between the asset and the alert's estimated event location. |
+| DataminrPulse.Alerts.assetsMatched.locationAssets.locationGroups.name | String | The name of the location group. |
+| DataminrPulse.Alerts.assetsMatched.thirdPartyAssets.name | String | The name of the third-party asset. |
+| DataminrPulse.Alerts.assetsMatched.thirdPartyAssets.customerProvidedId | String | The customer-provided unique ID for the asset. |
+| DataminrPulse.Alerts.assetsMatched.travelSegments.name | String | The name of the travel segment location or asset. |
+| DataminrPulse.Alerts.assetsMatched.travelSegments.lng | Number | The longitude of the asset. |
+| DataminrPulse.Alerts.assetsMatched.travelSegments.lat | Number | The latitude of the asset. |
+| DataminrPulse.Alerts.assetsMatched.travelSegments.distanceFromEventLocation | Number | The distance between the asset and the alert's estimated event location. |
+| DataminrPulse.Alerts.assetsMatched.travelSegments.travelType | String | The category of travel segment, such as HOTEL or FLIGHT. |
 | DataminrPulse.Alerts.intelAgents.summary.type | String | The type of the intelligence agent summary. |
 | DataminrPulse.Alerts.intelAgents.summary.title | String | The title of the intelligence agent summary. |
 | DataminrPulse.Alerts.intelAgents.summary.content | String | The content of the intelligence agent summary. |
@@ -247,6 +263,37 @@ Note: The "from" and "to" arguments should not be included on the first executio
 | DataminrPulse.Alerts.intelAgents.discoveredEntities.ttps.tacticName | String | The tactic name of the discovered entity. |
 | DataminrPulse.Alerts.intelAgents.discoveredEntities.countryOfOrigin | String | The country of origin of the discovered entity. |
 | DataminrPulse.Alerts.intelAgents.discoveredEntities.threatActors | String | The threat actors related to malware of the discovered entity. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.websiteUrl | String | The website URL associated with the discovered entity. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.locations.address | String | The address of the location associated with the discovered entity. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.industry | String | The industry in which the discovered entity operates. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.primaryLocation.address | String | The primary address of the discovered entity. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.organizationType | String | The type of organization associated with the discovered entity. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.headOfOrganization | String | The individual who heads the discovered entity. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.executives | String | The executives associated with the discovered entity. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.operatingRegions | String | The regions in which the discovered entity operates. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.address | String | The address information of the discovered entity. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.ownedBy | String | The entity or individual that owns the discovered entity. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.operatedBy | String | The entity or individual that operates the discovered entity. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.country | String | The country in which the discovered entity is located. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.timezone.utcOffsetSeconds | Number | The UTC offset in seconds for the entity's timezone. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.timezone.displayName | String | The display name of the entity's timezone. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.stateOrProvince | String | The state or province where the discovered entity is located. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.population | String | The population associated with the discovered entity's location. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.travelAdvisories.issuingCountry | String | The country issuing the travel advisory. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.travelAdvisories.issuedDate | String | The date when the travel advisory was issued. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.travelAdvisories.issuedCountry | String | The country for which the travel advisory was issued. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.travelAdvisories.advisoryText | String | The text content of the travel advisory. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.president | String | The president associated with the discovered entity's country or organization. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.officialLanguages | String | The official languages spoken in the entity's location. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.capital | String | The capital city associated with the discovered entity's country. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.locationType | String | The type of location represented by the discovered entity. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.managedBy | String | The entity or individual responsible for managing the discovered entity. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.nationalities | String | The nationalities associated with the discovered entity. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.pastRoles.tenureStartDate | String | The start date of the entity's past role. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.pastRoles.tenureEndDate | String | The end date of the entity's past role. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.pastRoles.roleName | String | The name of the past role associated with the entity. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.currentRoles.tenureStartDate | String | The start date of the entity's current role. |
+| DataminrPulse.Alerts.intelAgents.discoveredEntities.currentRoles.roleName | String | The name of the current role associated with the entity. |
 | DataminrPulse.Alerts.liveBrief.summary | String | The live brief summary. |
 | DataminrPulse.Alerts.liveBrief.version | String | The live brief version. |
 | DataminrPulse.Alerts.liveBrief.timestamp | String | The live brief timestamp. |

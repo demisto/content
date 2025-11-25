@@ -19,7 +19,7 @@ def create_impacted_assets_html(impacted_assets_data: dict, alert_url: str) -> s
 
     def append_section(icon: str, header: str, sub_header: str) -> None:
         html_content.append('<div style="display:flex; align-items:flex-start;">')
-        html_content.append(f'<div style="width:20px; text-align:center;">{icon}</div>')
+        html_content.append(f'<div style="width:20px; text-align:center; overflow:hidden; margin-right:15px;">{icon}</div>')
         html_content.append(f'<div style="flex:1;">{header}{sub_header}</div>')  # noqa: E231,E702
         html_content.append("</div>")
         html_content.append("<hr>")
@@ -37,60 +37,111 @@ def create_impacted_assets_html(impacted_assets_data: dict, alert_url: str) -> s
         else:
             header = f'<p style="margin:0; padding:0;"><strong>{name}</strong></p>'  # noqa: E231,E702
         sub_header = f'<p style="margin:0; padding:0;">{address}</p>'  # noqa: E231,E702
-        append_section("🏢", header, sub_header)
+        append_section(
+            '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAADfUlEQVR4AbSXy0sVYRjG32+'
+            "gpUbjMchsVesKoout+wO6k9GNWgS2qKxoUUtdhGW1UGhRdCNFLf0DWpciQbXOlZdAxxE9EYJ0vt7f5xk5Z5yZczST8zjv5XmfZ27nRT"
+            "2p8icIFo5NB/muYPbX8EyYn5mZzf9x0Jia6ymnSjnJNB4Lw81BmG/DyBrzwRhpsWIPipWcGjDrEVNzPeXAZYZZ5aR+GE5sTs8uXK6VTT"
+            "+slXuIJ5KSinpSzDCLRhKFWqLxdJjvMmKer8kQtVLoCaCBVmk5ilcZ63N7Z6y0RIR/PaKFZlynzLh4ds1x0gbkzUXtFakVY54HZ7fS2eA"
+            "AbTwiWWfMG2iMeRAVk47hbCidT7oyASdpNqrhgRe5M94sm+5UepFmMH7aLZ0ZCMI5NNOhL5zzUoYztiJXNc78eJ6jyqkTR6W/96U0bm+Qx"
+            "sYGF1NjWK+IQyYiL4+NlHa1ExNT8nlk1OHrt++ZglU39arx9ApijqQN9Q0Myqkzlxxu3r7naP3vh1w+MTklnBh9ajStbg6OlYCn5xmzrxLx"
+            "4vlmAfAOHdovrddbZIu/Rfw638XU6FULPD1r7M5KA5heOHfG0Q4fVOMb1ySnxqBVY2quWeUvPFnyfiV+q97mW3fuO1rfwJCcbL6kt/mnjI9"
+            "PuZgaTXj0QL/yqCXCir/8qiZ211dc/L0ow8OjMj4xmSngiZEwk6HNzoft8qijTSOR0yePykCPfp0at8mOHQ0upkazlEeeCvX0jDVjqYRi49"
+            "WbHnn9ttdln/TrxQZjWQBiajRLeeRpwNMrWPsljRDVEQTk3Ea215xuKVYkMTV6cABxFvD09O36mEWi91hvNSCOQA6inCM5IM4Cnl4uVzuozz"
+            "nIIib19u7ZLSCpl1kzEuDpQTIizzimga0FSvtsqUKhUFoSOKCsGEsiL2c8L0sdSVfd1HTAbSY2VRwsj/ri5or3yJmNeQoezktk+a/Mnb4/r1"
+            "dwV/OyT1NxS7Gd4mBdgng9ypktE9MED7w0XDYm2FpX+8Ia6Sb+H0Abj0jb3eoo2erXXNO4R7HRn56i9opumTHV+rqas5wd8UYALTTjWquMIX"
+            "B2+t/BFV4G8nXBSIAGWknzicYQeR4LsrTLGGlf0wmoITPMooFWElKNIfMG5vya+/V+Tb2x9rj+gdFtxIwUT4QvcYGYmuspBy4zzKKRhr8AAA"
+            'D//3VNGSwAAAAGSURBVAMAF1fNZsjaURMAAAAASUVORK5CYII=" style="max-width:100%; max-height:20px; '
+            'object-fit:contain;"/>',
+            header,
+            sub_header,
+        )
 
     # thirdPartyAssets
     for section in impacted_assets_data.get("thirdPartyAssets", []):
         name = section.get("name", "")
-        address = section.get("address", "")
+        url = section.get("href", "")
         header = f'<p style="margin:0; padding:0;"><strong>{name}</strong></p>'  # noqa: E231,E702
-        sub_header = f'<p style="margin:0; padding:0;">{address}</p>'  # noqa: E231,E702
-        html_content.append('<div style="display:flex; align-items:flex-start;">')
-        html_content.append(
-            '<div style="width:20px; text-align:center; overflow:hidden;">'
-            '<img src="data:image/png;base64,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" '
-            'style="max-width:100%; max-height:20px; object-fit:contain;" /></div>'
+        sub_header = f'<p style="margin:0; padding:0;">{url}</p>'  # noqa: E231,E702
+        append_section(
+            '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAEjUlEQVR4AaxXW2xURRj+5qQ3H1p'
+            "kty0J9kW2CKLxQpXVGIVAtUUQaQuSpaEWMIEsGoRwa1pai4UiJLaaUmxA5cEUIoKtIgUtD4YQNXGhmoiCLXS7lZJ2uwldHyTVPc43e3Gv7W"
+            "ns5vwz//z/93/fnJ3ZmawGgx+3e6Ro0O095B7+8/shj3doaNj7jzLpM6ZyEmOQDmMK93g8U9webx2FdCFOCwG7Dt0KHZlSgLUafcZUTmKIZ"
+            "Q1rJSbhw+K4ycHhkXUZSO7WdVSSPC4oXlBOijWsJUc8CGNxhQc93kMC4sMJCZIt3OQEyEGu8HDQjxGW69YqdNiDgP/bk4uc0TwRwoHZ2aJB"
+            "kzC2BbhDVCFhrgdnF8qM49y42Qun0zUO6r80uakRjChh7kAhxDvB4Fj9rYEBvPBiMZ5buATPLChEwZISDNy+PVZJKEcNajGghKcgebvRjbR"
+            "vfwOu/noN9XXVqNtThV+u/ob6A43kGt/khlNaEqmEdWCD9A09Pzqu4KE5s7GmdBXK19gwe9ZMOC53GaolKKil8UQy+rYstFhm4Nr1bnzV8T"
+            "W+ONOB67/3YGbuDKaMmXxramo+iHxjFX7UW7t3Ii01BRvsW2B/YxvuSUtDVcV2f9JgS01NEyLPIF7B+Had59thMptglnZB+rmW+1XOaENNT"
+            "Re6xWhBEJdz33SYp94Ls2kqcnKmB8OGe2rykDcZrggAdXkY/3X3Lmj0A2HjnQ6T2tXGKwCfz4fNW3fB5foDfX39eH3zDhWbCAexGgQ8dIzY"
+            "6Ojf2LhpK063nUH+ovlYMP9ZtH95Vm60N8GcEQ6FkZqa0EWPGiRoHI4uNB0+ipYjx1C+3o6z577B4oJFOPrB+/j4SBMKnl+IjvMXULZ2o8I"
+            "Qe6Xr5wRs/jA1NZ+uO/zD2HZHRQ1eXlGK/Qca8Pa+g/j24iUUL1+KluZGJCUlITk5SfoNWLZ0MS5e+k5hiH2pyIZdlbVI9KGmJndXZzxAd8"
+            "9NtJ74DFbrEzh54hhKipYpWGFBPjRZpQay4QQK5TcgXaxcsVxh583Lwyetn6p9wHi0UVPLzMz4XK6zOzrZ1+dSIdsrxXja+iTKy/y3pdPZr"
+            "+LhjdPlj619dbXCriopUukbvb2qj2gE3NTUGBRAC/tw43mckpKMd99rxslTbaiurVfpp6yx5401b67K7a7Zq7CNTYeRmpqKh+c8qOLhTVBL"
+            "Cd/B6MHot542LRu11RXqJ7NlWyW4YV5bV4bHH3sknEf5/Gp5YTgu/wRi+/tvYU9NBXiyKUCwkW+rtORYCVtMpjvyINgpxxEPb6DOc21q3dp"
+            "PtYLndAQgbMArkhjuB9aU2laGZf0uNajFkRKmk23O+EgXaKYfbrz2uMZ5cx8ND8f1iSF21gO5MXlyUyOYCAkzkG1K3yT749Im+zke4A7xRg"
+            "gzmmVOX83Z0Z8MIxc5o7lihAng7OS/g/XRG445wybgJge54tXEFSaQ6zGC0VwhsHdCE5CCrGEtOcgVzxIKE8wdmGlKr8oypWcJXS+Wt2Gzg"
+            'PghMBGfxPjoM6ZyEkMsa1gr8wmffwEAAP//xc8P6wAAAAZJREFUAwDfu81m29u+PgAAAABJRU5ErkJggg==" style="max-width:100%; '
+            'max-height:20px; object-fit:contain;"/>',
+            header,
+            sub_header,
         )
-        html_content.append(f'<div style="flex:1;">{header}{sub_header}</div>')  # noqa: E231,E702
-        html_content.append("</div>")
-        html_content.append("<hr>")
 
     # travelSegments
     for section in impacted_assets_data.get("travelSegments", []):
         distance_from_event = section.get("distanceFromEventLocation", "")
         name = section.get("name", "")
         travel_type = section.get("travelType", "")
+        travelers_count = section.get("countImpactedTravelers", 1)
         if distance_from_event:
             header = (
                 '<p style="margin:0; padding:0;"><strong>'  # noqa: E231,E702
-                f"{distance_from_event} km from {name}</strong></p>"
+                f"{distance_from_event} km from {travelers_count} "
+                f'{"traveler" if int(travelers_count) == 1 else "travelers"}</strong></p>'
             )
         else:
-            header = f'<p style="margin:0; padding:0;"><strong>{name}</strong></p>'  # noqa: E231,E702
-        sub_header = f'<p style="margin:0; padding:0;">{travel_type}</p>'  # noqa: E231,E702
+            header = (
+                '<p style="margin:0; padding:0;"><strong>'  # noqa: E231,E702
+                f'{travelers_count} {"traveler" if int(travelers_count) == 1 else "travelers"} '
+                "at risk</strong></p>"
+            )
+        sub_header = f'<p style="margin:0; padding:0;">{name}</p>'  # noqa: E231,E702
         if travel_type.lower() == "hotel":
-            append_section("🛏️", header, sub_header)
+            append_section(
+                '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAADeElEQVR4AbxWTUhUURQ+94GJyii'
+                "Mo5A/K1sXJaKB1CL7kQItFdICB1sItouiyBYtamFtgtCwqGxRE2gptImoRRGkiNHPqlA0/AmcN6MzE1pqc7vfZd7zzZvrMDOODe+8e+453/"
+                "m+894776lGCf50PXh8Xg91675fw15/yOv1hf5KEz5iMicwCdJRXOEJvz9P94euQYgz9pwx6uDEK4mTSwigVoOPmMwJDLCoQa3AbHigWJmc9"
+                "wXbciljnHPqBLkSpAqKplCDWnCoIIgphef9oW5G7H5SgmCzmmgAHOCyhg0/Rlg8tyeMU4cB2OwKLnDaeaKEI90120Fp2DdHuE0qUxjPA92Z"
+                "mTQ74IaGQSuFMYGMsS4juFUrNKAFfimcRxkXNjVIYErExMBJLYGVwpyoXfjmMTM7R43NbuofGDJj6XIMLQ1fJPvVLi//puHhUZqemTX1vn0"
+                "fp4WFRXP/6ctX+jAyqjQ0bgLtjrhqaGphYjX2nHUfCIaorqGFDhyuo53l1XT7zj2ZPne+k5pOupVWVX2QTrW202IgKLH2EzQ1jbFye8K677"
+                "37kMY+fpYhLj5JXTdu0eTUD7mPd3r77j1dunxVCYGmxhkvU2YjQa9Pj3jry+zcz/VNHO/lqze08mclBgFNfOSdMRlL4FjtIcuOqLhoO+3Zv"
+                "YsS+a2trdG0GNQYLCennOqYhCWwf181PX7US0dFA23u0/Ri0EPZWVkWRHw3HA4rARox8iszIjg9M0eY3G2ZmeRubaHaIzU0MTklY0tLywKR"
+                "4iE0NcbZhL3c6LL/2ZByajHNcV8ZCyEG0rKVLjS1MOdjcvcfT9DUxHS9tmtqIopYU0M99T/tS8lQCw7xfcYSZdDUXK7cQfGco94Z41aXlhT"
+                "R3sqKlAy1UIu51Yx0aGpIMqJerIbl5GRTVVUFlZYUG6GkV9SCIzs7+g0wtKRwgFZvWq+6pLiIBjx91NRYn7SgUYBacIDLiEFDaomAFC5zOg"
+                "PillwU+y09oAEtiEhhOIX5uQ84ox74W2HghobBbQojUOh0nBWrR1i6D0+E2+SNEka0IN/Rgu7gp8PABU47V4wwAOiOEz+DYcA+JWOkgwNcq"
+                "nqlMIB4HkFa3cEYXU+qASGIGtSCA1wq21AYYEygy+m4UuB0FDDOT4j/A3oYsZFII/izE4aPmMwJDLCoQS04NrJ/AAAA//9hH9u1AAAABklE"
+                'QVQDAOdvo2afurW1AAAAAElFTkSuQmCC" style="max-width:100%; max-height:20px; object-fit:contain;"/>',
+                header,
+                sub_header,
+            )
         elif travel_type.lower() == "flight":
-            append_section("✈️", header, sub_header)
+            append_section(
+                '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAD90lEQVR4AbxV729TVRh+'
+                "zk1IJLEdKxvJ0OgHEP8AoxsrkGimQfygAyEbiXHxB5ChBE0WElETzMikoBgj+INMY4zgJxQ1JsogfBEoYbCSQfg1fmVh0HVNWNnI"
+                "2OjhfU53L23vXXubLTTn3POe533e5zk3982pBZ+/RGKwPp5I7UgM3D7an0z19w+k7pkpMTGTE45PORQ07kkmyxLJVCuNtFJ7lUKz"
+                "hq6GRoUYsNZiTMzkhEMua1grnAkHiz2T8YHBt4KYdlFrbKS4J8kLlEOxhrXU8KIQ8zSOJ1M7FFR7SYZUy55yAGpQKxu2Y5exfLfd"
+                "SqPZJkx2pRY183VyjMdP15hPmoJ947i2I+UY83vwdE6mSHD23AWcO3+xCOtBmtr0sBFjzA5USm2xwWJrb+911C1+DS++XI+bN+PF"
+                "6E6eHvQiYIzLMK2llEa61tvLWqTTaVy+fNXEvh7ScMZLyMZYA6slfijD9rJ4I5XytpM+nbw1Pa00VN2kxUoUoKdlKfVMiXXoPBlz"
+                "Sk7Gup3Yb0BPSys9x2/B+Qs9WNbwJrZEvnJKNn++zWA9l644WLGAnrzkQ8WIQ8PD2NQawUtLliIaPe6iE6tb/Cpa27aBXBchH9AI"
+                "ma7Ox7P3e//4GwufX4Jd7T9jbGwsO5UTj46O4bsffsKiF17Bvr/+ycl5bSwoJL0S1/v6UL/iDaz7YAPi8X5DeWx2FVY2vI71768x"
+                "ez4YNzYsw+yqKm7NhbJ2XQuWNzSh78YNg7ke4mkprXpcCQE6T8QQO9WNRQtq8enGFhz8709E/+9ApG0TwuEaYWTGwvB8bG37DMcO"
+                "d+DAv/vwyUctWFBbIw3YBWpkWLlPelpprTtz4cyOxae7DmP3L7uw6p0mzHvKuwflGswUyPPpeXOx+t0m/PZrO07HjiA8v1pQ96Cn"
+                "Jd3V4U4B5eUzMP2R6V4paPmntxO8Nu04e2UtNbIxO6anVVER/F2+c8IG/axDt4cd2tDwHSf2FSgk6GmRrIDvuRabIyMj+GL7N1jz"
+                "3ocOdVXzemz/+lvcHbnrYIUC28sY38LoVj9vvf/AIWPy5BOPm+5esbwejHmY/QcPFfLL5ORtjZfsjPGcUOiWfLcNsi84wjXP4cyp"
+                "qOnwiHT3l5FWE3d3HUFt9bMFa5mkB70YG2MGs2YGf9QKOxlPNMtD5QgGHnWlZ5QFwZwrkQVQmx425BgTmBUKrJV1j8ypHnvGtR3d"
+                "HGOilTMDK3k6xlMxqUXNfC2XMQk8nYZ+20/Dke85FRLUoJZX3tOYRH6PQYzOVQqbSzqAGLKGtdSgltec0JhkdmBFKPBxZShQqbRe"
+                'KhfWTgUVHT9IWjhpxsRMTjjksoa1kp9w3AcAAP//P7eF1AAAAAZJREFUAwAV9JpmTBexMgAAAABJRU5ErkJggg==" '
+                'style="max-width:100%; max-height:20px; object-fit:contain;"/>',
+                header,
+                sub_header,
+            )
         else:
             append_section("📍", header, sub_header)
 
