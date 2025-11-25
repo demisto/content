@@ -1,5 +1,5 @@
 id: CyberArk EPM SOC Response
-version: 5
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: CyberArk EPM SOC Response
 description: Activates a CyberArk EPM SOC risk plan for a specified endpoint, based
@@ -21,6 +21,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"

@@ -1,5 +1,5 @@
 id: CyberArk Deactivate EPM SOC Response
-version: 9
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: CyberArk Deactivate EPM SOC Response
 description: Deactivates a specific CyberArk EPM SOC risk plan for a specified endpoint.
@@ -20,6 +20,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
