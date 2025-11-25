@@ -16,7 +16,7 @@ configuration:
   required: true
   type: 0
   additionalinfo: Mailbox to run commands on and to fetch incidents from.
-  section: Collect
+  section: Connect
 - defaultvalue: Inbox
   display: Name of the folder from which to fetch incidents (supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing)
   name: folder
