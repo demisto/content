@@ -1068,10 +1068,7 @@ class TestGetUserData:
         mocker.patch("GetUserData.demisto.args", return_value={"properties": "DisplayName,JobTitle"})
         command = Command("Microsoft Graph User", "msgraph-user-get", {"user": "graph_user"})
 
-        mocker_run = mocker.patch(
-            "GetUserData.run_execute_command",
-            return_value=([{}], "Human readable", [])
-        )
+        mocker_run = mocker.patch("GetUserData.run_execute_command", return_value=([{}], "Human readable", []))
 
         mocker.patch("GetUserData.get_output_key", return_value="Account")
         mocker.patch("GetUserData.get_outputs", return_value={})
@@ -1079,12 +1076,12 @@ class TestGetUserData:
 
         msgraph_user_get(command, additional_fields=False)
 
-        assert command.args.get("properties") == "displayName,jobTitle"
+        assert command.args.get("properties") == "DisplayName,JobTitle"
 
         mocker_run.assert_called_once()
         called_name, called_args = mocker_run.call_args[0]
 
-        assert called_args["properties"] == "displayName,jobTitle"
+        assert called_args["properties"] == "DisplayName,JobTitle"
 
     def test_msgraph_user_get_manager(self, mocker: MockerFixture):
         """
