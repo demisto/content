@@ -330,26 +330,6 @@ def create_readable_output(outputs: list):
     return readable_output
 
 
-def _get_content_lower(entry: Dict[str, Any]) -> Optional[str]:
-    """
-    Extracts content from the entry, performs basic validation, and converts it to lowercase.
-
-    Args:
-        entry (dict): The entry dictionary.
-
-    Returns:
-        Optional[str]: The lowercase content string, or None if invalid or empty.
-    """
-    # Prefer "Contents" but fall back to "Content"
-    content = entry.get("Contents") or entry.get("Content")
-
-    if not content or not isinstance(content, str):
-        return None
-
-    # Convert to lowercase for case-insensitive matching
-    return content.lower()
-
-
 def is_not_found_error(content_lower: str) -> bool:
     """
     Checks for patterns indicating a user, account, or session was not found.
@@ -439,10 +419,10 @@ def is_error_enhanced(entry: dict) -> bool:
     if is_error(entry):
         return True
 
-    content_lower = _get_content_lower(entry)
-    if not content_lower:
-        return False
-    return is_not_found_error(content_lower) or is_auth_authz_error(content_lower) or is_general_error(content_lower)
+    if content := entry.get("Contents"):
+        content_lower = str(content).lower()
+        return is_not_found_error(content_lower) or is_auth_authz_error(content_lower) or is_general_error(content_lower)
+    return False
 
 
 def get_error_enhanced(entry: dict) -> str:
@@ -463,7 +443,8 @@ def get_error_enhanced(entry: dict) -> str:
         # If no error is detected, raise the original ValueError
         raise ValueError("execute_command result has no error entry. before using get_error_enhanced use is_error_enhanced")
 
-    content_lower = str(_get_content_lower(entry))  # if content lower was None, is_error_enhanced would have been false
+
+    content_lower:str = entry.get("Contents").lower()
     # 1. Check for Not Found errors first, as they are very specific
     if is_not_found_error(content_lower):
         return "User not found."
