@@ -5984,7 +5984,7 @@ def test_cs_falcon_ods_create_scheduled_scan_command(mocker):
         (
             {"quarantine": "false", "schedule_interval": "every other week", "schedule_start_timestamp": "tomorrow"},
             True,
-            {"quarantine": False, "schedule": {"interval": 14, "start_timestamp": "2020-09-27T20:22"}},
+            {"quarantine": False, "schedule": {"interval": 14, "start_timestamp": "2020-09-27T17:22"}},
         ),
         ({"cpu_priority": "Low"}, False, {"cpu_priority": 2}),
     ),
