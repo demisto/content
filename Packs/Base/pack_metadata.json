@@ -8,10 +8,22 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-03-08T09:36:23Z",
-    "categories": ["Utilities"],
-    "tags": ["Core"],
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [
+        "Core"
+    ],
     "useCases": [],
-    "keywords": ["base", "common"],
+    "keywords": [
+        "base",
+        "common"
+    ],
     "dependencies": {},
-    "marketplaces": ["xsoar", "marketplacev2", "xpanse", "platform"]
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "xpanse",
+        "platform"
+    ]
 }
