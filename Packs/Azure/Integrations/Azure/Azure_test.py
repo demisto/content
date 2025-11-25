@@ -4044,7 +4044,7 @@ def test_create_set_tags_request_body():
     result_str = result.decode("utf-8")
 
     # Verify XML structure
-    assert '<?xml version="1.0" encoding="utf-8"?>' in result_str
+    assert "<?xml version='1.0' encoding='utf-8'?>" in result_str
     assert "<Tags>" in result_str
     assert "<TagSet>" in result_str
     assert "<Tag>" in result_str
