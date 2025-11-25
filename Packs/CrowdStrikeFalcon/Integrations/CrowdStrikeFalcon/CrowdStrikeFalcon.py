@@ -30,7 +30,7 @@ IDP_DETECTION = "IDP detection"
 MOBILE_DETECTION = "MOBILE detection"
 ON_DEMAND_SCANS_DETECTION = "On-Demand Scans detection"
 OFP_DETECTION = "OFP detection"
-CNAPP_DETECTION = "CNAPP detection"
+CNAPP_ALERT = "CNAPP alert"
 NGSIEM_DETECTION = "ngsiem_detection"
 THIRD_PARTY_DETECTION = "thirdparty_detection"
 
@@ -41,7 +41,7 @@ IDP_DETECTION_FETCH_TYPE = "IDP Detection"
 MOBILE_DETECTION_FETCH_TYPE = "Mobile Detection"
 ON_DEMAND_SCANS_DETECTION_TYPE = "On-Demand Scans Detection"
 OFP_DETECTION_TYPE = "OFP Detection"
-CNAPP_DETECTION_TYPE = "CNAPP Detection"
+CNAPP_ALERT_TYPE = "CNAPP Alert"
 IOM_FETCH_TYPE = "Indicator of Misconfiguration"
 IOA_FETCH_TYPE = "Indicator of Attack"
 NGSIEM_DETECTION_FETCH_TYPE = "NGSIEM Detection"
@@ -419,7 +419,7 @@ class LastRunIndex(IntEnum):
     MOBILE_DETECTIONS = 3
     ON_DEMAND_DETECTIONS = 4
     OFP_DETECTION = 5
-    CNAPP_DETECTION = 10
+    CNAPP_ALERT = 10
 
     # Fetch types only for fetch-incidents
     IOM = 6
@@ -3316,14 +3316,21 @@ def fetch_iom_incidents(iom_last_run):
 def fetch_cnapp_incidents(cnapp_last_run):
 
     detections: List = []
-    demisto.debug("Fetching CNAPP detections")
+    demisto.debug("Fetching CNAPP Alerts")
     demisto.debug(f"{cnapp_last_run=}")
     offset = int(cnapp_last_run.get("offset", 0))
     
     params = demisto.params()
     look_back = params.get("look_back")
-    fetch_query = params.get("cnapp_detection_fetch_query", "")
+    fetch_query = params.get("cnapp_alert_fetch_query", "")
     limit = (min(int(params.get("limit", 100)), 100))
+    
+    
+    start_fetch_time, end_fetch_time = get_fetch_run_time_range(
+        last_run=cnapp_last_run, first_fetch=FETCH_TIME, look_back=look_back, date_format=DATE_FORMAT
+    )
+    
+    
     if "last_seen" in fetch_query:
         raise DemistoException("last_seen is not allowed as part of the CNAPP fetch query.")
 
@@ -3342,12 +3349,12 @@ def fetch_cnapp_incidents(cnapp_last_run):
 
     response = http_request("GET", endpoint_url, params)
     demisto.info(f"[test] {response=}")
-    cnapp_detections = response.get("resources", [])
+    cnapp_alerts = response.get("resources", [])
     total_detections = demisto.get(response, "meta.pagination.total")
     # CNAPP_SEVERITY_MAPPING
     
-    offset = calculate_new_offset(offset, len(cnapp_detections), total_detections)
-    demisto.debug(f"CrowdStrikeFalconMsg: Total fetched CNAPP detections: {len(cnapp_detections)}")
+    offset = calculate_new_offset(offset, len(cnapp_alerts), total_detections)
+    demisto.debug(f"CrowdStrikeFalconMsg: Total fetched CNAPP alerts: {len(cnapp_alerts)}")
     if offset:
         if offset + limit > MAX_FETCH_SIZE:
             demisto.debug(
@@ -3357,9 +3364,9 @@ def fetch_cnapp_incidents(cnapp_last_run):
             offset = 0
         demisto.debug(f"CrowdStrikeFalconMsg: The new CNAPP offset is {offset}")
         
-    if cnapp_detections:
-        for detection in cnapp_detections:
-            detection["incident_type"] = CNAPP_DETECTION_TYPE
+    if cnapp_alerts:
+        for detection in cnapp_alerts:
+            detection["incident_type"] = CNAPP_ALERT_TYPE
             detection_to_context = detection_to_incident_context(
                 detection, detection_name_prefix, start_time_key, is_fetch_events=is_fetch_events
             )
@@ -3380,7 +3387,7 @@ def fetch_cnapp_incidents(cnapp_last_run):
         date_format=DETECTION_DATE_FORMAT,
         new_offset=offset,
     )
-    demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch {CNAPP_DETECTION_TYPE}. Fetched {len(detections)}")
+    demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch {CNAPP_ALERT_TYPE}. Fetched {len(detections)}")
     return detections, new_last_run
 
 
@@ -3512,7 +3519,7 @@ def fetch_items(command="fetch-incidents"):
     mobile_detections_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.MOBILE_DETECTIONS)
     on_demand_detections_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.ON_DEMAND_DETECTIONS)
     ofp_detection_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.OFP_DETECTION)
-    cnapp_detection_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.CNAPP_DETECTION)
+    cnapp_alerts_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.CNAPP_ALERT)
 
     # last_run objects - fetch types only for fetch-incidents
     iom_last_run: dict[str, Any] = {}
@@ -3626,18 +3633,17 @@ def fetch_items(command="fetch-incidents"):
         )
         items.extend(fetched_ofp_detections)
 
-    # Fetch CNAPP Detections
-    if CNAPP_DETECTION_TYPE in fetch_incidents_or_detections:
-        demisto.debug("CrowdStrikeFalconMsg: Start fetch CNAPP Detection")
-        demisto.debug(f"CrowdStrikeFalconMsg: Current CNAPP Detection last_run object: {cnapp_detection_last_run}")
+    if CNAPP_ALERT_TYPE in fetch_incidents_or_detections:
+        demisto.debug("CrowdStrikeFalconMsg: Start fetch CNAPP alert")
+        demisto.debug(f"CrowdStrikeFalconMsg: Current CNAPP alert last_run object: {cnapp_alerts_last_run}")
 
         if LEGACY_VERSION:
-            raise DemistoException(f"{CNAPP_DETECTION_TYPE} is not supported in legacy version.")
+            raise DemistoException(f"{CNAPP_ALERT_TYPE} is not supported in legacy version.")
 
-        fetched_cnapp_detections, cnapp_detection_last_run = fetch_cnapp_incidents(
-            cnapp_detection_last_run
+        fetched_cnapp_alerts, cnapp_alerts_last_run = fetch_cnapp_incidents(
+            cnapp_alerts_last_run
         )
-        items.extend(fetched_cnapp_detections)
+        items.extend(fetched_cnapp_alerts)
 
     # Fetch Indicators of Misconfiguration (IOM) - supported for fetch-incidents command only.
     if not is_fetch_events and IOM_FETCH_TYPE in fetch_incidents_or_detections:
@@ -3709,7 +3715,7 @@ def fetch_items(command="fetch-incidents"):
         last_run, index=LastRunIndex.OFP_DETECTION, data=ofp_detection_last_run, is_fetch_events=is_fetch_events
     )
     set_last_run_per_type(
-        last_run, index=LastRunIndex.CNAPP_DETECTION, data=cnapp_detection_last_run, is_fetch_events=is_fetch_events
+        last_run, index=LastRunIndex.CNAPP_ALERT, data=cnapp_alerts_last_run, is_fetch_events=is_fetch_events
     )
 
     if not is_fetch_events:
