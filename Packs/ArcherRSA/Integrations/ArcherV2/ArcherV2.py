@@ -1054,7 +1054,7 @@ def generate_field_contents(client, fields_values, level_fields, depth):
         # - A double quote, backslash, forward slash, b, f, n, r, or t
         # - The letter 'u' followed by exactly 4 hexadecimal digits
         pattern = r'\\(?!(?:["\\/nrt]|u[0-9a-fA-F]{4}))'
-        fields_values = re.sub(pattern, r'\\\\', fields_values)
+        fields_values = re.sub(pattern, r"\\\\", fields_values)
         demisto.debug(f"Fields values string after escaping: {fields_values}")
 
         try:
