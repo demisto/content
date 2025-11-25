@@ -6703,3 +6703,138 @@ def test_ec2_authorize_security_group_egress_command_without_port(mocker):
     result = EC2.authorize_security_group_egress_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert "The Security Group egress rule was authorized" in result.readable_output
+
+
+def test_handle_port_range_with_both_from_and_to_port():
+    """
+    Test handle_port_range function with both from_port and to_port arguments.
+
+    Given: A dictionary with both from_port and to_port values as strings
+    When: handle_port_range is called with these arguments
+    Then: Should return a tuple with both ports converted to integers
+    """
+    from AWS import handle_port_range
+
+    args = {"from_port": "80", "to_port": "443"}
+    result = handle_port_range(args)
+    assert result == (80, 443)
+
+
+def test_handle_port_range_with_single_port_argument():
+    """
+    Test handle_port_range function with a single port argument.
+
+    Given: A dictionary with a port value as a single string number
+    When: handle_port_range is called with this argument
+    Then: Should return a tuple with the same port for both from and to positions
+    """
+    from AWS import handle_port_range
+
+    args = {"port": "8080"}
+    result = handle_port_range(args)
+    assert result == (8080, 8080)
+
+
+def test_handle_port_range_with_port_range_argument():
+    """
+    Test handle_port_range function with a port range argument.
+
+    Given: A dictionary with a port value as a hyphen-separated range string
+    When: handle_port_range is called with this argument
+    Then: Should return a tuple with the parsed from and to port values
+    """
+    from AWS import handle_port_range
+
+    args = {"port": "80-443"}
+    result = handle_port_range(args)
+    assert result == (80, 443)
+
+
+def test_handle_port_range_with_port_range_spaces():
+    """
+    Test handle_port_range function with a port range containing spaces.
+
+    Given: A dictionary with a port value as a hyphen-separated range with spaces
+    When: handle_port_range is called with this argument
+    Then: Should return a tuple with the parsed ports, ignoring whitespace
+    """
+    from AWS import handle_port_range
+
+    args = {"port": "80 - 443"}
+    result = handle_port_range(args)
+    assert result == (80, 443)
+
+
+def test_handle_port_range_prioritizes_from_to_over_port():
+    """
+    Test handle_port_range function prioritization of from_port/to_port over port.
+
+    Given: A dictionary with both from_port/to_port and port arguments
+    When: handle_port_range is called with these conflicting arguments
+    Then: Should prioritize from_port and to_port values over the port argument
+    """
+    from AWS import handle_port_range
+
+    args = {"from_port": "22", "to_port": "22", "port": "80-443"}
+    result = handle_port_range(args)
+    assert result == (22, 22)
+
+
+def test_handle_port_range_with_only_from_port():
+    """
+    Test handle_port_range function with only from_port specified.
+
+    Given: A dictionary with only from_port and a fallback port argument
+    When: handle_port_range is called with these arguments
+    Then: Should return a tuple with from_port value and None for to_port
+    """
+    from AWS import handle_port_range
+
+    args = {"from_port": "80", "port": "443"}
+    result = handle_port_range(args)
+    assert result == (80, None)
+
+
+def test_handle_port_range_with_only_to_port():
+    """
+    Test handle_port_range function with only to_port specified.
+
+    Given: A dictionary with only to_port and a fallback port argument
+    When: handle_port_range is called with these arguments
+    Then: Should return a tuple with None for from_port and to_port value
+    """
+    from AWS import handle_port_range
+
+    args = {"to_port": "443", "port": "80"}
+    result = handle_port_range(args)
+    assert result == (None, 443)
+
+
+def test_handle_port_range_with_port_range_single_dash():
+    """
+    Test handle_port_range function with a port range having the same start and end.
+
+    Given: A dictionary with a port range where from and to ports are identical
+    When: handle_port_range is called with this argument
+    Then: Should return a tuple with the same port value for both positions
+    """
+    from AWS import handle_port_range
+
+    args = {"port": "80-80"}
+    result = handle_port_range(args)
+    assert result == (80, 80)
+
+
+def test_handle_port_range_with_high_port_range():
+    """
+    Test handle_port_range function with high port numbers.
+
+    Given: A dictionary with a port range using high port numbers (8000-65535)
+    When: handle_port_range is called with this argument
+    Then: Should return a tuple with the correct high port values parsed
+    """
+    from AWS import handle_port_range
+
+    args = {"port": "8000-65535"}
+    result = handle_port_range(args)
+    assert result == (8000, 65535)
