@@ -1707,14 +1707,14 @@ Set Blob properties.
 
 There is no context output for this command.
 
-### azure-storage-container-block-public-access
+### azure-storage-container-public-access-block
 
 ***
 Block public access to a container.
 
 #### Base Command
 
-`azure-storage-container-block-public-access`
+`azure-storage-container-public-access-block`
 
 #### Input
 
