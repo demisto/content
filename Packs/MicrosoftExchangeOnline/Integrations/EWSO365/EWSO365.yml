@@ -10,7 +10,7 @@ configuration:
   name: azure_cloud
   type: 15
   required: false
-  defaultvalue: Worldwide
+  defaultvalue: Worldwide 
   options:
   - Worldwide
   - US GCC
