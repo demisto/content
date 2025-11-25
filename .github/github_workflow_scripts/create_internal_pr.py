@@ -17,7 +17,7 @@ INTERNAL_LABEL = "Internal PR"
 
 def replace_related_with_fixes_in_pr_body(body: str) -> str:
     """
-    Replace any 'related:' or 'relates:' keywords in the PR body with 'fixes:', 
+    Replace any 'related:' or 'relates:' keywords in the PR body with 'fixes:',
     so that internal PR opened will be correctly connected to the relevant jira ticket.
     Keeps the original text after the colon.
     If none are found, appends 'fixes: ' at the end of the PR body.
