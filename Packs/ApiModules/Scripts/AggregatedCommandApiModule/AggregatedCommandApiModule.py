@@ -100,13 +100,27 @@ class IndicatorSchema:
 
     def get_all_values_from(self, data: dict[str, Any]) -> dict[str, Any]:
         """
-        Return ALL value fields that exist in this entry depends on self.value_field.
-        For File, that could return {"MD5": "...", "SHA1": "...", ...}
-        For URL (single value_field), this just returns {"Value": "..."} if available.
+        Collects all value fields from the given context entry based on this object's
+        `value_field` definition. Supports single-field (e.g., "Address") and multi-field
+        types (e.g., File hashes: ["MD5","SHA256"]).
+
+        - For a single value_field (string), returns {"Value": <extracted_value>} using that key.
+        - For multiple value_fields (list), returns only the matching fields with their original names.
+
+        Example:
+            get_all_values_from({"MD5": "aaa", "SHA256": "bbb", "Address": "ccc"})
+            self.value_field = ["MD5", "SHA256"]
+            → {"MD5": "aaa", "SHA256": "bbb"}
+
+            get_all_values_from({"MD5": "aaa", "SHA256": "bbb", "Address": "ccc"})
+            self.value_field = "Address"
+            → {"Value": "ccc"}
+
         Args:
-            data (dict[str, Any]): The Context.
+            data: The context dictionary to extract from.
+
         Returns:
-            dict ([str, Any]): The values field dict.
+            A dictionary of all found value fields.
         """
         out: dict[str, Any] = {}
         if isinstance(self.value_field, str):
@@ -593,7 +607,25 @@ class BrandManager:
 
     @staticmethod
     def get_brands_by_type(command_batches: list[list[Command]] | None, command_type: CommandType) -> list[str]:
-        """Return the brands list of the command type"""
+        """
+        Returns all unique brands that appear in the given command batches
+        for the specified command type.
+        Help getting all Internal command brands to inject them to the brand variable.
+        For example when WildFire-v2 is internal enrichment brand, we will add it to brands (when external_enrichment
+        is false and no brands is given). in order to not skip other Internal commands such as core-get-hash-analytics-prevalence,
+        we will call this function to append the internal brands to run them as well.
+        Args:
+            command_batches: A list of batches containing `Command` objects.
+            command_type: The command type to filter by.
+
+        Returns:
+            A list of unique brand names.
+
+        Example:
+            Input: All command batches, one of them is Internal with brand 'Cortex Core-IR'.
+            Calling: get_brands_by_type(batches, CommandType.INTERNAL)
+            Returns: ['Cortex Core-IR']
+        """
         if not command_batches:
             return []
         brands: set[str] = set()
