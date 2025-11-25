@@ -1,0 +1,14 @@
+{
+  "name": "testcontainer",
+  "id": "/subscriptions/subscription-id/resourceGroups/res-group/providers/Microsoft.Storage/storageAccounts/teststorage/blobServices/default/containers/testcontainer",
+  "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+  "etag": "\"0x8DB7F5589F2DC4A\"",
+  "properties": {
+    "publicAccess": "None",
+    "leaseStatus": "unlocked",
+    "leaseState": "available",
+    "lastModifiedTime": "2024-08-14T10:00:00Z",
+    "hasImmutabilityPolicy": false,
+    "hasLegalHold": false
+  }
+}

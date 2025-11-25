@@ -536,6 +536,328 @@ script:
           - Blob
           - Container
           - None
+
+  - arguments:
+    - description: The name of the Container.
+      name: container_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Retrieve properties for the specified Container.
+    name: azure-storage-container-property-get
+    outputs:
+    - contextPath: Azure.StorageContainer.Container.Property.last_modified
+      description: Last modified time of the container.
+      type: Date
+    - contextPath: Azure.StorageContainer.Container.Property.etag
+      description: The entity tag for the container.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Property.lease_status
+      description: The lease status of the container.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Property.lease_state
+      description: The lease state of the container.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Property.has_immutability_policy
+      description: Indicates whether the container has an immutability policy set on it.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Property.has_legal_hold
+      description: Indicates whether the container has a legal hold.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.name
+      description: Container name.
+      type: String
+
+  - arguments:
+    - description: |
+        The name of the Container to create. Rules for naming containers can be found here:
+        https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata
+      name: container_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Create a new Container under the specified account.
+    name: azure-storage-container-create
+
+  - arguments:
+    - description: The name of the Container to delete.
+      name: container_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Marks the specified Container for deletion. The Container and any Blobs contained within it, will be deleted during garbage collection.
+    execution: true
+    name: azure-storage-container-delete
+
+  - arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The entry ID of the file to upload as a new blob. Available from the war room while the context data contains file output.
+      name: file_entry_id
+      required: true
+    - description: The name of the Blob to create. Default is the file name.
+      name: blob_name
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Retrieve Blob from Container.
+    name: azure-storage-container-blob-create
+
+  - arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the Blob to retrieve.
+      name: blob_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Retrieve Blob from Container.
+    name: azure-storage-container-blob-get
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: Unknown
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+
+  - arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the blob.
+      name: blob_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Retrieve the tags of the specified Blob.
+    name: azure-storage-container-blob-tag-get
+    outputs:
+    - contextPath: Azure.StorageContainer.Container.Blob.Tag.Key
+      description: Tag key.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Blob.Tag.Value
+      description: Tag value.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Blob.name
+      description: Blob name.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.name
+      description: Container name.
+      type: String
+
+  - arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the blob.
+      name: blob_name
+      required: true
+    - description: 'Tags fields in JSON format: {"tag-name-1": "tag-value-1", "tag-name-2": "tag-value-2"}. The tags fields may contain at most 10 tags.'
+      name: tags
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - auto: PREDEFINED
+      description: Wether to append tags to the existing tags or not. Default is false.
+      name: append
+      defaultValue: False
+      predefined:
+      - 'true'
+      - 'false'
+    description: Updates the tags for the specified Blob. The command can replace the entire tags of the Blob and can be used to remove tags.
+    name: azure-storage-container-blob-tag-set
+
+  - arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the blob.
+      name: blob_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Retrieve Blob properties.
+    name: azure-storage-container-blob-property-get
+    outputs:
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.last_modified
+      description: Last modified time of the blob.
+      type: Date
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.etag
+      description: The entity tag for the blob.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.lease_status
+      description: The lease status of the blob.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.lease_state
+      description: The lease state of the blob.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.blob_type
+      description: The blob type.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.content_length
+      description: The size of the blob in bytes.
+      type: Number
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.content_type
+      description: The content type specified for the blob. If no content type was specified, the default content type is application/octet-stream.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.content-md5
+      description: The MD5 hash of the blob content.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.creation_time
+      description: The date at which the blob was created.
+      type: Date
+    - contextPath: Azure.StorageContainer.Container.Blob.name
+      description: Blob name.
+      type: String
+
+  - arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the blob.
+      name: blob_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - description: Blob content type. Indicates the media type of the blob.
+      name: content_type
+    - description: Blob MD5 hash value. Can be used by the client to check for content integrity.
+      name: content_md5
+    - auto: PREDEFINED
+      description: Blob content encoding. Used to specify the compression algorithm of the blob content.
+      name: content_encoding
+      predefined:
+      - identity
+      - gzip
+      - deflate
+      - br
+      - compress
+      - zstd
+      - aes128gcm
+      - dcb
+      - dcz
+      - exi
+      - pack200-gzip
+      - x-compress
+      - x-gzip
+    - description: Blob content language. Describes the human languages of the blob content.
+      name: content_language
+    - description: Blob content disposition. Conveys additional information about how to process the response payload, and also can be used to attach additional metadata.
+      name: content_disposition
+    - description: Modifies the cache control string for the blob. Indicates directives for caching in both requests and responses.
+      name: cache_control
+    - description: Request ID generated by the client and recorded in the analytics logs when storage analytics logging is enabled.
+      name: request_id
+    - description: Required if the blob has an active lease.
+      name: lease_id
+    description: Set Blob properties.
+    name: azure-storage-container-blob-property-set
+
+  - arguments:
+    - description: Name of a container.
+      name: container_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Block public access to a container.
+    name: azure-storage-container-public-access-block
+
   - arguments:
     - name: name
       required: true
