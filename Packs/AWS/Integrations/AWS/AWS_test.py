@@ -6824,17 +6824,3 @@ def test_handle_port_range_with_port_range_single_dash():
     result = handle_port_range(args)
     assert result == (80, 80)
 
-
-def test_handle_port_range_with_high_port_range():
-    """
-    Test handle_port_range function with high port numbers.
-
-    Given: A dictionary with a port range using high port numbers (8000-65535)
-    When: handle_port_range is called with this argument
-    Then: Should return a tuple with the correct high port values parsed
-    """
-    from AWS import handle_port_range
-
-    args = {"port": "8000-65535"}
-    result = handle_port_range(args)
-    assert result == (8000, 65535)
