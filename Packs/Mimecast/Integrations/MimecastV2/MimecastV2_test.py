@@ -1430,7 +1430,7 @@ def test_get_message_body_content_request_with_mailbox(mocker):
     message_type = "html"
     mailbox = "user@example.com"
 
-    mock_response = type('obj', (object,), {'content': b'test content'})()
+    mock_response = type("obj", (object,), {"content": b"test content"})()
     http_request_mock = mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
 
     result = MimecastV2.get_message_body_content_request(message_id, message_context, message_type, mailbox=mailbox)
@@ -1444,7 +1444,7 @@ def test_get_message_body_content_request_with_mailbox(mocker):
     assert payload["data"][0]["context"] == message_context
     assert payload["data"][0]["type"] == message_type
     assert payload["data"][0]["mailbox"] == mailbox
-    assert result == b'test content'
+    assert result == b"test content"
 
 
 def test_get_message_body_content_request_without_mailbox_delivered():
@@ -1486,7 +1486,7 @@ def test_get_message_body_content_request_without_mailbox_received(mocker):
     message_context = "RECEIVED"
     message_type = "html"
 
-    mock_response = type('obj', (object,), {'content': b'test content'})()
+    mock_response = type("obj", (object,), {"content": b"test content"})()
     http_request_mock = mocker.patch.object(MimecastV2, "http_request", return_value=mock_response)
 
     result = MimecastV2.get_message_body_content_request(message_id, message_context, message_type)
@@ -1500,7 +1500,7 @@ def test_get_message_body_content_request_without_mailbox_received(mocker):
     assert payload["data"][0]["context"] == message_context
     assert payload["data"][0]["type"] == message_type
     assert "mailbox" not in payload["data"][0]
-    assert result == b'test content'
+    assert result == b"test content"
 
 
 def test_get_message_command_with_mailbox(mocker):
@@ -1521,13 +1521,11 @@ def test_get_message_command_with_mailbox(mocker):
         "context": "DELIVERED",
         "type": "html",
         "part": "message",
-        "mailbox": "user@example.com"
+        "mailbox": "user@example.com",
     }
 
-    mock_content = b'test content'
-    get_message_body_mock = mocker.patch.object(
-        MimecastV2, "get_message_body_content_request", return_value=mock_content
-    )
+    mock_content = b"test content"
+    get_message_body_mock = mocker.patch.object(MimecastV2, "get_message_body_content_request", return_value=mock_content)
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch("MimecastV2.fileResult", return_value={"Type": 1, "File": "test"})
 

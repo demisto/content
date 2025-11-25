@@ -2361,13 +2361,13 @@ def get_message_body_content_request(message_id, message_context, message_type, 
     api_endpoint = "/api/archive/get-message-part"
 
     data = [{"id": message_id, "type": message_type, "context": message_context}]
-    
+
     # Add mailbox parameter when context is DELIVERED
     if message_context and message_context.upper() == "DELIVERED":
         if not mailbox:
             raise ValueError("The 'mailbox' parameter is required when context is set to 'DELIVERED'")
         data[0]["mailbox"] = mailbox
-    
+
     payload = {"data": data}
 
     response = http_request("POST", api_endpoint, payload, is_file=True)
