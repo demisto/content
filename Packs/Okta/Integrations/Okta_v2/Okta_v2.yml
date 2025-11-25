@@ -1,5 +1,5 @@
 category: Authentication & Identity Management
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -308,6 +308,8 @@ script:
       name: username
     - description: User ID of the user for which to get information.
       name: userId
+    - description: Email of the user for which to get information.
+      name: userEmail
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to return extended user information. Can be "true" or "false". The default is "false".
@@ -1528,7 +1530,7 @@ script:
   - description: Reset OAuth authentication data (authentication process will start from the beginning, and a new token will be generated).
     name: okta-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.4578119
   runonce: false
   script: ""
   subtype: python3

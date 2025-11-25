@@ -2174,6 +2174,54 @@ class TestFetch:
             assert '"incident_type": "detection"' in incident.get("rawJSON", "")
 
     @pytest.mark.parametrize(
+        "detection_type, expected_name",
+        [
+            ("ngsiem", "NGSIEM Detection"),
+            ("thirdparty", "Third Party Detection"),
+        ],
+    )
+    def test_fetch_type_no_legacy_version(self, requests_mock, mocker, detection_type, expected_name):
+        from CrowdStrikeFalcon import fetch_items, NGSIEM_DETECTION_FETCH_TYPE, THIRD_PARTY_DETECTION_FETCH_TYPE
+
+        # Get the actual constants based on the parameter
+        fetch_type = NGSIEM_DETECTION_FETCH_TYPE if detection_type == "ngsiem" else THIRD_PARTY_DETECTION_FETCH_TYPE
+
+        mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", False)
+        mocker.patch.object(
+            demisto, "params", return_value={"fetch_incidents_or_detections": [fetch_type], "legacy_version": False}
+        )
+
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+
+        requests_mock.get(
+            f"{SERVER_URL}/alerts/queries/alerts/v2",
+            json={"resources": [f"a:{detection_type}:1", f"a:{detection_type}:2"], "meta": {"pagination": {"total": 2}}},
+        )
+        requests_mock.post(
+            f"{SERVER_URL}/alerts/entities/alerts/v2",
+            json={
+                "resources": [
+                    {
+                        "composite_id": f"a:{detection_type}:1",
+                        "created_timestamp": "2025-03-11T16:45:21.571614153Z",
+                        "start_time": "2025-03-11T15:46:00.426Z",
+                    },
+                    {
+                        "composite_id": f"a:{detection_type}:2",
+                        "created_timestamp": "2025-03-11T16:45:21.571614153Z",
+                        "start_time": "2025-03-11T15:46:00.426Z",
+                    },
+                ]
+            },
+        )
+
+        _, incidents = fetch_items()
+        assert len(incidents) == 2
+
+        for incident in incidents:
+            assert expected_name in incident.get("name", "")
+
+    @pytest.mark.parametrize(
         "expected_name, fetch_incidents_or_detections,incidents_len",
         [
             ("Incident ID:", ["Incidents"], 2),
@@ -2433,6 +2481,26 @@ class TestIncidentFetch:
         _, incidents = fetch_items()
         for incident in incidents:
             assert '"incident_type": "incident"' in incident.get("rawJSON", "")
+
+    def test_last_run_uses_param(self, mocker: MockerFixture):
+        """
+        Given:
+            Old getLastRun which holds `limit`.
+        When:
+            A new lastRun is created.
+        Then:
+            The new limit should be based on the parameters and mot the old limit.
+        """
+        from CrowdStrikeFalcon import fetch_detections_by_product_type
+
+        mocker.patch("CrowdStrikeFalcon.INCIDENTS_PER_FETCH", 20)
+        mocker.patch("CrowdStrikeFalcon.get_fetch_run_time_range", return_value=(None,) * 2)
+        mocker.patch("CrowdStrikeFalcon.get_detections_ids", return_value={})
+        mock_func = mocker.patch("CrowdStrikeFalcon.update_last_run_object")
+
+        fetch_detections_by_product_type({"limit": 10}, 0, "", "", "", "", "")
+
+        assert mock_func.call_args.kwargs["fetch_limit"] == 20
 
 
 def get_fetch_data():
@@ -4401,6 +4469,62 @@ def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, in
         "comments": mirrored_data["comments"],
         "assigned_to_uid": mirrored_data["assigned_to_uid"],
     }
+
+
+@pytest.mark.parametrize(
+    "function_name, num_ids, expected_calls",
+    [
+        # These are two different functions - calling both of them to verify the call architecture applies to both.
+        ("get_detections_entities", 0, 0),  # Edge case: no IDs
+        ("get_detections_entities", 500, 1),  # Less than the limit
+        ("get_detections_entities", 1000, 1),  # Exactly the limit
+        ("get_detections_entities", 1001, 2),  # More than the limit (specific request)
+        ("get_detections_entities", 2500, 3),  # More than the limit (many calls)
+        ("get_detection_entities", 0, 0),
+        ("get_detection_entities", 500, 1),
+        ("get_detection_entities", 1000, 1),
+        ("get_detection_entities", 1001, 2),
+        ("get_detection_entities", 2500, 3),
+    ],
+)
+def test_get_detections_entities_batches_requests(mocker, function_name, num_ids, expected_calls):
+    """
+    Given
+        - Number of ID's to fetch from the CrowdStrike Falcon Entity API.
+    When
+        - Running fetch detections entities functions with the ID's list
+    Then
+        - Return the number of calls to http_request based on the number of IDs provided.
+        - Return the number of resources based on the number of IDs provided.
+    """
+    import CrowdStrikeFalcon
+
+    mock_http_request = mocker.patch.object(CrowdStrikeFalcon, "http_request")
+
+    # Configure a side effect to return responses with the correct number of resources
+    def side_effect(method, url, data):
+        data_dict = json.loads(data)
+        ids_in_batch = data_dict.get("composite_ids") or data_dict.get("ids")
+        return {"meta": {"trace_id": "test_trace"}, "resources": [{"id": i} for i in ids_in_batch]}
+
+    mock_http_request.side_effect = side_effect
+
+    # Get the function to test dynamically
+    function_to_test = getattr(CrowdStrikeFalcon, function_name)
+
+    # Load and slice the IDs list from the JSON file
+    id_list_full = load_json("./test_data/mock_detections_id_list.json").get("Ids", {})[:num_ids]
+    detections_ids = id_list_full[:num_ids]
+
+    # Call the function with the mock IDs
+    result = function_to_test(detections_ids)
+
+    # Check that the number of http_request calls matches the expectation
+    assert mock_http_request.call_count == expected_calls
+
+    # Check that the number of resources returned matches the number of IDs
+    if "resources" in result:
+        assert len(result["resources"]) == num_ids
 
 
 @pytest.mark.parametrize("updated_object, entry_content, close_incident", input_data.set_xsoar_incident_entries_args)
@@ -6377,6 +6501,28 @@ class TestCSFalconResolveIdentityDetectionCommand:
         command_results = cs_falcon_resolve_mobile_detection(args={"ids": "1,2"})
         assert isinstance(command_results.readable_output, str)
         assert "Mobile Detection(s) 1, 2 were successfully updated" in command_results.readable_output
+
+    def test_handle_resolve_detections(self, mocker: MockerFixture):
+        """
+        Given:
+            - Arguments for the handle_resolve_detections function.
+        When:
+            - Calling the handle_resolve_detections function.
+        Then:
+            - Verify that the http_request function is called once with the correct arguments.
+            - Validate the error message when assigning both assign_to_name and assign_to_user_id.
+        """
+        from CrowdStrikeFalcon import handle_resolve_detections
+
+        http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
+        args = {"assign_to_name": "name"}
+        handle_resolve_detections(args, "")
+        assert http_request_mocker.call_count == 1
+
+        with pytest.raises(ValueError) as e:
+            args = {"assign_to_name": "name", "assign_to_user_id": "id"}
+            handle_resolve_detections(args, "")
+        assert "Only one of the arguments assign_to_uuid, assign_to_name, assign_to_user_id should be provided." in str(e)
 
 
 class TestIOAFetch:

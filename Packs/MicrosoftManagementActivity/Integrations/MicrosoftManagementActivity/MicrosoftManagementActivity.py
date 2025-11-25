@@ -219,7 +219,7 @@ class Client(BaseClient):
         )
 
 
-def test_module(client: Client):
+def test_module(client: Client, auth_code: str):
     params = demisto.params()
     fetch_delta = params.get("first_fetch_delta", "10 minutes")
     user_input_fetch_start_date, _ = parse_date_range(fetch_delta)
@@ -230,7 +230,7 @@ def test_module(client: Client):
         client.get_access_token_data()
         return "ok"
 
-    if params.get("self_deployed") and (not params.get("auth_code") or not params.get("redirect_uri")):
+    if params.get("self_deployed") and (not auth_code or not params.get("redirect_uri")):
         raise DemistoException(
             "Error: in the self_deployed authentication flow the Authorization code and "
             "the Application redirect URI cannot be empty."
@@ -439,10 +439,10 @@ def get_content_types_to_fetch(client):
 
 
 def get_fetch_end_time_based_on_start_time(fetch_start_datetime):
-    is_fetch_start_time_over_10_minutes_ago = datetime.now() - timedelta(minutes=10) >= fetch_start_datetime
-    if is_fetch_start_time_over_10_minutes_ago:
+    is_fetch_start_time_over_24_hours_ago = datetime.now() - timedelta(hours=24) >= fetch_start_datetime
+    if is_fetch_start_time_over_24_hours_ago:
         # Start and end time can't be over 24, so the fetch will end 24  hours after it's start.
-        fetch_end_datetime = fetch_start_datetime + timedelta(minutes=10)
+        fetch_end_datetime = fetch_start_datetime + timedelta(hours=24)
     else:
         fetch_end_datetime = datetime.now()
     return fetch_end_datetime
@@ -589,7 +589,7 @@ def main():
         )
 
         if command == "test-module":
-            return_results(test_module(client=client))
+            return_results(test_module(client=client, auth_code=auth_code))
 
         # in the generate login url command we still don't't have the auth code do get the token
         if command != "ms-management-activity-generate-login-url":

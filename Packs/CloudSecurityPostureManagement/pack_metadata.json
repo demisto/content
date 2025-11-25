@@ -1,0 +1,84 @@
+{
+    "name": "Cloud Security Posture Management Playbooks",
+    "description": "This pack provides the remediation playbooks for Cortex Cloud Issues and Cases.",
+    "support": "xsoar",
+    "currentVersion": "1.5.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Cloud Services"
+    ],
+    "tags": [
+        "Core"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "supportedModules": [
+        "C1",
+        "C3",
+        "X5",
+        "cloud_runtime_security",
+        "agentix",
+        "cloud_posture",
+        "xsiam",
+        "cloud"
+    ],
+    "marketplaces": [
+        "platform"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "Slack": {
+            "mandatory": false,
+            "display_name": "Slack"
+        },
+        "Jira": {
+            "mandatory": false,
+            "display_name": "Atlassian Jira"
+        },
+        "Core": {
+            "mandatory": true,
+            "display_name": "Core"
+        },
+        "MicrosoftTeams": {
+            "mandatory": false,
+            "display_name": "Microsoft Teams"
+        },
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
+        },
+        "Azure": {
+            "mandatory": false,
+            "display_name": "Azure"
+        },
+        "AWS": {
+            "mandatory": false,
+            "display_name": "AWS"
+        },
+        "GCP": {
+            "mandatory": false,
+            "display_name": "GCP"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts",
+        "Slack",
+        "Jira",
+        "Core",
+        "MicrosoftTeams",
+        "ServiceNow",
+        "Azure",
+        "AWS",
+        "GCP",
+        "FiltersAndTransformers"
+    ]
+}

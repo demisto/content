@@ -84,7 +84,7 @@ def test_multi_lang_tokenization_spacy(mocker):
 
 
 def test_multi_lang_tokenization_basic_tokeniztion(mocker):
-    input_chinese_sentence = "你好，世界"
+    input_chinese_sentence = "你好, 世界"
     mocker.patch.object(demisto, 'args', return_value={'language': 'Other', 'tokenizationMethod': 'byLetters'})
     res = word_tokenize(input_chinese_sentence)
     tokenized_res = res['Contents']['tokenizedText']

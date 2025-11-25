@@ -1,6 +1,6 @@
-Use the Azure Active Directory Identity And Access integration to manage roles and members.
+Use the Entra ID Identity And Access (formerly Azure Active Directory Identity And Access) integration to manage roles and members.
 
-## Configure Azure Active Directory Identity and Access in Cortex
+## Configure Entra ID Identity and Access in Cortex
 
 | **Parameter** | **Required** |
 | --- | --- |
@@ -491,7 +491,7 @@ Retrieves the properties of a collection of riskDetection objects.
 
 #### Required Permissions
 
-`IdentityRiskEvent.Read.All`
+`IdentityRiskyUser.Read.All`
 
 #### Base Command
 

@@ -26,6 +26,7 @@ from Azure import (
     get_azure_client,
     remove_member_from_role,
     postgres_server_update_command,
+    extract_azure_resource_info,
     WEBAPP_API_VERSION,
     FLEXIBLE_API_VERSION,
     CommandResults,
@@ -66,6 +67,11 @@ def client(mocker, mock_params):
     )
 
 
+def util_load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.loads(f.read())
+
+
 def test_update_security_rule_command(mocker, client, mock_params):
     """
     Given: An Azure client and a request to update a security rule.
@@ -92,7 +98,7 @@ def test_update_security_rule_command(mocker, client, mock_params):
     }
 
     mocker.patch.object(client, "get_rule", return_value=rule_response)
-    mocker.patch.object(client, "create_rule", return_value=rule_response)
+    mocker.patch.object(client, "create_or_update_rule", return_value=rule_response)
 
     # Call the function
     args = {
@@ -1129,7 +1135,14 @@ def test_azure_client_handle_azure_error_404(mocker, client):
 
     # Verify ValueError is raised for 404 errors
     with pytest.raises(ValueError) as excinfo:
-        client.handle_azure_error(error, resource_name, resource_type, subscription_id, resource_group_name)
+        client.handle_azure_error(
+            e=error,
+            resource_name=resource_name,
+            resource_type=resource_type,
+            api_function_name="test",
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+        )
 
     assert 'Storage Account "test-resource"' in str(excinfo.value)
     assert 'subscription ID "test-subscription"' in str(excinfo.value)
@@ -1137,40 +1150,65 @@ def test_azure_client_handle_azure_error_404(mocker, client):
     assert "was not found" in str(excinfo.value)
 
 
-def test_azure_client_handle_azure_error_403(mocker, client):
+def test_azure_client_handle_azure_error_using_return_multiple_permissions_error_function(mocker):
     """
-    Given: An Azure client and a 403 error.
-    When: The handle_azure_error method is called.
-    Then: The function should raise a DemistoException with permission error message.
+    Test the permission lookup logic and return_multiple_permissions_error call in handle_azure_error.
+
+    Tests:
+    1. Permission found via API function mapping
+    2. Permission found via fallback method
     """
-    # Prepare test data
-    error = Exception("403 - Forbidden")
-    resource_name = "test-resource"
-    resource_type = "Key Vault"
+    from Azure import AzureClient
 
-    # Verify DemistoException is raised for 403 errors
-    with pytest.raises(DemistoException) as excinfo:
-        client.handle_azure_error(error, resource_name, resource_type)
+    mock_get_permissions_from_api = mocker.patch("Azure.get_permissions_from_api_function_name")
+    mock_get_permissions_from_required = mocker.patch("Azure.get_permissions_from_required_role_permissions_list")
+    mock_return_multiple_permissions_error = mocker.patch("Azure.return_multiple_permissions_error")
+    client = AzureClient("tenant_id", "client_id", "client_secret")
 
-    assert 'Insufficient permissions to access Key Vault "test-resource"' in str(excinfo.value)
+    # Test case 1: Permission found via API function mapping
+    mock_get_permissions_from_api.return_value = ["Microsoft.Network/networkInterfaces/read"]
+    mock_get_permissions_from_required.return_value = None
+    exception_403 = Exception("403 Forbidden: Access denied")
 
+    client.handle_azure_error(
+        e=exception_403,
+        resource_name="test-nic",
+        resource_type="Network Interface",
+        api_function_name="list_networks_interfaces_request",
+        subscription_id="sub123",
+    )
 
-def test_azure_client_handle_azure_error_401(mocker, client):
-    """
-    Given: An Azure client and a 401 error.
-    When: The handle_azure_error method is called.
-    Then: The function should raise a DemistoException with authentication error message.
-    """
-    # Prepare test data
-    error = Exception("401 - Unauthorized")
-    resource_name = "test-resource"
-    resource_type = "Web App"
+    mock_get_permissions_from_api.assert_called_with("list_networks_interfaces_request", "403 forbidden: access denied")
+    mock_get_permissions_from_required.assert_not_called()
 
-    # Verify DemistoException is raised for 401 errors
-    with pytest.raises(DemistoException) as excinfo:
-        client.handle_azure_error(error, resource_name, resource_type)
+    expected_error_entries = [
+        {"account_id": "sub123", "message": "403 forbidden: access denied", "name": "Microsoft.Network/networkInterfaces/read"}
+    ]
+    mock_return_multiple_permissions_error.assert_called_once_with(expected_error_entries)
 
-    assert 'Authentication failed when accessing Web App "test-resource"' in str(excinfo.value)
+    mock_get_permissions_from_api.reset_mock()
+    mock_get_permissions_from_required.reset_mock()
+    mock_return_multiple_permissions_error.reset_mock()
+
+    # Test case 2: Permission found via fallback method
+    mock_get_permissions_from_api.return_value = None
+    mock_get_permissions_from_required.return_value = ["Microsoft.Storage/storageAccounts/write"]
+    exception_401 = Exception("401 Unauthorized")
+
+    client.handle_azure_error(
+        e=exception_401,
+        resource_name="test-storage",
+        resource_type="Storage Account",
+        api_function_name="storage_account_update_request",
+        subscription_id="sub456",
+    )
+
+    mock_get_permissions_from_api.assert_called_with("storage_account_update_request", "401 unauthorized")
+    mock_get_permissions_from_required.assert_called_with("401 unauthorized")
+    expected_error_entries = [
+        {"account_id": "sub456", "message": "401 unauthorized", "name": "Microsoft.Storage/storageAccounts/write"}
+    ]
+    mock_return_multiple_permissions_error.assert_called_once_with(expected_error_entries)
 
 
 def test_azure_client_handle_azure_error_400(mocker, client):
@@ -1186,7 +1224,7 @@ def test_azure_client_handle_azure_error_400(mocker, client):
 
     # Verify DemistoException is raised for 400 errors
     with pytest.raises(DemistoException) as excinfo:
-        client.handle_azure_error(error, resource_name, resource_type)
+        client.handle_azure_error(e=error, resource_name=resource_name, resource_type=resource_type, api_function_name="test")
 
     assert 'Invalid request for Disk "test-resource"' in str(excinfo.value)
 
@@ -1204,7 +1242,7 @@ def test_azure_client_handle_azure_error_generic(mocker, client):
 
     # Verify DemistoException is raised for generic errors
     with pytest.raises(DemistoException) as excinfo:
-        client.handle_azure_error(error, resource_name, resource_type)
+        client.handle_azure_error(e=error, resource_name=resource_name, resource_type=resource_type, api_function_name="test")
 
     assert 'Failed to access Virtual Machine "test-resource"' in str(excinfo.value)
     assert "Some other error" in str(excinfo.value)
@@ -1432,7 +1470,7 @@ def test_azure_client_create_policy_assignment(mocker, client):
 def test_azure_client_create_rule_success(mocker, client):
     """
     Given: An Azure client and valid rule creation parameters.
-    When: The create_rule method is called.
+    When: The create_or_update_rule method is called.
     Then: The function should make the correct API call with rule properties and return the response.
     """
     # Setup mock response
@@ -1470,7 +1508,7 @@ def test_azure_client_create_rule_success(mocker, client):
     }
 
     # Call the function
-    result = client.create_rule(
+    result = client.create_or_update_rule(
         security_group="test-sg",
         rule_name="test-rule",
         properties=properties,
@@ -1495,7 +1533,7 @@ def test_azure_client_create_rule_success(mocker, client):
 def test_azure_client_create_rule_with_complex_properties(mocker, client):
     """
     Given: An Azure client and complex rule properties with multiple ports and addresses.
-    When: The create_rule method is called.
+    When: The create_or_update_rule method is called.
     Then: The function should handle complex properties correctly.
     """
     # Setup mock response
@@ -1533,7 +1571,7 @@ def test_azure_client_create_rule_with_complex_properties(mocker, client):
     }
 
     # Call the function
-    result = client.create_rule(
+    result = client.create_or_update_rule(
         security_group="test-sg",
         rule_name="complex-rule",
         properties=properties,
@@ -1667,7 +1705,7 @@ def test_azure_client_handle_azure_error_other(client):
     error = Exception("500 - Internal Server Error")
 
     with pytest.raises(DemistoException) as excinfo:
-        client.handle_azure_error(e=error, resource_name="test-resource", resource_type="SQL Database")
+        client.handle_azure_error(e=error, resource_name="test-resource", resource_type="SQL Database", api_function_name="test")
 
     assert 'Failed to access SQL Database "test-resource"' in str(excinfo.value)
     assert "500 - Internal Server Error" in str(excinfo.value)
@@ -1835,6 +1873,7 @@ def test_get_webapp_auth_error_handling(mocker, client):
     client.handle_azure_error.assert_called_once_with(
         e=mock_exception,
         resource_name=name,
+        api_function_name="get_webapp_auth",
         resource_type="Web App",
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
@@ -1870,6 +1909,7 @@ def test_update_webapp_auth_error_handling(mocker, client):
     client.handle_azure_error.assert_called_once_with(
         e=mock_exception,
         resource_name=name,
+        api_function_name="update_webapp_auth",
         resource_type="Web App",
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
@@ -1966,6 +2006,7 @@ def test_flexible_server_param_set_error_handling(mocker, client):
         e=mock_exception,
         resource_name=f"{server_name}/{configuration_name}",
         resource_type="MySQL Flexible Server Configuration",
+        api_function_name="flexible_server_param_set",
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
     )
@@ -2033,7 +2074,1337 @@ def test_get_monitor_log_profile_error_handling(mocker, client):
     client.handle_azure_error.assert_called_once_with(
         e=mock_exception,
         resource_name=log_profile_name,
+        api_function_name="get_monitor_log_profile",
         resource_type="Monitor Log Profile",
         subscription_id=subscription_id,
         resource_group_name=None,
     )
+
+
+def test_format_rule():
+    """
+    Given: rule data and rule name
+    Then: Command outputs is returned as expected and flattens the `properties` field.
+
+    """
+    from Azure import format_rule
+
+    rule = util_load_json("test_data/get_rule_response.json")
+    cr = format_rule(rule_json=rule, security_rule_name="RuleName")
+    assert cr.raw_response["name"] == "wow"
+    assert cr.raw_response["sourceAddressPrefix"] == "3.2.3.2"
+    assert "### Rules RuleName" in cr.readable_output
+
+
+def test_nsg_public_ip_addresses_list_command(mocker):
+    """
+    Given: An Azure client mock and the list_public_ip_addresses_response.json file.
+    When: nsg_public_ip_addresses_list_command is called
+          1. With a limit of 2 (all_results=False).
+          2. With all_results=True.
+    Then:
+          1. It should return only 2 results when limited.
+          2. It should return all results when all_results=True.
+          3. The results should contain expected fields such as name, id, fqdn.
+          4. The etag field should be cleaned up (first 3 chars and last char removed).
+    """
+    from Azure import nsg_public_ip_addresses_list_command
+
+    mock_response = util_load_json("test_data/list_public_ip_addresses_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.list_public_ip_addresses_request.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+
+    args = {"limit": "2", "all_results": "false"}
+    result: CommandResults = nsg_public_ip_addresses_list_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGPublicIPAddress"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 2
+    assert "name" in result.outputs[0]
+    assert "id" in result.outputs[0]
+
+    # "123etag3" should become "etag" after [3:-1]
+    first_item_with_etag = result.outputs[0]  # First item has etag "123etag3"
+    if first_item_with_etag.get("etag"):
+        assert first_item_with_etag.get("etag") == "etag"
+
+    args = {"all_results": "true"}
+    result_all: CommandResults = nsg_public_ip_addresses_list_command(mock_client, params, args)
+
+    assert isinstance(result_all, CommandResults)
+    assert len(result_all.outputs) == len(mock_response["value"])  # Should be 3 items
+
+    fqdn_values = [
+        out.get("properties", {}).get("dnsSettings", {}).get("fqdn")
+        for out in result_all.outputs
+        if out.get("properties", {}).get("dnsSettings", {}).get("fqdn")
+    ]
+
+    assert len(fqdn_values) == 2
+    assert "testlbl.westus.cloudapp.azure.com" in fqdn_values
+    assert "testlbl.hxdwgjcdfgbhgebs.eastus.sysgen.cloudapp.azure.com" in fqdn_values
+
+    # Check readable_output is generated
+    assert result_all.readable_output
+    assert "Public IP Addresses List" in result_all.readable_output
+
+
+def test_nsg_network_interfaces_list_command(mocker):
+    """
+    Given: An Azure client mock and the list_networks_interfaces_response.json file.
+    When: nsg_network_interfaces_list_command is called
+          1. With a limit of 1 (all_results=False).
+          2. With all_results=True.
+    Then:
+          1. It should return only 1 result when limited.
+          2. It should return all results when all_results=True.
+          3. The results should contain expected fields such as name, id.
+          4. The etag field should be cleaned up (first 3 chars and last char removed).
+    """
+    from Azure import nsg_network_interfaces_list_command
+
+    mock_response = util_load_json("test_data/list_networks_interfaces_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.list_networks_interfaces_request.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+
+    # --- Case 1: with limit=1 ---
+    args = {"limit": "1", "all_results": "false"}
+    result: CommandResults = nsg_network_interfaces_list_command(mock_client, params, args)
+
+    assert result.outputs_prefix == "Azure.NSGNetworkInterfaces"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    first = result.outputs[0]
+
+    assert first["name"] == "test-nic"
+    assert first["id"] == "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/test-nic"
+
+    # --- Case 2: with all_results=True ---
+    args = {"all_results": "true"}
+    result_all: CommandResults = nsg_network_interfaces_list_command(mock_client, params, args)
+
+    assert isinstance(result_all, CommandResults)
+    assert len(result_all.outputs) == len(mock_response["value"])  # Should be 2 items
+    assert len(result_all.outputs) == 2
+
+    names = [item["name"] for item in result_all.outputs]
+    assert "test-nic" in names
+    assert "test-nic2" in names
+
+    for item in result_all.outputs:
+        if item.get("etag"):
+            assert item["etag"] == "etag"
+
+    assert result_all.readable_output
+    assert "Network Interfaces List" in result_all.readable_output
+
+
+def test_nsg_resource_group_list_command(mocker):
+    """
+    Given: An Azure client mock and the list_resource_groups_response.json file.
+    When: nsg_resource_group_list_command is called
+          1. With a limit of 1.
+          2. Without limit (default).
+    Then:
+          1. It should respect the limit argument.
+          2. It should return the resource group data with expected fields.
+          3. It should generate proper readable output.
+    """
+    from Azure import nsg_resource_group_list_command
+
+    mock_response = util_load_json("test_data/list_resource_groups_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.list_resource_groups_request.return_value = mock_response
+
+    params = {"subscription_id": "subscription1"}
+
+    # --- Case 1: with limit=1 ---
+    args = {"limit": "1"}
+    result: CommandResults = nsg_resource_group_list_command(mock_client, params, args)
+
+    # Check that client method was called with correct parameters including limit
+    mock_client.list_resource_groups_request.assert_called_with(subscription_id="subscription1", filter_by_tag="", limit="1")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGResourceGroup"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+
+    first = result.outputs[0]
+    assert first["name"] == "resourceGroup1"
+    assert first["location"] == "centralus"
+    assert "tags" in first
+    assert "properties" in first
+    assert first["properties"]["provisioningState"] == "Succeeded"
+
+    # Check readable_output is generated
+    assert result.readable_output
+    assert "Resource Groups List" in result.readable_output
+
+    # --- Case 2: no limit (default) ---
+    args = {}
+    result_default: CommandResults = nsg_resource_group_list_command(mock_client, params, args)
+
+    assert isinstance(result_default, CommandResults)
+    assert len(result_default.outputs) == 1
+    assert result_default.outputs[0]["id"] == "/subscriptions/subscription1/resourceGroups/resourceGroup1"
+
+
+def test_nsg_security_rule_create_command(mocker):
+    """
+    Given: An Azure client mock and arguments for creating a security rule.
+    When: nsg_security_rule_create_command is called.
+    Then:
+        1. It should call create_or_update_rule with correct properties.
+        2. The returned CommandResults should include the created rule data.
+        3. The etag should be cleaned up.
+        4. Readable output should be generated.
+    """
+    from Azure import nsg_security_rule_create_command
+
+    mock_response = util_load_json("test_data/create_or_update_rule_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.create_or_update_rule.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {
+        "security_group_name": "testnsg",
+        "security_rule_name": "rule1",
+        "action": "Deny",
+        "direction": "Outbound",
+        "priority": 100,
+        "protocol": "Any",
+        "source": "10.0.0.0/8",
+        "destination": "11.0.0.0/8",
+        "destination_ports": "8080",
+    }
+
+    result: CommandResults = nsg_security_rule_create_command(mock_client, params, args)
+
+    # --- Check the properties passed to create_or_update_rule ---
+    expected_properties = {
+        "protocol": "*",
+        "access": "Deny",
+        "priority": 100,
+        "direction": "Outbound",
+        "sourcePortRange": "*",
+        "destinationPortRange": "8080",
+        "sourceAddressPrefix": "10.0.0.0/8",
+        "destinationAddressPrefix": "11.0.0.0/8",
+    }
+
+    mock_client.create_or_update_rule.assert_called_once_with(
+        security_group="testnsg",
+        rule_name="rule1",
+        properties=expected_properties,
+        subscription_id="subid",
+        resource_group_name="rg1",
+    )
+
+    # --- Check the returned CommandResults ---
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["name"] == "rule1"
+
+    # Check that etag is cleaned up
+    if result.outputs.get("etag"):
+        assert result.outputs.get("etag") == "etag"
+
+    # Check readable_output is generated
+    assert result.readable_output
+    assert f"The security rule {args['security_rule_name']} was created successfully" in result.readable_output
+
+
+def test_nsg_security_rule_get_command(mocker):
+    """
+    Given: An Azure client mock and a security rule JSON.
+    When: nsg_security_rule_get_command is called.
+    Then:
+        1. It should call client.get_rule with correct arguments.
+        2. The returned CommandResults should contain the rule data.
+        3. The etag should be cleaned up.
+        4. Readable output should be generated.
+    """
+    from Azure import nsg_security_rule_get_command
+
+    mock_rule = util_load_json("test_data/get_rule_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.get_rule.return_value = mock_rule
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"security_group_name": "testnsg", "security_rule_name": "wow"}
+
+    result: CommandResults = nsg_security_rule_get_command(mock_client, params, args)
+
+    # Check that get_rule was called correctly
+    mock_client.get_rule.assert_called_once_with(
+        security_group="testnsg",
+        rule_name="wow",
+        subscription_id="subid",
+        resource_group_name="rg1",
+    )
+
+    # Check the returned CommandResults
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_rule
+
+    # Check that etag is cleaned up
+    if result.outputs.get("etag"):
+        assert result.outputs["etag"] == "etag"
+
+    # Check readable_output is generated
+    assert result.readable_output
+    assert f"Rule {args['security_rule_name']}" in result.readable_output
+
+
+def test_nsg_security_groups_list_command(mocker):
+    """
+    Given: An Azure client mock and the list_network_security_groups_response.json file.
+    When: nsg_security_groups_list_command is called.
+    Then:
+        1. It should call client.list_network_security_groups with correct parameters.
+        2. The etag fields should be cleaned up for both groups and default security rules.
+        3. The CommandResults should have correct outputs and readable_output.
+    """
+    from Azure import nsg_security_groups_list_command
+
+    mock_response = util_load_json("test_data/list_network_security_groups_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.list_network_security_groups.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {}
+
+    result: CommandResults = nsg_security_groups_list_command(mock_client, params, args)
+
+    mock_client.list_network_security_groups.assert_called_once_with(subscription_id="subid", resource_group_name="rg1")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGSecurityGroup"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == len(mock_response["value"])
+
+    # Check that etag fields are cleaned up
+    for group in result.outputs:
+        if group.get("etag"):
+            assert group["etag"] == "etag"
+        for rule in group.get("defaultSecurityRules", []):
+            if rule.get("etag"):
+                assert rule["etag"] == "etag"
+
+        assert "name" in group
+        assert "id" in group
+        assert "location" in group
+
+    # Check readable_output is generated
+    assert result.readable_output
+    assert "Network Security Groups" in result.readable_output
+
+    # The readable_output should contain the NSG names
+    for group in result.outputs:
+        assert group["name"] in result.readable_output
+
+
+def test_nsg_security_rule_delete_command(mocker):
+    """
+    Given: An Azure client mock and various scenarios.
+    When: nsg_security_rule_delete_command is called.
+    Then:
+        1. It should call client.delete_rule with correct arguments for valid inputs.
+        2. It should return appropriate messages based on status codes (200=success, 202=async, 204=not found).
+        3. It should call return_error when required parameters are missing or empty.
+    """
+    from Azure import nsg_security_rule_delete_command
+
+    mock_client = mocker.Mock()
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+
+    mock_response = mocker.Mock()
+    mock_response.status_code = 202
+    mock_client.delete_rule.return_value = mock_response
+
+    args = {"security_group_name": "testnsg", "security_rule_name": "testrule"}
+    result = nsg_security_rule_delete_command(mock_client, params, args)
+
+    mock_client.delete_rule.assert_called_with(
+        security_group_name="testnsg",
+        security_rule_name="testrule",
+        subscription_id="subid",
+        resource_group_name="rg1",
+    )
+    assert isinstance(result, CommandResults)
+    assert "was accepted and the operation will complete asynchronously" in result.readable_output
+
+    mock_response.status_code = 200
+    result = nsg_security_rule_delete_command(mock_client, params, args)
+    assert "was successfully deleted" in result.readable_output
+
+    mock_response.status_code = 204
+    result = nsg_security_rule_delete_command(mock_client, params, args)
+    assert "was not found" in result.readable_output
+
+
+def test_get_permissions_from_api_function_name(mocker):
+    """
+    Given: An API function name and an error message.
+    When: get_permissions_from_api_function_name is called.
+    Then:
+          1. It should return the matching permission found in the error message.
+          2. It should return None if no permission is found in the error message.
+          3. It should be case-insensitive when matching.
+          4. Multiple permissions in function, return all matched permissions.
+    """
+    from Azure import get_permissions_from_api_function_name
+
+    # Test case 1: Permission found in error message
+    api_function_name = "list_networks_interfaces_request"
+    error_msg = "Access denied. Missing permission: Microsoft.Network/networkInterfaces/read"
+    result = get_permissions_from_api_function_name(api_function_name, error_msg)
+    assert result == ["Microsoft.Network/networkInterfaces/read"]
+
+    # Test case 2: Case-insensitive matching
+    error_msg_upper = "Access denied. Missing permission: MICROSOFT.NETWORK/NETWORKINTERFACES/READ"
+    result = get_permissions_from_api_function_name(api_function_name, error_msg_upper)
+    assert result == ["Microsoft.Network/networkInterfaces/read"]
+
+    # Test case 3: No permission found in error message
+    error_msg_no_match = "Some unrelated error message"
+    result = get_permissions_from_api_function_name(api_function_name, error_msg_no_match)
+    assert result == []
+
+    # Test case 4: Multiple permissions in function, return all matched permissions
+    api_function_name_multi = "acr_update"  # Has both read and write permissions
+    error_msg_write = (
+        "Missing Microsoft.ContainerRegistry/registries/read, Microsoft.ContainerRegistry/registries/write permissions"
+    )
+    result = get_permissions_from_api_function_name(api_function_name_multi, error_msg_write)
+    assert result == ["Microsoft.ContainerRegistry/registries/read", "Microsoft.ContainerRegistry/registries/write"]
+
+
+def test_get_permissions_from_required_role_permissions_list(mocker):
+    """
+    Given: An error message.
+    When: get_permissions_from_required_role_permissions_list is called.
+    Then:
+          1. It should return the first matching permission found in the error message.
+          2. It should return None if no permission is found in the error message.
+          3. It should be case-insensitive when matching.
+          4. It should search through all required role permissions.
+    """
+    from Azure import get_permissions_from_required_role_permissions_list
+
+    # Test case 1: Permission found in error message
+    error_msg = "Access denied. Missing permission: Microsoft.Network/networkSecurityGroups/read"
+    result = get_permissions_from_required_role_permissions_list(error_msg)
+    assert result == ["Microsoft.Network/networkSecurityGroups/read"]
+
+    # Test case 2: Case-insensitive matching
+    error_msg_mixed_case = "Access denied. Missing permission: microsoft.network/networksecuritygroups/READ"
+    result = get_permissions_from_required_role_permissions_list(error_msg_mixed_case)
+    assert result == ["Microsoft.Network/networkSecurityGroups/read"]
+
+    # Test case 3: No permission found in error message
+    error_msg_no_match = "Some completely unrelated error message without permissions"
+    result = get_permissions_from_required_role_permissions_list(error_msg_no_match)
+    assert result == ["N/A"]
+
+    # Test case 4: Empty error message
+    error_msg_empty = ""
+    result = get_permissions_from_required_role_permissions_list(error_msg_empty)
+    assert result == ["N/A"]
+
+
+def test_handle_azure_error_forbidden_text_match(mocker, client):
+    """
+    Given: An Azure client and an error containing "forbidden" text.
+    When: The handle_azure_error method is called.
+    Then: The function should trigger permission error handling.
+    """
+    mock_get_permissions_from_api = mocker.patch(
+        "Azure.get_permissions_from_api_function_name", return_value=["Microsoft.ContainerRegistry/registries/read"]
+    )
+    mock_get_permissions_from_required = mocker.patch("Azure.get_permissions_from_required_role_permissions_list")
+    mock_return_multiple_permissions_error = mocker.patch("Azure.return_multiple_permissions_error")
+
+    error = Exception("Access forbidden - insufficient privileges")
+    resource_name = "test"
+    resource_type = "test resource"
+    subscription_id = "test-sub"
+
+    client.handle_azure_error(
+        e=error,
+        resource_name=resource_name,
+        resource_type=resource_type,
+        api_function_name="acr_update",
+        subscription_id=subscription_id,
+    )
+
+    mock_get_permissions_from_api.assert_called_once_with("acr_update", "access forbidden - insufficient privileges")
+    mock_get_permissions_from_required.assert_not_called()
+
+    expected_error_entries = [
+        {
+            "account_id": "test-sub",
+            "message": "access forbidden - insufficient privileges",
+            "name": "Microsoft.ContainerRegistry/registries/read",
+        }
+    ]
+    mock_return_multiple_permissions_error.assert_called_once_with(expected_error_entries)
+
+
+def test_handle_azure_error_permission_error_no_permissions_found(mocker, client):
+    """
+    Given: An Azure client and a permission error where no permissions are found.
+    When: The handle_azure_error method is called.
+    Then: The function should call return_multiple_permissions_error with empty list.
+    """
+    mock_get_permissions_from_api = mocker.patch("Azure.get_permissions_from_api_function_name", return_value=None)
+    mock_get_permissions_from_required = mocker.patch(
+        "Azure.get_permissions_from_required_role_permissions_list", return_value=["N/A"]
+    )
+    mock_return_multiple_permissions_error = mocker.patch("Azure.return_multiple_permissions_error")
+
+    error = Exception("403 Forbidden")
+    resource_name = "test-resource"
+    resource_type = "Unknown Resource"
+
+    client.handle_azure_error(
+        e=error,
+        resource_name=resource_name,
+        resource_type=resource_type,
+        api_function_name="unknown_function",
+    )
+
+    mock_get_permissions_from_api.assert_not_called()
+    mock_get_permissions_from_required.assert_called_once()
+    mock_return_multiple_permissions_error.assert_called_once_with(
+        [{"account_id": None, "message": str(error).lower(), "name": "N/A"}]
+    )
+
+
+def test_handle_azure_error_permission_error_multiple_permissions(mocker, client):
+    """
+    Given: An Azure client and a permission error with multiple permissions found.
+    When: The handle_azure_error method is called.
+    Then: The function should call return_multiple_permissions_error with all permissions.
+    """
+    mock_return_multiple_permissions_error = mocker.patch("Azure.return_multiple_permissions_error")
+
+    error = Exception("401 Unauthorized missing Microsoft.Storage/storageAccounts/read")
+    resource_name = "test-storage"
+    resource_type = "Storage Account"
+    subscription_id = "sub-123"
+    resource_group_name = "rg-test"
+
+    client.handle_azure_error(
+        e=error,
+        resource_name=resource_name,
+        resource_type=resource_type,
+        api_function_name="storage_account_update_request",
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+    )
+
+    expected_error_entries = [
+        {
+            "account_id": "sub-123",
+            "message": "401 unauthorized missing microsoft.storage/storageaccounts/read",
+            "name": "Microsoft.Storage/storageAccounts/read",
+        }
+    ]
+    mock_return_multiple_permissions_error.assert_called_once_with(expected_error_entries)
+
+
+def test_storage_blob_service_properties_get_command(mocker):
+    """
+    Given: An Azure client mock and the get_blob_service_properties.json file.
+    When: storage_blob_service_properties_get_command is called.
+    Then:
+        1. It should call client.storage_blob_service_properties_get_request with correct parameters.
+        2. It should extract subscription_id, resource_group, and account_name from the response ID.
+        3. The CommandResults should have correct outputs, readable_output, and metadata.
+    """
+    from Azure import storage_blob_service_properties_get_command
+
+    mock_response = util_load_json("test_data/get_blob_service_properties.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_service_properties_get_request.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"account_name": "teststorage"}
+
+    result: CommandResults = storage_blob_service_properties_get_command(mock_client, params, args)
+
+    mock_client.storage_blob_service_properties_get_request.assert_called_once_with(
+        account_name="teststorage", resource_group_name="rg1", subscription_id="subid"
+    )
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.StorageBlobServiceProperties"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+    assert result.raw_response == mock_response
+
+    assert "Azure Storage Blob Service Properties" in result.readable_output
+    assert "default" in result.readable_output
+    assert "sto8607" in result.readable_output
+    assert "subscription-id" in result.readable_output
+    assert "res4410" in result.readable_output
+    assert "true" in result.readable_output.lower()
+
+    expected_headers = [
+        "Name",
+        "Account Name",
+        "Subscription ID",
+        "Resource Group",
+        "Change Feed",
+        "Delete Retention Policy",
+        "Versioning",
+    ]
+    for header in expected_headers:
+        assert header in result.readable_output
+
+
+def test_storage_blob_containers_update_command(mocker):
+    """
+    Given: An Azure client mock and the update_blob_container.json file.
+    When: storage_blob_containers_update_command is called.
+    Then:
+        1. It should call client.storage_blob_containers_create_update_request with correct parameters and PATCH method.
+        2. It should extract subscription_id, resource_group, and account_name from the response ID.
+        3. The CommandResults should have correct outputs, readable_output, and metadata.
+    """
+    from Azure import storage_blob_containers_update_command
+
+    mock_response = util_load_json("test_data/update_blob_container.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_containers_create_update_request.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"account_name": "teststorage", "container_name": "testcontainer"}
+
+    result: CommandResults = storage_blob_containers_update_command(mock_client, params, args)
+
+    mock_client.storage_blob_containers_create_update_request.assert_called_once_with(
+        subscription_id="subid", resource_group_name="rg1", args=args, method="PATCH"
+    )
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.StorageBlobContainer"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+    assert result.raw_response == mock_response
+
+    assert "Azure Storage Blob Containers Properties" in result.readable_output
+    assert "container6185" in result.readable_output
+    assert "sto328" in result.readable_output
+    assert "subscription-id" in result.readable_output
+    assert "res3376" in result.readable_output
+    assert "Container" in result.readable_output
+
+    expected_headers = ["Name", "Account Name", "Subscription ID", "Resource Group", "Public Access"]
+    for header in expected_headers:
+        assert header in result.readable_output
+
+
+def test_extract_azure_resource_info():
+    """
+    Given: Various Azure resource ID formats.
+    When: The extract_azure_resource_info function is called.
+    Then: The function should correctly extract subscription_id, resource_group, and account_name components.
+    """
+
+    # Test case 1: Complete Azure storage blob service resource ID
+    resource_id = "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage/blobServices/default"  # noqa: E501
+    subscription_id, resource_group, account_name = extract_azure_resource_info(resource_id)
+    assert subscription_id == "12345678-1234-1234-1234-123456789012"
+    assert resource_group == "test-rg"
+    assert account_name == "teststorage"
+
+    # Test case 2: Partial resource ID (only subscription and resource group)
+    resource_id = "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/test-rg/providers/Microsoft.Compute/virtualMachines/test-vm"  # noqa: E501
+    subscription_id, resource_group, account_name = extract_azure_resource_info(resource_id)
+    assert subscription_id == "12345678-1234-1234-1234-123456789012"
+    assert resource_group == "test-rg"
+    assert account_name is None
+
+    # Test case 3: Empty string
+    resource_id = ""
+    subscription_id, resource_group, account_name = extract_azure_resource_info(resource_id)
+    assert subscription_id is None
+    assert resource_group is None
+    assert account_name is None
+
+    # Test case 4: Invalid format
+    resource_id = "invalid-resource-id-format"
+    subscription_id, resource_group, account_name = extract_azure_resource_info(resource_id)
+    assert subscription_id is None
+    assert resource_group is None
+    assert account_name is None
+
+    # Test case 5: Only subscription information
+    resource_id = "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups"
+    subscription_id, resource_group, account_name = extract_azure_resource_info(resource_id)
+    assert subscription_id == "12345678-1234-1234-1234-123456789012"
+    assert resource_group is None
+    assert account_name is None
+
+    # Test case 6: Complex names with hyphens and underscores
+    resource_id = "/subscriptions/abcd-efgh-1234-5678-ijkl/resourceGroups/my-resource-group_v2/providers/Microsoft.Storage/storageAccounts/my_storage_account123/blobServices/default"  # noqa: E501
+    subscription_id, resource_group, account_name = extract_azure_resource_info(resource_id)
+    assert subscription_id == "abcd-efgh-1234-5678-ijkl"
+    assert resource_group == "my-resource-group_v2"
+    assert account_name == "my_storage_account123"
+
+    # Test case 7: Storage account without blob services suffix
+    resource_id = "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage"  # noqa: E501
+    subscription_id, resource_group, account_name = extract_azure_resource_info(resource_id)
+    assert subscription_id == "12345678-1234-1234-1234-123456789012"
+    assert resource_group == "test-rg"
+    assert account_name is None
+
+
+def test_start_vm_command(mocker):
+    """
+    Given: A subscription, resource group, and VM name.
+    When: start_vm_command is called with these parameters.
+    Then: It should call validate_provisioning_state and start_vm_request,
+          and return correct CommandResults with VM starting state.
+    """
+    from Azure import start_vm_command
+
+    mock_client = mocker.Mock()
+    params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "virtual_machine_name": "vm1"}
+
+    result = start_vm_command(mock_client, params, args)
+
+    mock_client.validate_provisioning_state.assert_called_once_with("sub-id", "rg1", "vm1")
+    mock_client.start_vm_request.assert_called_once_with("sub-id", "rg1", "vm1")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Compute"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == "vm1"
+    assert result.outputs["resourceGroup"] == "rg1"
+    assert result.outputs["powerState"] == "VM starting"
+    assert "vm1" in result.readable_output
+
+
+def test_poweroff_vm_command(mocker):
+    """
+    Given: A subscription, resource group, VM name, and optional skip_shutdown.
+    When: poweroff_vm_command is called.
+    Then: It should call validate_provisioning_state and poweroff_vm_request,
+          and return correct CommandResults with VM stopping state.
+    """
+    from Azure import poweroff_vm_command
+
+    mock_client = mocker.Mock()
+    params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "virtual_machine_name": "vm1", "skip_shutdown": True}
+
+    result = poweroff_vm_command(mock_client, params, args)
+
+    mock_client.validate_provisioning_state.assert_called_once_with("sub-id", "rg1", "vm1")
+    mock_client.poweroff_vm_request.assert_called_once_with("sub-id", "rg1", "vm1", True)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Compute"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == "vm1"
+    assert result.outputs["resourceGroup"] == "rg1"
+    assert result.outputs["powerState"] == "VM stopping"
+    assert "vm1" in result.readable_output
+
+
+def test_get_vm_command(mocker):
+    """
+    Given: A subscription, resource group, and VM name.
+    When: get_vm_command is called.
+    Then: It should call get_vm_request and return correct CommandResults
+          including OS, size, power state, and network interfaces.
+    """
+    from Azure import get_vm_command
+
+    mock_client = mocker.Mock()
+    params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "virtual_machine_name": "vm1", "expand": ""}
+
+    mock_response = {
+        "location": "eastus",
+        "tags": {"env": "prod"},
+        "properties": {
+            "vmId": "vm123",
+            "provisioningState": "Succeeded",
+            "storageProfile": {"osDisk": {"diskSizeGB": 128, "osType": "Linux"}},
+            "instanceView": {"statuses": [{"code": "PowerState/running", "displayStatus": "VM running"}]},
+            "networkProfile": {"networkInterfaces": [{"id": "nic1"}]},
+            "userData": "userdata",
+        },
+    }
+
+    mocker.patch.object(mock_client, "get_vm_request", return_value=mock_response)
+
+    result = get_vm_command(mock_client, params, args)
+
+    mock_client.get_vm_request.assert_called_once_with("sub-id", "rg1", "vm1", expand="")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Compute"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["properties"]["vmId"] == "vm123"
+    assert result.outputs["properties"]["provisioningState"] == "Succeeded"
+    assert result.outputs["properties"]["storageProfile"]["osDisk"]["osType"] == "Linux"
+    assert result.outputs["properties"]["instanceView"]["statuses"][0]["displayStatus"] == "VM running"
+    assert "vm1" in result.readable_output
+
+
+def test_get_network_interface_command(mocker):
+    """
+    Given: A subscription, resource group, and network interface name.
+    When: get_network_interface_command is called with these parameters.
+    Then: It should call get_network_interface_request and return correct CommandResults
+          with properly formatted network interface details.
+    """
+    from Azure import get_network_interface_command
+
+    mock_client = mocker.Mock()
+    mock_params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "network_interface_name": "nic1"}
+
+    mock_response = {
+        "id": "/subscriptions/sub-id/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/nic1",
+        "name": "nic1",
+        "location": "eastus",
+        "properties": {
+            "macAddress": "00:11:22:33:44:55",
+            "primary": True,
+            "networkSecurityGroup": {"id": "nsg-id"},
+            "nicType": "Standard",
+            "virtualMachine": {"id": "vm-id"},
+            "dnsSettings": {"internalDomainNameSuffix": "internal.local"},
+            "ipConfigurations": [
+                {
+                    "name": "ipconfig1",
+                    "id": "ipconfig-id",
+                    "properties": {"privateIPAddress": "10.0.0.4", "publicIPAddress": {"id": "public-ip-id"}},
+                    "etag": 'W/"12345"',
+                }
+            ],
+        },
+    }
+
+    mocker.patch.object(mock_client, "get_network_interface_request", return_value=mock_response)
+
+    result = get_network_interface_command(mock_client, mock_params, args)
+
+    mock_client.get_network_interface_request.assert_called_once_with("sub-id", "rg1", "nic1")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Network.Interfaces"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == "nic1"
+    assert result.outputs["properties"]["macAddress"] == "00:11:22:33:44:55"
+    assert result.outputs["properties"]["ipConfigurations"][0]["properties"]["privateIPAddress"] == "10.0.0.4"
+    assert result.outputs["properties"]["ipConfigurations"][0]["properties"]["publicIPAddress"]["id"] == "public-ip-id"
+    assert result.outputs["properties"]["ipConfigurations"][0]["etag"] == "12345"  # etag cleaned
+    assert "nic1" in result.readable_output
+
+
+def test_get_single_ip_details_from_list_of_ip_details():
+    """
+    Given: A subscription, resource group, and public IP name.
+    When: get_public_ip_details_command is called with these parameters.
+    Then: It should call get_public_ip_details_request and return correct CommandResults.
+    """
+    from Azure import get_single_ip_details_from_list_of_ip_details
+
+    list_of_ips = [
+        {"properties": {"ipAddress": "1.1.1.1"}},
+        {"properties": {"ipAddress": "2.2.2.2"}},
+        {"properties": {"nested": {"ipAddress": "3.3.3.3"}}},
+    ]
+
+    ip1 = get_single_ip_details_from_list_of_ip_details(list_of_ips, "1.1.1.1")
+    ip3 = get_single_ip_details_from_list_of_ip_details(list_of_ips, "3.3.3.3")
+    ip_missing = get_single_ip_details_from_list_of_ip_details(list_of_ips, "4.4.4.4")
+
+    assert ip1 == {"properties": {"ipAddress": "1.1.1.1"}}
+    assert ip3 == {"properties": {"nested": {"ipAddress": "3.3.3.3"}}}
+    assert ip_missing is None
+
+
+def test_get_public_ip_details_command_with_resource_group(mocker):
+    """
+    Given: A subscription, resource group, and public IP name.
+    When: get_public_ip_details_command is called with these parameters.
+    Then: It should call get_public_ip_details_request and return correct CommandResults.
+    """
+    from Azure import get_public_ip_details_command
+
+    mock_client = mocker.Mock()
+    mock_params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "address_name": "ip1"}
+
+    mock_response = {
+        "id": "/subscriptions/sub-id/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/ip1",
+        "name": "ip1",
+        "location": "eastus",
+        "etag": 'W/"12345"',
+        "properties": {
+            "ipAddress": "1.2.3.4",
+            "publicIPAddressVersion": "IPv4",
+            "publicIPAllocationMethod": "Static",
+            "ipConfiguration": {"id": "config-id"},
+            "dnsSettings": {"domainNameLabel": "label1", "fqdn": "ip1.eastus.cloudapp.azure.com"},
+        },
+    }
+
+    mocker.patch.object(mock_client, "get_public_ip_details_request", return_value=mock_response)
+
+    result = get_public_ip_details_command(mock_client, mock_params, args)
+
+    mock_client.get_public_ip_details_request.assert_called_once_with("sub-id", "rg1", "ip1")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Network.IPConfigurations"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["properties"]["ipAddress"] == "1.2.3.4"
+    assert result.outputs["properties"]["publicIPAddressVersion"] == "IPv4"
+    assert result.outputs["properties"]["publicIPAllocationMethod"] == "Static"
+    assert result.outputs["etag"] == "12345"
+    assert "ip1" in result.readable_output
+
+
+def test_get_public_ip_details_command_without_resource_group(mocker):
+    """
+    Given: A subscription and public IP name, but no resource group.
+    When: get_public_ip_details_command is called.
+    Then: It should call get_all_public_ip_details_request, find the matching IP, and return details.
+    """
+    from Azure import get_public_ip_details_command
+
+    mock_client = mocker.Mock()
+    mock_params = {"subscription_id": "sub-id"}
+    args = {"subscription_id": "sub-id", "address_name": "ip1"}
+
+    mock_all_ips = {
+        "value": [
+            {
+                "id": "/subscriptions/sub-id/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/ip1",
+                "name": "ip1",
+                "location": "eastus",
+                "etag": 'W/"999"',
+                "properties": {
+                    "ipAddress": "5.6.7.8",
+                    "publicIPAddressVersion": "IPv4",
+                    "publicIPAllocationMethod": "Dynamic",
+                },
+            },
+            {
+                "id": "/subscriptions/sub-id/resourceGroups/rg2/providers/Microsoft.Network/publicIPAddresses/ip2",
+                "name": "ip2",
+                "location": "westus",
+                "etag": 'W/"888"',
+                "properties": {
+                    "ipAddress": "9.9.9.9",
+                    "publicIPAddressVersion": "IPv6",
+                    "publicIPAllocationMethod": "Static",
+                },
+            },
+        ]
+    }
+
+    # Mock the client and helper functions
+    mocker.patch.object(mock_client, "get_all_public_ip_details_request", return_value=mock_all_ips)
+    mocker.patch("Azure.get_single_ip_details_from_list_of_ip_details", return_value=mock_all_ips["value"][0])
+
+    result = get_public_ip_details_command(mock_client, mock_params, args)
+
+    mock_client.get_all_public_ip_details_request.assert_called_once_with("sub-id")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["properties"]["ipAddress"] == "5.6.7.8"
+    assert result.outputs["etag"] == "999"
+    assert "ip1" in result.readable_output
+    assert "rg1" in result.readable_output
+
+
+def test_azure_billing_usage_list_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and valid billing usage arguments.
+    When: azure_billing_usage_list_command is called successfully.
+    Then: It should return CommandResults with usage data and proper outputs.
+    """
+    from Azure import azure_billing_usage_list_command
+
+    mock_response = {
+        "value": [
+            {
+                "name": "usage-item-1",
+                "properties": {
+                    "product": "Virtual Machines",
+                    "meterName": "D2s v3",
+                    "paygCost": {"amount": 125.75},
+                    "quantity": 24.5,
+                    "billingPeriodStartDate": "2025-10-01T00:00:00.0000000Z",
+                    "billingPeriodEndDate": "2025-10-01T23:59:59.0000000Z",
+                },
+            }
+        ],
+        "nextLink": "https://management.azure.com/subscriptions/test/providers/Microsoft.Consumption/usageDetails?$skiptoken=abc123",
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    args = {"subscription_id": "test-subscription-id", "max_results": "50", "filter": "properties/usageStart ge '2023-10-01'"}
+    params = mock_params
+
+    result = azure_billing_usage_list_command(client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Azure Billing Usage" in result.readable_output
+    assert "Azure.Billing.Usage(val.name && val.name == obj.name)" in result.outputs
+    assert "Azure.Billing(true)" in result.outputs
+    assert (
+        "https://management.azure.com/subscriptions/test/providers/Microsoft.Consumption/usageDetails?$skiptoken=abc123"
+        in result.outputs["Azure.Billing(true)"]["UsageNextToken"]
+    )
+    assert len(result.outputs["Azure.Billing.Usage(val.name && val.name == obj.name)"]) == 1
+    assert (
+        result.outputs["Azure.Billing.Usage(val.name && val.name == obj.name)"][0]["properties"]["product"] == "Virtual Machines"
+    )
+    assert result.raw_response == mock_response
+
+
+def test_azure_billing_forecast_list_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and valid billing forecast arguments.
+    When: azure_billing_forecast_list_command is called successfully.
+    Then: It should return CommandResults with forecast data and proper outputs.
+    """
+    from Azure import azure_billing_forecast_list_command
+
+    # The current implementation expects a table-like response under properties with columns and rows,
+    # and it calls client.billing_forecast_list (not http_request) directly.
+    mock_response = {
+        "properties": {
+            "columns": [
+                {"name": "UsageDate"},
+                {"name": "CostStatus"},
+                {"name": "Currency"},
+                {"name": "Pre Tax Cost USD"},
+            ],
+            "rows": [
+                [20231015, "Forecast", "USD", 250.50],
+            ],
+        }
+    }
+    mocker.patch.object(client, "billing_forecast_list", return_value=mock_response)
+
+    args = {
+        "subscription_id": "test-subscription-id",
+        "type": "Usage",
+        "aggregation_function_name": "Pre Tax Cost USD",
+        "filter": "properties/UsageDate ge '2023-10-15'",
+    }
+    params = mock_params
+
+    result = azure_billing_forecast_list_command(client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Azure Billing Forecast" in result.readable_output
+
+    # Validate context structure and parsed forecasts
+    assert "Azure.Billing.Forecast" in result.outputs
+    forecast_ctx = result.outputs["Azure.Billing.Forecast"]
+    assert isinstance(forecast_ctx, list)
+    assert len(forecast_ctx) == 1
+
+    row = forecast_ctx[0]
+    # The command uses aggregation_function_name as a key in the result rows
+    assert row["Pre Tax Cost USD"] == 250.50
+    assert row["CostStatus"] == "Forecast"
+    assert row["Currency"] == "USD"
+    # UsageDate should be formatted as YYYY-MM-DD from 20231015
+    assert row["UsageDate"] == "2023-10-15"
+
+    # Raw response should be the original mock response
+    assert result.raw_response == mock_response
+
+
+def test_azure_billing_budgets_list_command_success(mocker, client, mock_params):
+    """
+    Given: An Azure client and valid billing budgets arguments.
+    When: azure_billing_budgets_list_command is called successfully.
+    Then: It should return CommandResults with budget data and proper outputs.
+    """
+    from Azure import azure_billing_budgets_list_command
+
+    mock_response = {
+        "value": [
+            {
+                "name": "test-budget",
+                "type": "Microsoft.Consumption/budgets",
+                "properties": {
+                    "timePeriod": {"startDate": "2023-10-01T00:00:00Z", "endDate": "2023-10-31T23:59:59Z"},
+                    "amount": 1000.0,
+                    "currentSpend": {"amount": 750.25},
+                },
+            }
+        ]
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    args = {"subscription_id": "test-subscription-id"}
+    params = mock_params
+
+    result = azure_billing_budgets_list_command(client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Azure Budgets" in result.readable_output
+    assert "Azure.Billing.Budget" in result.outputs
+    assert len(result.outputs["Azure.Billing.Budget"]) == 1
+    assert result.outputs["Azure.Billing.Budget"][0]["name"] == "test-budget"
+    assert result.outputs["Azure.Billing.Budget"][0]["properties"]["amount"] == 1000.0
+    assert result.outputs["Azure.Billing.Budget"][0]["properties"]["currentSpend"]["amount"] == 750.25
+    assert result.raw_response == mock_response
+
+
+def test_azure_billing_budgets_list_command_single_budget(mocker, client, mock_params):
+    """
+    Given: An Azure client and arguments for retrieving a single budget by name.
+    When: azure_billing_budgets_list_command is called with budget_name parameter.
+    Then: It should return CommandResults with single budget data.
+    """
+    from Azure import azure_billing_budgets_list_command
+
+    mock_response = {
+        "name": "specific-budget",
+        "type": "Microsoft.Consumption/budgets",
+        "properties": {
+            "timePeriod": {"startDate": "2023-11-01T00:00:00Z", "endDate": "2023-11-30T23:59:59Z"},
+            "amount": 500.0,
+            "currentSpend": {"amount": 200.75},
+        },
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    args = {"subscription_id": "test-subscription-id", "budget_name": "specific-budget"}
+    params = mock_params
+
+    result = azure_billing_budgets_list_command(client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert "Azure Budgets" in result.readable_output
+    assert "Azure.Billing.Budget" in result.outputs
+    assert len(result.outputs["Azure.Billing.Budget"]) == 1
+    assert result.outputs["Azure.Billing.Budget"][0]["name"] == "specific-budget"
+    assert result.outputs["Azure.Billing.Budget"][0]["properties"]["amount"] == 500.0
+    assert result.raw_response == mock_response
+
+
+def test_azure_billing_usage_list_command_no_next_token(mocker, client, mock_params):
+    """
+    Given: An Azure client with response containing no next token.
+    When: azure_billing_usage_list_command is called successfully.
+    Then: It should return CommandResults without next token in outputs.
+    """
+    from Azure import azure_billing_usage_list_command
+
+    mock_response = {
+        "value": [
+            {
+                "name": "usage-item-2",
+                "properties": {
+                    "product": "Storage",
+                    "paygCost": {"amount": 15.25},
+                    "quantity": 100.0,
+                    "billingPeriodStartDate": "2025-10-01T00:00:00.0000000Z",
+                    "billingPeriodEndDate": "2025-10-02T23:59:59.0000000Z",
+                },
+            }
+        ]
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    args = {"subscription_id": "test-subscription-id", "max_results": "10"}
+    params = mock_params
+
+    result = azure_billing_usage_list_command(client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["Azure.Billing(true)"]["UsageNextToken"] == ""
+    assert "Next Page Token" not in result.readable_output
+    assert result.outputs["Azure.Billing.Usage(val.name && val.name == obj.name)"][0]["properties"]["product"] == "Storage"
+
+
+def test_azure_billing_usage_list_command_with_pagination_token(mocker, client, mock_params):
+    """
+    Given: An Azure client and arguments with next page token.
+    When: azure_billing_usage_list_command is called with pagination token.
+    Then: It should include the token in the request parameters.
+    """
+    from Azure import azure_billing_usage_list_command
+
+    mock_response = {
+        "value": [
+            {
+                "name": "usage-item-page-2",
+                "properties": {
+                    "product": "Networking",
+                    "paygCost": {"amount": 5.50},
+                    "quantity": 10.0,
+                    "billingPeriodStartDate": "2025-10-04T00:00:00.0000000Z",
+                    "billingPeriodEndDate": "2025-10-04T23:59:59.0000000Z",
+                },
+            }
+        ]
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    args = {"subscription_id": "test-subscription-id", "next_page_token": "existing-skiptoken"}
+    params = mock_params
+
+    result = azure_billing_usage_list_command(client, params, args)
+
+    # Verify the token was passed to the client
+    client.http_request.assert_called_once()
+    call_args = client.http_request.call_args[1]
+    assert call_args["params"].keys() == {"api-version"}
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["Azure.Billing.Usage(val.name && val.name == obj.name)"][0]["properties"]["product"] == "Networking"
+
+
+def test_parse_forecast_table_to_dict_success():
+    """
+    Given: A table-like Azure Cost Management response with columns and rows.
+    When: parse_forecast_table_to_dict is invoked.
+    Then: It should return a list of dict rows mapping column names to values.
+    """
+    from Azure import parse_forecast_table_to_dict
+
+    response = {
+        "properties": {
+            "columns": [
+                {"name": "UsageDate"},
+                {"name": "CostUSD"},
+                {"name": "CostStatus"},
+            ],
+            "rows": [
+                ["2025-10-01", 12.34, "Forecast"],
+                ["2025-10-02", 56.78, "Actual"],
+            ],
+        }
+    }
+
+    parsed = parse_forecast_table_to_dict(response)
+    assert isinstance(parsed, list)
+    assert parsed[0]["UsageDate"] == "2025-10-01"
+    assert parsed[0]["CostUSD"] == 12.34
+    assert parsed[0]["CostStatus"] == "Forecast"
+    assert parsed[1]["UsageDate"] == "2025-10-02"
+
+
+def test_parse_forecast_table_to_dict_mismatch_row_length(mocker):
+    """
+    Given: Response where one row length doesn't match columns length.
+    When: parse_forecast_table_to_dict runs.
+    Then: It should skip the mismatched row and parse the valid one.
+    """
+    from Azure import parse_forecast_table_to_dict
+
+    mocker.patch.object(demisto, "debug")
+
+    response = {
+        "properties": {
+            "columns": [{"name": "A"}, {"name": "B"}],
+            "rows": [
+                [1],  # mismatched (len 1 vs 2 columns) -> should be skipped
+                [2, 3],  # valid
+            ],
+        }
+    }
+
+    parsed = parse_forecast_table_to_dict(response)
+    assert parsed == [{"A": 2, "B": 3}]
+
+
+def test_parse_forecast_table_to_dict_malformed_raises():
+    """
+    Given: Malformed response (columns missing 'name').
+    When: parse_forecast_table_to_dict runs.
+    Then: It should raise DemistoException.
+    """
+    from Azure import parse_forecast_table_to_dict, DemistoException
+
+    bad_response = {
+        "properties": {
+            "columns": [{"wrong": "UsageDate"}],  # will cause KeyError in parsing
+            "rows": [["2025-10-01"]],
+        }
+    }
+
+    with pytest.raises(DemistoException):
+        parse_forecast_table_to_dict(bad_response)
+
+
+def test_remove_query_param_from_url_basic():
+    """
+    Given: A URL with multiple query parameters including duplicates for a key.
+    When: remove_query_param_from_url is used to remove that key.
+    Then: The resulting URL should not contain the removed parameter and others remain.
+    """
+    from Azure import remove_query_param_from_url
+    from urllib.parse import urlparse, parse_qs
+
+    url = "https://example.com/path?a=1&b=2&b=3&c=x"
+    out = remove_query_param_from_url(url, "b")
+    parsed = urlparse(out)
+    qs = parse_qs(parsed.query)
+    assert "b" not in qs
+    assert qs == {"a": ["1"], "c": ["x"]}
+
+
+def test_remove_query_param_from_url_param_absent():
+    """
+    Given: A URL without the specified parameter.
+    When: remove_query_param_from_url is called.
+    Then: The URL query mapping remains logically the same.
+    """
+    from Azure import remove_query_param_from_url
+    from urllib.parse import urlparse, parse_qs
+
+    url = "https://example.com/path?a=1&c=x"
+    out = remove_query_param_from_url(url, "b")
+    assert parse_qs(urlparse(out).query) == {"a": ["1"], "c": ["x"]}
+
+
+def test_remove_query_param_from_url_no_query():
+    """
+    Given: A URL without any query string.
+    When: remove_query_param_from_url is called.
+    Then: The URL remains unchanged.
+    """
+    from Azure import remove_query_param_from_url
+
+    url = "https://example.com/path"
+    out = remove_query_param_from_url(url, "b")
+    assert out == url

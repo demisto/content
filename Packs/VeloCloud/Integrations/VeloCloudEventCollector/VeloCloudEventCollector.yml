@@ -1,0 +1,121 @@
+category: Network Security
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: VeloCloudEventCollector
+  version: -1
+configuration:
+  - display: Server URL
+    name: url
+    type: 0
+    required: true
+    section: Connect
+  - display: Enterprise ID
+    name: enterprise_id
+    type: 0
+    required: true
+    additionalinfo: The enterprise logical ID for Arista VeloCloud
+    section: Connect
+  - display: ""
+    displaypassword: API Key
+    name: api_key
+    type: 9
+    required: true
+    hiddenusername: true
+    additionalinfo: API key for authenticating with Arista VeloCloud
+    section: Connect
+  - display: First fetch timestamp
+    name: first_fetch
+    type: 0
+    required: false
+    additionalinfo: The time range to consider for the first fetch, for example, 3 days ago
+    defaultvalue: 1 day ago
+    section: Collect
+  - display: Limit of events per fetch
+    name: limit
+    type: 0
+    required: false
+    additionalinfo: Maxium number of events to pull per fetch
+    defaultvalue: 1000
+    section: Collect
+  - display: Trust any certificate (not secure)
+    name: insecure
+    type: 8
+    required: false
+    section: Connect
+  - display: Use system proxy settings
+    name: proxy
+    type: 8
+    required: false
+    defaultvalue: 'false'
+    section: Connect
+description: 'Collects events from the VeloCloud API.'
+display: VeloCloud Event Collector
+name: VeloCloudEventCollector
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+    - name: velocloud-get-events
+      arguments:
+        - name: start_time
+          description: Start time for event query in ISO format or human-readable format (e.g., '3 days ago').
+          required: false
+          defaultValue: "1 day ago"
+        - name: end_time
+          description: End time for event query in ISO format or human-readable format (e.g., 'now').
+          required: false
+          defaultValue: "now"
+        - name: limit
+          description: Maximum number of events to retrieve.
+          required: false
+          defaultValue: "100"
+      description: Get events fro`m Arista VeloCloud
+      execution: false
+      outputs:
+        - contextPath: VeloCloud.Event.logicalId
+          description: Event logical ID.
+          type: String
+        - contextPath: VeloCloud.Event.category
+          description: Event category.
+          type: String
+        - contextPath: VeloCloud.Event.event
+          description: Event type.
+          type: String
+        - contextPath: VeloCloud.Event.severity
+          description: Event severity.
+          type: String
+        - contextPath: VeloCloud.Event.message
+          description: Event message.
+          type: String
+        - contextPath: VeloCloud.Event.detail
+          description: Event details, usually in JSON string format.
+          type: String
+        - contextPath: VeloCloud.Event.eventTime
+          description: Event timestamp.
+          type: Date
+        - contextPath: VeloCloud.Event.created
+          description: Event creation time.
+          type: Date
+        - contextPath: VeloCloud.Event.edgeName
+          description: Name of the edge.
+          type: String
+        - contextPath: VeloCloud.Event.enterpriseName
+          description: Name of the enterprise.
+          type: String
+        - contextPath: VeloCloud.Event.enterpriseUsername
+          description: Username associated with the enterprise.
+          type: String
+        - contextPath: VeloCloud.Event.segmentName
+          description: Name of the network segment.
+          type: String
+  dockerimage: demisto/python3:3.12.12.5490952
+  isfetchevents: true
+  runonce: false
+fromversion: 6.5.0
+marketplaces:
+- marketplacev2
+tests:
+- No tests (auto formatted)

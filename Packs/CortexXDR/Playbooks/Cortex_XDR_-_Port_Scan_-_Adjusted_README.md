@@ -62,7 +62,7 @@ This playbook does not use any integrations.
 | Initiator_CMD | The command used to initiate port scan activity. | PaloAltoNetworksXDR.Incident.alerts.action_process_image_command_line | Optional |
 | Initiator_Process_SHA256 | Process SHA256 file hash initiated port scanning. | PaloAltoNetworksXDR.Incident.alerts.action_process_image_sha256 | Optional |
 | AutoIsolateEndpoint | Whether to automatically isolate endpoints. | False | Required |
-| AutoBlockIndicators | Possible values: True/False.  Default: True.<br/>Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | True | Optional |
+| AutoBlockIndicators | Possible values: True/False.  Default: True.<br/>Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to True - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to False - the user will be prompted to select which indicators to block. | True | Optional |
 
 ## Playbook Outputs
 

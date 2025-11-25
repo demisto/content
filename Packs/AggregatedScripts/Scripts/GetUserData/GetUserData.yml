@@ -42,6 +42,13 @@ args:
   predefined:
     - 'true'
     - 'false'
+- description: Whether to return only risky users from Core/XDR brands or all given users. If set to true, the execution might take some time.
+  auto: PREDEFINED
+  name: list_non_risky_users
+  defaultValue: 'false'
+  predefined:
+    - 'true'
+    - 'false'
 comment: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
 commonfields:
   id: get-user-data
@@ -78,7 +85,7 @@ script: '-'
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.12.11.4508456
+dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.10.0
 tests:
 - GetUserData - Test

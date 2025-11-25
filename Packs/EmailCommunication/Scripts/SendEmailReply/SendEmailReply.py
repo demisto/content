@@ -105,7 +105,7 @@ def ensure_markdown_tables_have_spacing(md: str) -> str:
             new_lines.append(line)
         else:
             if in_table:
-                # Table just ended. Add blank line *only if there’s more non-empty content ahead*.
+                # Table just ended. Add blank line *only if there's more non-empty content ahead*.
                 remaining_lines = lines[i:]
                 if any(rl.strip() for rl in remaining_lines) and line.strip() != "":
                     new_lines.append("")

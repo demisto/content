@@ -1,0 +1,32 @@
+{
+    "curatedRules": [
+        {
+            "name": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/curatedRules/ur_dummy_curated_rule_id",
+            "displayName": "Test Rule 1",
+            "curatedRuleSet": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/curatedRuleSetCategories/dummy_curated_rule_set_category_id/curatedRuleSets/dummy_curated_rule_set_id",
+            "type": "SINGLE_EVENT",
+            "description": "This is a test rule.",
+            "severity": {
+                "displayName": "High"
+            },
+            "precision": "HIGH",
+            "tactics": [
+                {
+                    "displayName": "Persistence",
+                    "id": "TA0001"
+                }
+            ],
+            "techniques": [
+                {
+                    "displayName": "Persistence",
+                    "id": "T1001"
+                }
+            ],
+            "updateTime": "2025-07-29T10:00:00Z",
+            "metadata": {
+                "false_positives": "Deleting many firewall rules is not necessarily malicious, but could be used to disrupt operations."
+            }
+        }
+    ],
+    "nextPageToken": "next_page_token"
+}

@@ -2,7 +2,7 @@ category: Analytics & SIEM
 commonfields:
   id: Orca Event Collector
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 description: Orca Security event collector integration for Cortex XSIAM.
@@ -62,7 +62,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.11.3982393
+  dockerimage: demisto/python3:3.12.12.5490952
 fromversion: '6.8.0'
 supportlevelheader: xsoar
 marketplaces:
@@ -76,3 +76,4 @@ supportedModules:
 - X5
 - ENT_PLUS
 - agentix
+- xsiam

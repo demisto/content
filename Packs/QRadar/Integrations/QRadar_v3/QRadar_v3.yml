@@ -1,7 +1,7 @@
 commonfields:
   id: QRadar v3
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: QRadar v3
@@ -97,7 +97,7 @@ configuration:
   name: limit_assets
   type: 0
   section: Collect
-- additionalinfo: 'The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html'
+- additionalinfo: 'The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html. Selecting over 100 fields can result in long waiting times for queries.'
   defaultvalue: 'QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime'
   display: 'Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping).'
   name: events_columns
@@ -1447,6 +1447,30 @@ script:
       name: lastUpdate
     description: Returns the list of incidents IDs that were modified since the last update time. Note that this method is for debugging purposes. The get-modified-remote-data command is used as part of the mirroring feature, which is available from version 6.1.
     name: get-modified-remote-data
+  - name: qradar-print-context
+    description: Returns a redacted snapshot of integration context metrics (queued, in-progress, finished, meta sizes, concurrent active, samples count). This command is intended for debugging purposes and may return sensitive data.
+    outputs:
+    - contextPath: QRadar.Debug.snapshot.queried_count
+      description: The number of queried mirrored offenses.
+      type: Number
+    - contextPath: QRadar.Debug.snapshot.finished_count
+      description: The number of finished mirrored offenses.
+      type: Number
+    - contextPath: QRadar.Debug.snapshot.fetched_count
+      description: The number of fetched mirrored offenses.
+      type: Number
+    - contextPath: QRadar.Debug.snapshot.in_progress_count
+      description: The number of currently in progress mirrored offenses.
+      type: Number
+    - contextPath: QRadar.Debug.snapshot.waiting_markers_count
+      description: The number of currently waiting mirrored offenses.
+      type: Number
+    - contextPath: QRadar.Debug.snapshot.concurrent_active
+      description: The number of currently active queries for offenses.
+      type: Number
+    - contextPath: QRadar.Debug.snapshot.samples_count
+      description: The number of sample incidents.
+      type: Number
 #    Deprecated commands, to support backward compatibility for QRadar v2.
   - arguments:
     - description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
@@ -3123,7 +3147,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.11.4095827
+  dockerimage: demisto/python3:3.12.12.5490952
   isremotesyncin: true
   longRunning: true
   isFetchSamples: true

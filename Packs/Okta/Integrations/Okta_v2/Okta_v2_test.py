@@ -548,7 +548,63 @@ def test_get_user_command_not_found_user(mocker):
     args = {"username": "test@this.com"}
     mocker.patch.object(client, "get_user", side_effect=Exception("Error in API call [404] - Not found"))
     readable, _, _ = get_user_command(client, args)
-    assert "User test@this.com was not found." in readable
+    assert readable == "User 'test@this.com' was not found."
+
+
+def test_get_user_command_email(mocker):
+    """
+    Given:
+        - User email parameter.
+    When:
+        - Running get_user_command with userEmail.
+    Then:
+        - Ensure that the user is found via email search and returned correctly.
+    """
+    args = {"userEmail": "isaac.brock@example.com", "verbose": "false"}
+    user_data = {
+        "id": "TestID",
+        "status": "ACTIVE",
+        "created": "2013-06-24T16:39:18.000Z",
+        "activated": "2013-06-24T16:39:19.000Z",
+        "statusChanged": "2013-06-24T16:39:19.000Z",
+        "lastLogin": "2013-06-24T17:39:19.000Z",
+        "lastUpdated": "2013-07-02T21:36:25.344Z",
+        "passwordChanged": "2013-07-02T21:36:25.344Z",
+        "profile": {
+            "login": "isaac.brock@example.com",
+            "firstName": "Isaac",
+            "lastName": "Brock",
+            "nickName": "issac",
+            "displayName": "Isaac Brock",
+            "email": "isaac.brock@example.com",
+            "secondEmail": "isaac@example.org",
+            "manager": "manager",
+            "managerEmail": "manager@test.com",
+        },
+    }
+    expected_context = {
+        "ID": "TestID",
+        "Username": "isaac.brock@example.com",
+        "DisplayName": "Isaac Brock",
+        "Email": "isaac.brock@example.com",
+        "Status": "ACTIVE",
+        "Type": "Okta",
+        "Created": "2013-06-24T16:39:18.000Z",
+        "Activated": "2013-06-24T16:39:19.000Z",
+        "StatusChanged": "2013-06-24T16:39:19.000Z",
+        "PasswordChanged": "2013-07-02T21:36:25.344Z",
+        "Manager": "manager",
+        "ManagerEmail": "manager@test.com",
+    }
+    expected_readable = "isaac.brock@example.com"
+
+    mocker.patch.object(client, "list_users", return_value=([user_data], None))
+    mock_get_user = mocker.patch.object(client, "get_user", return_value=user_data)
+    readable, outputs, _ = get_user_command(client, args)
+
+    assert outputs.get("Account(val.ID && val.ID === obj.ID)")[0] == expected_context
+    assert expected_readable in readable
+    mock_get_user.assert_not_called()
 
 
 @pytest.mark.parametrize(

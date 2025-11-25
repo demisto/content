@@ -30,7 +30,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### github-get-indicators
 
 ***
-Gets indicators from the feed within a specified date range and up to a maximum limit..
+Retrieves indicators from the feed within a specified date range and up to a maximum limit.
 
 #### Base Command
 

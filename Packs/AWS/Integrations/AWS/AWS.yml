@@ -238,8 +238,37 @@ script:
       description: 'The bucket to which to apply the ACL.'
       required: true
 
+  - name: aws-s3-bucket-acl-set-to-private-quick-action
+    description: Sets the Access Control List (ACL) for the S3 bucket to private.
+    prettyname: Set Bucket ACL to Private
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: bucket
+        prettyname: Bucket Name
+        description: 'The bucket to which to apply the ACL.'
+        required: true
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
+      - name: acl
+        description: 'The canned ACL to apply to the bucket.'
+        defaultValue: 'private'
+        hidden: true
+
   - name: aws-s3-bucket-logging-put
-    description: Configure logging settings for an AWS S3 bucket, allowing to monitor access to the bucket through detailed access logs that are delivered to a designated target bucket.
+    description: Configures logging settings for an AWS S3 bucket, enabling monitoring of bucket access through detailed logs delivered to a designated target bucket.
     arguments:
     - description: The AWS account ID.
       name: account_id
@@ -290,6 +319,40 @@ script:
     - description: 'The prefix to be used for log object keys (e.g., "logs/"). Objects will be stored as: targetBucket/targetPrefix/sourceBucket/YYYY-MM-DD-HH-MM-SS-UniqueString.'
       name: target_prefix
       required: false
+
+  - name: aws-s3-bucket-enable-bucket-access-logging-quick-action
+    description: Enables server access logging for the S3 bucket, delivering detailed logs to a target bucket and prefix.
+    prettyname: Enable S3 Access Logging
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: bucket
+        prettyname: Bucket Name
+        description: The name of the bucket for which to set the logging parameters.
+        required: true
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
+      - name: target_bucket
+        description: 'The name of the bucket where server access logs should be delivered. If this is NOT provided, logging will be disabled.'
+        defaultValue: ${asset.xdm.asset.name}
+        hidden: true
+      - name: target_prefix
+        description: 'The prefix to be used for log object keys (e.g., "logs/"). Objects will be stored as: targetBucket/targetPrefix/sourceBucket/YYYY-MM-DD-HH-MM-SS-UniqueString.'
+        defaultValue: "AWSLogs/"
+        hidden: true
+
   - name: aws-s3-bucket-versioning-put
     description: Sets the versioning state of an existing bucket.
     arguments:
@@ -346,6 +409,36 @@ script:
       - 'Enabled'
       - 'Suspended'
       required: true
+
+  - name: aws-s3-bucket-versioning-enable-quick-action
+    description: Enables versioning on the S3 bucket to retain multiple versions of objects.
+    prettyname: Enable S3 Versioning
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: bucket
+        prettyname: Bucket Name
+        description: The name of the bucket for which to set the logging parameters.
+        required: true
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
+      - name: status
+        description: The versioning state of the bucket.
+        defaultValue: 'Enabled'
+        hidden: true
+
   - name: aws-s3-bucket-policy-put
     description: Applies an Amazon S3 bucket policy to an Outposts bucket.
     arguments:
@@ -396,6 +489,246 @@ script:
       description: 'The bucket policy to apply as a JSON string.'
       required: true
 
+  - name: aws-s3-bucket-website-delete
+    description: Removes the website configuration for a bucket.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: bucket
+        description: The name of the S3 bucket from which the website configuration will be removed.
+        required: true
+
+  - name: aws-s3-bucket-website-disable-hosting-quick-action
+    description: Removes the static website hosting configuration from an S3 bucket.
+    prettyname: Disable S3 Website Hosting
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: bucket
+        prettyname: Bucket Name
+        description: The name of the S3 bucket from which the website configuration will be removed.
+        required: true
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
+
+  - name: aws-s3-bucket-ownership-controls-put
+    description: Creates or modifies OwnershipControls for an Amazon S3 bucket.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: bucket
+        description: The name of the Amazon S3 bucket for which to configure Ownership Controls.
+        required: true
+      - name: ownership_controls_rule
+        description: Ownership for a bucket's ownership controls.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - BucketOwnerPreferred
+          - ObjectWriter
+          - BucketOwnerEnforced
+
+  - name: aws-s3-bucket-website-get
+    description: Returns the website configuration for a bucket.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: bucket
+        description: The bucket name for which to get the website configuration.
+        required: true
+    outputs:
+      - contextPath: AWS.S3-Buckets.BucketWebsite.ErrorDocument
+        description: The object key name of the website error document to use for 4XX class errors.
+        type: Object
+      - contextPath: AWS.S3-Buckets.BucketWebsite.IndexDocument
+        description: The name of the index document for the website (for example index.html).
+        type: Object
+      - contextPath: AWS.S3-Buckets.BucketWebsite.RedirectAllRequestsTo
+        description: Specifies the redirect behavior of all requests to a website endpoint of an Amazon S3 bucket.
+        type: Object
+      - contextPath: AWS.S3-Buckets.BucketWebsite.RoutingRules
+        description: Rules that define when a redirect is applied and the redirect behavior.
+        type: Array
+
+  - name: aws-s3-bucket-acl-get
+    description: Return the access control list (ACL) of a bucket.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: bucket
+        description: Specifies the S3 bucket whose ACL is being requested.
+        required: true
+    outputs:
+      - contextPath: AWS.S3-Buckets.BucketAcl.Grants
+        description: A list of grants.
+        type: Array
+      - contextPath: AWS.S3-Buckets.BucketAcl.Owner
+        description: Container for the bucket owner's display name and ID.
+        type: Object
 
   - name: aws-iam-account-password-policy-get
     description: Gets the AWS account password policy.
@@ -836,10 +1169,310 @@ script:
     - name: resources_vpc_config
       description: "A JSON representation of the VPC configuration used by the cluster control plane. For example \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
       required: false
+  - name: aws-eks-enable-control-plane-logging-quick-action
+    description: Enables control plane logging for an EKS cluster.
+    prettyname: Enable Control Plane Logging
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: cluster_name
+        prettyname: EKS Cluster
+        description: The name of the Amazon EKS cluster to update.
+        required: true
+        prettypredefined:
+          EKS Cluster: ${asset.xdm.asset.name}
+      - name: logging
+        description: "Enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs. By default, cluster control plane logs aren’t exported to CloudWatch Logs. For example \"{'clusterLogging': [{'types': ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'], 'enabled': true}]}\"."
+        defaultValue: '{"clusterLogging":[{"types":["api","audit","authenticator","controllerManager","scheduler"],"enabled":true}]}'
+        hidden: true
 
+  - name: aws-eks-disable-public-access-quick-action
+    description: Disables public access to the EKS cluster's API endpoint, making it only accessible from within the cluster's VPC.
+    prettyname: Set EKS Cluster to Private
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: cluster_name
+        prettyname: EKS Cluster
+        description: The name of the Amazon EKS cluster to update.
+        required: true
+        prettypredefined:
+          EKS Cluster: ${asset.xdm.asset.name}
+      - name: resources_vpc_config
+        description: "A JSON representation of the VPC configuration used by the cluster control plane. For example \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
+        defaultValue: '{"endpointPublicAccess": false, "endpointPrivateAccess": true}'
+        hidden: true
+
+  - name: aws-eks-cluster-describe
+    description: Describes an Amazon EKS cluster.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: cluster_name
+      description: The name of the cluster to describe.
+      required: true
+    - name: region
+      description: 'The AWS Region.'
+      auto: PREDEFINED
+      required: true
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    outputs:
+    - contextPath: AWS.EKS.Cluster.name
+      description: The name of your cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.arn
+      description: The Amazon Resource Name (ARN) of the cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.createdAt
+      description: The creation date of the object.
+      type: String
+    - contextPath: AWS.EKS.Cluster.version
+      description: The Kubernetes server version for the cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.endpoint
+      description: The endpoint for your Kubernetes API server.
+      type: String
+    - contextPath: AWS.EKS.Cluster.roleArn
+      description: The Amazon Resource Name (ARN) of the IAM role that provides permissions for the Kubernetes control plane to make calls to Amazon Web Services API operations on your behalf.
+      type: String
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.subnetIds
+      description: The subnets associated with your cluster.
+      type: List
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.securityGroupIds
+      description: The security groups associated with the cross-account elastic network interfaces that are used to allow communication between your nodes and the Kubernetes control plane.
+      type: List
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.clusterSecurityGroupId
+      description: The cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication.
+      type: String
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.vpcId
+      description: The VPC associated with your cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.endpointPublicAccess
+      description: Whether the public API server endpoint is enabled.
+      type: Boolean
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.endpointPrivateAccess
+      description: This parameter indicates whether the Amazon EKS private API server endpoint is enabled.
+      type: Boolean
+    - contextPath: AWS.EKS.Cluster.resourcesVpcConfig.publicAccessCidrs
+      description: The CIDR blocks that are allowed access to your cluster’s public Kubernetes API server endpoint.
+      type: List
+    - contextPath: AWS.EKS.Cluster.kubernetesNetworkConfig.serviceIpv4Cidr
+      description: The CIDR block that Kubernetes Pod and Service object IP addresses are assigned from.
+      type: String
+    - contextPath: AWS.EKS.Cluster.kubernetesNetworkConfig.serviceIpv6Cidr
+      description: The CIDR block that Kubernetes Pod and Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified ipv6 for ipFamily when you created the cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.kubernetesNetworkConfig.ipFamily
+      description: The IP family used to assign Kubernetes Pod and Service objects IP addresses.
+      type: String
+    - contextPath: AWS.EKS.Cluster.logging.clusterLogging
+      description: The cluster control plane logging configuration for your cluster.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.identity
+      description: The identity provider information for the cluster.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.status
+      description: The current status of the cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.certificateAuthority.data
+      description: The Base64-encoded certificate data required to communicate with your cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.clientRequestToken
+      description: A unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+      type: String
+    - contextPath: AWS.EKS.Cluster.platformVersion
+      description: The platform version of your Amazon EKS cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.tags
+      description: A dictionary containing metadata for categorization and organization.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.encryptionConfig.resources
+      description: Specifies the resources to be encrypted. The only supported value is secrets.
+      type: List
+    - contextPath: AWS.EKS.Cluster.encryptionConfig.provider
+      description: Key Management Service (KMS) key.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.connectorConfig.activationId
+      description: A unique ID associated with the cluster for registration purposes.
+      type: String
+    - contextPath: AWS.EKS.Cluster.connectorConfig.activationCode
+      description: A unique code associated with the cluster for registration purposes.
+      type: String
+    - contextPath: AWS.EKS.Cluster.connectorConfig.activationExpiry
+      description: The expiration time of the connected cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.connectorConfig.provider
+      description: The cluster’s cloud service provider.
+      type: String
+    - contextPath: AWS.EKS.Cluster.connectorConfig.roleArn
+      description: The Amazon Resource Name (ARN) of the role to communicate with services from the connected Kubernetes cluster.
+      type: String
+    - contextPath: AWS.EKS.Cluster.id
+      description: The ID of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+      type: String
+    - contextPath: AWS.EKS.Cluster.health.issues
+      description: An object representing the health issues of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+      type: List
+    - contextPath: AWS.EKS.Cluster.outpostConfig.outpostArns
+      description: An object representing the configuration of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.outpostConfig.controlPlaneInstanceType
+      description: The Amazon EC2 instance type used for the control plane.
+      type: String
+    - contextPath: AWS.EKS.Cluster.outpostConfig.controlPlanePlacement
+      description: An object representing the placement configuration for all the control plane instances of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+      type: Object
+    - contextPath: AWS.EKS.Cluster.accessConfig.bootstrapClusterCreatorAdminPermissions
+      description: Specifies whether or not the cluster creator IAM principal was set as a cluster admin access entry during cluster creation time.
+      type: Boolean
+    - contextPath: AWS.EKS.Cluster.accessConfig.authenticationMode
+      description: The current authentication mode of the cluster.
+      type: String
+
+  - name: aws-eks-access-policy-associate
+    description: Associates an access policy and its scope to an access entry.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: cluster_name
+      description: The name of the cluster for which to create an access entry.
+      required: true
+    - name: principal_arn
+      description: 'The Amazon Resource Name (ARN) of the IAM user or role for the AccessEntry that you’re associating the access policy to.'
+      required: true
+    - name: policy_arn
+      description: 'The ARN of the AccessPolicy that you’re associating.'
+      required: true
+    - name: type
+      description: 'The scope type of an access policy.'
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - cluster
+      - namespace
+    - name: namespaces
+      description: 'A comma-separated list of Kubernetes namespaces that an access policy is scoped to. A value is required if you specified namespace for type.'
+      required: false
+    - auto: PREDEFINED
+      description: The AWS Region.
+      name: region
+      required: true
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    outputs:
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.clusterName
+      description: The name of your cluster.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.principalArn
+      description: The ARN of the IAM principal for the AccessEntry.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.policyArn
+      description: The ARN of the AccessPolicy.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.accessScope.type
+      description: The scope type of an access policy.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.accessScope.namespaces
+      description: A Kubernetes namespace that an access policy is scoped to.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.associatedAt
+      description: The date and time the AccessPolicy was associated with an AccessEntry.
+      type: String
+    - contextPath: AWS.EKS.AssociatedAccessPolicy.modifiedAt
+      description: The date and time for the last modification to the object.
+      type: String
 
   - name: aws-rds-db-cluster-modify
-    description: Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options.
+    description: "Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -896,6 +1529,36 @@ script:
       predefined:
       - 'true'
       - 'false'
+
+  - name: aws-rds-db-cluster-enable-iam-auth-quick-action
+    description: This action enables 'iam database authentication' for the RDS cluster.
+    prettyname: Enable IAM Authentication on RDS Cluster
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: db_cluster_identifier
+        prettyname: RDS Cluster ID
+        description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
+        required: true
+        prettypredefined:
+          RDS Cluster ID: ${asset.xdm.asset.name}
+      - name: enable_iam_database_authentication
+        description: 'Whether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
+        defaultValue: 'true'
+        hidden: true
+
   - name: aws-rds-db-cluster-snapshot-attribute-modify
     description: Modifies the attributes associated with a DB cluster snapshot.
     arguments:
@@ -952,6 +1615,69 @@ script:
       description: 'A CSV list of DB cluster snapshot attributes to add to the attribute specified by AttributeName.'
       required: false
 
+  - name: aws-rds-db-cluster-snapshot-set-to-private-quick-action
+    description: Revokes public access to the RDS DB cluster snapshot, making it private.
+    prettyname: Set RDS Cluster Snapshot to Private
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: db_cluster_snapshot_identifier
+        prettyname: RDS Cluster Snapshot ID
+        description: 'The identifier for the DB cluster snapshot to modify the attributes for.'
+        required: true
+        prettypredefined:
+          RDS Cluster Snapshot ID: ${asset.xdm.asset.name}
+      - name: attribute_name
+        description: 'The name of the DB cluster snapshot attribute to modify.'
+        defaultValue: 'restore'
+        hidden: true
+      - name: values_to_remove
+        description: 'A CSV list of DB cluster snapshot attributes to remove from the attribute specified by AttributeName. The default value is all.'
+        defaultValue: 'all'
+        hidden: true
+
+  - name: aws-rds-db-cluster-enable-deletion-protection-quick-action
+    description: Enables deletion protection for the RDS DB cluster to prevent accidental deletion.
+    prettyname: Enable RDS Cluster Deletion Protection
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: db_cluster_identifier
+        prettyname: RDS Cluster ID
+        description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
+        required: true
+        prettypredefined:
+          RDS Cluster ID: ${asset.xdm.asset.name}
+      - name: deletion_protection
+        description: 'Whether the DB cluster has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled.'
+        defaultValue: 'true'
+        hidden: true
+
+
   - name: aws-rds-db-instance-modify
     description: "Modifies an Amazon RDS DB instance. Allows changing various settings of an existing DB instance, such as instance class, storage capacity, security groups, and other configuration parameters."
     arguments:
@@ -995,6 +1721,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+
     - name: db_instance_identifier
       description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
       required: true
@@ -1022,6 +1749,7 @@ script:
     - name: backup_retention_period
       description: 'The number of days to retain automated backups. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.'
       required: false
+
     - name: enable_iam_database_authentication
       description: 'Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
       required: false
@@ -1050,8 +1778,232 @@ script:
       predefined:
       - 'true'
       - 'false'
+
+  - name: aws-rds-db-instance-modify-publicly-accessible-quick-action
+    description: This action will disable public access for AWS RDS database instance by modifying the instance settings.
+    prettyname: Disable Public Access on RDS
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: db_instance_identifier
+        prettyname: RDS Instance ID
+        description: 'The identifier of DB instance to modify.'
+        required: true
+        prettypredefined:
+          RDS Instance ID: ${asset.xdm.asset.name}
+      - name: publicly_accessible
+        description: 'Whether the DB instance is publicly accessible.'
+        defaultValue: 'false'
+        hidden: true
+      - name: apply_immediately
+        description: 'Whether the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance, or the next failure reboot.'
+        defaultValue: 'true'
+        hidden: true
+
+  - name: aws-rds-db-instance-modify-copy-tags-on-rds-snapshot-quick-action
+    description: This action enables 'copy tags to snapshots' for the RDS instance.
+    prettyname: Enable Copy Tags on RDS Snapshot
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: db_instance_identifier
+        prettyname: RDS Instance ID
+        description: 'The identifier of DB instance to modify.'
+        required: true
+        prettypredefined:
+          RDS Instance ID: ${asset.xdm.asset.name}
+      - name: copy_tags_to_snapshot
+        description: 'Whether to copy all tags from the DB instance to snapshots of the DB instance. By default, tags aren’t copied.'
+        defaultValue: 'true'
+        hidden: true
+      - name: apply_immediately
+        description: 'Whether the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance, or the next failure reboot.'
+        defaultValue: 'true'
+        hidden: true
+
+  - name: aws-rds-db-instance-modify-enable-automatic-backup-quick-action
+    description: Enables the automatic backup settings for the RDS DB instance with a default retention period of 30 days.
+    prettyname: Enable Automatic Backup for RDS DB
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: db_instance_identifier
+        prettyname: RDS Instance ID
+        description: 'The identifier of DB instance to modify.'
+        required: true
+        prettypredefined:
+          RDS Instance ID: ${asset.xdm.asset.name}
+      - name: backup_retention_period
+        description: 'The number of days to retain automated backups. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.'
+        defaultValue: '30'
+        hidden: true
+      - name: apply_immediately
+        description: 'Whether the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance, or the next failure reboot.'
+        defaultValue: 'true'
+        hidden: true
+
+  - name: aws-rds-db-instance-enable-iam-auth-quick-action
+    description: Enables 'iam database authentication' for the RDS DB instance.
+    prettyname: Enable IAM Authentication on RDS
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: db_instance_identifier
+        prettyname: RDS Instance ID
+        description: 'The identifier of DB instance to modify.'
+        required: true
+        prettypredefined:
+          RDS Instance ID: ${asset.xdm.asset.name}
+      - name: enable_iam_database_authentication
+        description: 'Whether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
+        defaultValue: 'true'
+        hidden: true
+
+  - name: aws-rds-db-instance-enable-deletion-protection-quick-action
+    description: Enables 'deletion protection' for the RDS DB instance.
+    prettyname: Enable Deletion Protection on RDS
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: db_instance_identifier
+        prettyname: RDS Instance ID
+        description: 'The identifier of DB instance to modify.'
+        required: true
+        prettypredefined:
+          RDS Instance ID: ${asset.xdm.asset.name}
+      - name: deletion_protection
+        description: 'Whether the DB instance has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. For more information, see [Deleting a DB Instance.](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_DeleteInstance.html).'
+        defaultValue: 'true'
+        hidden: true
+
+  - name: aws-rds-db-instance-enable-auto-upgrade-quick-action
+    description: Enables automatic minor version upgrades for the RDS DB instance.
+    prettyname: Enable RDS Auto Upgrade
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: db_instance_identifier
+        prettyname: RDS Instance ID
+        description: 'The identifier of DB instance to modify.'
+        required: true
+        prettypredefined:
+          RDS Instance ID: ${asset.xdm.asset.name}
+      - name: auto_minor_version_upgrade
+        description: 'Whether minor version upgrades are applied automatically to the DB instance during the maintenance window. An outage occurs only if all of the following conditions are met: the automatic upgrade is enabled for the maintenance window, a newer minor version is available, and RDS has enabled automatic patching for the engine version. If any of these conditions are not met, Amazon RDS applies the change as soon as possible without causing an outage. For an RDS Custom DB instance, do not enable this setting; otherwise, the operation returns an error.'
+        defaultValue: 'true'
+        hidden: true
+      - name: apply_immediately
+        description: 'Whether the modifications in this request and any pending modifications are applied asynchronously as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance or on the next failure reboot.'
+        defaultValue: 'true'
+        hidden: true
+
+  - name: aws-rds-db-instance-enable-multi-az-quick-action
+    description: Enables Multi-AZ deployment for the RDS database instance to enhance availability and durability.
+    prettyname: Enable Multi-AZ for RDS
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: db_instance_identifier
+        prettyname: RDS Instance ID
+        description: 'The identifier of DB instance to modify.'
+        required: true
+        prettypredefined:
+          RDS Instance ID: ${asset.xdm.asset.name}
+      - name: multi_az
+        description: 'Whether the DB instance is a Multi-AZ deployment. Changing this parameter does not cause an outage. The change is applied during the next maintenance window unless the ApplyImmediately parameter is enabled for this request. This setting does not apply to RDS Custom DB instances.'
+        defaultValue: 'true'
+        hidden: true
+      - name: apply_immediately
+        description: 'Whether the modifications in this request and any pending modifications are applied asynchronously as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance or on the next failure reboot.'
+        defaultValue: 'true'
+        hidden: true
+
   - name: aws-rds-db-snapshot-attribute-modify
-    description: Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot.
+    description: 'Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot.'
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1093,6 +2045,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+
     - name: db_snapshot_identifier
       description: 'The identifier for the DB snapshot to modify the attributes for.'
       required: true
@@ -1105,9 +2058,128 @@ script:
       isArray: true
     - name: values_to_remove
       description: 'A list of DB snapshot attributes to remove from the attribute specified by AttributeName.'
-      isArray: true
       required: false
+      isArray: true
 
+  - name: aws-rds-event-subscription-modify
+    description: Modifies an existing RDS event notification subscription.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: subscription_name
+        description: The name of the RDS event notification subscription.
+        required: true
+      - name: enabled
+        description: Specifies whether to activate the subscription.
+      - name: event_categories
+        description: A list of event categories for a source type (SourceType) that you want to subscribe to.
+        isArray: true
+      - name: sns_topic_arn
+        description: The Amazon Resource Name (ARN) of the SNS topic created for event notification.
+      - name: source_type
+        description: The type of source that is generating the events.
+    outputs:
+      - contextPath: AWS.RDS.EventSubscription.CustomerAwsId
+        description: The AWS customer account associated with the RDS event notification subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.CustSubscriptionId
+        description: The RDS event notification subscription Id.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.Enabled
+        description: Specifies whether the subscription is enabled. True indicates the subscription is enabled.
+        type: boolean
+      - contextPath: AWS.RDS.EventSubscription.EventCategoriesList
+        description: A list of event categories for the RDS event notification subscription.
+        type: array
+      - contextPath: AWS.RDS.EventSubscription.EventSubscriptionArn
+        description: The Amazon Resource Name (ARN) for the event subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.SnsTopicArn
+        description: The topic ARN of the RDS event notification subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.SourceIdsList
+        description: A list of source IDs for the RDS event notification subscription.
+        type: array
+      - contextPath: AWS.RDS.EventSubscription.SourceType
+        description: The source type for the RDS event notification subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.Status
+        description: The status of the RDS event notification subscription.
+        type: string
+      - contextPath: AWS.RDS.EventSubscription.SubscriptionCreationTime
+        description: The time the RDS event notification subscription was created.
+        type: string
+
+  - name: aws-rds-db-snapshot-attribute-set-snapshot-to-private-quick-action
+    description: Revokes public access to the RDS DB snapshot, making it private.
+    prettyname: Set RDS Snapshot to Private
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: db_snapshot_identifier
+        prettyname: RDS Snapshot ID
+        description: 'The identifier for the DB snapshot to modify the attributes for.'
+        required: true
+        prettypredefined:
+          RDS Snapshot ID: ${asset.xdm.asset.name}
+      - name: attribute_name
+        description: 'The name of the DB snapshot attribute to modify.'
+        defaultValue: 'restore'
+        hidden: true
+      - name: values_to_remove
+        description: 'A list of DB snapshot attributes to remove from the attribute specified by AttributeName.'
+        defaultValue: 'all'
+        hidden: true
 
   - name: aws-ec2-security-group-ingress-revoke
     description: 'Revokes one or more ingress rules in a security group.'
@@ -1360,7 +2432,7 @@ script:
       required: false
 
   - name: aws-ec2-snapshot-attribute-modify
-    description: 'Adds or removes permission settings for the specified snapshot. Note: snapshots encrypted with the AWS-managed default key (alias/aws/ebs) cannot be shared—use unencrypted snapshots or those encrypted with a customer-managed KMS key to allow permission modifications.'
+    description: 'Adds or removes permission settings for the specified snapshot. Note: snapshots encrypted with the AWS-managed default key (alias/aws/ebs) cannot be shared. Use unencrypted snapshots or those encrypted with a customer-managed KMS key to allow permission modifications.'
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1432,11 +2504,11 @@ script:
   - name: aws-ec2-instance-attribute-modify
     description: Modifies the specified attribute of the specified instance. You can specify only one attribute at a time.
     arguments:
-    - name: account_id
-      description: The AWS account ID.
+    - description: The AWS account ID.
+      name: account_id
       required: true
-    - name: region
-      description: The AWS region.
+    - description: The AWS region.
+      name: region
       required: true
       auto: PREDEFINED
       predefined:
@@ -1472,17 +2544,16 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-
-    - name: instance_id
-      description: 'The ID of the instance.'
+    - description: The ID of the instance.
+      name: instance_id
       required: true
-    - name: disable_api_stop
-      description: Whether an instance is enabled for stop protection.
+    - description: Whether an instance is enabled for stop protection.
+      name: disable_api_stop
       predefined:
       - 'true'
       - 'false'
-    - name: groups
-      description: "A comma-separated list of security groups to replace the instance's current security groups. You must specify the ID of at least one security group, even if it’s just the default security group for the VPC."
+    - description: "A comma-separated list of security groups to replace the instance's current security groups. You must specify the ID of at least one security group, even if it’s just the default security group for the VPC."
+      name: groups
     - name: attribute
       description: 'The name of the attribute to modify. Possible values: sourceDestCheck, groupSet, ebsOptimized, sriovNetSupport, enaSupport, enclaveOptions, disableApiStop.'
       predefined:
@@ -1504,6 +2575,31 @@ script:
       - 'disableApiStop'
     - name: value
       description: A new value for the attribute. Use only with the kernel, ramdisk, userData, disableApiTermination, or instanceInitiatedShutdownBehavior attribute.
+
+  - name: aws-ec2-instance-attribute-modify-quick-action
+    description: Remove the associated security group from the EC2 instance profile.
+    prettyname: Detach Security Group from EC2
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: instance_id
+        description: The ID of the instance.
+        prettyname: EC2 Instance ID
+        prettypredefined:
+          EC2 Instance ID: ${asset.xdm.asset.strong_id}
+        required: true
 
   - name: aws-ec2-image-attribute-modify
     description: 'Modifies the specified attribute of the specified AMI.'
@@ -1548,7 +2644,6 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-
     - name: image_id
       description: 'The ID of the AMI.'
       required: true
@@ -1567,25 +2662,58 @@ script:
       - 'add'
       - 'remove'
     - name: user_ids
-      isArray: true
       description: 'The AWS account IDs to add to or remove from the list of users that have launch permissions for the AMI.'
       required: false
-    - name: user_groups
       isArray: true
+    - name: user_groups
       description: 'The user groups to add to or remove from the list of user groups that have launch permissions for the AMI.'
       required: false
+      isArray: true
     - name: description
       description: 'A new description for the AMI.'
       required: false
 
+  - name: aws-ec2-image-attribute-set-ami-to-private-quick-action
+    description: Revokes public launch permissions for the EC2 AMI.
+    prettyname: Set AMI to Private
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: image_id
+        prettyname: AMI ID
+        description: 'The ID of the AMI.'
+        required: true
+        prettypredefined:
+          AMI ID: ${asset.xdm.asset.strong_id}
+      - name: attribute
+        description: 'The AMI attribute to modify.'
+        defaultValue: 'launchPermission'
+        hidden: true
+      - name: operation_type
+        description: 'The operation to perform on the attribute.'
+        defaultValue: 'remove'
+        hidden: true
+
   - name: aws-ec2-instance-metadata-options-modify
     description: Modify the EC2 instance metadata parameters on a running or stopped instance.
     arguments:
-    - description: The AWS account ID.
-      name: account_id
+    - name: account_id
+      description: The AWS account ID.
       required: true
-    - description: The AWS region.
-      name: region
+    - name: region
+      description: The AWS region.
       required: true
       auto: PREDEFINED
       predefined:
@@ -1621,8 +2749,8 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    - description: The ID of the instance.
-      name: instance_id
+    - name: instance_id
+      description: 'The ID of the instance.'
       required: true
     - description: Whether IMDSv2 is required.
       auto: PREDEFINED
@@ -1637,6 +2765,657 @@ script:
       - 'disabled'
       - 'enabled'
 
+  - name: aws-ec2-snapshot-create
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - description: The ID of the EBS volume.
+      name: volume_id
+      required: true
+    - description: A description for the snapshot.
+      name: description
+    - description: The tags to apply to the snapshot during creation.
+      name: tags
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance.
+    outputs:
+    - contextPath: AWS.EC2.Snapshot.DataEncryptionKeyId
+      description: The data encryption key identifier for the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.Description
+      description: The description for the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.Encrypted
+      description: Indicates whether the snapshot is encrypted.
+      type: number
+    - contextPath: AWS.EC2.Snapshot.KmsKeyId
+      description: The full ARN of the AWS Key Management Service (AWS KMS) customer master key (CMK) that was used to protect the volume encryption key for the parent volume.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.OwnerId
+      description: The AWS account ID of the EBS snapshot owner.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.Progress
+      description: The progress of the snapshot, as a percentage.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.SnapshotId
+      description: The ID of the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.StartTime
+      description: The time stamp when the snapshot was initiated.
+      type: date
+    - contextPath: AWS.EC2.Snapshot.State
+      description: The snapshot state.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.StateMessage
+      description: this field displays error state details to help you diagnose why the error occurred.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.VolumeId
+      description: The ID of the volume that was used to create the snapshot.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.VolumeSize
+      description: The size of the volume, in GiB.
+      type: number
+    - contextPath: AWS.EC2.Snapshot.OwnerAlias
+      description: Value from an Amazon-maintained list of snapshot owners.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.Snapshot.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
+
+  - name: aws-ec2-snapshot-permission-modify
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - description: The ID of the EBS snapshot.
+      name: snapshot_id
+      required: true
+    - auto: PREDEFINED
+      predefined:
+      - 'add'
+      - 'remove'
+      description: The operation type, add or remove.
+      name: operation_type
+      required: true
+    - description: CSV of security group names. This parameter can be used only when UserIds not provided.
+      name: group_names
+    - description: CSV of AWS account IDs. This parameter can be used only when groupNames not provided.
+      name: user_ids
+    - auto: PREDEFINED
+      description: Checks whether you have the required permissions for the action, without actually making the request, and provides an error response.
+      name: dry_run
+      predefined:
+      - 'True'
+      - 'False'
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    description: Adds or removes permission settings for the specified snapshot.
+
+  - name: aws-ec2-set-snapshot-to-private-quick-action
+    description: Revokes public access to the EC2 snapshot.
+    prettyname: Set Snapshot to Private
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: snapshot_id
+        prettyname: EC2 Snapshot ID
+        description: The ID of the EBS snapshot.
+        required: true
+        prettypredefined:
+          EC2 Snapshot ID: ${asset.xdm.asset.name}
+      - name: operation_type
+        description: The operation type, add or remove.
+        defaultValue: 'remove'
+        hidden: true
+      - name: group_names
+        description: A CSV list of security group names. This parameter can be used only when UserIds is not provided.
+        defaultValue: 'all'
+        hidden: true
+
+  - name: aws-ecs-cluster-settings-update
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - description: The name of the cluster.
+      name: cluster_name
+      required: true
+    - description: The value of the containerInsights setting to update.
+      name: value
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'enabled'
+      - 'disabled'
+      - 'enhanced'
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    description: Updates the containerInsights setting of an ECS cluster.
+
+  - name: aws-ec2-subnet-attribute-modify
+    description: Modifies a subnet attribute.
+    arguments:
+      - description: The AWS account ID.
+        name: account_id
+        required: true
+      - description: The AWS region.
+        name: region
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - description: The ID of the subnet.
+        name: subnet_id
+        required: true
+      - description: Set to true to assign an IPv6 address to network interfaces created in the specified subnet.
+        name: assign_ipv6_address_on_creation
+      - description: The customer-owned IPv4 address pool associated with the subnet.
+        name: customer_owned_ipv4_pool
+      - description: Set to true to disable local network interfaces at the current position.
+        name: disable_lni_at_device_index
+      - description: Indicates whether DNS queries made to the Amazon-provided DNS Resolver in this subnet should return synthetic IPv6 addresses for IPv4-only destinations.
+        name: enable_dns64
+      - description: Indicates the device position for local network interfaces in this subnet.
+        name: enable_lni_at_device_index
+      - description: Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records.
+        name: enable_resource_name_dns_aaaa_record_on_launch
+      - description: Indicates whether to respond to DNS queries for instance hostnames with DNS A records.
+        name: enable_resource_name_dns_a_record_on_launch
+      - description: Set to true to assign a customer-owned IPv4 address to network interfaces attached to instances created in the specified subnet.
+        name: map_customer_owned_ip_on_launch
+      - description: Set to true to assign a public IPv4 address to network interfaces attached to instances created in the specified subnet.
+        name: map_public_ip_on_launch
+      - description: The type of hostname to assign to instances in the subnet at launch.
+        name: private_dns_hostname_type_on_launch
+
+  - arguments:
+    - description: One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options.
+      name: filters
+    - description: A comma-separated list of VPC IDs.
+      name: vpc_ids
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+    description: Describes one or more of your VPCs.
+    name: aws-ec2-vpcs-describe
+    outputs:
+    - contextPath: AWS.EC2.Vpcs.CidrBlock
+      description: The primary IPv4 CIDR block for the VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.DhcpOptionsId
+      description: The ID of the set of DHCP options you have associated with the VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.State
+      description: The current state of the VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.InstanceTenancy
+      description: The allowed tenancy of instances launched into the VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.IsDefault
+      description: Indicates whether the VPC is the default VPC.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.AssociationId
+      description: The association ID for the IPv6 CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlock
+      description: The IPv6 CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.State
+      description: The state of the CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage
+      description: A message about the status of the CIDR block, if applicable.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.AssociationId
+      description: The association ID for the IPv4 CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlock
+      description: The IPv4 CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.State
+      description: The state of the CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.StatusMessage
+      description: A message about the status of the CIDR block, if applicable.
+      type: string
+    - contextPath: AWS.EC2.Vpcs.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
+
+  - arguments:
+    - description: One or more filters Separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options.
+      name: filters
+    - description: A comma-separated list of subnet IDs.
+      name: subnet_ids
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+    description: Describes one or more of your subnets.
+    name: aws-ec2-subnets-describe
+    outputs:
+    - contextPath: AWS.EC2.Subnets.AvailabilityZone
+      description: The Availability Zone of the subnet.
+      type: string
+    - contextPath: AWS.EC2.Subnets.AvailableIpAddressCount
+      description: The number of unused private IPv4 addresses in the subnet. Note that the IPv4 addresses for any stopped instances are considered unavailable.
+      type: number
+    - contextPath: AWS.EC2.Subnets.CidrBlock
+      description: The IPv4 CIDR block assigned to the subnet.
+      type: string
+    - contextPath: AWS.EC2.Subnets.DefaultForAz
+      description: Indicates whether this is the default subnet for the Availability Zone.
+      type: boolean
+    - contextPath: AWS.EC2.Subnets.MapPublicIpOnLaunch
+      description: Indicates whether instances launched in this subnet receive a public IPv4 address.
+      type: boolean
+    - contextPath: AWS.EC2.Subnets.State
+      description: The current state of the subnet.
+      type: string
+    - contextPath: AWS.EC2.Subnets.SubnetId
+      description: The ID of the subnet.
+      type: string
+    - contextPath: AWS.EC2.Subnets.VpcId
+      description: The ID of the VPC the subnet is in.
+      type: string
+    - contextPath: AWS.EC2.Subnets.AssignIpv6AddressOnCreation
+      description: Indicates whether a network interface created in this subnet (including a network interface created by RunInstances) receives an IPv6 address.
+      type: boolean
+    - contextPath: AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.AssociationId
+      description: The association ID for the CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlock
+      description: The IPv6 CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.State
+      description: The state of a CIDR block.
+      type: string
+    - contextPath: AWS.EC2.Subnets.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage
+      description: A message about the status of the CIDR block, if applicable.
+      type: string
+    - contextPath: AWS.EC2.Subnets.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Subnets.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.Subnets.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
+
+  - arguments:
+    - description: A comma-separated list of the IPAM resource discovery IDs.
+      name: ipam_resource_discovery_ids
+    - description: One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+      name: filters
+    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50.
+      name: limit
+      defaultValue: 50
+    - description: The token for the next set of results.
+      name: next_token
+    - description: The Amazon Web Services region for the IP address.
+      name: address_region
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+    outputs:
+    - contextPath: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryId
+      description: The resource discovery ID.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveries.OwnerId
+      description: The ID of the owner.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveries.IpamResourceDiscoveryRegion
+      description: The resource discovery region.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveries.AccountId
+      description: The ID of the AWS account associated with the EC2 instance. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
+    description: Describes IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources owned by the account.
+    name: aws-ec2-ipam-resource-discoveries-describe
+
+  - arguments:
+    - description: A comma-separated list of the resource discovery association IDs.
+      name: ipam_resource_discovery_association_ids
+    - description: One or more filters separated by ';' (for example, name=<name>;values=<values>). See AWS documentation for details & filter options (https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-filter.html).
+      name: filters
+    - description: The maximum number of results to return in a single call. Specify a value between 5 and 1000. Default value is 50.
+      name: limit
+      defaultValue: 50
+    - description: The token for the next set of results.
+      name: next_token
+    - description: The Amazon Web Services region for the IP address.
+      name: address_region
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The AWS region.
+      name: region
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-7
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-west-3
+        - eu-south-2
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+    outputs:
+    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryAssociationId
+      description: The resource discovery association ID.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamResourceDiscoveryId
+      description: The resource discovery ID.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.IpamRegion
+      description: The IPAM home region.
+      type: String
+    - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.AccountId
+      description: The ID of the AWS account associated with the EC2 instance. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
+    description: Describes resource discovery association with an Amazon VPC IPAM. An associated resource discovery is a resource discovery that has been associated with an IPAM.
+    name: aws-ec2-ipam-resource-discovery-associations-describe
 
   - name: aws-cloudtrail-trail-update
     description: 'Updates trail settings that control what events you are logging, and how to handle log files. Changes to a trail do not require stopping the CloudTrail service. Use this action to designate an existing bucket for log delivery. If the existing bucket has previously been a target for CloudTrail log files, an IAM policy exists for the bucket. UpdateTrail must be called from the Region in which the trail was created; otherwise, an InvalidHomeRegionException is thrown.'
@@ -1770,11 +3549,89 @@ script:
       description: Weather a trail has insight selectors enabled.
       type: boolean
     - contextPath: AWS.CloudTrail.Trail.IsOrganizationTrail
-      description: Weather the trail is an organization trail.
+      description: Whether the trail is an organization trail.
       type: boolean
 
+  - name: aws-cloudtrail-trail-enable-log-validation-quick-action
+    description: Enables log file validation for the reported CloudTrail.
+    prettyname: Enable CloudTrail Log Validation
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: name
+        prettyname: Name
+        description: The name of the trail or trail ARN.
+        required: true
+        prettypredefined:
+          Name: ${asset.xdm.asset.name}
+      - name: enable_log_file_validation
+        description: Weather log file validation is enabled.
+        defaultValue: 'true'
+        hidden: true
+    outputs:
+      - contextPath: AWS.CloudTrail.Trail.TrailARN
+        description: The Amazon Resource Name (ARN) of the trail.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.Name
+        description: The name of the trail.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.S3BucketName
+        description: The name of the Amazon S3 bucket into which CloudTrail delivers your trail files.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.S3KeyPrefix
+        description: The Amazon S3 key prefix that comes after the name of the bucket you have designated for log file delivery.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.SnsTopicName
+        description: The name of the Amazon SNS topic defined for notification of log file delivery.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.SnsTopicARN
+        description: The Amazon Resource Name (ARN) of the Amazon SNS topic defined for notification of log file delivery.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.IncludeGlobalServiceEvents
+        description: Set to True to include AWS API calls from global services, such as IAM.
+        type: boolean
+      - contextPath: AWS.CloudTrail.Trail.IsMultiRegionTrail
+        description: Whether the trail exists in a single region or in all regions.
+        type: boolean
+      - contextPath: AWS.CloudTrail.Trail.HomeRegion
+        description: The region in which the trail was created.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.LogFileValidationEnabled
+        description: Whether log file validation is enabled.
+        type: boolean
+      - contextPath: AWS.CloudTrail.Trail.CloudWatchLogsLogGroupArn
+        description: The Amazon Resource Name (ARN), a unique identifier representing the log group to which CloudTrail logs are delivered.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.CloudWatchLogsRoleArn
+        description: The role that the CloudWatch Logs endpoint assumes to write to a user’s log group.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.KMSKeyId
+        description: The KMS key ID that encrypts the logs delivered by CloudTrail.
+        type: string
+      - contextPath: AWS.CloudTrail.Trail.HasCustomEventSelectors
+        description: Specifies if the trail has custom event selectors.
+        type: boolean
+      - contextPath: AWS.CloudTrail.Trail.HasInsightSelectors
+        description: Whether a trail has insight selectors enabled.
+        type: boolean
+      - contextPath: AWS.CloudTrail.Trail.IsOrganizationTrail
+        description: Whether the trail is an organization trail.
+        type: boolean
+
   - name: aws-cloudtrail-logging-start
-    description: Starts the recording of AWS API calls and log file delivery for a trail. For a trail that is enabled in all regions, this operation must be called from the region in which the trail was created. This operation cannot be called on the shadow trails (replicated trails in other regions) of a trail that is enabled in all regions.
+    description: Starts recording AWS API calls and log file delivery for a trail. For a trail enabled in all regions, this operation must be called from the region where the trail was created. This operation cannot be called on shadow trails (replicated trails in other regions) of a trail that is enabled in all regions.
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1819,210 +3676,17 @@ script:
     - name: name
       description: 'The name or the CloudTrail ARN of the trail for which CloudTrail logs Amazon Web Services API calls. e.g. arn:aws:cloudtrail:us-east-2:123456789012:trail/MyTrail.'
       required: true
-  - name: aws-ec2-security-group-create
-    execution: true
-    description: Creates a security group.
-    arguments:
-    - name: account_id
-      description: The AWS account ID.
-      required: true
-    - name: region
-      description: The AWS region.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
-    - name: group_name
-      description: The name of the security group. Up to 255 characters in length. Cannot start with sg-. Names are case-insensitive and must be unique within the VPC.
-      required: true
-    - name: description
-      description: 'A description for the security group. This is informational only. Up to 255 characters in length. Valid characters: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*.'
-      required: true
-    - name: vpc_id
-      description: The ID of the VPC. Required for a nondefault VPC.
-      required: false
-  - name: aws-ec2-security-group-delete
-    execution: true
-    description: Deletes a security group.
-    arguments:
-    - name: account_id
-      description: The AWS account ID.
-      required: true
-    - name: region
-      description: The AWS region.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
-    - name: group_id
-      description: The ID of the security group to delete (e.g., sg-12345678). Required if group_name is not provided.
-    - name: group_name
-      description: The name of the security group to delete. Required if group_id is not provided. Note that you can’t reference a security group for EC2-VPC by name.
-  - name: aws-ec2-security-groups-describe
-    description: Describes the specified security groups or all of your security groups. Returns detailed information about security groups including their rules, tags, and associated VPC information.
-    arguments:
-    - name: account_id
-      description: The AWS account ID.
-      required: true
-    - name: region
-      description: The AWS region.
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
-    - name: group_ids
-      description: Comma-separated list of security group IDs (e.g., sg-12345678,sg-87654321).
-      isArray: true
-    - name: group_names
-      description: Comma-separated list of security group names. group_names is only supported for EC2-Classic and default VPC.
-      isArray: true
-    - name: filters
-      description: "One or more custom filters to apply, separated by ';' (for example, name=<name>;values=<values>).You can specify up to 50 filters and up to 200 values per filter in a single request."
-      isArray: true
-    - name: limit
-      defaultValue: "50"
-      description: The maximum number of records to return. Valid range is 5-1000.
-    - name: next_token
-      description: The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter.
-    outputs:
-    - contextPath: AWS.EC2.SecurityGroupsNextToken
-      description: The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.Description
-      description: A description of the security group.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.GroupName
-      description: The name of the security group.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissions
-      description: The inbound rules associated with the security group.
-    - contextPath: AWS.EC2.SecurityGroups.OwnerId
-      description: The AWS account ID of the owner of the security group.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.GroupId
-      description: The ID of the security group.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress
-      description: The outbound rules associated with the security group.
-      type: array
-    - contextPath: AWS.EC2.SecurityGroups.VpcId
-      description: The ID of the VPC for the security group.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.Tags.Key
-      description: The key of the tag.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.Tags.Value
-      description: The value of the tag.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.AccountId
-      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.SecurityGroupArn
-      description: The ARN of the security group.
-      type: string
+
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.4688278
+  dockerimage: demisto/boto3py3:1.0.0.3575453
 fromversion: 5.5.0
 tests:
 - No test - No playbook part of this release.
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 isCloudProviderIntegration: true

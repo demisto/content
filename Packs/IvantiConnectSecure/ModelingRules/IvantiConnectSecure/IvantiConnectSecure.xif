@@ -110,7 +110,7 @@ alter
     xdm.target.host.hostname = coalesce(dst_hostname, vpn),
     xdm.target.domain = coalesce(target_share_domain, msg_realm),
     xdm.event.description = coalesce(msg_payload,msg),
-    xdm.event.type = log_event_type_and_name, // System, User Access, Admin Access, Sensors & Client Logs; 
+    xdm.event.type = log_event_type_and_name, // System, User Access, Admin Access, Sensors & Client Logs
     xdm.event.id = event_id,
     xdm.event.original_event_type = type,
     xdm.event.tags = arrayconcat(if(msg_payload ~= "[Ll]ogin|[Aa]uthentication", arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION), null), syslog_structured_data_segments), 

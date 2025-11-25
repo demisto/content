@@ -117,8 +117,9 @@ configuration:
   name: feedTags
   type: 0
   required: false
-description: Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
-display: AutoFocus Feed
+deprecated: true
+description: Deprecated. Use Unit 42 Feed integration instead.
+display: AutoFocus Feed (Deprecated)
 name: AutoFocus Feed
 script:
   commands:

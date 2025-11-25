@@ -1,5 +1,5 @@
 category: Authentication & Identity Management
-sectionOrder:
+sectionorder:
 - Connect
 commonfields:
   id: Microsoft Graph Groups
@@ -134,8 +134,8 @@ configuration:
   hidden: true
   section: Connect
   required: false
-description: Microsoft Graph Groups enables you to create and manage different types of groups and group functionality according to your requirements.
-display: Azure Active Directory Groups
+description: Entra ID Groups integration (formely Azure Active Directory Groups) enables you to create and manage different types of groups and group functionality according to your requirements.
+display: Entra ID Groups
 name: Microsoft Graph Groups
 script:
   commands:
@@ -449,7 +449,7 @@ script:
     execution: false
     name: msgraph-groups-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.5490413
   runonce: false
   script: '-'
   subtype: python3

@@ -1010,11 +1010,13 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: ews-auth-reset
     arguments: []
-  dockerimage: demisto/py3ews:5.5.1.3540100
+  dockerimage: demisto/py3ews:5.6.0.5331241
   isfetch: true
   script: ''
   subtype: python3
   type: python
 tests:
 - EWS search-mailbox test
+- EWS_O365_send_mail_test
+- EWS_O365_test
 fromversion: 5.0.0

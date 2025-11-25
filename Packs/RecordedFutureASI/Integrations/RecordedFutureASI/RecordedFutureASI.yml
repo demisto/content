@@ -4,7 +4,7 @@ commonfields:
 name: RecordedFutureASI
 display: Recorded Future Attack Surface Intelligence
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 description: Attack Surface Intelligence Risk Rules help security teams take risk and vulnerability prioritization to the next level by helping organizations identify the biggest weaknesses within their attack surface in mere seconds.

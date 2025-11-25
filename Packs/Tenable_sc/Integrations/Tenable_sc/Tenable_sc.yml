@@ -1,5 +1,5 @@
 category: Vulnerability Management
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -2487,7 +2487,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.11.3982393
+  dockerimage: demisto/python3:3.12.11.4819260
   runonce: false
 tests:
 - tenable-sc-test

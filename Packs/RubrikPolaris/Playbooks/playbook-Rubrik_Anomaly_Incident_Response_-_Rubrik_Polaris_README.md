@@ -14,6 +14,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Rubrik Fileset Ransomware Discovery - Rubrik Polaris
 * Rubrik Object Context Analysis - Rubrik Polaris
 * Rubrik Ransomware Discovery and File Recovery - Rubrik Polaris
+* Rubrik Turbo IOC Scan - Rubrik Polaris
+* Rubrik IOC Scan v2 - Rubrik Polaris
 
 ### Integrations
 

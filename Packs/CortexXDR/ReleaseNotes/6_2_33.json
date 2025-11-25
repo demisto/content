@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The following commands: **get_incident_extra_data**, **get_multiple_incidents_extra_data** now return a list instead of a single string in the output context path.. COMPLETE WITH CORECT PATH **action_file_name** and **action_file_path**."
+    "breakingChangesNotes": "The following commands: **get_incident_extra_data**, **get_multiple_incidents_extra_data** now return a list instead of a single string in the following output context paths: PaloAltoNetworksXDR.Incident.alerts.action_file_path and PaloAltoNetworksXDR.Incident.alerts.action_file_name."
 }

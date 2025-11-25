@@ -15,6 +15,7 @@ import dateparser.search
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
 RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
 RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
+RATE_LIMIT_PATTERN = r"query quota for .+ has been exceeded"
 
 # flake8: noqa
 
@@ -1849,6 +1850,20 @@ class WhoisEmptyResponse(Exception):
     pass
 
 
+class WhoisRateLimit(Exception):
+    """Exception raised when WHOIS rate limit is exceeded."""
+
+    def __init__(self, message, response=None):
+        super().__init__(message)
+        self.message = message
+        self.response = response
+
+    def __str__(self):
+        if self.response:
+            demisto.debug(f"Whois Rate Limit Response: {self.response}")
+        return f"Exception Message: {self.message}"
+
+
 class WhoisException(Exception):
     pass
 
@@ -3468,8 +3483,16 @@ def test_command():
     whois_result = get_whois(test_domain)
 
     try:
-        if whois_result["nameservers"][0] == "ns1.google.com":
+        nameservers = whois_result.get("nameservers", [])
+        if nameservers and nameservers[0] == "ns1.google.com":
             return "ok"
+        # Check for rate limit pattern in whois result
+        whois_result_str = str(whois_result)
+        if re.search(RATE_LIMIT_PATTERN, whois_result_str):
+            raise WhoisRateLimit(
+                "Test completed but encountered rate limiting. Consider using an engine to avoid IP-based rate limits. For more info see: https://xsoar.pan.dev/docs/reference/integrations/whois#rate-limiting-or-ip-blocking-issues",
+                response=whois_result,
+            )
     except Exception as e:
         raise WhoisException(f"Failed testing module using domain '{test_domain}': {e.__class__.__name__} {e}")
 
@@ -3790,21 +3813,21 @@ def main():  # pragma: no cover
         raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
     old_version = argToBoolean(params.get("old-version", "true"))
-    if old_version == False and command != "ip":
-        demisto.debug("Run by new context data layout")
-        if command == "domain" or command == "whois":
-            return_results(whois_and_domain_command(command, reliability))
-        if command == "test-module":
-            return_results(new_test_command())
-    else:
-        try:
-            results: List[CommandResults] = []
-            if command == "ip":
-                results = ip_command(reliability=reliability, should_error=should_error)
+    try:
+        results: List[CommandResults] = []
+        if command == "ip":
+            results = ip_command(reliability=reliability, should_error=should_error)
 
+        else:
+            org_socket = socket.socket
+            setup_proxy()
+            if not old_version:
+                demisto.debug("Run by new context data layout")
+                if command == "test-module":
+                    results = new_test_command()
+                elif command == "domain" or command == "whois":
+                    results = whois_and_domain_command(command, reliability)
             else:
-                org_socket = socket.socket
-                setup_proxy()
                 if command == "test-module":
                     results = test_command()
 
@@ -3817,16 +3840,16 @@ def main():  # pragma: no cover
                 else:
                     raise NotImplementedError()
 
-            demisto.debug(f"Returning results for command {demisto.command()}")
-            return_results(results)
-        except Exception as e:
-            msg = f"Exception thrown calling command '{demisto.command()}' {e.__class__.__name__}: {e}"
-            demisto.error(msg)
-            return_error(message=msg, error=e)
-        finally:
-            if command != "ip":
-                socks.set_default_proxy()  # clear proxy settings
-                socket.socket = org_socket  # type: ignore
+        demisto.debug(f"Returning results for command {demisto.command()}")
+        return_results(results)
+    except Exception as e:
+        msg = f"Exception thrown calling command '{demisto.command()}' {e.__class__.__name__}: {e}"
+        demisto.error(msg)
+        return_error(message=msg, error=e)
+    finally:
+        if command != "ip":
+            socks.set_default_proxy()  # clear proxy settings
+            socket.socket = org_socket  # type: ignore
 
 
 # python2 uses __builtin__ python3 uses builtins

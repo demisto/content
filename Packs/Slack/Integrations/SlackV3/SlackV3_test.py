@@ -1,7 +1,7 @@
 import json as js
 import threading
 from unittest.mock import MagicMock
-
+from datetime import datetime, UTC
 import aiohttp
 import pytest
 import slack_sdk
@@ -9,7 +9,13 @@ from CommonServerPython import *
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
-from SlackV3 import get_war_room_url, parse_common_channels
+from SlackV3 import (
+    get_war_room_url,
+    parse_common_channels,
+    conversation_history,
+    resolve_conversation_id_from_name,
+    to_unix_seconds_str,
+)
 
 
 def load_test_data(path):
@@ -5315,3 +5321,102 @@ def test_validate_slack_request_args():
     with pytest.raises(ValueError) as e:
         validate_slack_request_args(http_verb="HI", method="chat.postMessage", file_upload_params=None)
     assert str(e.value) == "Invalid http_verb: HI. Allowed values: POST, GET."
+
+
+def test_conversation_history_no_channel_provided_error(mocker):
+    """
+    Test conversation_history raises error when neither channel_id nor channel_name provided
+
+    Given: A conversation_history command is configured and no channel parameters are provided
+    When: The conversation_history command is called with args missing both conversation_id and conversation_name
+    Then: The command raises ValueError with appropriate error message
+    """
+
+    args = {"limit": "10"}
+
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    with pytest.raises(ValueError, match="Either conversation_id or conversation_name must be provided."):
+        conversation_history()
+
+
+def test_resolve_conversation_id_from_name_private_conversation_found(mocker):
+    """
+    Test resolve_conversation_id_from_name when channel name corresponds to a user name.
+
+    Given: The resolve_conversation_id_from_name is called with a user name as the channel_name parameter.
+    When: A private conversation exists for the specified user and conversation id or channel id is not provided.
+    Then: The function returns the channel ID of the private conversation with that user.
+    """
+    mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value="D1234567890")
+    mocker.patch("SlackV3.get_conversation_by_name")
+
+    result = resolve_conversation_id_from_name("john.doe")
+
+    assert result == "D1234567890"
+
+
+def test_resolve_conversation_id_from_name_channel_found(mocker):
+    """
+    Test resolve_conversation_id_from_name when channel name corresponds to a channel name.
+
+    Given: The resolve_conversation_id_from_name function is called with a channel name as the conversation_name parameter.
+    When: A channel with the specified name exists and channel id is not provided.
+    Then: The function returns the channel ID of the channel.
+    """
+    mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value=None)
+    mocker.patch("SlackV3.get_conversation_by_name", return_value={"id": "C1234567890", "name": "general"})
+
+    result = resolve_conversation_id_from_name("general")
+
+    assert result == "C1234567890"
+
+
+def test_resolve_conversation_id_from_name_no_channel_found(mocker):
+    """
+    Test resolve_conversation_id_from_name when no channel or user is found.
+
+    Given: The resolve_conversation_id_from_name function is called with a channel name that doesn't exist.
+    When: No private conversation or channel exists for the specified name and channel id is not provided.
+    Then: The function raises ValueError with appropriate error message indicating the channel was not found.
+    """
+    mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value=None)
+    mocker.patch("SlackV3.get_conversation_by_name", return_value={})
+
+    with pytest.raises(DemistoException, match="Channel 'nonexistent' does not exist."):
+        resolve_conversation_id_from_name("nonexistent")
+
+
+class TestToUnixSecondsStr:
+    def test_valid_unix_timestamp_string(self):
+        result = to_unix_seconds_str("1609459200")
+        assert result == "1609459200.0"
+
+    def test_unix_timestamp_with_decimals(self):
+        result = to_unix_seconds_str("1609459200.123456")
+        assert result == "1609459200.0"
+
+    def test_iso_date_string(self):
+        result = to_unix_seconds_str("2021-01-01T00:00:00Z")
+        expected_timestamp = datetime(2021, 1, 1, tzinfo=UTC).timestamp()
+        assert result == f"{expected_timestamp}"
+
+    def test_human_readable_date(self):
+        result = to_unix_seconds_str("January 1, 2021")
+        expected_timestamp = datetime(2021, 1, 1, tzinfo=UTC).timestamp()
+        assert result == f"{expected_timestamp}"
+
+    def test_date_without_timezone_assumes_utc(self):
+        result = to_unix_seconds_str("2021-01-01T12:00:00")
+        expected_timestamp = datetime(2021, 1, 1, 12, 0, 0, tzinfo=UTC).timestamp()
+        assert result == f"{expected_timestamp}"
+
+    def test_date_with_timezone_converts_to_utc(self):
+        result = to_unix_seconds_str("2021-01-01T12:00:00+05:00")
+        expected_timestamp = datetime(2021, 1, 1, 7, 0, 0, tzinfo=UTC).timestamp()
+        assert result == f"{expected_timestamp}"
+
+    def test_invalid_numeric_string_raises_error(self):
+        with pytest.raises(ValueError) as exc_info:
+            to_unix_seconds_str("not_a_number")
+        assert "Could not parse time string" in str(exc_info.value)

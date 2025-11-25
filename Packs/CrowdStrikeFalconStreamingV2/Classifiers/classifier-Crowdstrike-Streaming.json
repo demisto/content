@@ -10,7 +10,6 @@
 		"complex": null
 	},
 	"keyTypeMap": {
-		"DetectionSummaryEvent": "Malware",
 		"EppDetectionSummaryEvent": "Malware"
 	},
 	"fromVersion": "6.0.0"
