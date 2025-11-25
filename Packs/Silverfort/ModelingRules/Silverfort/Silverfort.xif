@@ -42,7 +42,7 @@ alter
 //For authentication story - should be only for SSO events.
 [RULE: silverfort_admin_console_authentication_story_fields]
 alter
-    xdm.source.port = to_integer(0), //some silly comment
+    xdm.source.port = to_integer(0),git
     xdm.source.user.user_type = XDM_CONST.USER_TYPE_REGULAR,
     xdm.target.port = to_integer(0),
     xdm.logon.type = XDM_CONST.LOGON_TYPE_INTERACTIVE,
