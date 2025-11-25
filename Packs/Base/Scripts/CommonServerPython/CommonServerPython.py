@@ -25,7 +25,6 @@ import signal
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
-import timeit
 from datetime import datetime, timedelta
 from abc import abstractmethod
 
@@ -63,7 +62,7 @@ MAX_ERROR_MESSAGE_LENGTH = 50000
 NUM_OF_WORKERS = 20
 HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 JSON_SEPARATORS = (",", ":")  # To get the most compact JSON representation, we should specify (',', ':') to eliminate whitespace.
-
+DEFAULT_INSIGHT_CACHE_SIZE = 3072
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     global _MODULES_LINE_MAPPING
@@ -7746,30 +7745,23 @@ class CommandResults:
 
         if indicators:
             # Get InsightCacheSize from demisto.callingContext (in KB, default 3 MB = 3072 KB)
-            insight_cache_size_kb = demisto.callingContext.get("context", {}).get("InsightCacheSize", 3072)
+            insight_cache_size_kb = demisto.callingContext.get("context", {}).get("InsightCacheSize", DEFAULT_INSIGHT_CACHE_SIZE)
             insight_cache_size_bytes = insight_cache_size_kb * 1024
 
-            # Measure performance of to_context() - full context generation
-            start_full = timeit.default_timer()
-            temp_outputs = {}
+            virtual_outputs = {}
             for indicator in indicators:
                 context_outputs = indicator.to_context()
 
                 for key, value in context_outputs.items():
-                    if key not in temp_outputs:
-                        temp_outputs[key] = []
-                    temp_outputs[key].append(value)
-            time_full_context = timeit.default_timer() - start_full
+                    if key not in virtual_outputs:
+                        virtual_outputs[key] = []
+                    virtual_outputs[key].append(value)
 
-            # Calculate the size of the serialized JSON string to compare against the cache limit.
-            start_serialize = timeit.default_timer()
-            context_size = len(json.dumps(temp_outputs, default=str, separators=JSON_SEPARATORS, ensure_ascii=False))
-            time_serialize = timeit.default_timer() - start_serialize
+            context_size = len(json.dumps(virtual_outputs, default=str, separators=JSON_SEPARATORS, ensure_ascii=False))
 
             # If the context size exceeds the limit, use to_minimum_context() instead
             if context_size > insight_cache_size_bytes:
                 # Measure performance of to_minimum_context() - minimal context generation
-                start_min = timeit.default_timer()
                 for indicator in indicators:
                     context_outputs = indicator.to_minimum_context()
 
@@ -7778,24 +7770,17 @@ class CommandResults:
                             outputs[key] = []
 
                         outputs[key].append(value)
-                time_min_context = timeit.default_timer() - start_min
 
                 human_readable += f"\nNote! some of the context data wasn’t included because it went over the {insight_cache_size_kb}KB limit."
 
                 demisto.debug(
-                    f"Context size ({context_size} chars) exceeded limit ({insight_cache_size_bytes} bytes). "
-                    f"Performance: to_context()={time_full_context:.6f}s, "
-                    f"serialization={time_serialize:.6f}s, "
-                    f"to_minimum_context()={time_min_context:.6f}s, "
-                    f"total={time_full_context + time_serialize + time_min_context:.6f}s"
+                    f"Context size ({context_size} chars) exceeded limit ({insight_cache_size_bytes} bytes). Will use the minimum context."
                 )
             else:
                 # Use the already calculated full context
-                outputs = temp_outputs
+                outputs = virtual_outputs
                 demisto.debug(
                     f"Using full context ({context_size} chars within {insight_cache_size_bytes} bytes limit). "
-                    f"Performance: to_context()={time_full_context:.6f}s, "
-                    f"serialization={time_serialize:.6f}s"
                 )
 
         if self.tags:
