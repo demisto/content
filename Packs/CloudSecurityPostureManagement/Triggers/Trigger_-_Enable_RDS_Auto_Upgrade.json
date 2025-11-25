@@ -1,0 +1,25 @@
+{
+  "trigger_id": "2d430008f7d4494c7c247bb8768a61f6",
+  "playbook_id": "",
+  "suggestion_reason": "Recommended for remediating an AWS RDS with minor upgrades not enabled",
+  "description": "This CLI command requires 'rds:ModifyDBInstance' permission. Successful execution will enable the minor upgrades of RDS datsbase instance",
+  "trigger_name": "Enable RDS Auto Upgrade",
+  "automation_type": "command",
+  "automation_id": "aws-rds-db-instance-enable-auto-upgrade-quick-action",
+  "supportedModules": [
+    "C1",
+    "C3",
+    "X5"
+  ],
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+          "SEARCH_FIELD": "matching_service_rule_id",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "d280f6cc-20ce-41e2-a29e-e23c6b3f8b6d"
+        }
+      ]
+    }
+  }
+}
