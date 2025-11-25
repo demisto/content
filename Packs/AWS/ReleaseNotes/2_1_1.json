@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "Removed support for the *port* argument in the aws-ec2-security-group-ingress-authorize, aws-ec2-security-group-ingress-revoke, aws-ec2-security-group-egress-revoke commands added support for arguments form_port, to_port instead"
+    "breakingChangesNotes": "Removed support for the *port* argument in the aws-ec2-security-group-ingress-authorize, aws-ec2-security-group-ingress-revoke, aws-ec2-security-group-egress-revoke commands added support for arguments form_port, to_port instead."
 }
