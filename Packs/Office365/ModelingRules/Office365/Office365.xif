@@ -152,10 +152,9 @@ call o365_common_fields
 	xdm.source.user.username = LogonUserDisplayName,
 	xdm.target.file.extension = object_id_file_extension,
 	xdm.target.file.filename = object_id_file_name,
-	xdm.target.file.path = object_id_file_path,
+	xdm.target.file.path = coalesce(object_id_file_path, Item -> ParentFolder.Path),
 	xdm.target.resource.name = if(ModifiedObjectResolvedName != null, ModifiedObjectResolvedName, ObjectId ~= "\S+", rtrim(ltrim(ObjectId, "<"), ">")),
-    xdm.target.resource.parent_id = Item -> ParentFolder.Path,
-    xdm.target.resource.id = Item -> ParentFolder.id;
+    xdm.target.resource.parent_id = Item -> ParentFolder.id;
 
 	
 [MODEL: dataset="msft_o365_sharepoint_online_raw"]
@@ -190,10 +189,11 @@ call o365_common_fields
 	xdm.event.outcome = if(ResultStatus = "Succeeded", XDM_CONST.OUTCOME_SUCCESS, ResultStatus = "PartiallySucceeded", XDM_CONST.OUTCOME_PARTIAL, ResultStatus = "Failed", XDM_CONST.OUTCOME_FAILED, ResultStatus ~= "[Tt]rue", XDM_CONST.OUTCOME_SUCCESS, ResultStatus ~= "[Ff]alse", XDM_CONST.OUTCOME_FAILED),
 	xdm.network.http.browser = if(BrowserName = null, null, BrowserName ~= "^\s*$", null, BrowserName),
 	xdm.network.rule = to_string(PolicyDetails),
+    xdm.network.session_id = AppAccessContext -> AADSessionId,
 	xdm.observer.action = to_string(ExceptionInfo),
 	xdm.observer.name = EventSource,
 	xdm.observer.type = coalesce(Workload, Source),
-	xdm.source.application.name = ApplicationDisplayName,
+	xdm.source.application.name = coalesce(ApplicationDisplayName, AppAccessContext -> ClientAppName),
 	xdm.source.host.ipv4_addresses = if(array_length(client_ipv4_addresses) > 0, client_ipv4_addresses),
 	xdm.source.host.ipv4_public_addresses = if(array_length(client_ipv4_public_addresses) > 0, client_ipv4_public_addresses),
 	xdm.source.host.ipv6_addresses = if(array_length(client_ipv6_addresses) > 0, client_ipv6_addresses),
@@ -216,7 +216,8 @@ call o365_common_fields
 	xdm.target.resource.type = ItemType,
 	xdm.target.url = SiteUrl,
 	xdm.target.user.groups = if(TargetUserOrGroupName !~= "@", arraycreate(TargetUserOrGroupName)),
-	xdm.target.user.upn = if(TargetUserOrGroupName ~= "@", TargetUserOrGroupName);
+	xdm.target.user.upn = if(TargetUserOrGroupName ~= "@", TargetUserOrGroupName),
+    xdm.session_context_id = AppAccessContext -> CorrelationId;
 
 
 [MODEL: dataset="msft_o365_dlp_raw"]
