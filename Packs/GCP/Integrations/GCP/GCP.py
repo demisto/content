@@ -5,6 +5,7 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account as google_service_account
 import urllib3
 from COOCApiModule import *
+from googleapiclient.errors import HttpError
 
 urllib3.disable_warnings()
 
@@ -124,7 +125,7 @@ class GCPServices(Enum):
 
 
 # Command requirements mapping: (GCP_Service_Enum, [Required_Permissions])
-COMMAND_REQUIREMENTS = {
+COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-firewall-patch": (
         GCPServices.COMPUTE,
         [
@@ -133,6 +134,48 @@ COMMAND_REQUIREMENTS = {
             "compute.firewalls.list",
             "compute.networks.updatePolicy",
             "compute.networks.list",
+        ],
+    ),
+    "gcp-compute-firewall-insert": (
+        GCPServices.COMPUTE,
+        [
+            "compute.firewalls.create",
+        ],
+    ),
+    "gcp-compute-firewall-list": (
+        GCPServices.COMPUTE,
+        [
+            "compute.firewalls.list",
+        ],
+    ),
+    "gcp-compute-firewall-get": (
+        GCPServices.COMPUTE,
+        [
+            "compute.firewalls.get",
+        ],
+    ),
+    "gcp-compute-snapshots-list": (
+        GCPServices.COMPUTE,
+        [
+            "compute.snapshots.list",
+        ],
+    ),
+    "gcp-compute-snapshot-get": (
+        GCPServices.COMPUTE,
+        [
+            "compute.snapshots.get",
+        ],
+    ),
+    "gcp-compute-instances-aggregated-list-by-ip": (
+        GCPServices.COMPUTE,
+        [
+            "cloudasset.assets.searchAllResources",
+        ],
+    ),
+    "gcp-compute-network-tag-set": (
+        GCPServices.COMPUTE,
+        [
+            "compute.instances.setTags",
         ],
     ),
     "gcp-compute-subnet-update": (
@@ -154,8 +197,46 @@ COMMAND_REQUIREMENTS = {
     ),
     "gcp-compute-instance-start": (GCPServices.COMPUTE, ["compute.instances.start"]),
     "gcp-compute-instance-stop": (GCPServices.COMPUTE, ["compute.instances.stop"]),
+    "gcp-compute-instances-list": (GCPServices.COMPUTE, ["compute.instances.list"]),
+    "gcp-compute-instance-get": (GCPServices.COMPUTE, ["compute.instances.get"]),
+    "gcp-compute-instance-labels-set": (GCPServices.COMPUTE, ["compute.instances.setLabels"]),
     "gcp-storage-bucket-policy-delete": (GCPServices.STORAGE, ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"]),
     "gcp-storage-bucket-metadata-update": (GCPServices.STORAGE, ["storage.buckets.update"]),
+    "gcp-storage-bucket-list": (
+        GCPServices.STORAGE,
+        ["storage.buckets.list"],
+    ),
+    "gcp-storage-bucket-get": (
+        GCPServices.STORAGE,
+        ["storage.buckets.get"],
+    ),
+    "gcp-storage-bucket-objects-list": (
+        GCPServices.STORAGE,
+        ["storage.objects.list"],
+    ),
+    "gcp-storage-bucket-policy-list": (
+        GCPServices.STORAGE,
+        ["storage.buckets.getIamPolicy", "storage.buckets.get"],
+    ),
+    "gcp-storage-bucket-policy-set": (
+        GCPServices.STORAGE,
+        ["storage.buckets.setIamPolicy"],
+    ),
+    "gcp-storage-bucket-object-policy-list": (
+        GCPServices.STORAGE,
+        ["storage.objects.getIamPolicy"],
+    ),
+    "gcp-storage-bucket-object-policy-set": (
+        GCPServices.STORAGE,
+        ["storage.objects.setIamPolicy"],
+    ),
+    "gcp-compute-network-get": (GCPServices.COMPUTE, ["compute.networks.get"]),
+    "gcp-compute-image-get": (GCPServices.COMPUTE, ["compute.images.get"]),
+    "gcp-compute-instance-group-get": (GCPServices.COMPUTE, ["compute.instanceGroups.get"]),
+    "gcp-compute-region-get": (GCPServices.COMPUTE, ["compute.regions.get"]),
+    "gcp-compute-zone-get": (GCPServices.COMPUTE, ["compute.zone.get"]),
+    "gcp-compute-networks-list": (GCPServices.COMPUTE, ["compute.networks.list"]),
+    "gcp-compute-network-insert": (GCPServices.COMPUTE, ["compute.networks.insert"]),
     "gcp-container-cluster-security-update": (
         GCPServices.CONTAINER,
         ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
@@ -186,7 +267,7 @@ COMMAND_REQUIREMENTS = {
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
 # taken from GoogleCloudCompute
 FIREWALL_RULE_REGEX = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
-METADATA_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
+KEY_VALUE_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
 
 
 def parse_firewall_rule(rule_str: str) -> list[dict[str, list[str] | str]]:
@@ -225,7 +306,7 @@ def parse_metadata_items(tags_str: str) -> list[dict[str, str]]:
     """
     tags = []
     for f in tags_str.split(";"):
-        match = METADATA_ITEM_REGEX.match(f)
+        match = KEY_VALUE_ITEM_REGEX.match(f)
         if match is None:
             raise ValueError(
                 f"Could not parse field: {f}. Please make sure you provided like so: key=abc,value=123;key=fed,value=456"
@@ -254,6 +335,124 @@ def extract_zone_name(zone_input: str | None) -> str:
     if "/" in zone_input:
         return zone_input.strip().split("/")[-1]
     return zone_input.strip()
+
+
+def parse_labels(labels_str: str) -> dict:
+    """
+    Transforms a string of multiple inputs to a dictionary
+    Args:
+        labels_str (str): The actual string to parse to a key & value pair.
+
+    Returns:
+        Returns the labels dictionary with the extracted key & value pairs.
+    """
+    labels = {}
+    for f in labels_str.strip().split(";"):
+        if f:
+            match = KEY_VALUE_ITEM_REGEX.match(f)
+            if match is None:
+                raise ValueError(
+                    f"Could not parse field: {f}. Please make sure you provided like so: key=abc,value=123;key=def,value=456"
+                )
+
+            labels.update({match.group(1).lower(): match.group(2).lower()})
+    return labels
+
+
+def handle_permission_error(e: HttpError, project_id: str, command_name: str):
+    """
+    Given an error, extract the relevant information (account_id & message & permission name) to report to the backend.
+    Args:
+        e (HttpError): The error object.
+        project_id (str): The project identifier.
+        command_name (str): The name of the command that was executed.
+
+    Returns:
+        Returns the labels dictionary with the extracted key & value pairs.
+    """
+    status_code = e.resp.status
+    if int(status_code) in [403, 401] and e.resp.get("content-type", "").startswith("application/json"):
+        message_content = json.loads(e.content)
+        error_message = message_content.get("error", {}).get("message", "")
+
+        # get the relevant permissions for the relevant command
+        command_permissions: list[str]
+        command_permissions = COMMAND_REQUIREMENTS[command_name][1]
+
+        # find out which permissions are relevant for the current execution failure from the list of command permissions.
+        found_permissions = [perm for perm in command_permissions if perm.lower() in error_message.lower()] or ["N/A"]
+
+        demisto.debug(f"The info {error_message=} {found_permissions=} {message_content=}")
+
+        # create an error entry for each missing permission.
+        error_entries = [{"account_id": project_id, "message": error_message, "name": perm} for perm in found_permissions]
+
+        return_multiple_permissions_error(error_entries)
+    else:  # Return the original error if it's not a 403, 401 or doesn't have a JSON body
+        return_error(f"Failed to execute command {demisto.command()}. Error: {str(e)}")
+
+
+def _format_gcp_datetime(ts: str | None) -> str | None:
+    if not ts:
+        return None
+    dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+    return dt.strftime("%Y-%m-%d %H:%M:%S")
+
+
+def _is_ubla_enabled(storage_client, bucket_name: str) -> bool:
+    """Returns True if Uniform Bucket-Level Access (UBLA) is enabled for the bucket."""
+    try:
+        meta = storage_client.buckets().get(bucket=bucket_name, fields="iamConfiguration").execute()  # pylint: disable=E1101
+        return meta.get("iamConfiguration", {}).get("uniformBucketLevelAccess", {}).get("enabled") is True
+    except Exception as e:
+        demisto.debug(f"_is_ubla_enabled: failed to fetch bucket metadata for {bucket_name}: {e}")
+        return False
+
+
+def _is_ubla_error(e: HttpError) -> bool:
+    """Detects UBLA-related 400 error content from Google API."""
+    try:
+        if isinstance(e.content, bytes | bytearray):
+            content_lower = e.content.decode("utf-8", errors="ignore").lower()
+        else:
+            content_lower = str(e.content).lower()
+    except Exception:
+        content_lower = ""
+    return e.resp.status == 400 and "uniform bucket-level access" in content_lower
+
+
+def _validate_bucket_policy_for_set(policy: dict[str, Any], add_mode: bool) -> None:
+    """Validate the structure of a bucket IAM policy for set operation.
+
+    Args:
+        policy: The JSON-decoded policy payload provided by the user.
+        add_mode: If True, we only require valid bindings for merge; if False, validate full policy fields where applicable.
+
+    Raises:
+        DemistoException: If validation fails.
+    """
+    if not isinstance(policy, dict):
+        raise DemistoException("Policy must be a JSON object.")
+
+    bindings = policy.get("bindings")
+    if bindings is not None and (not isinstance(bindings, list) or any(not isinstance(b, dict) for b in bindings)):
+        if add_mode:
+            raise DemistoException("Policy must include 'bindings' as an array of objects when add=true.")
+        else:
+            raise DemistoException("'bindings' must be an array of objects if provided.")
+
+    if isinstance(bindings, list):
+        for idx, b in enumerate(bindings):
+            role = b.get("role")
+            if not isinstance(role, str) or not role:
+                raise DemistoException(f"Binding at index {idx} is missing a valid 'role' string.")
+            members = b.get("members", [])
+            if not isinstance(members, list) or any(not isinstance(m, str) for m in members):
+                raise DemistoException(f"Binding at index {idx} must include 'members' as an array of strings.")
+            if "condition" in b:
+                version = policy.get("version", 1)
+                if not isinstance(version, int) or version < 3:
+                    raise DemistoException("Policy with IAM Conditions requires 'version' to be 3 or greater.")
 
 
 ##########
@@ -318,6 +517,922 @@ def compute_firewall_patch(creds: Credentials, args: dict[str, Any]) -> CommandR
         removeNull=True,
     )
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
+
+
+def storage_bucket_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of buckets in the project associated with the client.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including optional project_id, max_results, prefix, page_token.
+
+    Returns:
+        CommandResults: List of buckets with their metadata.
+    """
+    project_id = args.get("project_id")
+    max_results = arg_to_number(args.get("limit"))
+    prefix = args.get("prefix")
+    page_token = args.get("page_token")
+    demisto.debug(f"[GCP: storage_bucket_list] \nMax results: {max_results}, \nPrefix: {prefix}, \nPage token: {page_token}")
+
+    storage = GCPServices.STORAGE.build(creds)
+
+    # Build request parameters
+    request_params = {"project": project_id, "maxResults": max_results, "prefix": prefix, "pageToken": page_token}
+
+    remove_nulls_from_dictionary(request_params)
+
+    demisto.debug(f"[GCP: storage_bucket_list] Request params: {request_params}")
+    response = storage.buckets().list(**request_params).execute()  # pylint: disable=E1101
+
+    buckets = response.get("items", [])
+    demisto.debug(f"[GCP: storage_bucket_list] Buckets returned: {len(buckets)}")
+    hr_bucket_data: list[dict[str, Any]] = []
+
+    for bucket in buckets:
+        hr_bucket_data.append(
+            {
+                "Name": bucket.get("name"),
+                "TimeCreated": _format_gcp_datetime(bucket.get("timeCreated")),
+                "TimeUpdated": _format_gcp_datetime(bucket.get("updated")),
+                "OwnerID": bucket.get("owner", {}).get("entityId", ""),
+                "Location": bucket.get("location"),
+                "StorageClass": bucket.get("storageClass"),
+            }
+        )
+    hr = tableToMarkdown("GCP Storage Buckets", hr_bucket_data, removeNull=True, headerTransform=pascalToSpace)
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.Bucket",
+        outputs=buckets,
+        outputs_key_field=["name", "id"],
+        raw_response=buckets,
+    )
+
+
+def storage_bucket_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves information about a specific bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name.
+
+    Returns:
+        CommandResults: Bucket information.
+    """
+    bucket_name = args.get("bucket_name", "")
+
+    storage = GCPServices.STORAGE.build(creds)
+
+    response = storage.buckets().get(bucket=bucket_name).execute()  # pylint: disable=E1101
+
+    demisto.debug(f"[GCP: storage_bucket_get] \nResponse: \n{response}")
+
+    bucket_info = {
+        "Name": response.get("name"),
+        "TimeCreated": _format_gcp_datetime(response.get("timeCreated")),
+        "TimeUpdated": _format_gcp_datetime(response.get("updated")),
+        "OwnerID": response.get("owner", {}).get("entityId", ""),
+        "Location": response.get("location"),
+        "StorageClass": response.get("storageClass"),
+    }
+
+    hr = tableToMarkdown(f"GCP Storage Bucket: {bucket_name}", bucket_info, removeNull=True, headerTransform=pascalToSpace)
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.Bucket",
+        outputs=response,
+        outputs_key_field=["name", "id"],
+        raw_response=response,
+    )
+
+
+def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of objects in a bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name and optional filters.
+
+    Returns:
+        CommandResults: List of objects in the bucket.
+    """
+    bucket_name = args.get("bucket_name", "")
+
+    prefix = args.get("prefix", "")
+    delimiter = args.get("delimiter", "")
+    max_results = arg_to_number(args.get("limit"))
+    page_token = args.get("page_token", "")
+
+    storage = GCPServices.STORAGE.build(creds)
+
+    # Build request parameters
+    request_params = {
+        "bucket": bucket_name,
+        "prefix": prefix,
+        "delimiter": delimiter,
+        "maxResults": max_results,
+        "pageToken": page_token,
+    }
+    remove_nulls_from_dictionary(request_params)
+    demisto.debug(f"[GCP: storage_bucket_objects_list] Request params: {request_params}")
+
+    response = storage.objects().list(**request_params).execute()  # pylint: disable=E1101
+    demisto.debug(f" \nResponse: \n{response}")
+
+    objects = response.get("items", [])
+    demisto.debug(f"[GCP: storage_bucket_objects_list] Objects returned: {len(objects)}")
+    object_data: list[dict[str, Any]] = []
+
+    for obj in objects:
+        object_info = {
+            "Name": obj.get("name", ""),
+            "Bucket": obj.get("bucket", ""),
+            "ContentType": obj.get("contentType", ""),
+            "Size": obj.get("size", ""),
+            "TimeCreated": _format_gcp_datetime(obj.get("timeCreated", "")),
+            "TimeUpdated": _format_gcp_datetime(obj.get("updated", "")),
+            "MD5Hash": obj.get("md5Hash", ""),
+            "CRC32c": obj.get("crc32c", ""),
+        }
+        object_data.append(object_info)
+    hr = tableToMarkdown(f"Objects in bucket: {bucket_name}", object_data, removeNull=True, headerTransform=pascalToSpace)
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.BucketObject",
+        outputs=objects,
+        outputs_key_field=["name", "id"],
+        raw_response=objects,
+    )
+
+
+def storage_bucket_policy_list(
+    creds: Credentials,
+    args: dict[str, Any],
+    outputs_prefix: str = "GCP.Storage.BucketPolicy",
+    object_name: str = "",
+) -> CommandResults:
+    """
+    Retrieves the IAM policy for a bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name and optional requested_policy_version.
+
+    Returns:
+        CommandResults: IAM policy for the bucket.
+    """
+    bucket_name = args.get("bucket_name", "")
+    requested_policy_version = arg_to_number(args.get("requested_policy_version"))
+    storage = GCPServices.STORAGE.build(creds)
+
+    # Build request parameters
+    request_params = {
+        "bucket": bucket_name,
+        "optionsRequestedPolicyVersion": requested_policy_version,
+    }
+    remove_nulls_from_dictionary(request_params)
+    demisto.debug(f"[GCP: storage_bucket_policy_list] Request params: {request_params}")
+    response = storage.buckets().getIamPolicy(**request_params).execute()  # pylint: disable=E1101
+
+    policy_summary = {
+        "Bucket": bucket_name,
+        "Version": response.get("version"),
+        "ETag": response.get("etag"),
+        "Bindings count": len(response.get("bindings", [])),
+    }
+    bindings_rows = []
+    for binding in response.get("bindings", []):
+        role = binding.get("role", "")
+        members = binding.get("members", [])
+        bindings_rows.append({"Role": role, "Members": "\n".join(members) if members else ""})
+
+    summary_object_type = f"bucket: {bucket_name}"
+    outputs = response
+    primary_key: str | list[str] = "resourceId"
+    # Build outputs for object policy command
+    if object_name:
+        summary_object_type = f"object: {object_name}"
+        outputs = {"bucketName": bucket_name, "objectName": object_name, "bindings": response.get("bindings", [])}
+        primary_key = ["bucketName", "objectName"]
+
+    summary_text = (
+        f"IAM Policy for {summary_object_type}\n Version: {policy_summary['Version']}\n"
+        f"ETag: {policy_summary['ETag']}\n Bindings count: {policy_summary['Bindings count']}"
+    )
+
+    hr_bindings = tableToMarkdown(
+        "Bindings",
+        bindings_rows,
+        headers=["Role", "Members"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+    demisto.debug(f"[GCP: storage_bucket_policy_list] Bindings count: {len(bindings_rows)}")
+    hr = f"{summary_text}\n\n{hr_bindings}"
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix=outputs_prefix,
+        outputs=outputs,
+        raw_response=response,
+        outputs_key_field=primary_key,
+    )
+
+
+def storage_bucket_policy_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets the IAM policy for a bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name and policy.
+
+    Returns:
+        CommandResults: Result of the policy update operation.
+    """
+    bucket_name = args.get("bucket_name", "")
+    policy_json = args.get("policy", {})
+
+    try:
+        policy = json.loads(policy_json)
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"Invalid JSON format for policy: {str(e)}")
+
+    storage = GCPServices.STORAGE.build(creds)
+
+    demisto.debug(f"[GCP: storage_bucket_policy_set] Bucket: {bucket_name}; Policy keys: {list(policy.keys())}")
+    add_flag = argToBoolean(args.get("add"))
+
+    _validate_bucket_policy_for_set(policy=policy, add_mode=add_flag)
+    if add_flag:
+        current = storage.buckets().getIamPolicy(bucket=bucket_name).execute()  # pylint: disable=E1101
+        current_bindings: list[dict] = current.get("bindings", [])
+        provided_bindings: list[dict] = policy.get("bindings", [])
+
+        # Index current bindings by role
+        by_role: dict[str, dict] = {
+            str(b.get("role")): {"role": b.get("role"), "members": set(b.get("members", []))}
+            for b in current_bindings
+            if b.get("role")
+        }
+        # Merge provided bindings
+        for pb in provided_bindings:
+            role = pb.get("role")
+            members = set(pb.get("members", []) or [])
+            if not role:
+                continue
+            if role in by_role:
+                by_role[role]["members"].update(members)
+            else:
+                by_role[role] = {"role": role, "members": set(members)}
+
+        # Build merged bindings list
+        merged_bindings = [{"role": r, "members": sorted(data["members"])} for r, data in by_role.items()]
+        # Preserve other top-level fields from current policy if present (e.g., etag/version)
+        merged_policy = dict(current)
+        merged_policy["bindings"] = merged_bindings
+        response = storage.buckets().setIamPolicy(bucket=bucket_name, body=merged_policy).execute()  # pylint: disable=E1101
+    else:
+        response = storage.buckets().setIamPolicy(bucket=bucket_name, body=policy).execute()  # pylint: disable=E1101
+
+    demisto.debug(f" \nResponse: \n{response}")
+
+    result_info = {"Bucket": bucket_name, "PolicyUpdatedSuccessfully": True, "NewPolicyVersion": response.get("version")}
+
+    hr = tableToMarkdown(
+        f"IAM Policy updated for bucket: {bucket_name}",
+        result_info,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.BucketPolicy",
+        outputs=response,
+        outputs_key_field="etag",
+        raw_response=response,
+    )
+
+
+def storage_bucket_object_policy_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists object-level ACLs for a specific object using the GCS ObjectAccessControls API.
+
+    If Uniform Bucket-Level Access (UBLA) is enabled on the bucket, object-level ACLs are
+    disabled and the command returns the bucket-level IAM policy instead for guidance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]):
+            - bucket_name (str): Target bucket name.
+            - object_name (str): Target object name.
+            - generation (Number, optional): Object generation to target when listing ACLs.
+
+    Returns:
+        CommandResults: Human-readable table of ACL entries and machine outputs under
+        'GCP.Storage.BucketObjectPolicy'.
+    """
+    bucket_name = args.get("bucket_name", "")
+    object_name = args.get("object_name", "")
+
+    generation = arg_to_number(args.get("generation"))
+
+    storage = GCPServices.STORAGE.build(creds)
+
+    # UBLA short-circuit
+    if _is_ubla_enabled(storage, bucket_name):
+        demisto.debug(f"Uniform Bucket-Level Access is enabled for {bucket_name} bucket. return the bucket policy")
+        return storage_bucket_policy_list(
+            creds=creds,
+            args=args,
+            outputs_prefix="GCP.Storage.BucketObjectPolicy",
+            object_name=object_name,
+        )
+
+    # Build request parameters
+    request_params = {"bucket": bucket_name, "object": object_name, "generation": generation}
+    remove_nulls_from_dictionary(request_params)
+
+    demisto.debug(f"[GCP: storage_bucket_object_policy_list] Request params: {request_params}")
+    try:
+        response = (
+            storage.objectAccessControls()  # pylint: disable=E1101
+            .list(bucket=bucket_name, object=object_name)
+            .execute()
+        )
+    except HttpError as e:
+        if _is_ubla_error(e):
+            demisto.debug(f"Uniform Bucket-Level Access is enabled for {bucket_name} bucket. return the bucket policy")
+            return storage_bucket_policy_list(
+                creds=creds,
+                args=args,
+                outputs_prefix="GCP.Storage.BucketObjectPolicy",
+                object_name=object_name,
+            )
+        demisto.debug(f"[GCP: storage_bucket_object_policy_get] HttpError status={getattr(e.resp, 'status', None)}")
+        raise
+    # Build human readable output: summary + bindings table
+    items = response.get("items", [])
+    hr = tableToMarkdown(f"Policy for object: {object_name} in bucket: {bucket_name}", items, headerTransform=pascalToSpace)
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.BucketObjectPolicy",
+        outputs=items,
+        raw_response=response,
+        outputs_key_field=["Bucket", "Key"],
+    )
+
+
+def storage_bucket_object_policy_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets object-level ACLs using the GCS ObjectAccessControls API.
+
+    This command applies one or more ACL entries to a specific object. For each provided entry
+    (with fields like 'entity' and 'role'), it attempts an idempotent update first and falls back
+    to insert if the ACL entry does not exist. If Uniform Bucket-Level Access (UBLA) is enabled
+    on the bucket, object-level ACLs are not permitted and the command returns guidance to use
+    bucket-level IAM instead.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]):
+            - bucket_name (str): Target bucket name.
+            - object_name (str): Target object name.
+            - policy (JSON str): A single ACL object or a JSON array of ACL objects. Each object must
+              include 'entity' and 'role' (e.g., {"entity": "allUsers", "role": "READER"}).
+            - generation (Number, optional): Object generation to target.
+
+    Returns:
+        CommandResults: Human-readable table of applied ACL entries and machine outputs under
+        'GCP.Storage.BucketObjectPolicy'.
+    """
+    bucket_name = args.get("bucket_name", "")
+    object_name = args.get("object_name", "")
+    policy_json = args.get("policy", {})
+    generation = arg_to_number(args.get("generation"))
+
+    try:
+        policy = json.loads(policy_json)
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"Invalid JSON format for policy: {str(e)}")
+
+    storage = GCPServices.STORAGE.build(creds)
+
+    # UBLA short-circuit
+    ubla_message = f"""Uniform Bucket-Level Access (UBLA) is enabled for the bucket: {bucket_name}.
+    Use `gcp-storage-bucket-policy-set` at the bucket level instead."""
+    if _is_ubla_enabled(storage, bucket_name):
+        return CommandResults(readable_output=ubla_message)
+
+    # Interpret policy as one or many ObjectAccessControls entries
+    entries: list[dict[str, Any]]
+    if isinstance(policy, list):
+        entries = policy
+    elif isinstance(policy, dict):
+        entries = [policy]
+    else:
+        raise DemistoException("'policy' must be a JSON object or an array of objects representing ACL entries.")
+
+    results: list[dict[str, Any]] = []
+    for idx, entry in enumerate(entries):
+        entity = entry.get("entity")
+        role = entry.get("role")
+        if not entity or not role:
+            raise DemistoException("Each ACL entry must include 'entity' and 'role'.")
+
+        # Try update first (idempotent). If it doesn't exist, fallback to insert.
+        update_params = {"bucket": bucket_name, "object": object_name, "entity": entity, "body": entry, "generation": generation}
+        remove_nulls_from_dictionary(update_params)
+        try:
+            demisto.debug(f"[GCP: storage_bucket_object_policy_set] Updating ACL #{idx+1} for entity {entity}")
+            resp = storage.objectAccessControls().patch(**update_params).execute()  # pylint: disable=E1101
+            results.append(resp)
+            continue
+        except Exception as e:
+            # If update fails (e.g., 404), attempt insert. If UBLA error detected, short-circuit.
+            if isinstance(e, HttpError) and _is_ubla_error(e):
+                return CommandResults(readable_output=ubla_message)
+            demisto.debug(f"[GCP: storage_bucket_object_policy_set] Update failed for entity {entity}: {e}. Trying insert.")
+            try:
+                insert_params = {"bucket": bucket_name, "object": object_name, "body": entry, "generation": generation}
+                remove_nulls_from_dictionary(insert_params)
+                resp = storage.objectAccessControls().insert(**insert_params).execute()  # pylint: disable=E1101
+                results.append(resp)
+            except Exception as ie:
+                if isinstance(ie, HttpError) and _is_ubla_error(ie):
+                    return CommandResults(readable_output=ubla_message)
+                raise
+
+    hr = tableToMarkdown(
+        f"Object ACLs set for object: {object_name} in bucket: {bucket_name}",
+        results if results else [{"message": "No ACL changes applied"}],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.BucketObjectPolicy",
+        outputs=results,
+        raw_response=results,
+        outputs_key_field="resourceId",
+    )
+
+
+def compute_firewall_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a new Google Cloud Compute Engine firewall rule.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The ID of the GCP project where the rule will be created.
+            - resource_name (str): The name of the firewall rule.
+            - description (str, optional): Description of the rule.
+            - network (str, optional): The URL of the network for the rule.
+            - priority (int, optional): Priority value for the rule (lower means higher priority).
+            - source_ranges (str, optional): Comma-separated list of CIDR blocks for allowed sources.
+            - destination_ranges (str, optional): Comma-separated list of CIDR blocks for destinations.
+            - source_tags (str, optional): Comma-separated list of source tags.
+            - target_tags (str, optional): Comma-separated list of target tags.
+            - source_service_accounts (str, optional): Comma-separated list of source service accounts.
+            - target_service_accounts (str, optional): Comma-separated list of target service accounts.
+            - allowed (str, optional): Allowed protocols and ports (in JSON format).
+            - denied (str, optional): Denied protocols and ports (in JSON format).
+            - direction (str, optional): Direction of traffic ('INGRESS' or 'EGRESS').
+            - log_config_enable (bool, optional): Whether to enable logging for this rule.
+            - disabled (bool, optional): Whether the rule should be disabled upon creation.
+
+    Returns:
+        CommandResults: Object containing the operation details of the firewall insert request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    resource_name = args.get("resource_name")
+    body: dict[str, Any] = {"name": resource_name}
+
+    if description := args.get("description"):
+        body["description"] = description
+    if network := args.get("network"):
+        body["network"] = network
+    if priority := args.get("priority"):
+        body["priority"] = arg_to_number(priority)
+    if sourceRanges := args.get("source_ranges"):
+        body["sourceRanges"] = argToList(sourceRanges)
+    if destinationRanges := args.get("destination_ranges"):
+        body["destinationRanges"] = argToList(destinationRanges)
+    if sourceTags := args.get("source_tags"):
+        body["sourceTags"] = argToList(sourceTags)
+    if targetTags := args.get("target_tags"):
+        body["targetTags"] = argToList(targetTags)
+    if sourceServiceAccounts := args.get("source_service_accounts"):
+        body["sourceServiceAccounts"] = argToList(sourceServiceAccounts)
+    if targetServiceAccounts := args.get("target_service_accounts"):
+        body["targetServiceAccounts"] = argToList(targetServiceAccounts)
+    if allowed := args.get("allowed"):
+        body["allowed"] = parse_firewall_rule(allowed)
+    if denied := args.get("denied"):
+        body["denied"] = parse_firewall_rule(denied)
+    if direction := args.get("direction"):
+        body["direction"] = direction
+    if logConfigEnable := args.get("log_config_enable"):
+        body["logConfig"] = {"enable": argToBoolean(logConfigEnable)}
+    if disabled := args.get("disabled"):
+        body["disabled"] = argToBoolean(disabled)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"Firewall insert body for {resource_name} in project {project_id}: {body}")
+    response = (
+        compute.firewalls()  # pylint: disable=E1101
+        .insert(project=project_id, body=body)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Firewall Rule Insert Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response, raw_response=response)
+
+
+def compute_firewall_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists all firewall rules in the specified GCP project.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1–500). Defaults to API default.
+            - page_token (str, optional): Token to retrieve the next page of results.
+            - filter (str, optional): Expression for filtering the listed resources.
+
+    Returns:
+        CommandResults: Object containing the list of firewall rules in the project,
+        with `GCP.Compute.Firewall` and `GCP.Compute.FirewallNextToken` context outputs.
+    """
+    project_id = args.get("project_id")
+    limit = arg_to_number(args.get("limit"))
+    page_token = args.get("page_token")
+    flt = args.get("filter")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "maxResults": limit,
+        "pageToken": page_token,
+        "filter": flt,
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.firewalls().list(**params).execute()  # pylint: disable=E1101
+    items = response.get("items", [])
+    next_token = response.get("nextPageToken")
+    headers = ["name", "id", "direction", "priority", "sourceRanges", "targetTags", "creationTimestamp", "network", "disabled"]
+    metadata = (
+        "Run the following command to retrieve the next batch of firewalls:\n"
+        f"!gcp-compute-firewall-list project_id={project_id} page_token={next_token}"
+        if next_token
+        else None
+    )
+    readable_output = tableToMarkdown(
+        "GCP Compute Firewalls",
+        items,
+        headers=headers,
+        headerTransform=pascalToSpace,
+        metadata=metadata,
+    )
+
+    outputs = {
+        "GCP.Compute.Firewall(val.name && val.name == obj.name)": items,
+        "GCP.Compute(true)": {"FirewallNextToken": next_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=items,
+    )
+
+
+def compute_firewall_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves details of a specific Google Cloud firewall rule.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - resource_name (str): The name of the firewall rule to retrieve.
+
+    Returns:
+        CommandResults: Object containing the firewall rule details under `GCP.Compute.Firewall`.
+        If the firewall rule is not found, returns a human-readable message.
+    """
+    project_id = args.get("project_id")
+    resource_name = args.get("resource_name")
+    compute = GCPServices.COMPUTE.build(creds)
+    try:
+        response = compute.firewalls().get(project=project_id, firewall=resource_name).execute()  # pylint: disable=E1101
+    except HttpError as e:
+        reason = e._get_reason()
+        if e.resp.status == 404 and ("The resource" and "was not found" in reason):
+            return CommandResults(readable_output=f"Firewall '{resource_name}' not found in project '{project_id}'")
+        raise
+    demisto.debug(f"Firewall get response for {project_id}: \n{response}")
+    hr = tableToMarkdown(
+        f"GCP Compute Firewall: {resource_name}",
+        response,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Firewall",
+        outputs=response,
+        outputs_key_field="name",
+        raw_response=response,
+    )
+
+
+def compute_snapshots_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists all Compute Engine snapshots in a specified GCP project.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1–500).
+            - page_token (str, optional): Token for pagination.
+            - filter (str, optional): Expression for filtering listed snapshots.
+
+    Returns:
+        CommandResults: Object containing a list of snapshot details under `GCP.Compute.Snapshot`
+        and pagination token under `GCP.Compute.SnapshotNextToken`.
+    """
+    project_id = args.get("project_id")
+    limit = arg_to_number(args.get("limit"))
+    page_token = args.get("page_token")
+    flt = args.get("filter")
+
+    params: dict[str, Any] = {"project": project_id}
+    validate_limit(limit)
+    if limit:
+        params["maxResults"] = limit
+    if page_token:
+        params["pageToken"] = page_token
+    if flt:
+        params["filter"] = flt
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.snapshots().list(**params).execute()  # pylint: disable=E1101
+    demisto.debug(f"GCP Compute Snapshots \nresponse: \n{response}")
+    items = response.get("items", [])
+    next_token = response.get("nextPageToken")
+    metadata = (
+        "Run the following command to retrieve the next batch of snapshots:\n"
+        f"!gcp-compute-snapshots-list project_id={project_id} page_token={next_token}"
+        if next_token
+        else None
+    )
+    headers = ["name", "status", "creationTimestamp"]
+    hr = tableToMarkdown(
+        "GCP Compute Snapshots",
+        items,
+        headers=headers,
+        removeNull=True,
+        metadata=metadata,
+        headerTransform=pascalToSpace,
+    )
+    outputs = {
+        "GCP.Compute.Snapshot(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"SnapshotNextToken": next_token},
+    }
+    return CommandResults(readable_output=hr, outputs=outputs, raw_response=response)
+
+
+def compute_snapshot_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves a specific Compute Engine snapshot by name.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - resource_name (str): The name of the snapshot to retrieve.
+
+    Returns:
+        CommandResults: Object containing the snapshot details under `GCP.Compute.Snapshot`.
+        If not found, returns a readable message instead of raising an exception.
+    """
+    project_id = args.get("project_id")
+    resource_name = args.get("resource_name")
+    compute = GCPServices.COMPUTE.build(creds)
+    try:
+        response = compute.snapshots().get(project=project_id, snapshot=resource_name).execute()  # pylint: disable=E1101
+    except HttpError as e:
+        reason = e._get_reason()
+        if e.resp.status == 404 and ("The resource" and "was not found" in reason):
+            return CommandResults(readable_output=f"Snapshot '{resource_name}' not found in project '{project_id}'")
+        raise
+    demisto.debug(f"Snapshot get response for {project_id}: \n{response}")
+
+    hr = tableToMarkdown(
+        f"GCP Compute Snapshot: {resource_name}",
+        response,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Snapshot",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def _collect_instance_ips(instance: dict[str, Any]) -> tuple[list[str], list[str]]:
+    """
+    Collects internal and external IP addresses from a Compute Engine instance.
+
+    Args:
+        instance (dict): The instance resource object.
+
+    Returns:
+        Tuple[List[str], List[str]]: A tuple containing two lists -
+        the first for internal IPs and the second for external IPs.
+    """
+    internal_ips: list[str] = []
+    external_ips: list[str] = []
+    for nic in instance.get("networkInterfaces", []) or []:
+        if ip := nic.get("networkIP"):
+            internal_ips.append(ip)
+        for ac in nic.get("accessConfigs", []) or []:
+            if eip := ac.get("natIP"):
+                external_ips.append(eip)
+    return internal_ips, external_ips
+
+
+def _match_instance_by_ip(instance: dict[str, Any], ip_address: str, match_external: bool) -> tuple[bool, str]:
+    """
+    Checks if the given IP address matches the instance IPs based on the match mode.
+
+    Args:
+        instance (dict): The instance resource object.
+        ip_address (str): The IP address to match.
+        match_external (bool): Whether to check external IPs (True) or internal IPs (False).
+
+    Returns:
+        Tuple[bool, str]: A tuple indicating whether a match was found,
+        and the match type ('internal', 'external', or 'none').
+    """
+    internal_ips, external_ips = _collect_instance_ips(instance)
+    if match_external:
+        return (ip_address in external_ips, "external" if ip_address in external_ips else "none")
+    return (ip_address in internal_ips, "internal" if ip_address in internal_ips else "none")
+
+
+def compute_instances_aggregated_list_by_ip(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists Compute Engine instances aggregated across all zones and filters them by IP address.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - ip_address (str): The IP address to match.
+            - match_external (bool, optional): Whether to search external IPs (default is False).
+            - limit (int, optional): Maximum number of results per API call.
+            - page_token (str, optional): Token for pagination.
+
+    Returns:
+        CommandResults: Object containing matched instances under `GCP.Compute.Instance`,
+        including match type and matched IP, along with readable summary table.
+    """
+    project_id = args.get("project_id")
+    ip_address = args.get("ip_address", "")
+    match_external = argToBoolean(args.get("match_external", "false"))
+    limit = arg_to_number(args.get("limit"))
+    page_token = args.get("page_token")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {"project": project_id}
+    if limit:
+        params["maxResults"] = limit
+    if page_token:
+        params["pageToken"] = page_token
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instances().aggregatedList(**params).execute()  # pylint: disable=E1101
+    demisto.debug(f"Instances aggregated list response for {project_id}: \n{response}")
+
+    matched: list[dict[str, Any]] = []
+    hr_items: list[dict[str, str]] = []
+    for scope in response.get("items", {}).values():
+        for inst in scope.get("instances", []) or []:
+            is_match, match_type = _match_instance_by_ip(inst, ip_address, match_external)
+            if is_match:
+                internal_ips, external_ips = _collect_instance_ips(inst)
+                matched.append(inst)
+                hr_items.append(
+                    {
+                        "name": inst.get("name"),
+                        "id": inst.get("id"),
+                        "status": inst.get("status"),
+                        "zone": inst.get("zone"),
+                        "networkIP": ", ".join(internal_ips),
+                        "accessConfigs.natIP": ", ".join(external_ips),
+                        "matchType": match_type,
+                        "matchedIP": ip_address,
+                    }
+                )
+
+    hr_headers = ["name", "id", "status", "zone", "networkIP", "accessConfigs.natIP", "matchType", "matchedIP"]
+    hr = tableToMarkdown(
+        "GCP Compute Instances (filtered by IP)",
+        hr_items,
+        headers=hr_headers,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Instance",
+        outputs=matched,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_network_tag_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Adds or updates network tags for a Compute Engine VM instance.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - zone (str): The zone of the instance (e.g., "us-central1-a").
+            - resource_name (str): The name of the VM instance.
+            - tag (str): The tag or list of tags to apply.
+            - add_tag (bool, optional): Whether to merge with existing tags (default: True).
+            - tags_fingerprint (str): The current fingerprint of the instance's tags,
+              required for updates.
+
+    Returns:
+        CommandResults: Object containing operation details under `GCP.Compute.Operations`,
+        and a readable message confirming tag update.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+    tags = argToList(args.get("tag"))
+    add_tag = argToBoolean(args.get("add_tag", "true"))
+
+    compute = GCPServices.COMPUTE.build(creds)
+    fingerprint = args.get("tags_fingerprint", "")
+
+    if add_tag:
+        instance = compute.instances().get(project=project_id, zone=zone, instance=resource_name).execute()  # pylint: disable=E1101
+        demisto.debug(f"Instance get response for {project_id}: \n{instance}")
+        tags_obj = instance.get("tags", {})
+        items = tags_obj.get("items", []) or []
+        if tags not in items:
+            tags.extend(items)
+
+    body = {"items": tags, "fingerprint": fingerprint}
+
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .setTags(project=project_id, zone=zone, instance=resource_name, body=body)
+        .execute()
+    )
+
+    demisto.debug(f"Add network tag response for {project_id}: \n{response}")
+    new_tag = args.get("tag")
+    readable_output = f"Added '{new_tag}' tag to instance {resource_name} successfully\n" f"The full network tag list is: {tags}"
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=response,
+        outputs_prefix=" GCP.Compute.Operations",
+        outputs_key_field="id",
+        raw_response=response,
+    )
 
 
 def storage_bucket_policy_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -950,6 +2065,183 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
 #     return CommandResults(readable_output=hr)
 
 
+def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of instances contained within the specified zone.
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): Must include 'resource_name'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    limit = (arg_to_number(args.get("limit")) or 50) if args.get("limit", "50") != "0" else 0
+    filters = args.get("filters")
+    order_by = args.get("order_by")
+    page_token = args.get("page_token")
+
+    validate_limit(limit)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.instances()
+        .list(project=project_id, zone=zone, filter=filters, maxResults=limit, orderBy=order_by, pageToken=page_token)
+        .execute()
+    )
+
+    next_page_token = response.get("nextPageToken", "")
+    metadata = (
+        "Run the following command to retrieve the next batch of instances:\n"
+        f"!gcp-compute-instances-list project_id={project_id} zone={zone} page_token={next_page_token}"
+        if next_page_token
+        else None
+    )
+    if limit != 50:
+        metadata = f"{metadata} {limit=}"
+
+    if next_page_token:
+        response["InstancesNextPageToken"] = response.pop("nextPageToken")
+
+    if response.get("items"):
+        response["Instances"] = response.pop("items")
+
+    hr_data = []
+    for instance in response.get("Instances", [{}]):
+        d = {
+            "id": instance.get("id"),
+            "name": instance.get("name"),
+            "kind": instance.get("kind"),
+            "creationTimestamp": instance.get("creationTimestamp"),
+            "description": instance.get("description"),
+            "status": instance.get("status"),
+            "machineType": instance.get("machineType"),
+            "zone": instance.get("zone"),
+        }
+        hr_data.append(d)
+
+    readable_output = tableToMarkdown(
+        "GCP Instances",
+        hr_data,
+        headers=["id", "name", "kind", "creationTimestamp", "description", "status", "machineType", "zone"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+        metadata=metadata,
+    )
+
+    outputs = {
+        "GCP.Compute.Instances(val.id && val.id == obj.id)": response.get("Instances", []),
+        "GCP.Compute(true)": {
+            "InstancesNextPageToken": response.get("InstancesNextPageToken"),
+            "InstancesSelfLink": response.get("selfLink"),
+            "InstancesWarning": response.get("warning"),
+        },
+    }
+    remove_empty_elements(outputs)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def gcp_compute_instance_get_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified Instance resource.
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): Must include 'resource_name'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    instance = args.get("instance")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instances().get(project=project_id, zone=zone, instance=instance).execute()
+
+    hr_data = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "kind": response.get("kind"),
+        "creationTimestamp": response.get("creationTimestamp"),
+        "description": response.get("description"),
+        "status": response.get("status"),
+        "machineType": response.get("machineType"),
+        "labels": response.get("labels"),
+        "labelFingerprint": response.get("labelFingerprint"),
+    }
+    readable_output = tableToMarkdown(
+        f"GCP Instance {instance} from zone {zone}",
+        hr_data,
+        headers=["id", "name", "kind", "creationTimestamp", "description", "status", "machineType", "labels", "labelFingerprint"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Instances",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_instance_label_set_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets labels on an instance.
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): Must include 'resource_name'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    instance = args.get("instance")
+    label_fingerprint = args.get("label_fingerprint", "")
+    add_labels = argToBoolean(args.get("add_labels", False))
+    labels = parse_labels(args.get("labels", ""))
+    demisto.debug(f"The parsed {labels=}")
+
+    current_labels = {}
+    if add_labels:
+        instance_info = gcp_compute_instance_get_command(creds, args).outputs
+        if isinstance(instance_info, dict):
+            current_labels = instance_info.get("labels", {})
+            demisto.debug(f"Adding the new labels {labels=} to the current ones {current_labels}")
+
+    body = {"labels": current_labels | labels, "labelFingerprint": label_fingerprint}
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instances().setLabels(project=project_id, zone=zone, instance=instance, body=body).execute()
+
+    data_res = {
+        "status": response.get("status"),
+        "kind": response.get("kind"),
+        "name": response.get("name"),
+        "id": response.get("id"),
+        "progress": response.get("progress"),
+        "operationType": response.get("operationType"),
+    }
+
+    headers = ["id", "name", "kind", "status", "progress", "operationType"]
+
+    readable_output = tableToMarkdown(f"GCP instance {instance} labels update", data_res, headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
 def _get_commands_for_requirement(requirement: str, req_type: str) -> list[str]:
     """
     Find which commands require a specific API or permission.
@@ -1038,6 +2330,22 @@ def _get_requirements(command: str = "") -> tuple[list[str], list[str]]:
     )
 
     return apis, permissions
+
+
+def validate_limit(limit):
+    """
+    Validates that the provided limit argument is within the allowed range.
+
+    Args:
+        limit (int): The limit value to validate.
+
+    Raises:
+        DemistoException: If the limit is not set or is outside the allowed range (1-500 inclusive).
+    """
+    if limit > 500 or limit < 1:
+        raise DemistoException(
+            f"The acceptable values of the argument limit are 1 to 500, inclusive. Currently the value is {limit}"
+        )
 
 
 def check_required_permissions(
@@ -1232,6 +2540,331 @@ def get_credentials(args: dict, params: dict) -> Credentials:
         raise DemistoException(f"Failed to authenticate with GCP: {str(e)}")
 
 
+def gcp_compute_network_get_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified network.
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): _description_
+    Returns:
+        CommandResults: _description_
+    """
+    project = args.get("project_id")
+    network = args.get("network")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.networks().get(project=project, network=network).execute()
+
+    data_res = {
+        "name": response.get("name"),
+        "id": response.get("id"),
+        "creationTimestamp": response.get("creationTimestamp"),
+        "description": response.get("description"),
+    }
+
+    headers = ["id", "name", "creationTimestamp", "description"]
+
+    readable_output = tableToMarkdown(
+        f"GCP network {network}", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Networks",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_image_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified image.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): _description_
+    Returns:
+        CommandResults: _description_
+    """
+    project = args.get("project_id")
+    image = args.get("image")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.images().get(project=project, image=image).execute()
+
+    data_res = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "creationTimestamp": response.get("creationTimestamp"),
+        "description": response.get("description"),
+    }
+    headers = ["id", "name", "creationTimestamp", "description"]
+
+    readable_output = tableToMarkdown(
+        f"GCP image {image}", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Images",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_region_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Get a specified region resource.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): _description_
+    Returns:
+        CommandResults: _description_
+    """
+    project = args.get("project_id")
+    region = args.get("region")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.regions().get(project=project, region=region).execute()
+
+    data_res = {"id": response.get("id"), "name": response.get("name"), "status": response.get("status")}
+    headers = ["id", "name", "status"]
+
+    readable_output = tableToMarkdown(
+        f"GCP region {region}", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Regions",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_instance_group_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified instance group.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): _description_
+    Returns:
+        CommandResults: _description_
+    """
+    project = args.get("project_id")
+    instance_group = args.get("instance_group")
+    zone = args.get("zone")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instanceGroups().get(project=project, zone=zone, instanceGroup=instance_group).execute()
+
+    data_res = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "zone": response.get("zone"),
+        "network": response.get("network"),
+    }
+    headers = ["id", "name", "zone", "network"]
+
+    readable_output = tableToMarkdown(
+        f"GCP instanceGroups {instance_group}", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.InstanceGroups",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_zone_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Get a specified zone resource.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): _description_
+    Returns:
+        CommandResults: _description_
+    """
+    project = args.get("project_id")
+    zone = args.get("zone")
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.zones().get(project=project, zone=zone).execute()
+    data_res = {
+        "status": response.get("status"),
+        "name": response.get("name"),
+        "id": response.get("id"),
+    }
+
+    headers = ["id", "name", "status"]
+
+    readable_output = tableToMarkdown(
+        f"GCP zone {zone}", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Zones",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_network_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a subnet-mode network in the specified project using the data provided.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Arguments including:
+            - name: Name of the network
+            - description: Optional description
+            - auto_create_sub_networks: "true"/"false" (optional, defaults to True)
+            - routing_config_routing_mode: "REGIONAL" or "GLOBAL" (optional)
+            - project_id: GCP project ID
+    Returns:
+        CommandResults: The result of the network creation operation.
+    """
+    config = {}
+
+    # Name (required)
+    if args.get("name"):
+        config["name"] = args.get("name", "")
+    else:
+        raise ValueError("The 'name' argument is required to create a network.")
+
+    # Description (optional)
+    if args.get("description"):
+        config["description"] = args.get("description")
+
+    # Auto-create subnets (default to True)
+    auto_create_sub_networks = argToBoolean(args.get("auto_create_sub_networks", True))
+    if auto_create_sub_networks is not None:
+        config["autoCreateSubnetworks"] = auto_create_sub_networks
+    else:
+        config["autoCreateSubnetworks"] = True  # default to subnet-mode network
+
+    # Optional routing config
+    if args.get("routing_config_routing_mode"):
+        config["routingConfig"] = {"routingMode": args["routing_config_routing_mode"]}
+
+    # Project ID
+    project = args.get("project_id")
+    # Build the compute service
+    compute = GCPServices.COMPUTE.build(creds)
+
+    # Execute the insert network request
+    response = compute.networks().insert(project=project, body=config).execute()
+
+    # Prepare output
+    data_res = {
+        "status": response.get("status"),
+        "kind": response.get("kind"),
+        "name": response.get("name"),
+        "id": response.get("id"),
+        "progress": response.get("progress"),
+        "operationType": response.get("operationType"),
+    }
+
+    headers = ["status", "kind", "id", "progress", "operationType", "name"]
+    readable_output = tableToMarkdown(
+        "Google Cloud Compute Network Insert", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of networks available to the specified project.
+    """
+    project = args.get("project_id")
+    limit = (arg_to_number(args.get("limit")) or 50) if args.get("limit", "50") != "0" else 0
+    filters = args.get("filters")
+    order_by = args.get("order_by")
+    page_token = args.get("page_token")
+
+    validate_limit(limit)
+
+    data_res = []
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.networks()
+        .list(
+            project=project,
+            filter=filters,
+            maxResults=limit,
+            orderBy=order_by,
+            pageToken=page_token,
+        )
+        .execute()
+    )
+
+    next_page_token = response.get("nextPageToken")
+
+    metadata = (
+        "Run the following command to retrieve the next batch of networks:\n"
+        f"!gcp-compute-networks-list project_id={project} page_token={next_page_token}"
+        if next_page_token
+        else None
+    )
+
+    if limit != 50:
+        metadata = f"{metadata} {limit=}"
+
+    if next_page_token:
+        response["NetworksNextPageToken"] = response.pop("nextPageToken")
+
+    if response.get("items"):
+        response["Networks"] = response.pop("items")
+
+    for item in response.get("Networks", [{}]):
+        data_res_item = {
+            "name": item.get("name"),
+            "id": item.get("id"),
+            "creationTimestamp": item.get("creationTimestamp"),
+            "status": item.get("status"),
+        }
+        data_res.append(data_res_item)
+
+    headers = ["name", "id", "creationTimestamp", "status"]
+    readable_output = tableToMarkdown(
+        "Google Cloud Compute Networks",
+        data_res,
+        headers=headers,
+        removeNull=True,
+        metadata=metadata,
+        headerTransform=pascalToSpace,
+    )
+
+    outputs = {
+        "GCP.Compute.Networks(val.id && val.id == obj.id)": response.get("Networks", []),
+        "GCP.Compute(true)": {
+            "NetworksNextPageToken": response.get("NetworksNextPageToken"),
+            "NetworksSelfLink": response.get("selfLink"),
+            "outputsWarning": response.get("warning"),
+        },
+    }
+    remove_empty_elements(outputs)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Networks",
+        outputs_key_field="id",
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Main function to route commands and execute logic.
@@ -1239,27 +2872,66 @@ def main():  # pragma: no cover
     This function processes the incoming command, sets up the appropriate credentials,
     and routes the execution to the corresponding handler function.
     """
-    try:
-        command = demisto.command()
-        args = demisto.args()
-        params = demisto.params()
+    command = demisto.command()
+    args = demisto.args()
+    params = demisto.params()
 
-        command_map = {
+    try:
+        command_map: dict[str, Callable[[Any, dict], Any]] = {
             "test-module": test_module,
             # Compute Engine commands
             "gcp-compute-firewall-patch": compute_firewall_patch,
+            "gcp-compute-firewall-insert": compute_firewall_insert,
+            "gcp-compute-firewall-list": compute_firewall_list,
+            "gcp-compute-firewall-get": compute_firewall_get,
+            "gcp-compute-snapshots-list": compute_snapshots_list,
+            "gcp-compute-snapshot-get": compute_snapshot_get,
+            "gcp-compute-instances-aggregated-list-by-ip": compute_instances_aggregated_list_by_ip,
+            "gcp-compute-network-tag-set": compute_network_tag_set,
             "gcp-compute-subnet-update": compute_subnet_update,
             "gcp-compute-instance-service-account-set": compute_instance_service_account_set,
             "gcp-compute-instance-service-account-remove": compute_instance_service_account_remove,
             "gcp-compute-instance-start": compute_instance_start,
             "gcp-compute-instance-stop": compute_instance_stop,
+            "gcp-compute-instances-list": gcp_compute_instances_list_command,
+            "gcp-compute-instance-get": gcp_compute_instance_get_command,
+            "gcp-compute-instance-labels-set": gcp_compute_instance_label_set_command,
+            "gcp-compute-network-get": gcp_compute_network_get_command,
+            "gcp-compute-image-get": gcp_compute_image_get,
+            "gcp-compute-instance-group-get": gcp_compute_instance_group_get,
+            "gcp-compute-region-get": gcp_compute_region_get,
+            "gcp-compute-zone-get": gcp_compute_zone_get,
+            "gcp-compute-networks-list": gcp_compute_networks_list,
+            "gcp-compute-network-insert": gcp_compute_network_insert,
             # Storage commands
+            "gcp-storage-bucket-list": storage_bucket_list,
+            "gcp-storage-bucket-get": storage_bucket_get,
+            "gcp-storage-bucket-objects-list": storage_bucket_objects_list,
+            "gcp-storage-bucket-policy-list": storage_bucket_policy_list,
+            "gcp-storage-bucket-policy-set": storage_bucket_policy_set,
+            "gcp-storage-bucket-object-policy-list": storage_bucket_object_policy_list,
+            "gcp-storage-bucket-object-policy-set": storage_bucket_object_policy_set,
             "gcp-storage-bucket-policy-delete": storage_bucket_policy_delete,
             "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
             # Container (GKE) commands
             "gcp-container-cluster-security-update": container_cluster_security_update,
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
+            # Quick Actions - Firewall
+            "gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action": compute_firewall_patch,
+            # Quick Actions - Storage Bucket Policy
+            "gcp-storage-bucket-policy-delete-remove-allusers-access-quick-action": storage_bucket_policy_delete,
+            "gcp-storage-bucket-policy-delete-remove-AllAuthenticatedUser-access-quick-action": storage_bucket_policy_delete,
+            "gcp-storage-bucket-policy-delete-make-gcp-bucket-private-quick-action": storage_bucket_policy_delete,
+            # Quick Actions - Subnet Update
+            "gcp-compute-subnet-update-enable-gcp-subnet-flow-logs-quick-action": compute_subnet_update,
+            "gcp-compute-enable-private-ip-access-on-subnet-quick-action": compute_subnet_update,
+            # Quick Actions - Container Cluster Security
+            "gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action": container_cluster_security_update,  # noqa E501
+            "gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action": container_cluster_security_update,  # noqa E501
+            # Quick Actions - Storage Bucket Metadata
+            "gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action": storage_bucket_metadata_update,
+            "gcp-storage-bucket-metadata-update-set-GCP-bucket-access-to-uniform-quick-action": storage_bucket_metadata_update,
             # The following commands are currently unsupported:
             # # Compute Engine commands
             # "gcp-compute-instance-metadata-add": compute_instance_metadata_add,
@@ -1281,6 +2953,10 @@ def main():  # pragma: no cover
             return_results(command_map[command](creds, args))
         else:
             raise NotImplementedError(f"Command not implemented: {command}")
+
+    except HttpError as e:
+        project_id = args.get("project_id") or args.get("folder_id") or "N/A"
+        handle_permission_error(e, project_id, command)
 
     except Exception as e:
         return_error(f"Failed to execute command {demisto.command()}. Error: {str(e)}")
