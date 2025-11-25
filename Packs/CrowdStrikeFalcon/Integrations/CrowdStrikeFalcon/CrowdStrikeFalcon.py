@@ -1807,8 +1807,7 @@ def get_detection_entities(incidents_ids: list):
     """
     combined_resources = []
 
-    url_endpoint_version = "v2"
-    url = f"/alerts/entities/alerts/{url_endpoint_version}"
+    url = f"/alerts/entities/alerts/v2"
 
     for i in range(0, len(incidents_ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
         batch_ids = incidents_ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
