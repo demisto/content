@@ -2270,6 +2270,7 @@ script:
           type: String
     - name: core-run-playbook
       description: Run a playbook with specified playbook ID and issue IDs.
+      hidden: true
       arguments:
         - name: playbook_id
           description: The ID of the playbook to run.
