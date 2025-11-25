@@ -10,8 +10,8 @@ Office 365 is a subscription-based service that provides a comprehensive suite o
 
 ### Data Normalization and Querying Capabilities
 
-* Data modeling rules to normalize Microsoft Office 365 logs that are ingested via _Office 365_ integration to Cortex XSIAM.
-* Querying ingested logs in XQL Search using the below datasets:
+* Data modeling rules to normalize Microsoft Office 365 logs that are ingested via the _Office 365_ integration into Cortex XSIAM.
+* Querying ingested logs in XQL Search using the datasets below:
 
 1. _msft_o365_general_raw_
 2. _msft_o365_exchange_online_raw_
