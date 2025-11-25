@@ -4723,7 +4723,7 @@ def main():  # pragma: no cover
             "azure-storage-container-blob-tag-set": storage_container_blob_tag_set_command,
             "azure-storage-container-blob-property-get": storage_container_blob_property_get_command,
             "azure-storage-container-blob-property-set": storage_container_blob_property_set_command,
-            "azure-storage-container-block-public-access": storage_container_block_public_access_command,
+            "azure-storage-container-public-access-block": storage_container_block_public_access_command,
             "azure-policy-assignment-create": create_policy_assignment_command,
             "azure-postgres-config-set": set_postgres_config_command,
             "azure-postgres-server-update": postgres_server_update_command,
