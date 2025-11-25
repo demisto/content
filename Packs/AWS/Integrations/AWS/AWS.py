@@ -10,7 +10,6 @@ from botocore.exceptions import ClientError
 from boto3 import Session
 import re
 
-
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
 DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv("EGRESSPROXY_CA_PATH") or "/etc/certs/egress.crt"
@@ -4023,8 +4022,6 @@ REQUIRED_ACTIONS: list[str] = [
     "secretsmanager:CreateSecret",
     "secretsmanager:RotateSecret",
     "secretsmanager:TagResource",
-    "rds:AddTagsToResource",
-    "rds:CreateTenantDatabase",
     "rds:AddTagsToResource",
     "rds:CreateTenantDatabase",
     "rds:ModifyDBCluster",
