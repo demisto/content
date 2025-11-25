@@ -41,7 +41,7 @@ configuration:
   - high
   required: true
   type: 15
-  section: Collect
+  section: Connect
 - additionalinfo: The query used to collect indicators to sync from Cortex.
   defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
   display: Sync Query
