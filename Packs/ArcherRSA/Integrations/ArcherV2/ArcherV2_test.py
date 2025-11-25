@@ -586,7 +586,9 @@ class TestArcherV2:
             pytest.param('{"Device Name":"Generic Tablet 2025"}', "Generic Tablet 2025", id="No special characters"),
             # Test case from XSUP-59455: Invalid \u sequence (not followed by 4 hex digits)
             pytest.param('{"Device Name":"Path: \\user\\123"}', "Path: \\user\\123", id="Invalid unicode escape - user path"),
-            pytest.param('{"Device Name":"C:\\users\\file.txt"}', "C:\\users\\file.txt", id="Invalid unicode escape - Windows path"),
+            pytest.param(
+                '{"Device Name":"C:\\users\\file.txt"}', "C:\\users\\file.txt", id="Invalid unicode escape - Windows path"
+            ),
         ],
     )
     def test_generate_field_contents(self, json_fields_values: str, expected_value: str):
