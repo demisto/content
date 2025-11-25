@@ -487,10 +487,11 @@ _EXTRACTION_JAVASCRIPT = """
 def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tuple[str, str]:
     """
     Executes the JavaScript to extract ONLY the structured content string.
+    For JSON URLs, returns raw JSON. For HTML, returns markdown-formatted content.
 
     Returns:
         tuple[str, str]: A tuple containing:
-            - str: The structured Markdown content string.
+            - str: The structured content string (JSON or Markdown).
             - str: The final URL navigated to (as auxiliary data).
     """
     demisto.debug(f"Executing content-only extraction for tab {tab.id}")
@@ -502,14 +503,28 @@ def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tupl
         demisto.debug(f"Could not get frame URL: {ex}")
         final_url = "N/A"
 
+    is_json_url = final_url.lower().endswith(('.json', '.jsonl')) or '/json' in final_url.lower()
+    
     try:
-        result = tab.Runtime.evaluate(
-            expression=_EXTRACTION_JAVASCRIPT,
-            returnByValue=True,
-            _timeout=navigation_timeout
-        )
-
-        content_string = result.get("result", {}).get("value", "")
+        if is_json_url:
+            json_extraction_js = (
+                "document.querySelector('pre') ? "
+                "document.querySelector('pre').textContent : document.body.textContent"
+            )
+            result = tab.Runtime.evaluate(
+                expression=json_extraction_js,
+                returnByValue=True,
+                _timeout=navigation_timeout
+            )
+            content_string = result.get("result", {}).get("value", "").strip()
+        else:
+            # For HTML URLs, use markdown extraction
+            result = tab.Runtime.evaluate(
+                expression=_EXTRACTION_JAVASCRIPT,
+                returnByValue=True,
+                _timeout=navigation_timeout
+            )
+            content_string = result.get("result", {}).get("value", "")
 
         if not content_string:
             raise DemistoException("Extraction failed: Received empty content string from JavaScript execution.")
