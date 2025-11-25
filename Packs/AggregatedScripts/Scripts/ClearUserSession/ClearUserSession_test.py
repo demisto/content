@@ -139,7 +139,7 @@ def test_prepare_human_readable_error():
 
     assert len(result) == 1
     assert isinstance(result[0], CommandResults)
-    assert result[0].readable_output == "#### Error for test-command arg1=value1\nError occurred"
+    assert result[0].readable_output == "Error occurred"
     assert result[0].entry_type == EntryType.ERROR
     assert result[0].mark_as_note is True
 

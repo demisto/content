@@ -69,7 +69,7 @@ def prepare_human_readable(
             result_message = f"#### Result for {command}\n{human_readable}"
             result.append(CommandResults(readable_output=result_message, mark_as_note=True))
         else:
-            result_message = f"#### Error for {command}\n{human_readable}"
+            result_message = human_readable
             result.append(
                 CommandResults(
                     readable_output=result_message,
@@ -419,7 +419,7 @@ def is_error_enhanced(entry: dict) -> bool:
     if is_error(entry):
         return True
 
-    if content := entry.get("Contents"):
+    if (content := entry.get("Contents")) and isinstance(entry.get("Contents"), str):
         content_lower = str(content).lower()
         return is_not_found_error(content_lower) or is_auth_authz_error(content_lower) or is_general_error(content_lower)
     return False
@@ -443,8 +443,11 @@ def get_error_enhanced(entry: dict) -> str:
         # If no error is detected, raise the original ValueError
         raise ValueError("execute_command result has no error entry. before using get_error_enhanced use is_error_enhanced")
 
+    content = entry.get("Contents")
+    if not isinstance(content, str):
+        return f"Unknown error occurred: {content}"
 
-    content_lower:str = entry.get("Contents").lower()
+    content_lower = entry.get("Contents").lower()
     # 1. Check for Not Found errors first, as they are very specific
     if is_not_found_error(content_lower):
         return "User not found."
@@ -454,7 +457,6 @@ def get_error_enhanced(entry: dict) -> str:
         return "Authentication failed."
 
     # 3. Resolve to general error
-    content = entry.get("Contents") or entry.get("Content")
     return f"Unknown error occurred: {content}"
 
 
@@ -477,13 +479,12 @@ def run_command(
     if not error_message:
         return brand, "Success", f"User session was cleared for {user_name or user_id}"
 
-    failed_message = f"{brand}: {error_message.lstrip('#').strip()}"
+    failed_message = f"{error_message.lstrip('#').strip()}"
     demisto.debug(
         f"Failed to clear sessions for {brand} user with ID {user_id}. "
         f"Error message: {error_message}. Response details: {readable_outputs}."
     )
     return brand, "Failed", failed_message
-
 
 
 """ MAIN FUNCTION """
@@ -501,7 +502,7 @@ def main():
         filtered_users_names, outputs = remove_system_user(users_names, brands)
 
         # Step 1: Get user IDs for usernames if any usernames provided
-        users_ids = {}
+        users_ids: dict[str, list] = {}
         if filtered_users_names:
             get_user_data_command = Command(
                 name="get-user-data",
@@ -533,16 +534,18 @@ def main():
                         user_id_brand_to_username[(user_id, brand)] = user_name
                         processed_user_ids.add(user_id)
                 else:
-                    outputs.append({
-                        "Message": "User not found or no integration configured.",
-                        "Result": "Failed",
-                        "Brand": brand,
-                        "UserId": "",
-                        "UserName": user_name,
-                    })
+                    outputs.append(
+                        {
+                            "Message": "User not found or no integration configured.",
+                            "Result": "Failed",
+                            "Brand": brand,
+                            "UserId": "",
+                            "UserName": user_name,
+                        }
+                    )
 
         # Step 3: Process each unique (user_id, brand) combination
-        user_results = {}  # Track results per user_id to group output
+        user_results: dict[str, list] = {}  # Track results per user_id to group output
 
         for (user_id, brand), associated_username in user_id_brand_to_username.items():
             if brand not in brands:
