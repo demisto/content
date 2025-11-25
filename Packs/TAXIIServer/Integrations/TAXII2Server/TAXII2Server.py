@@ -260,15 +260,26 @@ class TAXII2Server:
         """
         found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get("query")
-        iocs, _, total, _ = find_indicators(
-            query=query, types=types, added_after=added_after, limit=limit, offset=offset, is_manifest=True
+        iocs, _, total, use_search_after = find_indicators(
+            query=query, types=types, added_after=added_after, limit=limit, offset=offset, is_manifest=True, collection_id=collection_id
         )
+        demisto.debug(f"T2S: after find_indicators {iocs}")
 
         first_added = None
         last_added = None
-        objects = iocs[offset : offset + limit]
-        if iocs and not objects:
-            raise RequestedRangeNotSatisfiable
+
+
+        if use_search_after:
+            # returns the iocs without calculate offset
+            objects = iocs
+            demisto.info(f"T2S: total IOCs fetched for collection {collection_id} : {(offset + limit) * STIX_PERCENTAGE}")
+        else:
+            objects = iocs[offset: offset + limit]
+            if iocs and not objects:
+                raise RequestedRangeNotSatisfiable
+
+        if len(objects) < len(iocs):
+            demisto.info(f"T2S: WARNING: number of created IOCs is higher than limit {len(objects)=} {len(iocs)=}")
 
         if objects:
             first_added = objects[-1].get("date_added")
@@ -279,11 +290,12 @@ class TAXII2Server:
             "objects": objects,
         }
 
-        if self.version == TAXII_VER_2_1 and total > offset + limit:
+        if self.version == TAXII_VER_2_1 and total > (offset + limit) * STIX_PERCENTAGE:
             response["more"] = True
             response["next"] = str(limit + offset)
 
         content_range = f"items {offset}-{len(objects)}/{total}"
+        demisto.debug(f"T2S: {len(objects)=}")
         return response, first_added, last_added, content_range
 
     def get_objects(self, collection_id: str, added_after, limit: int, offset: int, types: list) -> tuple:
