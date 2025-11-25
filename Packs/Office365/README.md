@@ -59,6 +59,6 @@ To access the Office 365 Native Collector on your Cortex XSIAM tenant:
 **Pay Attention**:
 In order to normalize **Azure AD** (msft_azure_ad_raw) and **Azure AD Audit** (msft_azure_ad_audit_raw) logs, install the Microsoft Entra ID pack.
 
-![Office_365_Collector_Settings](https://github.com/demisto/content/tree/3f84a36b72377778993a7ce4df32265927b8ab21/Packs/Office365/doc_files)
+![Office_365_Collector_Settings](https://github.com/demisto/content/blob/88072b8c5a03e5dcbd871250cdc634956ed96b1f/Packs/Office365/doc_files/Office_365_Collector_Settings.png)
 
 </~XSIAM>
