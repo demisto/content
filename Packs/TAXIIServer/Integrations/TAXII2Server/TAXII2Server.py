@@ -261,20 +261,25 @@ class TAXII2Server:
         found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get("query")
         iocs, _, total, use_search_after = find_indicators(
-            query=query, types=types, added_after=added_after, limit=limit, offset=offset, is_manifest=True, collection_id=collection_id
+            query=query,
+            types=types,
+            added_after=added_after,
+            limit=limit,
+            offset=offset,
+            is_manifest=True,
+            collection_id=collection_id,
         )
         demisto.debug(f"T2S: after find_indicators {iocs}")
 
         first_added = None
         last_added = None
 
-
         if use_search_after:
             # returns the iocs without calculate offset
             objects = iocs
             demisto.info(f"T2S: total IOCs fetched for collection {collection_id} : {(offset + limit) * STIX_PERCENTAGE}")
         else:
-            objects = iocs[offset: offset + limit]
+            objects = iocs[offset : offset + limit]
             if iocs and not objects:
                 raise RequestedRangeNotSatisfiable
 
