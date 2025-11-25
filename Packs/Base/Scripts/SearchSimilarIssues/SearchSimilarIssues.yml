@@ -74,19 +74,19 @@ outputs:
 - contextPath: SimilarIssues.isSimilarIssueFound
   description: Indicates whether similar issues have been found.
   type: boolean
-- contextPath: SimilarIssues.similarIssueList.created
+- contextPath: SimilarIssues.similarIssue.created
   description: The creation date of the linked issue.
   type: date
-- contextPath: SimilarIssues.similarIssueList.id
+- contextPath: SimilarIssues.similarIssue.id
   description: The ID of the linked issue.
   type: string
-- contextPath: SimilarIssues.similarIssueList.name
+- contextPath: SimilarIssues.similarIssue.name
   description: The name of the linked issue.
   type: string
-- contextPath: SimilarIssues.similarIssueList.similarityIssue
+- contextPath: SimilarIssues.similarIssue.similarityIssue
   description: The similarity of the linked issue represented as a float in the range 0-1.
   type: number
-- contextPath: SimilarIssues.similarIssueList.details
+- contextPath: SimilarIssues.similarIssue.details
   description: The details of the linked issue.
   type: string
 script: '-'

@@ -120,7 +120,7 @@ def handle_results(results) -> tuple[str, dict]:
             issues_list = replace_keys_recursively_multi(issues_list, replacements)
             issues_list = delete_keys_recursively(issues_list, ["alert ID"])
             final_outputs = {
-                "similarIssueList": issues_list,
+                "similarIssue": issues_list,
                 "isSimilarIssueFound": bool(issues_list),
                 "excutionSummary": "Success",
             }
@@ -129,7 +129,7 @@ def handle_results(results) -> tuple[str, dict]:
     replacements = {"alerts": "issues", "Alert": "Issue", "alert": "issue", "incidentId": "issueId"}
     combined_human_readable = replace_keys_recursively_multi(combined_human_readable, replacements)
     if not final_outputs:
-        final_outputs = {"excutionSummary": combined_human_readable, "similarIssueList": {}, "isSimilarIssueFound": False}
+        final_outputs = {"excutionSummary": combined_human_readable, "similarIssue": {}, "isSimilarIssueFound": False}
         final_outputs = {"SimilarIssues": final_outputs}
 
     return combined_human_readable, final_outputs
