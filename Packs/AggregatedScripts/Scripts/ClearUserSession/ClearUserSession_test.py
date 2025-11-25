@@ -15,6 +15,8 @@ from ClearUserSession import (
     get_user_id,
     clear_user_sessions,
     main,
+    is_error_enhanced,
+    get_error_enhanced,
 )
 
 
@@ -780,3 +782,96 @@ def test_main_with_user_id_argument(mocker: MockerFixture):
         assert output["UserName"] == ""
 
 
+def test_is_error_enhanced_with_standard_error():
+    """
+    Given:
+        An entry with a standard error type.
+    When:
+        is_error_enhanced is called.
+    Then:
+        It should return True (using standard is_error function).
+    """
+    entry = {"Type": 4, "Contents": "Some error"}
+
+    result = is_error_enhanced(entry)
+
+    assert result is True
+
+
+def test_is_error_enhanced_with_not_found_error():
+    """
+    Given:
+        An entry with content indicating a user not found error.
+    When:
+        is_error_enhanced is called.
+    Then:
+        It should return True.
+    """
+    entry = {"Type": 1, "Contents": "User john.doe not found in the system"}
+
+    result = is_error_enhanced(entry)
+
+    assert result is True
+
+
+def test_is_error_enhanced_with_no_error():
+    """
+    Given:
+        An entry with no error indicators.
+    When:
+        is_error_enhanced is called.
+    Then:
+        It should return False.
+    """
+    entry = {"Type": 1, "Contents": "User session cleared successfully"}
+
+    result = is_error_enhanced(entry)
+
+    assert result is False
+
+
+def test_get_error_enhanced_with_not_found_error():
+    """
+    Given:
+        An entry with content indicating a user not found error.
+    When:
+        get_error_enhanced is called.
+    Then:
+        It should return "User not found.".
+    """
+    entry = {"Type": 1, "Contents": "User john.doe does not exist"}
+
+    result = get_error_enhanced(entry)
+
+    assert result == "User not found."
+
+
+def test_get_error_enhanced_with_auth_error():
+    """
+    Given:
+        An entry with content indicating an authentication error.
+    When:
+        get_error_enhanced is called.
+    Then:
+        It should return "Authentication failed.".
+    """
+    entry = {"Type": 1, "Contents": "Unauthorized access for user"}
+
+    result = get_error_enhanced(entry)
+
+    assert result == "Authentication failed."
+
+
+def test_get_error_enhanced_with_no_error():
+    """
+    Given:
+        An entry with no error indicators.
+    When:
+        get_error_enhanced is called.
+    Then:
+        It should raise a ValueError.
+    """
+    entry = {"Type": 1, "Contents": "User session cleared successfully"}
+
+    with pytest.raises(ValueError, match="execute_command result has no error entry"):
+        get_error_enhanced(entry)
