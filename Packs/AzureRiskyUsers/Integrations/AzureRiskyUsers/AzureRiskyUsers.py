@@ -183,6 +183,7 @@ class Client:
             json_data={"userIds": user_ids},
             resp_type="response",
         )
+        #  The status code must be 204: https://learn.microsoft.com/en-us/graph/api/riskyuser-confirmcompromised
         if res.status_code != 204:
             raise DemistoException(f"Unable to confirm risky user:\n{res.text}")
 
@@ -201,6 +202,7 @@ class Client:
             json_data={"userIds": user_ids},
             resp_type="response",
         )
+        #  The status code must be 204: https://learn.microsoft.com/en-us/graph/api/riskyuser-confirmsafe
         if res.status_code != 204:
             raise DemistoException(f"Unable to confirm risky user:\n{res.text}")
 
@@ -653,7 +655,7 @@ def risky_users_confirm(client: Client, args: dict[str, Any], confirm_func: Call
             user_id = client.upn_to_user_id(user) if is_upn(user) else user
             confirm_func(user_ids=[user_id])
             success_outputs.append({"User": user})
-        except Exception as e:
+        except DemistoException as e:
             error_outputs.append({"User": user, "Error": str(e)})
 
     if success_outputs:
