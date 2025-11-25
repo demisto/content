@@ -6622,7 +6622,7 @@ class TestCommonTypes:
             sha512='test_sha512',
             ssdeep='test_ssdeep',
             imphash='test_imphash',
-            name='test_name',
+            name='test_name'*1024*2073,
             entry_id='test_entry_id',
             size=1000,
             dbot_score=dbot_score,
@@ -6651,7 +6651,7 @@ class TestCommonTypes:
             behaviors=None,
             relationships=None,
             creation_date='test_creation_date',
-            description='a'*1024*2073,
+            description='a',
             hashes=None,
             stix_id='test_stix_id',
             organization_prevalence=0,
@@ -6674,8 +6674,11 @@ class TestCommonTypes:
                 ' val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 &&'
                 ' val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep &&'
                 ' val.SSDeep == obj.SSDeep)': [
-                    {
-                        'Name': 'test_name',
+                   {
+                       'MD5': '63347f5d946164a23faca26b78a91e1c',
+                       'SHA1': 'test_sha1',
+                       'SHA256': 'test_sha256',
+                       'SHA512': 'test_sha512'
                     }
                 ],
                 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
