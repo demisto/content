@@ -589,7 +589,7 @@ def test_add_tim_context():
     Then:
         - The internal state should be updated with the provided data.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path(val.Value && val.Value == obj.Value)")
+    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
     tim_ctx = {"indicator1": [{"Brand": "brandA", "data": "value"}]}
     dbot_list = [make_dbot("indicator1", "brandA", 2)]
 
@@ -608,7 +608,7 @@ def test_add_other_commands_results():
     Then:
         - The internal other_context dictionary should be correctly updated.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path(val.Value && val.Value == obj.Value)")
+    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
 
     builder.add_other_commands_results({"Command1": {"data": "value1"}})
     builder.add_other_commands_results({"Command2": {"data": "value2"}})
@@ -711,7 +711,7 @@ def test_build_without_tim_context_carries_dbot_and_other():
     Then:
         - Final context contains DBot + Other but no TIM key.
     """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Final.Path(val.Value && val.Value == obj.Value)")
+    builder = ContextBuilder(indicator=default_indicator, final_context_path="Final.Path")
     builder.add_tim_context({}, dbot_scores=[make_dbot("ind1", "V", 1)])
     builder.add_other_commands_results({"K1": {"v": 2}})
 
