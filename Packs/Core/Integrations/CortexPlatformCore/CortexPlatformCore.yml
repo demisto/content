@@ -2268,6 +2268,76 @@ script:
         - contextPath: Core.AppsecIssue.backlog_status
           description: The backlog status of the issue.
           type: String
+    - name: core-update-case
+      description: Updates the properties of a case.
+      arguments:
+        - name: case_id
+          description: The ID of the case to update.
+          required: true
+          type: String
+        - name: case_name
+          description: The new name for the case.
+          type: String
+        - name: description
+          description: The new description for the case.
+          type: String
+        - name: assignee
+          description: The new assignee for the case.
+          type: String
+        - auto: PREDEFINED
+          name: status
+          description: The new status for the case.
+          type: String
+          predefined:
+            - "new"
+            - "under_investigation"
+            - "resolved"
+        - name: notes
+          description: Additional notes for the case.
+          type: String
+        - auto: PREDEFINED
+          name: starred
+          description: Whether the case should be starred.
+          type: Boolean
+          predefined:
+            - "true"
+            - "false"
+        - auto: PREDEFINED
+          name: user_defined_severity
+          description: The user-defined severity for the case.
+          type: String
+          predefined:
+            - "low"
+            - "medium"
+            - "high"
+            - "critical"
+        - auto: PREDEFINED
+          name: resolve_reason
+          description: The reason for resolving the case. Only relevant when status is set to resolved.
+          type: String
+          predefined:
+            - "known_issue"
+            - "duplicate"
+            - "false_positive"
+            - "true_positive"
+            - "security_testing"
+            - "other"
+        - name: resolved_comment
+          description: Comment when resolving the case. Only relevant when status is set to resolved.
+          type: String
+        - auto: PREDEFINED
+          name: resolve_all_alerts
+          description: Whether to resolve all alerts associated with the case. Only relevant when status is set to resolved.
+          type: Boolean
+          predefined:
+            - "true"
+            - "false"
+        - name: custom_fields
+          description: Custom fields for the case.
+          type: String
+
+
+
   runonce: false
   script: "-"
   subtype: python3

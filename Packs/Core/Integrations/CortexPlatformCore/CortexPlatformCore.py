@@ -44,6 +44,7 @@ WEBAPP_COMMANDS = [
     "core-get-asset-coverage-histogram",
     "core-create-appsec-policy",
     "core-get-appsec-issues",
+    "core-update-case",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -53,6 +54,41 @@ ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 
+CASE_STATUS_RESOLVED_REASON = {
+    'known_issue': 'STATUS_040_RESOLVED_KNOWN_ISSUE',
+    'duplicate': 'STATUS_050_RESOLVED_DUPLICATE',
+    'false_positive': 'STATUS_060_RESOLVED_FALSE_POSITIVE',
+    'true_positive': 'STATUS_090_RESOLVED_TRUE_POSITIVE',
+    'security_testing': 'STATUS_100_RESOLVED_SECURITY_TESTING',
+    'other': 'STATUS_070_RESOLVED_OTHER',
+}
+
+CASE_FIELDS = {
+    "case_id_list": "CASE_ID",
+    "case_domain": "INCIDENT_DOMAIN",
+    "case_name": "NAME",
+    "case_description": "DESCRIPTION",
+    "status": "STATUS_PROGRESS",
+    "severity": "SEVERITY",
+    "creation_time": "CREATION_TIME",
+    "asset_ids": "UAI_ASSET_IDS",
+    "asset_groups": "UAI_ASSET_GROUP_IDS",
+    "assignee": "ASSIGNED_USER_PRETTY",
+    "assignee_email": "ASSIGNED_USER",
+    "name": "CONTAINS",
+    "description": "DESCRIPTION",
+    "last_updated": "LAST_UPDATE_TIME",
+    "hosts": "HOSTS",
+    "starred": "CASE_STARRED",
+}
+
+CASE_STATUS = {
+    "new": "STATUS_010_NEW",
+    "under_investigation": "STATUS_020_UNDER_INVESTIGATION",
+    "resolved": "STATUS_025_RESOLVED",
+}
+
+CASE_SEVERITY = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
 
 class AppsecIssues:
     class AppsecIssueType:
@@ -416,6 +452,24 @@ def arg_to_float(arg: Optional[str]):
 
     raise ValueError(f'"{arg}" is not a valid number')
 
+def determine_assignee_filter_field(assignee: str) -> str:
+    """
+    Determine whether the assignee should be filtered by email or pretty name.
+
+    Args:
+        assignee (str): The assignee value to filter on.
+
+    Returns:
+        str: The appropriate field to filter on based on the input.
+    """
+    if not assignee:
+        return CASE_FIELDS["assignee"]
+    elif "@" in assignee:
+        # If the assignee contains '@', use the email field
+        return CASE_FIELDS["assignee_email"]
+    else:
+        # Otherwise, use the pretty name field
+        return CASE_FIELDS["assignee"]
 
 def preprocess_get_cases_args(args: dict):
     demisto.debug(f"original args: {args}")
@@ -587,6 +641,17 @@ class Client(CoreClient):
             data=policy_payload,
             headers={**self._headers, "content-type": "application/json"},
             url_suffix="/public_api/appsec/v1/policies",
+        )
+        
+    def update_case(self, request_data):
+        return self._http_request(
+            method="POST",
+            url_suffix="/case/set_data",
+            headers={
+                **self._headers,
+                "Content-Type": "application/json",
+            },
+            json_data=request_data,
         )
 
 
@@ -1810,6 +1875,81 @@ def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
         outputs=filtered_appsec_issues,
         raw_response=all_appsec_issues,
     )
+    
+def update_case_command(client: Client, args: dict) -> CommandResults:
+    """
+    Updates a case with new information based on provided arguments.
+    """
+    case_id = args.get("case_id")
+    case_name = args.get("case_name", "")
+    description = args.get("description", "")
+    assignee = args.get("assignee", "")
+    status = args.get("status", "")
+    notes = args.get("notes", "")
+    starred = args.get("starred", "")
+    user_defined_severity = args.get("user_defined_severity", "")
+    resolve_reason = args.get("resolve_reason", "")
+    resolved_comment = args.get("resolved_comment", "")
+    resolve_all_alerts = args.get("resolve_all_alerts", "")
+    custom_fields = args.get("custom_fields", "")
+    
+    if resolve_reason or resolve_all_alerts or resolved_comment and not status == "resolved":
+        raise ValueError("In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the status must be set to 'resolved'")
+        
+    # Build request_data with mapped and filtered values
+    request_data = {"request_data": {
+        "newIncidentInterface": True,
+        "case_id": case_id,
+        **{
+            "caseName": case_name if case_name else None,
+        },
+        **{
+            "description": description if description else None
+        },
+        **{
+            "assignedUser": assignee if assignee and determine_assignee_filter_field(assignee) == CASE_FIELDS["assignee_email"] else None
+        },
+         **{
+            "assignedUserPrettyName": assignee if assignee and determine_assignee_filter_field(assignee) ==  CASE_FIELDS["assignee"] else None
+        },
+        **{
+            "status": CASE_STATUS[status] if status else None
+        },
+        **{
+            "notes": notes if notes else None
+        },
+        **{
+            "starred": starred if starred else None
+        },
+        **{
+            "userSeverity": CASE_SEVERITY[user_defined_severity] if user_defined_severity else None
+        },
+        **{
+            "resolve_reason": CASE_STATUS_RESOLVED_REASON[resolve_reason] if resolve_reason else None
+        },
+        **{
+            "caseResolvedComment": resolved_comment if resolved_comment else None
+        },
+        **{
+            "resolve_all_alerts": resolve_all_alerts if resolve_all_alerts else None
+        },
+        **{
+            "customFields": custom_fields if custom_fields else None
+        },
+    }
+    }
+    
+    
+    response = client.update_case(request_data)
+    reply = response.get("reply", {})
+    
+    return CommandResults(
+        readable_output=f"Case {case_id} successfully updated.",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+        outputs_key_field="case_id",
+        outputs=reply,
+        raw_response=response)
+            
 
 
 def main():  # pragma: no cover
@@ -1914,7 +2054,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-appsec-issues":
             return_results(get_appsec_issues_command(client, args))
-
+        elif command == "core-update-case":
+            return_results(update_case_command(client, args))
+            
     except Exception as err:
         demisto.error(traceback.format_exc())
         return_error(str(err))
