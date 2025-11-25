@@ -447,7 +447,7 @@ def get_error_enhanced(entry: dict) -> str:
     if not isinstance(content, str):
         return f"Unknown error occurred: {content}"
 
-    content_lower = entry.get("Contents").lower() # type: ignore
+    content_lower = entry.get("Contents").lower()  # type: ignore
     # 1. Check for Not Found errors first, as they are very specific
     if is_not_found_error(content_lower):
         return "User not found."
@@ -545,7 +545,7 @@ def main():
                     )
 
         # Step 3: Process each unique (user_id, brand) combination
-        user_results: dict[str, list[tuple[str,str,str]]] = {}  # Track results per user_id to group output
+        user_results: dict[str, list[tuple[str, str, str]]] = {}  # Track results per user_id to group output
 
         for (user_id, brand), associated_username in user_id_brand_to_username.items():
             if brand not in brands:
@@ -582,7 +582,7 @@ def main():
             command_results_list: list[CommandResults] = []
             command_results_list.extend(results_for_verbose)
         else:
-            command_results_list: list[CommandResults] = []
+            command_results_list = []
 
         command_results_list.append(
             CommandResults(
