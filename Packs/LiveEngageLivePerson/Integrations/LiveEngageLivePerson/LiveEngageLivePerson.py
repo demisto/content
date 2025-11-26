@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 import traceback
 from typing import Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 """ CONSTANTS """
 
@@ -285,7 +285,7 @@ def test_module(client: Client) -> str:
     """
     demisto.info(f"{INTEGRATION_PREFIX} Starting test-module.")
     try:
-        one_day_ago = datetime.utcnow() - timedelta(days=1)
+        one_day_ago = datetime.now(UTC) - timedelta(days=1)
         demisto.info(f"{INTEGRATION_PREFIX} test-module: Attempting to fetch 1 event from 1 day ago.")
         client.fetch_events(max_fetch=1, last_run_time=one_day_ago)
 
@@ -341,16 +341,13 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
         raise
 
 
-def fetch_events_command(
-    client: Client, max_fetch: int, first_fetch_time: datetime
-) -> tuple[list[dict[str, Any]], datetime, datetime]:
+def fetch_events_command(client: Client, max_fetch: int) -> list[dict[str, Any]]:
     """
-    Fetches events for XSIAM and returns the events along with timestamp information.
+    Fetches events for XSIAM and returns the events.
 
     :param client: The LivePerson client
     :param max_fetch: Maximum number of events to fetch
-    :param first_fetch_time: The first fetch time to use if no last run exists
-    :return: A tuple of (events, last_run_time, new_max_timestamp)
+    :return: List of events
     """
     last_run = demisto.getLastRun()
     last_run_time_str = last_run.get("last_fetch_time")
@@ -359,12 +356,17 @@ def fetch_events_command(
         last_run_time = datetime.fromisoformat(last_run_time_str)
         demisto.info(f"{INTEGRATION_PREFIX} Found last run time: {last_run_time_str}")
     else:
-        last_run_time = first_fetch_time
-        demisto.info(f"{INTEGRATION_PREFIX} No last run time found. Using first_fetch time: {first_fetch_time.isoformat()}")
+        # For first fetch, use 1 minute ago to prevent backpressure
+        last_run_time = datetime.now(UTC) - timedelta(minutes=1)
+        demisto.info(f"{INTEGRATION_PREFIX} No last run time found. Using 1 minute ago: {last_run_time.isoformat()}")
 
     events, new_max_timestamp = client.fetch_events(max_fetch=max_fetch, last_run_time=last_run_time)
 
-    return events, last_run_time, new_max_timestamp
+    # Update last run after fetching
+    if events:
+        update_last_run(last_run_time, new_max_timestamp, events)
+
+    return events
 
 
 def update_last_run(last_run_time: datetime, new_max_timestamp: datetime, events: list[dict[str, Any]]) -> None:
@@ -418,7 +420,6 @@ def main() -> None:
     proxies = handle_proxy(params.get("proxy", False))
 
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH))
-    first_fetch_str = params.get("first_fetch", "3 days")
 
     command = demisto.command()
     demisto.debug(f"{INTEGRATION_PREFIX} Command being run: {command}")
@@ -430,11 +431,6 @@ def main() -> None:
                 "Missing required parameters: Authorization Server URL, Account ID, Client ID, or Client Secret."
             )
 
-        first_fetch_time, _ = parse_date_range(first_fetch_str)
-        if not first_fetch_time:
-            raise DemistoException(
-                f"Invalid 'first_fetch' format: {first_fetch_str}. Use phrases like '3 days ago' or '2023-10-25T10:00:00Z'."
-            )
         if max_fetch is None or max_fetch <= 0:
             raise DemistoException(f"'max_fetch' must be a positive integer. Got: {max_fetch}")
 
@@ -464,16 +460,13 @@ def main() -> None:
             return_results(get_events_command(client, demisto.args()))
 
         elif command == "fetch-events":
-            events, last_run_time, new_max_timestamp = fetch_events_command(client, max_fetch, first_fetch_time)
+            events = fetch_events_command(client, max_fetch)
 
             if events:
                 demisto.debug(f"{INTEGRATION_PREFIX} Sending {len(events)} events to XSIAM.")
                 # send_events_to_xsiam handles event hashing for deduplication
                 send_events_to_xsiam(events, vendor=INTEGRATION_NAME, product="liveperson")
-
-                # Only update last run after successful event submission
-                demisto.info(f"{INTEGRATION_PREFIX} Events successfully sent to XSIAM. Updating last run time.")
-                update_last_run(last_run_time, new_max_timestamp, events)
+                demisto.info(f"{INTEGRATION_PREFIX} Events successfully sent to XSIAM.")
             else:
                 demisto.debug(f"{INTEGRATION_PREFIX} No events to send to XSIAM.")
 

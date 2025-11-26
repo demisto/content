@@ -1,4 +1,4 @@
-display: LiveEngage LivePerson
+display: LiveEngage LivePerson (Beta)
 name: LiveEngage LivePerson
 commonfields:
   id: LiveEngage LivePerson
@@ -44,13 +44,6 @@ configuration:
     defaultvalue: '5000'
     section: Collect
     additionalinfo: 'The maximum number of Audit trail events per fetch. The API max is 500 per call; the integration will loop to get this total.'
-  - name: first_fetch
-    display: First fetch time
-    required: false
-    type: 0
-    defaultvalue: '3 days'
-    section: Collect
-    additionalinfo: "The time to start fetching events from, e.g., '3 days ago' or '2023-01-01T00:00:00Z'."
   - name: insecure
     display: Trust any certificate (not secure)
     required: false
