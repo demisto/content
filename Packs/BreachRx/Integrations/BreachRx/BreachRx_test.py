@@ -27,26 +27,31 @@ def introspection_matcher(request):
 
 def create_incident_matcher(request):
     from graphql import print_ast
+
     return request.json().get("query") == print_ast(create_incident_mutation.document)
 
 
 def get_severities_matcher(request):
     from graphql import print_ast
+
     return request.json().get("query") == print_ast(get_incident_severities.document)
 
 
 def get_types_matcher(request):
     from graphql import print_ast
+
     return request.json().get("query") == print_ast(get_incident_types.document)
 
 
 def get_incident_matcher(request):
     from graphql import print_ast
+
     return request.json().get("query") == print_ast(get_incident_by_name.document)
 
 
 def get_actions_matcher(request):
     from graphql import print_ast
+
     return request.json().get("query") == print_ast(get_actions_for_incident.document)
 
 
