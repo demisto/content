@@ -534,8 +534,6 @@ def main():
         user_results: dict[str, list[tuple[str, str, str]]] = {}  # Track results per user_id to group output
 
         for (user_id, brand), associated_username in user_id_brand_to_username.items():
-            if brand not in brands:
-                continue  # Skip brands not requested
 
             if user_id not in user_results:
                 user_results[user_id] = []
