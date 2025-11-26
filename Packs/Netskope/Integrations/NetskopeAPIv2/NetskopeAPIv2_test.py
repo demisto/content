@@ -1008,3 +1008,86 @@ def test_update_remote_system():
             result = update_remote_system(client_instance, args, {"close_netskope_incident": True})
 
             assert result == "incident123"
+
+
+@pytest.mark.parametrize(
+    "data, expected_output",
+    [
+        # Test case 1: No large integers
+        (
+            {"id": 123, "name": "test", "count": 1000},
+            {"id": 123, "name": "test", "count": 1000},
+        ),
+        # Test case 2: Single large integer exceeding JS_NUMBER_LIMIT
+        (
+            {"id": 9007199254740992, "name": "test"},
+            {"id": "9007199254740992", "name": "test"},
+        ),
+        # Test case 3: Multiple large integers
+        (
+            {
+                "object_id": 9007199254740993,
+                "incident_id": 9007199254740994,
+                "timestamp": 1234567890,
+                "name": "test",
+            },
+            {
+                "object_id": "9007199254740993",
+                "incident_id": "9007199254740994",
+                "timestamp": 1234567890,
+                "name": "test",
+            },
+        ),
+        # Test case 4: Integer exactly at JS_NUMBER_LIMIT (should not convert)
+        (
+            {"id": 9007199254740991, "name": "test"},
+            {"id": 9007199254740991, "name": "test"},
+        ),
+        # Test case 5: Mixed data types with large integers
+        (
+            {
+                "large_id": 9007199254740995,
+                "small_id": 100,
+                "name": "test",
+                "active": True,
+                "score": 99.5,
+            },
+            {
+                "large_id": "9007199254740995",
+                "small_id": 100,
+                "name": "test",
+                "active": True,
+                "score": 99.5,
+            },
+        ),
+    ],
+)
+def test_convert_large_integers_to_strings(data, expected_output):
+    """
+    Scenario: Test the convert_large_integers_to_strings function.
+
+    Given:
+     - A dictionary containing various integer values, some exceeding JavaScript's MAX_SAFE_INTEGER.
+
+    When:
+     - Calling convert_large_integers_to_strings function with the dictionary.
+
+    Then:
+     - Ensure integers larger than 2^53-1 are converted to strings.
+     - Ensure integers at or below 2^53-1 remain as integers.
+     - Ensure other data types remain unchanged.
+     - Ensure the function modifies the dictionary in-place.
+    """
+    from NetskopeAPIv2 import convert_large_integers_to_strings
+
+    # Make a copy to verify in-place modification
+    original_data = data.copy()
+    
+    # Call the function (modifies in-place)
+    convert_large_integers_to_strings(data)
+    
+    # Verify the data was modified in-place
+    assert data == expected_output
+    
+    # Verify it's the same object (in-place modification)
+    assert id(data) == id(original_data)

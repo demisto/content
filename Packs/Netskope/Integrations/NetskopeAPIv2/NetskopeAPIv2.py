@@ -1235,12 +1235,9 @@ def parse_incident(
         dict: XSOAR Incident.
     """
     incident_id = incident["object_id"] if incident_type == "dlp_incident" else incident["_id"]
-
     incident["incident_type"] = incident_type
     incident["mirror_direction"] = mirror_direction
     incident["mirror_instance"] = demisto.integrationInstance()
-
-    # Convert large integers to strings to prevent JavaScript precision loss
     convert_large_integers_to_strings(incident)
 
     return {
