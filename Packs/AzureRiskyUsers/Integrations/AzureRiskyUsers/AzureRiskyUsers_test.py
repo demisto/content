@@ -482,9 +482,8 @@ def test_risky_users_confirm_compromise_command(mocker):
     mock_client_instance.confirm_compromised_request.assert_has_calls(
         [mocker.call(user_ids=["id_user1@example.com"]), mocker.call(user_ids=["id_user2@example.com"])]
     )
-    assert result[0].readable_output == tableToMarkdown(
-        "Successfully confirmed users as compromised.", {"User": users_to_compromise}
-    )
+    assert result[0].outputs[0]["Success"] is True
+    assert result[0].outputs[1]["Success"] is True
 
 
 def test_risky_users_confirm_safe_command(mocker):
@@ -514,4 +513,5 @@ def test_risky_users_confirm_safe_command(mocker):
     mock_client_instance.confirm_safe_request.assert_has_calls(
         [mocker.call(user_ids=["id_user3@example.com"]), mocker.call(user_ids=["id_user4@example.com"])]
     )
-    assert result[0].readable_output == tableToMarkdown("Successfully confirmed users as safe.", {"User": users_to_safe})
+    assert result[0].outputs[0]["Success"] is True
+    assert result[0].outputs[1]["Success"] is True

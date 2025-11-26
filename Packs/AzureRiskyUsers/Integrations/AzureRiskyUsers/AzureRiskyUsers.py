@@ -734,7 +734,7 @@ def test_connection(client: Client) -> str:
     return "Success!"
 
 
-def main():
+def main():  # pragma: no cover
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
