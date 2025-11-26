@@ -505,7 +505,7 @@ def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tupl
     """
     Executes the JavaScript to extract ONLY the structured content string.
     For JSON content (detected by Content-Type), returns raw JSON. For HTML, returns markdown-formatted content.
-    
+
     The JavaScript handles both detection and extraction in a single call for optimal performance.
 
     Returns:
@@ -521,16 +521,12 @@ def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tupl
     except Exception as ex:
         demisto.debug(f"Could not get frame URL: {ex}")
         final_url = "N/A"
-    
+
     try:
         # Single JavaScript call that handles both JSON detection and content extraction
-        result = tab.Runtime.evaluate(
-            expression=_EXTRACTION_JAVASCRIPT,
-            returnByValue=True,
-            _timeout=navigation_timeout
-        )
+        result = tab.Runtime.evaluate(expression=_EXTRACTION_JAVASCRIPT, returnByValue=True, _timeout=navigation_timeout)
         extraction_result = result.get("result", {}).get("value", {})
-        
+
         # Check if we got a structured response (with type and content)
         content_type = extraction_result.get("type", "html")
         raw_content = extraction_result.get("content", "").strip()
@@ -538,14 +534,13 @@ def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tupl
         if content_type == "json":
             try:
                 parsed_json = json.loads(raw_content)
-                content_string = json.dumps(parsed_json, separators=(', ', ': '), ensure_ascii=False)
+                content_string = json.dumps(parsed_json, separators=(", ", ": "), ensure_ascii=False)
                 demisto.debug(f"Successfully parsed and formatted JSON (detected by Content-Type) from {final_url}")
             except json.JSONDecodeError as json_err:
                 demisto.debug(f"Could not parse JSON from {final_url}: {json_err}, returning raw content")
                 content_string = raw_content
         else:
             content_string = raw_content
-
 
         if not content_string:
             raise DemistoException("Extraction failed: Received empty content string from JavaScript execution.")
@@ -560,6 +555,7 @@ def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tupl
 # endregion
 
 # region utility functions
+
 
 def count_running_chromes(port) -> int:
     try:
@@ -1291,9 +1287,7 @@ def rasterize_thread(
 
         elif rasterize_type == RasterizeType.TEXT or str(rasterize_type).lower() == RasterizeType.TEXT.value:
             demisto.debug(f"Executing extract_text_content for TEXT, {path=}, {tab.id=}")
-            return extract_text_content(
-                browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout
-            )
+            return extract_text_content(browser, tab, path, wait_time=wait_time, navigation_timeout=navigation_timeout)
 
         else:
             raise DemistoException(f"Unsupported rasterization type: {rasterize_type}.")
@@ -1901,10 +1895,7 @@ def rasterize_extract_command():  # pragma: no cover
             )
             continue
 
-        outputs = {
-            "URL": final_url,
-            "Content": extracted_content
-        }
+        outputs = {"URL": final_url, "Content": extracted_content}
 
         results.append(
             CommandResults(

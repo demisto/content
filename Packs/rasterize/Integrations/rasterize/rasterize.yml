@@ -369,6 +369,7 @@ script:
       name: height
     description: Extracts structured text content from web pages in markdown format.
     name: rasterize-extract
+    hidden: true
     outputs:
     - contextPath: Rasterize.URL
       description: The final URL after any redirects.
