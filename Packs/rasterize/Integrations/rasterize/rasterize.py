@@ -388,6 +388,22 @@ class PychromeEventHandler:
 # endregion
 _EXTRACTION_JAVASCRIPT = """
 (function() {
+    // --- JSON Detection and Extraction (First Priority) ---
+    const contentType = (document.contentType ||
+                         document.querySelector('meta[http-equiv="Content-Type"]')?.content ||
+                         '').toLowerCase();
+    const isJson = contentType.includes('application/json') ||
+                   contentType.includes('application/ld+json');
+    
+    if (isJson) {
+        // Extract JSON content from <pre> tag (how browsers display JSON) or body
+        const jsonContent = document.querySelector('pre') ?
+                            document.querySelector('pre').textContent :
+                            document.body.textContent;
+        return { type: 'json', content: jsonContent };
+    }
+
+    // --- HTML/Markdown Extraction ---
     // --- Configuration ---
     const MAIN_CONTENT_SELECTORS = 'main, article, .main-content, .post, .entry, .container';
     const IGNORE_SELECTORS = 'nav, header, footer, aside, script, style, noscript, form, iframe, button, '
@@ -480,7 +496,7 @@ _EXTRACTION_JAVASCRIPT = """
     finalContent = finalContent.replace(/ ([.,;:!?])/g, '$1');
     finalContent = finalContent.trim();
 
-    return finalContent;
+    return { type: 'html', content: finalContent };
 })();
 """
 
@@ -488,7 +504,9 @@ _EXTRACTION_JAVASCRIPT = """
 def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tuple[str, str]:
     """
     Executes the JavaScript to extract ONLY the structured content string.
-    For JSON URLs, returns raw JSON. For HTML, returns markdown-formatted content.
+    For JSON content (detected by Content-Type), returns raw JSON. For HTML, returns markdown-formatted content.
+    
+    The JavaScript handles both detection and extraction in a single call for optimal performance.
 
     Returns:
         tuple[str, str]: A tuple containing:
@@ -503,37 +521,31 @@ def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tupl
     except Exception as ex:
         demisto.debug(f"Could not get frame URL: {ex}")
         final_url = "N/A"
-
-    is_json_url = final_url.lower().endswith(('.json', '.jsonl')) or '/json' in final_url.lower()
     
     try:
-        if is_json_url:
-            json_extraction_js = (
-                "document.querySelector('pre') ? "
-                "document.querySelector('pre').textContent : document.body.textContent"
-            )
-            result = tab.Runtime.evaluate(
-                expression=json_extraction_js,
-                returnByValue=True,
-                _timeout=navigation_timeout
-            )
-            raw_json = result.get("result", {}).get("value", "").strip()
-            
+        # Single JavaScript call that handles both JSON detection and content extraction
+        result = tab.Runtime.evaluate(
+            expression=_EXTRACTION_JAVASCRIPT,
+            returnByValue=True,
+            _timeout=navigation_timeout
+        )
+        extraction_result = result.get("result", {}).get("value", {})
+        
+        # Check if we got a structured response (with type and content)
+        content_type = extraction_result.get("type", "html")
+        raw_content = extraction_result.get("content", "").strip()
+
+        if content_type == "json":
             try:
-                parsed_json = json.loads(raw_json)
+                parsed_json = json.loads(raw_content)
                 content_string = json.dumps(parsed_json, separators=(', ', ': '), ensure_ascii=False)
-                demisto.debug(f"Successfully parsed and formatted JSON from {final_url}")
+                demisto.debug(f"Successfully parsed and formatted JSON (detected by Content-Type) from {final_url}")
             except json.JSONDecodeError as json_err:
                 demisto.debug(f"Could not parse JSON from {final_url}: {json_err}, returning raw content")
-                content_string = raw_json
+                content_string = raw_content
         else:
-            # For HTML URLs, use markdown extraction
-            result = tab.Runtime.evaluate(
-                expression=_EXTRACTION_JAVASCRIPT,
-                returnByValue=True,
-                _timeout=navigation_timeout
-            )
-            content_string = result.get("result", {}).get("value", "")
+            content_string = raw_content
+
 
         if not content_string:
             raise DemistoException("Extraction failed: Received empty content string from JavaScript execution.")
