@@ -15,9 +15,8 @@ COMMANDS_BY_BRAND = {
     GSUITE_BRAND: "gsuite-user-signout",
 }
 ARG_NAME_BY_BRAND = {OKTA_BRAND: "userId", MS_GRAPH_BRAND: "user", GSUITE_BRAND: "user_key"}
-USER_NOT_FOUND_ERROR_TYPE = "NOT_FOUND"
-AUTH_AUTHZ_ERROR_TYPE = "AUTH_AUTHZ"
-GENERAL_ERROR_TYPE = "GENERAL_ERROR"
+USER_NOT_FOUND_ERROR = "User not found."
+AUTH_AUTHZ_ERROR = "Authentication failed."
 
 
 class Command:
@@ -146,8 +145,9 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> tuple[list[d
     entry_context_list = []
     for entry in res:
         entry_context_list.append(entry.get("EntryContext", {}))
-        if is_error_enhanced(entry):
-            errors_command_results.extend(prepare_human_readable(command_name, args, get_error_enhanced(entry), is_error=True))
+        error_message = get_enhanced_error_message(entry)
+        if error_message:
+            errors_command_results.extend(prepare_human_readable(command_name, args, error_message, is_error=True))
         else:
             human_readable_list.append(entry.get("HumanReadable") or "")
     human_readable = "\n".join(human_readable_list)
@@ -405,59 +405,48 @@ def is_general_error(content_lower: str) -> bool:
     return any(re.search(pattern, content_lower) for pattern in general_patterns)
 
 
-def is_error_enhanced(entry: dict) -> bool:
+def get_enhanced_error_message(entry: dict) -> str:
     """
-    Enhanced error detection that checks both the Type field and Content field.
+    Determines if an error exists in the entry and returns the corresponding error message.
+
+    This function prioritizes the standard 'is_error' check. If that fails, it scans
+    the 'Contents' field for specific text patterns.
 
     Args:
-        entry (dict): The entry dictionary to check for errors.
+        entry (dict): The entry dictionary to check.
 
     Returns:
-        bool: True if the entry indicates an error, False otherwise.
+        str: The specific error message if an error is detected,
+             otherwise returns an empty string ("").
     """
-    # First check using the standard is_error function
+    # 1. Standard Path: Trust the existing infrastructure first
     if is_error(entry):
-        return True
+        return get_error(entry)
 
-    if (content := entry.get("Contents")) and isinstance(entry.get("Contents"), str):
-        content_lower = str(content).lower()
-        return is_not_found_error(content_lower) or is_auth_authz_error(content_lower) or is_general_error(content_lower)
-    return False
-
-
-def get_error_enhanced(entry: dict) -> str:
-    """
-    Enhanced error message extraction that tries the standard get_error function first,
-    then falls back to extracting error information from the Content field.
-
-    Args:
-        entry (dict): The entry dictionary to extract error message from.
-
-    Returns:
-        str: The error message from the entry.
-
-    Raises:
-        ValueError: If no error is detected in the entry.
-    """
-    if not is_error_enhanced(entry):
-        # If no error is detected, raise the original ValueError
-        raise ValueError("execute_command result has no error entry. before using get_error_enhanced use is_error_enhanced")
-
+    # 2. Enhanced Path: Extract and validate content
     content = entry.get("Contents")
-    if not isinstance(content, str):
-        return f"Unknown error occurred: {content}"
 
-    content_lower = entry.get("Contents").lower()  # type: ignore
-    # 1. Check for Not Found errors first, as they are very specific
+    # Fail fast if content is missing or not a string (implies no error in this context)
+    if not content or not isinstance(content, str):
+        return ""
+
+    # Normalize for case-insensitive comparison
+    content_lower = content.lower()
+
+    # 3. Specific Pattern Matching
     if is_not_found_error(content_lower):
-        return "User not found."
+        return USER_NOT_FOUND_ERROR
 
-    # 2. Check for Authentication/Authorization errors next
     if is_auth_authz_error(content_lower):
-        return "Authentication failed."
+        return AUTH_AUTHZ_ERROR
 
-    # 3. Resolve to general error
-    return f"Unknown error occurred: {content}"
+    # 4. General Error Fallback
+    # Only return the generic error message if is_general_error explicitly flags it.
+    if is_general_error(content_lower):
+        return content
+
+    # No error detected
+    return ""
 
 
 def run_command(
@@ -516,11 +505,9 @@ def main():
         # Step 2: Create mapping of (user_id, brand) -> username
         # This handles cases where same user_id exists across brands with different usernames
         user_id_brand_to_username = {}
-        processed_user_ids = set()
 
         # Add user_ids provided directly (no username, applies to all brands)
         for user_id in user_ids_arg:
-            processed_user_ids.add(user_id)
             for brand in brands:
                 user_id_brand_to_username[(user_id, brand)] = ""
 
@@ -532,7 +519,6 @@ def main():
                     # Only add if this (user_id, brand) combination hasn't been processed
                     if (user_id, brand) not in user_id_brand_to_username:
                         user_id_brand_to_username[(user_id, brand)] = user_name
-                        processed_user_ids.add(user_id)
                 else:
                     outputs.append(
                         {

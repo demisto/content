@@ -15,8 +15,7 @@ from ClearUserSession import (
     get_user_id,
     clear_user_sessions,
     main,
-    is_error_enhanced,
-    get_error_enhanced,
+    get_enhanced_error_message
 )
 
 
@@ -325,7 +324,7 @@ def test_run_execute_command_error(mocker: MockerFixture):
     assert len(errors) == 1
     assert isinstance(errors[0], CommandResults)
     mock_prepare_human_readable.assert_called_once_with(
-        "test-command", {"arg1": "value1"}, "Unknown error occurred: Error occurred", is_error=True
+        "test-command", {"arg1": "value1"}, "Error occurred", is_error=True
     )
     demisto.debug.assert_called_with("Finished executing command: test-command")
 
@@ -793,7 +792,7 @@ def test_is_error_enhanced_with_standard_error():
     """
     entry = {"Type": 4, "Contents": "Some error"}
 
-    result = is_error_enhanced(entry)
+    result = bool(get_enhanced_error_message(entry))
 
     assert result is True
 
@@ -809,7 +808,7 @@ def test_is_error_enhanced_with_not_found_error():
     """
     entry = {"Type": 1, "Contents": "User john.doe not found in the system"}
 
-    result = is_error_enhanced(entry)
+    result = bool(get_enhanced_error_message(entry))
 
     assert result is True
 
@@ -825,7 +824,7 @@ def test_is_error_enhanced_with_no_error():
     """
     entry = {"Type": 1, "Contents": "User session cleared successfully"}
 
-    result = is_error_enhanced(entry)
+    result = bool(get_enhanced_error_message(entry))
 
     assert result is False
 
@@ -841,7 +840,7 @@ def test_get_error_enhanced_with_not_found_error():
     """
     entry = {"Type": 1, "Contents": "User john.doe does not exist"}
 
-    result = get_error_enhanced(entry)
+    result = get_enhanced_error_message(entry)
 
     assert result == "User not found."
 
@@ -857,21 +856,6 @@ def test_get_error_enhanced_with_auth_error():
     """
     entry = {"Type": 1, "Contents": "Unauthorized access for user"}
 
-    result = get_error_enhanced(entry)
+    result = get_enhanced_error_message(entry)
 
     assert result == "Authentication failed."
-
-
-def test_get_error_enhanced_with_no_error():
-    """
-    Given:
-        An entry with no error indicators.
-    When:
-        get_error_enhanced is called.
-    Then:
-        It should raise a ValueError.
-    """
-    entry = {"Type": 1, "Contents": "User session cleared successfully"}
-
-    with pytest.raises(ValueError, match="execute_command result has no error entry"):
-        get_error_enhanced(entry)
