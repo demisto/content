@@ -52,7 +52,7 @@ To use this integration, you need to connect an application with a certificate.
 4. In the left sidebar, select: **Role Groups**
 5. Search for the following role group:
    - **Security Administrator**
-6. Open the role and verify that the **user account running the integration** is listed.
+6. Open the role and verify that the **service principal of the Azure AD application used by the integration** is listed.
 7. If not listed, click **Edit → Add Users** and assign the required roles.
 
 Note: The information in the Playground is sensitive information. You should delete the information by running the following command:
