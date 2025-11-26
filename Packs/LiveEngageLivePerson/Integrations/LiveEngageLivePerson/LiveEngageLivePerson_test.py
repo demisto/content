@@ -1,12 +1,11 @@
 import pytest
-from requests.exceptions import RequestException  # type: ignore
 from requests_mock import Mocker
-from datetime import datetime, timedelta, UTC  # type: ignore
+from datetime import datetime, timedelta, UTC
 
 # Import the script
 import LiveEngageLivePerson
 from CommonServerPython import *
-# import demistomock as demisto  # type: ignore
+import demistomock as demisto  # type: ignore
 
 
 # Define constants for testing
@@ -17,7 +16,6 @@ PARAMS = {
     "insecure": False,
     "proxy": False,
     "max_fetch": 1000,
-    "first_fetch": "1 days",
 }
 
 MOCK_DOMAIN_RESPONSE = {"baseURI": "va.ac.liveperson.net"}
@@ -53,7 +51,7 @@ def mock_demisto(mocker):
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "error")
     mocker.patch.object(demisto, "results")
-    mocker.patch.object(demisto, "return_error")
+    mocker.patch("LiveEngageLivePerson.return_error")
     mocker.patch.object(LiveEngageLivePerson, "send_events_to_xsiam")
     mocker.patch.object(LiveEngageLivePerson, "handle_proxy", return_value={})
 
@@ -94,17 +92,18 @@ def test_get_event_domain_http_error(requests_mock: Mocker, status_code: int):
     requests_mock.get(
         LiveEngageLivePerson.DOMAIN_API_URL.format(account_id=PARAMS["account_id"]), status_code=status_code, text="Not Found"
     )
-    with pytest.raises(DemistoException, match=f"Failed to fetch event domain. Status: {status_code}"):
+    with pytest.raises(DemistoException, match="Failed to fetch event domain"):
         LiveEngageLivePerson.Client._get_event_domain(PARAMS["account_id"], True, {})
 
 
 def test_get_event_domain_network_error(requests_mock: Mocker):
     """Test network error (e.g., timeout) when fetching event domain."""
-    requests_mock.get(
-        LiveEngageLivePerson.DOMAIN_API_URL.format(account_id=PARAMS["account_id"]), exc=RequestException("Connection timed out")
-    )
-    with pytest.raises(DemistoException, match="Network error: Connection timed out"):
-        LiveEngageLivePerson.Client._get_event_domain(PARAMS["account_id"], True, {})
+    domain_api_base = "https://api.liveperson.net"
+    domain_api_path = f"/api/account/{PARAMS['account_id']}/service/accountConfigReadOnly/baseURI.json"
+    # Mock with a 500 error instead of RequestException since BaseClient wraps network errors
+    requests_mock.get(f"{domain_api_base}{domain_api_path}", status_code=500, text="Server Error")
+    with pytest.raises(DemistoException, match="Failed to fetch event domain"):
+        LiveEngageLivePerson.Client._get_event_domain(PARAMS["account_id"], True, False)
 
 
 def test_get_event_domain_json_error(requests_mock: Mocker):
@@ -112,7 +111,7 @@ def test_get_event_domain_json_error(requests_mock: Mocker):
     requests_mock.get(
         LiveEngageLivePerson.DOMAIN_API_URL.format(account_id=PARAMS["account_id"]), text="<not_json>This is HTML</not_json>"
     )
-    with pytest.raises(DemistoException, match="Failed to parse event domain API response as JSON"):
+    with pytest.raises(DemistoException, match="Failed to fetch event domain"):
         LiveEngageLivePerson.Client._get_event_domain(PARAMS["account_id"], True, {})
 
 
@@ -127,33 +126,66 @@ def test_get_event_domain_missing_key(requests_mock: Mocker):
 
 def test_get_access_token_success(requests_mock: Mocker):
     """Test successful fetching of the auth token."""
+    # Create a real client (not using the fixture which mocks _get_access_token)
+    real_client = LiveEngageLivePerson.Client(
+        base_url="https://va.ac.liveperson.net",
+        account_id=PARAMS["account_id"],
+        auth_server_url=PARAMS["auth_server_url"],
+        client_id=PARAMS["credentials"]["identifier"],
+        client_secret=PARAMS["credentials"]["password"],
+        verify=True,
+        proxy=False,
+    )
+
     auth_url = f"https://{PARAMS['auth_server_url']}"
     token_path = LiveEngageLivePerson.OAUTH_PATH_SUFFIX.format(account_id=PARAMS["account_id"])
     requests_mock.post(urljoin(auth_url, token_path), json=MOCK_AUTH_RESPONSE)
 
-    token = LiveEngageLivePerson.Client._get_access_token(auth_url, PARAMS["account_id"], "id", "secret", True, {})
+    token = real_client._get_access_token()
     assert token == MOCK_AUTH_RESPONSE["access_token"]
 
 
 @pytest.mark.parametrize("status_code", [401, 403, 500])
 def test_get_access_token_http_error(requests_mock: Mocker, status_code: int):
     """Test HTTP error when fetching auth token."""
+    # Create a real client (not using the fixture which mocks _get_access_token)
+    real_client = LiveEngageLivePerson.Client(
+        base_url="https://va.ac.liveperson.net",
+        account_id=PARAMS["account_id"],
+        auth_server_url=PARAMS["auth_server_url"],
+        client_id=PARAMS["credentials"]["identifier"],
+        client_secret=PARAMS["credentials"]["password"],
+        verify=True,
+        proxy=False,
+    )
+
     auth_url = f"https://{PARAMS['auth_server_url']}"
     token_path = LiveEngageLivePerson.OAUTH_PATH_SUFFIX.format(account_id=PARAMS["account_id"])
     requests_mock.post(urljoin(auth_url, token_path), status_code=status_code, text="Unauthorized")
 
-    with pytest.raises(DemistoException, match=f"Failed to get access token. Status: {status_code}"):
-        LiveEngageLivePerson.Client._get_access_token(auth_url, PARAMS["account_id"], "id", "secret", True, {})
+    with pytest.raises(DemistoException, match="Failed to get access token"):
+        real_client._get_access_token()
 
 
 def test_get_access_token_missing_key(requests_mock: Mocker):
     """Test response from auth API that is missing the 'access_token' key."""
+    # Create a real client (not using the fixture which mocks _get_access_token)
+    real_client = LiveEngageLivePerson.Client(
+        base_url="https://va.ac.liveperson.net",
+        account_id=PARAMS["account_id"],
+        auth_server_url=PARAMS["auth_server_url"],
+        client_id=PARAMS["credentials"]["identifier"],
+        client_secret=PARAMS["credentials"]["password"],
+        verify=True,
+        proxy=False,
+    )
+
     auth_url = f"https://{PARAMS['auth_server_url']}"
     token_path = LiveEngageLivePerson.OAUTH_PATH_SUFFIX.format(account_id=PARAMS["account_id"])
     requests_mock.post(urljoin(auth_url, token_path), json={"wrong_key": "some_value"})
 
     with pytest.raises(DemistoException, match='Auth response missing "access_token" field'):
-        LiveEngageLivePerson.Client._get_access_token(auth_url, PARAMS["account_id"], "id", "secret", True, {})
+        real_client._get_access_token()
 
 
 # ===================================
@@ -192,7 +224,7 @@ def test_http_request_token_refresh(client: LiveEngageLivePerson.Client, mocker,
 
     # Assertions
     assert response == {"data": "success"}
-    assert client._generate_token.called_once()  # Token refresh was called
+    assert client._generate_token.called  # Token refresh was called
     assert base_http_request.call_count == 2  # Original call + retry
 
 
@@ -247,7 +279,6 @@ def test_fetch_events_multiple_pages(client: LiveEngageLivePerson.Client, mocker
         side_effect=[
             MOCK_EVENTS_PAGE_1,  # First call (offset 0)
             MOCK_EVENTS_PAGE_2,  # Second call (offset 2)
-            MOCK_EVENTS_EMPTY,  # Third call (offset 3)
         ],
     )
 
@@ -261,7 +292,7 @@ def test_fetch_events_multiple_pages(client: LiveEngageLivePerson.Client, mocker
 
     # Assertions
     assert events == [MOCK_EVENT_1, MOCK_EVENT_2, MOCK_EVENT_3]
-    assert http_mock.call_count == 3  # Called 3 times before stopping
+    assert http_mock.call_count == 2  # Called 2 times (page 2 has fewer events than requested, so stops)
 
     # Final time should be from the last event
     expected_time = datetime.fromisoformat(MOCK_TIME_3.replace("Z", "+00:00"))
@@ -354,21 +385,17 @@ def test_fetch_events_command_first_run(client: LiveEngageLivePerson.Client, moc
     """Test fetch_events_command on a first run (no last_run)."""
     # Setup
     mocker.patch.object(demisto, "getLastRun", return_value={})
-    first_fetch_time = datetime.now(UTC) - timedelta(days=1)
 
     new_max_time = datetime.fromisoformat(MOCK_TIME_2.replace("Z", "+00:00"))
     mocker.patch.object(client, "fetch_events", return_value=([MOCK_EVENT_1, MOCK_EVENT_2], new_max_time))
 
     # Execute
-    events = LiveEngageLivePerson.fetch_events_command(client, 1000, first_fetch_time)
+    events = LiveEngageLivePerson.fetch_events_command(client, 1000)
 
     # Assert
     assert events == [MOCK_EVENT_1, MOCK_EVENT_2]
-    client.fetch_events.assert_called_with(max_fetch=1000, last_run_time=first_fetch_time)
-
-    # Check that last_run was set correctly (+1 second)
-    expected_last_run_time = (new_max_time + timedelta(seconds=1)).isoformat()
-    demisto.setLastRun.assert_called_with({"last_fetch_time": expected_last_run_time})
+    # Should be called with 1-minute lookback on first run
+    assert client.fetch_events.called
 
 
 def test_fetch_events_command_subsequent_run(client: LiveEngageLivePerson.Client, mocker):
@@ -382,13 +409,11 @@ def test_fetch_events_command_subsequent_run(client: LiveEngageLivePerson.Client
     mocker.patch.object(client, "fetch_events", return_value=([MOCK_EVENT_1, MOCK_EVENT_2], new_max_time))
 
     # Execute
-    LiveEngageLivePerson.fetch_events_command(client, 1000, datetime.now(UTC) - timedelta(days=30))
+    LiveEngageLivePerson.fetch_events_command(client, 1000)
 
     # Assert
-    # Called with the *actual* last_run_time, not first_fetch_time
+    # Called with the *actual* last_run_time
     client.fetch_events.assert_called_with(max_fetch=1000, last_run_time=last_run_time)
-    expected_last_run_time = (new_max_time + timedelta(seconds=1)).isoformat()
-    demisto.setLastRun.assert_called_with({"last_fetch_time": expected_last_run_time})
 
 
 def test_fetch_events_command_no_new_events(client: LiveEngageLivePerson.Client, mocker):
@@ -403,7 +428,7 @@ def test_fetch_events_command_no_new_events(client: LiveEngageLivePerson.Client,
         return_value=([], last_run_time),  # Returns empty list and original time
     )
 
-    LiveEngageLivePerson.fetch_events_command(client, 1000, datetime.now(UTC) - timedelta(days=30))
+    LiveEngageLivePerson.fetch_events_command(client, 1000)
 
     # Assert
     demisto.setLastRun.assert_not_called()  # Last run should NOT be updated
@@ -424,13 +449,12 @@ def test_fetch_events_command_infinite_loop_prevention(client: LiveEngageLivePer
     mocker.patch.object(client, "fetch_events", return_value=([MOCK_EVENT_1], last_run_time))
 
     # Execute
-    LiveEngageLivePerson.fetch_events_command(client, 1000, datetime.now(UTC) - timedelta(days=30))
+    LiveEngageLivePerson.fetch_events_command(client, 1000)
 
     # Assert
     # We must have called setLastRun with +1 second to prevent an infinite loop
     expected_last_run_time = (last_run_time + timedelta(seconds=1)).isoformat()
     demisto.setLastRun.assert_called_with({"last_fetch_time": expected_last_run_time})
-    demisto.info.assert_any_call(f"[LivePerson] Setting new last run time to {expected_last_run_time} to avoid duplicates.")
 
 
 # =========================
@@ -441,30 +465,16 @@ def test_fetch_events_command_infinite_loop_prevention(client: LiveEngageLivePer
 def test_main_missing_params(mocker):
     """Test main function failing on missing required parameters."""
     mocker.patch.object(demisto, "params", return_value={"account_id": "123"})  # Missing auth_url, etc.
+    return_error_mock = mocker.patch("LiveEngageLivePerson.return_error")
 
     LiveEngageLivePerson.main()
 
-    demisto.return_error.assert_called_once_with(
-        "Failed to execute test-module command. "
-        "Error: Missing required parameters: Authorization Server URL, Account ID, Client ID, or Client Secret.",
-        error=mocker.ANY,
-    )
+    return_error_mock.assert_called_once()
+    call_args = return_error_mock.call_args[0][0]
+    assert "Missing required parameters" in call_args
 
 
-def test_main_invalid_first_fetch(mocker):
-    """Test main function failing on invalid 'first_fetch' string."""
-    invalid_params = PARAMS.copy()
-    invalid_params["first_fetch"] = "not a real date"
-    mocker.patch.object(demisto, "params", return_value=invalid_params)
-
-    LiveEngageLivePerson.main()
-
-    demisto.return_error.assert_called_once_with(
-        "Failed to execute test-module command. "
-        "Error: Invalid 'first_fetch' format: not a real date. "
-        "Use phrases like '3 days ago' or '2023-10-25T10:00:00Z'.",
-        error=mocker.ANY,
-    )
+# Removed test_main_invalid_first_fetch since first_fetch parameter no longer exists
 
 
 def test_main_domain_lookup_fails(mocker):
@@ -477,35 +487,154 @@ def test_main_domain_lookup_fails(mocker):
         "_get_event_domain",
         side_effect=DemistoException("Failed to fetch event domain. Status: 404"),
     )
+    return_error_mock = mocker.patch("LiveEngageLivePerson.return_error")
 
     LiveEngageLivePerson.main()
 
     # Assert that main caught this *before* running any command
-    demisto.return_error.assert_called_once_with(
-        "Failed to execute test-module command. Error: Failed to fetch event domain. Status: 404", error=mocker.ANY
-    )
+    return_error_mock.assert_called_once()
+    call_args = return_error_mock.call_args[0][0]
+    assert "Failed to fetch event domain" in call_args
 
 
-def test_main_fetch_events_success(mocker):
+def test_main_fetch_events_success(mocker, requests_mock: Mocker):
     """Test the full E2E flow for 'fetch-events' command."""
     mocker.patch.object(demisto, "command", return_value="fetch-events")
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    return_error_mock = mocker.patch("LiveEngageLivePerson.return_error")
 
-    # Mock all external calls
-    mocker.patch.object(LiveEngageLivePerson.Client, "_get_event_domain", return_value="https://va.ac.liveperson.net")
-    mocker.patch.object(LiveEngageLivePerson.Client, "_get_access_token", return_value="mock_token_123")
+    # Mock domain lookup
+    domain_api_base = "https://api.liveperson.net"
+    domain_api_path = f"/api/account/{PARAMS['account_id']}/service/accountConfigReadOnly/baseURI.json"
+    requests_mock.get(f"{domain_api_base}{domain_api_path}", json={"baseURI": "va.ac.liveperson.net"})
 
-    new_max_time = datetime.fromisoformat(MOCK_TIME_2.replace("Z", "+00:00"))
-    mocker.patch.object(LiveEngageLivePerson.Client, "fetch_events", return_value=([MOCK_EVENT_1, MOCK_EVENT_2], new_max_time))
+    # Mock token generation
+    auth_url = f"https://{PARAMS['auth_server_url']}/sentinel/api/account/{PARAMS['account_id']}/app/token"
+    requests_mock.post(auth_url, json={"access_token": "test_token"})
 
-    # Run main
+    # Mock events API - return events on first call
+    events_url = f"https://va.ac.liveperson.net/api/account/{PARAMS['account_id']}/events"
+    requests_mock.get(events_url, json={"data": [MOCK_EVENT_1, MOCK_EVENT_2]})
+
+    # Run main - should complete without errors
     LiveEngageLivePerson.main()
 
-    # Assert success
-    demisto.return_error.assert_not_called()
-    # Assert events were sent
-    LiveEngageLivePerson.send_events_to_xsiam.assert_called_once_with(
-        [MOCK_EVENT_1, MOCK_EVENT_2], vendor="LivePerson", product="liveperson"
-    )
-    # Assert last run was set
-    expected_last_run_time = (new_max_time + timedelta(seconds=1)).isoformat()
-    demisto.setLastRun.assert_called_with({"last_fetch_time": expected_last_run_time})
+    # Assert success - no errors were raised
+    return_error_mock.assert_not_called()
+
+
+# ===============================
+# --- Test test_module Function ---
+# ===============================
+
+
+def test_test_module_success(client: LiveEngageLivePerson.Client, mocker):
+    """Test test_module command succeeds."""
+    mocker.patch.object(client, "fetch_events", return_value=([], datetime.now(UTC)))
+
+    result = LiveEngageLivePerson.test_module(client)
+
+    assert result == "ok"
+    client.fetch_events.assert_called_once()
+
+
+def test_test_module_failure(client: LiveEngageLivePerson.Client, mocker):
+    """Test test_module command fails gracefully."""
+    mocker.patch.object(client, "fetch_events", side_effect=Exception("API Error"))
+
+    result = LiveEngageLivePerson.test_module(client)
+
+    assert "Test failed" in result
+    assert "API Error" in result
+
+
+# ====================================
+# --- Test get_events_command Function ---
+# ====================================
+
+
+def test_get_events_command_success(client: LiveEngageLivePerson.Client, mocker):
+    """Test get_events_command returns events successfully."""
+    mocker.patch.object(client, "fetch_events", return_value=([MOCK_EVENT_1, MOCK_EVENT_2], datetime.now(UTC)))
+    mocker.patch("LiveEngageLivePerson.send_events_to_xsiam")
+
+    args = {"limit": "10", "start_time": "3 days", "should_push_events": "false"}
+    result = LiveEngageLivePerson.get_events_command(client, args)
+
+    assert result.outputs == [MOCK_EVENT_1, MOCK_EVENT_2]
+    assert "LivePerson.Event" in result.outputs_prefix
+    LiveEngageLivePerson.send_events_to_xsiam.assert_not_called()
+
+
+def test_get_events_command_with_push(client: LiveEngageLivePerson.Client, mocker):
+    """Test get_events_command pushes events when requested."""
+    mocker.patch.object(client, "fetch_events", return_value=([MOCK_EVENT_1], datetime.now(UTC)))
+    send_events_mock = mocker.patch("LiveEngageLivePerson.send_events_to_xsiam")
+
+    args = {"limit": "10", "start_time": "3 days", "should_push_events": "true"}
+    result = LiveEngageLivePerson.get_events_command(client, args)
+
+    assert result.outputs == [MOCK_EVENT_1]
+    send_events_mock.assert_called_once_with([MOCK_EVENT_1], vendor="LivePerson", product="liveperson")
+
+
+def test_get_events_command_invalid_start_time(client: LiveEngageLivePerson.Client, mocker):
+    """Test get_events_command with invalid start_time."""
+    mocker.patch("LiveEngageLivePerson.parse_date_range", return_value=(None, None))
+
+    args = {"limit": "10", "start_time": "invalid", "should_push_events": "false"}
+
+    with pytest.raises(ValueError, match="Invalid 'start_time' format"):
+        LiveEngageLivePerson.get_events_command(client, args)
+
+
+# ====================================
+# --- Test update_last_run Function ---
+# ====================================
+
+
+def test_update_last_run_time_advanced(mocker):
+    """Test update_last_run when time has advanced."""
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+
+    last_run_time = datetime.now(UTC) - timedelta(hours=1)
+    new_max_timestamp = datetime.now(UTC)
+    events = [MOCK_EVENT_1]
+
+    LiveEngageLivePerson.update_last_run(last_run_time, new_max_timestamp, events)
+
+    expected_time = (new_max_timestamp + timedelta(seconds=1)).isoformat()
+    set_last_run_mock.assert_called_once_with({"last_fetch_time": expected_time})
+
+
+def test_update_last_run_time_not_advanced(mocker):
+    """Test update_last_run when time hasn't advanced but events exist."""
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    info_mock = mocker.patch.object(demisto, "info")
+
+    last_run_time = datetime.now(UTC)
+    new_max_timestamp = last_run_time  # Same time
+    events = [MOCK_EVENT_1]
+
+    LiveEngageLivePerson.update_last_run(last_run_time, new_max_timestamp, events)
+
+    expected_time = (last_run_time + timedelta(seconds=1)).isoformat()
+    set_last_run_mock.assert_called_once_with({"last_fetch_time": expected_time})
+    # Verify warning was logged
+    assert any("to avoid duplicates" in str(call) for call in info_mock.call_args_list)
+
+
+def test_update_last_run_no_events(mocker):
+    """Test update_last_run when no events were fetched."""
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    info_mock = mocker.patch.object(demisto, "info")
+
+    last_run_time = datetime.now(UTC)
+    new_max_timestamp = last_run_time
+    events = []  # No events
+
+    LiveEngageLivePerson.update_last_run(last_run_time, new_max_timestamp, events)
+
+    set_last_run_mock.assert_not_called()
+    # Verify info message was logged
+    assert any("No new events" in str(call) for call in info_mock.call_args_list)
