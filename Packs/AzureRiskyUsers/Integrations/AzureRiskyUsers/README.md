@@ -575,20 +575,44 @@ Confirms user(s) as safe (post-investigation).
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Remediation.UserID | String | The ID of the user. |
+| Remediation.UserPrincipalName | String | The UPN of the user. This key will be populated only if the user's UPN is provided. |
+| Remediation.Success | Boolean | Whether the new state was applied successfully. |
+| Remediation.RiskState | String | The new risk state of the user. |
 
 #### Command Example
 
 ```!azure-risky-users-confirm-safe user=name1@test.com,name2@test.com```
 
+#### Context Example
+
+```json
+[
+    {
+        "UserID": "user_id_1",
+        "UserPrincipalName": "name1@test.com",
+        "Success": true,
+        "RiskState": "confirmedSafe"
+    },
+    {
+        "UserID": "user_id_2",
+        "UserPrincipalName": "name2@test.com",
+        "Success": true,
+        "RiskState": "confirmedSafe"
+    }
+]
+```
+
 #### Human Readable Output
 
 > ### Successfully confirmed users as safe
 >
-> |User|
-> |---|
-> | name1@test.com |
-> | name2@test.com |
+> |UserID|UserPrincipalName|Success|RiskState|
+> |---|---|---|---|
+> | user_id_1 | name1@test.com | true | confirmedSafe |
+> | user_id_2 | name2@test.com | true | confirmedSafe |
 
 ### azure-risky-users-confirm-compromise
 
@@ -607,17 +631,41 @@ Confirms user(s) as compromised.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Remediation.UserID | String | The ID of the user. |
+| Remediation.UserPrincipalName | String | The UPN of the user. This key will be populated only if the user's UPN is provided. |
+| Remediation.Success | Boolean | Whether the new state was applied successfully. |
+| Remediation.RiskState | String | The new risk state of the user. |
 
 #### Command Example
 
-```!azure-risky-users-confirm-compromise user=name1@test.com,name2@test.com```
+```!azure-risky-users-confirm-compromise user=user_id_1,name2@test.com```
+
+#### Context Example
+
+```json
+[
+    {
+        "UserID": "user_id_1",
+        "UserPrincipalName": "",
+        "Success": true,
+        "RiskState": "confirmedCompromised"
+    },
+    {
+        "UserID": "user_id_2",
+        "UserPrincipalName": "name2@test.com",
+        "Success": true,
+        "RiskState": "confirmedCompromised"
+    }
+]
+```
 
 #### Human Readable Output
 
 > ### Successfully confirmed users as compromised
 >
-> |User|
-> |---|
-> | name1@test.com |
-> | name2@test.com |
+> |UserID|UserPrincipalName|Success|RiskState|
+> |---|---|---|---|
+> | user_id_1 |  | true | confirmedCompromised |
+> | user_id_2 | name2@test.com | true | confirmedCompromised |

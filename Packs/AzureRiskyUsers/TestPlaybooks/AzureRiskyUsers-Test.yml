@@ -907,7 +907,7 @@ tasks:
     task:
       id: 2c32d95f-8b31-41f5-931f-eda4674e403d
       version: -1
-      name: Wait 20 secs
+      name: Wait 5 minutes
       description: Sleep for X seconds.
       scriptName: Sleep
       type: regular
@@ -918,7 +918,7 @@ tasks:
       - "16"
     scriptarguments:
       seconds:
-        simple: "20"
+        simple: "300"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -942,7 +942,7 @@ tasks:
     task:
       id: 27134817-483e-4343-87cd-4c556f7f8171
       version: -1
-      name: Wait 20 secs
+      name: Wait 5 minutes
       description: Sleep for X seconds.
       scriptName: Sleep
       type: regular
@@ -953,7 +953,7 @@ tasks:
       - "19"
     scriptarguments:
       seconds:
-        simple: "20"
+        simple: "300"
     separatecontext: false
     continueonerrortype: ""
     view: |-

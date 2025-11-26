@@ -648,15 +648,31 @@ def risk_detection_get_command(client: Client, args: dict[str, Any]) -> CommandR
 def risky_users_confirm(client: Client, args: dict[str, Any], confirm_func: Callable, verdict: str) -> list[CommandResults]:
     error_outputs = []
     success_outputs = []
-    results = []
+    context_ouputs = []
+    results: list[CommandResults] = []
 
     for user in argToList(args["user"]):
         try:
             user_id = client.upn_to_user_id(user) if is_upn(user) else user
             confirm_func(user_ids=[user_id])
-            success_outputs.append({"User": user})
+            output = {
+                "UserID": user_id,
+                "UserPrincipalName": user if is_upn(user) else "",
+                "Success": True,
+                "RiskState": f"confirmed{verdict.capitalize()}"
+            }
+            success_outputs.append(output)
+            context_ouputs.append(output)
         except DemistoException as e:
             error_outputs.append({"User": user, "Error": str(e)})
+            context_ouputs.append(
+                {
+                    "UserID": user if not is_upn(user) else "",
+                    "UserPrincipalName": user if is_upn(user) else "",
+                    "Success": False,
+                    "RiskState": ""
+                }
+            )
 
     if success_outputs:
         results.append(
@@ -671,6 +687,10 @@ def risky_users_confirm(client: Client, args: dict[str, Any], confirm_func: Call
                 content_format=EntryFormat.MARKDOWN,
             )
         )
+
+    results[0].outputs_prefix="Remediation"
+    results[0].outputs_key_field="UserID"
+    results[0].outputs=context_ouputs
 
     return results
 

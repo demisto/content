@@ -342,6 +342,19 @@ script:
       isArray: True
     description: Confirms user(s) as compromised.
     name: azure-risky-users-confirm-compromise
+    outputs:
+    - contextPath: Remediation.UserID
+      description: The ID of the user.
+      type: String
+    - contextPath: Remediation.UserPrincipalName
+      description: The UPN of the user. This key will be populated only if the user's UPN is provided.
+      type: String
+    - contextPath: Remediation.Success
+      description: Whether the new state was applied successfully.
+      type: Boolean
+    - contextPath: Remediation.RiskState
+      description: The new risk state of the user.
+      type: String
   - arguments:
     - description: A comma-separated list of User IDs or UPNs of the user(s) to confirm as safe. Results may not be immediately visible due to processing delays in Azure.
       name: user
@@ -349,6 +362,19 @@ script:
       isArray: True
     description: Confirms user(s) as safe (post-investigation).
     name: azure-risky-users-confirm-safe
+    outputs:
+    - contextPath: Remediation.UserID
+      description: The ID of the user.
+      type: String
+    - contextPath: Remediation.UserPrincipalName
+      description: The UPN of the user. This key will be populated only if the user's UPN is provided.
+      type: String
+    - contextPath: Remediation.Success
+      description: Whether the new state was applied successfully.
+      type: Boolean
+    - contextPath: Remediation.RiskState
+      description: The new risk state of the user.
+      type: String
   dockerimage: demisto/crypto:1.0.0.5490413
   runonce: false
   script: '-'
