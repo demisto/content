@@ -983,6 +983,9 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
     elif detection_type == MOBILE_DETECTION_FETCH_TYPE:
         incident_context["name"] = f'{detection_type} ID: {detection.get("mobile_detection_id")}'
         incident_context["severity"] = detection.get("severity")
+    elif detection_type == CNAPP_ALERT_TYPE:
+        incident_context["name"] = f'{detection_type} ID: {detection.get("detection_name")}'
+        incident_context["severity"] = CNAPP_SEVERITY_MAPPING.get(detection.get("severity"), 0)
 
     if is_fetch_events:
         incident_context["_source_log_type"] = "detection"
@@ -3313,26 +3316,22 @@ def fetch_iom_incidents(iom_last_run):
     return iom_incidents, iom_last_run
 
 
-def fetch_cnapp_incidents(cnapp_last_run):
+def fetch_cnapp_incidents(cnapp_last_run, is_fetch_events, look_back, limit, fetch_query):
+    demisto.debug(f"[test] Fetching CNAPP Alerts with {cnapp_last_run=}")
 
     detections: List = []
-    demisto.debug("Fetching CNAPP Alerts")
-    demisto.debug(f"{cnapp_last_run=}")
     offset = int(cnapp_last_run.get("offset", 0))
     
-    params = demisto.params()
-    look_back = params.get("look_back")
-    fetch_query = params.get("cnapp_alert_fetch_query", "")
-    limit = (min(int(params.get("limit", 100)), 100))
-    
-    
+    demisto.info(f"[test] Calling get_fetch_run_time_range with {cnapp_last_run=}, {FETCH_TIME=}, {look_back=}")
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(
         last_run=cnapp_last_run, first_fetch=FETCH_TIME, look_back=look_back, date_format=DATE_FORMAT
     )
+    demisto.info(f"[test] done get_fetch_run_time_range {start_fetch_time=}, {end_fetch_time=}")
     
     
     if "last_seen" in fetch_query:
         raise DemistoException("last_seen is not allowed as part of the CNAPP fetch query.")
+    demisto.info(f"[test] {fetch_query=} is valid.")
 
     filter_arg = ""
     if not cnapp_last_run:
@@ -3344,14 +3343,17 @@ def fetch_cnapp_incidents(cnapp_last_run):
     filter = f"last_seen:>'{last_seen}'"
     if filter_arg:
         filter = f"{filter}&{filter_arg}"
+    
     params = {"sort": "last_seen.asc", "offset": offset, "limit": limit, "filter": filter}
+        
+    demisto.info(f"[test] calling endpoint with {params=}")
+    
     endpoint_url = "/container-security/combined/container-alerts/v1"
 
     response = http_request("GET", endpoint_url, params)
     demisto.info(f"[test] {response=}")
     cnapp_alerts = response.get("resources", [])
     total_detections = demisto.get(response, "meta.pagination.total")
-    # CNAPP_SEVERITY_MAPPING
     
     offset = calculate_new_offset(offset, len(cnapp_alerts), total_detections)
     demisto.debug(f"CrowdStrikeFalconMsg: Total fetched CNAPP alerts: {len(cnapp_alerts)}")
@@ -3363,18 +3365,19 @@ def fetch_cnapp_incidents(cnapp_last_run):
             )
             offset = 0
         demisto.debug(f"CrowdStrikeFalconMsg: The new CNAPP offset is {offset}")
-        
+     
     if cnapp_alerts:
         for detection in cnapp_alerts:
             detection["incident_type"] = CNAPP_ALERT_TYPE
             detection_to_context = detection_to_incident_context(
-                detection, detection_name_prefix, start_time_key, is_fetch_events=is_fetch_events
+                detection, CNAPP_ALERT_TYPE, "last_seen_timestamp", is_fetch_events=is_fetch_events
             )
             detections.append(detection_to_context)
+        demisto.info(f'[test] preparing to filter_incidents_by_duplicates_and_limit {detections=}\n{cnapp_last_run=}\n{INCIDENTS_PER_FETCH=}')
         detections = filter_incidents_by_duplicates_and_limit(
             incidents_res=detections, last_run=cnapp_last_run, fetch_limit=INCIDENTS_PER_FETCH, id_field="name"
         )
-
+    demisto.info(f'[test] preparing to update_last_run_object {detections=}\n{offset=}')
     new_last_run = update_last_run_object(
         last_run=cnapp_last_run,
         incidents=detections,
@@ -3388,6 +3391,7 @@ def fetch_cnapp_incidents(cnapp_last_run):
         new_offset=offset,
     )
     demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch {CNAPP_ALERT_TYPE}. Fetched {len(detections)}")
+    demisto.info(f'[test] preparing to return from fetch_cnapp_incidents with {detections=}\n{new_last_run=}')
     return detections, new_last_run
 
 
@@ -3641,7 +3645,11 @@ def fetch_items(command="fetch-incidents"):
             raise DemistoException(f"{CNAPP_ALERT_TYPE} is not supported in legacy version.")
 
         fetched_cnapp_alerts, cnapp_alerts_last_run = fetch_cnapp_incidents(
-            cnapp_alerts_last_run
+            cnapp_alerts_last_run,
+            is_fetch_events=is_fetch_events,
+            look_back=look_back,
+            limit=(min(int(params.get("limit", 100)), 100)),
+            fetch_query=params.get("cnapp_alert_fetch_query", "")
         )
         items.extend(fetched_cnapp_alerts)
 
@@ -7884,7 +7892,10 @@ def main():  # pragma: no cover
         elif command == "fetch-incidents":
             disable_for_xsiam()
             last_run, incidents = fetch_items(command=command)
+            demisto.info(f"[test] finished fetch-incidents wtih {last_run=}\n{incidents=}")
+            demisto.info(f"[test] preparing to call demisto.incidents with {incidents=}")
             demisto.incidents(incidents)
+            demisto.info(f"[test] finished sending incidents with {incidents=}")
         elif command == "fetch-events":
             last_run, events = fetch_items(command=command)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
