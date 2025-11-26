@@ -7772,9 +7772,9 @@ class CommandResults:
                         outputs[key].append(value)
 
                 if human_readable:
-                    human_readable += f"\nNote! some of the context data wasn’t included because it went over the {insight_cache_size_kb}KB limit."
+                    human_readable += f"\n Some of the context data was not included because it went over the {insight_cache_size_kb}KB limit."
                 else:
-                    human_readable = f"Note! some of the context data wasn’t included because it went over the {insight_cache_size_kb}KB limit."
+                    human_readable = f"Some of the context data was not included because it went over the {insight_cache_size_kb}KB limit."
 
                 demisto.debug(
                     f"Context size ({context_size} chars) exceeded limit ({insight_cache_size_bytes} bytes). Will use the minimum context."
