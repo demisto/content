@@ -84,48 +84,40 @@ class OrcaClient:
     def get_alerts(
             self,
             time_from: Optional[str],
-            fetch_informational: bool = False,
-            next_page_token: Optional[str] = None,
+            page: Optional[int] = 1,
             limit: int = 1000
     ) -> Tuple[List[Dict[str, Any]], Optional[str]]:
         """
         Fetch alerts
         :param time_from: datetime
-        :param fetch_informational: bool
-        :param next_page_token: str
+        :param page: int
         :param limit: int
         :return: dict
         """
-        demisto.info("Get alerts, enter")
+        demisto.info(f"Get alerts start, {time_from=} {page=} {limit=}")
         alerts: List[Dict[str, Any]] = []
-        params: Dict[str, Any] = {"limit": limit}
-        filters: List[Dict[str, Any]] = []
+        params: Dict[str, Any] = {
+            "limit": limit,
+            "page": page,
+            "from_date": time_from,
+        }
 
         if time_from:
-            filters.append({
-                "field": "state.last_updated",
-                "range": {"gte": time_from}
-            })
-        if fetch_informational:
-            filters.append({
-                "field": "state.score",
-                "includes": [1, 2, 3, 4]
-            })
+            params["from_date"] = time_from
 
-        params["dsl_filter"] = json.dumps(filters)
-
-        if next_page_token:
-            params['next_page_token'] = next_page_token
-
+        is_last_page = False
         try:
-            response = self.client._http_request(method="POST", url_suffix="/rules/query/alerts", data=params,
+            response = self.client._http_request(method="POST", url_suffix="/automations/query/alerts", data=params,
                                                  timeout=ORCA_API_TIMEOUT)
-
             if response.get("status") != 'success':
                 demisto.info(f"got bad response, {response.get('error')}")
             else:
                 alerts = response.get("data")
-                next_page_token = response.get("next_page_token")
+
+            total_items = response.get("total_items", 0)
+            demisto.info(f"Total items to fetch: {total_items}")
+            total_pages = total_items // limit
+            is_last_page = page >= total_pages
 
         except requests.exceptions.ReadTimeout as e:
             demisto.info(f"Alerts Request ReadTimeout error: {str(e)}")
@@ -133,11 +125,7 @@ class OrcaClient:
             demisto.info(f"Alerts Request Error: {str(e)}")
 
         demisto.info(f"done fetching orca alerts, fetched {len(alerts)} alerts.")
-        if next_page_token:
-            demisto.info("not the last page")
-        else:
-            demisto.info("the last page fetched")
-        return alerts, next_page_token
+        return alerts, is_last_page
 
     def get_asset(self, asset_unique_id: str) -> Union[Dict[str, Any], str]:  # pylint: disable=E1136
         demisto.debug("get_asset, enter")
@@ -242,12 +230,12 @@ def get_incident_from_alert(alert: Dict[str, Any]) -> Dict[str, Any]:
     if alert is None:
         return {}
 
-    last_seen_time = dateutil.parser.parse(alert.get('state', {}).get('last_seen')).isoformat()
+    last_seen_time = dateutil.parser.parse(alert.get('LastSeen')).isoformat()
     return {
-        'name': alert.get('state', {}).get('alert_id'),
+        'name': alert.get('AlertId'),
         'occurred': last_seen_time,
         'rawJSON': json.dumps(alert),
-        'severity': map_orca_score_to_demisto_score(orca_score=alert.get('state', {}).get('risk_level'))
+        'severity': map_orca_score_to_demisto_score(orca_score=alert.get('RiskLevel'))
     }
 
 
@@ -255,7 +243,7 @@ def get_incidents_from_alerts(alerts: List[Dict[str, Any]]) -> List[Dict[str, An
     demisto.info("get_incidents_from_alerts enter")
     incidents = []
     for alert in alerts:
-        alert['demisto_score'] = map_orca_score_to_demisto_score(orca_score=alert.get("state", {}).get("risk_level"))
+        alert['demisto_score'] = map_orca_score_to_demisto_score(orca_score=alert.get("RiskLevel"))
         incident = get_incident_from_alert(alert=alert)
         incidents.append(incident)
 
@@ -263,7 +251,7 @@ def get_incidents_from_alerts(alerts: List[Dict[str, Any]]) -> List[Dict[str, An
     return incidents
 
 
-def fetch_incidents(
+def fetch_incidents_es(
         orca_client: OrcaClient,
         last_run: Dict[str, Any],
         max_fetch: int,
@@ -312,6 +300,82 @@ def fetch_incidents(
     next_run["lastRun"] = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
     if next_page_token:
         next_run['next_page_token'] = next_page_token
+    return next_run, incidents
+
+
+def fetch_incidents(
+        orca_client: OrcaClient,
+        last_run: Dict[str, Any],
+        max_fetch: int,
+        first_fetch_time: Optional[str],  # pylint: disable=E1136
+        pull_existing_alerts: bool = False
+) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+    demisto.info(f"fetch-incidents called {max_fetch=}")
+
+    # Init parameters
+    fetch_page = int(last_run.get("fetch_page", 1))
+    last_run_time = last_run.get("lastRun")
+    step = last_run.get("step", STEP_INIT)
+    next_run = {
+        "step": step,
+    }
+
+    # Prepare time_from based on the step
+    if step == STEP_INIT:
+        # Set the time_from for the initial fetch
+        if pull_existing_alerts:
+            # Pull existing alerts from first_fetch_time
+            demisto.info("first run. export of existing alerts")
+            time_from = first_fetch_time
+        else:
+            demisto.info("pull_existing_alerts flag is not set, not pulling alerts")
+            # Pull only new alerts from now
+            time_from = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
+
+        next_run["step"] = STEP_FETCH
+    else:
+        # Not first run, continue exporting alerts from last run time
+        demisto.info("not first run, exporting reminder of alerts")
+        time_from = last_run_time
+
+    if not time_from:
+        # If time_from is still None, set it to now
+        time_from = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
+
+    # Fetch alerts
+    alerts, is_last_page = orca_client.get_alerts(
+        time_from=time_from,
+        limit=max_fetch,
+        page=fetch_page,
+    )
+
+    # Update next_run based on whether it's the last page
+    if is_last_page:
+        # reset page count and update last run time
+        next_run["fetch_page"] = 1
+        next_run["lastRun"] = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
+    else:
+        # increment page count
+        # Keep the lastRun datetime as is
+        next_run["fetch_page"] = fetch_page + 1
+        next_run["lastRun"] = time_from
+
+    # Prepare incidents
+    incidents = get_incidents_from_alerts(alerts)
+
+    total_incidents_count = len(incidents)
+    incidents = [incident for incident in incidents
+                 if incident.get("severity") > DEMISTO_INFORMATIONAL]  # type: ignore
+    filtered_incidents_count = len(incidents)
+    demisto.info(f"Fetched {total_incidents_count} alerts. Imported {filtered_incidents_count} incidents")
+
+    ids = [item.get("name") for item in incidents]
+    demisto.info(f"fetch-incidents {ids=}")
+    if "imported_ids" not in last_run:
+        last_run["imported_ids"] = []
+    last_run["imported_ids"].extend(ids)
+    next_run["imported_ids"] = last_run["imported_ids"]
+
     return next_run, incidents
 
 
@@ -428,7 +492,6 @@ def main() -> None:
         demisto.debug(f'Orca Command being called is {command}')
         api_token = demisto.params().get('api_token').get('password')
         api_host = demisto.params().get('api_host')
-        fetch_informational = demisto.params().get('fetch_informational')
         max_fetch = int(demisto.params().get('max_fetch', '200'))
         pull_existing_alerts = demisto.params().get('pull_existing_alerts')
 
@@ -480,7 +543,6 @@ def main() -> None:
                 orca_client,
                 last_run=demisto.getLastRun(),
                 max_fetch=max_fetch,
-                fetch_informational=fetch_informational,
                 pull_existing_alerts=pull_existing_alerts,
                 first_fetch_time=first_fetch_time
             )
