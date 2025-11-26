@@ -370,13 +370,8 @@ def is_auth_authz_error(content_lower: str) -> bool:
         r".*\s+does\s+not\s+have\s+.*\s+permission",  # "<user> does not have <action> permission"
         r".*account\s+.*\s+disabled",  # "Account <id> disabled"
         r".*account\s+.*\s+suspended",  # "Account <id> suspended"
-        # Simple string indicators that are NOT covered by the regex above (e.g., a pure single word)
-        r"access denied",  # Added as a simple match in case it's not followed by dynamic content
-        r"permission denied",
-        r"unauthorized",
-        r"authentication failed",
-        r"forbidden",
-        r"invalid credentials",
+        r".*credentials\s+.*\s+invalid",  # "Account <id> suspended"
+        r".*invalid\s+.*\s+credentials",  # "Account <id> suspended"
     ]
 
     return any(re.search(pattern, content_lower) for pattern in auth_authz_patterns)
@@ -394,12 +389,6 @@ def is_general_error(content_lower: str) -> bool:
         r".*error\s*:\s*.*",  # "error: user related message"
         r".*exception\s*:\s*.*",  # "exception: user related message"
         r".*unable\s+to\s+.*\s+user",  # "Unable to find user", "Unable to authenticate user"
-        # Simple string indicators (must not duplicate those in Auth/Authz)
-        r"error:",
-        r"failed:",
-        r"exception:",
-        r"bad request",
-        r"invalid request",
     ]
 
     return any(re.search(pattern, content_lower) for pattern in general_patterns)
@@ -419,11 +408,7 @@ def get_enhanced_error_message(entry: dict) -> str:
         str: The specific error message if an error is detected,
              otherwise returns an empty string ("").
     """
-    # 1. Standard Path: Trust the existing infrastructure first
-    if is_error(entry):
-        return get_error(entry)
-
-    # 2. Enhanced Path: Extract and validate content
+    # 1. Enhanced Path: Extract and validate content
     content = entry.get("Contents")
 
     # Fail fast if content is missing or not a string (implies no error in this context)
@@ -433,17 +418,21 @@ def get_enhanced_error_message(entry: dict) -> str:
     # Normalize for case-insensitive comparison
     content_lower = content.lower()
 
-    # 3. Specific Pattern Matching
+    # 2. Specific Pattern Matching
     if is_not_found_error(content_lower):
         return USER_NOT_FOUND_ERROR
 
     if is_auth_authz_error(content_lower):
         return AUTH_AUTHZ_ERROR
 
-    # 4. General Error Fallback
+    # 3. General Error Fallback
     # Only return the generic error message if is_general_error explicitly flags it.
     if is_general_error(content_lower):
         return content
+
+    # 4. Standard Path: Trust the existing infrastructure first
+    if is_error(entry):
+        return get_error(entry)
 
     # No error detected
     return ""
