@@ -64,6 +64,7 @@ Another authentication option is to create and register a GitHub app under your 
    - Once installed, you will see configuration options for the app on your selected account.
 5. Copy the **private key** from the .pem file generated and downloaded above. Include the lines `-----BEGIN RSA PRIVATE KEY-----` and `-----END RSA PRIVATE KEY-----`. In Cortex, navigate to **Settings** > **Credentials** and click **+ New Credential**. Give the credential a name and paste the private key into the **Certificate** field. When you configure the integration instance, for the **Credentials** parameter, you must select **Switch to credentials** and select the credential you just created.
 6. Locate the **GitHub app integration ID** (under **Advanced Settings** when you set up the integration instance): From the **GitHub Apps** page, click on the app name. The integration ID is the **Client ID**, which should be a string of letters and numbers.
+<img width="716" height="332" alt="Screenshot 2025-11-26 at 4 18 14 PM" src="https://github.com/user-attachments/assets/a7e5fb89-984c-48f4-acc2-871da37ec880" />
 7. Locate the **GitHub app installation ID**: Navigate to a repository where you have installed the app > **Settings** > **GitHub Apps**. To the right of the app name, click **Configure**. The installation ID is the number at the end of the URL.
 
 ### Configure Integration Parameters
