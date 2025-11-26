@@ -702,6 +702,11 @@ def core_get_contributing_event_command(client: Client, args: Dict) -> CommandRe
     )
 
 
+def core_list_endpoints_command(client: Client, args: dict):
+    
+    return
+
+
 def polling_block_ip_status(args, client) -> PollResult:
     """
     Check action status for each endpoint id and ip address.
@@ -1203,6 +1208,9 @@ def main():  # pragma: no cover
 
         elif command == "core-block-ip":
             return_results(core_block_ip_command(args, client))
+            
+        elif command == "core-list-endpoints":
+            return_results(core_list_endpoints_command(client, args))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
