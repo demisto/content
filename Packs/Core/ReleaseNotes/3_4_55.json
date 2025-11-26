@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The following output context paths of the ***core-get-cases*** command have been removed and are now retrievable using the **get-enriched-case-data** argument set to true (under the Core.Case.CaseExtraData prefix): **Core.Case.notes**, **Core.Case.detection_time**, **Core.Case.xdr_url**, **Core.Case.manual_description**, **Core.Case.starred_manually**."
+    "breakingChangesNotes": "**Important Note**: The following playbook **Netcat Makes or Gets Connections** have been moved to the 'Cortex Response And Remediation' pack. Make sure to update the *Cortex Response And Remediation* pack to the latest version in order to use the playbook.\n"
 }
