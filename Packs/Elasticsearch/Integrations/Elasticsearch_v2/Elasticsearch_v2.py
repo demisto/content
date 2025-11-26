@@ -846,6 +846,9 @@ def get_time_range(
     if TIME_METHOD == "Simple-Date":
         range_dict["format"] = ES_DEFAULT_DATETIME_FORMAT
 
+    if utc_offset := re.search(r"([+-]\d{2}:\d{2})$", time_range_start):
+        range_dict["time_zone"] = utc_offset.group(1)
+
     demisto.debug(f"Time range dictionary created: {range_dict}")
     return {"range": {time_field: range_dict}}
 
