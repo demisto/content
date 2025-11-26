@@ -18,6 +18,14 @@
             ]
         },
         {
+            "id": "AIAgents",
+            "supportedModules": [
+                "agentix",
+                "cloud_posture",
+                "xsiam"
+            ]
+        },
+        {
             "id": "AutoFocus",
             "supportedModules": [
                 "X1",
