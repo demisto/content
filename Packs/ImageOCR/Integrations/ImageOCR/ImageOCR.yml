@@ -46,7 +46,7 @@ script:
     - contextPath: File.Text
       description: Extracted text from the passed image file.
       type: String
-  dockerimage: demisto/tesseract:1.0.0.2038079
+  dockerimage: demisto/tesseract:1.0.0.5110346
   runonce: false
   script: '-'
   type: python
