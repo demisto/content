@@ -421,9 +421,7 @@ class Client(BaseClient):
         # Convert large integers to strings to prevent JavaScript precision loss
         if incidents := response.get("result"):
             for incident in incidents:
-                for key, value in list(incident.items()):
-                    if isinstance(value, int) and value > JS_NUMBER_LIMIT:
-                        incident[key] = str(value)
+                convert_large_integers_to_strings(incident)
 
         return response
 
@@ -511,6 +509,7 @@ def list_alert_command(
     for alert in output:
         alert["alert_id"] = alert["_id"]
         alert["timestamp"] = timestamp_to_datestring(alert["timestamp"] * 1000)
+        convert_large_integers_to_strings(alert)
 
     readable_output = tableToMarkdown(
         name="Alert List",
@@ -575,6 +574,7 @@ def list_event_command(
     for event in output:
         event["event_id"] = event["_id"]
         event["timestamp"] = timestamp_to_datestring(event["timestamp"] * 1000)
+        convert_large_integers_to_strings(event)
 
     readable_output = tableToMarkdown(
         name="Event List",
@@ -1160,6 +1160,23 @@ def get_remote_data_command(
 # HELPERS FUNCTIONS #
 
 
+def convert_large_integers_to_strings(data: dict[str, Any]) -> None:
+    """Convert large integers to strings to prevent JavaScript precision loss.
+    
+    JavaScript cannot safely represent integers larger than 2^53-1 (Number.MAX_SAFE_INTEGER).
+    This function converts such integers to strings in-place to preserve their exact values.
+    
+    Args:
+        data (dict[str, Any]): Dictionary containing potential large integer values.
+    
+    Reference:
+        https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
+    """
+    for key, value in list(data.items()):
+        if isinstance(value, int) and value > JS_NUMBER_LIMIT:
+            data[key] = str(value)
+
+
 def get_hourly_timestamps(start_time: int, end_time: int) -> list[int]:
     """Get a list of timestamps with a one hour gap between the received start and end timestamps.
 
@@ -1223,11 +1240,8 @@ def parse_incident(
     incident["mirror_direction"] = mirror_direction
     incident["mirror_instance"] = demisto.integrationInstance()
 
-    for key, value in list(incident.items()):
-        # JavaScript does not work well with large numbers larger than 2^53-1 so need to stringify them.
-        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
-        if isinstance(value, int) and value > JS_NUMBER_LIMIT:
-            incident[key] = str(value)
+    # Convert large integers to strings to prevent JavaScript precision loss
+    convert_large_integers_to_strings(incident)
 
     return {
         "name": f"{incident_type} ID: {incident_id}",
@@ -1237,8 +1251,6 @@ def parse_incident(
         "occurred": convert_datetime_int_to_iso(incident["timestamp"]),
         "rawJSON": json.dumps(incident),
     }
-
-
 def convert_datetime_int_to_iso(creation_timestamp: int) -> datetime:
     """Convert datetime to iso.
 
