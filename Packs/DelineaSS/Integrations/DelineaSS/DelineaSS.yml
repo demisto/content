@@ -467,7 +467,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Create a new user
+    description: Create a new user in Secret Server
     name: delinea-secret-server-user-create
     outputs:
     - contextPath: Delinea.secret.server.User.Create
@@ -496,7 +496,7 @@ script:
       name: sortBy_priority
     - description: Maximum number of records to include in results(integer)
       name: take
-    description: Search, filter, sort, and page users
+    description: Search, filter, sort, and page users in Secret Server
     name: delinea-secret-server-user-search
     outputs:
     - contextPath: Delinea.Secret.Server.User.Search
@@ -584,7 +584,7 @@ script:
       - '1'
       - '2'
       - '3'
-    description: Update a single user by ID
+    description: Update a single user by ID in Secret Server
     name: delinea-secret-server-user-update
     outputs:
     - contextPath: Delinea.Secret.Server.User.Update
@@ -594,7 +594,7 @@ script:
     - description: User ID
       name: id
       required: true
-    description: Delete user by ID
+    description: Delete Secret Server user by ID
     name: delinea-secret-server-user-delete
     outputs:
     - contextPath: Delinea.Secret.Server.User.Delete
@@ -645,7 +645,7 @@ script:
     - description: The user display.
       name: DisplayName
     - description: Password for new user. The password used to log in.
-      name: password
+      name: Password
       required: true
     - description: The user name.
       name: Name
@@ -678,7 +678,7 @@ script:
     - description: The name or UUID of the user to remove.
       name: id
       required: true
-    description: Delete user by ID
+    description: Delete Platform user by ID
     name: delinea-platform-user-delete
     outputs:
       - contextPath: Delinea.Platform.User.Delete
@@ -727,7 +727,7 @@ script:
         name: Description
       - description: The user home number.
         name: HomeNumber
-    description: Update a single user by ID.
+    description: Update a Platform user by ID.
     name: delinea-platform-user-update
     outputs:
       - contextPath: Delinea.Platform.User.Update
@@ -737,7 +737,7 @@ script:
     - description: Fetches a platform user by uuid or upn (User Principal Name).
       name: userUuidOrUpn
       required: true
-    description: Fetches a single platform user by uuid or upn
+    description: Fetches a Platform user by uuid or upn
     name: delinea-platform-user-get
     outputs:
     - contextPath: Delinea.Platform.User.Get
@@ -762,7 +762,7 @@ script:
         required: true
       - description: Page size. Default 1000.
         name: pageSize
-    description: Get Platform User search by text.
+    description: Retrieve Platform Users by Search Text.
     name: delinea-platform-get-user-searchbytext
     outputs:
       - contextPath: Delinea.Platform.Get.User.Searchbytext

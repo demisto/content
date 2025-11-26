@@ -154,10 +154,6 @@ class Client(BaseClient):
         self._headers = {}
         self._token = self.authenticate()
 
-    # @property
-    # def platform_url(self):
-    #     return getattr(self, '_platformurl', None)
-
     def authenticate(self):
         authentication_model = is_platform_or_ss(self._base_url, self._username, self._password)
         if authentication_model.platform_login:
@@ -490,7 +486,7 @@ def secret_server_user_get_command(client):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix='Delinea.User',
+        outputs_prefix='Delinea.Secret.Server.User',
         outputs_key_field="user",
         raw_response=user,
         outputs=user
@@ -648,7 +644,7 @@ def secret_server_user_create_command(client, **kwargs):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Delinea.User.Create",
+        outputs_prefix="Delinea.Secret.Server.User.Create",
         outputs_key_field="user",
         raw_response=user,
         outputs=user
@@ -661,7 +657,7 @@ def secret_server_user_search_command(client, **kwargs):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Delinea.User.Search",
+        outputs_prefix="Delinea.Secret.Server.User.Search",
         outputs_key_field="user",
         raw_response=user,
         outputs=user
@@ -674,7 +670,7 @@ def secret_server_user_update_command(client, id: str = '', **kwargs):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Delinea.User.Update",
+        outputs_prefix="Delinea.Secret.Server.User.Update",
         outputs_key_field="user",
         raw_response=user,
         outputs=user
@@ -703,7 +699,7 @@ def platform_user_get_command(client, userUuidOrUpn: str = ""):
         outputs_prefix='Delinea.Platform.User.Get',
         outputs_key_field='uuid',
         raw_response=user,
-        outputs={'Delinea.Platform.User.Get': user}
+        outputs=user
     )
 
 
@@ -714,10 +710,10 @@ def platform_get_all_users_command(client, **kwargs):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix='Delinea.Platform.UserSearch',
+        outputs_prefix='Delinea.Platform.Get.All.Users',
         outputs_key_field='uuid',
         raw_response=users,
-        outputs={'Delinea.Platform.UserSearch': user_list}
+        outputs=user_list
     )
 
 
@@ -732,7 +728,7 @@ def platform_get_user_searchbytext_command(client, **kwargs):
         outputs_prefix='Delinea.Platform.Get.User.Searchbytext',
         outputs_key_field='uuid',
         raw_response=users,
-        outputs={'Delinea.Platform.Get.User.Searchbytext': user_list}
+        outputs=user_list
     )
 
 
@@ -768,7 +764,7 @@ def secret_server_user_delete_command(client, id: str = ''):
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="Delinea.User.Delete",
+        outputs_prefix="Delinea.Secret.Server.User.Delete",
         outputs_key_field="user",
         raw_response=user,
         outputs=user
