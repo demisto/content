@@ -777,23 +777,23 @@ def test_get_time_range(time_method, last_fetch, time_range_start, time_range_en
 def test_get_time_range_with_utc_offset(time_method, time_range_start, expected_time_zone):
     """
     Test that UTC offset is correctly extracted from time_range_start and added to range_dict.
-    
+
     Given:
         - A time_range_start with various UTC offset formats (+HH:MM or -HH:MM)
         - Different time methods (Simple-Date, Timestamp-Seconds, Timestamp-Milliseconds)
-    
+
     When:
         - Calling get_time_range with the time_range_start parameter
-    
+
     Then:
         - The UTC offset should be extracted and added to range_dict as 'time_zone'
         - If no UTC offset is present (Z or no offset), time_zone should not be in range_dict
     """
     Elasticsearch_v2.TIME_METHOD = time_method
     from Elasticsearch_v2 import get_time_range
-    
+
     result = get_time_range(last_fetch=None, time_range_start=time_range_start, time_range_end=None, time_field="time_field")
-    
+
     if expected_time_zone:
         assert "time_zone" in result["range"]["time_field"]
         assert result["range"]["time_field"]["time_zone"] == expected_time_zone
