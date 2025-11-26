@@ -112,50 +112,57 @@ def normalize_indicator_type(raw_type: str) -> str:
 
 def run_extract_indicators(text: str) -> Dict[str, Any]:
     """
-    Run the `extractIndicators` command via the Command API and return ExtractedIndicators.
+    Run the `extractIndicators` command in the same way the working helper does.
 
-    This is used when `text` is provided, to detect all indicators present in the text.
-
-    Example:
-        >>> run_extract_indicators("IP 192.168.1.0 and URL https://example.com")
-        {
-            "IP": ["192.168.1.0"],
-            "URL": ["https://example.com"]
-        }
+    This:
+        - Uses execute_command instead of Command.execute()
+        - Forces extract_contents=False so we get a full entry structure
+        - Always reads ExtractedIndicators from EntryContext ONLY
+        - Never crashes on unexpected structure
+        - Returns {} if no indicators are found or if command fails
 
     Args:
         text: Free text from which to extract indicators.
 
     Returns:
-        A dict representing the `ExtractedIndicators` context, or {} if nothing is found.
+        Dict[str, Any]: The ExtractedIndicators mapping,
+                        e.g. {"IP": ["1.1.1.1"], "URL": ["https://..."]}
+                        or {} if nothing is found.
     """
     if not text:
         return {}
 
-    demisto.debug("IndicatorEnrichment: running extractIndicators via Command.execute.")
+    demisto.debug("IndicatorEnrichment: validating input using extractIndicators (execute_command)")
 
-    cmd = Command(
-        name="extractIndicators",
-        args={"text": text},
-        command_type=CommandType.INTERNAL,
-        ignore_using_brand=True,
+    # Use the same approach as your working version
+    results = execute_command(
+        "extractIndicators",
+        {"text": text},
+        extract_contents=False
     )
 
-    results = cmd.execute()
-    if not results:
-        demisto.debug("IndicatorEnrichment: extractIndicators returned no results.")
-        return {}
-    demisto.debug(f"Extract indicators results: {results}")
-    if isinstance(results, dict):
-        entry = results
-    else:
-        entry = results[0]
-    entry_context = entry.get("EntryContext") or entry.get("Contents") or entry
-    extracted = entry_context.get("ExtractedIndicators") or entry_context
-    if not isinstance(extracted, dict):
-        demisto.debug("IndicatorEnrichment: ExtractedIndicators is not a dict.")
+    # Defensive check: results should be a list of entries
+    if not isinstance(results, list) or not results:
+        demisto.debug("IndicatorEnrichment: extractIndicators returned no results or invalid structure.")
         return {}
 
+    first = results[0]
+    if not isinstance(first, dict):
+        demisto.debug(f"IndicatorEnrichment: malformed extractIndicators result: {first!r}")
+        return {}
+
+    # Always extract ONLY from EntryContext.ExtractedIndicators (your working pattern)
+    entry_context = first.get("EntryContext", {})
+    if not isinstance(entry_context, dict):
+        demisto.debug("IndicatorEnrichment: EntryContext missing or invalid.")
+        return {}
+
+    extracted = entry_context.get("ExtractedIndicators", {})
+    if not isinstance(extracted, dict):
+        demisto.debug("IndicatorEnrichment: ExtractedIndicators missing or invalid.")
+        return {}
+
+    demisto.debug(f"IndicatorEnrichment: extracted indicators = {extracted}")
     return extracted
 
 
@@ -624,7 +631,7 @@ def run_underlying_enrichment_scripts(
         )
         for (result, _hr_output, error_message) in command_results:
             # Merge EntryContext into local merged_context (for building IndicatorEnrichment)
-            context = result.get("Contents") or result.get("EntryContext") or {}
+            context = result.get("EntryContext") or result.get("Contents") or {}
             if isinstance(context, dict):
                 merged_context.update(context)
 
@@ -764,42 +771,6 @@ def build_indicator_enrichment_list(
     return indicator_enrichment
 
 
-def delete_enrichment_context_keys(merged_context: Dict[str, Any]) -> None:
-    """
-    Delete the *Enrichment(...) keys from incident context using DeleteContext,
-    based on what we saw in merged_context.
-
-    This is used when raw_context=false so that:
-        - Core, EndpointData, DBotScore, etc. remain in context from the child scripts.
-        - The raw IPEnrichment/URLEnrichment/... lists are removed.
-        - Only IndicatorEnrichment remains as the aggregated view.
-
-    Args:
-        merged_context: EntryContext produced by the child enrichment scripts.
-    """
-    keys_to_delete: List[str] = []
-
-    for key in merged_context.keys():
-        for type_cfg in INDICATOR_TYPE_CONFIG.values():
-            prefix = type_cfg.get("enrichment_prefix")
-            if prefix and key.startswith(prefix):
-                keys_to_delete.append(key)
-                break
-
-    for key in keys_to_delete:
-        demisto.debug(f"IndicatorEnrichment: deleting context key '{key}' via DeleteContext.")
-        delete_cmd = Command(
-            name="DeleteContext",
-            args={"key": key, "subplaybook": "no"},
-            command_type=CommandType.BUILTIN,
-            ignore_using_brand=True,
-        )
-        try:
-            delete_cmd.execute()
-        except Exception as ex:
-            demisto.debug(f"IndicatorEnrichment: failed to delete context key '{key}': {ex}")
-
-
 def build_final_context(
     merged_context: Dict[str, Any],
     unsupported_entries: Set[Tuple[str, str]],
@@ -810,36 +781,55 @@ def build_final_context(
     Build the final context for this script.
 
     Behavior:
-        - Always builds IndicatorEnrichment from:
-            * underlying *Enrichment(...) keys,
-            * unsupported indicators,
-            * unknown/invalid indicators.
+        - Start from the full merged_context returned by child scripts (Core, EndpointData, DBotScore, *Enrichment, etc.).
+        - Always build IndicatorEnrichment from the *Enrichment(...) keys and errors.
         - If raw_context is False:
-            * Deletes *Enrichment(...) keys from incident context via DeleteContext.
-            * Leaves other keys like Core, EndpointData, DBotScore intact.
-        - Returns a context dict that only includes IndicatorEnrichment for this script.
+            * Drop the raw *Enrichment(...) keys from this script's output context.
+          If raw_context is True:
+            * Keep the raw *Enrichment(...) keys as-is.
+        - The resulting context for this entry is:
+            child context keys (+/- raw enrichment lists) + IndicatorEnrichment.
 
     Args:
-        merged_context: EntryContext from child scripts.
-        unsupported_entries: Set of unsupported indicators.
-        unknown_entries: Set of unknown/invalid indicators.
-        raw_context: Whether to preserve the raw *Enrichment(...) lists in context.
+        merged_context: EntryContext/Contents merged from all child scripts.
+        unsupported_entries: Unsupported indicators collected from input parsing.
+        unknown_entries: Unknown/invalid indicators collected from input parsing.
+        raw_context: Whether to preserve the raw *Enrichment(...) lists.
 
     Returns:
-        A dict suitable for CommandResults.outputs containing only IndicatorEnrichment.
+        A dict suitable for CommandResults.outputs containing:
+            - Core, EndpointData, DBotScore, etc.
+            - IndicatorEnrichment
+            - Optionally *Enrichment(...) keys when raw_context=True.
     """
+    # Start from everything children gave us
+    final_context: Dict[str, Any] = dict(merged_context) if merged_context else {}
+
+    # Always build the aggregated IndicatorEnrichment list
     indicator_enrichment_list = build_indicator_enrichment_list(
         merged_context=merged_context,
         unsupported_entries=unsupported_entries,
         unknown_entries=unknown_entries,
     )
 
-    # If raw_context is False, delete the underlying *Enrichment(...) keys from context
-    if not raw_context and merged_context:
-        pass
-        # delete_enrichment_context_keys([type.get("enrichment_prefix") for INDICATOR_TYPE_CONFIG.values()])
+    # If raw_context is False: drop raw *Enrichment(...) keys from THIS script's context
+    if not raw_context and final_context:
+        keys_to_drop: List[str] = []
+        for key in list(final_context.keys()):
+            for type_cfg in INDICATOR_TYPE_CONFIG.values():
+                prefix = type_cfg.get("enrichment_prefix")
+                if prefix and key.startswith(prefix):
+                    keys_to_drop.append(key)
+                    break
 
-    final_context: Dict[str, Any] = {}
+        for key in keys_to_drop:
+            demisto.debug(
+                f"IndicatorEnrichment: removing raw enrichment context key '{key}' "
+                f"from this script's output (raw_context=false)."
+            )
+            final_context.pop(key, None)
+
+    # Add our aggregated IndicatorEnrichment view
     if indicator_enrichment_list:
         final_context["IndicatorEnrichment"] = indicator_enrichment_list
 

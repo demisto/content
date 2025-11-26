@@ -1,7 +1,7 @@
-name: indicators-enrichment
+name: indicator-enrichment
 comment: "Enriches indicators from a provided list or a block of free text. This script detects the indicator type and runs the correct underlying enrichment script. Currently supports: IP, URL, Domain, CVE, and File."
 commonfields:
-  id: indicators-enrichment
+  id: indicator-enrichment
   version: -1
 
 # ------------------ Input Arguments -----------------------
@@ -13,7 +13,7 @@ args:
       Example: "[\"https://example.com/search?tags=red,yellow,green\", \"https://example2.com\"]".
     - From Context: Pass JSON arrays directly, without modification.
   name: indicators_list
-  required: true
+  required: false
   isArray: true
 - name: text
   description: "Free text to be parsed for indicators. The script will run !extractIndicators to retrieve the underlying indicators within the text."
