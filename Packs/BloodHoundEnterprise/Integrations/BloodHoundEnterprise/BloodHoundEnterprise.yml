@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -62,7 +62,7 @@ script:
       required: false
     description: Gets events from BloodHound Enterprise.
     name: bloodhound-get-events
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4819260
   isfetchevents: true
   runonce: false
   script: '-'
@@ -72,5 +72,6 @@ marketplaces:
 - marketplacev2
 - platform
 fromversion: 8.4.0
+supportlevelheader: xsoar
 tests:
 - No tests (auto formatted)

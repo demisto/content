@@ -1548,8 +1548,8 @@ def init_filter_args_options() -> dict[str, AlertFilterArg]:
         "alert_category": AlertFilterArg("alert_category", EQ, array),
         "alert_domain": AlertFilterArg("alert_domain", EQ, array),
         "alert_description": AlertFilterArg("alert_description", CONTAINS, array),
-        "os_actor_process_image_sha256": AlertFilterArg("os_actor_process_image_sha256", CONTAINS, array),
-        "action_file_macro_sha256": AlertFilterArg("action_file_macro_sha256", CONTAINS, array),
+        "os_actor_process_image_sha256": AlertFilterArg("os_actor_process_image_sha256", EQ, array),
+        "action_file_macro_sha256": AlertFilterArg("action_file_macro_sha256", EQ, array),
         "status": AlertFilterArg("status.progress", EQ, array, STATUS_PROGRESS),
         "not_status": AlertFilterArg("status.progress", NEQ, array, STATUS_PROGRESS),
         "asset_ids": AlertFilterArg("asset_ids", EQ, array),
@@ -3799,9 +3799,6 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     custom_filter_str = args.pop("custom_filter", None)
 
     if custom_filter_str:
-        for arg in args:
-            if arg not in ["time_frame", "start_time", "end_time"]:
-                raise DemistoException('Please provide either "custom_filter" argument or other filter arguments but not both.')
         try:
             custom_filter = json.loads(custom_filter_str)
 

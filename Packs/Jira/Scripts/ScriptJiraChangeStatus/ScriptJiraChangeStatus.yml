@@ -16,9 +16,3 @@ comment: |-
   This script changes the status field of a Jira incident. It gets the new Jira status of the remote Jira issue and updates the Cortex XSOAR incident status.
 tests:
 - No tests (auto formatted)
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

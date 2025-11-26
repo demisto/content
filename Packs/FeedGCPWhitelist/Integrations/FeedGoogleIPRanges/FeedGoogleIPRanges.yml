@@ -137,6 +137,6 @@ script:
 fromversion: 6.0.0
 tests:
 - Fetch Indicators Test
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

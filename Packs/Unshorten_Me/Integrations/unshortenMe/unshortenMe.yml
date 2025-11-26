@@ -38,6 +38,6 @@ script:
   type: python
 tests:
 - unshortenMe Test
-sectionOrder:
+sectionorder:
 - Connect
 fromversion: 6.10.0

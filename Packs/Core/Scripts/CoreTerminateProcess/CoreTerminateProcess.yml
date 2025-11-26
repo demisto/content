@@ -5,7 +5,7 @@ name: CoreTerminateProcess
 script: ''
 type: python
 tags:
-  - Utilities
+- Utilities
 comment: A polling wrapper script; Terminate a process tree by its causality ID.
 enabled: true
 args:
@@ -79,3 +79,4 @@ marketplaces:
 - platform
 supportedModules:
 - agentix_xsiam
+- xsiam

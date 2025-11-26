@@ -5,7 +5,7 @@ name: CoreQuarantineFiles
 script: ''
 type: python
 tags:
-  - Utilities
+- Utilities
 comment: A polling wrapper script; Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
 enabled: true
 args:
@@ -60,3 +60,4 @@ marketplaces:
 - platform
 supportedModules:
 - agentix_xsiam
+- xsiam

@@ -1,5 +1,5 @@
 category: Authentication & Identity Management
-sectionOrder:
+sectionorder:
 - Connect
 commonfields:
   id: Silverfort

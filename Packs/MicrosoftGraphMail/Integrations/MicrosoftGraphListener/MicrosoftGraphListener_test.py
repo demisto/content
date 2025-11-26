@@ -6,6 +6,7 @@ import pytest
 import requests_mock
 from CommonServerPython import *
 from MicrosoftGraphListener import MsGraphListenerClient
+from MicrosoftApiModule import NotFoundError
 
 
 def oproxy_client():
@@ -1403,3 +1404,158 @@ def test_file_result_creator(monkeypatch, raw_attachment, legacy_name, expected_
     else:
         result = GraphMailUtils.file_result_creator(raw_attachment, legacy_name)
         assert result["File"] == expected_name
+
+
+def test_add_attachment_with_upload_session__404_once_then_success_and_final_201(mocker):
+    """
+    Given:
+      - MsGraphMail client with MAX_ATTACHMENT_SIZE=4.
+      - get_upload_session() succeeds and returns a valid uploadUrl.
+      - upload_attachment() behavior per chunk:
+          * Chunk (0,4): first attempt 404, retry succeeds with 200 (mid-chunk).
+          * Chunk (4,8): 200 (mid-chunk).
+          * Chunk (8,10): 201 (final).
+      - A 10-byte attachment ("abcdefghij") producing three chunks: [0,4), [4,8), [8,10).
+
+    When:
+      - add_attachment_with_upload_session() is invoked to upload the attachment via an upload session.
+
+    Then:
+      - The first chunk is retried exactly once due to a 404, then proceeds.
+      - The second chunk uploads once with 200 (mid-chunk).
+      - The final chunk returns 201, ending the loop successfully.
+      - Calls per chunk: (0,4) == 2, (4,8) == 1, (8,10) == 1.
+    """
+    client = self_deployed_client()
+
+    # Make chunking deterministic: 10 bytes => [0,4), [4,8), [8,10)
+    client.MAX_ATTACHMENT_SIZE = 4
+
+    # Upload session: succeed immediately with an upload URL
+    client.get_upload_session = lambda **kw: {"uploadUrl": "https://example/upload"}
+
+    # Track call counts per (start, endExclusive)
+    calls = {}
+
+    def upload_attachment(self, upload_url, start_chunk_idx, end_chunk_idx, chunk_data, attachment_size):
+        key = (start_chunk_idx, end_chunk_idx)
+        calls[key] = calls.get(key, 0) + 1
+        # First chunk: first attempt 404, then 200
+        if key == (0, 4):
+            return MockedResponse(404) if calls[key] == 1 else MockedResponse(200)
+        # Second chunk: mid-chunk OK
+        if key == (4, 8):
+            return MockedResponse(200)
+        # Final chunk: done
+        if key == (8, 10):
+            return MockedResponse(201)
+        raise AssertionError(f"Unexpected chunk {key}")
+
+    mocker.patch.object(client, "upload_attachment", types.MethodType(upload_attachment, client))
+
+    # Act
+    client.add_attachment_with_upload_session(
+        email="x@y",
+        draft_id="d1",
+        attachment_data=b"abcdefghij",  # len=10
+        attachment_name="f.txt",
+        is_inline=False,
+    )
+
+    # Assert: first chunk retried exactly once; others once
+    assert calls[(0, 4)] == 2
+    assert calls[(4, 8)] == 1
+    assert calls[(8, 10)] == 1
+
+
+def test_upload_chunk_404_twice_raises(mocker):
+    """
+    Given:
+      - MsGraphMail client with MAX_ATTACHMENT_SIZE=4 and a valid uploadUrl.
+      - upload_attachment() for the first chunk (0,4) returns 404 twice.
+
+    When:
+      - add_attachment_with_upload_session() is called for a 10-byte attachment (three chunks total).
+
+    Then:
+      - The function retries the failing chunk once.
+      - On the second 404 for the same chunk, it raises DemistoException.
+      - The exception message contains '404' and mentions the failing 'range'.
+    """
+    client = self_deployed_client()
+    client.MAX_ATTACHMENT_SIZE = 4
+    mocker.patch.object(client, "get_upload_session", lambda **kw: {"uploadUrl": "https://example/upload"})
+
+    attempts = {"n": 0}
+
+    def upload_attachment(self, upload_url, start_chunk_idx, end_chunk_idx, chunk_data, attachment_size):
+        # Always fail on the first chunk to trigger the double-404 path
+        assert (start_chunk_idx, end_chunk_idx) == (0, 4)
+        attempts["n"] += 1
+        # Provide .text on the second response so error formatting can include details if json() is absent
+        if attempts["n"] == 2:
+            r = MockedResponse(404)
+            r.text = '{"error":{"code":"ErrorItemNotFound"}}'
+            return r
+        return MockedResponse(404)
+
+    mocker.patch.object(client, "upload_attachment", types.MethodType(upload_attachment, client))
+    mocker.patch.object(demisto, "debug", lambda *a, **k: None)
+
+    with pytest.raises(DemistoException) as ei:
+        client.add_attachment_with_upload_session(
+            email="x@y",
+            draft_id="d1",
+            attachment_data=b"abcdefghij",  # len=10
+            attachment_name="f.txt",
+            is_inline=False,
+        )
+
+    msg = str(ei.value)
+    # We at least surface it's a 404 failure; range text may be inclusive in your log/exception formatting.
+    assert "404" in msg
+    assert "range" in msg
+
+
+def test_get_upload_session_retried_on_notfound(mocker):
+    """
+    Given:
+      - MsGraphMail client with MAX_ATTACHMENT_SIZE=4.
+      - get_upload_session() raises NotFoundError on the first call and succeeds on the second.
+      - upload_attachment() for the single-chunk file returns 201 (final).
+
+    When:
+      - add_attachment_with_upload_session() is called for a 4-byte attachment (exactly one chunk).
+
+    Then:
+      - get_upload_session() is attempted at least twice (one failure + one success).
+      - The upload proceeds and completes successfully with a 201 final response.
+    """
+    client = self_deployed_client()
+    client.MAX_ATTACHMENT_SIZE = 4
+
+    attempts = {"n": 0}
+
+    def get_upload_session(**kw):
+        attempts["n"] += 1
+        if attempts["n"] == 1:
+            raise NotFoundError("transient not found")
+        return {"uploadUrl": "https://example/upload"}
+
+    # One-chunk upload that ends with 201
+    def upload_attachment(self, **kw):
+        return MockedResponse(201)
+
+    mocker.patch.object(client, "get_upload_session", get_upload_session)
+    mocker.patch.object(client, "upload_attachment", types.MethodType(upload_attachment, client))
+    mocker.patch.object(demisto, "debug", lambda *a, **k: None)
+
+    client.add_attachment_with_upload_session(
+        email="x@y",
+        draft_id="d1",
+        attachment_data=b"abcd",  # exactly one chunk
+        attachment_name="f.txt",
+        is_inline=False,
+    )
+
+    assert attempts["n"] == 2

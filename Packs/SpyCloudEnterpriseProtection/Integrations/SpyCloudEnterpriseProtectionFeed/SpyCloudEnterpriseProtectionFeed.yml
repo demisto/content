@@ -1,4 +1,9 @@
 category: Data Enrichment & Threat Intelligence
+sectionorder:
+  - Connect
+  - Collect
+  - Optimize
+  - Result
 commonfields:
   id: SpyCloudEnterpriseProtectionFeed
   version: -1
@@ -8,16 +13,19 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: API Key
   hidden: false
   name: apikey
   required: true
   type: 4
+  section: Connect
 - defaultvalue: 'true'
   display: Fetch incidents
   name: isFetch
   required: true
   type: 8
+  section: Collect
 - additionalinfo: |-
     This parameter allows you to define the starting point for a date range query on the spycloud_publish_date field.
     Example: -1days, now, YYYY-MM-DD.
@@ -27,6 +35,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: |-
     This parameter allows you to define the ending point for a date range query on the spycloud_publish_date field.
     Example: -1days, now, YYYY-MM-DD.
@@ -36,6 +45,7 @@ configuration:
   name: until
   required: false
   type: 0
+  section: Collect
 - additionalinfo: |-
     This parameter allows you to define the starting point for a date range query on the when an already published record was modified (record_modification_date).
     Example: -1days, now, YYYY-MM-DD.
@@ -45,6 +55,7 @@ configuration:
   name: since_modification_date
   required: false
   type: 0
+  section: Collect
 - additionalinfo: |-
     This parameter allows you to define the ending point for a date range query on the when an already published record was modified (record_modification_date).
     Example: -1days, now, YYYY-MM-DD.
@@ -54,6 +65,7 @@ configuration:
   name: until_modification_date
   required: false
   type: 0
+  section: Collect
 - additionalinfo: This parameter allows you to filter based on the numeric severity code.
   defaultvalue: 20,25
   display: Severity
@@ -66,18 +78,21 @@ configuration:
   - '2'
   required: false
   type: 16
+  section: Optimize
 - additionalinfo: This parameter allows you to filter based on a particular breach source.This parameter allows you to filter based on a particular breach source.
   display: Source ID
   hidden: false
   name: source_id
   required: false
   type: 0
+  section: Optimize
 - additionalinfo: If hashing is enabled for your API key, you have the option to provide a 10 to 24 character, high entropy salt otherwise the pre-configured salt will be used.
   display: Salt
   hidden: false
   name: salt
   required: false
   type: 0
+  section: Optimize
 - additionalinfo: This parameter lets you filter results by type. The allowed values are 'corporate' for corporate records, and 'infected' for infected user records (from botnet data). If no value has been provided the API function will, by default, return all record types.
   display: Type
   hidden: false
@@ -85,8 +100,11 @@ configuration:
   options:
   - corporate
   - infected
+  - email_domain
+  - target_domain
   required: false
   type: 15
+  section: Optimize
 - additionalinfo: 'This parameters lets you filter results for only emails or only domains on your watchlist. The allowed values are: [''email'', ''domain'', ''subdomain'', ''ip'']. If no value has been provided, the API will return all watchlist types.'
   display: Watchlist Type
   hidden: false
@@ -98,24 +116,42 @@ configuration:
   - ip
   required: false
   type: 15
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   hidden: false
   name: proxy
   required: false
   type: 8
+  section: Connect
 - defaultvalue: '2'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
+  section: Optimize
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Optimize
+- additionalinfo: please enter the domains to search here, if left empty, your full watchlist will be pulled
+  display: Domain Search
+  name: domain_search
+  required: false
+  type: 12
+  section: Collect
+- additionalinfo: Volume of incidents captured at a single time. By default this is set to 200.
+  display: Fetch Limit
+  name: fetch_limit
+  defaultvalue: "200"
+  required: false
+  type: 0
+  section: Collect
 description: Fetch SpyCloud watchlist data (breach and malware records) for daily monitoring, incident response, and mitigation.
 display: SpyCloud Enterprise Protection Feed
 name: SpyCloudEnterpriseProtectionFeed
@@ -125,7 +161,7 @@ script:
   type: python
   subtype: python3
   isfetch: true
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4819260
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

@@ -19,7 +19,7 @@ This is the default integration for this content pack when configured by the Dat
 | Number of offenses to pull per API call (max 50) | In case of mirroring with events, this value will be used for mirroring API calls as well, and it is advised to have a small value. | False |
 | Query to fetch offenses. | Define a query to determine which offenses to fetch. E.g., "severity &gt;= 4 AND id &gt; 5". | False |
 | Incidents Enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
-| Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping). | The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html | False |
+| Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping). | The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html. Selecting over 100 fields can result in long waiting times for queries. | False |
 | Mirroring Options | How mirroring from QRadar to Cortex XSOAR should be done, available from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar version, see the integration documentation at https://xsoar.pan.dev. | False |
 | Close Mirrored XSOAR Incident | When selected, closing the QRadar offense is mirrored in Cortex XSOAR. | False |
 | The number of incoming incidents to mirror each time | Maximum number of incoming incidents to mirror each time. | False |
@@ -133,7 +133,9 @@ If you're uncertain which API version to use, it is recommended to use the lates
 
 ## Troubleshooting
 
-When *Fetch with events* is configured, the integration will fetch the offense events from `QRadar`.
+### Fetch with Events Retries
+
+When "*Fetch with events*" is configured, the integration will fetch the offense events from IBM QRadar.
 Nevertheless, some events may not be available when trying to fetch them during an incident creation. If **Retry events fetch** is enabled, the integration tries to fetch more events when the number fetched is less than the expected `event_count`. In the default setting, the integration will try 3 times, with a wait time of 100 seconds between retries.
 In order to change the default values, configure the following **Advanced Parameters** in the instance configuration:
 
@@ -152,6 +154,15 @@ This feature collects metadata on QRadar API calls and their success status.
 API Call metrics are not available for long-running commands such as `fetch incidents`.
 
 API Metrics are shown in the built-in **API Execution Metrics** dashboard, and are available to use in custom widgets.
+
+### Duplicate Incidents
+
+When running on an Engine Load-Balancing Group, concurrent fetches may run on multiple containers, leading to the creation of duplicate Incidents.
+
+Recommended workarounds:
+
+- **Option A - Preserve high availability**: Continue running the integration on the Load-Balancing Group for optimal fault tolerance and higher availability. Create an [Incident Pre-processing Rule](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-SaaS-Documentation/Pre-process-rules) to drop duplicate incidents.
+- **Option B - Use a simplified setup**: Alternatively, run the integration on a single custom engine or use the default "*No engine*" option if possible for a more streamlined configuration.
 
 ## Commands
 

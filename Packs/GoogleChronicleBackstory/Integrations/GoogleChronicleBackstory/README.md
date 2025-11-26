@@ -1,3 +1,20 @@
+## Deprecation Notice
+
+---
+
+The "Chronicle" integration currently relies on the Backstory API, which is being deprecated in favor of the more modern and supported Google SecOps v1alpha API.
+
+We have built a new "Google SecOps" (v1alpha API) integration for Cortex XSOAR, and it will be part of the existing pack.
+
+What this means for you:
+
+- The current "Chronicle" (Backstory API) integration will remain functional but will no longer actively maintained or supported.
+- The new "Google SecOps" (v1alpha API) integration will offer similar functionality and command structure, with additional backend improvements.
+
+We recommend migrating to the new "Google SecOps" integration to ensure continued support, compatibility, and access to the latest updates.
+
+If you have any questions or need assistance, please reach out via [XSOAR Support Contact](https://go.chronicle.security/contact).
+
 ## Overview
 
 ---
@@ -4378,7 +4395,7 @@ Return the detections for the specified curated rule identifier.
 
 ***
 Lists the events for the specified UDM Search query.
-Note: The underlying API has the rate limit of 120 queries per hour.
+Note: The underlying API has the rate limit of 360 queries per hour.
 
 #### Base Command
 

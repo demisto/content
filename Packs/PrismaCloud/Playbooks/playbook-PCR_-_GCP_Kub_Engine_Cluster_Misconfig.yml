@@ -562,8 +562,7 @@ tasks:
       id: 245adf70-f841-4cfc-88da-185631bce956
       version: -1
       name: Disable basic auth
-      description: Enable basic (username/password) auth for the cluster. Enable will
-        create user admin with generated password.
+      description: Enable basic (username/password) auth for the cluster. Enable will create user admin with generated password.
       script: "|||gcloud-clusters-set-muster-auth"
       type: regular
       iscommand: true
@@ -601,8 +600,7 @@ tasks:
       id: 6e0531dd-e652-4380-8d51-cd2b9eaa5d94
       version: -1
       name: Disable legacy auth
-      description: Configuration for the legacy Attribute Based Access Control authorization
-        mode.
+      description: Configuration for the legacy Attribute Based Access Control authorization mode.
       script: "|||gcloud-clusters-set-legacy-auth"
       type: regular
       iscommand: true
@@ -721,9 +719,7 @@ tasks:
       id: 732041a6-4c99-440f-8851-8138082365f1
       version: -1
       name: Enable logging
-      description: Enable or Disable k8s stackdriver. Important - To use this functinality
-        the user should enable manually logging to "monitoring.googleapis.com/kubernetes"
-        manulally via the GCP console.
+      description: Enable or Disable k8s stackdriver. Important - To use this functinality the user should enable manually logging to "monitoring.googleapis.com/kubernetes" manulally via the GCP console.
       script: "|||gcloud-clusters-set-k8s-stackdriver"
       type: regular
       iscommand: true
@@ -764,9 +760,7 @@ tasks:
       id: 03b16ac7-cf90-4e63-8e39-6ee27115ab6a
       version: -1
       name: Enable monitoring
-      description: Enable or Disable k8s stackdriver. Important - To use this functinality
-        the user should enable manually logging to "monitoring.googleapis.com/kubernetes"
-        manulally via the GCP console.
+      description: Enable or Disable k8s stackdriver. Important - To use this functinality the user should enable manually logging to "monitoring.googleapis.com/kubernetes" manulally via the GCP console.
       script: "|||gcloud-clusters-set-k8s-stackdriver"
       type: regular
       iscommand: true
@@ -1064,13 +1058,7 @@ inputs:
   value: {}
   required: true
   description: Prisma Cloud policy Id.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
 - No Test
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

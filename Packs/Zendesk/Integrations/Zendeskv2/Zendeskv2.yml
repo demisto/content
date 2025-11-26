@@ -6,7 +6,7 @@ display: Zendesk v2
 category: Case Management
 description: IT service management.
 detaileddescription: Zendesk integration requires the API key and a username.
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

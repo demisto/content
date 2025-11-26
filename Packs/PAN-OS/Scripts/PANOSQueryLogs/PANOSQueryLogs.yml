@@ -247,12 +247,10 @@ outputs:
   type: String
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.11.4508456
+dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.1.0
 isInternal: true
 tests:
 - No tests (auto formatted)
 marketplaces:
 - platform
-supportedModules:
-- agentix

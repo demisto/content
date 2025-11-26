@@ -9,11 +9,11 @@
 		"Malware": {
 			"internalMapping": {
 				"Dest": {
-					"simple": "event.ComputerName",
+					"simple": "event.Hostname",
 					"complex": null
 				},
 				"Dest NT Domain": {
-					"simple": "event.MachineDomain",
+					"simple": "event.LogonDomain",
 					"complex": null
 				},
 				"File Hash": {
@@ -50,7 +50,7 @@
 									"defaultValue": {
 										"isContext": true,
 										"value": {
-											"simple": "event.DetectDescription"
+											"simple": "event.Description"
 										}
 									}
 								},
@@ -73,7 +73,7 @@
 									"defaultValue": {
 										"isContext": true,
 										"value": {
-											"simple": "event.DetectName"
+											"simple": "event.Name"
 										}
 									}
 								},

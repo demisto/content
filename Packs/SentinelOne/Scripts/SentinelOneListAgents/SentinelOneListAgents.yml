@@ -96,7 +96,5 @@ fromversion: 6.1.0
 isInternal: true
 marketplaces:
 - platform
-supportedModules:
-- agentix
 tests:
 - No tests (auto formatted)

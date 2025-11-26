@@ -11,6 +11,8 @@ This integration was integrated and tested with version v1.4.4 of HashicorpTerra
 | Default Workspace ID | There is an option to override with an input parameter. If not provided, some commands should require the workspace ID. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
+| Fetch events | | False |
+| Maximum Number of Audit Events Per Fetch | Default is 10000. | False |
 
 ## Commands
 
@@ -25,6 +27,10 @@ List runs in a workspace.
 #### Base Command
 
 `terraform-runs-list`
+
+#### Permissions
+
+This command requires a **User** or **Team** token that has admin level access to the workspace. Refer to [HashiCorp Terraform API Token Access Levels](https://developer.hashicorp.com/terraform/cloud-docs/users-teams-organizations/api-tokens#access-levels).
 
 #### Input
 
@@ -321,6 +327,10 @@ Perform an action on a Terraform run. The available actions are: apply, cancel, 
 
 `terraform-run-action`
 
+#### Permissions
+
+This command requires a **User** or **Team** token that has admin level access to the workspace. Refer to [HashiCorp Terraform API Token Access Levels](https://developer.hashicorp.com/terraform/cloud-docs/users-teams-organizations/api-tokens#access-levels).
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -349,6 +359,10 @@ Get the plan JSON file or the plan meta data.
 #### Base Command
 
 `terraform-plan-get`
+
+#### Permissions
+
+This command requires a **User** or **Team** token that has admin level access to the workspace. Refer to [HashiCorp Terraform API Token Access Levels](https://developer.hashicorp.com/terraform/cloud-docs/users-teams-organizations/api-tokens#access-levels).
 
 #### Input
 
@@ -479,6 +493,10 @@ List the policies for an organization or get a specific policy.
 
 `terraform-policies-list`
 
+#### Permissions
+
+This command requires a **User** or **Team** token that has admin level access to the workspace. Refer to [HashiCorp Terraform API Token Access Levels](https://developer.hashicorp.com/terraform/cloud-docs/users-teams-organizations/api-tokens#access-levels).
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -589,6 +607,10 @@ List the policy sets for an organization or get a specific policy set.
 #### Base Command
 
 `terraform-policy-set-list`
+
+#### Permissions
+
+This command requires a **User** or **Team** token that has admin level access to the workspace. Refer to [HashiCorp Terraform API Token Access Levels](https://developer.hashicorp.com/terraform/cloud-docs/users-teams-organizations/api-tokens#access-levels).
 
 #### Input
 
@@ -721,6 +743,10 @@ List the policy checks for a Terraform run.
 
 `terraform-policies-checks-list`
 
+#### Permissions
+
+This command requires a **User** or **Team** token that has admin level access to the workspace. Refer to [HashiCorp Terraform API Token Access Levels](https://developer.hashicorp.com/terraform/cloud-docs/users-teams-organizations/api-tokens#access-levels).
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -763,3 +789,49 @@ List the policy checks for a Terraform run.
 >### Terraform Policy Checks
 >
 >**No entries.**
+
+### terraform-get-events
+
+***
+Retrieves Terraform audit trail events. This command is supported in Cortex XSIAM only and is intended for development and debugging purposes, as it may produce duplicate events.
+
+#### Base Command
+
+`terraform-get-events`
+
+#### Permissions
+
+This command requires the `audit-logging` feature entitlement for the organization as well as an **Audit trail** or **Organization** token. Refer to [HashiCorp Terraform API Token Access Levels](https://developer.hashicorp.com/terraform/cloud-docs/users-teams-organizations/api-tokens#access-levels).
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| from_date | The start date for the audit trails as a relative time expression (e.g., '3 days ago') or an absolute time in ISO 8601 format (e.g., '2025-09-01T00:00:00Z'). Default is 1 hour ago. | Optional |
+| limit | The maximum number of events to retrieve. Default is 10. | Optional |
+| should_push_events | If true, the command will push the events to the Cortex XSIAM dataset; otherwise, it will only display them. Default is false. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!terraform-get-events limit=2```
+
+#### Human Readable Output
+
+>### Terraform Audit Trail Events
+>
+>
+>| timestamp| id | version | type | auth | request |
+>| --- | --- | --- | --- | --- | --- |
+>| 2025-09-21T11:24:26.541Z | ae66e491-aaaa-457c-8445-9c908ee726aa | 0 | Resource | {"accessor_id": "user-xxxxxxxxxxxx", "description": "example-userA"} | {"id": "4df584d4-7e2a-aaaa-6cc0-4adbefa020e6"} |
+>| 2025-09-21T11:24:26.541Z | ae66e491-bbbb-457c-8445-9c908ee726bb | 0 | Resource | {"accessor_id": "user-yyyyyyyyyyyy", "description": "example-userB"} | {"id": "4df584d4-7e2a-bbbb-6cc0-4adbefa020e6"} |
+
+## Troubleshooting
+
+- **HTTP 429 (Too many requests) Errors**
+  - Typically occur when the 30 requests per second API limit is exceeded when paginating over audit trail events.
+  - To avoid such errors, reduce the *Maximum Number of Audit Events Per Fetch* parameter value.
+  - For additional information, refer to [HashiCorp Terraform API Rate Limits](https://developer.hashicorp.com/terraform/enterprise/api-docs#rate-limits).

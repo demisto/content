@@ -31,8 +31,8 @@ Update a security rule. If one does not exist, it will be created.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Optional |
-| resource_group_name | The name of the resource group. | Optional |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The name of the resource group. | Required |
 | security_group_name | The name of the security group. | Required |
 | security_rule_name | The name of the rule to be updated. | Required |
 | direction | The direction of the rule. Possible values are: "Inbound" and "Outbound". Possible values are: Inbound, Outbound. | Optional |
@@ -40,9 +40,9 @@ Update a security rule. If one does not exist, it will be created.
 | protocol | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP", and "ICMP". Possible values are: Any, TCP, UDP, ICMP. | Optional |
 | source | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any". | Optional |
 | priority | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096". | Optional |
-| source_ports | The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". | Optional |
-| destination | The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. | Optional |
-| destination_ports | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional |
+| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". | Optional |
+| destination | The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. | Optional |
+| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. | Optional |
 | description | A description to add to the rule. | Optional |
 | access | The network traffic is allowed or denied. Possible values are: Allow, Deny. | Optional |
 
@@ -55,11 +55,11 @@ Update a security rule. If one does not exist, it will be created.
 | Azure.NSGRule.etag | String | The rule's ETag. |
 | Azure.NSGRule.type | String | The rule's type. |
 | Azure.NSGRule.provisioningState | String | The rule's provisioning state. |
-| Azure.NSGRule.protocol | String | The protocol. Can be "TCP", "UDP", "ICMP", "\*". |
-| Azure.NSGRule.sourcePortRange | String | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead. |
-| Azure.NSGRule.sourcePortRanges | String | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead. |
-| Azure.NSGRule.destinationPortRange | String | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. |
-| Azure.NSGRule.destinationPortRanges | String | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead. |
+| Azure.NSGRule.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". |
+| Azure.NSGRule.sourcePortRange | String | For a single port, the source port or a range of ports. |
+| Azure.NSGRule.sourcePortRanges | String | For multiple ports, a list of these ports. |
+| Azure.NSGRule.destinationPortRange | String | For a single port, the destination port or range of ports. |
+| Azure.NSGRule.destinationPortRanges | String | For multiple ports, a list of destination ports. |
 | Azure.NSGRule.sourceAddressPrefix | String | The source address. |
 | Azure.NSGRule.destinationAddressPrefix | String | The destination address. |
 | Azure.NSGRule.access | String | The rule's access. Can be "Allow" or "Deny". |
@@ -116,7 +116,7 @@ Updates a specific account storage.
 | Azure.StorageAccount.properties.isHnsEnabled | Boolean | Account HierarchicalNamespace enabled if sets to true. |
 | Azure.StorageAccount.properties.allowBlobPublicAccess | Boolean | If set to true \(default\), allows public access to all blobs or containers in the storage account. |
 | Azure.StorageAccount.properties.minimumTlsVersion | String | Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0. |
-| Azure.StorageAccount.properties.allowSharedKeyAccess | Boolean | Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests \(including shared access signatures\) must be authorized with Azure Active Directory \(Azure AD\). |
+| Azure.StorageAccount.properties.allowSharedKeyAccess | Boolean | Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests \(including shared access signatures\) must be authorized with Entra ID \(Azure AD\). |
 | Azure.StorageAccount.properties.creationTime | Date | The creation date and time of the storage account in UTC. |
 | Azure.StorageAccount.properties.primaryEndpoints | String | The URLs that are used to retrieve a public blob, queue, or table object. |
 | Azure.StorageAccount.properties.primaryLocation | String | The storage account primary data center location. |
@@ -668,10 +668,10 @@ Updates a key vault in the specified subscription.
 | Azure.KeyVault.tags | unknown | Resource tags. |
 | Azure.KeyVault.properties.sku.family | String | SKU family name. |
 | Azure.KeyVault.properties.sku.name | String | SKU name to specify whether the key vault is a standard vault or a premium vault. |
-| Azure.KeyVault.properties.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
+| Azure.KeyVault.properties.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
 | Azure.KeyVault.properties.accessPolicies | unknown | An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID. |
-| Azure.KeyVault.properties.accessPolicies.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
-| Azure.KeyVault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. |
+| Azure.KeyVault.properties.accessPolicies.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
+| Azure.KeyVault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies. |
 | Azure.KeyVault.properties.accessPolicies.permissions | unknown | Permissions the identity has for keys, secrets and certificates. |
 | Azure.KeyVault.properties.enabledForDeployment | Boolean | Whether Azure Virtual Machines are allowed to retrieve certificates stored as secrets from the key vault. |
 | Azure.KeyVault.properties.enabledForDiskEncryption | Boolean | Whether Azure Disk Encryption is allowed to retrieve secrets from the vault and unwrap keys. |
@@ -817,3 +817,641 @@ Updates the properties of an existing Azure Cosmos DB database account.
 | Azure.CosmosDB.properties.readLocations | List | An array that contains the read locations enabled for the Cosmos DB account. |
 | Azure.CosmosDB.properties.virtualNetworkRules | List | List of Virtual Network ACL rules. |
 | Azure.CosmosDB.properties.writeLocations | List | An array that contains the write locations enabled for the Cosmos DB account. |
+
+### azure-vm-instance-details-get
+
+***
+Gets the properties of a given virtual machine.
+
+#### Base Command
+
+`azure-vm-instance-details-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
+| virtual_machine_name | The name of the virtual machine you want to view the details of.| Required |
+| expand | The expand expression to apply on the operation. 'instanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'userData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Default value is False. Possible values are: instanceView, userData. Default is instanceView. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Compute.name | string | The name of the virtual machine you want to get details of. |
+| Azure.Compute.id | string | The ID of the virtual machine. |
+| Azure.Compute.location | string | The region in which the virtual machine is hosted. |
+| Azure.Compute.Size | number | The size of the deployed virtual machine \(in gigabytes\). |
+| Azure.Compute.OS | string | The OS running on the given virtual machine. |
+| Azure.Compute.properties.provisioningState | string | The provisioning state of the deployed virtual machine. |
+| Azure.Compute.networkProfile.networkInterfaces | string | The list of network interfaces attached to this virtual machine. |
+| Azure.Compute.properties.hardwareProfile.vmSize | string | The size or SKU of the virtual machine, defining CPU, memory, and storage capacity. |
+| Azure.Compute.properties.provisioningState | string | The current provisioning state of the virtual machine \(e.g., Succeeded, Updating, Failed\). |
+| Azure.Compute.properties.osProfile | string | The operating system configuration of the virtual machine, including admin credentials and hostname. |
+| Azure.Compute.properties.storageProfile | string | The storage settings for the virtual machine, including OS and data disks. |
+| Azure.Compute.properties.vmId | string | The unique identifier assigned to the virtual machine instance. |
+| Azure.Compute.properties.instanceView | string | Detailed runtime status information about the virtual machine, such as power state and extensions. |
+| Azure.Compute.properties.timeCreated | string | The timestamp when the virtual machine was created. |
+| Azure.Compute.properties.networkProfile | string | The network configuration of the virtual machine, including associated network interfaces and settings. |
+| Azure.Compute.properties.diagnosticsProfile | string | The configuration for boot diagnostics and monitoring of the virtual machine. |
+
+### azure-nsg-security-groups-list
+
+***
+List all network security groups.
+
+#### Base Command
+
+`azure-nsg-security-groups-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.NSGSecurityGroup.name | String | The security group's name. |
+| Azure.NSGSecurityGroup.id | String | The security group's ID. |
+| Azure.NSGSecurityGroup.type | String | The security group's type. |
+| Azure.NSGSecurityGroup.location | String | The security group's location. |
+| Azure.NSGSecurityGroup.etag | String | The security group's ETag. |
+| Azure.NSGSecurityGroup.tags | String | The security group's tags. |
+| Azure.NSGSecurityGroup.properties.defaultSecurityRules | List | The default security rules. |
+| Azure.NSGSecurityGroup.properties.networkInterfaces | List | The network interfaces. |
+| Azure.NSGSecurityGroup.properties.provisioningState | String | The provisioning state. |
+| Azure.NSGSecurityGroup.properties.resourceGuid | String | The resource GUID. |
+| Azure.NSGSecurityGroup.properties.SecurityRules | List | The security rules. |
+
+### azure-nsg-security-rule-delete
+
+***
+Delete a security rule.
+
+#### Base Command
+
+`azure-nsg-security-rule-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | Resource group name. | Required |
+| security_group_name | The name of the security group. | Required |
+| security_rule_name | The name of the rule to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-storage-blob-containers-update
+
+***
+Run this command to update a specific blob container.
+
+#### Base Command
+
+`azure-storage-blob-containers-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | The storage account name. | Required |
+| container_name | The container name. | Required |
+| default_encryption_scope | Uses the specified encryption scope by default for all writes to the container. | Optional |
+| deny_encryption_scope_override | Blocks overriding the container’s default encryption scope. Possible values: true, false. Possible values are: true, false. | Optional |
+| public_access | Specifies the access level. Possible values: Blob, Container, None. Possible values are: Blob, Container, None. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.StorageBlobContainer.id | String | Fully qualified resource ID for the resource. |
+| Azure.StorageBlobContainer.name | String | The name of the resource. |
+| Azure.StorageBlobContainer.type | String | The resource type. |
+| Azure.StorageBlobContainer.properties.metadata.metadata | String | A metadata entry for the container, in name–value format. |
+| Azure.StorageBlobContainer.properties.publicAccess | String | Specifies whether data in the container may be accessed publicly and the access level. |
+| Azure.StorageBlobContainer.properties.hasImmutabilityPolicy | Boolean | The hasImmutabilityPolicy property is set to true by SRP if an ImmutabilityPolicy exists for this container, and false if it does not. |
+| Azure.StorageBlobContainer.properties.hasLegalHold | Boolean | The hasLegalHold property is set to true by SRP if at least one legal hold tag exists, and false if all tags are cleared. |
+
+### azure-vm-instance-start
+
+***
+Powers on a given virtual machine.
+
+#### Base Command
+
+`azure-vm-instance-start`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | Resource Group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
+| virtual_machine_name | Name of the virtual machine to power on.| Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Compute.name | string | Name of the VM that was started. |
+| Azure.Compute.resourceGroup | string | Resource group the VM resides in. |
+| Azure.Compute.powerState | string | Whether the VM instance is powered on or off. |
+
+### azure-nsg-network-interfaces-list
+
+***
+Gets network interfaces in a resource group.
+
+#### Base Command
+
+`azure-nsg-network-interfaces-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | The subscription ID. | Required |
+| limit | The maximum number of records to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.NSGNetworkInterfaces.name | String | The network interface's name. |
+| Azure.NSGNetworkInterfaces.id | String | The network interface's ID. |
+| Azure.NSGNetworkInterfaces.kind | String | The kind of the network interface. |
+| Azure.NSGNetworkInterfaces.etag | String | The ETag of the network interface. |
+| Azure.NSGNetworkInterfaces.location | String | The location of the network interface. |
+| Azure.NSGNetworkInterfaces.managedBy | String | The entity that manages the network interface. |
+| Azure.NSGNetworkInterfaces.tags | String | The tags associated with the network interface. |
+| Azure.NSGNetworkInterfaces.properties.provisioningState | String | The network interface's provisioning state. |
+| Azure.NSGNetworkInterfaces.properties.ipConfigurations.name | List | The name of the IP configuration resource that is unique within a resource group. |
+| Azure.NSGNetworkInterfaces.properties.ipConfigurations.id | List | The IP configuration resource ID. |
+| Azure.NSGNetworkInterfaces.properties.ipConfigurations.etag | List | The ETag of the IP configuration. |
+| Azure.NSGNetworkInterfaces.properties.ipConfigurations.type | List | The type of the IP configuration resource. |
+| Azure.NSGNetworkInterfaces.properties.tapConfigurations | List | List of tap configurations. |
+| Azure.NSGNetworkInterfaces.properties.allowPort25Out | Boolean | Whether port 25 outbound traffic is allowed. |
+| Azure.NSGNetworkInterfaces.properties.nicType | String | The network interface card type \(Standard/Basic\). |
+
+### azure-vm-network-interface-details-get
+
+***
+Gets the properties of a given network interface.
+
+#### Base Command
+
+`azure-vm-network-interface-details-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group to which the network interface belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
+| network_interface_name | The name of the network interface you want to view the details of. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Network.Interfaces.properties.ipConfigurations | Unknown | The interface public IP address ID. |
+| Azure.Network.Interfaces.properties.macAddress | String | The interface MAC address. |
+| Azure.Network.Interfaces.name | String | The interface name. |
+| Azure.Network.Interfaces.location | String | The interface location. |
+| Azure.Network.Interfaces.id | String | The interface ID. |
+| Azure.Network.Interfaces.location | String | The Azure region where the network interface is deployed. |
+| Azure.Network.Interfaces.etag | String | A unique read-only string that changes whenever the network interface resource is updated. |
+| Azure.Network.Interfaces.kind | String | The type of the network interface resource, used for Azure internal classification. |
+| Azure.Network.Interfaces.properties.tapConfigurations | String | The list of tap configurations attached to the network interface for traffic mirroring. |
+| Azure.Network.Interfaces.properties.allowPort25Out | String | Indicates whether outbound traffic on port 25 \(SMTP\) is allowed from this network interface. |
+| Azure.Network.Interfaces.properties.nicType | String | Specifies the type of network interface, such as Standard or Elastic. |
+| Azure.Network.Interfaces.properties.provisioningState | String | The current provisioning state of the network interface \(e.g., Succeeded, Updating, Failed\). |
+| Azure.Network.Interfaces.properties.dnsSettings | String | The DNS configuration of the network interface, including DNS servers and domain name. |
+| Azure.Network.Interfaces.properties.enableIPForwarding | String | Indicates whether IP forwarding is enabled for the network interface. |
+
+### azure-nsg-security-rule-get
+
+***
+Get a specific rule.
+
+#### Base Command
+
+`azure-nsg-security-rule-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | Resource group name. | Required |
+| security_group_name | The name of the security group. | Required |
+| security_rule_name | The name of the rule to get. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.NSGRule.name | String | The rule's name. |
+| Azure.NSGRule.id | String | The rule's ID. |
+| Azure.NSGRule.location | String | The rule's location. |
+| Azure.NSGRule.etag | String | The rule's ETag. |
+| Azure.NSGRule.type | String | The rule's type. |
+| Azure.NSGRule.properties.provisioningState | String | The rule's provisioning state. |
+| Azure.NSGRule.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". |
+| Azure.NSGRule.properties.sourcePortRange | String | For a single port, the source port or a range of ports. For multiple ports, \`sourcePortRanges\` is used instead. |
+| Azure.NSGRule.properties.sourcePortRanges | String | For multiple ports, a list of ports. For a single port, \`sourcePortRange\` is used instead. |
+| Azure.NSGRule.properties.destinationPortRange | String | For a single port, the destination port or range of ports. For multiple ports, \`destinationPortRanges\` is used instead. |
+| Azure.NSGRule.properties.destinationPortRanges | String | For multiple ports, a list of destination ports. For a single port, \`destinationPortRange\` is used instead. |
+| Azure.NSGRule.properties.sourceAddressPrefix | String | The source address. |
+| Azure.NSGRule.properties.destinationAddressPrefix | String | The destination address. |
+| Azure.NSGRule.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
+| Azure.NSGRule.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
+| Azure.NSGRule.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
+
+### azure-nsg-public-ip-addresses-list
+
+***
+Gets public IP addresses in a resource group.
+
+#### Base Command
+
+`azure-nsg-public-ip-addresses-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | The subscription ID. | Required |
+| limit | The maximum number of records to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.NSGPublicIPAddress.name | String | The public IP address's name. |
+| Azure.NSGPublicIPAddress.id | String | The public IP address's ID. |
+| Azure.NSGPublicIPAddress.location | String | The location of the public IP address. |
+| Azure.NSGPublicIPAddress.sku | String | The public IP address's SKU. |
+| Azure.NSGPublicIPAddress.type | String | The type of the public IP address. |
+| Azure.NSGPublicIPAddress.etag | String | The public IP address's ETag. |
+| Azure.NSGPublicIPAddress.properties.provisioningState | String | The public IP address's provisioning state. |
+| Azure.NSGPublicIPAddress.properties.publicIPAddressVersion | String | The public IP address's version. |
+| Azure.NSGPublicIPAddress.properties.ipAddress | String | The public IP address's IP address. |
+| Azure.NSGPublicIPAddress.properties.domainNameLabel | String | The public IP address's domain name label. |
+| Azure.NSGPublicIPAddress.properties.publicIPAllocationMethod | String | The public IP address's allocation method. |
+| Azure.NSGPublicIPAddress.properties.fqdn | String | The public IP address's fully qualified domain name \(FQDN\). |
+| Azure.NSGPublicIPAddress.properties.resourceGuid | String | The public IP address's resource GUID. |
+| Azure.NSGPublicIPAddress.sku.name | String | The public IP address's SKU name. |
+| Azure.NSGPublicIPAddress.sku.tier | String | The public IP address's SKU tier. |
+
+### azure-storage-blob-service-properties-get
+
+***
+Run this command to get the blob service properties of a specific account storage.
+
+#### Base Command
+
+`azure-storage-blob-service-properties-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group name. | Required |
+| account_name | The storage account name. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.StorageBlobServiceProperties.id | String | Fully qualified resource ID for the resource. |
+| Azure.StorageBlobServiceProperties.name | String | The name of the resource. |
+| Azure.StorageBlobServiceProperties.type | String | The resource type. |
+| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.enable | Boolean | When set to true, last access time–based tracking is enabled. |
+| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.name | String | Name of the policy. The valid value is AccessTimeTracking. |
+| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.trackingGranularityInDays | Number | Specifies the blob object tracking granularity in days, indicating how often the blob should be tracked. |
+| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.blobType | String | An array of predefined, supported blob types. The only supported value is BlockBlob. |
+
+### azure-vm-public-ip-details-get
+
+***
+Gets the properties of a given public IP address.
+
+#### Base Command
+
+`azure-vm-public-ip-details-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group to which the IP address belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
+| address_name | The IP address name. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Network.IPConfigurations.location | String | The Azure region where the IP configuration resource is located. |
+| Azure.Network.IPConfigurations.id | String | The unique resource ID of the IP configuration. |
+| Azure.Network.IPConfigurations.name | String | The name of the IP configuration. |
+| Azure.Network.IPConfigurations.etag | String | A unique read-only string that changes whenever the IP configuration resource is updated. |
+| Azure.Network.IPConfigurations.properties.idleTimeoutInMinutes | String | The idle timeout value in minutes for the associated public IP address. |
+| Azure.Network.IPConfigurations.properties.ipAddress | String | The private IP address assigned to the network interface or resource. |
+| Azure.Network.IPConfigurations.properties.provisioningState | String | The current provisioning state of the IP configuration \(e.g., Succeeded, Updating, Failed\). |
+| Azure.Network.IPConfigurations.properties.ipConfiguration | String | The reference to another IP configuration associated with this resource. |
+| Azure.Network.IPConfigurations.properties.publicIPAddressVersion | String | The version of the public IP address \(IPv4 or IPv6\). |
+| Azure.Network.IPConfigurations.properties.publicIPAllocationMethod | String | Defines how the public IP address is allocated — Static or Dynamic. |
+| Azure.Network.IPConfigurations.properties.resourceGuid | String | The unique Azure resource GUID for the IP configuration. |
+| Azure.Network.IPConfigurations.properties.sku | String | The SKU of the public IP address associated with the configuration, defining its performance tier. |
+
+### azure-nsg-security-rule-create
+
+***
+Create a security rule.
+
+#### Base Command
+
+`azure-nsg-security-rule-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | Resource group name. | Required |
+| security_group_name | The name of the security group. | Required |
+| security_rule_name | The name of the rule to create. | Required |
+| direction | The direction of the rule. Possible values are: "Inbound" and "Outbound". Possible values are: Inbound, Outbound. | Required |
+| action | Whether to allow the traffic. Possible values are: "Allow" and "Deny". Possible values are: Allow, Deny. Default is Allow. | Optional |
+| protocol | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP" and "ICMP". Possible values are: Any, TCP, UDP, ICMP. Default is Any. | Optional |
+| source | The source IP address range from which incoming traffic is allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any". Default is Any. | Optional |
+| priority | The priority of the rule, with a value between 100 and 4096. Each rule in the collection must have a unique priority number. Lower numbers indicate higher priority. | Required |
+| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". Default is *. | Optional |
+| destination | The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional |
+| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is*. | Optional |
+| description | A description to add to the rule. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.NSGRule.name | String | The rule's name. |
+| Azure.NSGRule.id | String | The rule's ID. |
+| Azure.NSGRule.etag | String | The rule's ETag. |
+| Azure.NSGRule.type | String | The rule's type. |
+| Azure.NSGRule.properties.provisioningState | String | The rule's provisioning state. |
+| Azure.NSGRule.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". |
+| Azure.NSGRule.properties.sourcePortRange | String | For a single port, the source port or a range of ports. For multiple ports, \`sourcePortRanges\` is used instead. |
+| Azure.NSGRule.properties.sourcePortRanges | String | For multiple ports, a list of ports. For a single port, \`sourcePortRange\` is used instead. |
+| Azure.NSGRule.properties.destinationPortRange | String | For a single port, the destination port or range of ports. For multiple ports, \`destinationPortRanges\` is used instead. |
+| Azure.NSGRule.properties.destinationPortRanges | String | For multiple ports, a list of destination ports. For a single port, \`destinationPortRange\` is used instead. |
+| Azure.NSGRule.properties.sourceAddressPrefix | String | The source address. |
+| Azure.NSGRule.properties.destinationAddressPrefix | String | The destination address. |
+| Azure.NSGRule.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
+| Azure.NSGRule.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
+| Azure.NSGRule.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
+
+### azure-nsg-resource-group-list
+
+***
+Gets all resource groups for a subscription.
+
+#### Base Command
+
+`azure-nsg-resource-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| limit | Limit on the number of resource groups to return. Default is 50. | Optional |
+| tag | A single tag in the form of `{"Tag Name":"Tag Value"}` to filter the list by. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.NSGResourceGroup.id | String | The unique identifier of the Azure Network Security Groups resource group. |
+| Azure.NSGResourceGroup.name | String | The name of the Azure Network Security Groups resource group. |
+| Azure.NSGResourceGroup.type | String | The type of the Azure Network Security Groups resource group. |
+| Azure.NSGResourceGroup.location | String | The location of the Azure Network Security Groups resource group. |
+| Azure.NSGResourceGroup.properties.provisioningState | String | The provisioning state of the Azure Network Security Groups resource group. |
+| Azure.NSGResourceGroup.tags.Owner | String | The owner tag of the Azure Network Security Groups resource group. |
+| Azure.NSGResourceGroup.tags | Unknown | The tags associated with the Azure Network Security Groups resource group. |
+| Azure.NSGResourceGroup.tags.Name | String | The name tag of the Azure Network Security Groups resource group. |
+| Azure.NSGResourceGroup.managedBy | String | The entity that manages the Azure Network Security Groups resource group. |
+| Azure.NSGResourceGroup.tags.aNSG-managed-cluster-name | String | The ANSG managed cluster name tag associated with the Azure Network Security Groups resource group. |
+| Azure.NSGResourceGroup.tags.aNSG-managed-cluster-rg | String | The ANSG managed cluster resource group tag associated with the Azure Network Security Groups resource group. |
+| Azure.NSGResourceGroup.tags.type | String | The type tag associated with the Azure Network Security Groups resource group. |
+
+### azure-vm-instance-power-off
+
+***
+Powers off a given virtual machine.
+
+#### Base Command
+
+`azure-vm-instance-power-off`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. | Required |
+| resource_group_name | The resource group to which the virtual machine belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command<br/>. | Required |
+| virtual_machine_name | The name of the virtual machine to power off.| Required |
+| skip_shutdown | Set to True to request non-graceful VM shutdown. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Compute.name | string | The name of the virtual machine that was powered off. |
+| Azure.Compute.resourceGroup | string | The resource group in which the virtual machine resides. |
+| Azure.Compute.powerState | string | Whether the virtual machine instance is powered on or off. |
+
+### azure-billing-usage-list
+
+***
+Returns actual usage and cost details for a given time period, optionally filtered by service name.
+
+#### Base Command
+
+`azure-billing-usage-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID on which to run the command. It will be sent as a scope parameter - /subscriptions/{subscriptionId}/. | Required |
+| expand_result | Whether to expand the result. Default - false. | Optional |
+| filter | Optional filter for the API. API argument - $filter. | Optional |
+| metric | The metric to retrieve. API values [actualcost, amortizedcost, usage]. Possible values are: Actual Cost, Amortized Cost, Usage. | Optional |
+| max_results | Maximum results to return. Default - 50, Max - 1000. | Optional |
+| next_page_token | Next page token for pagination. Use value from Azure.Billing.UsageNextToken. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Billing.Usage | unknown | List of usage details from Azure Consumption API. |
+| Azure.Billing.Usage.id | String | Fully qualified resource ID for the usage detail. |
+| Azure.Billing.Usage.name | String | Name of the usage detail resource. |
+| Azure.Billing.Usage.type | String | Resource type \(Microsoft.Consumption/usageDetails\). |
+| Azure.Billing.Usage.kind | String | Kind of usage detail \(legacy, modern\). |
+| Azure.Billing.Usage.properties.billingAccountId | String | Billing account identifier. |
+| Azure.Billing.Usage.properties.billingAccountName | String | Billing account name. |
+| Azure.Billing.Usage.properties.billingPeriodStartDate | Date | Billing period start date. |
+| Azure.Billing.Usage.properties.billingPeriodEndDate | Date | Billing period end date. |
+| Azure.Billing.Usage.properties.billingProfileId | String | Billing profile identifier. |
+| Azure.Billing.Usage.properties.billingProfileName | String | Billing profile name. |
+| Azure.Billing.Usage.properties.accountOwnerId | String | Account owner identifier. |
+| Azure.Billing.Usage.properties.accountName | String | Account name. |
+| Azure.Billing.Usage.properties.subscriptionId | String | Subscription identifier. |
+| Azure.Billing.Usage.properties.subscriptionName | String | Subscription name. |
+| Azure.Billing.Usage.properties.date | Date | Usage date. |
+| Azure.Billing.Usage.properties.product | String | Product name. |
+| Azure.Billing.Usage.properties.partNumber | String | Part number for the product. |
+| Azure.Billing.Usage.properties.meterId | String | Meter identifier. |
+| Azure.Billing.Usage.properties.meterDetails | unknown | Meter details object. |
+| Azure.Billing.Usage.properties.meterDetails.meterName | String | Meter name. |
+| Azure.Billing.Usage.properties.meterDetails.meterCategory | String | Meter category. |
+| Azure.Billing.Usage.properties.meterDetails.meterSubCategory | String | Meter subcategory. |
+| Azure.Billing.Usage.properties.meterDetails.unit | String | Unit of measure. |
+| Azure.Billing.Usage.properties.meterDetails.meterLocation | String | Meter location. |
+| Azure.Billing.Usage.properties.meterDetails.totalIncludedQuantity | Number | Total included quantity. |
+| Azure.Billing.Usage.properties.meterDetails.pretaxStandardRate | Number | Pretax standard rate. |
+| Azure.Billing.Usage.properties.quantity | Number | Usage quantity. |
+| Azure.Billing.Usage.properties.effectivePrice | Number | Effective price for the usage. |
+| Azure.Billing.Usage.properties.cost | Number | Cost amount. |
+| Azure.Billing.Usage.properties.unitPrice | Number | Unit price. |
+| Azure.Billing.Usage.properties.billingCurrency | String | Billing currency. |
+| Azure.Billing.Usage.properties.resourceLocation | String | Resource location. |
+| Azure.Billing.Usage.properties.consumedService | String | Consumed service name. |
+| Azure.Billing.Usage.properties.resourceId | String | Resource identifier. |
+| Azure.Billing.Usage.properties.resourceName | String | Resource name. |
+| Azure.Billing.Usage.properties.serviceInfo1 | String | Service info 1. |
+| Azure.Billing.Usage.properties.serviceInfo2 | String | Service info 2. |
+| Azure.Billing.Usage.properties.additionalInfo | String | Additional information. |
+| Azure.Billing.Usage.properties.invoiceSection | String | Invoice section. |
+| Azure.Billing.Usage.properties.costCenter | String | Cost center. |
+| Azure.Billing.Usage.properties.resourceGroup | String | Resource group name. |
+| Azure.Billing.Usage.properties.reservationId | String | Reservation identifier. |
+| Azure.Billing.Usage.properties.reservationName | String | Reservation name. |
+| Azure.Billing.Usage.properties.productOrderId | String | Product order identifier. |
+| Azure.Billing.Usage.properties.productOrderName | String | Product order name. |
+| Azure.Billing.Usage.properties.offerId | String | Offer identifier. |
+| Azure.Billing.Usage.properties.isAzureCreditEligible | Boolean | Whether usage is Azure credit eligible. |
+| Azure.Billing.Usage.properties.term | String | Term. |
+| Azure.Billing.Usage.properties.publisherName | String | Publisher name. |
+| Azure.Billing.Usage.properties.publisherType | String | Publisher type. |
+| Azure.Billing.Usage.properties.planName | String | Plan name. |
+| Azure.Billing.Usage.properties.chargeType | String | Charge type. |
+| Azure.Billing.Usage.properties.frequency | String | Frequency. |
+| Azure.Billing.Usage.properties.payGPrice | Number | Pay-as-you-go price. |
+| Azure.Billing.Usage.properties.pricingModel | String | Pricing model. |
+| Azure.Billing.UsageNextToken | String | Next page token for pagination. |
+
+### azure-billing-forecast-list
+
+***
+Returns cost forecast for a subscription over a given time range.
+
+#### Base Command
+
+`azure-billing-forecast-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | Azure subscription ID (required). | Required |
+| type | Forecast type (required). Possible values are: Usage, ActualCost, AmortizedCost. | Required |
+| aggregation_function_name | The name of the column to aggregate (required). Possible values are: PreTaxCostUSD, Cost, CostUSD, PreTaxCost. | Required |
+| aggregation_function_type | The name of the aggregation function to use. Default is Sum. | Optional |
+| granularity | The granularity of the forecast. Default is Daily. | Optional |
+| start_date | Start date for the forecast. Default value current time. | Optional |
+| end_date | End date for the forecast. Default value 7 days from current time. | Optional |
+| filter | A URL parameter to filter forecasts by properties/usageDate (Utc time), properties/chargeType or properties/grain. The filter supports 'eq', 'lt', 'gt', 'le', 'ge', and 'and'. It does not currently support 'ne', 'or', or 'not'. | Optional |
+| include_actual_cost | Include actual cost data. Possible values are: true, false. Default is false. | Optional |
+| include_fresh_partial_cost | Include fresh partial cost data. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Billing.Forecast.Cost | Number | Cost amount. |
+| Azure.Billing.Forecast.CostUSD | Number | Cost in USD. |
+| Azure.Billing.Forecast.PreTaxCost | Number | Pre-tax cost amount. |
+| Azure.Billing.Forecast.UsageDate | String | Usage date for the forecast \(YYYY-MM-DD format\). |
+| Azure.Billing.Forecast.CostStatus | String | Cost status \(Forecast, Actual\). |
+| Azure.Billing.Forecast.Currency | String | Currency code for the forecast. |
+
+### azure-billing-budgets-list
+
+***
+Lists configured budgets at the subscription or resource group scope.
+
+#### Base Command
+
+`azure-billing-budgets-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID on which to run the command. Will be sent as a scope parameter - /subscriptions/{subscriptionId}/. | Required |
+| budget_name | Name of the budget. Optional; if provided, returns a specific budget. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Billing.Budget | unknown | List of budget details from Azure Consumption API. |
+| Azure.Billing.Budget.id | String | Fully qualified resource ID for the budget. |
+| Azure.Billing.Budget.name | String | Name of the budget resource. |
+| Azure.Billing.Budget.type | String | Resource type \(Microsoft.Consumption/budgets\). |
+| Azure.Billing.Budget.eTag | String | ETag for the budget resource. |
+| Azure.Billing.Budget.properties.category | String | Budget category \(Cost, Usage\). |
+| Azure.Billing.Budget.properties.amount | Number | Budget amount limit. |
+| Azure.Billing.Budget.properties.timeGrain | String | Time grain for the budget \(Monthly, Quarterly, Annually\). |
+| Azure.Billing.Budget.properties.timePeriod | unknown | Time period object for the budget. |
+| Azure.Billing.Budget.properties.timePeriod.startDate | Date | Start date of the budget period. |
+| Azure.Billing.Budget.properties.timePeriod.endDate | Date | End date of the budget period. |
+| Azure.Billing.Budget.properties.currentSpend | unknown | Current spend object. |
+| Azure.Billing.Budget.properties.currentSpend.amount | Number | Current spend amount. |
+| Azure.Billing.Budget.properties.currentSpend.unit | String | Currency unit for current spend. |
+| Azure.Billing.Budget.properties.notifications | unknown | Budget notifications configuration. |
+| Azure.Billing.Budget.properties.filter | unknown | Budget filter configuration. |
+| Azure.Billing.Budget.properties.filter.and | unknown | AND filter conditions. |
+| Azure.Billing.Budget.properties.filter.dimensions | unknown | Dimension filters. |
+| Azure.Billing.Budget.properties.filter.dimensions.name | String | Dimension name \(ResourceGroup, ResourceType, etc.\). |
+| Azure.Billing.Budget.properties.filter.dimensions.operator | String | Filter operator \(In, Equal\). |
+| Azure.Billing.Budget.properties.filter.dimensions.values | unknown | Filter values array. |
+| Azure.Billing.Budget.properties.filter.tags | unknown | Tag filters. |
+| Azure.Billing.Budget.properties.filter.tags.name | String | Tag name. |
+| Azure.Billing.Budget.properties.filter.tags.operator | String | Tag filter operator. |
+| Azure.Billing.Budget.properties.filter.tags.values | unknown | Tag filter values. |
+| Azure.Billing.Budget.properties.forecastSpend | unknown | Forecasted spend object. |
+| Azure.Billing.Budget.properties.forecastSpend.amount | Number | Forecasted spend amount. |
+| Azure.Billing.Budget.properties.forecastSpend.unit | String | Currency unit for forecasted spend. |

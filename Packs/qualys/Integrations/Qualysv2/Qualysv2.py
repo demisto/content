@@ -3460,9 +3460,11 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
     set_new_limit = True
     with ExecutionTimeout(FETCH_ASSETS_COMMAND_TIME_OUT):
         # Exits code block below if it takes longer to execute than the specified timeout
-        assets, new_last_run, _, snapshot_id, set_new_limit = fetch_assets(client, last_run)
+        assets, new_last_run, _, snapshot_id, _ = fetch_assets(client, last_run)
         detection_qids: list = list({asset.get("DETECTION", {}).get("QID") for asset in assets})
         vulnerabilities, _ = fetch_vulnerabilities(client, last_run, detection_qids) if detection_qids else ([], {})
+        demisto.debug("Finished fetch for assets and vulnerabilities.")
+        set_new_limit = False
 
     # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
     if set_new_limit:

@@ -1,7 +1,7 @@
 commonfields:
   id: CrowdStrike Falcon Intel v2
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: CrowdStrike Falcon Intel v2

@@ -1020,7 +1020,7 @@ class TestTableToMarkdown:
         Then:
             Validate that the script ran successfully.
         """
-        data = {'key': 'value', 'listtest': [1, 2, 3, 4]} 
+        data = {'key': 'value', 'listtest': [1, 2, 3, 4]}
         table = tableToMarkdown("tableToMarkdown test", data, sort_headers=False, is_auto_json_transform=True)
         assert table
 
@@ -3570,6 +3570,22 @@ def test_http_client_debug_int_logger_sensitive_query_params(mocker):
             assert 'apikey=<XX_REPLACED>' in arg[0][0]
 
 
+def test_safe_strptime():
+    """
+    Given: A string and a format that is missing the milliseconds
+    When: Calling safe_strptime
+    Then: Verify the result is as expected
+    """
+    from CommonServerPython import safe_strptime
+
+    assert safe_strptime("2024-01-15 17:00:00Z", "%Y-%m-%d %H:%M:%S.%fZ") == datetime(2024, 1, 15, 17, 0, 0)
+    assert safe_strptime("2024-01-15 17:00:00", "%Y-%m-%d %H:%M:%S") == datetime(2024, 1, 15, 17, 0, 0)
+    assert safe_strptime("2024-01-15 17:00:00", "%Y-%m-%d %H:%M:%S", strptime=time.strptime) == time.strptime("2024-01-15 17:00:00", "%Y-%m-%d %H:%M:%S")
+
+    with pytest.raises(ValueError):
+        safe_strptime("2024-01-15 17:00:00", "%Y-%m-%dT%H:%M:%S")
+
+
 class TestParseDateRange:
     @staticmethod
     @freeze_time("2024-01-15 17:00:00 UTC")
@@ -3787,7 +3803,7 @@ class TestReturnOutputs:
         pytest.param('on', True, id='string_on_lowercase'),
         pytest.param('ON', True, id='string_on_uppercase'),
         pytest.param('1', True, id='string_one'),
-        
+
         # False values
         pytest.param('false', False, id='string_false_lowercase'),
         pytest.param('no', False, id='string_no_lowercase'),
@@ -8694,6 +8710,23 @@ class TestFetchWithLookBack:
         assert calculate_new_offset(1, 2, 3) == 0
         assert calculate_new_offset(1, 2, None) == 3
 
+    def test_remove_old_incidents_ids(self):
+        """
+        Test that the remove_old_incidents_ids function removes old incident IDs from the last run object.
+        Given:
+            A last run object with incident IDs and their addition times.
+        When:
+            Calling remove_old_incidents_ids with the last run object and a look back period.
+        Then:
+            Make sure that the old incident IDs are removed from the last run object and the latest incident IDs is returned.
+        """
+        from CommonServerPython import remove_old_incidents_ids
+
+        assert remove_old_incidents_ids(
+            {"inc1": 1, "inc2": 2, "inc3": 3}, 1000, 1) == {"inc3": 3}
+        assert remove_old_incidents_ids(
+            {"inc1": 1, "inc2": 2, "inc3": 2}, 1000, 1) == {"inc2": 2, "inc3": 2}
+
 
 class TestTracebackLineNumberAdgustment:
     @staticmethod
@@ -9773,12 +9806,12 @@ def test_censor_request_logs(request_log, expected_output):
         case 3: A request log with a sensitive data under the 'Authorization' header, but with no 'Bearer' prefix.
         case 4: A request log with a sensitive data under the 'Authorization' header, but with no 'send b' prefix at the beginning.
         case 5: A request log with no sensitive data.
-        case 6: A request log with a sensitive data under the 'Authorization' header, with a "LOG" prefix (which used in cases 
+        case 6: A request log with a sensitive data under the 'Authorization' header, with a "LOG" prefix (which used in cases
                 like HMAC signature authentication).
     When:
         Running censor_request_logs function.
     Then:
-        Assert the function returns the exactly same log with the sensitive data masked. 
+        Assert the function returns the exactly same log with the sensitive data masked.
     """
     assert censor_request_logs(request_log) == expected_output
 
@@ -9953,18 +9986,18 @@ def test_get_server_config_fail(mocker):
                               "Test-instanec-without-xsoar-engine-configures"
                          ])
 def test_is_integration_instance_running_on_engine(mocker, instance_name, expected_result):
-    """ Tests the 'is_integration_instance_running_on_engine' function's logic. 
+    """ Tests the 'is_integration_instance_running_on_engine' function's logic.
 
-        Given:  
+        Given:
                 1. A name of an instance that has an engine configured (and relevant mocked responses).
                 2. A name of an instance that doesn't have an engine configured (and relevant mocked responses).
 
-        When:  
-            - Running the 'is_integration_instance_running_on_engine' funcution. 
+        When:
+            - Running the 'is_integration_instance_running_on_engine' funcution.
 
         Then:
-            - Verify that: 
-                1. The result is the engine's id. 
+            - Verify that:
+                1. The result is the engine's id.
                 2. The result is an empty string.
     """
     mock_response = {
@@ -9980,14 +10013,14 @@ def test_is_integration_instance_running_on_engine(mocker, instance_name, expect
 
 
 def test_get_engine_base_url(mocker):
-    """ Tests the 'get_engine_base_url' function's logic. 
+    """ Tests the 'get_engine_base_url' function's logic.
 
-        Given:  
+        Given:
             - Mocked response of the internalHttpRequest call for the '/engines' endpoint, including 2 engines.
-            - An id of an engine. 
+            - An id of an engine.
 
-        When:  
-            - Running the 'is_integration_instance_running_on_engine' funcution. 
+        When:
+            - Running the 'is_integration_instance_running_on_engine' funcution.
 
         Then:
             - Verify that base url of the given engine id was returened.
@@ -10659,5 +10692,79 @@ def test_execution_timeout_decorator(sleep_time, expected_return_value):
     def do_logic():
         time.sleep(sleep_time)
         return "I AM DONE"
-    
+
     assert do_logic() == expected_return_value
+
+
+
+class TestTimeSensitive:
+    def test_http_request_time_sensitive(self, mocker):
+        """
+        Given:
+           - A BaseClient object
+           - Time-sensitive mode is enabled
+        When:
+           - Calling _http_request
+        Then:
+           - Ensure the timeout is calculated correctly based on the remaining time.
+        """
+        from CommonServerPython import BaseClient, is_time_sensitive
+        mocker.patch('CommonServerPython.is_time_sensitive', return_value=True)
+        mocker.patch('time.time', side_effect=[100, 105])  # First call for deadline, second for remaining time
+        client = BaseClient('http://example.com', timeout=60)
+        client._time_sensitive_total_timeout = 15
+        client._time_sensitive_deadline = 115  # 100 + 15
+
+        mock_session = mocker.patch.object(client, '_session')
+        mock_session.request.return_value.ok = True
+        mock_session.request.return_value.status_code = 200
+
+        client._http_request('get', 'test')
+
+        # The timeout passed to the request should be deadline - current_time
+        # 115 - 105 = 10
+        assert mock_session.request.call_args[1]['timeout'] == 10
+
+    def test_http_request_time_sensitive_budget_exceeded_before_call(self, mocker):
+        """
+        Given:
+           - A BaseClient object
+           - Time-sensitive mode is enabled
+           - The time budget is already exceeded
+        When:
+           - Calling _http_request
+        Then:
+           - Ensure a DemistoException is raised.
+        """
+        from CommonServerPython import BaseClient, DemistoException, is_time_sensitive
+        mocker.patch('CommonServerPython.is_time_sensitive', return_value=True)
+        mocker.patch('time.time', return_value=120)
+        client = BaseClient('http://example.com')
+        client._time_sensitive_total_timeout = 15
+        client._time_sensitive_deadline = 115  # 100 + 15
+
+        with pytest.raises(DemistoException, match="Time-sensitive command execution time limit .* reached before performing the API request"):
+            client._http_request('get', 'test')
+
+    def test_http_request_time_sensitive_timeout_during_call(self, mocker):
+        """
+        Given:
+           - A BaseClient object
+           - Time-sensitive mode is enabled
+        When:
+           - Calling _http_request and it times out
+        Then:
+           - Ensure a DemistoException is raised with a time-sensitive budget exceeded message.
+        """
+        from CommonServerPython import BaseClient, DemistoException, is_time_sensitive
+        mocker.patch('CommonServerPython.is_time_sensitive', return_value=True)
+        mocker.patch('time.time', side_effect=[100, 105])  # First for deadline, second for remaining time
+        client = BaseClient('http://example.com')
+        client._time_sensitive_total_timeout = 15
+        client._time_sensitive_deadline = 115  # 100 + 15
+
+        mocker.patch.object(client, '_session')
+        client._session.request.side_effect = requests.exceptions.ConnectTimeout
+
+        with pytest.raises(DemistoException, match="Time-sensitive command execution time limit .* exceeded"):
+            client._http_request('get', 'test')

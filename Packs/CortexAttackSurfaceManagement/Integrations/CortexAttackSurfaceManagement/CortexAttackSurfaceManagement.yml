@@ -2,26 +2,32 @@ category: Vulnerability Management
 commonfields:
   id: Cortex Attack Surface Management
   version: -1
+sectionorder:
+- Connect
 configuration:
-- additionalinfo: The web UI with `api-` appended to front (e.g., https://api-xsiam.paloaltonetworks.com). For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.
+- additionalinfo: The web UI with `api-` appended to front (e.g., https://api-xsiam.paloaltonetworks.com). For more information please see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-REST-API/Get-Started-with-Cortex-XDR-APIs.
   display: Server URL
   name: url
   required: true
   type: 0
-- additionalinfo: For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.  Only standard API key type is supported.
+  section: Connect
+- additionalinfo: For more information please see https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-REST-API/Get-Started-with-Cortex-XDR-APIs.  Only standard API key type is supported.
   display: API Key ID
   displaypassword: API Key
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
 description: Integration to pull assets and other ASM related information.
 display: Cortex Attack Surface Management
 name: Cortex Attack Surface Management
@@ -363,7 +369,7 @@ script:
       predefined:
       - asc
       - desc
-    description: Returns list of remediation path rules.
+    description: Returns the list of remediation path rules.  This command applies only to Expander v2.
     name: asm-list-remediation-rule
     outputs:
     - contextPath: ASM.RemediationRule.rule_id
@@ -468,7 +474,7 @@ script:
       description: Attack surface rule priority.
     - contextPath: ASM.AttackSurfaceRule.remediation_guidance
       description: Remediation guidance of attack surface rule.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4819260
   runonce: false
   script: ''
   subtype: python3

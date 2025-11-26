@@ -2,7 +2,7 @@
     "name": "HIPAA Compliance",
     "description": "Ensure your organization is following HIPAA guidelines with the relevant dashboard and report evidence.",
     "support": "xsoar",
-    "currentVersion": "2.0.0",
+    "currentVersion": "2.0.1",
     "author": "Cortex XSIAM",
     "url": "https://www.paloaltonetworks.com/cortex",
     "categories": [
@@ -28,6 +28,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

@@ -33,9 +33,8 @@ args:
   defaultValue: 'xsiam-blocked-external-ip'
 - description: |-
     Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
-    For multi-select provide a comma-separated list. For example: "Palo Alto Networks - Prisma SASE,Panorama,CheckPointFirewall_v2".
+    For multi-select provide a comma-separated list. The possible values are: Palo Alto Networks - Prisma SASE,Panorama,FortiGate,F5Silverline,Cisco ASA,Zscaler.
   isArray: true
-  defaultValue: 'Palo Alto Networks - Prisma SASE,Panorama,FortiGate,F5Silverline,Cisco ASA,Zscaler'
   name: brands
   required: false
   auto: PREDEFINED
@@ -83,11 +82,14 @@ system: false
 timeout: 20m0s
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.12.11.4508456
+compliantpolicies:
+  - IP Blockage
+dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.1.0
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 polling: true
 tests:
 - BlockExternalIP - Test

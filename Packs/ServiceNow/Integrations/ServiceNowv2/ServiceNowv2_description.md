@@ -4,9 +4,10 @@
  Please make sure you have the correct role so you have permissions to work with the relevant table.
   
 ### Instance Configuration
-The integration supports two types of authorization:
+The integration supports three types of authorization:
 1. Basic authorization using username and password.
 2. OAuth 2.0 authorization.
+3. JWT Authentication.
 
 #### OAuth 2.0 Authorization
 To use OAuth 2.0 authorization follow the next steps:
@@ -21,6 +22,23 @@ To use OAuth 2.0 authorization follow the next steps:
 2. Every time the refresh token expires you will have to run the `servicenow-oauth-login` command again. Hence, we recommend to set the `Refresh Token Lifespan` field in the endpoint created in step 1 to a long period (can be set to several years). 
 3. The grant type used to get an access token is `Resource owner password credentials`. See the [Snow documentation](https://docs.servicenow.com/bundle/xanadu-platform-security/page/administer/security/concept/c_OAuthApplications.html#d25788e201) for more information.
 
+#### JWT Authentication
+##### Prerequisites in order to support JWT
+
+1. Create a Java Key Store and upload it to the instance by accessing from the upper menu: **All** > **System Definition** > **Certificates**. The private key will be used as an integration parameter. 
+2. Configure a JWT signing key by accessing: All→System OAuth→JWT Keys using the keystore from above and keep the Key ID as it will be used as kid integration parameter. 
+3. Create a JWT provider with a JWT signing key by accessing: All→System OAuth→JWT providers. Claim Name sub in Standard Claims has to be existing non-admin servicenow user with all necessary roles.
+4. Connect to an OAuth provider and create an OAuth application registry by accessing All→System OAuth→Application Registry: 
+   1. aud in JWT provider has to be equal to Client ID from OAuth JWT application - update JWT provider If necessary. 
+   2. The value of kid in JWT Verifier Maps has to be the same as Key Id in JWT signing key.
+      The value can be updated if necessary.
+5. Create API Access Policy or add Authentication profile to existing Policy by accessing: All→System Web Services→API Access Policies→Rest API Access Policies
+
+**IMPORTANT:**
+1. The Standard Authentication Profile of type Oauth should be already present in ServiceNow and has to be added to the Policy.
+API Access Policy should be configured as global in order to cover all available resources and not just now/table
+2. Granting JWT to admin is not allowed.
+You should have a non-admin user with all necessary roles (only non-admin roles) in addition to the existing role snc_platform_rest_api_access that is required to make API calls.
 
 ### Using Multi-Factor Authentication (MFA)
 MFA can be used both when using basic authorization and when using OAuth 2.0 authorization, however we strongly recommend using OAuth 2.0 when using MFA.
@@ -37,31 +55,6 @@ the look back to a number that is greater than the previous value, then in the i
 If the integration was already set with look back > 0, and the look-back is not being increased at any point of time, then those incident duplications would not occur.
 
 
-#### JWT Authentication
-
-
-#### Prerequisites in order to support JWT
-
-1. Create a Java Key Store and upload it to the instance. (Accessing from the upper menu :**Al** > **System Definition** > **Certificates**.)
-(Private key will be used as an integration parameter)
-2. Configure a JWT signing key (Use the keystore from above. Keep the Key ID. It will be used as kid integration parameter)
-(All→System OAuth→JWT Keys)
-3. Create a JWT provider with a JWT signing key
-(Customer required to set  in Standard Claims the same values for aud, iss and sub that will be used as integration parameters. Claim Name sub in Standard Claims has to be existing non-admin servicenow user with all necessary roles)
-
-(All→System OAuth→JWT providers)
-4. Connect to an OAuth provider and create an OAuth application registry (aud in JWT provider has to be equal to Client ID from OAuth JWT application - update JWT provider If necessary. The value of kid in JWT Verifier Maps has to be the  same as Key Id in JWT signing key. The value can be updated if necessary.)
-(All→System OAuth→Application Registry)
-
-
-5. Create API Access Policy or add Authentication profile to existing Policy (All→System Web Services→API Access Policies→Rest API Access Policies )
-
-**IMPORTANT:**
-
-1. Standard Authentication Profile of type Oauth should be already present in ServiceNow and this one needs to be added to Policy.
-API Access Policy should be configured as global in order to cover all available resources and not just now/table
-2. Granting JWT to admin is not allowed.
-You should have a non-admin user with all necessary roles (only non-admin roles) in addition to the existing  role snc_platform_rest_api_access that is required to make API calls.
 
 ---
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/service-now-v2)

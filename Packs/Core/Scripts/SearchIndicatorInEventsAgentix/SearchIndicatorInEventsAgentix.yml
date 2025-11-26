@@ -5,34 +5,32 @@ name: SearchIndicatorInEventsAgentix
 script: ''
 type: python
 tags:
-  - Utilities
+- Utilities
 comment: A polling wrapper script; Searches for a specific indicator in the tenant's event and log data, and extracts the logs the indicator appears in.
 enabled: true
 args:
-  - name: indicator
-    required: true
-    description: The indicator value (e.g., IP address, domain, hash) to search for in the selected dataset logs.
-  - name: time_frame
-    defaultValue: 7 days
-    description: The search timeframe in days (e.g., "7 days" means searching the past 7 days of data).
-  - name: data_set
-    defaultValue: xdr_data
-    description: The dataset for the search. By default, this is "xdr_data".
-  - name: query_name
-    required: true 
-    description: The name to use for the query results. Find the query results under this name in the War Room context.
+- name: indicator
+  required: true
+  description: The indicator value (e.g., IP address, domain, hash) to search for in the selected dataset logs.
+- name: time_frame
+  defaultValue: 7 days
+  description: The search timeframe in days (e.g., "7 days" means searching the past 7 days of data).
+- name: data_set
+  defaultValue: xdr_data
+  description: The dataset for the search. By default, this is "xdr_data".
+- name: query_name
+  required: true
+  description: The name to use for the query results. Find the query results under this name in the War Room context.
 outputs:
-  - contextPath: PaloAltoNetworksXQL
-    description: A list of event records (constructed as dictionaries) where the specified indicator was found.
-    type: List
+- contextPath: PaloAltoNetworksXQL
+  description: A list of event records (constructed as dictionaries) where the specified indicator was found.
+  type: List
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.11.4819260
 fromversion: 6.1.0
 isInternal: true
 tests:
 - No tests (auto formatted)
 marketplaces:
 - platform
-supportedModules:
-- agentix_xsiam

@@ -364,7 +364,11 @@ expected_enrich_output = [
     }
 ]
 
-mock_response = ""
+cve_enrich_remediation = [{"advisory": "N/A", "description": "N/A", "solutions": "N/A"}]
+
+expected_enrich_remediation_output = [{"Value": "CVE-2020-9047", "Advisory": "N/A", "Description": "N/A", "Solutions": "N/A"}]
+
+mock_response, mock_response_remediation = "", ""
 mocked_get_token_response = """{"access_token": "fababfafbh"}"""
 args = {"cve_id": "CVE-2020-9047"}
 channel_code = "d5cd46c205c20c87006b55a18b106428"
@@ -390,13 +394,18 @@ def init_params():
 
 def mocked_request(*args, **kwargs):
     global mock_response
+    global mock_response_remediation
     request = kwargs.get("request", {})
     end_point = request.path_url
     method = request.method
     mock_response = json.dumps(cve_enrich)
+    mock_response_remediation = json.dumps(cve_enrich_remediation)
     response_dict = {
         "POST": {"/auth/token": MockedResponse(200, mocked_get_token_response)},
-        "GET": {"/dve_enrich/CVE-2020-9047": MockedResponse(200, mock_response)},
+        "GET": {
+            "/dve_enrich/CVE-2020-9047": MockedResponse(200, mock_response),
+            "/dve_enrich/CVE-2020-9047/remediation": MockedResponse(200, mock_response_remediation),
+        },
     }
     response_dict = response_dict.get(method)
     response = response_dict.get(end_point)
@@ -447,3 +456,17 @@ def test_cve_enrich_command(mocker):
 
     output = cve_enrich_command(client, demisto.args())
     assert output[0].outputs == expected_enrich_output
+
+
+def test_cve_enrich_remediation_command(mocker):
+    mocker.patch.object(demisto, "params", return_value=init_params())
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch("requests.sessions.Session.send", new=mocked_request)
+
+    from CybersixgillDVEEnrichment import cve_enrich_remediation_command
+    from sixgill.sixgill_enrich_client import SixgillEnrichClient
+
+    client = SixgillEnrichClient(demisto.params()["client_id"], demisto.params()["client_secret"], channel_code, demisto)
+
+    output = cve_enrich_remediation_command(client, demisto.args())
+    assert output[0].outputs == expected_enrich_remediation_output

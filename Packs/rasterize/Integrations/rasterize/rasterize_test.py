@@ -398,7 +398,7 @@ def test_chrome_manager_case_chrome_instances_file_is_empty(mocker):
     browser, chrome_port = chrome_manager()
 
     assert generate_new_chrome_instance_mocker.call_count == 1
-    assert generate_new_chrome_instance_mocker.called_with(instance_id, chrome_options)
+    generate_new_chrome_instance_mocker.assert_called_with(instance_id, chrome_options)
     assert terminate_chrome_mocker.call_count == 0
     assert browser == "browser_object"
     assert chrome_port == "chrome_port"
@@ -430,7 +430,7 @@ def test_chrome_manager_case_chromes_options_exist_and_instance_id_not_linked(mo
     browser, chrome_port = chrome_manager()
 
     assert generate_new_chrome_instance_mocker.call_count == 1
-    assert generate_new_chrome_instance_mocker.called_with(instance_id, chrome_options)
+    generate_new_chrome_instance_mocker.assert_called_with(instance_id, chrome_options)
     assert terminate_chrome_mocker.call_count == 0
     assert browser == "browser_object"
     assert chrome_port == "chrome_port"
@@ -463,7 +463,7 @@ def test_chrome_manager_case_new_chrome_options_and_instance_id(mocker):
     browser, chrome_port = chrome_manager()
 
     assert generate_new_chrome_instance_mocker.call_count == 1
-    assert generate_new_chrome_instance_mocker.called_with(instance_id, chrome_options)
+    generate_new_chrome_instance_mocker.assert_called_with(instance_id, chrome_options)
     assert terminate_chrome_mocker.call_count == 0
     assert browser == "browser_object"
     assert chrome_port == "chrome_port"
@@ -500,7 +500,7 @@ def test_chrome_manager_case_instance_id_exist_but_new_chrome_options(mocker):
 
     assert terminate_chrome_mocker.call_count == 1
     assert generate_new_chrome_instance_mocker.call_count == 1
-    assert generate_new_chrome_instance_mocker.called_with(instance_id, chrome_options)
+    generate_new_chrome_instance_mocker.assert_called_with(instance_id, chrome_options)
     assert browser == "browser_object"
     assert chrome_port == "chrome_port"
 

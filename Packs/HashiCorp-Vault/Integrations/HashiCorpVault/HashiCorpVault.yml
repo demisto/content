@@ -4,7 +4,7 @@ commonfields:
 name: HashiCorp Vault
 display: HashiCorp Vault
 category: Authentication & Identity Management
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 description: Manage Secrets and Protect Sensitive Data through HashiCorp Vault.
@@ -25,6 +25,13 @@ configuration:
   name: credentials
   defaultvalue: ""
   type: 9
+  required: false
+  section: Connect
+- display: Cache the authentication token
+  additionalinfo: Is relevant only for Username/Password, or AppRole combinations.
+  name: cache_token
+  defaultvalue: "false"
+  type: 8
   required: false
   section: Connect
 - display: Authentication token
