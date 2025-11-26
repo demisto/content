@@ -584,7 +584,7 @@ Confirms user(s) as safe (post-investigation).
 
 #### Command Example
 
-```!azure-risky-users-confirm-safe user=name1@test.com,name2@test.com```
+```!azure-risky-users-confirm-safe user=user_id_1,name2@test.com,name3@test.com```
 
 #### Context Example
 
@@ -592,7 +592,7 @@ Confirms user(s) as safe (post-investigation).
 [
     {
         "UserID": "user_id_1",
-        "UserPrincipalName": "name1@test.com",
+        "UserPrincipalName": "",
         "Success": true,
         "RiskState": "confirmedSafe"
     },
@@ -601,6 +601,12 @@ Confirms user(s) as safe (post-investigation).
         "UserPrincipalName": "name2@test.com",
         "Success": true,
         "RiskState": "confirmedSafe"
+    },
+    {
+        "UserID": "user_id_3",
+        "UserPrincipalName": "name3@test.com",
+        "Success": false,
+        "RiskState": ""
     }
 ]
 ```
@@ -611,8 +617,14 @@ Confirms user(s) as safe (post-investigation).
 >
 > |UserID|UserPrincipalName|Success|RiskState|
 > |---|---|---|---|
-> | user_id_1 | name1@test.com | true | confirmedSafe |
+> | user_id_1 |  | true | confirmedSafe |
 > | user_id_2 | name2@test.com | true | confirmedSafe |
+
+> ### Unable to confirm users as safe
+>
+> |User|Error|
+> |---|---|
+> | name3@test.com | Error: confirmation failed. |
 
 ### azure-risky-users-confirm-compromise
 
@@ -640,7 +652,7 @@ Confirms user(s) as compromised.
 
 #### Command Example
 
-```!azure-risky-users-confirm-compromise user=user_id_1,name2@test.com```
+```!azure-risky-users-confirm-compromise user=user_id_1,name2@test.com,name3@test.com```
 
 #### Context Example
 
@@ -657,6 +669,12 @@ Confirms user(s) as compromised.
         "UserPrincipalName": "name2@test.com",
         "Success": true,
         "RiskState": "confirmedCompromised"
+    },
+    {
+        "UserID": "user_id_3",
+        "UserPrincipalName": "name3@test.com",
+        "Success": false,
+        "RiskState": ""
     }
 ]
 ```
@@ -669,3 +687,9 @@ Confirms user(s) as compromised.
 > |---|---|---|---|
 > | user_id_1 |  | true | confirmedCompromised |
 > | user_id_2 | name2@test.com | true | confirmedCompromised |
+
+> ### Unable to confirm users as compromised
+>
+> |User|Error|
+> |---|---|
+> | name3@test.com | Error: confirmation failed. |

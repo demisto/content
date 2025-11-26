@@ -682,7 +682,7 @@ def risky_users_confirm(client: Client, args: dict[str, Any], confirm_func: Call
     if error_outputs:
         results.append(
             CommandResults(
-                readable_output=tableToMarkdown(f"Unable to confirmed users as {verdict}.", error_outputs),
+                readable_output=tableToMarkdown(f"Unable to confirm users as {verdict}.", error_outputs),
                 entry_type=EntryType.ERROR,
                 content_format=EntryFormat.MARKDOWN,
             )
