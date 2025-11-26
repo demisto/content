@@ -830,6 +830,7 @@ def get_time_range(
     range_dict = {}
     if not last_fetch and time_range_start:  # this is the first fetch
         start_date = dateparser.parse(time_range_start)
+
         start_time = convert_date_to_timestamp(start_date)
     else:
         start_time = last_fetch
@@ -894,10 +895,10 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
 
 def fetch_incidents(proxies):
     last_run = demisto.getLastRun()
-    last_fetch = last_run.get("time")
+    last_fetch = last_run.get("time") or FETCH_TIME
 
     es = elasticsearch_builder(proxies)
-    time_range_dict = get_time_range(last_fetch=last_fetch)
+    time_range_dict = get_time_range(time_range_start=last_fetch)
 
     if RAW_QUERY:
         response = execute_raw_query(es, RAW_QUERY)
