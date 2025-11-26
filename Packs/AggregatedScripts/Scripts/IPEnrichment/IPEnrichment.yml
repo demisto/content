@@ -72,7 +72,10 @@ outputs:
   description: A list of all indicators found for the IP address.
   type: array
 - contextPath: IPEnrichment.Status
-  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified.'
+  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, "Error" if enrichment Failed, and "None" if never modified.'
+  type: string
+- contextPath: IPEnrichment.Message
+  description: The error message explaining the reason for the failure (e.g., "Invalid", "createIndicator failed", etc.).
   type: string
 - contextPath: IPEnrichment.ModifiedTime
   description: The time the indicator was last modified.

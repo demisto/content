@@ -65,7 +65,10 @@ outputs:
   description: List of all indicators found for the CVE.
   type: array
 - contextPath: CVEEnrichment.Status
-  description: The status of the indicator.
+  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, "Error" if enrichment Failed, and "None" if never modified.'
+  type: string
+- contextPath: CVEEnrichment.Message
+  description: The error message explaining the reason for the failure (e.g., "Invalid", "createIndicator failed", etc.).
   type: string
 # CVEEnrichment Main Keys
 - contextPath: CVEEnrichment.Results.Brand
@@ -79,9 +82,6 @@ outputs:
   type: string
 - contextPath: CVEEnrichment.Results.Published
   description: The published date of the indicator.
-  type: string
-- contextPath: CVEEnrichment.Results.Status
-  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified.'
   type: string
 - contextPath: CVEEnrichment.Results.ModifiedTime
   description: The time the indicator was last modified.
