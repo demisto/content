@@ -1211,7 +1211,8 @@ def get_cases_command(client, args):
                     readable_output="Cannot retrieve enriched case data for more than 10 cases. "
                     "Only standard case data will be shown. "
                     "Try using a more specific query, "
-                    "for example specific case IDs you want to get enriched data for."
+                    "for example specific case IDs you want to get enriched data for.",
+                    entry_type=4,
                 )
             )
 
