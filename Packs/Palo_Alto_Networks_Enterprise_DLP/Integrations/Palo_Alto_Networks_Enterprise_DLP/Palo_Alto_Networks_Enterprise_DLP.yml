@@ -41,6 +41,8 @@ configuration:
   - AU
   - IN 
   - JP
+  - SG
+  - BR
   required: false
   section: Collect
 - display: Data profiles to allow exemption
