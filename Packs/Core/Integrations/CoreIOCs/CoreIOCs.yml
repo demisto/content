@@ -39,14 +39,15 @@ configuration:
   - low
   - medium
   - high
-  required: true
+  required: false
+  defaultvalue: low
   type: 15
   section: Connect
 - additionalinfo: The query used to collect indicators to sync from Cortex.
   defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
   display: Sync Query
   name: query
-  required: true
+  required: false
   type: 0
   section: Collect
 description: The Cortex Core - IOCs integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
