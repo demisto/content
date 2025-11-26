@@ -46,23 +46,25 @@ To generate a new token:
 Another authentication option is to create and register a GitHub app under your personal account or under any organization you have administrative access to.
 
 1. Navigate to the upper-right corner of any page and click your **profile photo**:
-   - For a personal account owned app, go to your **Account Settings**.
-   - For an organization owned app, click Your organizations. To the right of the organization, click **Settings**.
-2. In the left sidebar, click **Developer settings**, from the sub-menu, click **GitHub Apps**.
+   - For a personal account owned app, click **Settings**.
+   - For an organization owned app, click **Organizations**. To the right of the organization, click **Settings**.
+2. In the left sidebar, click **Developer settings**. From the sub-menu, click **GitHub Apps**.
 3. Click **New GitHub App**.
    - In **GitHub App name**, type the name of your app.
    - In **Homepage URL**, type any URL (this field is required).
    - Deselect the **Active** option under the **Webhook settings**.
-   - In **Permissions**, choose the permissions your app will request. For each type of permission, use the drop-down menu and click Read-only, Read & write, or No access. The minimum is read-only permissions for **Pull requests**, **Checks**, **Pull requests**, **Security events**, and **Commit statuses**.
+   - In **Permissions**, choose the permissions your app will request. For each type of permission, use the drop-down menu and click Read-only, Read and write, or No access. The minimum is read-only Repository permissions for **Contents**, **Issues**, **Pull requests**, **Checks**, and **Commit statuses**.
    - Click **Create GitHub App**.
-   - Click to generate a **private key** to install your GitHub app.
-4. Once you create a private GitHub app, you can install it on one of your org or user repositories.
-   - From the **GitHub Apps settings** page, select your app.
+   - Click to generate and download a **private key** for your GitHub app.
+4. Once you create a GitHub app, you can install it on one or more of your org or user repositories.
+   - From the **Developer settings** > **GitHub Apps** page, select your app.
    - In the left sidebar, click **Install App**.
    - Click **Install** next to the organization or user account containing the correct repository.
    - Install the app on all repositories or on selected repositories.
    - Once installed, you will see configuration options for the app on your selected account.
-5. Copy the **private key** generated above to a new credentials object.
+5. Copy the **private key** from the .pem file generated and downloaded above. Include the lines `-----BEGIN RSA PRIVATE KEY-----` and `-----END RSA PRIVATE KEY-----`. In Cortex, navigate to **Settings** > **Credentials** and click **+ New Credential**. Give the credential a name and paste the private key into the **Certificate** field. When you configure the integration instance, for the **Credentials** parameter, you must select **Switch to credentials** and select the credential you just created.
+6. Locate the **GitHub app integration ID** (under **Advanced Settings** when you set up the integration instance): From the **GitHub Apps** page, click on the app name. The integration ID is the **Client ID**, which should be a string of letters and numbers.
+7. Locate the **GitHub app installation ID**: Navigate to a repository where you have installed the app > **Settings** > **GitHub Apps**. To the right of the app name, click **Configure**. The installation ID is the number at the end of the URL.
 
 ### Configure Integration Parameters
 
@@ -72,21 +74,21 @@ Another authentication option is to create and register a GitHub app under your 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Fetch incidents |  | False |
-| Select an Issue or Pull requests to Fetch |  | False |
-| Server URL | The REST API URL | False |
-| API Token |  | False |
-| Credentials |  | False |
-| Password |  | False |
-| Username of the repository owner, for example: github.com/repos/{_owner_}/{repo}/issues |  | False |
-| The name of the requested repository |  | False |
-| First fetch interval (in days) |  | False |
-| Use system proxy settings |  | False |
-| Trust any certificate (not secure) |  | False |
-| Incident type |  | False |
-| GitHub app integration ID |  | False |
-| GitHub app installation ID |  | False |
-| Incidents Fetch Interval |  | False |
+| Fetch incidents | Whether to fetch. | False |
+| Select an Issue or Pull requests to Fetch | Item type to fetch. | False |
+| Server URL | The REST API URL. | False |
+| API Token | GitHub token. | False |
+| Credentials | GitHub username or, if using a GitHub app, this is where you select the Credential containing the app private key. | False |
+| Password | GitHub password. | False |
+| Username of the repository owner, for example: github.com/repos/{_owner_}/{repo}/issues | Repository owner org name/username. | False |
+| The name of the requested repository | Repository name. | False |
+| First fetch interval (in days) | First fetch interval. | False |
+| Use system proxy settings | Whether to use system proxy settings. | False |
+| Trust any certificate (not secure) | Whether to trust any certificate. | False |
+| Incident type | Incident/issue type, if fetching. | False |
+| GitHub app integration ID | GitHub app Client ID from app settings page. | False |
+| GitHub app installation ID | GitHub app installation ID from installed app page URL. | False |
+| Incidents Fetch Interval | Fetch interval. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
