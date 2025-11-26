@@ -80,11 +80,7 @@ class Client(BaseClient):
             # Use a temporary BaseClient. It will correctly handle proxy and verify.
             temp_client = BaseClient(base_url=domain_api_base, verify=verify, proxy=proxy)
             data = temp_client._http_request(
-                method="GET",
-                url_suffix=domain_api_path,
-                params=params,
-                resp_type="json",
-                ok_codes=(200,)
+                method="GET", url_suffix=domain_api_path, params=params, resp_type="json", ok_codes=(200,)
             )
         except DemistoException as e:
             # BaseClient wraps HTTPError and RequestException in DemistoException
@@ -127,12 +123,7 @@ class Client(BaseClient):
 
         try:
             token_data = super()._http_request(
-                method="POST",
-                full_url=full_auth_url,
-                data=data,
-                headers=headers,
-                resp_type="json",
-                ok_codes=(200,)
+                method="POST", full_url=full_auth_url, data=data, headers=headers, resp_type="json", ok_codes=(200,)
             )
         except DemistoException as e:
             # BaseClient will raise DemistoException for HTTP errors or network issues
@@ -355,7 +346,7 @@ def fetch_events_command(
 ) -> tuple[list[dict[str, Any]], datetime, datetime]:
     """
     Fetches events for XSIAM and returns the events along with timestamp information.
-    
+
     :param client: The LivePerson client
     :param max_fetch: Maximum number of events to fetch
     :param first_fetch_time: The first fetch time to use if no last run exists
@@ -379,7 +370,7 @@ def fetch_events_command(
 def update_last_run(last_run_time: datetime, new_max_timestamp: datetime, events: list[dict[str, Any]]) -> None:
     """
     Updates the last run time after successful event submission.
-    
+
     :param last_run_time: The previous last run time
     :param new_max_timestamp: The maximum timestamp from the fetched events
     :param events: The list of events that were fetched
@@ -474,17 +465,20 @@ def main() -> None:
 
         elif command == "fetch-events":
             events, last_run_time, new_max_timestamp = fetch_events_command(client, max_fetch, first_fetch_time)
-            
+
             if events:
                 demisto.debug(f"{INTEGRATION_PREFIX} Sending {len(events)} events to XSIAM.")
                 # send_events_to_xsiam handles event hashing for deduplication
                 send_events_to_xsiam(events, vendor=INTEGRATION_NAME, product="liveperson")
-                
+
                 # Only update last run after successful event submission
                 demisto.info(f"{INTEGRATION_PREFIX} Events successfully sent to XSIAM. Updating last run time.")
                 update_last_run(last_run_time, new_max_timestamp, events)
             else:
                 demisto.debug(f"{INTEGRATION_PREFIX} No events to send to XSIAM.")
+
+        else:
+            raise NotImplementedError(f"Command '{command}' is not implemented.")
 
     except Exception as e:
         # Get the full traceback for debugging

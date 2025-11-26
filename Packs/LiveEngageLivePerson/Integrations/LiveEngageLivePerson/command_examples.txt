@@ -1,1 +1,1 @@
-liveperson-get-events
+!liveperson-get-events limit=10 should_push_events=false
