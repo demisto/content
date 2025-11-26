@@ -1162,13 +1162,13 @@ def get_remote_data_command(
 
 def convert_large_integers_to_strings(data: dict[str, Any]) -> None:
     """Convert large integers to strings to prevent JavaScript precision loss.
-    
+
     JavaScript cannot safely represent integers larger than 2^53-1 (Number.MAX_SAFE_INTEGER).
     This function converts such integers to strings in-place to preserve their exact values.
-    
+
     Args:
         data (dict[str, Any]): Dictionary containing potential large integer values.
-    
+
     Reference:
         https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
     """
@@ -1248,6 +1248,8 @@ def parse_incident(
         "occurred": convert_datetime_int_to_iso(incident["timestamp"]),
         "rawJSON": json.dumps(incident),
     }
+
+
 def convert_datetime_int_to_iso(creation_timestamp: int) -> datetime:
     """Convert datetime to iso.
 

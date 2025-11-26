@@ -1080,14 +1080,12 @@ def test_convert_large_integers_to_strings(data, expected_output):
     """
     from NetskopeAPIv2 import convert_large_integers_to_strings
 
-    # Make a copy to verify in-place modification
-    original_data = data.copy()
-    
-    # Call the function (modifies in-place)
+    original_id = id(data)
+
     convert_large_integers_to_strings(data)
-    
-    # Verify the data was modified in-place
+
+    # Verify the data was modified correctly
     assert data == expected_output
-    
+
     # Verify it's the same object (in-place modification)
-    assert id(data) == id(original_data)
+    assert id(data) == original_id
