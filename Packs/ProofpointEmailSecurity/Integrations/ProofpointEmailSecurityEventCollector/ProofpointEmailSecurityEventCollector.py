@@ -76,7 +76,7 @@ class EventConnection:
         attempt = 0
         while attempt < MAX_RECONNECT_ATTEMPTS:
             attempt += 1
-            demisto.info(f"In {self.event_type} reconnect, going to attempt reconnection #{attempt} / {MAX_RECONNECT_ATTEMPTS}.")
+            demisto.info(f"[{self.event_type}] Going to attempt reconnection #{attempt} / {MAX_RECONNECT_ATTEMPTS}.")
             try:
                 self.connection = self.connect()
                 demisto.info(f"[{self.event_type}] Successfully reconnected to WebSocket after {attempt} attempt(s).")
@@ -509,7 +509,7 @@ def get_events_command(host: str, cluster_id: str, api_key: str, args: dict[str,
                 should_skip_sleeping=[],
                 write_to_integration_context=False,
             )
-            demisto.debug(f"Got {len(events)} {connection.event_type} Events. Appending up to {limit} events.")
+            demisto.debug(f"[{connection.event_type}] Got {len(events)} events. Appending up to {limit} events.")
             all_events.extend(events[:limit])
 
     return all_events, CommandResults(readable_output=tableToMarkdown(f"Events since {since_time} to {to_time}", all_events))
