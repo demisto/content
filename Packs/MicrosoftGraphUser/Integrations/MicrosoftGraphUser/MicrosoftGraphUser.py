@@ -184,6 +184,7 @@ class MsGraphClient:
                 method="GET", url_suffix=f"users/{quote(user)}/authentication/passwordMethods"
             )
             password_method_id = password_method_id_response.get("value", [])[0]["id"]  # There is only one password method object
+            demisto.debug("Got the password method id")
         except (IndexError, KeyError) as e:
             raise DemistoException("Failed getting passwordMethod id", exception=e, res=password_method_id_response)
         return password_method_id
@@ -513,7 +514,6 @@ def change_password_user_on_premise_command(
     if not polling_url:
         new_password = validate_input_password(args)
         password_method_id = client.fetch_password_method_id(user)
-        demisto.debug("Got password method id")
 
         demisto.debug(f"Initiating password reset for user: {user}")
         try:
@@ -544,9 +544,7 @@ def change_password_user_on_premise_command(
         demisto.debug(f"Checking status for {user} at: {polling_url}")
 
         # Poll the status URL (returns the longRunningOperation object)
-        status_response = client.ms_client.http_request(
-            method="GET", full_url=polling_url, resp_type="json"
-        )
+        status_response = client.ms_client.http_request(method="GET", full_url=polling_url, resp_type="json")
         demisto.debug(f"Got {status_response=}")
 
         operation_status = status_response.get("status", "unknown")
