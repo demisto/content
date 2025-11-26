@@ -770,7 +770,7 @@ class ThreatIntel:
         DELIVERY = "Delivery"
         WEAPONIZATION = "Weaponization"
         ACT_ON_OBJECTIVES = "Actions on Objectives"
-        COMMAND_AND_CONTROL = "Command \u0026 Control"
+        COMMAND_AND_CONTROL = "Command & Control"
 
 
 def is_debug_mode():
