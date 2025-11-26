@@ -7777,13 +7777,13 @@ class CommandResults:
                     human_readable = "Note! some of the context data was not included because it went over the {}KB limit.".format(insight_cache_size_kb)
 
                 demisto.debug(
-                    f"Context size ({context_size} chars) exceeded limit ({insight_cache_size_bytes} bytes). Will use the minimum context."
+                    "Context size ({} chars) exceeded limit ({} bytes). Will use the minimum context.".format(context_size, insight_cache_size_bytes)
                 )
             else:
                 # Use the already calculated full context
                 outputs = virtual_outputs
                 demisto.debug(
-                    f"Using full context ({context_size} chars within {insight_cache_size_bytes} bytes limit). "
+                    "Using full context ({} chars within {} bytes limit). ".format(context_size, insight_cache_size_bytes)
                 )
 
         if self.tags:
