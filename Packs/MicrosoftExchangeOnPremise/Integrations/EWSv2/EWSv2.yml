@@ -20,7 +20,7 @@ configuration:
 - defaultvalue: Inbox
   display: Name of the folder from which to fetch incidents (supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing)
   name: folder
-  required: true
+  required: false
   type: 0
   section: Collect
 - defaultvalue: 'false'
@@ -1059,7 +1059,7 @@ script:
       name: handle_inline_image
     description: Replies to an email using EWS.
     name: reply-mail
-  dockerimage: demisto/py-ews:5.5.0.118073
+  dockerimage: demisto/py-ews:5.6.0.6006104
   isfetch: true
   runonce: false
   script: '-'
