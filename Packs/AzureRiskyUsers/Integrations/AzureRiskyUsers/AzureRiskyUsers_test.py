@@ -467,7 +467,7 @@ def test_risky_users_confirm_compromise_command(mocker):
      - Ensure client.confirm_compromised_request is called with the correct user IDs.
      - Ensure the readable output is as expected.
     """
-    from AzureRiskyUsers import risky_users_confirm, tableToMarkdown
+    from AzureRiskyUsers import risky_users_confirm
 
     mock_client_instance = mock_client()
     mocker.patch.object(mock_client_instance, "upn_to_user_id", side_effect=lambda x: f"id_{x}")
@@ -498,7 +498,7 @@ def test_risky_users_confirm_safe_command(mocker):
      - Ensure client.confirm_safe_request is called with the correct user IDs.
      - Ensure the readable output is as expected.
     """
-    from AzureRiskyUsers import risky_users_confirm, tableToMarkdown
+    from AzureRiskyUsers import risky_users_confirm
 
     mock_client_instance = mock_client()
     mocker.patch.object(mock_client_instance, "upn_to_user_id", side_effect=lambda x: f"id_{x}")

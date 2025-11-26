@@ -659,7 +659,7 @@ def risky_users_confirm(client: Client, args: dict[str, Any], confirm_func: Call
                 "UserID": user_id,
                 "UserPrincipalName": user if is_upn(user) else "",
                 "Success": True,
-                "RiskState": f"confirmed{verdict.capitalize()}"
+                "RiskState": f"confirmed{verdict.capitalize()}",
             }
             success_outputs.append(output)
             context_ouputs.append(output)
@@ -670,7 +670,7 @@ def risky_users_confirm(client: Client, args: dict[str, Any], confirm_func: Call
                     "UserID": user if not is_upn(user) else "",
                     "UserPrincipalName": user if is_upn(user) else "",
                     "Success": False,
-                    "RiskState": ""
+                    "RiskState": "",
                 }
             )
 
@@ -688,9 +688,9 @@ def risky_users_confirm(client: Client, args: dict[str, Any], confirm_func: Call
             )
         )
 
-    results[0].outputs_prefix="Remediation"
-    results[0].outputs_key_field="UserID"
-    results[0].outputs=context_ouputs
+    results[0].outputs_prefix = "Remediation"
+    results[0].outputs_key_field = "UserID"
+    results[0].outputs = context_ouputs
 
     return results
 
