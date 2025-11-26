@@ -20,6 +20,423 @@ name: Cortex Core - Platform
 script:
   commands:
     - arguments:
+        - description: The unique ID of the asset. Accepts a comma-separated list.
+          name: asset_id
+          isArray: true
+        - description: The name of the asset. Accepts a comma-separated list.
+          name: asset_name
+          isArray: true
+        - description: Business application names. Accepts a comma-separated list.
+          name: business_application_names
+          isArray: true
+        - auto: PREDEFINED
+          description: The status coverage. Accepts a comma-separated list.
+          isArray: true
+          name: status_coverage
+          predefined:
+            - FULLY SCANNED
+            - NOT SCANNED
+            - PARTIALLY SCANNED
+        - auto: PREDEFINED
+          description: Is scanned by vulnerabilities. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_vulnerabilities
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by code weakness. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_code_weakness
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by secrets. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_secrets
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by IaC. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_iac
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by malware. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_malware
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by CICD. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_cicd
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: The last scan status. Accepts a comma-separated list.
+          isArray: true
+          name: last_scan_status
+          predefined:
+            - NOT_SCANNED_YET
+            - ERROR
+            - COMPLETED
+        - auto: PREDEFINED
+          description: The asset type. Accepts a comma-separated list.
+          isArray: true
+          name: asset_type
+          predefined:
+            - CICD PIPELINE
+            - CONTAINER IMAGE REPOSITORY
+            - REPOSITORY
+        - auto: PREDEFINED
+          description: The asset provider. Accepts a comma-separated list.
+          isArray: true
+          name: asset_provider
+          predefined:
+            - AWS
+            - AWS_CODE_BUILD
+            - AWS_CODE_COMMIT
+            - AZURE
+            - AZURE_PIPELINES
+            - AZURE_REPOS
+            - BITBUCKET
+            - CIRCLE_CI
+            - DOCKER
+            - GCP
+            - GITHUB
+            - GITHUB_ACTIONS
+            - GITLAB
+            - GITLAB_CI
+            - HCP_TFC_RUN_TASKS
+            - JENKINS
+            - JFROG_ARTIFACTORY
+            - OCI
+        - auto: PREDEFINED
+          description: The vendor name. Accepts a comma-separated list.
+          isArray: true
+          name: vendor_name
+          predefined:
+            - AWS
+            - AWS_CODE_BUILD
+            - AWS_CODE_COMMIT
+            - AZURE
+            - AZURE_REPOS
+            - BITBUCKET
+            - BITBUCKET_DATACENTER
+            - CIRCLE_CI
+            - DOCKER
+            - GCP
+            - GITHUB
+            - GITHUB_ACTIONS
+            - GITHUB_ENTERPRISE
+            - GITLAB
+            - GITLAB_SELF_MANAGED
+            - HCP_TFC_RUN_TASKS
+            - HCP_TFE_RUN_TASKS
+            - JENKINS
+            - JFROG_ARTIFACTORY
+            - OCI
+        - name: max_values_per_column
+          description: "The maximum number of distinct values to return for each column."
+          defaultValue: "100"
+        - name: columns
+          description: A list of fields for which to generate histograms.
+          isArray: true
+          required: true
+          predefined:
+            - asset_name
+            - business_application_names
+            - status_coverage
+            - is_scanned_by_vulnerabilities
+            - is_scanned_by_code_weakness
+            - is_scanned_by_secrets
+            - is_scanned_by_iac
+            - is_scanned_by_malware
+            - is_scanned_by_cicd
+            - last_scan_status
+            - asset_type
+            - asset_provider
+            - vendor_name
+      name: core-get-asset-coverage-histogram
+      description: "Calculates the distribution of values (counts and percentages) for specified categorical fields."
+      outputs:
+        - contextPath: Core.Coverage.Histogram.column_name
+          description: The column over which the histogram is generated.
+          type: String
+
+        - contextPath: Core.Coverage.Histogram.data.value
+          description: The distinct value.
+          type: String
+
+        - contextPath: Core.Coverage.Histogram.data.count
+          description: The number of records with this value after filtering.
+          type: Number
+
+        - contextPath: Core.Coverage.Histogram.data.percentage
+          description: The percentage of filtered records with this value.
+          type: Number
+
+        - contextPath: Core.Coverage.Histogram.data.pretty_name
+          description: A user-friendly label for the value.
+          type: String
+    - arguments:
+        - description: The unique ID of the asset. Accepts a comma-separated list.
+          name: asset_id
+          isArray: true
+        - description: The name of the asset. Accepts a comma-separated list.
+          name: asset_name
+          isArray: true
+        - description: Business application names. Accepts a comma-separated list.
+          name: business_application_names
+          isArray: true
+        - auto: PREDEFINED
+          description: The status coverage. Accepts a comma-separated list.
+          isArray: true
+          name: status_coverage
+          predefined:
+            - FULLY SCANNED
+            - NOT SCANNED
+            - PARTIALLY SCANNED
+        - auto: PREDEFINED
+          description: Is scanned by vulnerabilities. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_vulnerabilities
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by code weakness. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_code_weakness
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by secrets. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_secrets
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by IaC. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_iac
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by malware. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_malware
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: Is scanned by CICD. Accepts a comma-separated list.
+          isArray: true
+          name: is_scanned_by_cicd
+          predefined:
+            - DISABLED
+            - ENABLED
+            - IRRELEVANT
+        - auto: PREDEFINED
+          description: The last scan status. Accepts a comma-separated list.
+          isArray: true
+          name: last_scan_status
+          predefined:
+            - NOT_SCANNED_YET
+            - ERROR
+            - COMPLETED
+        - auto: PREDEFINED
+          description: The asset type. Accepts a comma-separated list.
+          isArray: true
+          name: asset_type
+          predefined:
+            - CICD PIPELINE
+            - CONTAINER IMAGE REPOSITORY
+            - REPOSITORY
+        - auto: PREDEFINED
+          description: The asset provider. Accepts a comma-separated list.
+          isArray: true
+          name: asset_provider
+          predefined:
+            - AWS
+            - AWS_CODE_BUILD
+            - AWS_CODE_COMMIT
+            - AZURE
+            - AZURE_PIPELINES
+            - AZURE_REPOS
+            - BITBUCKET
+            - CIRCLE_CI
+            - DOCKER
+            - GCP
+            - GITHUB
+            - GITHUB_ACTIONS
+            - GITLAB
+            - GITLAB_CI
+            - HCP_TFC_RUN_TASKS
+            - JENKINS
+            - JFROG_ARTIFACTORY
+            - OCI
+        - auto: PREDEFINED
+          description: The vendor name. Accepts a comma-separated list.
+          isArray: true
+          name: vendor_name
+          predefined:
+            - AWS
+            - AWS_CODE_BUILD
+            - AWS_CODE_COMMIT
+            - AZURE
+            - AZURE_REPOS
+            - BITBUCKET
+            - BITBUCKET_DATACENTER
+            - CIRCLE_CI
+            - DOCKER
+            - GCP
+            - GITHUB
+            - GITHUB_ACTIONS
+            - GITHUB_ENTERPRISE
+            - GITLAB
+            - GITLAB_SELF_MANAGED
+            - HCP_TFC_RUN_TASKS
+            - HCP_TFE_RUN_TASKS
+            - JENKINS
+            - JFROG_ARTIFACTORY
+            - OCI
+        - name: limit
+          description: "The maximum number of assets to return."
+          defaultValue: "100"
+        - name: sort_field
+          description: The field by which to sort the results.
+          predefined:
+            - asset_id
+            - asset_name
+            - business_application_names
+            - status_coverage
+            - is_scanned_by_vulnerabilities
+            - is_scanned_by_code_weakness
+            - is_scanned_by_secrets
+            - is_scanned_by_iac
+            - is_scanned_by_malware
+            - is_scanned_by_cicd
+            - last_scan_status
+            - asset_type
+            - asset_provider
+            - vendor_name
+        - auto: PREDEFINED
+          description: The order in which to sort the results.
+          name: sort_order
+          predefined:
+            - DESC
+            - ASC
+      name: core-get-asset-coverage
+      description: "Retrieves a list of assets (e.g., Repositories, CI/CD Pipelines, Container Image Repositories) along with their scan coverage status."
+      outputs:
+        - contextPath: Core.Coverage.Asset.asset_id
+          description: The unique ID of the asset. Each asset is assigned a unique identifier in the system.
+          type: String
+
+        - contextPath: Core.Coverage.Asset.asset_name
+          description: The name of the asset. Typically corresponds to the repository, container image, or pipeline name.
+          type: String
+
+        - contextPath: Core.Coverage.Asset.asset_provider
+          description:
+            "The vendor or source platform of the asset. Indicates where the asset originates from. Possible values: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_REPOS, BITBUCKET, BITBUCKET_DATACENTER, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITHUB_ENTERPRISE, GITLAB, GITLAB_SELF_MANAGED, HCP_TFC_RUN_TASKS, HCP_TFE_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.asset_type
+          description:
+            "The type or category of the asset. Determines the nature of the resource being scanned. Possible values: CICD PIPELINE, CONTAINER IMAGE REPOSITORY, REPOSITORY."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.business_application_names
+          description: A list of business applications associated with the asset. These applications help map the asset to business context or ownership.
+          type: Array
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_cicd
+          description:
+            "Indicates whether the asset is scanned within CI/CD pipelines. Possible values: ENABLED, DISABLED, IRRELEVANT."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_code_weakness
+          description:
+            "Indicates whether code weakness scanning is performed on the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_iac
+          description:
+            "Indicates whether infrastructure-as-code (IaC) scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_malware
+          description:
+            "Indicates whether malware scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_secrets
+          description:
+            "Indicates whether the asset is scanned for hardcoded secrets or credentials. Possible values: ENABLED, DISABLED, IRRELEVANT."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_semgrep
+          description:
+            "Boolean flag indicating whether the asset is analyzed using Semgrep for code issues or misconfigurations. Possible values: true, false."
+          type: Boolean
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_sonarqube
+          description:
+            "Boolean flag indicating whether the asset is analyzed using SonarQube for code quality and security issues. Possible values: true, false."
+          type: Boolean
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_veracode
+          description:
+            "Boolean flag indicating whether the asset is scanned using Veracode for security vulnerabilities. Possible values: true, false."
+          type: Boolean
+
+        - contextPath: Core.Coverage.Asset.is_scanned_by_vulnerabilities
+          description:
+            "Indicates whether vulnerability scanning is enabled for the asset. Possible values: ENABLED, DISABLED, IRRELEVANT."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.last_scan_status
+          description:
+            "The status of the most recent scan performed on the asset. Possible values: NOT_SCANNED_YET, ERROR, COMPLETED."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.scanners_data
+          description: An array containing detailed information from the scanners that evaluated the asset, including scan results, timestamps, and metadata.
+          type: Array
+
+        - contextPath: Core.Coverage.Asset.status_coverage
+          description:
+            "The overall scan coverage of the asset. Possible values: FULLY SCANNED, PARTIALLY SCANNED, NOT SCANNED."
+          type: String
+
+        - contextPath: Core.Coverage.Asset.unified_provider
+          description:
+            "The unified provider name associated with the asset. Standardized across different vendor integrations. Possible values: AWS, AWS_CODE_BUILD, AWS_CODE_COMMIT, AZURE, AZURE_PIPELINES, AZURE_REPOS, BITBUCKET, CIRCLE_CI, DOCKER, GCP, GITHUB, GITHUB_ACTIONS, GITLAB, GITLAB_CI, HCP_TFC_RUN_TASKS, JENKINS, JFROG_ARTIFACTORY, OCI."
+          type: String
+    - arguments:
         - description: The unique ID of the issue. Accepts a comma-separated list.
           name: issue_id
           isArray: true
@@ -373,168 +790,6 @@ script:
           description: The normalized fields associated with the asset.
         - contextPath: Core.CoreAsset.all_sources
           description: A list of all sources providing information about the asset.
-    - arguments:
-        - description: A datetime with the format 2019-12-31T23:59:00. Only cases that were created on or before the specified datetime will be retrieved.
-          name: lte_creation_time
-        - description: A datetime with the format 2019-12-31T23:59:00. Only cases that were created on or after the specified datetime will be retrieved.
-          name: gte_creation_time
-        - description: Filters for returned cases that were created on or before the specified datetime with the format 2019-12-31T23:59:00.
-          name: lte_modification_time
-        - description: Filters for returned cases that were modified on or after the specified datetime with the format 2019-12-31T23:59:00.
-          name: gte_modification_time
-        - description: A comma separated list of case IDs.
-          isArray: true
-          name: case_id_list
-        - description: Filters for returned cases that were created on or after the specified date range, for example, 1 month, 2 days, 1 hour, and so on.
-          name: since_creation_time
-        - description: Filters for returned cases that were modified on or after the specified date range, for example, 1 month, 2 days, 1 hour, and so on.
-          name: since_modification_time
-        - auto: PREDEFINED
-          description: Sorts returned cases by the datetime that the case was last modified ("asc" - ascending, "desc" - descending).
-          name: sort_by_modification_time
-          predefined:
-            - asc
-            - desc
-        - auto: PREDEFINED
-          description: Sorts returned cases by the datetime that the case was created ("asc" - ascending, "desc" - descending).
-          name: sort_by_creation_time
-          predefined:
-            - asc
-            - desc
-        - defaultValue: '0'
-          description: Page number (for pagination).
-          name: page
-        - defaultValue: '100'
-          description: Maximum number of cases to return per page. The maximum is 100.
-          name: limit
-        - description: 'Filters for cases with the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
-          name: status
-        - auto: PREDEFINED
-          description: 'Whether the case is starred.'
-          name: starred
-          predefined:
-            - 'true'
-            - 'false'
-      name: core-get-cases
-      description: Get case information based on the specified filters.
-      outputs:
-        - contextPath: Core.Case.case_id
-          description: Unique ID assigned to each returned case.
-          type: String
-        - contextPath: Core.Case.case_name
-          description: Name of the case.
-          type: String
-        - contextPath: Core.Case.creation_time
-          description: Timestamp when the case was created.
-          type: Number
-        - contextPath: Core.Case.modification_time
-          description: Timestamp when the case was last modified.
-          type: Number
-        - contextPath: Core.Case.detection_time
-          description: Timestamp when the first issue was detected in the case. May be null.
-          type: Date
-        - contextPath: Core.Case.status
-          description: Current status of the case.
-          type: String
-        - contextPath: Core.Case.severity
-          description: Severity level of the case.
-          type: String
-        - contextPath: Core.Case.description
-          description: Description of the case.
-          type: String
-        - contextPath: Core.Case.assigned_user_mail
-          description: Email address of the assigned user. May be null.
-          type: String
-        - contextPath: Core.Case.assigned_user_pretty_name
-          description: Full name of the assigned user. May be null.
-          type: String
-        - contextPath: Core.Case.issue_count
-          description: Total number of issues in the case.
-          type: Number
-        - contextPath: Core.Case.low_severity_issue_count
-          description: Number of issues with low severity.
-          type: Number
-        - contextPath: Core.Case.med_severity_issue_count
-          description: Number of issues with medium severity.
-          type: Number
-        - contextPath: Core.Case.high_severity_issue_count
-          description: Number of issues with high severity.
-          type: Number
-        - contextPath: Core.Case.critical_severity_issue_count
-          description: Number of issues with critical severity.
-          type: Number
-        - contextPath: Core.Case.user_count
-          description: Number of users involved in the case.
-          type: Number
-        - contextPath: Core.Case.host_count
-          description: Number of hosts involved in the case.
-          type: Number
-        - contextPath: Core.Case.notes
-          description: Notes related to the case. May be null.
-          type: String
-        - contextPath: Core.Case.resolve_comment
-          description: Comments added when resolving the case. May be null.
-          type: String
-        - contextPath: Core.Case.resolved_timestamp
-          description: Timestamp when the case was resolved.
-          type: Number
-        - contextPath: Core.Case.manual_severity
-          description: Severity manually assigned by the user. May be null.
-          type: Number
-        - contextPath: Core.Case.manual_description
-          description: Description manually provided by the user.
-          type: String
-        - contextPath: Core.Case.xdr_url
-          description: URL to view the case in Cortex XDR.
-          type: String
-        - contextPath: Core.Case.starred
-          description: Indicates whether the case is starred.
-          type: Boolean
-        - contextPath: Core.Case.starred_manually
-          description: True if the case was starred manually; false if starred by rules.
-          type: Boolean
-        - contextPath: Core.Case.hosts
-          description: List of hosts involved in the case.
-          type: Array
-        - contextPath: Core.Case.users
-          description: List of users involved in the case.
-          type: Array
-        - contextPath: Core.Case.case_sources
-          description: Sources of the case.
-          type: Array
-        - contextPath: Core.Case.rule_based_score
-          description: Score based on rules.
-          type: Number
-        - contextPath: Core.Case.manual_score
-          description: Manually assigned score. May be null.
-          type: Number
-        - contextPath: Core.Case.wildfire_hits
-          description: Number of WildFire hits.
-          type: Number
-        - contextPath: Core.Case.issues_grouping_status
-          description: Status of issue grouping.
-          type: String
-        - contextPath: Core.Case.mitre_tactics_ids_and_names
-          description: List of MITRE ATT&CK tactic IDs and names associated with the case.
-          type: Array
-        - contextPath: Core.Case.mitre_techniques_ids_and_names
-          description: List of MITRE ATT&CK technique IDs and names associated with the case.
-          type: Array
-        - contextPath: Core.Case.issue_categories
-          description: Categories of issues associated with the case.
-          type: Array
-        - contextPath: Core.Case.original_tags
-          description: Original tags assigned to the case.
-          type: Array
-        - contextPath: Core.Case.tags
-          description: Current tags assigned to the case.
-          type: Array
-        - contextPath: Core.Case.case_domain
-          description: Domain associated with the case.
-          type: String
-        - contextPath: Core.Case.custom_fields
-          description: Custom fields for the case with standardized lowercase, whitespace-free names.
-          type: Unknown
     - arguments:
       - description: A comma separated list of case IDs.
         isArray: true
@@ -1099,6 +1354,62 @@ script:
           description: The type of the file artifact.
           type: String
     - arguments:
+      - description: Issue ID to update. If empty, updates the current issue ID.
+        name: id
+        type: string
+      - description: Email address of the user to assign the issue to.
+        name: assigned_user_mail
+        type: string
+      - name: severity
+        auto: PREDEFINED
+        description: Change the severity of an issue.
+        type: string
+        predefined:
+          - low
+          - medium
+          - high
+          - critical
+      - name: name
+        description: Change the issue name.
+        type: string
+      - name: occurred
+        description: >
+          Change the occurred time of an issue. Supports different time formats, for example: 3 days ago, 2017-09-27T10:00:00+03:00.
+        type: string
+      - name: phase
+        description: Change the phase of an issue.
+        type: string
+        auto: PREDEFINED
+        predefined:
+          - Triage
+          - Investigation
+          - Containment
+          - Response
+      - name: type
+        description: Change the type of an issue.
+        type: string
+      - name: description
+        description: Change the description of an issue.
+        type: string
+      - name: status
+        description: Change the status of an issue.
+        type: string
+        auto: PREDEFINED
+        predefined:
+        - New
+        - In Progress
+        - Resolved - Known Issue
+        - Resolved - Duplicate Issue
+        - Resolved - False Positive
+        - Resolved - other
+        - Resolved - True Positive
+        - Resolved - Security Testing
+        - Resolved - Dismissed
+        - Resolved - Fixed
+        - Resolved - Risk Accepted
+      name: core-update-issue
+      description: Updates the properties of an issue. This command does not provide an explicit indication of success.
+    - arguments:
       - name: page_size
         description: The number of assets to return per page. Default is 100.
       - name: page_number
@@ -1359,6 +1670,668 @@ script:
           type: String
         - contextPath: Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id
           description: The ID of the suggestion rule that generated this recommendation.
+          type: String
+        - contextPath: Core.IssueRecommendations.existing_code_block
+          description: Original vulnerable code.
+          type: String
+        - contextPath: Core.IssueRecommendations.suggested_code_block
+          description: Code block fix suggestion.
+          type: String
+    - arguments:
+      - description: A comma-separated list of issue IDs to fix (maximum 10 per request).
+        name: issue_ids
+        required: true
+        isArray: true
+      - description: Custom title for the pull request.
+        name: title
+      name: core-appsec-remediate-issue
+      description: Create automated pull requests to fix multiple security issues in a single bulk operation.
+      outputs:
+      - contextPath: Core.TriggeredPRs.issueId
+        description: The issue identifier.
+        type: String
+      - contextPath: Core.TriggeredPRs.status
+        description: Either "triggered" or "automated_fix_not_available".
+        type: String
+    - arguments:
+        - description: List of repository asset IDs to configure scanners for.
+          name: repository_ids
+          isArray: true
+          required: true
+        - auto: PREDEFINED
+          description: List of scanners to enable.
+          name: enable_scanners
+          isArray: true
+          predefined:
+            - SECRETS
+            - IAC
+            - SCA
+        - auto: PREDEFINED
+          description: List of scanners to disable.
+          name: disable_scanners
+          isArray: true
+          predefined:
+            - SECRETS
+            - IAC
+            - SCA
+        - auto: PREDEFINED
+          description: Enable live validation of discovered secrets. This argument only relevant when SECRETS scanner is enabled.
+          type: boolean
+          name: secret_validation
+          predefined:
+            - "true"
+            - "false"
+        - auto: PREDEFINED
+          description: Enable scanning on pull requests.
+          type: boolean
+          name: pr_scanning
+          predefined:
+            - "true"
+            - "false"
+        - auto: PREDEFINED
+          description: Block deployment on scanner errors.
+          name: block_on_error
+          type: boolean
+          predefined:
+            - "true"
+            - "false"
+        - auto: PREDEFINED
+          description: Enable tagging of resource blocks.
+          name: tag_resource_blocks
+          type: boolean
+          predefined:
+            - "true"
+            - "false"
+        - auto: PREDEFINED
+          description: Enable tagging of module blocks.
+          name: tag_module_blocks
+          type: boolean
+          predefined:
+            - "true"
+            - "false"
+        - description: List of file paths to exclude from scanning.
+          name: exclude_paths
+          isArray: true
+      name: core-enable-scanners
+      description: Enable or disable scanners with the specified configuration.
+
+    - name: core-create-appsec-policy
+      description: Creates a new AppSec policy in Cortex Platform with defined conditions, scope, and triggers for application security governance.
+      arguments:
+        - name: policy_name
+          description: A unique name for the AppSec policy. Must be descriptive and follow organizational naming conventions.
+          required: true
+        - name: description
+          description: A detailed explanation of the policy's objective, use case, and expected outcomes.
+        - name: asset_group_names
+          description: Comma-separated list of Asset Group names to apply the policy to. Asset groups will be automatically resolved to their corresponding IDs.
+          isArray: true
+        # Condition Filters (Findings Criteria)
+        - name: conditions_finding_type
+          description: "Filter by specific finding types to target policy enforcement. Supported values: Vulnerabilities, IaC Misconfiguration, Licenses, Operational Risk, Secrets, Code Weaknesses, CI/CD Risks."
+          isArray: true
+        - name: conditions_severity
+          description: "Filter findings by severity level to prioritize policy actions. Supported values: CRITICAL, HIGH, MEDIUM, LOW."
+          isArray: true
+        - name: conditions_respect_developer_suppression
+          description: "Controls whether a developer’s manual suppression should be honored. 
+          Set to 'true' to respect developer suppression (evaluate only non-suppressed findings). 
+          Set to 'false' to ignore suppression and always evaluate the finding."
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: conditions_backlog_status
+          description: Filter findings based on their backlog workflow status (NEW or BACKLOG).
+          auto: PREDEFINED
+          predefined:
+            - NEW
+            - BACKLOG
+        - name: conditions_package_name
+          description: Target specific software packages by name for license or vulnerability policies.
+        - name: conditions_package_version
+          description: Specify software package version constraints for precise policy targeting.
+        - name: conditions_package_operational_risk
+          description: "Filter packages by their operational risk assessment level. Supported values: HIGH, MEDIUM, LOW."
+        - name: conditions_appsec_rule_names
+          description: Comma-separated list of AppSec rule names to include in policy evaluation. Rule names will be automatically resolved to their corresponding IDs.
+          isArray: true
+        - name: conditions_cvss
+          description: CVSS base score threshold for vulnerability findings (0.0-10.0). Only vulnerabilities meeting or exceeding this score will trigger the policy.
+        - name: conditions_epss
+          description: Exploit Prediction Scoring System score threshold (0-100). Targets vulnerabilities with higher exploitation probability.
+        - name: conditions_has_a_fix
+          description: Filter findings based on whether a remediation fix or patch is available.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: conditions_is_kev
+          description: Target findings listed in CISA's Known Exploited Vulnerabilities (KEV) catalog for prioritized remediation.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: conditions_secret_validity
+          description: "Filter exposed secrets by their validity status. Supported values: VALID (active secrets), PRIVILEGED (high-access secrets), INVALID (expired/revoked), UNAVAILABLE (status unknown)."
+          isArray: true
+        - name: conditions_license_type
+          description: Target specific software license types for compliance and legal risk management.
+          isArray: true
+
+        # Scope Filters (Asset Criteria)
+        - name: scope_category
+          description: "Define asset categories to include in policy scope. Supported values: Application, Repository, CI/CD Instance, CI/CD Pipeline, VCS Collaborator, VCS Organization."
+          isArray: true
+        - name: scope_business_application_names
+          description: Target specific business applications by name for focused policy enforcement.
+          isArray: true
+        - name: scope_application_business_criticality
+          description: "Filter applications by business criticality level. Supported values: CRITICAL, HIGH, MEDIUM, LOW."
+          isArray: true
+        - name: scope_repository_name
+          description: Target specific code repositories by name for repository-focused policies.
+          isArray: true
+        - name: scope_is_public_repository
+          description: Filter repositories based on their visibility (public vs private) for exposure risk management.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: scope_has_deployed_assets
+          description: Target repositories or applications that have associated deployed infrastructure or runtime assets.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: scope_has_internet_exposed_deployed_assets
+          description: Filter assets based on whether the deployed components are exposed to internet traffic for external attack surface management.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: scope_has_sensitive_data_access
+          description: Target deployed assets that have access to sensitive data stores, databases, or classified information.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: scope_has_privileged_capabilities
+          description: Filter deployed assets with elevated privileges, admin access, or high-impact system capabilities.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        # Trigger Settings (Policy Execution Events)
+        - name: triggers_periodic_report_issue
+          description: Enables detection during scheduled scans. When a violation is found in a periodic scan, an issue will be created ("Detect").
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_periodic_override_severity
+          description: Override the default severity level for issues created by periodic scan detections.
+          auto: PREDEFINED
+          predefined:
+            - Critical
+            - High
+            - Medium
+            - Low
+        - name: triggers_pr_report_issue
+          description: Enables detection during pull request scans. When a violation is found in a PR, an issue is created. Required for PR-based detection.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_pr_block_pr
+          description: Blocks merging of pull requests that contain violations detected by the policy.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_pr_report_pr_comment
+          description: Adds an automated comment to pull requests summarizing detected violations and guidance.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_pr_override_severity
+          description: Override the default severity level for issues created by pull request detections.
+          auto: PREDEFINED
+          predefined:
+            - Critical
+            - High
+            - Medium
+            - Low
+        - name: triggers_cicd_report_issue
+          description: Enables detection during CI/CD pipeline scans. When a violation is found in a pipeline run, an issue is created.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_cicd_block_cicd
+          description: Blocks or fails CI/CD pipeline runs when violations occur.
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_cicd_report_cicd
+          description: Reports violation details back to the CI/CD system (pipeline logs, dashboards, status checks).
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: triggers_cicd_override_severity
+          description: Override the default severity level for issues created by CI/CD pipeline detections.
+          auto: PREDEFINED
+          predefined:
+            - Critical
+            - High
+            - Medium
+            - Low
+    - arguments:
+        - name: case_id_list
+          description: A comma-separated list of case IDs to filter by.
+          isArray: true
+        - auto: PREDEFINED
+          description: Sorts returned cases by the date/time that the case was created ("asc" - ascending, "desc" - descending).
+          name: sort_by_creation_time
+          predefined:
+            - ASC
+            - DESC
+        - auto: PREDEFINED
+          description: Sorts returned cases by the date/time that the case was modified ("asc" - ascending, "desc" - descending).
+          name: sort_by_modification_time
+          predefined:
+            - ASC
+            - DESC
+        - defaultValue: '0'
+          description: Page number (for pagination). The default is 0 (the first page).
+          name: page
+        - defaultValue: '100'
+          description: Maximum number of cases to return per page. The default and maximum value is 100.
+          name: limit
+        - description: A comma-separated list of domains to filter cases by.
+          isArray: true
+          name: case_domain
+        - auto: PREDEFINED
+          description: |
+            A comma-separated list of case statuses to filter cases by.
+          isArray: true
+          name: status
+          predefined:
+            - 'new'
+            - 'under_investigation'
+            - 'resolved'
+        - auto: PREDEFINED
+          description: |
+            A comma-separated list of severity levels to filter cases by.
+          isArray: true
+          name: severity
+          predefined:
+            - 'low'
+            - 'medium'
+            - 'high'
+            - 'critical'
+        - description: A comma-separated list of Asset IDs associated with the case by which to filter the cases.
+          isArray: true
+          name: asset_ids
+        - description: A comma-separated list of Asset Group IDs, where the case is filtered by the assets contained within those groups.
+          isArray: true
+          name: asset_groups
+        - description: A comma-separated list of hosts to filter cases by.
+          isArray: true
+          name: hosts
+        - description: |-
+            A comma-separated list of assignee names or emails to filter cases by. Use the special values: "assigned" - to get all cases with assignees, "unassigned" - to get cases with no assignees.
+          name: assignee
+        - auto: PREDEFINED
+          description: Filter cases by whether they are starred or not.
+          name: starred
+          isArray: true
+          predefined:
+            - 'true'
+            - 'false'
+        - description: A comma-separated list of names to filter cases by.
+          name: case_name
+        - description: A comma-separated list of descriptions to filter cases by.
+          name: case_description
+        - description: A datetime with the format 2019-12-31T23:59:00. Only cases that were created on or before the specified datetime will be retrieved.
+          name: lte_creation_time
+        - description: A datetime with the format 2019-12-31T23:59:00. Only cases that were created on or after the specified datetime will be retrieved.
+          name: gte_creation_time
+        - description: Filters for returned cases that were created on or before the specified datetime with the format 2019-12-31T23:59:00.
+          name: lte_modification_time
+        - description: Filters for returned cases that were modified on or after the specified datetime with the format 2019-12-31T23:59:00.
+          name: gte_modification_time
+        - description: Filters for returned cases that were created on or after the specified date range, for example, 1 month, 2 days, 1 hour, and so on.
+          name: since_creation_time
+        - description: Filters for returned cases that were modified on or after the specified date range, for example, 1 month, 2 days, 1 hour, and so on.
+          name: since_modification_time
+        - auto: PREDEFINED
+          description: Whether to include enriched case data in the response. Recommended for up to 10 cases.
+          name: get_enriched_case_data
+          defaultValue: 'false'
+          predefined:
+            - 'true'
+            - 'false'
+        - description: A comma-separated list of tags to filter cases by.
+          name: tag
+      name: core-get-cases
+      description: Get case information based on the specified filters.
+      outputs:
+        - contextPath: Core.Case.case_id
+          description: Unique ID assigned to each returned case.
+          type: String
+        - contextPath: Core.Case.case_name
+          description: Name of the case.
+          type: String
+        - contextPath: Core.Case.creation_time
+          description: Timestamp when the case was created.
+          type: Number
+        - contextPath: Core.Case.modification_time
+          description: Timestamp when the case was last modified.
+          type: Number
+        - contextPath: Core.Case.status
+          description: Current status of the case.
+          type: String
+        - contextPath: Core.Case.severity
+          description: Severity level of the case.
+          type: String
+        - contextPath: Core.Case.description
+          description: Description of the case.
+          type: String
+        - contextPath: Core.Case.assigned_user_mail
+          description: Email address of the assigned user. May be null.
+          type: String
+        - contextPath: Core.Case.assigned_user_pretty_name
+          description: Full name of the assigned user. May be null.
+          type: String
+        - contextPath: Core.Case.issue_count
+          description: Total number of issues in the case.
+          type: Number
+        - contextPath: Core.Case.low_severity_issue_count
+          description: Number of issues with low severity.
+          type: Number
+        - contextPath: Core.Case.med_severity_issue_count
+          description: Number of issues with medium severity.
+          type: Number
+        - contextPath: Core.Case.high_severity_issue_count
+          description: Number of issues with high severity.
+          type: Number
+        - contextPath: Core.Case.critical_severity_issue_count
+          description: Number of issues with critical severity.
+          type: Number
+        - contextPath: Core.Case.user_count
+          description: Number of users involved in the case.
+          type: Number
+        - contextPath: Core.Case.host_count
+          description: Number of hosts involved in the case.
+          type: Number
+        - contextPath: Core.Case.resolve_comment
+          description: Comments added when resolving the case. May be null.
+          type: String
+        - contextPath: Core.Case.resolved_timestamp
+          description: Timestamp when the case was resolved.
+          type: Number
+        - contextPath: Core.Case.manual_severity
+          description: Severity manually assigned by the user. May be null.
+          type: Number
+        - contextPath: Core.Case.starred
+          description: Indicates whether the case is starred.
+          type: Boolean
+        - contextPath: Core.Case.hosts
+          description: List of hosts involved in the case.
+          type: Array
+        - contextPath: Core.Case.users
+          description: List of users involved in the case.
+          type: Array
+        - contextPath: Core.Case.case_sources
+          description: Sources of the case.
+          type: Array
+        - contextPath: Core.Case.manual_score
+          description: Manually assigned score. May be null.
+          type: Number
+        - contextPath: Core.Case.rule_based_score
+          description: Score based on rules.
+          type: Number
+        - contextPath: Core.Case.wildfire_hits
+          description: Number of WildFire hits.
+          type: Number
+        - contextPath: Core.Case.issues_grouping_status
+          description: Status of issue grouping.
+          type: String
+        - contextPath: Core.Case.mitre_tactics_ids_and_names
+          description: List of MITRE ATT&CK tactic IDs and names associated with the case.
+          type: Array
+        - contextPath: Core.Case.mitre_techniques_ids_and_names
+          description: List of MITRE ATT&CK technique IDs and names associated with the case.
+          type: Array
+        - contextPath: Core.Case.issue_categories
+          description: Categories of issues associated with the case.
+          type: Array
+        - contextPath: Core.Case.original_tags
+          description: Original tags assigned to the case.
+          type: Array
+        - contextPath: Core.Case.tags
+          description: Current tags assigned to the case.
+          type: Array
+        - contextPath: Core.Case.case_domain
+          description: Domain associated with the case.
+          type: String
+        - contextPath: Core.Case.custom_fields
+          description: Custom fields for the case with standardized lowercase, whitespace-free names.
+          type: Unknown
+        - contextPath: Core.Case.CaseExtraData.issue_ids
+          description: List of issue IDs associated with the case.
+          type: Array
+        - contextPath: Core.Case.CaseExtraData.file_artifacts
+          description: File artifacts associated with the case.
+          type: Array
+        - contextPath: Core.Case.CaseExtraData.network_artifacts
+          description: Network artifacts associated with the case.
+          type: Array
+        - contextPath: Core.Case.CaseExtraData.starred_manually
+          description: True if the case was starred manually; false if starred by rules.
+          type: Boolean
+        - contextPath: Core.Case.CaseExtraData.xdr_url
+          description: URL to view the case in Cortex XDR.
+          type: String
+        - contextPath: Core.Case.CaseExtraData.manual_description
+          description: Description manually provided by the user.
+          type: String
+        - contextPath: Core.Case.CaseExtraData.notes
+          description: The notes related to the case.
+          type: String
+        - contextPath: Core.Case.CaseExtraData.detection_time
+          description: The timestamp when the first issue was detected in the case.
+          type: Date
+        - contextPath: Core.CasesMetadata.returned_count
+          description: The actual number of cases that match all filter criteria and returned in this specific response.
+          type: String
+        - contextPath: Core.CasesMetadata.filtered_count
+          description: The total number of cases in the system that match all filter criteria.
+    - name: core-get-appsec-issues
+      description: "Retrieves application security issues based on specified filters."
+      arguments:
+        - name: limit
+          description: "The maximum number of issues to return."
+          defaultValue: "50"
+        - name: sort_field
+          description: The field by which to sort the results.
+          defaultValue: severity
+        - name: sort_order
+          description: The order in which to sort the results.
+          auto: PREDEFINED
+          predefined:
+            - DESC
+            - ASC
+          defaultValue: DESC
+        - name: start_time
+          description: "The start time for filtering according to issue insert time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
+        - name: end_time
+          description: "The end time for filtering according to issue insert time. Supports free-text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
+        - name: issue_id
+          description: "The issue ID. Accepts a comma-separated list."
+          isArray: true
+        - name: assignee
+          description: |
+            The email of the user assigned to the issue. Accepts a comma-separated list. 
+            Use 'unassigned' for all unassigned issues or 'assigned' for all assigned issues.
+          isArray: true
+        - name: collaborator
+          description: The collaborators of the issue. Accepts a comma-separated list.
+          isArray: true
+        - name: status
+          isArray: true
+          description: The issue status. Accepts a comma-separated list.
+          predefined:
+            - New
+            - In Progress
+            - Resolved
+          auto: PREDEFINED
+        - name: issue_name
+          isArray: true
+          description: The issue name. Accepts a comma-separated list.
+        - name: asset_name
+          isArray: true
+          description: The name of the affected asset for the issue. Accepts a comma-separated list.
+        - name: repository
+          isArray: true
+          description: The repository of the issue. Accepts a comma-separated list.
+        - name: file_path
+          isArray: true
+          description: The path of the relevant file for the issue. Accepts a comma-separated list.
+        - name: backlog_status
+          isArray: true
+          description: The backlog status of the issue. Accepts a comma-separated list.
+          predefined:
+            - BACKLOG
+            - NEW
+          auto: PREDEFINED
+        - name: cvss_score_gte
+          description: "The minimum CVSS score."
+        - name: epss_score_gte
+          description: "The minimum EPSS score."
+        - name: has_kev
+          description: "Filter by vulnerabilities that have a Known Exploited Vulnerability (KEV)."
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: severity
+          description: The severity of the issue. Accepts a comma-separated list.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - info
+            - low
+            - medium
+            - high
+            - critical
+        - name: urgency
+          description: The urgency of the issue. Accepts a comma-separated list.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - N/A
+            - NOT_URGENT
+            - URGENT
+            - TOP_URGENT
+        - name: automated_fix_available
+          description: Is there an available automated fix.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: sla
+          description: SLA status of the issue. Accepts a comma-separated list.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - Approaching
+            - On Track
+            - Overdue
+        - name: validation
+          description: Validation status of the issue. Accepts a comma-separated list.
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - INVALID
+            - NO_VALIDATION
+            - PRIVILEGED
+            - UNAVAILABLE
+            - VALID
+      outputs:
+        - contextPath: Core.AppsecIssue.internal_id
+          description: The unique identifier for the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.asset_name
+          description: The names of the assets related to the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.severity
+          description: The severity of the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.epss_score
+          description: The Exploit Prediction Scoring System (EPSS) score.
+          type: Number
+        - contextPath: Core.AppsecIssue.cvss_score
+          description: The Common Vulnerability Scoring System (CVSS) score.
+          type: Number
+        - contextPath: Core.AppsecIssue.assignee
+          description: The full name of the user assigned to the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.is_fixable
+          description: Whether a fix is available for the issue.
+          type: Boolean
+        - contextPath: Core.AppsecIssue.issue_name
+          description: The name of the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.issue_source
+          description: The source of the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.issue_category
+          description: The category of the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.issue_domain
+          description: The domain of the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.issue_description
+          description: The description of the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.status
+          description: The status of the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.time_added
+          description: The timestamp when the issue was inserted.
+          type: Number
+        - contextPath: Core.AppsecIssue.urgency
+          description: The urgency of the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.sla_status
+          description: The SLA status of the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.secret_validation
+          description: The secret validation status of the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.repository_name
+          description: The name of the repository where the issue was found.
+          type: String
+        - contextPath: Core.AppsecIssue.repository_organization
+          description: The organization of the repository where the issue was found.
+          type: String
+        - contextPath: Core.AppsecIssue.file_path
+          description: The file path related to the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.collaborator
+          description: The collaborator associated with the issue.
+          type: String
+        - contextPath: Core.AppsecIssue.has_kev
+          description: Whether the issue is part of the Known Exploited Vulnerabilities catalog (KEV).
+          type: Boolean
+        - contextPath: Core.AppsecIssue.backlog_status
+          description: The backlog status of the issue.
           type: String
   runonce: false
   script: "-"

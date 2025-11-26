@@ -1,0 +1,38 @@
+{
+    "machines": [
+        {
+            "id": 1,
+            "status": "available",
+            "name": "win7",
+            "arch": "x86",
+            "resultserver_ip": "10.10.10.1",
+            "resultserver_port": 8000,
+            "ip": "10.10.10.101",
+            "label": "Windows 7",
+            "locked_changed_on": null,
+            "locked": false,
+            "platform": "windows",
+            "snapshot": "win7_snapshot",
+            "interface": "eth0",
+            "status_changed_on": "1970-01-01 00:00:00",
+            "tags": ["windows", "x86"]
+        },
+        {
+            "id": 2,
+            "status": "available",
+            "name": "win10",
+            "arch": "x64",
+            "resultserver_ip": "10.10.10.1",
+            "resultserver_port": 8000,
+            "ip": "10.10.10.102",
+            "label": "Windows 10",
+            "locked_changed_on": null,
+            "locked": false,
+            "platform": "windows",
+            "snapshot": "win10_snapshot",
+            "interface": "eth0",
+            "status_changed_on": "1970-01-01 00:00:00",
+            "tags": ["windows", "x64"]
+        }
+    ]
+}
