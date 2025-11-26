@@ -39,6 +39,10 @@ CLOUDSEC_SOURCES = [
     "ATTACK_PATH",
     "CSPM_SCANNER"
 ]
+REMEDIATION_TECHNIQUES_SOURCES = [
+    "CIEM_SCANNER",
+    "DATA_POLICY"
+]
 WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
     "core-search-asset-groups",
@@ -660,48 +664,65 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         "issue_name",
         "severity",
         "description",
-        "remediation"
+        "remediation",
     ]
+
     append_appsec_headers = False
     append_playbook_suggestion_header = False
     all_recommendations = []
-    
+
     for issue in issue_data:
         current_issue_id = issue.get("internal_id")
-        
-        # Get playbook suggestions
-        playbook_response = client.get_playbook_suggestion_by_issue(current_issue_id)
-        playbook_suggestions = playbook_response.get("reply", {})
-        demisto.debug(f"{playbook_response=}")
-        if playbook_suggestions:
-            append_playbook_suggestion_header = True
 
+        # Base recommendation
         recommendation = {
             "issue_id": current_issue_id,
             "issue_name": issue.get("alert_name"),
             "severity": issue.get("severity"),
             "description": issue.get("alert_description"),
             "remediation": issue.get("remediation"),
-            "playbook_suggestions": playbook_suggestions,
         }
 
-        if issue.get("alert_source") in APPSEC_SOURCES:
+        # --- Playbook Suggestions ---
+        playbook_response = client.get_playbook_suggestion_by_issue(current_issue_id)
+        playbook_suggestions = playbook_response.get("reply") or {}
+        demisto.debug(f"{playbook_suggestions=} for {current_issue_id=}")
+        if playbook_suggestions:
+            append_playbook_suggestion_header = True
+            recommendation["playbook_suggestions"] = playbook_suggestions
+
+        alert_source = issue.get("alert_source")
+
+        # --- AppSec ---
+        if alert_source in APPSEC_SOURCES:
             appsec_recommendation = get_appsec_suggestion(client, issue, current_issue_id)
-            recommendation = recommendation.update(appsec_recommendation)
-            append_appsec_headers = True
-            
-        elif issue.get("alert_source") in CLOUDSEC_SOURCES:
+            demisto.debug(f"{appsec_recommendation=} for {current_issue_id=}")
+            if appsec_recommendation:
+                recommendation.update(appsec_recommendation)
+                append_appsec_headers = True
+
+        # --- CloudSec ---
+        elif alert_source in CLOUDSEC_SOURCES:
             cloudsec_recommendation = get_cloudsec_suggestion(client, issue, recommendation)
-            recommendation = recommendation.update(cloudsec_recommendation)
-            
+            demisto.debug(f"{cloudsec_recommendation=} for {current_issue_id=}")
+            if cloudsec_recommendation:
+                recommendation.update(cloudsec_recommendation)
+
+        # --- Remediation Techniques ---
+        elif alert_source in REMEDIATION_TECHNIQUES_SOURCES:
+            remediation_techniques_response = issue.get("extended_fields", {}).get("remediationTechniques")
+            demisto.debug(f"Remediation recommendation of {current_issue_id=}: {remediation_techniques_response}")
+            recommendation["remediation"] = remediation_techniques_response or recommendation.get("remediation")
+
         all_recommendations.append(recommendation)
 
+    # Final header adjustments
     if append_appsec_headers:
         headers.extend(["existing_code_block", "suggested_code_block"])
-    
+
     if append_playbook_suggestion_header:
         headers.append("playbook_suggestions")
-    
+        
     # Combine all readable outputs
     issue_readable_output = tableToMarkdown(
         f"Issue Recommendations for {issue_ids}",
