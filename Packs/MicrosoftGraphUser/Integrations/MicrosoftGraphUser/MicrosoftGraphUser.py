@@ -494,21 +494,6 @@ def validate_input_password(args: dict[str, Any]) -> str:
     return sensitive_password or nonsensitive_password
 
 
-# def change_password_user_on_premise_command(client: MsGraphClient, args: dict[str, Any]):
-#     """
-#     changes password for on-premise accounts. See change_password_user_saas_command for the SAAS equivalent.
-#     """
-#     user = str(args.get("user", ""))
-#     password = validate_input_password(args)
-
-#     password_method_id = client.fetch_password_method_id(user)
-#     demisto.debug("Got password method id")
-
-#     client.password_change_user_on_premise(user, password, password_method_id)
-
-#     return CommandResults(readable_output=f"The password of user {user} has been changed successfully.")
-
-
 @polling_function(
     "msgraph-user-change-password-on-premise",  # The specified command name
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 600)),
@@ -559,12 +544,11 @@ def change_password_user_on_premise_command(
         demisto.debug(f"Checking status for {user} at: {polling_url}")
 
         # Poll the status URL (returns the longRunningOperation object)
-        status_response = client.ms_client.http_request(  # Use client's underlying HTTP method
+        status_response = client.ms_client.http_request(
             method="GET", full_url=polling_url, resp_type="json"
         )
         demisto.debug(f"Got {status_response=}")
 
-        # Get status from the microsoft.graph.longRunningOperation object
         operation_status = status_response.get("status", "unknown")
 
         outputs = {"user": user, "status": operation_status, "polling_url": polling_url}
