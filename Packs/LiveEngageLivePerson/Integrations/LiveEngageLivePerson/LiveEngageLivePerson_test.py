@@ -1,12 +1,12 @@
 import pytest
-from requests.exceptions import RequestException
+from requests.exceptions import RequestException  # type: ignore
 from requests_mock import Mocker
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, UTC  # type: ignore
 
 # Import the script
 import LiveEngageLivePerson
 from CommonServerPython import *
-import demistomock as demisto
+# import demistomock as demisto  # type: ignore
 
 
 # Define constants for testing
@@ -34,11 +34,11 @@ MOCK_EVENT_2 = {"changeDate": MOCK_TIME_2, "accountId": "123456789", "element": 
 MOCK_EVENT_3 = {"changeDate": MOCK_TIME_3, "accountId": "123456789", "element": "event3"}
 
 # Page of 2 events
-MOCK_EVENTS_PAGE_1 = {"data": [MOCK_EVENT_1, MOCK_EVENT_2]}
+MOCK_EVENTS_PAGE_1: dict[str, list[dict[str, str]]] = {"data": [MOCK_EVENT_1, MOCK_EVENT_2]}
 # Page of 1 event
-MOCK_EVENTS_PAGE_2 = {"data": [MOCK_EVENT_3]}
+MOCK_EVENTS_PAGE_2: dict[str, list[dict[str, str]]] = {"data": [MOCK_EVENT_3]}
 # Empty page
-MOCK_EVENTS_EMPTY = {"data": []}
+MOCK_EVENTS_EMPTY: dict[str, list[dict[str, str]]] = {"data": []}
 
 
 @pytest.fixture(autouse=True)

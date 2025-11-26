@@ -4,6 +4,7 @@ commonfields:
   id: LiveEngage LivePerson
   version: -1
 category: Messaging and Conferencing
+beta: true
 description: Collects audit events from the LivePerson LiveEngage platform (part of Conversational Cloud).
 detaileddescription: 'LivePerson''s LiveEngage is an AI-powered conversational commerce platform. This integration collects audit trail events.'
 sectionorder:
