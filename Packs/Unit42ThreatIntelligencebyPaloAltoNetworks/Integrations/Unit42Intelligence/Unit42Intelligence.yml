@@ -20,7 +20,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   defaultvalue: A++ - Reputation script
-  required: true
+  required: false
   section: Collect
   advanced: true
 - display: Create relationships
