@@ -406,7 +406,7 @@ _EXTRACTION_JAVASCRIPT = """
     function traverse(node) {
         if (node.nodeType === 3) { // TEXT_NODE
             const text = node.textContent.trim();
-            if (text) markdownOutput.push(text);
+            if (text) markdownOutput.push(text + ' ');
         } else if (node.nodeType === 1) { // ELEMENT_NODE
             const tag = node.tagName.toLowerCase();
             const children = Array.from(node.childNodes);
@@ -437,7 +437,7 @@ _EXTRACTION_JAVASCRIPT = """
                     const href = node.getAttribute('href');
                     const text = node.textContent.trim();
                     if (href && text && !href.toLowerCase().startsWith('mailto:')) {
-                        prefix = `[${text}](${href})`;
+                        prefix = `[${text}](${href}) `;
                         skipChildren = true;
                     } else if (text) {
                         prefix = text;
@@ -471,12 +471,13 @@ _EXTRACTION_JAVASCRIPT = """
     traverse(mainElement);
 
     // --- 3. Final Cleanup ---
-    let finalContent = markdownOutput.join(' ').trim();
+    let finalContent = markdownOutput.join('').trim();
 
     // Standardize whitespace and clean up newlines.
     finalContent = finalContent.replace(/ +/g, ' ');
     finalContent = finalContent.replace(/\\n\\n\\n+/g, '\\n\\n');
     finalContent = finalContent.replace(/[ \\t]*\\n[ \\t]*/g, '\\n');
+    finalContent = finalContent.replace(/ ([.,;:!?])/g, '$1');
     finalContent = finalContent.trim();
 
     return finalContent;
@@ -516,7 +517,15 @@ def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tupl
                 returnByValue=True,
                 _timeout=navigation_timeout
             )
-            content_string = result.get("result", {}).get("value", "").strip()
+            raw_json = result.get("result", {}).get("value", "").strip()
+            
+            try:
+                parsed_json = json.loads(raw_json)
+                content_string = json.dumps(parsed_json, separators=(', ', ': '), ensure_ascii=False)
+                demisto.debug(f"Successfully parsed and formatted JSON from {final_url}")
+            except json.JSONDecodeError as json_err:
+                demisto.debug(f"Could not parse JSON from {final_url}: {json_err}, returning raw content")
+                content_string = raw_json
         else:
             # For HTML URLs, use markdown extraction
             result = tab.Runtime.evaluate(
