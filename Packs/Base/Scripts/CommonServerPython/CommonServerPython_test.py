@@ -5991,7 +5991,7 @@ class TestCommonTypes:
             'Type': 1,
             'ContentsFormat': 'json',
             'Contents': None,
-            'HumanReadable': 'Note! some of the context data was not included because it went over the 3072KB limit',
+            'HumanReadable': 'Note! some of the context data was not included because it went over the 3072KB limit.',
             'EntryContext': {
                 'IP(val.Address && val.Address == obj.Address)': [
                     {'Address': '8.8.8.8'}
@@ -6258,7 +6258,7 @@ class TestCommonTypes:
             'Type': 1,
             'ContentsFormat': 'json',
             'Contents': None,
-            'HumanReadable': 'Note! some of the context data was not included because it went over the 3072KB limit',
+            'HumanReadable': 'Note! some of the context data was not included because it went over the 3072KB limit.',
             'EntryContext': {
                 'Domain(val.Name && val.Name == obj.Name)': [
                     {
@@ -6447,7 +6447,7 @@ class TestCommonTypes:
             'Type': 1,
             'ContentsFormat': 'json',
             'Contents': None,
-            'HumanReadable': 'Note! some of the context data was not included because it went over the 3072KB limit',
+            'HumanReadable': 'Note! some of the context data was not included because it went over the 3072KB limit.',
             'EntryContext': {
                 'URL(val.Data && val.Data == obj.Data)': [
                     {
@@ -6668,7 +6668,7 @@ class TestCommonTypes:
             'Type': 1,
             'ContentsFormat': 'json',
             'Contents': None,
-            'HumanReadable': 'Note! some of the context data was not included because it went over the 3072KB limit',
+            'HumanReadable': 'Note! some of the context data was not included because it went over the 3072KB limit.',
             'EntryContext': {
                 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 &&'
                 ' val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 &&'
