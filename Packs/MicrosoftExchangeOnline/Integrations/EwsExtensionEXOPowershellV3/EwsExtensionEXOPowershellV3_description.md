@@ -47,7 +47,7 @@ To use this integration, you need to connect an application with a certificate.
 
 #### Verify that the admin account has sufficient Exchange Online permissions
 1. Open the Microsoft Purview Portal: https://purview.microsoft.com/
-2. Log in using the same account configured in the XSOAR integration (or an admin account that can modify its permissions).
+2. Log in using an admin account that manages the Azure AD application (for example, a Global Administrator or Privileged Role Administrator).
 3. In the top bar, select: **Settings → Roles and scopes**
 4. In the left sidebar, select: **Role Groups**
 5. Search for the following role group:
