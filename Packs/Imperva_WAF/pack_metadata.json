@@ -10,9 +10,19 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Network",
+        "Security"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "waf",
+        "Imperva",
+        "SecureSphere",
+        "Gateway"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
