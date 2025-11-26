@@ -2283,7 +2283,7 @@ script:
           description: The new description for the case.
           type: String
         - name: assignee
-          description: The new assignee for the case.
+          description: The new assignee for the case. Use the special value "unassigned" to remove an existing assignee.
           type: String
         - auto: PREDEFINED
           name: status
