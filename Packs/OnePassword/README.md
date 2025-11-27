@@ -7,7 +7,7 @@
 ## What does this pack contain?
 
 - Rest API integration for your 1Password.
-- Modeling Rules security events:
+- Modeling Rules for security events:
   - Audit events
   - Item usage actions
   - Sign in attempts
@@ -86,6 +86,5 @@ There is no context output for this command.
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 >| H9T8ZQ6P4F3JY1VK7D2N5L7XQ2W | success | app_name: 1Password Browser Extension<br>app_version: 81055002<br>... | UK | country: UK<br>region: Scotland<br>city: Glasgow<br>... | YB7RPKX9V6N2DAG3T0ZQ8YHWY4C | uuid: LJ5T8WK9U8FQGZ2D1Q4V9RLP3S<br>name: Jenny Bee<br>email: userB@example.com<br>type: user | 2024-12-13T19:52:14.658476952Z | credentials_ok | NAFGMYS3LZBCZLX2MVRSWNXIHI |
 >| B7N3W5E9Y6JHQ2V1KZ8M4P0QX5T | success | app_name: 1Password for Web<br>app_version: 1895<br>... | IL | country: IL<br>region: Gush Dan<br>city: Tel Aviv<br>... | C4XUJWF8N2Y1K9V3WZ7M5E6T0H | uuid: MNY8UJ6PZG5BVW9QH3A1K2X3CK<br>name: John Doe<br>email: userA@example.com<br>type: user | 2024-12-16T13:27:33.375466135Z | credentials_ok | QXZTBRJULQX5ZJWKRFG8YTP8EX |
-
 
 </~XSIAM>
