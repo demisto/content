@@ -2400,7 +2400,9 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     if not headers and isinstance(t, dict) and len(t.keys()) == 1:
         # in case of a single key, create a column table where each element is in a different row.
         headers = list(t.keys())
-        t = list(t.values())[0]
+        # if the value of the single key is a list, unpack it for creating a column table.
+        if isinstance(list(t.values())[0], list):
+            t = list(t.values())[0]
 
     if not isinstance(t, list):
         t = [t]
@@ -8518,16 +8520,16 @@ def response_to_context(reponse_obj, user_predefiend_keys=None):
 def safe_strptime(date_str, datetime_format, strptime=datetime.strptime):
     """
     Parses a date string to a datetime object, handling cases where the microsecond component is missing.
-    
+
     :type date_str: ``str``
     :param date_str: The date string to parse (required)
-    
+
     :type datetime_format: ``str``
     :param datetime_format: The format of the date string (required)
-    
+
     :type strptime: ``Callable``
     :param strptime: The function to use for parsing the date string (optional)
-    
+
     :return: The parsed datetime object
     :rtype: ``datetime.datetime``
     """
@@ -9375,6 +9377,7 @@ if 'requests' in sys.modules:
         """
 
         REQUESTS_TIMEOUT = 60
+        TIME_SENSITIVE_TOTAL_TIMEOUT = 15
 
         def __init__(
             self,
@@ -9404,7 +9407,6 @@ if 'requests' in sys.modules:
                 ensure_proxy_has_http_prefix()
             else:
                 skip_proxy()
-
             if not verify:
                 skip_cert_verification()
 
@@ -9413,7 +9415,18 @@ if 'requests' in sys.modules:
             system_timeout = os.getenv('REQUESTS_TIMEOUT', '')
             self.timeout = float(entity_timeout or system_timeout or timeout)
 
+            # Time-Sensitive Logic
+            self._time_sensitive_deadline = None
+            self._time_sensitive_total_timeout = self.TIME_SENSITIVE_TOTAL_TIMEOUT
+
+            if is_time_sensitive():
+                demisto.debug("Time-sensitive mode enabled. Setting execution time limit to {} seconds.".format(self._time_sensitive_total_timeout))
+                self._time_sensitive_deadline = time.time() + float(
+                    self._time_sensitive_total_timeout
+                )
+
             self.execution_metrics = ExecutionMetrics()
+
 
         def __del__(self):
             self._return_execution_metrics_results()
@@ -9428,6 +9441,7 @@ if 'requests' in sys.modules:
         def _implement_retry(self, retries=0,
                              status_list_to_retry=None,
                              backoff_factor=5,
+                             backoff_jitter=0.0,
                              raise_on_redirect=False,
                              raise_on_status=False):
             """
@@ -9456,6 +9470,10 @@ if 'requests' in sys.modules:
 
                 By default, backoff_factor set to 5
 
+            :type backoff_jitter ``float``
+            :param backoff_jitter: the sleep (backoff factor) is extended by
+                random.uniform(0, {backoff jitter})
+
             :type raise_on_redirect ``bool``
             :param raise_on_redirect: Whether, if the number of redirects is
                 exhausted, to raise a MaxRetryError, or to return a response with a
@@ -9478,6 +9496,7 @@ if 'requests' in sys.modules:
                     read=retries,
                     connect=retries,
                     backoff_factor=backoff_factor,
+                    backoff_jitter=backoff_jitter,
                     status=retries,
                     status_forcelist=status_list_to_retry,
                     raise_on_status=raise_on_status,
@@ -9505,7 +9524,7 @@ if 'requests' in sys.modules:
         def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
                           params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
-                          backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
+                          backoff_factor=5, backoff_jitter=0.0, raise_on_redirect=False, raise_on_status=False,
                           error_handler=None, empty_valid_codes=None, params_parser=None, with_metrics=False, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -9580,6 +9599,10 @@ if 'requests' in sys.modules:
 
                 By default, backoff_factor set to 5
 
+            :type backoff_jitter ``float``
+            :param backoff_jitter: the sleep (backoff factor) is extended by
+                random.uniform(0, {backoff jitter})
+
             :type raise_on_redirect ``bool``
             :param raise_on_redirect: Whether, if the number of redirects is
                 exhausted, to raise a MaxRetryError, or to return a response with a
@@ -9610,16 +9633,48 @@ if 'requests' in sys.modules:
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
             """
+            
+            # Time-Sensitive command Logic
+            request_timeout = timeout
+            request_retries = retries
+            remaining_time = None
+
+            # Time-Sensitive command mode
+            if self._time_sensitive_deadline:
+                remaining_time = self._time_sensitive_deadline - time.time()
+
+                if remaining_time <= 0:
+                    raise DemistoException(
+                            "Time-sensitive command execution time limit ({time_limit}s) reached before performing the API request."
+                            .format(time_limit=self._time_sensitive_total_timeout)
+                        )
+
+                request_retries = 0
+                request_timeout = remaining_time
+
+            # Set default timeout if one hasn't been set by user OR by time-sensitive logic
+            if request_timeout is None:
+                request_timeout = self.timeout
+
             try:
                 # Replace params if supplied
                 address = full_url if full_url else urljoin(self._base_url, url_suffix)
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
-                if retries:
-                    self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
-                if not timeout:
-                    timeout = self.timeout
-                if IS_PY3 and params_parser:  # The `quote_via` parameter is supported only in python3.
+
+                if request_retries:
+                    self._implement_retry(
+                        request_retries,
+                        status_list_to_retry,
+                        backoff_factor,
+                        backoff_jitter,
+                        raise_on_redirect,
+                        raise_on_status,
+                    )
+
+                if (
+                    IS_PY3 and params_parser
+                ):  # The `quote_via` parameter is supported only in python3.
                     params = urllib.parse.urlencode(params, quote_via=params_parser)
 
                 # Execute
@@ -9633,19 +9688,37 @@ if 'requests' in sys.modules:
                     files=files,
                     headers=headers,
                     auth=auth,
-                    timeout=timeout,
+                    timeout=request_timeout,
                     **kwargs
                 )
+
                 if not self._is_status_code_valid(res, ok_codes):
                     self._handle_error(error_handler, res, with_metrics)
 
-                return self._handle_success(res, resp_type, empty_valid_codes, return_empty_response, with_metrics)
+                return self._handle_success(
+                    res,
+                    resp_type,
+                    empty_valid_codes,
+                    return_empty_response,
+                    with_metrics,
+                )
 
             except requests.exceptions.ConnectTimeout as exception:
                 if with_metrics:
                     self.execution_metrics.timeout_error += 1
-                err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
-                          ' is incorrect or that the Server is not accessible from your host.'
+                err_msg = (
+                    "Connection Timeout Error - potential reasons might be that the Server URL parameter"
+                    " is incorrect or that the Server is not accessible from your host."
+                )
+                if (
+                    self._time_sensitive_deadline
+                    and remaining_time is not None
+                    and remaining_time <= request_timeout
+                ):
+                    err_msg = "Time-sensitive command execution time limit ({time_limit}s) exceeded. Original error: {original_msg}".format(
+                        time_limit=self._time_sensitive_total_timeout,
+                        original_msg=err_msg
+                    )
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.SSLError as exception:
                 if with_metrics:

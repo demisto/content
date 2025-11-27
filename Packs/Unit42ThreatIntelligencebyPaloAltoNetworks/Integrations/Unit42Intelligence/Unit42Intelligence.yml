@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -20,7 +20,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   defaultvalue: A++ - Reputation script
-  required: true
+  required: false
   section: Collect
   advanced: true
 - display: Create relationships
