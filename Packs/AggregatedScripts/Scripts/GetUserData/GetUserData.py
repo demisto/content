@@ -405,6 +405,8 @@ def prisma_cloud_get_user(command: Command, additional_fields: bool) -> tuple[li
 def msgraph_user_get(command: Command, additional_fields: bool) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     readable_outputs_list = []
 
+    command.args["properties"] = demisto.args().get("properties")
+
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
