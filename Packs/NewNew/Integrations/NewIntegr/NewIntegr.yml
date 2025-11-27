@@ -661,7 +661,7 @@ script:
   subtype: python3
   type: python
 tests:
-  - No Tests
+- No Tests
 defaultmapperin: Grafana Alert Mapper
 defaultclassifier: Grafana Alert
-fromversion: 6.0.0
+fromversion: 6.10.0

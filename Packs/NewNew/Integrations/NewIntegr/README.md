@@ -21,9 +21,12 @@ This integration was integrated and tested with version 8.0.0 of Grafana
 | Incident type |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### grafana-alerts-list
+
 ***
 Gets alerts.
 
@@ -31,6 +34,7 @@ Gets alerts.
 #### Base Command
 
 `grafana-alerts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -64,9 +68,11 @@ Gets alerts.
 
 
 #### Command Example
+
 ```!grafana-alerts-list```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -127,6 +133,7 @@ Gets alerts.
 #### Human Readable Output
 
 >### Existing Alerts:
+
 >|Id|Name|State|New State Date|Panel Id|Dashboard Id|Dashboard Uid|Dashboard Name|Url|
 >|---|---|---|---|---|---|---|---|---|
 >| 2 | Adi's Alert | no_data | 2021-09-30T15:43:20Z | 5 | 2 | yzDQUOR7z | streaming2 | [https://base_url/d/yzDQUOR7z/streaming2](https://base_url/d/yzDQUOR7z/streaming2) |
@@ -135,6 +142,7 @@ Gets alerts.
 
 
 ### grafana-alert-pause
+
 ***
 Pauses an alert by ID.
 
@@ -142,6 +150,7 @@ Pauses an alert by ID.
 #### Base Command
 
 `grafana-alert-pause`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -158,9 +167,11 @@ Pauses an alert by ID.
 
 
 #### Command Example
+
 ```!grafana-alert-pause alert_id=2```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -176,12 +187,14 @@ Pauses an alert by ID.
 #### Human Readable Output
 
 >### Paused Alert 2:
+
 >|Id|Message|State|
 >|---|---|---|
 >| 2 | Alert paused | paused |
 
 
 ### grafana-alert-unpause
+
 ***
 Unpauses an alert by ID.
 
@@ -189,6 +202,7 @@ Unpauses an alert by ID.
 #### Base Command
 
 `grafana-alert-unpause`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -205,9 +219,11 @@ Unpauses an alert by ID.
 
 
 #### Command Example
+
 ```!grafana-alert-unpause alert_id=2```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -223,12 +239,14 @@ Unpauses an alert by ID.
 #### Human Readable Output
 
 >### Un-paused Alert 2:
+
 >|Id|Message|State|
 >|---|---|---|
 >| 2 | Alert un-paused | unknown |
 
 
 ### grafana-users-search
+
 ***
 Gets users.
 
@@ -236,6 +254,7 @@ Gets users.
 #### Base Command
 
 `grafana-users-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -262,9 +281,11 @@ Gets users.
 
 
 #### Command Example
+
 ```!grafana-users-search```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -301,6 +322,7 @@ Gets users.
 #### Human Readable Output
 
 >### Existing Users:
+
 >|Id|Email|Name|Login|Is Admin|Is Disabled|Avatar Url|Last Seen At|Last Seen At Age|
 >|---|---|---|---|---|---|---|---|---|
 >| 1 | User@mail | admin | admin | true | false | [https://base_url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b](https://base_url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b) | 2021-10-04T15:25:40Z | 4m |
@@ -309,6 +331,7 @@ Gets users.
 
 
 ### grafana-user-teams-get
+
 ***
 Gets the user's teams by user ID.
 
@@ -316,6 +339,7 @@ Gets the user's teams by user ID.
 #### Base Command
 
 `grafana-user-teams-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -338,9 +362,11 @@ Gets the user's teams by user ID.
 
 
 #### Command Example
+
 ```!grafana-user-teams-get user_id=1```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -374,6 +400,7 @@ Gets the user's teams by user ID.
 #### Human Readable Output
 
 >### Teams For User 1:
+
 >|Id|Org Id|Name|Email|Avatar Url|Member Count|Permission|
 >|---|---|---|---|---|---|---|
 >| 15 | 1 | Test Team | team@test.com | [https://base_url/avatar/f1f97cfa3c828a7352da671a](https://base_url/avatar/f1f97cfa3c828a7352da671a) | 1 | 0 |
@@ -381,6 +408,7 @@ Gets the user's teams by user ID.
 
 
 ### grafana-user-orgs-get
+
 ***
 Gets user's organizations by user ID.
 
@@ -388,6 +416,7 @@ Gets user's organizations by user ID.
 #### Base Command
 
 `grafana-user-orgs-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -406,9 +435,11 @@ Gets user's organizations by user ID.
 
 
 #### Command Example
+
 ```!grafana-user-orgs-get user_id=1```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -434,6 +465,7 @@ Gets user's organizations by user ID.
 #### Human Readable Output
 
 >### Organizations For User 1:
+
 >|Name|Org Id|Role|
 >|---|---|---|
 >| Main Org. | 1 | Admin |
@@ -441,6 +473,7 @@ Gets user's organizations by user ID.
 
 
 ### grafana-user-update
+
 ***
 Updates a user by user ID. Login or email is mandatory. If you change your own login information, you won't be able to continue querying as your username (login) will change. Login and email should be unique.
 
@@ -448,6 +481,7 @@ Updates a user by user ID. Login or email is mandatory. If you change your own l
 #### Base Command
 
 `grafana-user-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -464,17 +498,20 @@ Updates a user by user ID. Login or email is mandatory. If you change your own l
 There is no context output for this command.
 
 #### Command Example
+
 ```!grafana-user-update user_id=3 email=TestUser login=TestUser name=TestUser```
 
 #### Human Readable Output
 
 >### Successfully Updated User 3:
+
 >|Message|
 >|---|
 >| User updated |
 
 
 ### grafana-annotation-create
+
 ***
 Creates an annotation in the Grafana database. The dashboard_id and panel_id fields are optional. If they are not specified, a global annotation is created and can be queried in any dashboard that adds the Grafana annotations data source. When creating a region annotation include the time_end property.
 
@@ -482,6 +519,7 @@ Creates an annotation in the Grafana database. The dashboard_id and panel_id fie
 #### Base Command
 
 `grafana-annotation-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -502,9 +540,11 @@ Creates an annotation in the Grafana database. The dashboard_id and panel_id fie
 
 
 #### Command Example
+
 ```!grafana-annotation-create text="annotate"```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -519,12 +559,14 @@ Creates an annotation in the Grafana database. The dashboard_id and panel_id fie
 #### Human Readable Output
 
 >### Successfully Created Annotation 266:
+
 >|Id|Message|
 >|---|---|
 >| 266 | Annotation added |
 
 
 ### grafana-teams-search
+
 ***
 Gets teams.
 
@@ -532,6 +574,7 @@ Gets teams.
 #### Base Command
 
 `grafana-teams-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -556,9 +599,11 @@ Gets teams.
 
 
 #### Command Example
+
 ```!grafana-teams-search```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -598,6 +643,7 @@ Gets teams.
 #### Human Readable Output
 
 >### Teams Search Results:
+
 >|Id|Org Id|Name|Email|Avatar Url|Member Count|Permission|
 >|---|---|---|---|---|---|---|
 >| 15 | 1 | Test Team | team@test.com | [https://base_url/avatar/f1f97cfa3c828a7352da671a](https://base_url/avatar/f1f97cfa3c828a7352da671a) | 1 | 0 |
@@ -606,6 +652,7 @@ Gets teams.
 
 
 ### grafana-team-members-list
+
 ***
 Gets a list of all team members by team ID.
 
@@ -613,6 +660,7 @@ Gets a list of all team members by team ID.
 #### Base Command
 
 `grafana-team-members-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -638,9 +686,11 @@ Gets a list of all team members by team ID.
 
 
 #### Command Example
+
 ```!grafana-team-members-list team_id=15```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -668,12 +718,14 @@ Gets a list of all team members by team ID.
 #### Human Readable Output
 
 >### Team 15 Members:
+
 >|Org Id|Team Id|User Id|Email|Name|Login|Avatar Url|Permission|
 >|---|---|---|---|---|---|---|---|
 >| 1 | 15 | 1 | User@mail | admin | admin | [https://base_url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b](https://base_url/avatar/5d9c68c6c50ed3d02a2fcf54f63993b) | 0 |
 
 
 ### grafana-user-add-to-team
+
 ***
 Adds a user to a team.
 
@@ -681,6 +733,7 @@ Adds a user to a team.
 #### Base Command
 
 `grafana-user-add-to-team`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -694,17 +747,20 @@ Adds a user to a team.
 There is no context output for this command.
 
 #### Command Example
+
 ```!grafana-user-add-to-team team_id=15 user_id=3```
 
 #### Human Readable Output
 
 >### Successfully Added User 3 to Team 15:
+
 >|Message|
 >|---|
 >| Member added to Team |
 
 
 ### grafana-user-remove-from-team
+
 ***
 Removes a user from a team.
 
@@ -712,6 +768,7 @@ Removes a user from a team.
 #### Base Command
 
 `grafana-user-remove-from-team`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -725,17 +782,20 @@ Removes a user from a team.
 There is no context output for this command.
 
 #### Command Example
+
 ```!grafana-user-remove-from-team team_id=15 user_id=3```
 
 #### Human Readable Output
 
 >### Successfully Removed User 3 from Team 15:
+
 >|Message|
 >|---|
 >| Team Member removed |
 
 
 ### grafana-team-add
+
 ***
 Creates a new team.
 
@@ -743,6 +803,7 @@ Creates a new team.
 #### Base Command
 
 `grafana-team-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -760,9 +821,11 @@ Creates a new team.
 
 
 #### Command Example
+
 ```!grafana-team-add name="TestTeam4"```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -777,12 +840,14 @@ Creates a new team.
 #### Human Readable Output
 
 >### Successfully Created Team 153:
+
 >|Message|Team Id|
 >|---|---|
 >| Team created | 153 |
 
 
 ### grafana-team-delete
+
 ***
 Deletes a team.
 
@@ -790,6 +855,7 @@ Deletes a team.
 #### Base Command
 
 `grafana-team-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -802,17 +868,20 @@ Deletes a team.
 There is no context output for this command.
 
 #### Command Example
+
 ```!grafana-team-delete team_id=152```
 
 #### Human Readable Output
 
 >### Successfully Deleted Team 152:
+
 >|Message|
 >|---|
 >| Team deleted |
 
 
 ### grafana-org-create
+
 ***
 Creates an organization.
 
@@ -820,6 +889,7 @@ Creates an organization.
 #### Base Command
 
 `grafana-org-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -835,9 +905,11 @@ Creates an organization.
 
 
 #### Command Example
+
 ```!grafana-org-create name="Organization"```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -852,12 +924,14 @@ Creates an organization.
 #### Human Readable Output
 
 >### Successfully Created Organization 12:
+
 >|Message|Org Id|
 >|---|---|
 >| Organization created | 12 |
 
 
 ### grafana-dashboards-search
+
 ***
 Searches dashboards.
 
@@ -865,6 +939,7 @@ Searches dashboards.
 #### Base Command
 
 `grafana-dashboards-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -895,9 +970,11 @@ Searches dashboards.
 
 
 #### Command Example
+
 ```!grafana-dashboards-search```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -934,6 +1011,7 @@ Searches dashboards.
 #### Human Readable Output
 
 >### Existing Dashboards:
+
 >|Id|Uid|Title|Is Starred|Tags|Uri|Url|Type|Sort Meta|
 >|---|---|---|---|---|---|---|---|---|
 >| 1 | TXSTREZ | Streaming | true |  | db/streaming | [https://base_url/d/TXSTREZ/streaming](https://base_url/d/TXSTREZ/streaming) | dash-db | 0 |
@@ -941,6 +1019,7 @@ Searches dashboards.
 
 
 ### grafana-user-get-by-id
+
 ***
 Gets a user by ID.
 
@@ -948,6 +1027,7 @@ Gets a user by ID.
 #### Base Command
 
 `grafana-user-get-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -975,9 +1055,11 @@ Gets a user by ID.
 
 
 #### Command Example
+
 ```!grafana-user-get-by-id user_id=1```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -1003,12 +1085,14 @@ Gets a user by ID.
 #### Human Readable Output
 
 >### User 1 Results:
+
 >|Id|Email|Name|Login|Theme|Org Id|Is Grafana Admin|Is D Is abled|Is External|Updated At|Created At|Avatar Url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | User@mail | admin | admin | light | 1 | true | false | false | 2021-09-30T14:46:22Z | 2021-06-08T10:57:39Z | [https://base_url/avatar/46d229b033af06a191ff2267bca9ae5](https://base_url/avatar/46d229b033af06a191ff2267bca9ae5) |
 
 
 ### grafana-team-get-by-id
+
 ***
 Gets a team by ID.
 
@@ -1016,6 +1100,7 @@ Gets a team by ID.
 #### Base Command
 
 `grafana-team-get-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1037,9 +1122,11 @@ Gets a team by ID.
 
 
 #### Command Example
+
 ```!grafana-team-get-by-id team_id=15```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -1059,12 +1146,14 @@ Gets a team by ID.
 #### Human Readable Output
 
 >### Team 15 Results:
+
 >|Id|Org Id|Name|Email|Avatar Url|Member Count|Permission|
 >|---|---|---|---|---|---|---|
 >| 15 | 1 | Test Team | team@test.com | [https://base_url/avatar/f1f97cfa3c828a7352da671a](https://base_url/avatar/f1f97cfa3c828a7352da671a) | 1 | 0 |
 
 
 ### grafana-alert-get-by-id
+
 ***
 Gets an alert by id.
 
@@ -1072,6 +1161,7 @@ Gets an alert by id.
 #### Base Command
 
 `grafana-alert-get-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1106,9 +1196,11 @@ Gets an alert by id.
 
 
 #### Command Example
+
 ```!grafana-alert-get-by-id alert_id=1```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -1192,12 +1284,14 @@ Gets an alert by id.
 #### Human Readable Output
 
 >### Alert 1 Results:
+
 >|Id|Version|Org Id|Dashboard Id|Panel Id|Name|Message|State|New State Date|State Changes|Handler|Silenced|Frequency|For|Created|Updated|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | 0 | 1 | 1 | 4 | Arseny's Alert | man down! | no_data | 2021-06-09T15:20:01Z | 1 | 1 | false | 600 | 60000000000 | 2021-06-09T15:13:45Z | 2021-06-09T15:14:51Z |
 
 
 ### grafana-org-list
+
 ***
 Gets organizations.
 
@@ -1205,6 +1299,7 @@ Gets organizations.
 #### Base Command
 
 `grafana-org-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1222,9 +1317,11 @@ Gets organizations.
 
 
 #### Command Example
+
 ```!grafana-org-list```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -1249,6 +1346,7 @@ Gets organizations.
 #### Human Readable Output
 
 >### Existing Organizations:
+
 >|Id|Name|
 >|---|---|
 >| 1 | Main Org. |
@@ -1257,6 +1355,7 @@ Gets organizations.
 
 
 ### grafana-org-get-by-name
+
 ***
 Gets an organization by name.
 
@@ -1264,6 +1363,7 @@ Gets an organization by name.
 #### Base Command
 
 `grafana-org-get-by-name`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1281,9 +1381,11 @@ Gets an organization by name.
 
 
 #### Command Example
+
 ```!grafana-org-get-by-name name="Main Org."```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -1306,12 +1408,14 @@ Gets an organization by name.
 #### Human Readable Output
 
 >### Organization "Main Org." Results:
+
 >|Name|Id|Address|
 >|---|---|---|
 >| Main Org. | 1 | address1: <br/>address2: <br/>city: <br/>zipCode: <br/>state: <br/>country:  |
 
 
 ### grafana-org-get-by-id
+
 ***
 Gets an organization by ID.
 
@@ -1319,6 +1423,7 @@ Gets an organization by ID.
 #### Base Command
 
 `grafana-org-get-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1336,9 +1441,11 @@ Gets an organization by ID.
 
 
 #### Command Example
+
 ```!grafana-org-get-by-id org_id=1```
 
 #### Context Example
+
 ```json
 {
     "Grafana": {
@@ -1361,6 +1468,7 @@ Gets an organization by ID.
 #### Human Readable Output
 
 >### Organization 1 Results:
+
 >|Id|Name|Address|
 >|---|---|---|
 >| 1 | Main Org. | address1: <br/>address2: <br/>city: <br/>zipCode: <br/>state: <br/>country:  |
