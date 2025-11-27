@@ -119,7 +119,7 @@ class RasterizeType(Enum):
     PNG = "png"
     PDF = "pdf"
     JSON = "json"
-    TEXT = "text"  # Added for structured extraction
+    TEXT = "text"
 
 
 # endregion
@@ -386,6 +386,7 @@ class PychromeEventHandler:
 
 
 # endregion
+
 _EXTRACTION_JAVASCRIPT = """
 (function() {
     // --- JSON Detection and Extraction (First Priority) ---
@@ -553,8 +554,6 @@ def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tupl
 
 
 # endregion
-
-# region utility functions
 
 
 def count_running_chromes(port) -> int:
