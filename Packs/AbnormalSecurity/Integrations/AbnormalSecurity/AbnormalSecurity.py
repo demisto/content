@@ -216,7 +216,7 @@ class Client(BaseClient):
 
     def get_details_of_a_threat_request(self, threat_id, subtenant=None, page_size=None, page_number=None):
         """
-        Get details of a specific threat with pagination support.
+        Get details of a specific threat with pagination support .
 
         Args:
             threat_id (str): The ID of the threat to get details for
