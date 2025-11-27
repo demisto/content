@@ -224,7 +224,8 @@ def run_gsuiteadmin(user: UserData, using: str) -> tuple[list[ExpiredPasswordRes
 
 def run_aws_iam(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult], str]:
     """
-    Forces password change on next sign-in in AWS IAM using the 'aws-iam-update-login-profile' command.
+    Forces a user to change their password on the next sign-in in AWS IAM
+    using the 'aws-iam-update-login-profile' command with explicit arguments.
 
     Args:
         user (UserData): The user data dictionary.
@@ -233,18 +234,38 @@ def run_aws_iam(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
     Returns:
         tuple[list[ExpiredPasswordResult], str]: A list containing the result of the password expiration operation and the HR.
     """
+
+    args = {
+        "userName": user["Username"],
+        "using": using,
+        "passwordResetRequired": "True"
+    }
+
     res_cmd, hr = run_command(
         "aws-iam-update-login-profile",
-        {"user": user["Username"], "using": using},
+        args,
     )
+
     func_res = []
     for res in res_cmd:
-        func_res.append(
-            ExpiredPasswordResult(Result="Success",
-                                  Message="IAM password policy updated, requiring change on next sign-in")
-            if not is_error(res)
-            else ExpiredPasswordResult(Result="Failed", Message=res["Contents"])
-        )
+        if not is_error(res):
+            func_res.append(
+                ExpiredPasswordResult(
+                    Result="Success",
+                    Message="IAM user login profile updated successfully, requiring password change on next sign-in."
+                )
+            )
+        else:
+            func_res.append(
+                ExpiredPasswordResult(
+                    Result="Failed",
+                    Message=res.get("Contents", "AWS-IAM command failed with no specific error message.")
+                )
+            )
+
+    if not func_res:
+        return [ExpiredPasswordResult(Result="Failed", Message="Unexpected empty response from AWS-IAM command.")], hr
+
     return func_res, hr
 
 
