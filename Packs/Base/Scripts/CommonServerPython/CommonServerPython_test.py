@@ -673,6 +673,16 @@ class TestTableToMarkdown:
         )
         assert table_single_key_dict == expected_single_key_dict_tbl
 
+        t = {"dummy_key1": {"dummy_key2": "dummy_value"}}
+        table_single_key_dict_nested = tableToMarkdown('TABLE 1', t)
+        expected_single_key_dict_nested_tbl = (
+            '### TABLE 1\n'
+            '|dummy_key1|\n'
+            '|---|\n'
+            '| dummy_key2: dummy_value |\n'
+        )
+        assert table_single_key_dict_nested == expected_single_key_dict_nested_tbl
+
     @staticmethod
     def test_dict_with_special_character():
         """
