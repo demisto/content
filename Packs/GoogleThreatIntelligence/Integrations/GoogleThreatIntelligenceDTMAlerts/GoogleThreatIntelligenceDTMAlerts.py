@@ -272,6 +272,19 @@ def trim_spaces_from_args(args):
     return args
 
 
+def remove_empty_elements_for_fetch(d: Any) -> Any:
+    """
+    Recursively remove empty lists, empty dicts, or None elements from a dictionary or list.
+    :param d: Input dictionary or list.
+    :return: Dictionary or list with all empty lists, and empty dictionaries removed.
+    """
+    if not isinstance(d, dict | list):
+        return d
+    elif isinstance(d, list):
+        return [v for v in (remove_empty_elements_for_fetch(v) for v in d) if not check_empty(v)]
+    return {k: v for k, v in ((k, remove_empty_elements_for_fetch(v)) for k, v in d.items()) if not check_empty(v)}
+
+
 def remove_empty_elements_for_hr(d: Any) -> Any:
     """
     Recursively remove empty lists, empty dicts, or None elements from a dictionary or list.
@@ -902,7 +915,7 @@ def fetch_incidents(
         )
 
         alert["doc_markdown"] = readable_output
-        alert = remove_empty_elements_for_hr(alert)
+        alert = remove_empty_elements_for_fetch(alert)
         alert_incidents.append(
             {
                 "name": alert.get("title", ""),
