@@ -89,7 +89,8 @@ def get_module_command_func(
 
 def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult], str]:
     """
-    Expires a user's password in Active Directory using the 'ad-expire-password' command.
+    Expires a user's password in Active Directory by clearing the 'Password Never Expires' flag
+    and then running the 'ad-expire-password' command.
 
     Args:
         user (UserData): The user data dictionary.
@@ -98,18 +99,56 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
     Returns:
         tuple[list[ExpiredPasswordResult], str]: A list containing the result of the password expiration operation and the HR.
     """
-    res_cmd, hr = run_command("ad-expire-password", {"username": user["Username"], "using": using})
-    func_res = []
-    for res in res_cmd:
-        res_msg = res["Contents"]
-        # Assuming successful message or context check for Active Directory command
-        func_res.append(
-            ExpiredPasswordResult(Result="Success", Message="Password expiration successfully enforced")
-            if not is_error(res) # TODO: is this term is good?
-            else ExpiredPasswordResult(Result="Failed", Message=res_msg)
-        )
-    return func_res, hr
+    username = user["Username"]
 
+    # 1. Clear the "Password Never Expires" attribute (userAccountControl 0x10000)
+    # This must run before ad-expire-password to ensure the policy can be enforced.
+    args_never_expire_flag = {"username": username, "using": using, "value": "false"}
+    res_never_expire, hr_never_expire = run_command("ad-modify-password-never-expire", args_never_expire_flag)
+
+    # Check if clearing the "never expire" flag failed first
+    if any(is_error(res) for res in res_never_expire):
+        error_msg = next((res.get("Contents") for res in res_never_expire if is_error(res)),
+                         "Failed to clear 'password never expire' flag.")
+        return [
+            ExpiredPasswordResult(
+                Result="Failed",
+                Message=f"Pre-check failed (AD flag clearance): {error_msg}"
+            )
+        ], hr_never_expire
+
+    # 2. Run the explicit password expiration command
+    args_expire = {"username": username, "using": using}
+    res_expire, hr_expire = run_command("ad-expire-password", args_expire)
+
+    # Combine human-readable outputs
+    hr = f"{hr_never_expire}\n\n{hr_expire}"
+
+    func_res = []
+    for res in res_expire:
+        if not is_error(res):
+            # Success is inferred if both commands run without error
+            func_res.append(
+                ExpiredPasswordResult(
+                    Result="Success",
+                    Message="Password expiration successfully enforced (AD flag cleared and expiration set)"
+                )
+            )
+        else:
+            # Failure result
+            res_msg = res.get("Contents", "AD expiration command failed with no specific message.")
+            func_res.append(
+                ExpiredPasswordResult(
+                    Result="Failed",
+                    Message=f"AD expiration command failed: {res_msg}"
+                )
+            )
+
+    # Ensure at least one result is returned; if func_res is empty, something unexpected happened
+    if not func_res:
+        return [ExpiredPasswordResult(Result="Failed", Message="Unexpected empty response from AD commands.")], hr
+
+    return func_res, hr
 
 def run_microsoft_graph_user(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult], str]:
     """
