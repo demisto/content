@@ -115,9 +115,6 @@ ignore=IF115
 [file:incidentfield-Dataminr-Pulse-Vulnerability.json]
 ignore=IF115
 
-[file:incidentfield-Dataminr-Pulse-Post-Text.json]
-ignore=IF115
-
 [file:incidentfield-Dataminr-Pulse-Metadata-Cyber-Address.json]
 ignore=IF115
 
@@ -133,16 +130,10 @@ ignore=IF115
 [file:indicatorfield-Dataminr_Pulse_EPSS_Score.json]
 ignore=IF115
 
-[file:indicatorfield-Dataminr_Pulse_Exploit_POC_Links.json]
-ignore=IF115
-
 [file:indicatorfield-Dataminr_Pulse_Exploitable.json]
 ignore=IF115
 
 [file:indicatorfield-Dataminr_Pulse_Known_Exploited_Date.json]
-ignore=IF115
-
-[file:indicatorfield-Dataminr_Pulse_Malware_YARA_Rules.json]
 ignore=IF115
 
 [file:indicatorfield-Dataminr_Pulse_Published_Date.json]

@@ -436,6 +436,19 @@ def remove_empty_elements_for_hr(d: Any) -> Any:
     return {k: v for k, v in ((k, remove_empty_elements_for_hr(v)) for k, v in d.items()) if not check_empty(v)}
 
 
+def remove_empty_elements_for_fetch(d: Any) -> Any:
+    """
+    Recursively remove empty lists, empty dicts, or None elements from a dictionary or list.
+    :param d: Input dictionary or list.
+    :return: Dictionary or list with all empty lists, and empty dictionaries removed.
+    """
+    if not isinstance(d, dict | list):
+        return d
+    elif isinstance(d, list):
+        return [v for v in (remove_empty_elements_for_fetch(v) for v in d) if not check_empty(v)]
+    return {k: v for k, v in ((k, remove_empty_elements_for_fetch(v)) for k, v in d.items()) if not check_empty(v)}
+
+
 def check_empty(x: Any) -> bool:
     """
     Check if input is empty (None, empty dict, empty list, or empty string).
@@ -919,7 +932,7 @@ def fetch_incidents(
         _from = response.get("previousPage", "")
         to = response.get("nextPage", "")
 
-    alert_valid_response = remove_empty_elements(alert_response)
+    alert_valid_response = remove_empty_elements_for_fetch(alert_response)
 
     from_url = urlparse(_from)
     from_params = parse_qs(from_url.query)
