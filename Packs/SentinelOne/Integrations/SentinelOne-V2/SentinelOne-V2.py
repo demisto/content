@@ -750,16 +750,16 @@ class Client(BaseClient):
             if missing:
                 return_error(f"IOC at index {idx} missing required field(s): {', '.join(missing)}")
             # Normalize to API expectations (upper-case TYPE and METHOD)
-            ioc_type = ioc["type"].strip().upper()
-            method = ioc["method"].strip().upper()
+            ioc_type = ioc.get("type", "").strip().upper()
+            method = ioc.get("method", "").strip().upper()
             # Build the outbound object preserving optional fields if present
             outbound = {
-                "source": ioc["source"],
+                "source": ioc.get("source", ""),
                 "type": ioc_type,
                 "method": method,
-                "value": ioc["value"],
-                "validUntil": ioc["validUntil"],
-                "name": ioc["name"],
+                "value": ioc.get("value", ""),
+                "validUntil": ioc.get("validUntil", ""),
+                "name": ioc.get("name", ""),
             }
             # Optional fields as per current single-IOC code
             for opt in ("externalId", "description"):
@@ -1922,9 +1922,9 @@ def create_bulk_ioc(client: Client, args: dict) -> CommandResults:
     try:
         file_info = demisto.getFilePath(entry_id)
     except Exception as e:
-        return_error(f"Failed to retrieve file info for entry_id={entry_id}. Error: {str(e)}")
+        raise ValueError(f"Failed to retrieve file info for entry_id={entry_id}. Error: {str(e)}")
     if not file_info or not file_info.get("path"):
-        return_error(f"Could not resolve file path for entry_id={entry_id}")
+        raise ValueError(f"Could not resolve file path for entry_id={entry_id}")
     file_path = file_info["path"]
 
     # Load JSON array of IOC objects
@@ -1932,11 +1932,11 @@ def create_bulk_ioc(client: Client, args: dict) -> CommandResults:
         with open(file_path, encoding="utf-8") as json_ioc_list:
             iocs_data = json.load(json_ioc_list)
     except json.JSONDecodeError as e:
-        return_error(f"Invalid JSON in uploaded file: {str(e)}")
+        raise ValueError(f"Invalid JSON in uploaded file: {str(e)}")
     except Exception as e:
-        return_error(f"Failed reading uploaded file {file_path}: {str(e)}")
+        raise ValueError(f"Failed reading uploaded file {file_path}: {str(e)}")
     if not isinstance(iocs_data, list):
-        return_error("Uploaded JSON must be an array of IOC objects.")
+        raise ValueError("Uploaded JSON must be an array of IOC objects.")
 
     iocs = client.create_bulk_ioc_request(iocs_data, account_ids)
 
@@ -1976,18 +1976,18 @@ def run_powerquery(client: Client, args: dict) -> CommandResults:
     sdl_url = args.get("singularity_xdr_url")
     sdl_api_key = args.get("singularity_xdr_api_key")
     query = args.get("query")
-    start_time = args.get("startTime")
-    end_time = args.get("endTime")
+    start_time = args.get("start_time")
+    end_time = args.get("end_time")
     priority = args.get("priority")
     recurring = argToBoolean(args.get("recurring")) if args.get("recurring") else None
-    team_emails = argToList(args.get("teamEmails")) or None
+    team_emails = argToList(args.get("team_emails")) or None
 
     pq_response = client.run_powerquery_request(
         sdl_url, sdl_api_key, query, start_time, end_time, priority, recurring, team_emails
     )
 
     # Extract columns and rows
-    columns = [col["name"] for col in pq_response.get("columns", [])]
+    columns = [col.get("name") for col in pq_response.get("columns", [])]
     rows = pq_response.get("values", [])
 
     table_data = [dict(zip(columns, row)) for row in rows]

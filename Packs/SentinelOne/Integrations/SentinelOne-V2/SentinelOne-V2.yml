@@ -1894,7 +1894,7 @@ script:
       description: Entry ID of uploaded IOCs JSON file.
     - name: account_ids
       required: true
-      description: List of account IDs to filter by.
+      description: A comma-separated list of account IDs to filter by.
       isArray: true
     description: Add bulk list of IoCs to the Threat Intelligence database. Relevant for API version 2.1.
     name: sentinelone-create-bulk-ioc
@@ -1945,10 +1945,10 @@ script:
     - name: query
       required: true
       description: The query, in PowerQuery syntax.
-    - name: startTime
+    - name: start_time
       required: false
       description: Start time for your query.
-    - name: endTime
+    - name: end_time
       required: false
       description: End time for your query.
     - name: priority
@@ -1963,7 +1963,8 @@ script:
       - "false"
       defaultValue: "false"
       description: Optional (defaults to false). When set to true, a materialized view of your query is created.
-    - name: teamEmails
+    - name: team_emails
+      isArray: true
       required: false
       description: Comma-separated list of account emails to query, enabling Cross Team Search.
     description: Run a PowerQuery, where you can pipe one or many search expressions into a set of commands to transform, manipulate, group, and summarize your data.
