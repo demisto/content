@@ -3,7 +3,7 @@
     "description": "Deprecated. Use the Generic Export Indicators Service instead.",
     "support": "xsoar",
     "hidden": true,
-    "currentVersion": "1.1.7",
+    "currentVersion": "1.1.9",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -28,6 +28,7 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix"
     ]
 }

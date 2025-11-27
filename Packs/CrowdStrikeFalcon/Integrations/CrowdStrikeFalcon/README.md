@@ -9,7 +9,6 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Secret |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command. | False |
 | Trust any certificate (not secure) |  | False |
-| Use legacy API | Supported in Cortex XSOAR only. Use the legacy version of the API, which refers to versions prior to the 'Next Generation Raptor release.' | False |
 | Use system proxy settings |  | False |
 | Endpoint Detections fetch query | Supported in Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
 | Endpoint Incidents fetch query | Supported in Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
@@ -21,7 +20,7 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Detections from On-Demand Scans fetch query | Supported in Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).| False|
 | Close Mirrored XSOAR Incident | Supported in Cortex XSOAR only. When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident. | False |
 | Close Mirrored CrowdStrike Falcon Incident or Detection | Supported in Cortex XSOAR only. When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
-| Fetch types | Supported in Cortex XSOAR only. Choose what to fetch - Options: Endpoint Incident, Endpoint Detection, IDP Detection, Indicator of Misconfiguration, Indicator of Attack, Mobile Detection, On-Demand Scans Detection, OFP Detection. You can choose any combination. Notes: 1. The 'On-Demand Scans Detection' option is not available in the legacy version. 2. Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.| False |
+| Fetch types | Supported in Cortex XSOAR only. Choose what to fetch - Options: Endpoint Incident, Endpoint Detection, IDP Detection, Indicator of Misconfiguration, Indicator of Attack, Mobile Detection, On-Demand Scans Detection, OFP Detection. You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.| False |
 | Reopen Statuses | Supported in Cortex XSOAR only. CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
 | Advanced: Time in minutes to look back when fetching incidents and detections | Supported in Cortex XSOAR only. Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created. | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Supported in Cortex XSOAR only. | False |
@@ -354,7 +353,7 @@ Search for details of specific detections, either using a filter query, or by pr
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ids | A comma-separated list of IDs of the detections to search. If provided, will override other arguments. | Optional |
-| filter | Filter detections using a query in Falcon Query Language (FQL).<br/>For example, filter="device.hostname:'CS-SE-TG-W7-01'"<br/>For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch. | Optional |
+| filter | Filter detections using a query in Falcon Query Language (FQL).<br/>For example, filter="device.hostname:'CS-SE-TG-W7-01'"<br/>Default is "product:'epp'+type:'ldt'.Applies only if the ids argument is not supplied.<br/>For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch. | Optional |
 | extended_data | Whether to get additional data such as device and behaviors processed. Possible values are: Yes, No. | Optional |
 
 #### Context Output
@@ -372,7 +371,6 @@ Search for details of specific detections, either using a filter query, or by pr
 | CrowdStrike.Detection.Behavior.SensorID | String | The sensor ID related to the behavior. |
 | CrowdStrike.Detection.Behavior.ParentProcessID | String | The ID of the parent process. |
 | CrowdStrike.Detection.Behavior.ProcessID | String | The process ID of the behavior.|
-| CrowdStrike.Detection.Behavior.ID | String | The ID of the behavior. Note: This output exists only in the legacy version.|
 | CrowdStrike.Detection.System | String | The system name of the detection. |
 | CrowdStrike.Detection.CustomerID | String | The ID of the customer \(CID\). |
 | CrowdStrike.Detection.MachineDomain | String | The name of the domain of the detection machine. |
@@ -380,6 +378,14 @@ Search for details of specific detections, either using a filter query, or by pr
 | CrowdStrike.Detection.ProcessStartTime | Date | The start time of the process that generated the detection. |
 
 #### Command Example
+
+`!cs-falcon-search-detection filter="product:'idp'"`
+
+`!cs-falcon-search-detection filter="product:'mobile'"`
+
+`!cs-falcon-search-detection filter="product:'ngsiem'"`
+
+`!cs-falcon-search-detection filter="product:'thirdparty'"`
 
 `!cs-falcon-search-detection ids=ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1898376850347,ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1092318056279064902`
 
@@ -497,7 +503,7 @@ Resolves and updates a detection using the provided arguments. At least one opti
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ids | A comma-separated list of one or more IDs to resolve. | Required |
-| status | The status to transition a detection to. **Possible** values are: new, in_progress, true_positive, false_positive, closed, reopened, ignored. <br /> Note: The following statuses—true_positive, false_positive, and ignored—are only available in the legacy version of the API.| Optional |
+| status | The status to transition a detection to. **Possible** values are: new, in_progress, closed, reopened. | Optional |
 | assigned_to_uuid | A user ID, for example: 1234567891234567891. username and assigned_to_uuid are mutually exclusive. | Optional |
 | comment | Optional comment to add to the detection. Comments are displayed with the detection in CrowdStrike Falcon and provide context or notes for other Falcon users. | Optional |
 | show_in_ui | If true, displays the detection in the UI. Possible values are: true, false. | Optional |
@@ -2005,8 +2011,6 @@ Lists detection summaries.
 | CrowdStrike.Detections.behaviors.confidence | Number | The true positive confidence rating for the behavior. The value can be any integer between 1-100. |
 | CrowdStrike.Detections.behaviors.ioc_type | String | The type of the triggering IOC. Possible values are: "hash_sha256", "hash_md5", "domain", "filename", "registry_key", "command_line", and "behavior". |
 | CrowdStrike.Detections.behaviors.ioc_value | String | The IOC value. |
-| CrowdStrike.Detections.behaviors.ioc_source | String | The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write".  Note: This output exists only in the legacy version.|
-| CrowdStrike.Detections.behaviors.ioc_description | String | The IOC description.  Note: This output exists only in the legacy version.|
 | CrowdStrike.Detections.behaviors.user_name | String | The user name. |
 | CrowdStrike.Detections.behaviors.user_id | String | The Security Identifier \(SID\) of the user in Windows. |
 | CrowdStrike.Detections.behaviors.control_graph_id | String | The behavior hit key for the Threat Graph API. |
@@ -2033,15 +2037,8 @@ Lists detection summaries.
 | CrowdStrike.Detections.behaviors.pattern_disposition_details.process_blocked | Boolean | Whether the process is blocked. |
 | CrowdStrike.Detections.behaviors.pattern_disposition_details.registry_operation_blocked | Boolean | Whether the registry operation is blocked. |
 | CrowdStrike.Detections.email_sent | Boolean | Whether an email is sent about this detection. |
-| CrowdStrike.Detections.first_behavior | Date | The datetime of the first behavior.  Note: This output exists only in the legacy version.|
-| CrowdStrike.Detections.last_behavior | Date | The datetime of the last behavior.  Note: This output exists only in the legacy version.|
-| CrowdStrike.Detections.max_confidence | Number | The highest confidence value of all behaviors. The value can be any integer between 1-100.  Note: This output exists only in the legacy version.|
-| CrowdStrike.Detections.max_severity | Number | The highest severity value of all behaviors. Value can be any integer between 1-100.  Note: This output exists only in the legacy version.|
-| CrowdStrike.Detections.max_severity_displayname | String | The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low".  Note: This output exists only in the legacy version.|
 | CrowdStrike.Detections.show_in_ui | Boolean | Whether the detection displays in the UI. |
 | CrowdStrike.Detections.status | String | The status of the detection. |
-| CrowdStrike.Detections.assigned_to_uid | String | The UID of the user for whom the detection is assigned.  Note: This output exists only in the legacy version.|
-| CrowdStrike.Detections.assigned_to_name | String | The human-readable name of the user to whom the detection is currently assigned.  Note: This output exists only in the legacy version.|
 | CrowdStrike.Detections.hostinfo.domain | String | The domain of the Active Directory. |
 | CrowdStrike.Detections.seconds_to_triaged | Number | The amount of time it took to move a detection from "new" to "in_progress". |
 | CrowdStrike.Detections.seconds_to_resolved | Number | The amount of time it took to move a detection from new to a resolved state \("true_positive", "false_positive", and "ignored"\). |
@@ -3860,7 +3857,7 @@ There is no context output for this command.
 ### get-remote-data
 
 ***
-Gets remote data from a remote incident or detection. This method does not update the current incident or detection, and should be used for debugging purposes only. Note that this command is supported in Cortex XSOAR only.
+Gets remote data from a remote incident or detection. When executing manually, this method does not update the current incident or detection, and should be used for debugging purposes only. Note that this command is supported in Cortex XSOAR only.
 
 #### Base Command
 
@@ -3880,7 +3877,7 @@ There is no context output for this command.
 ### get-modified-remote-data
 
 ***
-Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1. Note that this command is supported in Cortex XSOAR only.
+Gets the list of incidents and detections that were modified since the last update time. When executing manually, this method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1. Note that this command is supported in Cortex XSOAR only.
 
 #### Base Command
 
@@ -3899,7 +3896,7 @@ There is no context output for this command.
 ### update-remote-system
 
 ***
-Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection. Note that this command is supported in Cortex XSOAR only.
+Updates the remote incident or detection with local incident or detection changes. When executing manually, this method is only used for debugging purposes and will not update the current incident or detection. Note that this command is supported in Cortex XSOAR only.
 
 #### Base Command
 
@@ -3936,7 +3933,7 @@ Retrieve vulnerability details according to the selected filter. Each request re
 
 #### Command Example
 
-``` cve cve_id=CVE-2021-2222 ```
+``` cve cve=CVE-2021-2222 ```
 
 #### Human Readable Output
 
@@ -6000,6 +5997,7 @@ Perform actions on identity detection alerts.
 | --- | --- | --- |
 | ids | A comma-separated list of IDs of the alerts to update. | Required |
 | assign_to_name | Assign the specified detections to a user based on their username. | Optional |
+| assign_to_user_id | Assign the specified detections to a user based on their user ID (Email). | Optional |
 | assign_to_uuid | Assign the specified detections to a user based on their UUID. | Optional |
 | append_comment | Appends a new comment to any existing comments for the specified detections. | Optional |
 | add_tag | Add a tag to the specified detections. | Optional |
@@ -6011,14 +6009,6 @@ Perform actions on identity detection alerts.
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-
-```!cs-falcon-resolve-identity-detection ids="id_1,id_2" add_tag="Demo tag" append_comment="Demo comment" assign_to_name="morganf" show_in_ui=true update_status=in_progress```
-
-#### Human Readable Output
-
->IDP Detection(s) id_1, id_2 were successfully updated
 
 ### cs-falcon-resolve-mobile-detection
 
@@ -6035,6 +6025,7 @@ Perform actions on mobile detection alerts.
 | --- | --- | --- |
 | ids | A comma-separated list of IDs of the alerts to update. | Required |
 | assign_to_name | Assign the specified detections to a user based on their username. | Optional |
+| assign_to_user_id | Assign the specified detections to a user based on their user ID (Email). | Optional |
 | assign_to_uuid | Assign the specified detections to a user based on their UUID. | Optional |
 | append_comment | Appends a new comment to any existing comments for the specified detections. | Optional |
 | add_tag | Add a tag to the specified detections. | Optional |
@@ -6047,14 +6038,6 @@ Perform actions on mobile detection alerts.
 
 There is no context output for this command.
 
-#### Command Example
-
-```!cs-falcon-resolve-mobile-detection ids="id_1,id_2" add_tag="Demo tag" append_comment="Demo comment" assign_to_name="morganf" show_in_ui=true update_status=in_progress```
-
-#### Human Readable Output
-
->Mobile Detection(s) id_1, id_2 were successfully updated
->
 ### cs-falcon-list-users
 
 ***
@@ -6478,7 +6461,7 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
   - For example, filtering by "severity_name" equal to "Medium", "High", or "Critical" can be achieved by specifying `severity_name:['Medium','High','Critical']`
 
 - When encountering the error "400 - Reason: Bad Request: Invalid element in the request", ensure the integration instance is configured correctly and verify the command arguments.
-  - For example, the error appears when using the ID of a detection prior to the Raptor release (legacy API) in an integration configured to run with Raptor. In such case, the "Use legacy API" checkbox in the instance configuration parameters may need to be checked.
+  - For example, the error appears when using the ID of a detection prior to the Raptor release (legacy API) in an integration configured to run with Raptor.
 
 - When experiencing connectivity or authorization errors in Cortex XSOAR 8 or Cortex XSIAM, ensure that the IP addresses associated with the relevant CrowdStrike Falcon region are added to the allow list for the Cortex tenant. For detailed instructions, refer to the **Egress** section or search for **Egress** in the product documentation:
   - [Enable access to Cortex XSOAR 8](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Enable-access-to-Palo-Alto-Networks-resources)
@@ -6500,5 +6483,4 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
     - OFP Detection
 
   - Notes:
-    - The "On-Demand Scans Detection" option is not available in the legacy version.
     - Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: "Endpoint Detection" and "OFP Detection".

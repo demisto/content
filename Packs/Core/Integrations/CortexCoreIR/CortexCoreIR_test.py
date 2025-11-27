@@ -6,6 +6,8 @@ from CommonServerPython import *
 from CortexCoreIR import (
     core_execute_command_reformat_args,
     core_add_indicator_rule_command,
+    core_block_ip_command,
+    polling_block_ip_status,
     Client,
     core_get_contributing_event_command,
 )
@@ -508,6 +510,24 @@ def test_reformat_output():
                 },
             ],
         },
+        {
+            "endpoint_name": "name3",
+            "endpoint_ip_address": ["11.11.11.11"],
+            "endpoint_status": "STATUS_020_CONNECTED",
+            "domain": "",
+            "endpoint_id": "dummy_id3",
+            "executed_command": [
+                {
+                    "failed_files": 0,
+                    "retention_date": None,
+                    "retrieved_files": 0,
+                    "standard_output": "output",
+                    "execution_status": "COMPLETED_SUCCESSFULLY",
+                    "command_output": None,
+                    "command": None,
+                }
+            ],
+        },
     ]
     assert reformatted_outputs == excepted_output
 
@@ -533,8 +553,26 @@ def test_reformat_readable():
 | dummy_id | echo hello | hello | 2.2.2.2 | name | STATUS_010_CONNECTED |
 | dummy_id2 | echo |  | 11.11.11.11 | name2 | STATUS_010_CONNECTED |
 | dummy_id2 | echo hello | hello | 11.11.11.11 | name2 | STATUS_010_CONNECTED |
+| dummy_id3 |  |  | 11.11.11.11 | name3 | STATUS_020_CONNECTED |
 """
     assert reformatted_readable_output == excepted_output
+
+
+@pytest.mark.parametrize("result", load_test_data("./test_data/execute_command_response.json")["results"])
+def test_reformat_command_data(result):
+    """
+    Given:
+        - Response from polling command.
+    When:
+        - Calling `core_execute_command_reformat_command_data` with response.
+    Then:
+        - Verify function output removes the underscore prefix from the command name.
+    """
+    from CortexCoreIR import core_execute_command_reformat_command_data
+
+    reformatted_command_data = core_execute_command_reformat_command_data(result)
+
+    assert not str(reformatted_command_data["command"]).startswith("_")
 
 
 @freeze_time("2024-01-01T12:00:00Z")
@@ -851,6 +889,357 @@ class TestCoreAddIndicator:
 
         assert "Core Add Indicator Rule Command: post of IOC rule failed: error1, error2" in str(exc_info.value)
         mock_post.assert_called_once()
+
+
+class TestClientBlockIP:
+    @pytest.fixture
+    def client(self):
+        return Client(base_url="", headers={})
+
+    def test_block_ip_request_disconnected(self, mocker, client):
+        """
+        Given:
+            - client.block_ip_request called with all args.
+        When:
+            - No endpoint exists with that id.
+        Then:
+            - group_id of the actions are None
+        """
+        mocker.patch.object(client, "get_endpoints", return_value=[])
+
+        ips = ["1.1.1.1", "2.2.2.2"]
+        results = client.block_ip_request("endpoint_id", ips, 300)
+
+        assert results == [
+            {"ip_address": "1.1.1.1", "group_id": None, "endpoint_id": "endpoint_id"},
+            {"ip_address": "2.2.2.2", "group_id": None, "endpoint_id": "endpoint_id"},
+        ]
+
+    def test_block_ip_request_success(self, mocker, client):
+        """
+        Given:
+            - client.block_ip_request called with all args.
+        When:
+            - Endpoint exists and running.
+        Then:
+            - the appropriate list returned.
+        """
+        mocker.patch.object(client, "get_endpoints", return_value="Connected")
+        mocker.patch.object(client, "_http_request", return_value={"reply": {"group_action_id": "gid-123"}})
+
+        results = client.block_ip_request("endpoint_id", ["3.3.3.3", "4.4.4.4"], 123)
+        assert results == [
+            {"ip_address": "3.3.3.3", "group_id": "gid-123", "endpoint_id": "endpoint_id"},
+            {"ip_address": "4.4.4.4", "group_id": "gid-123", "endpoint_id": "endpoint_id"},
+        ]
+
+    def test_fetch_block_status_disconnected(self, mocker, client):
+        """
+        Given:
+            - client.fetch_block_status called.
+        When:
+            - Endpoint disconnected.
+        Then:
+            - The status returned is Failure with Endpoint Disconnected message.
+        """
+        mocker.patch.object(client, "get_endpoints", return_value=[])
+
+        status, msg = client.fetch_block_status("gid123", "endpoint_id")
+
+        assert status == "Failure"
+        assert msg == "Endpoint Disconnected"
+
+    def test_fetch_block_status_group_id_none(self, mocker, client):
+        """
+        Given:
+            - client.fetch_block_status called.
+        When:
+            - group_id is none.
+        Then:
+            - The status returned is Failure with Endpoint Disconnected message.
+        """
+        mocker.patch.object(client, "get_endpoints", return_value=[])
+
+        status, msg = client.fetch_block_status(None, "endpoint_id")
+
+        assert status == "Failure"
+        assert msg == "Endpoint Disconnected"
+
+    def test_fetch_block_status_failed_with_errorText(self, mocker, client):
+        """
+        Given:
+            - client.fetch_block_status called.
+        When:
+            - Action failed due to internal error and returned FAILED.
+        Then:
+            - The status returned is Failure with the returned message.
+        """
+        mocker.patch.object(client, "get_endpoints", return_value="Connected")
+        mocker.patch.object(
+            client,
+            "action_status_get",
+            return_value={"data": {"endpoint_id": "FAILED"}, "errorReasons": {"endpoint_id": {"errorText": "Error Message"}}},
+        )
+
+        status, msg = client.fetch_block_status(100, "endpoint_id")
+
+        assert status == "Failure"
+        assert msg == "Error Message"
+
+    def test_fetch_block_status_failed_without_errorText(self, mocker, client):
+        """
+        Given:
+            - client.fetch_block_status called.
+        When:
+            - Action failed due to internal error and returned FAILED.
+            - No message in errorText.
+        Then:
+            - The status returned is Failure with the "Unknown error" message.
+        """
+        mocker.patch.object(client, "get_endpoints", return_value="Connected")
+        mocker.patch.object(
+            client, "action_status_get", return_value={"data": {"endpoint_id": "FAILED"}, "errorReasons": {"endpoint_id": {}}}
+        )
+        status, msg = client.fetch_block_status(100, "endpoint_id")
+        assert status == "Failure"
+        assert msg == "Unknown error"
+
+    def test_fetch_block_status_success(self, mocker, client):
+        """
+        Given:
+            - client.fetch_block_status called.
+        When:
+            - Action Success.
+        Then:
+            - The status returned is Success without message.
+        """
+        mocker.patch.object(client, "get_endpoints", return_value="Connected")
+        mocker.patch.object(client, "action_status_get", return_value={"data": {"endpoint_id": "COMPLETED_SUCCESSFULLY"}})
+        status, msg = client.fetch_block_status(100, "endpoint_id")
+        assert status == "Success"
+        assert msg == ""
+
+    def test_fetch_block_status_unknown(self, mocker, client):
+        """
+        Given:
+            - client.fetch_block_status called.
+        When:
+            - Action in progress.
+        Then:
+            - The status returned is IN_PROGRESS without message.
+        """
+        mocker.patch.object(client, "get_endpoints", return_value="Connected")
+        mocker.patch.object(client, "action_status_get", return_value={"data": {"endpoint_id": "IN_PROGRESS"}})
+        status, msg = client.fetch_block_status(100, "endpoint_id")
+        assert status == "IN_PROGRESS"
+        assert msg == ""
+
+    def test_fetch_block_error_code_message(self, mocker, client):
+        """
+        Given:
+            - client.fetch_block_status called.
+        When:
+            - ip address already blocked and server return error code -197
+        Then:
+            - The status returned is Failure with the right message.
+        """
+        from CortexCoreIR import ERROR_CODE_MAP
+
+        mocker.patch.object(client, "get_endpoints", return_value="Connected")
+        mocker.patch.object(
+            client,
+            "_http_request",
+            return_value={
+                "reply": {
+                    "data": {"endpoint_id": "FAILED"},
+                    "errorReasons": {
+                        "endpoint_id": {
+                            "errorData": '{"reportIds":["11"],"errorText":"Failed blocking IP address with error code -197\\n"}'
+                        }
+                    },
+                }
+            },
+        )
+        status, msg = client.fetch_block_status(100, "endpoint_id")
+        assert status == "Failure"
+        assert msg == ERROR_CODE_MAP[-197]
+
+
+class DummyClient:
+    """
+    Test-double for the Integration Client.
+    Initialized with:
+      - status_map: dict mapping (group_id, endpoint_id) to (status, message)
+      - block_map: dict mapping endpoint_id to list of action dicts
+    fetch_block_status and block_ip_request delegate to those maps.
+    """
+
+    def __init__(self, status_map=None, block_map=None):
+        self.status_map = status_map or {}
+        self.block_map = block_map or {}
+
+    def fetch_block_status(self, group_id, endpoint_id):
+        return self.status_map.get((group_id, endpoint_id), ("Unknown", ""))
+
+    def block_ip_request(self, endpoint_id, ip_list, duration):
+        return self.block_map.get(endpoint_id, [])
+
+
+class TestBlockIp:
+    def test_polling_all_success(self):
+        """
+        Given:
+            - A blocked_list with one action (gid1 on endpoint_id1).
+        When:
+            - polling_block_ip_status returns Success for that action.
+        Then:
+            - polling stops and outputs include the success reason.
+        """
+        args = {"blocked_list": [{"endpoint_id": "endpoint1", "group_id": "gid1", "ip_address": "1.1.1.1"}]}
+        client = DummyClient(status_map={("gid1", "endpoint1"): ("Success", "")})
+
+        pollRequest: PollResult = polling_block_ip_status(args, client)
+
+        assert pollRequest.continue_to_poll is False
+        assert isinstance(pollRequest.response, CommandResults)
+        assert pollRequest.response.outputs == [{"ip_address": "1.1.1.1", "endpoint_id": "endpoint1", "reason": "Success"}]
+        assert pollRequest.args_for_next_run == args
+
+    def test_polling_failure(self):
+        """
+        Given:
+            - A blocked_list with one action (gid1 on endpoint1).
+        When:
+            - polling_block_ip_status returns Failure with a message.
+        Then:
+            - polling stops and outputs include the failure reason and message.
+        """
+        args = {"blocked_list": [{"endpoint_id": "endpoint1", "group_id": "gid1", "ip_address": "1.1.1.1"}]}
+        client = DummyClient(status_map={("gid1", "endpoint1"): ("Failure", "Network unreachable")})
+
+        pollRequest = polling_block_ip_status(args, client)
+
+        assert pollRequest.continue_to_poll is False
+        assert pollRequest.response.outputs == [
+            {
+                "ip_address": "1.1.1.1",
+                "endpoint_id": "endpoint1",
+                "reason": "Failure: Network unreachable",
+            }
+        ]
+        assert pollRequest.args_for_next_run == args
+
+    def test_polling_continue(self):
+        """
+        Given:
+            - A blocked_list with one action.
+        When:
+            - polling_block_ip_status returns a non-terminal status.
+        Then:
+            - polling continues with partial results.
+        """
+        args = {"blocked_list": [{"endpoint_id": "endpoint1", "group_id": "gid1", "ip_address": "1.1.1.1"}]}
+        client = DummyClient(status_map={("gid1", "endpoint1"): ("PENDING", "Still working")})
+
+        pollRequest = polling_block_ip_status(args, client)
+
+        assert pollRequest.continue_to_poll is True
+        assert pollRequest.response is None
+        assert isinstance(pollRequest.partial_result, CommandResults)
+        assert pollRequest.args_for_next_run == args
+
+    def test_polling_empty_queue(self):
+        """
+        Given:
+            - An empty blocked_list.
+        When:
+            - polling_block_ip_status is invoked.
+        Then:
+            - polling stops immediately with empty outputs.
+        """
+        args = {"blocked_list": []}
+        client = DummyClient()
+
+        pollRequest = polling_block_ip_status(args, client)
+
+        assert pollRequest.continue_to_poll is False
+        assert isinstance(pollRequest.response, CommandResults)
+        assert pollRequest.response.outputs == []
+        assert pollRequest.args_for_next_run == args
+
+    def test_core_block_ip_initial_call(self, mocker):
+        """
+        Given:
+            - The command_block_ip function is being called first time.
+            - block_ip_request will work for endpoint1 ip 1.1.1.1.
+        When:
+            - core_block_ip_command is called.
+        Then:
+            - client.block_ip_request is invoked exactly once.
+            - results are passed to polling_block_ip_status.
+        """
+        calls = {}
+
+        fake_poll_result = PollResult(response="Polling", continue_to_poll=False, args_for_next_run=None, partial_result=None)
+
+        def fake_poll(args, client):
+            calls["args"] = args
+            return fake_poll_result
+
+        mocker.patch("CortexCoreIR.polling_block_ip_status", side_effect=fake_poll)
+
+        block_map = {"endpoint1": [{"endpoint_id": "endpoint1", "group_id": "gid1", "ip_address": "1.1.1.1"}]}
+        client = DummyClient(block_map=block_map)
+        spy = mocker.spy(client, "block_ip_request")
+
+        args = {
+            "addresses": ["1.1.1.1"],
+            "endpoint_list": "endpoint1",
+            "duration": "123",
+        }
+
+        result = core_block_ip_command(args, client)
+
+        assert result == "Polling"
+
+        # polling_block_ip_status should see the merged blocked_list + original args
+        expected_args = {"blocked_list": block_map["endpoint1"], **args}
+        assert calls["args"] == expected_args
+
+        spy.assert_called_once_with("endpoint1", ["1.1.1.1"], 123)
+
+    def test_core_block_ip_subsequent_call(self, mocker):
+        """
+        Given:
+            - The command_block_ip function is being called second time after the blocking requests.
+        When:
+            - core_block_ip_command was called adn the block requests worked and returned group id.
+        Then:
+            - client.block_ip_request is not being called.
+            - The args are not being changed.
+        """
+        calls = {}
+
+        fake_poll_result = PollResult(response="Polling", continue_to_poll=False, args_for_next_run=None, partial_result=None)
+
+        def fake_poll(a, c):
+            calls["args"] = a
+            return fake_poll_result
+
+        mocker.patch("CortexCoreIR.polling_block_ip_status", side_effect=fake_poll)
+
+        client = DummyClient()
+        spy = mocker.spy(client, "block_ip_request")
+        args = {
+            "blocked_list": [{"endpoint_id": "endpoint1", "group_id": "gid1", "ip_address": "1.1.1.1"}],
+        }
+
+        result = core_block_ip_command(args, client)
+
+        assert result == "Polling"
+        # we get exactly the same args dict back
+        assert calls["args"] == args
+        assert spy.call_count == 0
 
 
 def test_core_get_contributing_event(mocker):

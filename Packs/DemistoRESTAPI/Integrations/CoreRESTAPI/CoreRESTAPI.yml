@@ -1,4 +1,4 @@
-sectionOrder:
+sectionorder:
 - Connect
 commonfields:
   id: Core REST API
@@ -169,6 +169,8 @@ script:
       description: Request endpoint (e.g. /incident or /public_api/v1/incidents/update_incident).
     - name: body
       description: Body of HTTP POST.
+    - name: timeout
+      description: Request timeout in minutes. Default is 3 minutes.
     description: send HTTP POST request.
     execution: true
   - name: core-api-get

@@ -1,0 +1,38 @@
+{
+    "Warninglist": {
+        "id": 1,
+        "name": "Hello, this world has changed!",
+        "type": "string",
+        "description": "The entries in this list have been changed",
+        "version": 42,
+        "enabled": false,
+        "default": false,
+        "category": "false_positive",
+        "matching_attributes": [
+            "ip-src",
+            "ip-dst"
+        ]
+    },
+    "WarninglistEntry": [
+        {
+            "value": "8.8.8.8",
+            "comment": null
+        },
+        {
+            "value": "9.9.9.9",
+            "comment": null
+        }
+    ],
+    "WarninglistType": [
+        {
+            "id": 123,
+            "type": "ip-src",
+            "warninglist_id": 1
+        },
+        {
+            "id": 456,
+            "type": "ip-dst",
+            "warninglist_id": 1
+        }
+    ]
+}

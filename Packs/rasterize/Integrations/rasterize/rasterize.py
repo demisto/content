@@ -366,6 +366,9 @@ class PychromeEventHandler:
         request_url = kwargs.get("request", {}).get("url", "")
 
         if any(value in request_url for value in BLOCKED_URLS):
+            demisto.info(
+                f"The following URL is blocked. Consider updating the 'List of domains to block' parameter:{request_url}"
+            )
             self.tab.Fetch.enable()
             demisto.debug(f"Fetch events enabled. {self.tab.id=}, {self.path=}")
 
@@ -803,7 +806,13 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
             tab.Page.navigate(url=path)
 
         demisto.debug(f"Waiting for tab_ready_event on {tab.id=}, {path=}")
-        tab_ready_event.wait(navigation_timeout)
+
+        if not tab_ready_event.wait(navigation_timeout):
+            return_warning(
+                f"Warning: Rasterize failed to navigate to the specified path due to a timeout of {navigation_timeout} seconds,"
+                f" some content might be missing .\n{path=}"
+            )
+
         demisto.debug(f"After waiting for tab_ready_event on {tab.id=}, {path=}")
 
         if wait_time > 0:
@@ -1244,19 +1253,22 @@ def perform_rasterize(
 
                 # Start a new thread in group of max_tabs
                 rasterization_threads.append(
-                    executor.submit(
-                        rasterize_thread,
-                        browser=browser,
-                        chrome_port=chrome_port,
-                        path=current_path,
-                        rasterize_type=rasterize_type,
-                        wait_time=wait_time,
-                        offline_mode=offline_mode,
-                        navigation_timeout=navigation_timeout,
-                        include_url=include_url,
-                        full_screen=full_screen,
-                        width=width,
-                        height=height,
+                    (
+                        executor.submit(
+                            rasterize_thread,
+                            browser=browser,
+                            chrome_port=chrome_port,
+                            path=current_path,
+                            rasterize_type=rasterize_type,
+                            wait_time=wait_time,
+                            offline_mode=offline_mode,
+                            navigation_timeout=navigation_timeout,
+                            include_url=include_url,
+                            full_screen=full_screen,
+                            width=width,
+                            height=height,
+                        ),
+                        current_path,
                     )
                 )
             # Wait for all tasks to complete
@@ -1285,19 +1297,57 @@ def perform_rasterize(
                 increase_counter_chrome_instances_file(chrome_port=chrome_port)
 
             # Get the results
-            for current_thread in rasterization_threads:
-                ret_value, response_body = current_thread.result()
-                if ret_value:
-                    rasterization_results.append((ret_value, response_body))
-                else:
-                    return_results(
-                        CommandResults(
-                            readable_output=str(response_body), entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING)
+            for current_thread, path in rasterization_threads:
+                try:
+                    ret_value, response_body = current_thread.result()
+                    if ret_value:
+                        rasterization_results.append((ret_value, response_body))
+                    else:
+                        return_results(
+                            CommandResults(
+                                readable_output=str(response_body),
+                                entry_type=(EntryType.ERROR if WITH_ERRORS else EntryType.WARNING),
+                            )
                         )
-                    )
+                except Exception as ex:
+                    error_msg = f"Failed to rasterize the path {path}, exception: {str(ex)}"
+                    demisto.debug(error_msg)
+                    return_err_or_warn(error_msg)
             return rasterization_results
 
     else:
+        chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
+        chrome_options_dict = {
+            options[CHROME_INSTANCE_OPTIONS]: {"chrome_port": port} for port, options in chrome_instances_contents.items()
+        }
+        chrome_options = demisto.params().get("chrome_options", "None")
+        chrome_port = chrome_options_dict.get(chrome_options, {}).get("chrome_port", "")
+
+        ps_aux_output = "\n".join(
+            subprocess.check_output(  # noqa: S602
+                "ps aux | grep chrom | grep port= | grep -- --headless",
+                shell=True,
+                text=True,
+                stderr=subprocess.STDOUT,
+            ).splitlines()
+        )
+        chrome_headless_content = "\n".join(
+            subprocess.check_output(["cat", CHROME_LOG_FILE_PATH], stderr=subprocess.STDOUT, text=True).splitlines()
+        )
+        df_output = "\n".join(subprocess.check_output(["df", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
+        free_output = "\n".join(subprocess.check_output(["free", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
+        chromedriver = subprocess.check_output(["chromedriver", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
+        chrome_version = subprocess.check_output(["google-chrome", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
+
+        count_running_chromes(chrome_port)
+        demisto.debug(f"{chrome_instances_contents=}")
+        demisto.debug(f"ps aux command result:\n{ps_aux_output}")
+        demisto.debug(f"chrome_headless.log:\n{chrome_headless_content}")
+        demisto.debug(f"df command result:\n{df_output}")
+        demisto.debug(f"free command result:\n{free_output}")
+        demisto.debug(f"chrome driver: {chromedriver}")
+        demisto.debug(f"chrome version: {chrome_version}")
+
         message = "Could not use local Chrome for rasterize command"
         demisto.error(message)
         return_error(message)
@@ -1486,6 +1536,13 @@ def get_list_item(list_of_items: list, index: int, default_value: str):
     return list_of_items[index]
 
 
+def process_urls(urls):
+    if isinstance(urls, str) and urls.startswith("["):
+        urls = argToList(urls)
+    urls = [urls] if isinstance(urls, str) else urls
+    return urls
+
+
 def add_filename_suffix(file_names: list, file_extension: str):
     ret_value = []
     for current_filename in file_names:
@@ -1495,8 +1552,7 @@ def add_filename_suffix(file_names: list, file_extension: str):
 
 def rasterize_command():  # pragma: no cover
     urls = demisto.getArg("url")
-    #  Rasterize does not support array in `url`. Please consult the owner before changing this.
-    urls = [urls] if isinstance(urls, str) else urls
+    urls = process_urls(urls)
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get("full_screen", False))
     rasterize_type = RasterizeType(demisto.args().get("type", "png").lower())

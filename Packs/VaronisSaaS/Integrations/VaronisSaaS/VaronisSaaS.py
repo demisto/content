@@ -1716,6 +1716,13 @@ def fetch_incidents_command(
 
     severities = get_included_severitires(severity)
 
+    if last_fetched_ingest_time is None:
+        raise ValueError("last_fetched_ingest_time cannot be None")
+
+    max_window = timedelta(days=7)
+    if ingest_time_to - last_fetched_ingest_time > max_window:
+        last_fetched_ingest_time = ingest_time_to - max_window
+
     alerts = client.varonis_get_alerts(
         threat_model_names=threat_model_names,
         alertIds=None,

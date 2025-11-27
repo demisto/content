@@ -70,6 +70,7 @@ class Client(BaseClient):
         alerts_type: str | None,
         sort_by: str | None,
         offset: int | None = 0,
+        direction: str = "asc",
     ) -> dict[str, Any]:
         request_params: dict[str, Any] = {}
 
@@ -93,6 +94,8 @@ class Client(BaseClient):
         """ Sorting parameters"""
         if sort_by:
             request_params["sort"] = sort_by
+
+        request_params["direction"] = direction
 
         return self._http_request(method="GET", url_suffix="/v1/sic/alerts", params=request_params)
 
@@ -242,9 +245,13 @@ class Client(BaseClient):
     def get_kill_chain(self, kill_chain_uuid: str) -> dict[str, Any]:
         return self._http_request(method="GET", url_suffix=f"/v1/sic/kill-chains/{kill_chain_uuid}")
 
-    def http_request(self, method: str, url_suffix: str, params: dict) -> dict[str, Any]:
+    def http_request(self, method: str, url_suffix: str, params: dict, data: dict | None) -> dict[str, Any]:
         if not params:
             params = {}
+
+        if data and method in ["POST", "PUT", "PATCH"]:
+            # If data is provided, we use json_data to send it as JSON
+            return self._http_request(method=method, url_suffix=url_suffix, params=params, data=data)
 
         return self._http_request(method=method, url_suffix=url_suffix, params=params)
 
@@ -381,7 +388,7 @@ def exclude_info_events(event_info: dict, exclude_info: str) -> list:
     return headers
 
 
-def undot(json_data: dict) -> str:
+def undot(json_data: dict) -> dict:
     """
     Remove/Replace dots from the key names of a JSON.
     This function transform the name of the JSON keys that contain "dots" to make it easier to reference them in XSOAR.
@@ -409,7 +416,7 @@ def undot(json_data: dict) -> str:
             if new_key != key:
                 item[new_key] = item.pop(key)
     # Convert back to JSON and return it
-    return json.dumps(data)
+    return data
 
 
 def filter_list_by_keys(dicts_list: list, keys_to_keep: list) -> list:
@@ -444,7 +451,7 @@ def filter_dict_by_keys(input_dict: dict, keys_to_keep: list) -> dict:
     return {key: value for key, value in input_dict.items() if key in keys_to_keep}
 
 
-def fetch_alerts_with_pagination(
+def fetch_alerts_asc_mode(
     client: Client,
     alert_status: str | None,
     alert_urgency: str | None,
@@ -454,49 +461,22 @@ def fetch_alerts_with_pagination(
     alerts_updated_at: str | None,
     sort_by: str | None,
 ) -> List[Dict[str, Any]]:
-    """
-    Fetches alerts from the Sekoia XDR API with pagination support.
-    This function retrieves alerts in batches, allowing for efficient handling of large datasets.
-    Args:
-        client (Client): Sekoia XDR client to use.
-        alert_status (str): status of the alert to search for.
-        alert_urgency (str): alert urgency range to search for. Format: "MIN_urgency,MAX_urgency". i.e: 80,100.
-        alert_type (str): type of alerts to search for.
-        max_results (int): Maximum numbers of incidents per fetch.
-        alerts_created_at (str): The date range to search for alerts.
-    Returns:
-        dict: List of alerts retrieved from the API.
-    """
+    response = client.list_alerts(
+        alerts_created_at=alerts_created_at,
+        alerts_updated_at=alerts_updated_at,
+        alerts_status=alert_status,
+        alerts_urgency=alert_urgency,
+        alerts_type=alert_type,
+        alerts_limit=max_results,
+        sort_by=sort_by,
+        direction="asc",
+    )
 
-    final_alerts = []
-    offset = 0
-    total_alerts = 0
+    alerts: List[Dict[str, Any]] = response.get("items", [])
 
-    # Fetch alerts in a loop until all alerts are retrieved
-    # Using offset to paginate through the results
-    while True:
-        response = client.list_alerts(
-            alerts_created_at=alerts_created_at,
-            alerts_updated_at=alerts_updated_at,
-            alerts_status=alert_status,
-            alerts_urgency=alert_urgency,
-            alerts_type=alert_type,
-            alerts_limit=max_results,
-            sort_by=sort_by,
-            offset=offset,
-        )
+    demisto.debug(f"Fetched {len(alerts)} alerts in ascending direction.")
 
-        alerts: List[Dict[str, Any]] = response.get("items", [])
-        total_alerts = response.get("total", 0)
-
-        # Extend the final alerts list with the current batch of alerts
-        final_alerts.extend(alerts)
-        demisto.debug(f"Fetched {len(alerts)} alerts from offset {offset}.")
-        offset += len(alerts)
-        if offset >= total_alerts:
-            break
-
-    return final_alerts
+    return alerts
 
 
 def handle_alert_events_query(
@@ -525,7 +505,8 @@ def handle_alert_events_query(
         # If it's finished, get the events
         # This case is rare but can happen if the fetch is too fast
         events = client.retrieve_events(event_search_job_uuid=search_job_uuid)
-        alert["events"] = events
+        undoted_events = undot(json_data=events)
+        alert["events"] = undoted_events
 
     return alert
 
@@ -615,7 +596,8 @@ def fetch_incidents(
                         continue
 
                     events = client.retrieve_events(event_search_job_uuid=incident_job_uuid)
-                    incident["rawJSON"]["events"] = events
+                    undoted_events = undot(json_data=events)
+                    incident["rawJSON"]["events"] = undoted_events
                     # Serialize the rawJSON to a string
                     incident["rawJSON"] = json.dumps(incident["rawJSON"])
                     incidents.append(incident)
@@ -660,7 +642,7 @@ def fetch_incidents(
     # for type checking, making sure that latest_created_time is int
     latest_created_time = cast(int, last_fetch)
 
-    alerts = fetch_alerts_with_pagination(
+    alerts = fetch_alerts_asc_mode(
         client,
         alert_status,
         alert_urgency,
@@ -905,7 +887,8 @@ def get_remote_data_command(
 
             # If the alert is finished, we will get the events
             events = client.retrieve_events(event_search_job_uuid=alert_job_uuid)
-            alert_object["alert"]["events"] = events
+            undoted_events = undot(json_data=events)
+            alert_object["alert"]["events"] = undoted_events
 
             # Delete the object from the context
             del context_cache["mirroring_cache"][index]
@@ -960,7 +943,7 @@ def get_modified_remote_data_command(client: Client, args):
     converted_time = time_converter(formatted_last_update)
     last_update_time = f"{converted_time},now"
 
-    raw_alerts = fetch_alerts_with_pagination(client, None, None, None, 100, None, last_update_time, "updated_at")
+    raw_alerts = fetch_alerts_asc_mode(client, None, None, None, 100, None, last_update_time, "updated_at")
 
     # Append the modified alert ids to the list
     # We can have alerts in this list that are already in the cache
@@ -1410,13 +1393,22 @@ def get_kill_chain_command(client: Client, args: dict[str, Any]) -> CommandResul
 
 def http_request_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
-    method, url_sufix, params = (
+    method, url_suffix, params, data = (
         args["method"],
         args["url_sufix"],
         args.get("parameters", {}),
+        args.get("data", ""),
     )
 
-    request = client.http_request(method=method, params=params, url_suffix=url_sufix)
+    if data:
+        try:
+            data = json.loads(data)
+        except json.JSONDecodeError as e:
+            raise DemistoException(f"Data argument is not a valid JSON: {e}")
+    else:
+        data = None
+
+    request = client.http_request(method=method, params=params, url_suffix=url_suffix, data=data)
     readable_output = tableToMarkdown(
         f"The HTTP {method} request with params {params} returned the following information:",
         request["items"] if request["items"] else request,
@@ -1442,7 +1434,7 @@ def test_module(client: Client) -> str:
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-    # Check a JWT token’s validity
+    # Check a JWT token's validity
     # https://docs.sekoia.io/develop/rest_api/identity_and_authentication/#tag/User-Authentication/operation/get_validate_resource
 
     try:
@@ -1489,7 +1481,10 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {command}")
     try:
-        headers = {"Authorization": f"Bearer {api_key}"}
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
         client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         if command == "test-module":

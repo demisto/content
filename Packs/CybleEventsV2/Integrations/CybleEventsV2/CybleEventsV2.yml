@@ -1,7 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: cybleeventsv2
   version: -1
@@ -59,7 +56,7 @@ configuration:
   type: 0
   required: false
   additionalinfo: Maximum incidents to be fetched every time. Upper limit is 1000 incidents.
-  defaultvalue: '1'
+  defaultvalue: '300'
   section: Collect
 - display: Incident type
   name: incidentType
@@ -71,11 +68,11 @@ configuration:
   type: 8
   required: false
   section: Collect
-- display: First fetch time (by days)
+- display: First fetch time (by hours)
   name: first_fetch_timestamp
   required: false
   type: 0
-  additionalinfo: Time interval for first fetch (retroactive), by days only. Maximum of 7 days for retroactive value is allowed.
+  additionalinfo: Time interval for first fetch (retroactive), by hours only. Maximum of 3 hours for retroactive value is allowed.
   defaultvalue: '1'
   section: Collect
 - display: Hide Card Details
@@ -95,6 +92,38 @@ display: CybleEvents v2
 name: cybleeventsv2
 script:
   commands:
+  - description: Update multiple Cyble alerts with new status/severity. Service is auto-resolved per alert ID.
+    name: cyble-vision-update-alerts
+    outputs:
+    - contextPath: CybleEvents.AlertUpdate.id
+      description: Alert ID that was updated.
+      type: string
+    - contextPath: CybleEvents.AlertUpdate.service
+      description: Service corresponding to the alert.
+      type: string
+    - contextPath: CybleEvents.AlertUpdate.status
+      description: Updated alert status (if provided).
+      type: string
+    - contextPath: CybleEvents.AlertUpdate.user_severity
+      description: Updated alert severity (if provided).
+      type: string
+
+    arguments:
+    - name: ids
+      description: |
+        Comma-separated list of alert IDs to update.
+        Example: b9c5573d-4c3e-54c1-b340-7d9d7244350e,8a8e2bfc-2c39-5cd2-ae1f-8a8dc6f67b94 .
+      required: true
+    - name: status
+      description: |
+        Comma-separated list of statuses. Must be one value (applied to all alerts) or exactly match the number of IDs.
+        Example: INFORMATIONAL or REVIEWED,RESOLVED .
+      required: false
+    - name: severity
+      description: |
+        Comma-separated list of user severity levels. Must be one value or exactly match the number of IDs.
+        Example: HIGH or LOW,MEDIUM.
+      required: false
   - description: Get list of Subscribed services.
     name: cyble-vision-subscribed-services
     outputs:
@@ -102,11 +131,11 @@ script:
       description: A list of subscribed services from Cyble vision.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      defaultValue: Domain
+    - defaultValue: 'Domain'
       description: Returns records according to their type (Domain, FileHash-MD5, FileHash-SHA1, FileHash-SHA256, IPv4, IPv6, URL, Email).
-      isArray: true
       name: ioc_type
+      auto: PREDEFINED
+      isArray: true
       predefined:
       - Domain
       - FileHash-MD5
@@ -118,16 +147,16 @@ script:
       - Emai
     - description: Returns records for the specified indicator value.
       name: ioc
-    - defaultValue: '1'
-      description: Returns records that starts from the given page number (the value of the form parameter) in the results list.
+    - description: Returns records that starts from the given page number (the value of the form parameter) in the results list.
       name: from
+      defaultValue: '1'
     - defaultValue: '1'
       description: Number of records to return (max 100). Using a smaller limit will get faster responses.
       name: limit
-    - auto: PREDEFINED
-      defaultValue: last_seen
+    - defaultValue: 'last_seen'
       description: Sorting based on the column (last_seen, first_seen, ioc_type).
       name: sort_by
+      auto: PREDEFINED
       predefined:
       - last_seen
       - first_seen
@@ -162,10 +191,10 @@ script:
     - description: Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601).
       name: end_date
       required: true
-    - auto: PREDEFINED
-      defaultValue: asc
-      description: A sorting order for the fetched alerts.
+    - description: A sorting order for the fetched alerts.
       name: order_by
+      auto: PREDEFINED
+      defaultValue: asc
       predefined:
       - asc
       - desc
@@ -173,7 +202,6 @@ script:
       description: Returns records for the timeline starting from the given indice.
       name: from
     description: Fetch alerts based on the given parameters. The alerts would have multiple events grouped into one, based on a specific service type. This way the user will see, in some cases, more events than the limit provides.
-    execution: true
     name: cyble-vision-fetch-alerts
     outputs:
     - contextPath: CybleEvents.Events.name
@@ -188,7 +216,11 @@ script:
     - contextPath: CybleEvents.Events.keyword
       description: Return keywords.
       type: Unknown
-  - arguments:
+
+    execution: true
+  - description: Fetch incident event group.
+    name: cyble-vision-fetch-alert-groups
+    arguments:
     - auto: PREDEFINED
       defaultValue: asc
       description: A sorting order for the fetched alerts.
@@ -209,30 +241,30 @@ script:
       description: Returns records for the timeline starting from the given indice.
       name: from
       required: true
-    description: Fetch incident event group.
-    name: cyble-vision-fetch-alert-groups
     outputs:
     - contextPath: CybleEvents.AlertGroup
       description: Fetch all the alert groups.
       type: String
+
   - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
   - arguments:
-      - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
-        name: lastUpdate
-        required: true
+    - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
+      name: lastUpdate
+      required: true
     description: Checks for incidents modified since the last synchronization time to enable incremental data fetching.
     name: get-modified-remote-data
-  - arguments:
-      - description: The remote incident ID.
-        name: id
-        required: true
-      - defaultValue: '0'
-        description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
-        name: lastUpdate
+  - name: get-remote-data
     description: Retrieves the latest data for a specific remote incident by its ID, updating only if modified since the given timestamp.
-    name: get-remote-data
-  dockerimage: demisto/python3:3.12.8.3296088
+    arguments:
+    - description: The remote incident ID.
+      name: id
+      required: true
+    - defaultValue: '0'
+      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
+      name: lastUpdate
+
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   runonce: false
   script: '-'
@@ -244,3 +276,6 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 6.2.0
+sectionorder:
+- Connect
+- Collect

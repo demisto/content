@@ -99,6 +99,17 @@ Converts the contents of a URL to an image file or a PDF file.
 }
 ```
 
+#### Passing Multiple URLs
+
+To pass multiple URLs as an argument when one or more URL contains a comma, use a JSON list formatted as a string as follows:
+ ```"[\"https://www.a.com\", \"https://www.b.com\"]"```
+
+Alternatively, you can wrap the entire list in backticks (`) so it is interpreted as a single argument. If you do this, make sure to:
+-Only use double quotes (") to enclose each URL string.
+-Replace any double quotes in a URL with single quotes (') or`%22`, or pass the URL separately to ensure proper parsing and avoid conflicts caused by nested quotation marks.
+for example:
+``` `["https://www.a.com", "https://www.b.com/?q='test_arg'/search"]` ```
+
 #### Human Readable Output
 
 [!image](https://raw.githubusercontent.com/demisto/content/6bdd1b0ca11b977db6d1c652063b71b8697794c2/Packs/rasterize/Integrations/rasterize/doc_files/rasterize_url_command_output.png)

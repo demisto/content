@@ -383,6 +383,7 @@ Run any command supported in the API.
 | job-id | Job ID. | Optional |
 | query | Query string. | Optional |
 | vsys | The name of the virtual system to be configured. If no vsys is mentioned, this command will not use the vsys parameter. | Optional |
+| newname | The object's new name, used when action=rename. If no value is provided, the name defaults to 'newname'.| Optional |
 
 #### Context Output
 
@@ -2593,24 +2594,37 @@ Deletes a policy rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rulename | Name of the rule to delete. | Required |
-| pre_post | Pre rule or Post rule (Panorama instances). | Optional |
-| device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional |
+| rulename | The name of the rule to delete. | Required |
+| pre_post | The pre-rule or post-rule (Panorama instances). Possible values are: pre-rulebase, post-rulebase. | Optional |
+| device-group | The device group where the rule is configured (Panorama instances). | Optional |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| rulebase | The rulebase from which to delete the rule. Possible values are: security, application-override, authentication, decryption, nat, pbf. Default is security. | Required |
+| vsys | The Firewall VSYS to delete the rule from. Use for deleting local rules from a firewall via Panorama or to specify a different VSYS than set in Integration parameters. Default is vsys1. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.SecurityRule.Name | string | Rule name. |
-| Panorama.SecurityRule.DeviceGroup | string | Device group for the rule \(Panorama instances\). |
-
-#### Command Example
-
-```!pan-os-delete-rule rulename=block_bad_application```
-
-#### Human Readable Output
-
->Rule deleted successfully.
+| Panorama.SecurityRule.Name | string | The rule name. |
+| Panorama.SecurityRule.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
+| Panorama.NAT.Name | string | The rule name. |
+| Panorama.NAT.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
+| Panorama.SSLRule.Name | string | The rule name. |
+| Panorama.SSLRule.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
+| Panorama.PBF.Name | string | The rule name. |
+| Panorama.PBF.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
+| Panorama.AuthRule.Name | string | The rule name. |
+| Panorama.AuthRule.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
+| Panorama.AppOverride.Name | string | The rule name. |
+| Panorama.AppOverride.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
+| Panorama.CleanedUpRules.Category | string | The category of the rule that was cleaned up \(Local or Panorama\). |
+| Panorama.CleanedUpRules.AppliedAction | string | The applied cleanup action \(Disabled or Deleted\). |
+| Panorama.CleanedUpRules.DeviceGroup | string | The device group where the rule was cleaned up from \(Panorama instances\). |
+| Panorama.CleanedUpRules.PrePost | string | The location where the rule was cleaned up from \(Panorama instances\). |
+| Panorama.CleanedUpRules.RuleName | string | The name of the rule. |
+| Panorama.CleanedUpRules.Rulebase | string | The rulebase where the rule was cleaned up from \(e.g. 'security', 'nat'\). |
+| Panorama.CleanedUpRules.Target | string | The target firewall serial number, if provided. |
+| Panorama.CleanedUpRules.Vsys | string | The VSYS where the rule was cleaned up from. |
 
 ### pan-os-list-applications
 
@@ -9881,6 +9895,7 @@ Gathers the name, expiration date, and expiration status of certificates configu
 
 ***
 Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content.
+When running from a Panorama instance, the `target` argument must be specified.
 
 #### Base Command
 
@@ -9890,7 +9905,7 @@ Checks for the latest available dynamic update versions and returns a list of la
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| target | Serial number of the firewall on which to run the command. Mandatory for Panorama instances. | Optional |
 
 #### Context Output
 
@@ -10159,3 +10174,90 @@ Installs the latest GlobalProtect Clientless VPN dynamic update.
 | Panorama.GP.Install.JobID | String | The job ID of the installation. |
 | Panorama.GP.Install.Status | String | The installation status. |
 | Panorama.GP.Install.Details | String | The install job details. |
+
+### pan-os-disable-rule
+
+***
+Disables a policy rule.
+
+#### Base Command
+
+`pan-os-disable-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the rule to disable. | Required |
+| pre_post | The pre-rule or post-rule (Panorama instances). Possible values are: pre-rulebase, post-rulebase. | Optional |
+| device-group | The device group where the rule is configured (Panorama instances). | Optional |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| rulebase | The rulebase from which to disable the rule. Possible values are: security, application-override, authentication, decryption, nat, pbf. Default is security. | Required |
+| vsys | The Firewall VSYS to disable the rule on. Use for disabling local rules on a firewall via Panorama or to specify a different VSYS than set in Integration parameters. Default is vsys1. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.SecurityRule.Name | string | The rule name. |
+| Panorama.SecurityRule.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
+| Panorama.NAT.Name | string | The rule name. |
+| Panorama.NAT.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
+| Panorama.SSLRule.Name | string | The rule name. |
+| Panorama.SSLRule.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
+| Panorama.PBF.Name | string | The rule name. |
+| Panorama.PBF.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
+| Panorama.AuthRule.Name | string | The rule name. |
+| Panorama.AuthRule.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
+| Panorama.AppOverride.Name | string | The rule name. |
+| Panorama.AppOverride.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
+| Panorama.CleanedUpRules.Category | string | The category of rule that was cleaned up \(Local or Panorama\). |
+| Panorama.CleanedUpRules.AppliedAction | string | The applied cleanup action \(Disabled or Deleted\). |
+| Panorama.CleanedUpRules.DeviceGroup | string | The device group where the rule was cleaned up from \(Panorama instances\). |
+| Panorama.CleanedUpRules.PrePost | string | The location where the rule was cleaned up from \(Panorama instances\). |
+| Panorama.CleanedUpRules.RuleName | string | The name of the rule. |
+| Panorama.CleanedUpRules.Rulebase | string | The rulebase where the rule was cleaned up from \(e.g. 'security', 'nat'\). |
+| Panorama.CleanedUpRules.Target | string | The target firewall serial number, if provided. |
+| Panorama.CleanedUpRules.Vsys | string | The VSYS where the rule was cleaned up from. |
+
+### pan-os-get-rule-hitcounts
+
+***
+Gets rule hit counts from the firewall.  When connected to Panorama this command can be run on any firewall managed by it.
+
+#### Base Command
+
+`pan-os-get-rule-hitcounts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | The string by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | The target number of the firewall. Used only on a Panorama instance. | Optional |
+| rulebase | The firewall rulebase to check. Possible values are: application-override, authentication, decryption, dos, nat, network-packet-broker, pbf, qos, sdwan, security, tunnel-inspect. Default is security. | Optional |
+| vsys | The firewall VSYS name to check.  Returns results for all VSYS if left blank. Default is all. | Optional |
+| rules | Comma-separated list of rule names to check.  Returns results for all rules if left blank. Default is all. | Optional |
+| unused_only | If set to true, only returns rules with a hit count of 0. Possible values are: true, false. Default is false. | Optional |
+| no_new_hits_since | Shows rules that have had hits, but not after the date provided (in the format YYYY/MM/DD HH:MM:SS). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.RuleHitCount.first_hit_timestamp | Date | Timestamp when the rule was first hit. |
+| PANOS.RuleHitCount.from_dg_name | String | Name of the device group the rule is inherited from. |
+| PANOS.RuleHitCount.hit_count | Number | Number of hits for the rule. |
+| PANOS.RuleHitCount.hostid | String | Serial number of the firewall the entry was fetched from. |
+| PANOS.RuleHitCount.instanceName | String | Name of the PAN-OS Integration Instance used to fetch the entry. |
+| PANOS.RuleHitCount.instanceType | String | The type of the PAN-OS Integration Instance running the command \(panorama or firewall\). |
+| PANOS.RuleHitCount.is_from_panorama | Boolean | Indicates if the rule was pushed from Panorama \(true\) or is local to the firewall \(false\). |
+| PANOS.RuleHitCount.last_hit_timestamp | Date | Timestamp when the rule was most recently hit. |
+| PANOS.RuleHitCount.last_reset_timestamp | Date | Timestamp when hit count data was last reset. |
+| PANOS.RuleHitCount.latest | String | Value of the "latest" property returned by the API. |
+| PANOS.RuleHitCount.name | String | Name of the rule. |
+| PANOS.RuleHitCount.position | String | Indicates the position of the rule pushed from Panorama \(pre_rulebase or post_rulebase\). |
+| PANOS.RuleHitCount.rule_creation_timestamp | Date | Timestamp when the rule was created. |
+| PANOS.RuleHitCount.rule_modification_timestamp | Date | Timestamp when the rule was most recently modified. |
+| PANOS.RuleHitCount.rulebase | String | The rulebase of the rule \(such as security, nat, and so on\). |
+| PANOS.RuleHitCount.vsys | String | The name of the firewall VSYS. |

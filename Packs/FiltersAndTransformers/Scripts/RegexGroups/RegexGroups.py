@@ -34,7 +34,7 @@ def get_regex_matches(args):
         for i in pattern_match.groups():
             matches.append(i)
 
-    if capture_groups:
+    if capture_groups and matches:
         for j in capture_groups:
             if len(matches) - 1 < int(j):
                 raise ValueError("Error: Regex group (" + j + ") out of range")

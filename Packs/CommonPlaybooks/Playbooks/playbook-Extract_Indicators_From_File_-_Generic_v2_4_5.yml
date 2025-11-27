@@ -171,10 +171,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 1f1bd979-a81c-4d02-8a7e-d039839c0f11
+    taskid: 615974ba-0088-4aed-92bf-80613b251d49
     type: condition
     task:
-      id: 1f1bd979-a81c-4d02-8a7e-d039839c0f11
+      id: 615974ba-0088-4aed-92bf-80613b251d49
       version: -1
       name: Is there a text-based file?
       description: Checks if there is a text-based file in context. Skips MSG and EML files.
@@ -229,6 +229,24 @@ tasks:
                     right:
                       value:
                         simple: JSON data
+                    ignorecase: true
+                  - operator: containsString
+                    left:
+                      value:
+                        simple: inputs.File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CSV text
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: csv
                     ignorecase: true
                 - - operator: notContainsString
                     left:
@@ -337,10 +355,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 1da99193-16fa-4afe-8c81-6181adf34b7a
+    taskid: f2241e90-214f-4661-a5ea-0cc6769773bc
     type: regular
     task:
-      id: 1da99193-16fa-4afe-8c81-6181adf34b7a
+      id: f2241e90-214f-4661-a5ea-0cc6769773bc
       version: -1
       name: Extract indicators from text-based file
       description: Extracts indicators from text-based files.
@@ -389,6 +407,24 @@ tasks:
               right:
                 value:
                   simple: JSON data
+              ignorecase: true
+            - operator: containsString
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: CSV text
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: csv
               ignorecase: true
           - - operator: notContainsString
               left:
@@ -2146,8 +2182,8 @@ tasks:
       id: 8cae1b0c-df86-4070-83bc-2108b2fb3281
       version: -1
       name: Does ReadQRCode support the image?
+      description: Check if the image type is supported by the ReadQRCode script.
       type: condition
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:

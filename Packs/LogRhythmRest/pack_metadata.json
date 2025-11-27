@@ -2,7 +2,7 @@
     "name": "LogRhythm",
     "description": "LogRhythm security intelligence.",
     "support": "xsoar",
-    "currentVersion": "2.0.25",
+    "currentVersion": "2.0.27",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -25,6 +25,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

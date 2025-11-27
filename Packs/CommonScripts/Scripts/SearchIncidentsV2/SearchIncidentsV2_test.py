@@ -110,26 +110,10 @@ def test_is_incident_id_valid(id_value, expected_output):
 
 
 EXAMPLE_INCIDENTS_RAW_RESPONSE = [
-    {
-        "id": "1",
-        "type": "TypeA",
-        "name": "Phishing",
-    },
-    {
-        "id": "2",
-        "type": "Type-A",
-        "name": "Phishing Campaign",
-    },
-    {
-        "id": "3",
-        "type": "SomeType-A",
-        "name": "Go Phish",
-    },
-    {
-        "id": "4",
-        "type": "Another Type-A",
-        "name": "Hello",
-    },
+    {"id": "1", "type": "TypeA", "name": "Phishing", "created": "2025-01-01T10:00:00Z"},
+    {"id": "2", "type": "Type-A", "name": "Phishing Campaign", "created": "2025-01-01T10:01:00Z"},
+    {"id": "3", "type": "SomeType-A", "name": "Go Phish", "created": "2025-01-01T10:02:00Z"},
+    {"id": "4", "type": "Another Type-A", "name": "Hello", "created": "2025-01-01T10:03:00Z"},
 ]
 
 FILTER_TO_MATCHED_INCIDENTS = [
@@ -175,9 +159,17 @@ def get_incidents_mock(_, args, extract_contents=True, fail_on_error=True):
         # ({}, {}, []),
         ({"trimevents": "0"}, {}, []),
         ({"trimevents": "1"}, {"trimevents": "1"}, []),
-        ({"id": 1}, {"id": "1"}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0]]),
-        ({"id": [1, 2]}, {"id": "1,2"}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
-        ({"id": "1,2"}, {"id": "1,2"}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
+        ({"id": 1}, {"id": "1", "todate": "2025-01-01T10:00:00Z"}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0]]),
+        (
+            {"id": [1, 2]},
+            {"id": "1,2", "todate": "2025-01-01T10:00:00Z"},
+            [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]],
+        ),
+        (
+            {"id": "1,2"},
+            {"id": "1,2", "todate": "2025-01-01T10:00:00Z"},
+            [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]],
+        ),
     ],
 )
 def test_filter_events(mocker, args, filtered_args, expected_result):
@@ -208,8 +200,8 @@ def test_filter_events(mocker, args, filtered_args, expected_result):
 
 def get_incidents_mock_include_informational(_, args, extract_contents=True, fail_on_error=True):
     incidents = [
-        {"id": "1", "informational": False},
-        {"id": "2", "informational": False},
+        {"id": "1", "informational": False, "created": "2025-01-01T09:59:00Z"},
+        {"id": "2", "informational": False, "created": "2025-01-01T10:00:00Z"},
     ]
 
     includeinformational = args.get("includeinformational", None)
@@ -217,8 +209,8 @@ def get_incidents_mock_include_informational(_, args, extract_contents=True, fai
     if includeinformational:
         incidents.extend(
             [
-                {"id": "3", "informational": True},
-                {"id": "4", "informational": True},
+                {"id": "3", "informational": True, "created": "2025-01-01T10:01:00Z"},
+                {"id": "4", "informational": True, "created": "2025-01-01T10:02:00Z"},
             ]
         )
 
@@ -248,8 +240,8 @@ INCLUDE_INFORMATIONAL_3_HOURS_AGO = dt.datetime(2024, 10, 1, 12, 0, 0).isoformat
             ["1", "2", "3", "4"],
         ),
         ({"includeinformational": "true"}, {}, ValueError),
-        ({"includeinformational": "false"}, {}, ["1", "2"]),
-        ({}, {}, ["1", "2"]),
+        ({"includeinformational": "false"}, {"todate": "2025-01-01T09:59:00Z"}, ["1", "2"]),
+        ({}, {"todate": "2025-01-01T09:59:00Z"}, ["1", "2"]),
         ({"includeinformational": "true", "todate": "now"}, {}, ValueError),
         ({"includeinformational": "true", "fromdate": "3 hours ago"}, {}, ValueError),
     ],
@@ -439,3 +431,40 @@ def test_query_argument_with_unicode_escape(mocker):
     for _ in special_chars:
         mocker.patch.object(SearchIncidentsV2, "execute_command", side_effect=execute_get_incidents_command_side_effect(1))
         SearchIncidentsV2.main()
+
+
+def test_todate_set_and_pagination(mocker):
+    """
+    Given: Duplicated incidents from executing getIncidents command to the platform in 2 different requests in a row.
+    When: Running the command with limit that is larger than the page size.
+    Then: Validate that the command return incident list without duplications by changing the todate to
+     be the first incident time from the first run.
+    """
+    import SearchIncidentsV2
+
+    # Page 1 returns exactly page_size incidents
+    page1_incidents = [{"created": f"2025-01-01T10:0{i}:00Z", "id": i} for i in range(5)]
+    # Page 2 returns fewer, triggering end-of-pagination
+    page2_incidents = [{"created": "2025-01-01T09:59:00Z", "id": 101}]
+
+    # Mock execute_command behavior
+    execute_command_mocker = mocker.patch.object(
+        SearchIncidentsV2,
+        "execute_command",
+        side_effect=[
+            # 1st call: initial getIncidents
+            [{"Contents": {"data": page1_incidents}}],
+            # 2nd call: getIncidents inside loop (page2)
+            {"data": page2_incidents},
+        ],
+    )
+
+    args = {"limit": 10, "size": 5}
+    SearchIncidentsV2.search_incidents(args=args)
+
+    # After first page, todate should be set to the very first created timestamp
+    expected_todate = page1_incidents[0]["created"]
+
+    # Confirm that execute_command was called a second time with args including todate
+    _, second_call_kwargs = execute_command_mocker.call_args_list
+    assert second_call_kwargs[0][1]["todate"] == expected_todate

@@ -5,16 +5,21 @@ name: Recorded Future v2
 display: Recorded Future v2
 category: Data Enrichment & Threat Intelligence
 description: Unique threat intel technology that automatically serves up relevant insights in real time.
+sectionorder:
+  - Connect
+  - Collect
 configuration:
 - display: Server URL (e.g., https://api.recordedfuture.com/gw/xsoar/)
   name: server_url
   defaultvalue: https://api.recordedfuture.com/gw/xsoar/
   type: 0
   required: true
+  section: Connect
 - display: API Token
   name: token
   type: 4
   required: false
+  section: Connect
   displaypassword: API Token
   hiddenusername: true
   hidden: true
@@ -24,47 +29,55 @@ configuration:
   required: false
   displaypassword: API Token
   hiddenusername: true
+  section: Connect
 - display: File Threshold
   additionalinfo: Minimum risk score from Recorded Future to consider the file malicious.
   name: file_threshold
   defaultvalue: "65"
   type: 0
   required: false
+  section: Collect
 - display: CVE Threshold
   additionalinfo: Minimum risk score from Recorded Future to consider the CVE malicious.
   name: cve_threshold
   defaultvalue: "65"
   type: 0
   required: false
+  section: Collect
 - display: IP Threshold
   additionalinfo: Minimum risk score from RF to consider the IP malicious.
   name: ip_threshold
   defaultvalue: "65"
   type: 0
   required: false
+  section: Collect
 - display: Domain Threshold
   additionalinfo: Minimum risk score from Recorded Future to consider the domain malicious.
   name: domain_threshold
   defaultvalue: "65"
   type: 0
   required: false
+  section: Collect
 - display: URL Threshold
   additionalinfo: Minimum risk score from Recorded Future to consider the URL malicious.
   name: url_threshold
   defaultvalue: "65"
   type: 0
   required: false
+  section: Collect
 - display: Vulnerability Threshold
   name: vulnerability_threshold
   defaultvalue: '65'
   type: 0
   required: false
+  section: Collect
   additionalinfo: Minimum risk score from Recorded Future to consider the vulnerability critical.
 - display: Collective Insights
   name: collective_insights
   defaultvalue: "On"
   type: 15
   required: true
+  section: Collect
   additionalinfo: The Recorded Future Platform tracks trends and facilitates new insights on detections to better identify threats. See trends and track metrics over time using the Recorded Future Platform. This feature will store XSOAR enrichments based on playbooks. This feature permits additional analytics to track trends and identify new insights with the Recorded Future Intelligence Cloud. Please refer to the Help section for information about fields collected for Collective Insights.
   options:
   - On
@@ -74,24 +87,29 @@ configuration:
   type: 8
   defaultvalue: "false"
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
   defaultvalue: 'false'
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Rule names to fetch alerts by
   name: rule_names
   type: 12
   additionalinfo: 'Rule names to fetch alerts by, separated by semicolon. If empty, all alerts will be fetched.'
   required: false
+  section: Collect
 - display: Alert Statuses to include in the fetch
   name: fetch_statuses
   defaultvalue: "no-action"
   type: 0
+  section: Collect
   additionalinfo: Comma-separated alert statuses (e.g. "unassigned,assigned,pending,actionable,no-action,tuning"). If empty, the default value of "no-action" will be used.
   required: false
 - display: Update alert status on fetch.
@@ -100,22 +118,26 @@ configuration:
   name: update_status
   type: 8
   required: false
+  section: Collect
 - name: first_fetch
   display: 'First fetch time'
   type: 0
   defaultvalue: 24 hours
   required: false
+  section: Collect
   additionalinfo: 'Format: <number> <time unit>, e.g., "12 hours", "7 days", "3 months", "1 year".'
 - display: Incident type
   name: incidentType
   defaultvalue: "Recorded Future Alert"
   type: 13
   required: false
+  section: Collect
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: '50'
   type: 0
   required: false
+  section: Collect
 - name: integrationReliability
   display: 'Source Reliability'
   defaultvalue: B - Usually reliable
@@ -130,11 +152,13 @@ configuration:
   type: 15
   required: false
   additionalinfo: Reliability of the source providing the intelligence data.
+  section: Collect
 - display: ''
   name: feedExpirationPolicy
   defaultvalue: "indicatorType"
   type: 17
   required: false
+  section: Collect
   options:
   - never
   - interval
@@ -145,16 +169,18 @@ configuration:
   defaultvalue: '20160'
   type: 1
   required: false
+  section: Collect
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
+  section: Collect
 script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.111039
+  dockerimage: demisto/python3:3.12.11.3982393
   commands:
   - name: domain
     description: Gets a quick indicator of the risk associated with a domain.
@@ -2683,7 +2709,8 @@ script:
       type: Number
 
   - name: recordedfuture-single-alert
-    description: Get detailed information from vulnerability, typosquat and credential alerts.
+    description: 'Get detailed information from vulnerability, typosquat and credential alerts. Deprecated in favor of "Recorded Future Alerts" integration in "Recorded Future" pack.'
+    deprecated: true
     arguments:
     - name: id
       description: Alert ID.
@@ -2706,7 +2733,11 @@ script:
       type: string
 
   - name: recordedfuture-alerts
-    description: Gets details on alerts configured and generated by Recorded Future by alert rule ID and/or time range.
+    description: |-
+      Gets details on alerts configured and generated by Recorded Future by alert rule ID and/or time range.
+      
+      Deprecated: use rf-alerts from "Recorded Future Alerts" integration in "Recorded Future" pack instead.
+    deprecated: true
     arguments:
     - name: rule_id
       description: Alert rule ID.
@@ -2766,7 +2797,11 @@ script:
       type: string
 
   - name: recordedfuture-alert-rules
-    description: Search for alert rule IDs.
+    description: |-
+      Search for alert rule IDs.
+      
+      Deprecated: use rf-alerts from "Recorded Future Alerts" integration in "Recorded Future" pack instead.
+    deprecated: true
     arguments:
     - name: rule_name
       description: Rule name to search. Can be a partial name.
@@ -2782,7 +2817,11 @@ script:
       type: string
 
   - name: recordedfuture-alert-set-status
-    description: Set alert into predefined status.
+    description: |-
+      Set alert into predefined status.
+      
+      Deprecated: use rf-alert-update from "Recorded Future Alerts" integration in "Recorded Future" pack instead.
+    deprecated: true
     arguments:
     - name: alert_id
       required: true
@@ -2820,7 +2859,11 @@ script:
       type: date
 
   - name: recordedfuture-alert-set-note
-    description: Set a note for the alert in Recorded Future.
+    description: |-
+      Set a note for the alert in Recorded Future.
+      
+      Deprecated: use rf-alert-update from "Recorded Future Alerts" integration in "Recorded Future" pack instead.
+    deprecated: true
     arguments:
     - name: alert_id
       required: true

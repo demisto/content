@@ -1,0 +1,39 @@
+commonfields:
+  id: CoreUnisolateEndpoint
+  version: -1
+name: CoreUnisolateEndpoint
+script: ''
+type: python
+tags:
+- Utilities
+comment: A polling wrapper script; Unisolates the specified endpoint.
+enabled: true
+args:
+- description: Links the response action to the triggered incident.
+  name: incident_id
+- description: The endpoint ID (string) to isolate. Retrieve the string from the core-get-endpoints command.
+  name: endpoint_id
+  required: true
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Suppress an error when trying to isolate a disconnected endpoint. When set to false, an error is returned.
+  name: suppress_disconnected_endpoint_error
+  predefined:
+  - 'true'
+  - 'false'
+outputs:
+- contextPath: Core.Isolation.endpoint_id
+  description: The endpoint ID.
+  type: String
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.11.4508456
+fromversion: 6.1.0
+isInternal: true
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform
+supportedModules:
+- agentix_xsiam
+- xsiam

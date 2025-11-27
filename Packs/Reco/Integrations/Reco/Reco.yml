@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -78,7 +78,7 @@ description: Reco is a Saas data security solution that protects your data from 
 display: Reco
 name: Reco
 script:
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4417419
   isfetch: true
   runonce: false
   script: "-"
@@ -97,13 +97,22 @@ script:
     description: Add exclusion filter to Reco Classifier.
     name: reco-add-exclusion-filter
   - arguments:
-    - description: Comment to add to the incident.
+    - description: Comment to add to the alert.
+      name: comment
+      required: true
+    - description: Alert ID to add the comment to.
+      name: alert_id
+      required: true
+    description: Add a comment to an alert in Reco.
+    name: reco-add-comment-to-alert
+  - arguments:
+    - description: Comment to add to the alert.
       name: comment
       required: true
     - description: Incident ID to add the comment to.
       name: incident_id
       required: true
-    description: Add a comment to an incident in Reco.
+    description: Add a comment to an alert in Reco.
     name: reco-update-incident-timeline
   - arguments:
     - description: entity id of the file to resolve.
@@ -126,8 +135,6 @@ script:
       required: true
     description: Tag a user as risky in Reco.
     name: reco-add-risky-user-label
-    compliantpolicies:
-    - User Soft Remediation
   - arguments:
     - description: Email address of the user.
       name: email_address
@@ -146,8 +153,6 @@ script:
       required: true
     description: Tag a user as leaving org user in Reco.
     name: reco-add-leaving-org-user-label
-    compliantpolicies:
-    - User Soft Remediation
   - arguments:
     - description: Asset name to search for.
       name: asset_name

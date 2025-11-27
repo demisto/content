@@ -1,0 +1,86 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"RF Domain Abuse Playbook Alert"
+	],
+	"caseInsensitive": true,
+	"cliName": "rfwhoisrecorddata",
+	"closeForm": false,
+	"columns": [
+		{
+			"displayName": "Created Date",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "createddate",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "date",
+			"width": 150
+		},
+		{
+			"displayName": "Registrar Name",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "registrarname",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "Contact Email",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "contactemail",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "Name Servers",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "nameservers",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		}
+	],
+	"content": true,
+	"defaultRows": [
+		{},
+		{},
+		{}
+	],
+	"editForm": true,
+	"group": 0,
+	"hidden": false,
+	"id": "incident_rfwhoisrecorddata",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "RF Whois Record Data",
+	"neverSetAsRequired": false,
+	"openEnded": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"sla": 0,
+	"system": false,
+	"threshold": 72,
+	"type": "grid",
+	"unmapped": false,
+	"unsearchable": true,
+	"useAsKpi": false,
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

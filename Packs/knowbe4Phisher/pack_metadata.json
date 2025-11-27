@@ -2,7 +2,7 @@
     "name": "PhishER",
     "description": "A pack for KnowBe4 PhishER integration",
     "support": "partner",
-    "currentVersion": "1.0.14",
+    "currentVersion": "1.0.17",
     "author": "KnowBe4",
     "url": "https://www.knowbe4.com/products/phisher",
     "email": "support@knowbe4.com",
@@ -22,6 +22,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

@@ -2,8 +2,8 @@
     "name": "FortiSandbox",
     "description": "FortiSandbox is an advanced security tool that goes beyond standard sandboxing. It combines proactive mitigation, enhanced threat detection, and in-depth reporting, using Fortinet's dynamic antivirus technology, dual-level sandboxing, and FortiGuard cloud integration to counter advanced threats. It effectively detects viruses, Advanced Persistent Threats (APTs), and malicious URLs, integrating seamlessly with existing Fortinet devices like FortiGate and FortiMail for comprehensive network protection.",
     "support": "xsoar",
-    "currentVersion": "2.0.2",
-    "author": "Lior Sabri",
+    "currentVersion": "2.0.4",
+    "author": "Cortex XSOAR",
     "url": "",
     "email": "",
     "created": "2021-01-21T23:27:50Z",
@@ -25,6 +25,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

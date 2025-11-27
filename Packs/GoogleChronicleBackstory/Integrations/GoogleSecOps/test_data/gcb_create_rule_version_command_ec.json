@@ -1,0 +1,25 @@
+{
+    "GoogleChronicleBackstory.Rules(val.ruleId == obj.ruleId)": {
+        "ruleId": "dummy_rule_id",
+        "versionId": "dummy_rule_id@dummy_revicion_id",
+        "ruleName": "singleEventRule2",
+        "ruleText": "rule singleEventRule2 { meta: author = \"securityuser\" description = \"single event rule that should generate detections\" events: $e.metadata.event_type = \"NETWORK_DNS\" condition: $e }\n",
+        "ruleType": "SINGLE_EVENT",
+        "versionCreateTime": "2025-01-02T00:00:00.000000z",
+        "metadata": {
+            "author": "securityuser",
+            "created": "2025-01-01T00:00:00.000000z",
+            "severity": "Medium",
+            "description": "single event rule that should generate detections"
+        },
+        "compilationState": "SUCCEEDED",
+        "inputsUsed": {
+            "usesUdm": true
+        },
+        "allowedRunFrequencies": [
+            "LIVE",
+            "HOURLY",
+            "DAILY"
+        ]
+    }
+}

@@ -5,16 +5,20 @@ name: Cortex XDR - IR CTF
 display: Cortex XDR - IR CTF
 category: Endpoint
 description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
+sectionorder:
+- Collect
 configuration:
 - display: Fetch incidents
   name: isFetch
   defaultvalue: "true"
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Incident Mirroring Direction
   name: mirror_direction
   defaultvalue: None
@@ -25,51 +29,61 @@ configuration:
   - Incoming
   - Outgoing
   - Both
+  section: Collect
 - display: HTTP Timeout
   name: timeout
   defaultvalue: "120"
   type: 0
   required: false
   additionalinfo: The timeout of the HTTP requests sent to Cortex XDR API (in seconds).
+  section: Collect
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "201"
   type: 0
   required: false
   additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
+  section: Collect
 - display: Only fetch starred incidents
   name: starred
   type: 8
   required: false
+  section: Collect
 - display: Starred incidents fetch window
   name: starred_incidents_fetch_window
   defaultvalue: 3 days
   type: 0
   required: false
   additionalinfo: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days). Fetches only starred incidents within the specified time range.
+  section: Collect
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   defaultvalue: 3 days
   type: 0
   required: false
+  section: Collect
 - display: Sync Incident Owners
   name: sync_owners
   type: 8
   required: false
   additionalinfo: For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR.
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Collect
 - display: Prevent Only Mode
   name: prevent_only
   type: 8
   required: false
   additionalinfo: Whether the XDR tenant Mode is prevent only
+  section: Collect
 - display: Incident Statuses to Fetch
   name: status
   type: 16
@@ -84,11 +98,13 @@ configuration:
   - resolved_other
   - resolved_auto
   additionalinfo: 'The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched.'
+  section: Collect
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "500000000000"
   type: 19
   required: false
+  section: Collect
 script:
   script: ''
   type: python
@@ -725,7 +741,7 @@ script:
       description: Whether the alert is starred or not.
       type: Boolean
     description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.11.3982393
   isfetch: true
   runonce: false
   subtype: python3

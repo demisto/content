@@ -32,9 +32,10 @@ def http_req(method="GET", url_suffix="", file_name=None, parse_json=True, scan_
         demisto.debug(f"Using explicit rule: {scan_rule}")
         headers["rule"] = scan_rule.encode("utf-8")
     if file_name:
+        headers["content-type"] = "application/octet-stream"
         headers["filename"] = file_name.encode("utf-8")  # type: ignore
         with open(file_name, "rb") as file_:
-            res = requests.post(url, verify=USE_SSL, files={"file": file_}, headers=headers)
+            res = requests.post(url, verify=USE_SSL, data=file_, headers=headers)
     elif method.upper() == "GET":
         res = requests.get(url, verify=USE_SSL, headers=headers)
     elif method.upper() == "POST":

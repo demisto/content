@@ -1,6 +1,9 @@
 commonfields:
   id: HashicorpTerraform
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: Server URL
   name: server_url
@@ -25,16 +28,34 @@ configuration:
   name: default_workspace_id
   type: 0
   required: false
-  section: Collect
+  section: Connect
   additionalinfo: There is an option to override with an input parameter. If not provided, some commands should require the workspace ID.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
+- display: Maximum Number of Audit Events Per Fetch
+  name: max_fetch  # for fetch-events on XSIAM 
+  defaultvalue: 10000
+  type: 0
+  section: Collect
+  hidden:
+    - xsoar
 name: HashicorpTerraform
 display: HashiCorp Terraform
 category: IT Services
@@ -219,6 +240,23 @@ script:
     - contextPath: Terraform.Run.data.links.self
       description: Link to the Terraform run data.
       type: String
+  - name: terraform-get-events
+    description: Retrieves Terraform audit trail events. This command is supported in Cortex XSIAM only and is intended for development and debugging purposes, as it may produce duplicate events.
+    arguments:
+    - name: from_date
+      description: The start date for the audit trails as a relative time expression (e.g., '3 days ago') or an absolute time in ISO 8601 format (e.g., '2025-09-01T00:00:00Z').
+      defaultValue: "1 hour ago"
+    - name: limit
+      description: The maximum number of events to retrieve.
+      defaultValue: "10"
+    - name: should_push_events
+      description: If true, the command will push the events to the Cortex XSIAM dataset; otherwise, it will only display them. 
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+    outputs: []
   - name: terraform-run-action
     arguments:
     - name: run_id
@@ -621,7 +659,10 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/auth-utils:1.0.0.4578605
+  # Fetch events (XSIAM only)
+  isfetchevents: true
+  isfetchevents:xsoar: false
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

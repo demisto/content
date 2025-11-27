@@ -226,6 +226,6 @@ script:
 tests:
 - PlainText Feed - Test
 fromversion: 5.5.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

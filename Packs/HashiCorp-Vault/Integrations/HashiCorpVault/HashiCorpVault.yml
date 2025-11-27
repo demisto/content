@@ -4,6 +4,9 @@ commonfields:
 name: HashiCorp Vault
 display: HashiCorp Vault
 category: Authentication & Identity Management
+sectionorder:
+- Connect
+- Collect
 description: Manage Secrets and Protect Sensitive Data through HashiCorp Vault.
 configuration:
 - display: HashiCorp server URL (e.g., https://192.168.0.1:8200)
@@ -11,56 +14,74 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+  section: Connect
 - display: Use AppRole Auth Method
   name: use_approle
   type: 8
   required: false
+  section: Connect
 - display: Username / Role ID
   displaypassword: Password / Secret ID
   name: credentials
   defaultvalue: ""
   type: 9
   required: false
+  section: Connect
+- display: Cache the authentication token
+  additionalinfo: Is relevant only for Username/Password, or AppRole combinations.
+  name: cache_token
+  defaultvalue: "false"
+  type: 8
+  required: false
+  section: Connect
 - display: Authentication token
   name: token
   defaultvalue: ""
   type: 4
   hidden: true
   required: false
+  section: Connect
 - displaypassword: Authentication token
   name: credentials_token
   hiddenusername: true
   type: 9
   required: false
+  section: Connect
 - display: Vault enterprise namespace
   name: namespace
   defaultvalue: ""
   type: 0
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Fetches credentials
   name: isFetchCredentials
   defaultvalue: "true"
   type: 8
   required: false
+  section: Collect
 - display: CSV list of secrets engine types to fetch secrets from
   additionalinfo: Possible values are KV, Cubbyhole, AWS.
   name: engines
   defaultvalue: KV,Cubbyhole
   type: 0
   required: false
+  section: Collect
 - display: Concat username to credential object name
   name: concat_username_to_cred_name
   type: 8
   additionalinfo: Should be used in case there are several secrets under the same folder in order to make the credential object unique.
   required: false
+  section: Collect
 script:
   script: ''
   type: python
@@ -133,6 +154,8 @@ script:
     - contextPath: HashiCorp.Secret.Path
       description: Secret path.
       type: string
+    - contextPath: HashiCorp.Secret.CustomMetadata
+      description: The custom metadata saved in the secret.
     description: Returns information about a specified secret in a specified KV V2 engine.
   - name: hashicorp-delete-secret
     arguments:
@@ -371,7 +394,7 @@ script:
       description: AppRole Name.
       type: string
     description: Retrieves the AppRole ID for a specified role.
-  dockerimage: demisto/vendors-sdk:1.0.0.3242986
+  dockerimage: demisto/vendors-sdk:1.0.0.4577311
 tests:
 - hashicorp_test
 fromversion: 5.0.0

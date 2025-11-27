@@ -1,25 +1,27 @@
 {
-  "trigger_id": "8b94c2511f1b6dbcb25e1f2c1681b8cd",
-  "playbook_id": "Identity Analytics - Alert Handling",
-  "suggestion_reason": "Recommended for Identity Analytics alerts",
-  "description": "This trigger is responsible for handling Identity Analytics alerts",
-  "trigger_name": "Identity Analytics Alerts",
-  "fromVersion": "6.10.0",
-  "alerts_filter": {
-    "filter": {
-      "AND": [
-        {
-            "SEARCH_FIELD": "tags",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "DT:Identity Analytics"
+    "trigger_id": "8b94c2511f1b6dbcb25e1f2c1681b8cd",
+    "playbook_id": "Identity Analytics - Alert Handling",
+    "suggestion_reason": "Recommended for Identity Analytics alerts",
+    "description": "This trigger is responsible for handling Identity Analytics alerts",
+    "trigger_name": "Identity Analytics Alerts",
+    "fromVersion": "6.10.0",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "SEARCH_FIELD": "tags",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "DT:Identity Analytics"
+                }
+            ]
         }
-      ]
-    }
-  },
-  "supportedModules": [
-      "X1",
-      "X3",
-      "X5",
-      "ENT_PLUS"
-  ]
+    },
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "xsiam",
+        "agentix"
+    ]
 }

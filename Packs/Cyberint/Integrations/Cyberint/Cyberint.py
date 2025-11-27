@@ -44,24 +44,26 @@ class Client(BaseClient):
     API Client to communicate with Cyberint API endpoints.
     """
 
-    def __init__(self, base_url: str, access_token: str, verify_ssl: bool, proxy: bool):
+    def __init__(self, base_url: str, region: str, access_token: str, verify_ssl: bool, proxy: bool):
         """
         Client for Cyberint RESTful API.
 
         Args:
             base_url (str): URL to access when getting alerts.
+            region (str): Region for the API.
             access_token (str): Access token for authentication.
             verify_ssl (bool): specifies whether to verify the SSL certificate or not.
             proxy (bool): specifies if to use XSOAR proxy settings.
         """
         params = demisto.params()
+        self._region = (region or "us").lower()
         self._cookies = {"access_token": access_token}
         self._headers = {
             "X-Integration-Type": "XSOAR",
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": "1.1.4",
+            "X-Integration-Version": "1.1.12",
         }
         super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy)
 
@@ -375,7 +377,7 @@ def cyberint_alerts_fetch_command(client: Client, args: dict) -> CommandResults:
         outputs.append(alert)
     total_alerts = result.get("total")
     table_headers = ["id", "ref_id", "title", "status", "severity", "created_date", "update_date", "type", "environment"]
-    readable_output = f'Total alerts: {total_alerts}\nCurrent page: {args.get("page", 1)}\n'
+    readable_output = f"Total alerts: {total_alerts}\nCurrent page: {args.get('page', 1)}\n"
     readable_output += tableToMarkdown(name="Cyberint alerts:", t=outputs, headers=table_headers, removeNull=True)
     return CommandResults(
         outputs_key_field="ref_id",
@@ -878,7 +880,7 @@ def fetch_incidents(
                 alert_data.update({"content": incident_csv_record})
                 alert.update({"attachments": alert_data})
 
-                alert_name = f"Cyberint alert {alert_id} ({index+1}): {alert_title}"
+                alert_name = f"Cyberint alert {alert_id} ({index + 1}): {alert_title}"
                 alert.update({"alert_name": alert_name})
 
                 incident.update({"name": alert_name, "rawJSON": json.dumps(alert)})
@@ -911,15 +913,17 @@ def main():
     command = demisto.command()
     access_token = params.get("access_token")
     url = params.get("environment")
+    region = params.get("region", "us")
 
     verify_certificate = not params.get("insecure", False)
     first_fetch_time = params.get("first_fetch", "3 days").strip()
     proxy = params.get("proxy", False)
-    base_url = f"{url}/alert/"
+    base_url = f"{url}/{region}/alert/"
     demisto.info(f"Command being called is {command}")
     try:
         client = Client(
             base_url=base_url,
+            region=region,
             verify_ssl=verify_certificate,
             access_token=access_token,
             proxy=proxy,

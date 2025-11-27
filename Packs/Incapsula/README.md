@@ -18,6 +18,6 @@ You can configure the AWS S3 collector:
 2. Make sure to add the following values to the configuration:
    - Log Type - Generic
    - Log Format - CEF
-   - Vendor - incapsula
-   - Product - siemintegration
+   - Vendor - Auto-Detect
+   - Product - Auto-Detect
 </~XSIAM>

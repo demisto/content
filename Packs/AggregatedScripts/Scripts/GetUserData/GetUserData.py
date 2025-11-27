@@ -99,6 +99,7 @@ def is_valid_args(command: Command):
 
 def create_user(
     source: str,
+    instance: Optional[str] = None,
     id: Optional[str] = None,
     username: Optional[str] = None,
     email_address: Optional[str] = None,
@@ -119,10 +120,9 @@ def create_user(
         kwargs: Additional key-value pairs to include in the user dictionary.
 
     Returns:
-        dict[str, Any]: A dictionary containing the non-empty user information.
+        dict[str, Any]: A dictionary containing the user information.
     """
     user = {
-        "Source": source,
         "ID": id,
         "Username": username,
         "Email": email_address,
@@ -130,9 +130,11 @@ def create_user(
     }
     if additional_fields:
         user["AdditionalFields"] = kwargs  # type: ignore
-    user = remove_empty_elements(user)
-
-    return user
+    return remove_empty_elements(user) | {
+        "Source": source,
+        "Brand": source,
+        "Instance": instance,
+    }
 
 
 def prepare_human_readable(
@@ -284,7 +286,7 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> tuple[list[d
     human_readable_list = []
     entry_context_list = []
     for entry in res:
-        entry_context_list.append(entry.get("EntryContext", {}))
+        entry_context_list.append((entry.get("EntryContext") or {}) | {"instance": entry.get("ModuleName")})
         if is_error(entry):
             errors_command_results.extend(prepare_human_readable(command_name, args, get_error(entry), is_error=True))
         else:
@@ -294,115 +296,137 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> tuple[list[d
     return entry_context_list, human_readable, errors_command_results
 
 
-def ad_get_user(command: Command, additional_fields=False) -> tuple[list[CommandResults], dict[str, Any]]:
+def ad_get_user(command: Command, additional_fields=False) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     readable_outputs_list = []
     command.args["attributes"] = demisto.args().get("attributes")
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
 
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
-    output_key = get_output_key("ActiveDirectory.Users", entry_context[0])
-    outputs = get_outputs(output_key, entry_context[0])
+    user_outputs = []
+    for output in entry_context:
+        output_key = get_output_key("ActiveDirectory.Users", output)
+        outputs = get_outputs(output_key, output)
 
-    username = outputs.pop("name", None)
-    if isinstance(username, list) and len(username) == 1:
-        username = username[0]
-    mail = outputs.pop("mail", None)
-    if isinstance(mail, list) and len(mail) == 1:
-        mail = mail[0]
-    for k, v in outputs.items():
-        if isinstance(v, list) and len(v) == 1:
-            outputs[k] = v[0]
-    user_output = create_user(
-        source=command.brand,
-        username=username,
-        email_address=mail,
-        additional_fields=additional_fields,
-        **outputs,
-    )
+        username = outputs.pop("sAMAccountName", None)
+        if isinstance(username, list) and len(username) == 1:
+            username = username[0]
+        mail = outputs.pop("mail", None)
+        if isinstance(mail, list) and len(mail) == 1:
+            mail = mail[0]
+        for k, v in outputs.items():
+            if isinstance(v, list) and len(v) == 1:
+                outputs[k] = v[0]
+        user_outputs.append(
+            create_user(
+                source=command.brand,
+                username=username,
+                email_address=mail,
+                additional_fields=additional_fields,
+                instance=output.get("instance"),
+                **outputs,
+            )
+        )
+    return readable_outputs_list, user_outputs
 
-    return readable_outputs_list, user_output
 
-
-def okta_get_user(command: Command, additional_fields=False) -> tuple[list[CommandResults], dict[str, Any]]:
+def okta_get_user(command: Command, additional_fields=False) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     readable_outputs_list = []
 
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
-    output_key = get_output_key("Account", entry_context[0])
-    outputs = get_outputs(output_key, entry_context[0])
-    user_output = create_user(
-        source=command.brand,
-        id=outputs.pop("ID", None),
-        username=outputs.pop("Username", None),
-        email_address=outputs.pop("Email", None),
-        additional_fields=additional_fields,
-        **outputs,
-    )
+    user_outputs = []
+    for output in entry_context:
+        output_key = get_output_key("Account", output)
+        outputs = get_outputs(output_key, output)
+        user_outputs.append(
+            create_user(
+                source=command.brand,
+                id=outputs.pop("ID", None),
+                username=outputs.pop("Username", None),
+                email_address=outputs.pop("Email", None),
+                additional_fields=additional_fields,
+                instance=output.get("instance"),
+                **outputs,
+            )
+        )
 
-    return readable_outputs_list, user_output
+    return readable_outputs_list, user_outputs
 
 
-def aws_iam_get_user(command: Command, additional_fields: bool) -> tuple[list[CommandResults], dict[str, Any]]:
+def aws_iam_get_user(command: Command, additional_fields: bool) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     readable_outputs_list = []
 
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
-    output_key = get_output_key("AWS.IAM.Users", entry_context[0])
-    outputs = get_outputs(output_key, entry_context[0])
-    user_output = create_user(
-        source=command.brand,
-        id=outputs.pop("UserId", None),
-        username=outputs.pop("UserName", None),
-        additional_fields=additional_fields,
-        **outputs,
-    )
+    user_outputs = []
+    for output in entry_context:
+        output_key = get_output_key("AWS.IAM.Users", output)
+        outputs = get_outputs(output_key, output)
+        user_outputs.append(
+            create_user(
+                source=command.brand,
+                id=outputs.pop("UserId", None),
+                username=outputs.pop("UserName", None),
+                additional_fields=additional_fields,
+                instance=output.get("instance"),
+                **outputs,
+            )
+        )
+    return readable_outputs_list, user_outputs
 
-    return readable_outputs_list, user_output
 
-
-def prisma_cloud_get_user(command: Command, additional_fields: bool) -> tuple[list[CommandResults], dict[str, Any]]:
+def prisma_cloud_get_user(command: Command, additional_fields: bool) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     readable_outputs_list = []
 
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
-    output_key = get_output_key("PrismaCloud.Users", entry_context[0])
-    outputs = get_outputs(output_key, entry_context[0])
-    user_output = create_user(
-        source=command.brand,
-        username=outputs.pop("username", None),
-        email_address=outputs.pop("email", None),
-        additional_fields=additional_fields,
-        **outputs,
-    )
+    user_outputs = []
+    for output in entry_context:
+        output_key = get_output_key("PrismaCloud.Users", output)
+        outputs = get_outputs(output_key, output)
+        user_outputs.append(
+            create_user(
+                source=command.brand,
+                username=outputs.pop("username", None),
+                email_address=outputs.pop("email", None),
+                additional_fields=additional_fields,
+                instance=output.get("instance"),
+                **outputs,
+            )
+        )
 
-    return readable_outputs_list, user_output
+    return readable_outputs_list, user_outputs
 
 
-def msgraph_user_get(command: Command, additional_fields: bool) -> tuple[list[CommandResults], dict[str, Any]]:
+def msgraph_user_get(command: Command, additional_fields: bool) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     readable_outputs_list = []
 
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
-    output_key = get_output_key("Account", entry_context[0])
-    outputs = get_outputs(output_key, entry_context[0])
-    user_output = create_user(
-        source=command.brand,
-        id=outputs.pop("ID", None),
-        username=outputs.pop("Username", None),
-        email_address=outputs.pop("Email", {}).get("Address", None),
-        additional_fields=additional_fields,
-        **outputs,
-    )
+    user_outputs = []
+    for output in entry_context:
+        output_key = get_output_key("Account", output)
+        outputs = get_outputs(output_key, output)
+        user_outputs.append(
+            create_user(
+                source=command.brand,
+                id=outputs.pop("ID", None),
+                username=outputs.pop("Username", None),
+                email_address=outputs.pop("Email", {}).get("Address", None),
+                additional_fields=additional_fields,
+                instance=output.get("instance"),
+                **outputs,
+            )
+        )
+    return readable_outputs_list, user_outputs
 
-    return readable_outputs_list, user_output
 
-
-def msgraph_user_get_manager(command: Command, additional_fields: bool) -> dict[str, Any]:
+def msgraph_user_get_manager(command: Command) -> dict[str, Any]:
     readable_outputs_list = []
 
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
@@ -411,100 +435,316 @@ def msgraph_user_get_manager(command: Command, additional_fields: bool) -> dict[
     output_key = get_output_key("MSGraphUserManager", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
     manager_output = {
-        "manager_display_name": outputs.get("Manager", {}).get("DisplayName"),
-        "manager_email": outputs.get("Manager", {}).get("Mail"),
+        "ManagerDisplayName": outputs.get("Manager", {}).get("DisplayName"),
+        "ManagerEmail": outputs.get("Manager", {}).get("Mail"),
     }
 
     return manager_output
 
 
-def xdr_list_risky_users(
+def iam_get_user(
     command: Command,
-    outputs_key_field: str,
     additional_fields: bool,
-) -> tuple[list[CommandResults], dict[str, Any]]:
+) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     readable_outputs_list = []
-
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
-    output_key = get_output_key(f"{outputs_key_field}.RiskyUser", entry_context[0])
-    outputs = get_outputs(output_key, entry_context[0])
+    account_outputs = []
+    for output in entry_context:
+        output_key = get_output_key("IAM.Vendor", output)
+        outputs = get_outputs(output_key, output)
+        account_outputs.append(
+            create_user(
+                source=command.brand,
+                email_address=outputs.pop("email", None),
+                instance=output.get("instance"),
+                **outputs,
+                additional_fields=additional_fields,
+            )
+            if outputs.get("success")
+            else create_user(source=command.brand, instance=output.get("instance"))
+        )
+    return readable_outputs_list, account_outputs
 
-    account_output = create_user(
-        source=command.brand,
-        id=outputs.get("id"),
-        risk_level=outputs.pop("risk_level", None),
-        username=outputs.pop("id", None),
-        **outputs,
-        additional_fields=additional_fields,
-    )
 
-    return readable_outputs_list, account_output
-
-
-def xdr_get_risky_user(
+def gsuite_get_user(
     command: Command,
     additional_fields: bool,
-) -> tuple[list[CommandResults], dict[str, Any]]:
-    return xdr_list_risky_users(command, outputs_key_field="PaloAltoNetworksXDR", additional_fields=additional_fields)
+) -> tuple[list[CommandResults], list[dict[str, Any]]]:
+    readable_outputs_list = []
+    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
+    readable_outputs_list.extend(readable_errors)
+    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
+    account_outputs = []
+    for output in entry_context:
+        output_key = get_output_key("GSuite.User", output)
+        outputs = get_outputs(output_key, output)
+        account_outputs.append(
+            create_user(
+                source=command.brand,
+                email_address=outputs.pop("primaryEmail", None),
+                username=outputs.pop("fullName", None),
+                instance=output.get("instance"),
+                **outputs,
+                additional_fields=additional_fields,
+            )
+        )
+    return readable_outputs_list, account_outputs
 
 
-def core_get_risky_user(
-    command: Command,
+def run_list_risky_users_command(list_risky_users_commands: list[Command], additional_fields: bool, outputs_key_field: str):
+    """
+    Handles all the logic for the core/xdr list-risky-users command
+
+    Args:
+        list_risky_users_commands (list[Command]): list of commands to run.
+        additional_fields (bool): whether to add additional fields to the output.
+        outputs_key_field (str): the key field to use for the output.
+    Returns:
+        tuple[list[CommandResults], list[dict[str, Any]]]: readable outputs list and users list.
+    """
+    readable_outputs_list = []
+    users = []
+    for list_risky_users_command in list_risky_users_commands:
+        entry_context, human_readable, readable_errors = run_execute_command(
+            list_risky_users_command.name, list_risky_users_command.args
+        )
+        readable_outputs_list.extend(readable_errors)
+        readable_outputs_list.extend(
+            prepare_human_readable(list_risky_users_command.name, list_risky_users_command.args, human_readable)
+        )
+        for output in entry_context:
+            output_key = get_output_key(f"{outputs_key_field}.RiskyUser", output)
+            outputs = get_outputs(output_key, output)
+            user = create_user(
+                source=list_risky_users_command.brand,
+                id=outputs.get("id"),
+                risk_level=outputs.pop("risk_level", None),
+                username=outputs.pop("id", None),
+                instance=output.get("instance"),
+                email_address=outputs.pop("email", None),
+                **outputs,
+                additional_fields=additional_fields,
+            )
+            if set(user) == {"Source", "Brand", "Instance"}:  # contains only the source and brand keys
+                user["Status"] = f"User not found - userId: {list_risky_users_command.args.get('user_id')}."
+            else:
+                user["Status"] = "found"
+            users.append(user)
+
+    return readable_outputs_list, users
+
+
+def run_list_users_command(
+    list_users_command: Command,
     additional_fields: bool,
-) -> tuple[list[CommandResults], dict[str, Any]]:
-    return xdr_list_risky_users(command, outputs_key_field="Core", additional_fields=additional_fields)
+    outputs_key_field: str,
+    email_list: List[str],
+    users: list[dict[str, Any]],
+    readable_outputs_list: list[CommandResults],
+) -> tuple[list[CommandResults], list[dict[str, Any]]]:
+    """
+    Handles all the logic for the core/xdr list-users command.
+
+    Args:
+        list_users_command (Command): The command to run.
+        additional_fields (bool): whether to add additional fields to the output.
+        outputs_key_field (str): the key field to use for the output.
+        email_list (List[str]): the list of emails to search for.
+        users (list[dict[str, Any]]): the list of users obtained from previous command.
+        readable_outputs_list (list[CommandResults]): the list of readable outputs to append to.
+
+    Returns:
+        tuple[list[CommandResults], list[dict[str, Any]]]: the list of readable outputs and the list of users.
+    """
+    email_set = set(email_list)
+    risky_users_email_set = set()
+    for user in users:
+        if mail := user.get("Email"):
+            risky_users_email_set.add(mail)
+    if additional_fields:
+        email_set.update(risky_users_email_set)
+    if email_set:
+        entry_context, _, readable_errors = run_execute_command(list_users_command.name, list_users_command.args)
+        readable_outputs_list.extend(readable_errors)
+        for output in entry_context:
+            output_key = get_output_key(f"{outputs_key_field}.User", output)
+            if isinstance(output, dict):
+                outputs = output.get(output_key, [])
+            else:
+                outputs = []
+            demisto.debug(f"found {len(outputs)} users")
+            for output in outputs:  # type: ignore[assignment]
+                if (mail := output.get("user_email", "")) and mail in email_set:
+                    demisto.debug(f"found user with email: {mail}")
+                    email_set.remove(mail)
+                    found = False
+                    for user in users:
+                        if (mail := user.get("Email")) and mail == output.get("user_email"):
+                            demisto.debug(f"found user with email in results from risky-users: {mail}")
+                            found = True
+                            if additional_fields:
+                                demisto.debug(f"adding additional fields to user with email: {mail}")
+                                output.pop("user_email")
+                                user["AdditionalFields"].update(output)
+                            break
+                    if not found:
+                        demisto.debug(f"User with {mail} was not found in previous results, creating new user.")
+                        user = create_user(
+                            source=list_users_command.brand,
+                            id=output.get("id"),
+                            risk_level=output.pop("risk_level", None),
+                            username=output.pop("id", None),
+                            instance=output.get("instance"),
+                            email_address=output.pop("user_email", None),
+                            **output,
+                            additional_fields=additional_fields,
+                        )
+                        user["Status"] = "found"
+                        users.append(user)
+                    if not email_set:
+                        demisto.debug("all given users were found, breaking")
+                        break
+    else:
+        demisto.debug("Did not recieve any email to search for, skipping list users command.")
+    # Update the list of non found users.
+    for mail in email_set:
+        if mail not in risky_users_email_set:
+            user = create_user(
+                source=list_users_command.brand,
+                instance=output.get("instance"),
+                email_address=mail,
+                additional_fields=additional_fields,
+            )
+            user["Status"] = "not found"
+            users.append(user)
+    return readable_outputs_list, users
+
+
+def xdr_and_core_list_all_users(
+    list_risky_users_commands: list[Command],
+    list_users_command: Command,
+    outputs_key_field: str,
+    additional_fields: bool,
+    list_non_risky_users: bool,
+    email_list: List[str],
+) -> tuple[list[CommandResults], list[dict[str, Any]]]:
+    readable_outputs_list, users = run_list_risky_users_command(list_risky_users_commands, additional_fields, outputs_key_field)
+    if list_non_risky_users:
+        readable_outputs_list, users = run_list_users_command(
+            list_users_command, additional_fields, outputs_key_field, email_list, users, readable_outputs_list
+        )
+
+    return readable_outputs_list, users
 
 
 def azure_get_risky_user(
     command: Command,
     additional_fields: bool,
-) -> tuple[list[CommandResults], dict[str, Any]]:
+) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     readable_outputs_list = []
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
-    output_key = get_output_key("AzureRiskyUsers.RiskyUser", entry_context[0])
-    outputs = get_outputs(output_key, entry_context[0])
 
-    account_output = create_user(
-        source=command.brand,
-        id=outputs.get("id"),
-        risk_level=outputs.pop("riskLevel", None),
-        username=outputs.pop("id", None),
-        **outputs,
-        additional_fields=additional_fields,
-    )
+    account_outputs = []
+    for output in entry_context:
+        output_key = get_output_key("AzureRiskyUsers.RiskyUser", output)
+        outputs = get_outputs(output_key, output)
 
-    return readable_outputs_list, account_output
+        account_outputs.append(
+            create_user(
+                source=command.brand,
+                id=outputs.get("id"),
+                risk_level=outputs.pop("riskLevel", None),
+                username=outputs.pop("id", None),
+                instance=output.get("instance"),
+                **outputs,
+                additional_fields=additional_fields,
+            )
+        )
+
+    return readable_outputs_list, account_outputs
 
 
 def get_command_results(
     command: Command, cmd_to_run: Callable, modules: Modules, additional_fields: bool
-) -> tuple[list[CommandResults], dict[str, Any]] | None:
+) -> tuple[list[CommandResults], list[dict[str, Any]]] | None:
     if modules.is_brand_available(command) and is_valid_args(command):
         return cmd_to_run(command, additional_fields)
     return None
 
 
 def get_data(
-    modules: Modules, brand_name: str, command_name: str, arg_name: str, arg_value: str, cmd: Callable, additional_fields: bool
-):
+    modules: Modules,
+    brand_name: str,
+    command_name: str,
+    arg_name: str,
+    arg_value: str,
+    cmd: Callable,
+    additional_fields: bool,
+) -> tuple[list[str], list[dict]]:
     get_user_command = Command(
         brand=brand_name,
         name=command_name,
-        args={arg_name: arg_value},
+        args={arg_name: arg_value, "using-brand": brand_name},
     )
     if modules.is_brand_available(get_user_command) and is_valid_args(get_user_command):
         demisto.debug(f"calling {command_name} command with brand {brand_name}")
         readable_outputs, outputs = cmd(get_user_command, additional_fields)
-        if len(outputs) == 1:  # contains only the source key
-            outputs["Status"] = f"User not found - userId: {arg_value}."
-        else:
-            outputs["Status"] = "found"
+        for output in outputs:
+            if set(output) == {"Source", "Brand", "Instance"}:  # contains only the source and brand keys
+                output["Status"] = f"User not found - userId: {arg_value}."
+            else:
+                output["Status"] = "found"
         return readable_outputs, outputs
-    return [], {}
+    return [], []
+
+
+def get_core_and_xdr_data(
+    modules: Modules,
+    brand_name: str,
+    first_command: str,
+    second_command: str,
+    user_names: List[str],
+    additional_fields: bool,
+    list_non_risky_users: bool = False,
+    email_list: List[str] = [],
+    outputs_key_field: str = "",
+) -> tuple[list[CommandResults], list[dict[str, Any]]]:
+    # prepare both commands
+    first_commands = []
+    for user_name in user_names:
+        first_commands.append(
+            Command(
+                brand=brand_name,
+                name=first_command,
+                args={"user_id": user_name, "using-brand": brand_name},
+            )
+        )
+        if auto_detect_indicator_type(user_name) == FeedIndicatorType.Email:
+            email_list.append(user_name)
+    second_command = Command(
+        brand=brand_name,
+        name=second_command,
+        args={"using-brand": brand_name},
+    )
+
+    if (first_commands and modules.is_brand_available(first_commands[0]) and is_valid_args(first_commands[0])) or (
+        email_list and modules.is_brand_available(second_command)
+    ):
+        demisto.debug(f"Starting execution flow for list-users for {brand_name}")
+        readable_outputs, outputs = xdr_and_core_list_all_users(
+            first_commands,
+            second_command,
+            outputs_key_field=outputs_key_field,
+            additional_fields=additional_fields,
+            list_non_risky_users=list_non_risky_users,
+            email_list=email_list,
+        )
+        return readable_outputs, outputs
+    return [], []
 
 
 """ MAIN FUNCTION """
@@ -521,6 +761,7 @@ def main():
         brands_to_run = argToList(args.get("brands", []))
         additional_fields = argToBoolean(args.get("additional_fields") or False)
         modules = Modules(demisto.getModules(), brands_to_run)
+        list_non_risky_users = argToBoolean(args.get("list_non_risky_users") or False)
 
         if domain and not users_names:
             raise ValueError("When specifying the domain argument, the user_name argument must also be provided.")
@@ -528,7 +769,6 @@ def main():
             raise ValueError("At least one of the following arguments must be specified: user_id, user_name or user_email.")
 
         command_results_list: list[CommandResults] = []
-        user_outputs_list: list[dict[str, Any]] = []
         users_outputs: list[dict] = []
         users_readables: list = []
 
@@ -545,13 +785,13 @@ def main():
                     modules=modules,
                     brand_name="Active Directory Query v2",
                     command_name="ad-get-user",
-                    arg_name="name",
+                    arg_name="username",
                     arg_value=user_name,
                     cmd=ad_get_user,
                     additional_fields=additional_fields,
                 )
                 if readable_output and outputs:
-                    users_outputs.append(outputs)
+                    users_outputs.extend(outputs)
                     users_readables.extend(readable_output)
 
                 #################################
@@ -567,7 +807,7 @@ def main():
                     additional_fields=additional_fields,
                 )
                 if readable_output and outputs:
-                    users_outputs.append(outputs)
+                    users_outputs.extend(outputs)
                     users_readables.extend(readable_output)
 
                 #################################
@@ -583,7 +823,7 @@ def main():
                     additional_fields=additional_fields,
                 )
                 if readable_output and outputs:
-                    users_outputs.append(outputs)
+                    users_outputs.extend(outputs)
                     users_readables.extend(readable_output)
 
                 #################################
@@ -599,16 +839,17 @@ def main():
                     additional_fields=additional_fields,
                 )
                 if readable_output and outputs:
+                    for output in outputs:
+                        if output.get("ID") and additional_fields:
+                            msgraph_user_get_manager_command = Command(
+                                brand="Microsoft Graph User",
+                                name="msgraph-user-get-manager",
+                                args={"user": user_name},
+                            )
+                            manager_output = msgraph_user_get_manager(msgraph_user_get_manager_command)
+                            output["AdditionalFields"].update(manager_output)
+                    users_outputs.extend(outputs)
                     users_readables.extend(readable_output)
-                    if outputs.get("id") and additional_fields:
-                        msgraph_user_get_manager_command = Command(
-                            brand="Microsoft Graph User",
-                            name="msgraph-user-get-manager",
-                            args={"user": user_name},
-                        )
-                        manager_output = msgraph_user_get_manager(msgraph_user_get_manager_command, additional_fields)
-                        outputs["AdditionalFields"].extend(manager_output)
-                    users_outputs.append(outputs)
 
                 #################################
                 ### Running for Prismacloud v2 ###
@@ -623,43 +864,60 @@ def main():
                     additional_fields=additional_fields,
                 )
                 if readable_output and outputs:
-                    users_outputs.append(outputs)
+                    users_outputs.extend(outputs)
+                    users_readables.extend(readable_output)
+
+                #################################
+                ### Running for Okta IAM ###
+                #################################
+                readable_output, outputs = get_data(
+                    modules=modules,
+                    brand_name="Okta IAM",
+                    command_name="iam-get-user",
+                    arg_name="user-profile",
+                    arg_value=f'{{"login":"{user_name}"}}',
+                    cmd=iam_get_user,
+                    additional_fields=additional_fields,
+                )
+                if readable_output and outputs:
+                    users_outputs.extend(outputs)
+                    users_readables.extend(readable_output)
+
+                #################################
+                ### Running for AWS-ILM ###
+                #################################
+                readable_output, outputs = get_data(
+                    modules=modules,
+                    brand_name="AWS-ILM",
+                    command_name="iam-get-user",
+                    arg_name="user-profile",
+                    arg_value=f'{{"login":"{user_name}"}}',
+                    cmd=iam_get_user,
+                    additional_fields=additional_fields,
+                )
+                if readable_output and outputs:
+                    users_outputs.extend(outputs)
                     users_readables.extend(readable_output)
 
             else:
                 demisto.debug(f"Skipping commands that do not support domain in user_name: {user_name}")
 
             #################################
-            ### Running for Cortex XDR - IR (XDR) ###
+            ### Running for Active Directory Query v2 ###
             #################################
-            readable_output, outputs = get_data(
-                modules=modules,
-                brand_name="Cortex XDR - IR",
-                command_name="xdr-list-risky-users",
-                arg_name="user_id",
-                arg_value=user_name,
-                cmd=xdr_get_risky_user,
-                additional_fields=additional_fields,
-            )
-            if readable_output and outputs:
-                users_outputs.append(outputs)
-                users_readables.extend(readable_output)
-
-            #################################
-            ### Running for Cortex XDR - IR (Core) ###
-            #################################
-            readable_output, outputs = get_data(
-                modules=modules,
-                brand_name="Cortex Core - IR",
-                command_name="core-list-risky-users",
-                arg_name="user_id",
-                arg_value=user_name,
-                cmd=core_get_risky_user,
-                additional_fields=additional_fields,
-            )
-            if readable_output and outputs:
-                users_outputs.append(outputs)
-                users_readables.extend(readable_output)
+            if "\\" in (user_name or ""):
+                readable_output, outputs = get_data(
+                    modules=modules,
+                    brand_name="Active Directory Query v2",
+                    command_name="ad-get-user",
+                    arg_name="username",
+                    arg_value=user_name.split("\\")[1],
+                    cmd=ad_get_user,
+                    additional_fields=additional_fields,
+                )
+                if readable_output and outputs:
+                    users_outputs.extend(outputs)
+                    users_readables.extend(readable_output)
 
         #################################
         ### Running for Users IDs ###
@@ -680,7 +938,7 @@ def main():
                 additional_fields=additional_fields,
             )
             if readable_output and outputs:
-                users_outputs.append(outputs)
+                users_outputs.extend(outputs)
                 users_readables.extend(readable_output)
 
             #################################
@@ -696,19 +954,20 @@ def main():
                 additional_fields=additional_fields,
             )
             if readable_output and outputs:
+                for output in outputs:
+                    if output.get("ID") and additional_fields:
+                        msgraph_user_get_manager_command = Command(
+                            brand="Microsoft Graph User",
+                            name="msgraph-user-get-manager",
+                            args={"user": user_id},
+                        )
+                        manager_output = msgraph_user_get_manager(msgraph_user_get_manager_command)
+                        output["AdditionalFields"].update(manager_output)
                 users_readables.extend(readable_output)
-                if outputs.get("id") and additional_fields:
-                    msgraph_user_get_manager_command = Command(
-                        brand="Microsoft Graph User",
-                        name="msgraph-user-get-manager",
-                        args={"user": user_id},
-                    )
-                    manager_output = msgraph_user_get_manager(msgraph_user_get_manager_command, additional_fields)
-                    outputs["AdditionalFields"].extend(manager_output)
-                users_outputs.append(outputs)
+                users_outputs.extend(outputs)
 
             #################################
-            ### Running for Azure Risky Users	 ###
+            ### Running for Azure Risky User ###
             #################################
             readable_output, outputs = get_data(
                 modules=modules,
@@ -720,7 +979,55 @@ def main():
                 additional_fields=additional_fields,
             )
             if readable_output and outputs:
-                users_outputs.append(outputs)
+                users_outputs.extend(outputs)
+                users_readables.extend(readable_output)
+
+            #################################
+            ### Running for Okta IAM ###
+            #################################
+            readable_output, outputs = get_data(
+                modules=modules,
+                brand_name="Okta IAM",
+                command_name="iam-get-user",
+                arg_name="user-profile",
+                arg_value=f'{{"id":"{user_id}"}}',
+                cmd=iam_get_user,
+                additional_fields=additional_fields,
+            )
+            if readable_output and outputs:
+                users_outputs.extend(outputs)
+                users_readables.extend(readable_output)
+
+            #################################
+            ### Running for AWS-ILM ###
+            #################################
+            readable_output, outputs = get_data(
+                modules=modules,
+                brand_name="AWS-ILM",
+                command_name="iam-get-user",
+                arg_name="user-profile",
+                arg_value=f'{{"id":"{user_id}"}}',
+                cmd=iam_get_user,
+                additional_fields=additional_fields,
+            )
+            if readable_output and outputs:
+                users_outputs.extend(outputs)
+                users_readables.extend(readable_output)
+
+            #################################
+            ### Running for GSuiteAdmin ###
+            #################################
+            readable_output, outputs = get_data(
+                modules=modules,
+                brand_name="GSuiteAdmin",
+                command_name="gsuite-user-get",
+                arg_name="user",
+                arg_value=user_id,
+                cmd=gsuite_get_user,
+                additional_fields=additional_fields,
+            )
+            if readable_output and outputs:
+                users_outputs.extend(outputs)
                 users_readables.extend(readable_output)
 
         #################################
@@ -728,6 +1035,22 @@ def main():
         #################################
         for user_email in users_emails:
             demisto.debug(f"Start getting user data for {user_email=}")
+
+            #################################
+            ### Running for Okta v2 ###
+            #################################
+            readable_output, outputs = get_data(
+                modules=modules,
+                brand_name="Okta v2",
+                command_name="okta-get-user",
+                arg_name="userEmail",
+                arg_value=user_email,
+                cmd=okta_get_user,
+                additional_fields=additional_fields,
+            )
+            if readable_output and outputs:
+                users_outputs.extend(outputs)
+                users_readables.extend(readable_output)
 
             #################################
             ### Running for Active Directory Query v2 ###
@@ -742,23 +1065,107 @@ def main():
                 additional_fields=additional_fields,
             )
             if readable_output and outputs:
-                users_outputs.append(outputs)
+                users_outputs.extend(outputs)
+                users_readables.extend(readable_output)
+
+            #################################
+            ### Running for Okta IAM ###
+            #################################
+            readable_output, outputs = get_data(
+                modules=modules,
+                brand_name="Okta IAM",
+                command_name="iam-get-user",
+                arg_name="user-profile",
+                arg_value=f'{{"email":"{user_email}"}}',
+                cmd=iam_get_user,
+                additional_fields=additional_fields,
+            )
+            if readable_output and outputs:
+                users_outputs.extend(outputs)
+                users_readables.extend(readable_output)
+
+            #################################
+            ### Running for AWS-ILM ###
+            #################################
+            readable_output, outputs = get_data(
+                modules=modules,
+                brand_name="AWS-ILM",
+                command_name="iam-get-user",
+                arg_name="user-profile",
+                arg_value=f'{{"email":"{user_email}"}}',
+                cmd=iam_get_user,
+                additional_fields=additional_fields,
+            )
+            if readable_output and outputs:
+                users_outputs.extend(outputs)
+                users_readables.extend(readable_output)
+
+            #################################
+            ### Running for GSuiteAdmin ###
+            #################################
+            readable_output, outputs = get_data(
+                modules=modules,
+                brand_name="GSuiteAdmin",
+                command_name="gsuite-user-get",
+                arg_name="user",
+                arg_value=user_email,
+                cmd=gsuite_get_user,
+                additional_fields=additional_fields,
+            )
+            if readable_output and outputs:
+                users_outputs.extend(outputs)
                 users_readables.extend(readable_output)
 
         if verbose:
             command_results_list.extend(users_readables)
 
-        demisto.debug(f"users list: {user_outputs_list}")
+        #################################
+        ### Running for XDR ###
+        #################################
+        readable_output, outputs = get_core_and_xdr_data(  # type: ignore[assignment]
+            modules=modules,
+            brand_name="Cortex XDR - IR",
+            first_command="xdr-list-risky-users",
+            second_command="xdr-list-users",
+            user_names=users_names,
+            additional_fields=additional_fields,
+            list_non_risky_users=list_non_risky_users,
+            email_list=users_emails,
+            outputs_key_field="PaloAltoNetworksXDR",
+        )
+        # we don't expect xdr-list-users to return readable outputs.
+        if readable_output or outputs:
+            users_outputs.extend(outputs)
+            users_readables.extend(readable_output)
+
+        #################################
+        ### Running for Core ###
+        #################################
+        readable_output, outputs = get_core_and_xdr_data(  # type: ignore[assignment]
+            modules=modules,
+            brand_name="Cortex Core - IR",
+            first_command="core-list-risky-users",
+            second_command="core-list-users",
+            user_names=users_names,
+            additional_fields=additional_fields,
+            list_non_risky_users=list_non_risky_users,
+            email_list=users_emails,
+            outputs_key_field="Core",
+        )
+        # we don't expect core-list-users to return readable outputs.
+        if readable_output or outputs:
+            users_outputs.extend(outputs)
+            users_readables.extend(readable_output)
+
         command_results_list.append(
             CommandResults(
                 outputs_prefix="UserData",
-                # because if source1 and source2 got the same username, we don't want any of the sources to overrides the other
-                outputs_key_field=["Username", "Source"],
+                outputs_key_field=["Username", "Instance"],
                 outputs=users_outputs,
                 readable_output=tableToMarkdown(
                     name="User(s) data",
                     t=users_outputs,
-                    headers=["Source", "ID", "Username", "Email", "Status"],
+                    headers=["Source", "Instance", "ID", "Username", "Email", "Status"],
                     removeNull=False,
                 ),
             )

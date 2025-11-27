@@ -1,9 +1,13 @@
 import concurrent.futures
+import copy
 import secrets
 import uuid
 from enum import Enum
 from ipaddress import ip_address
 from urllib import parse
+from collections.abc import Callable
+from deepmerge import always_merger
+
 
 import pytz
 import urllib3
@@ -18,7 +22,6 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 FAILURE_SLEEP = 20  # sleep between consecutive failures events fetch
 FETCH_SLEEP = arg_to_number(demisto.params().get("fetch_interval")) or 60  # sleep between fetches
-FETCH_INITIAL_SLEEP = 1  # sleep before the initial check to see if a query has completed.
 BATCH_SIZE = 100  # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10  # max amount of IPs to enrich per offense
 MAX_WORKERS = 8  # max concurrent workers used for events enriching
@@ -32,6 +35,8 @@ MAX_RETRIES_CONTEXT = 5  # max number of retries to update the context
 MAX_SEARCHES_QUEUE = 10  # maximum number of concurrent searches in mirroring
 
 SAMPLE_SIZE = 2  # number of samples to store in integration context
+MAX_SAMPLE_SIZE_MB = 3  # maximum size in MB for incidents to be stored as samples
+MAX_SAMPLE_SIZE_BYTES = MAX_SAMPLE_SIZE_MB * 1024 * 1024  # convert MB to bytes
 EVENTS_INTERVAL_SECS = 60  # interval between events polling
 EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
 
@@ -49,8 +54,8 @@ ADVANCED_PARAMETERS_STRING_NAMES = [
 ADVANCED_PARAMETER_INT_NAMES = [
     "EVENTS_INTERVAL_SECS",
     "MAX_SEARCHES_QUEUE",
-    "EVENTS_SEARCH_RETRIES",
-    "EVENTS_POLLING_RETRIES",
+    "EVENTS_SEARCH_TRIES",
+    "EVENTS_POLLING_TRIES",
     "EVENTS_SEARCH_RETRY_SECONDS",
     "FAILURE_SLEEP",
     "FETCH_SLEEP",
@@ -80,6 +85,7 @@ MIRROR_DIRECTION: dict[str, Optional[str]] = {"No Mirroring": None, "Mirror Offe
 MIRRORED_OFFENSES_QUERIED_CTX_KEY = "mirrored_offenses_queried"
 MIRRORED_OFFENSES_FINISHED_CTX_KEY = "mirrored_offenses_finished"
 MIRRORED_OFFENSES_FETCHED_CTX_KEY = "mirrored_offenses_fetched"
+SAMPLE_INCIDENTS_KEY = "samples"
 
 LAST_MIRROR_KEY = "last_mirror_update"
 LAST_MIRROR_CLOSED_KEY = "last_mirror_closed_update"
@@ -413,6 +419,16 @@ class QueryStatus(str, Enum):
     SUCCESS = "success"
     PARTIAL = "partial"
 
+    @classmethod
+    def values(cls) -> list[str]:
+        """
+        Gets the values of all enum members.
+
+        Returns:
+            list[str]: The values of the enum class members.
+        """
+        return [member.value for member in cls]
+
 
 FIELDS_MIRRORING = "id,start_time,event_count,last_persisted_time,close_time"
 
@@ -421,14 +437,16 @@ FIELDS_MIRRORING = "id,start_time,event_count,last_persisted_time,close_time"
 
 class Client(BaseClient):
     def __init__(
-        self, server: str, verify: bool, proxy: bool, api_version: str, credentials: dict, timeout: Optional[int] = None
+        self, server: str, verify: bool, proxy: bool, api_version: str, credentials: dict, timeout: int | float | None = None
     ):
         username = credentials.get("identifier")
         password = credentials.get("password")
         if username == API_USERNAME:
+            auth_type = "API Key"
             self.base_headers = {"Version": api_version, "SEC": password}
             auth = None
         else:
+            auth_type = "Basic"
             auth = (username, password)
             self.base_headers = {"Version": api_version}
         base_url = urljoin(server, "/api")
@@ -436,6 +454,7 @@ class Client(BaseClient):
         self.timeout = timeout  # type: ignore[assignment]
         self.password = password
         self.server = server
+        demisto.debug(f"QRadar client instance initialized with: {server=}, {verify=}, {proxy=}, {api_version=}, {auth_type=}.")
 
     def http_request(
         self,
@@ -1137,7 +1156,8 @@ def get_remote_events(
             status = QueryStatus.ERROR.value
             print_debug_msg(f"No results for {offense_id}. Error: {e}. Stopping execution")
             time.sleep(FAILURE_SLEEP)
-    elif offense_id in offenses_queried:  # if our offense is in the queried list, we will get the result
+
+    elif offense_id in offenses_queried:
         search_id = offenses_queried[offense_id]
         events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=int(offense_id))
         if status == QueryStatus.SUCCESS.value:
@@ -1146,12 +1166,18 @@ def get_remote_events(
 
     if status == QueryStatus.SUCCESS.value:
         offenses_fetched[offense_id] = get_num_events(events)
-        context_data.update({MIRRORED_OFFENSES_FETCHED_CTX_KEY: offenses_fetched})
 
-    context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: offenses_queried})
-    context_data.update({MIRRORED_OFFENSES_FINISHED_CTX_KEY: offenses_finished})
+    partial_changes = {
+        MIRRORED_OFFENSES_QUERIED_CTX_KEY: offenses_queried,
+        MIRRORED_OFFENSES_FINISHED_CTX_KEY: offenses_finished,
+        MIRRORED_OFFENSES_FETCHED_CTX_KEY: offenses_fetched,
+    }
 
-    safely_update_context_data(context_data, context_version, offense_ids=changed_ids_ctx)
+    safely_update_context_data_partial(
+        partial_changes,
+        override_keys=list(partial_changes.keys()),  # need to override (not merge!) since offense may have been deleted
+    )
+
     return events, status
 
 
@@ -1159,121 +1185,90 @@ def update_user_query(user_query: str) -> str:
     return f" AND ({user_query})" if user_query else ""
 
 
-def insert_to_updated_context(
-    context_data: dict,
-    offense_ids: list | None = None,
-    should_update_last_fetch: bool = False,
-    should_update_last_mirror: bool = False,
-    should_add_reset_key: bool = False,
-    should_force_update: bool = False,
-):
-    """When we have a race condition, insert the changed data from context_data to the updated context data
+def merge_samples(current_ctx: dict, changes: dict) -> None:
+    """Merges samples from `changes` into `current_ctx`.
 
     Args:
-        context_data (dict): Context data with relevant changes.
-        updated_context_data (dict): Context data that was updated before.
-        offense_ids (list, optional): Offense ids that were changed. Defaults to None.
-        should_update_last_fetch (bool, optional): Should update the last_fetch. Defaults to False.
-        should_update_last_mirror (bool, optional): Should update the last mirror. Defaults to False.
-        should_add_reset_key (bool, optional): If we should add reset key. Defaults to False
-        should_force_update (bool, optional): If we should force update the current context. Defaults to False
-
+        current_ctx (dict): The current integration context.
+        changes (dict): The changes to be merged into the integration context.
     """
-    if offense_ids is None:
-        offense_ids = []
-    updated_context_data, version = get_integration_context_with_version()
-    new_context_data = updated_context_data.copy()
-    if should_force_update:
-        return context_data, version
-
-    if should_add_reset_key:
-        new_context_data[RESET_KEY] = True
-    for id_ in offense_ids:
-        # Those are "trusted ids" from the changed context_data, we will keep the data (either update or delete it)
-        for key in (MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, MIRRORED_OFFENSES_FETCHED_CTX_KEY):
-            if id_ in context_data[key]:
-                new_context_data[key][id_] = context_data[key][id_]
-            else:
-                new_context_data[key].pop(id_, None)
-
-    if should_update_last_fetch:
-        # Last fetch is updated with the samples that were fetched
-        new_context_data.update(
-            {LAST_FETCH_KEY: int(context_data.get(LAST_FETCH_KEY, 0)), "samples": context_data.get("samples", [])}
-        )
-
-    if should_update_last_mirror:
-        new_context_data.update(
-            {
-                LAST_MIRROR_KEY: int(context_data.get(LAST_MIRROR_KEY, 0)),
-                LAST_MIRROR_CLOSED_KEY: int(context_data.get(LAST_MIRROR_CLOSED_KEY, 0)),
-            }
-        )
-    return new_context_data, version
-
-
-def safely_update_context_data(
-    context_data: dict,
-    version: Any,
-    offense_ids: list | None = None,
-    should_update_last_fetch: bool = False,
-    should_update_last_mirror: bool = False,
-    should_add_reset_key: bool = False,
-    should_force_update: bool = False,
-) -> None:
-    """Safely updates context
-
-    Args:
-        context_data (dict): The context data to save (encoded)
-        version (Any): The context current version
-        offense_ids (list, optional): List of offenses ids to change. Defaults to None.
-        should_update_last_fetch (bool, optional): If we should update last fetch. Defaults to False
-        should_update_last_mirror (bool, optional): If we should update last mirror. Defaults to False
-        should_add_reset_key (bool, optional): If we should add reset key. Defaults to False
-        should_force_update (bool, optional): If we should force update the current context. Defaults to False
-
-
-    Raises:
-        DemistoException: if could not update the context_data in all retries
-
-    Returns:
-    """
-    if (
-        not offense_ids
-        and not should_update_last_fetch
-        and not should_update_last_mirror
-        and not should_add_reset_key
-        and not should_force_update
-    ):
-        print_debug_msg("No need to update context, no ids and no last fetch/mirror")
-        return
-    print_debug_msg(f"Attempting to update context data after version {version}")
-    updated_context = context_data.copy()
-    new_version = version
-    print_context_data_stats(updated_context, "Safely update context - Before Update")
-
-    for retry in range(MAX_RETRIES_CONTEXT):
-        try:
-            updated_context, new_version = insert_to_updated_context(
-                context_data,
-                offense_ids,
-                should_update_last_fetch,
-                should_update_last_mirror,
-                should_add_reset_key,
-                should_force_update,
-            )
-            print_debug_msg(f"{updated_context=}")
-
-            set_integration_context(updated_context, version=new_version)
-            print_debug_msg(f"Updated integration context after version {new_version}.")
-            break
-        except Exception as e:
-            # if someone else is updating the context, we will get a conflict error
-            print_debug_msg(f"Could not set integration context in retry {retry + 1}. Error: {e}. Trying to resolve conflicts")
+    new_samples = changes.pop(SAMPLE_INCIDENTS_KEY, [])
+    current_samples = current_ctx.get(SAMPLE_INCIDENTS_KEY, [])
+    if isinstance(current_samples, list):
+        # Ensure samples do not grow unbounded due to the list appending behavior of always_merger
+        demisto.debug("Appending new samples to existing ones in context.")
+        current_ctx[SAMPLE_INCIDENTS_KEY] = (current_samples + new_samples)[:SAMPLE_SIZE]
     else:
-        raise DemistoException(f"Could not update integration context with version {new_version}.")
+        # If samples is a JSON string (legacy context schema), then override
+        demisto.debug("Setting new samples in context.")
+        current_ctx[SAMPLE_INCIDENTS_KEY] = new_samples[:SAMPLE_SIZE]
 
-    print_context_data_stats(updated_context, "Safely update context - After Update")
+
+def remove_context_keys(
+    current_ctx: dict,
+    changes: dict,
+    override_keys: list[str],
+):
+    """Removes the values in the `current_ctx` if they exist in `changes` before merging.
+
+    Args:
+        current_ctx (dict): The current integration context.
+        changes (dict): The changes to be merged into the integration context.
+        override_keys (list[str]): The list of current_ctx keys to override, if value exists.
+    """
+    demisto.debug(f"Overriding keys in current context: {', '.join(override_keys)}.")
+    removed_keys = set()
+    for key in override_keys:
+        if key in current_ctx and key in changes:
+            current_ctx.pop(key, None)
+            removed_keys.add(key)
+    demisto.debug(f"Removed keys from current integration context for overriding: {', '.join(removed_keys)}.")
+
+
+def deep_merge_context_changes(
+    current_ctx: dict,
+    changes: dict,
+    override_keys: list[str],
+) -> None:
+    """Recursively merges `changes` into `current_ctx` using the `deepmerge` package.
+
+    Args:
+        current_ctx (dict): The current integration context.
+        changes (dict): The changes to be merged into the integration context.
+        override_keys (list[str]): The list of current_ctx keys to override, if value exists.
+    """
+    if override_keys:  # remove values in the `current_ctx` if they exist in `changes` before merging
+        remove_context_keys(current_ctx, changes, override_keys)
+    merge_samples(current_ctx, changes)
+    always_merger.merge(current_ctx, changes)  # updates `current_ctx` in place with `changes`
+
+
+def safely_update_context_data_partial(
+    changes: dict,
+    attempts: int = 5,
+    override_keys: Optional[list[str]] = None,
+) -> None:
+    """
+    Reads the current integration context+version,
+    deep-merges `changes` into it, then writes it back.
+    Retries up to `attempts` times if there's a version conflict.
+    """
+    override_keys = override_keys or []
+    changes_size_bytes = {key: calculate_object_size(value) for key, value in changes.items()}
+    print_debug_msg(f"Updating context with {changes=}, {override_keys=}, {changes_size_bytes=}.")
+    for _ in range(attempts):
+        ctx, version = get_integration_context_with_version()
+        merged = copy.deepcopy(ctx)
+        deep_merge_context_changes(merged, changes, override_keys=override_keys)
+        merged_size_bytes = {key: calculate_object_size(value) for key, value in merged.items()}
+        try:
+            print_debug_msg(f"Saving merged context using {version=}, {merged_size_bytes=}.")
+            set_integration_context(merged, version=version)
+            return  # success
+        except Exception as e:
+            print_debug_msg(f"Version conflict or error setting context: {e}. Retrying...")
+
+    raise DemistoException(f"Failed updating context after {attempts} attempts.")
 
 
 def add_iso_entries_to_dict(dicts: List[dict]) -> List[dict]:
@@ -1446,10 +1441,57 @@ def get_offense_closing_reasons(client: Client, offenses: List[dict]) -> dict:
         return {}
 
 
+def get_names_with_retries(func: Callable, *args, **kwargs) -> dict:
+    """
+    A wrapper for retrying API calls with exponential backoff for getting names from IDs.
+
+    Args:
+        func (Callable): The API call to be executed and retried.
+        *args: Positional arguments to pass to the API call.
+        **kwargs: Keyword arguments to pass to the API call.
+
+    Returns:
+        dict: Dictionary of {id: name} from the API response, or an empty dictionary if all retries fail.
+    """
+    # Retry logic with exponential backoff
+    max_retries = CONNECTION_ERRORS_RETRIES  # Use existing constant (5)
+    base_delay = CONNECTION_ERRORS_INTERVAL  # Use existing constant (1)
+
+    last_exception = None
+    # NOTE: Retry logic is essential here to prevent silent failures in name resolution.
+    # Without retries, API call failures result in empty dict return, causing IDs (e.g., "6")
+    # to be displayed instead of names (e.g., "ABC") in the relevant field.
+    for attempt in range(max_retries):
+        try:
+            demisto.debug(f"Resolution attempt {attempt + 1}/{max_retries} to get names using {func.__name__}.")
+            return func(*args, **kwargs)
+        except Exception as e:
+            last_exception = e
+            attempt_msg = f"Resolution attempt {attempt + 1}/{max_retries} failed to get names using {func.__name__}."
+
+            if attempt < max_retries - 1:
+                # Calculate delay with exponential backoff
+                delay = base_delay * (2**attempt)
+                demisto.debug(f"{attempt_msg}: {str(e)}. Retrying in {delay} seconds...")
+                time.sleep(delay)
+            else:
+                demisto.error(f"{attempt_msg}: {str(e)}. All retry attempts exhausted.")
+
+    # If we reach here, all retries failed
+    error_msg = f"Requests failed after {max_retries} attempts"
+    if last_exception:
+        error_msg += f". Last error: {str(last_exception)}"
+
+    demisto.error(error_msg)
+    demisto.info(f"Falling back to using IDs instead of names from {func.__name__}.")
+    return {}
+
+
 def get_domain_names(client: Client, outputs: List[dict]) -> dict:
     """
     Receives list of outputs, and performs API call to QRadar service to retrieve the domain names
     matching the domain IDs of the outputs.
+    Includes retry logic and enhanced logging for better reliability.
     Args:
         client (Client): Client to perform the API request to QRadar.
         outputs (List[Dict]): List of all of the offenses.
@@ -1457,14 +1499,21 @@ def get_domain_names(client: Client, outputs: List[dict]) -> dict:
     Returns:
         (Dict): Dictionary of {domain_id: domain_name}
     """
-    try:
-        domain_ids = {offense.get("domain_id") for offense in outputs if offense.get("domain_id") is not None}
-        if not domain_ids:
-            return {}
-        domains_info = client.domains_list(filter_=f"""id in ({','.join(map(str, domain_ids))})""", fields="id,name")
-        return {domain_info.get("id"): domain_info.get("name") for domain_info in domains_info}
-    except Exception as e:
-        demisto.error(f"Encountered an issue while getting offense domain names: {e}")
+    domain_ids = {offense.get("domain_id") for offense in outputs if offense.get("domain_id") is not None}
+    if not domain_ids:
+        demisto.debug("No domain IDs found in outputs for domain name enrichment")
+        return {}
+
+    domain_ids_str = ",".join(map(str, domain_ids))
+    demisto.debug(f"Attempting to resolve domain names for domain IDs: {domain_ids_str}")
+    domains_info = get_names_with_retries(client.domains_list, filter_=f"id in ({domain_ids_str})", fields="id,name")
+
+    if domains_info:
+        domain_mapping = {domain_info.get("id"): domain_info.get("name") for domain_info in domains_info}
+        demisto.debug(f"Successfully resolved {len(domain_mapping)} domain names: {domain_mapping}")
+        return domain_mapping
+    else:
+        demisto.debug(f"Domain list API returned empty response for domain IDs: {domain_ids_str}")
         return {}
 
 
@@ -1479,14 +1528,22 @@ def get_rules_names(client: Client, offenses: List[dict]) -> dict:
     Returns:
         (Dict): Dictionary of {rule_id: rule_name}
     """
-    try:
-        rules_ids = {rule.get("id") for offense in offenses for rule in offense.get("rules", [])}
-        if not rules_ids:
-            return {}
-        rules = client.rules_list(None, None, f"""id in ({','.join(map(str, rules_ids))})""", "id,name")
-        return {rule.get("id"): rule.get("name") for rule in rules}
-    except Exception as e:
-        demisto.error(f"Encountered an issue while getting offenses rules: {e}")
+    # Collect unique rule IDs
+    rules_ids = {rule.get("id") for offense in offenses for rule in offense.get("rules", []) if rule.get("id") is not None}
+    if not rules_ids:
+        demisto.debug("No rule IDs found in offenses for rule name enrichment")
+        return {}
+
+    rules_ids_str = ",".join(map(str, rules_ids))
+    demisto.debug(f"Attempting to resolve rule names for rule IDs: {rules_ids_str}")
+    rules = get_names_with_retries(client.rules_list, filter_=f"id in ({rules_ids_str})", fields="id,name")
+
+    if rules:
+        mapping = {rule.get("id"): rule.get("name") for rule in rules}
+        demisto.debug(f"Successfully resolved {len(mapping)} rule names")
+        return mapping
+    else:
+        demisto.debug(f"Rules API returned empty response for rule IDs: {rules_ids_str}")
         return {}
 
 
@@ -1938,10 +1995,12 @@ def convert_dict_to_actual_values(input_dict: dict) -> dict[str, Any]:
             output_dict[key] = convert_list_to_actual_values(value)
         elif isinstance(value, str):
             try:
-                output_dict[key] = argToBoolean(value)
+                # output_dict[key] = argToBoolean(value)
+                output_dict[key] = arg_to_real_number(value)
             except ValueError:
                 try:
-                    output_dict[key] = arg_to_real_number(value)
+                    # output_dict[key] = arg_to_real_number(value)
+                    output_dict[key] = argToBoolean(value)
                 except ValueError:
                     output_dict[key] = value
         else:
@@ -2048,34 +2107,44 @@ def print_debug_msg(msg: str):
     demisto.debug(f"QRadarMsg - {msg}")
 
 
-def is_reset_triggered(ctx: dict | None = None, version: Any = None):
+def is_reset_triggered(ctx: dict | None = None, version: Any = None) -> bool:
     """
-    Checks if reset of integration context have been made by the user.
-    Because fetch is long running execution, user communicates with us
-    by calling 'qradar-reset-last-run' command which sets reset flag in
-    context.
+    Checks if reset of the integration context has been made by the user.
+    Because fetch is long-running, the user triggers a reset by calling
+    'qradar-reset-last-run', which sets 'reset' in the context.
 
-    Args:
-        ctx (dict | None): The context data to check. If it is None it will get the context from the platform.
-        version: The context data version.
-    Returns:
-        (bool):
-        - True if reset flag was set. If 'handle_reset' is true, also resets integration context.
-        - False if reset flag was not found in integration context.
+    If found, we clear the key sub-dicts and 'samples', plus remove the 'reset' key.
+    Returns True if a reset was triggered and handled, False otherwise.
     """
     if not ctx or not version:
         ctx, version = get_integration_context_with_version()
-    if ctx and RESET_KEY in ctx:
-        # if we need to reset we have to get the version of the context
+
+    # RESET_KEY must be True if 'qradar-reset-last-run' command was called
+    if isinstance(ctx, dict) and ctx.get(RESET_KEY) is True:
         print_debug_msg("Reset fetch-incidents.")
         demisto.setLastRun({LAST_FETCH_KEY: 0})
-        context_data: dict[str, Any] = {
-            MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
-            MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
-            "samples": [],
+
+        ctx.pop(RESET_KEY, None)
+
+        ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY] = {}
+        ctx[MIRRORED_OFFENSES_FINISHED_CTX_KEY] = {}
+        ctx[SAMPLE_INCIDENTS_KEY] = []
+
+        partial_changes = {
+            # Explicitly remove RESET_KEY by setting it to None (will be handled by merge logic)
+            RESET_KEY: None,
+            MIRRORED_OFFENSES_QUERIED_CTX_KEY: ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY],
+            MIRRORED_OFFENSES_FINISHED_CTX_KEY: ctx[MIRRORED_OFFENSES_FINISHED_CTX_KEY],
+            SAMPLE_INCIDENTS_KEY: ctx[SAMPLE_INCIDENTS_KEY],
         }
-        safely_update_context_data(context_data, version=version, should_force_update=True)
+
+        safely_update_context_data_partial(
+            partial_changes,
+            override_keys=[MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, SAMPLE_INCIDENTS_KEY],
+        )
+
         return True
+
     return False
 
 
@@ -2197,16 +2266,71 @@ def test_module_command(client: Client, params: dict) -> str:
     return message
 
 
+def calculate_object_size(item: dict) -> int:
+    """
+    Calculate the approximate size of an JSON serializable object in bytes for context storage.
+
+    This function uses a multi-step process with granular error handling:
+    1. It first attempts to create a string using JSON serialization, which is precise.
+    2. If JSON serialization fails (e.g., due to non-serializable types), it
+       falls back to using the basic `str()` representation.
+    3. It then attempts to encode the resulting string to UTF-8 to get the byte size.
+    4. If encoding fails (a rare case), it performs the encoding again but
+       replaces any problematic characters to guarantee a result.
+
+    Args:
+        incident (dict): The JSON serializable object.
+
+    Returns:
+        int: The calculated or estimated size of the object in bytes.
+    """
+    try:
+        string_to_encode = json.dumps(item, default=str)
+    except TypeError as e:
+        print_debug_msg(f"Could not serialize object to JSON: {e}. Using fallback string representation.")
+        string_to_encode = str(item)
+
+    try:
+        encoded_bytes = string_to_encode.encode("utf-8")
+        return len(encoded_bytes)
+    except UnicodeEncodeError as e:
+        print_debug_msg(f"Could not encode string to UTF-8: {e}. Forcing encoding by replacing errors.")
+        encoded_bytes_safe = string_to_encode.encode("utf-8", errors="replace")
+        return len(encoded_bytes_safe)
+
+
+def is_incident_size_acceptable(incident: dict) -> bool:
+    """
+    Check if an incident is small enough to be stored as a sample in the integration context.
+
+    Args:
+        incident (dict): The incident dictionary
+
+    Returns:
+        bool: True if incident size is acceptable, False otherwise
+    """
+    size_bytes = calculate_object_size(incident)
+    if size_bytes > MAX_SAMPLE_SIZE_BYTES:
+        print_debug_msg(
+            f"Incident {incident.get('name', 'Unknown')} size ({size_bytes / (1024*1024):.2f} MB) "
+            f"exceeds maximum sample size ({MAX_SAMPLE_SIZE_MB} MB). Skipping from samples."
+        )
+        return False
+    return True
+
+
 def fetch_incidents_command() -> List[dict]:
     """
     Fetch incidents implemented, for mapping purposes only.
     Returns list of samples saved by long running execution.
 
     Returns:
-        (List[Dict]): List of incidents samples.
+        (List[Dict]): List of incidents samples, limited to SAMPLE_SIZE.
     """
     ctx = get_integration_context()
-    return ctx.get("samples", [])
+    samples = ctx.get(SAMPLE_INCIDENTS_KEY, [])
+    # Enforce the sample size limit to prevent returning too many incidents
+    return samples[:SAMPLE_SIZE]
 
 
 def create_search_with_retry(
@@ -2258,8 +2382,7 @@ def poll_offense_events(
         search_status_response = client.search_status_get(search_id)
         print_debug_msg(f"Got search status for {search_id}")
         query_status = search_status_response.get("status")
-        query_runtime = search_status_response.get("query_execution_time", "N/A")
-        print_debug_msg(f"Search status for offense {offense_id} is {query_status}. Current time elapsed: {query_runtime}")
+        print_debug_msg(f"Search status for offense {offense_id} is {query_status}.")
 
         if query_status in {"CANCELED", "ERROR"}:
             return [], QueryStatus.ERROR.value
@@ -2354,7 +2477,6 @@ def enrich_offense_with_events(client: Client, offense: dict, fetch_mode: FetchM
         if search_id == QueryStatus.ERROR.value:
             failure_message = "Search for events was failed."
         else:
-            time.sleep(FETCH_INITIAL_SLEEP)
             events, failure_message = poll_offense_events_with_retry(client, search_id, int(offense_id))
         events_fetched = get_num_events(events)
         offense["events_fetched"] = events_fetched
@@ -2404,13 +2526,31 @@ def get_current_concurrent_searches(context_data: dict) -> int:
     """
     waiting_for_update = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
     # we need offenses which we have a search_id for it in QRadar
-    return len([offense_id for offense_id, status in waiting_for_update.items() if status not in list(QueryStatus)])
+    return len([offense_id for offense_id, status in waiting_for_update.items() if status not in QueryStatus.values()])
 
 
-def delete_offense_from_context(offense_id: str, context_data: dict, context_version: Any):
-    for key in (MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY):
-        context_data[key].pop(offense_id, None)
-    safely_update_context_data(context_data, context_version, offense_ids=[offense_id])
+def delete_offense_from_context(offense_id: str):
+    """
+    Removes offense_id from MIRRORED_OFFENSES_QUERIED_CTX_KEY and MIRRORED_OFFENSES_FINISHED_CTX_KEY
+    in a concurrency-safe manner, without overwriting unrelated data.
+    """
+    ctx, _ = get_integration_context_with_version()
+
+    offenses_queried = ctx.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
+    offenses_finished = ctx.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
+
+    offenses_queried.pop(offense_id, None)
+    offenses_finished.pop(offense_id, None)
+
+    partial_changes = {
+        MIRRORED_OFFENSES_QUERIED_CTX_KEY: offenses_queried,
+        MIRRORED_OFFENSES_FINISHED_CTX_KEY: offenses_finished,
+    }
+
+    safely_update_context_data_partial(
+        partial_changes,
+        override_keys=list(partial_changes.keys()),  # need to override (not merge!) since offense was deleted
+    )
 
 
 def is_all_events_fetched(client: Client, fetch_mode: FetchMode, offense_id: str, events_limit: int, events: list[dict]) -> bool:
@@ -2532,14 +2672,22 @@ def get_incidents_long_running_execution(
 
 
 def prepare_context_for_events(offenses_with_metadata):
-    ctx, version = get_integration_context_with_version()
-    changed_offense_ids = []
+    """
+    For any offense that wasn't successfully enriched, mark it in MIRRORED_OFFENSES_QUERIED_CTX_KEY as WAIT.
+    Uses partial merge so as not to overwrite other keys.
+    """
+    ctx, _ = get_integration_context_with_version()
+
+    mirrored_offenses_queried = ctx.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
+
     for offense, is_success in offenses_with_metadata:
         if not is_success:
             offense_id = str(offense.get("id"))
-            ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = QueryStatus.WAIT.value
-            changed_offense_ids.append(offense_id)
-    safely_update_context_data(ctx, version, offense_ids=changed_offense_ids)
+            mirrored_offenses_queried[offense_id] = QueryStatus.WAIT.value
+
+    partial_changes = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses_queried}
+
+    safely_update_context_data_partial(partial_changes)
 
 
 def create_incidents_from_offenses(offenses: List[dict], incident_type: Optional[str]) -> List[dict]:
@@ -2592,7 +2740,7 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
     last_mirror_update = context_data.get(LAST_MIRROR_KEY, 0)
     last_mirror_update_closed = context_data.get(LAST_MIRROR_CLOSED_KEY, 0)
     concurrent_mirroring_searches = get_current_concurrent_searches(context_data)
-    samples = context_data.get("samples", [])
+    samples = context_data.get(SAMPLE_INCIDENTS_KEY, [])
     sample_length = 0
     if samples:
         sample_length = len(samples[0])
@@ -2626,11 +2774,15 @@ def perform_long_running_loop(
     long_running_container_id: str,
 ):
     context_data, version = get_integration_context_with_version()
+    print_debug_msg(f"Got context data with {version=}.")
 
     if is_reset_triggered(context_data, version):
         last_highest_id = 0
+        print_debug_msg("Reset was triggered. Set last highest ID to 0.")
     else:
         last_highest_id = int(context_data.get(LAST_FETCH_KEY, 0))
+        print_debug_msg(f"Got last highest ID in context: {last_highest_id}.")
+
     print_debug_msg(f"Starting fetch loop. Fetch mode: {fetch_mode} on Container:{long_running_container_id}.")
     incidents, new_highest_id = get_incidents_long_running_execution(
         client=client,
@@ -2648,42 +2800,70 @@ def perform_long_running_loop(
         mirror_options=mirror_options,
         assets_limit=assets_limit,
     )
-    print_debug_msg(f"Got incidents, Creating incidents and updating context data. new highest id is {new_highest_id}")
-    context_data, ctx_version = get_integration_context_with_version()
-    if incidents and new_highest_id:
-        incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else context_data.get("samples", [])
-        if incident_batch_for_sample:
-            print_debug_msg(f"Saving New Highest ID: {new_highest_id}")
-            context_data.update({"samples": incident_batch_for_sample, LAST_FETCH_KEY: int(new_highest_id)})
 
-        # if incident creation fails, it'll drop the data and try again in the next iteration
+    print_debug_msg(f"Got incidents, Creating incidents and updating context data. new highest id is {new_highest_id}")
+
+    # Refresh context to see if something changed in parallel
+    context_data, ctx_version = get_integration_context_with_version()
+
+    if incidents and new_highest_id:
+        # Filter incidents that are small enough to store as samples
+        filtered_incidents = [incident for incident in incidents if is_incident_size_acceptable(incident)]
+        incident_batch_for_sample = (
+            filtered_incidents[:SAMPLE_SIZE] if filtered_incidents else context_data.get(SAMPLE_INCIDENTS_KEY, [])[:SAMPLE_SIZE]
+        )
+
+        if len(filtered_incidents) < len(incidents):
+            skipped_count = len(incidents) - len(filtered_incidents)
+            print_debug_msg(f"Skipped {skipped_count} incident(s) from samples due to size constraints.")
+        # Actually create the incidents in XSOAR
         demisto.createIncidents(incidents, {LAST_FETCH_KEY: str(new_highest_id)})
-        safely_update_context_data(context_data=context_data, version=ctx_version, should_update_last_fetch=True)
+        partial_changes = {}
+        if incident_batch_for_sample:
+            partial_changes[SAMPLE_INCIDENTS_KEY] = incident_batch_for_sample
+        # Always update LAST_FETCH_KEY
+        partial_changes[LAST_FETCH_KEY] = int(new_highest_id)
+
+        # Merge changes so we don't overwrite other subkeys
+        safely_update_context_data_partial(partial_changes)
 
         print_debug_msg(
-            f'Successfully Created {len(incidents)} incidents. Incidents created: {[incident["name"] for incident in incidents]}'
+            f'Successfully Created {len(incidents)} incidents. '
+            f'Incidents created: {[incident["name"] for incident in incidents]}'
         )
 
 
 def recover_from_last_run(ctx: dict | None = None, version: Any = None):
     """
-    This recovers the integration context from the last run, if there is inconsistency between last run and context.
-    It happens when the container crashes after `demisto.createIncidents` and the integration context is not updated.
+    This recovers the integration context from the last run, if there is an inconsistency
+    between demisto.getLastRun() and the context. This can happen when the container crashes
+    after demisto.createIncidents but before the context is updated.
     """
     if not ctx or not version:
         ctx, version = get_integration_context_with_version()
+
     assert isinstance(ctx, dict)
+
     last_run = demisto.getLastRun() or {}
     last_highest_id_last_run = int(last_run.get(LAST_FETCH_KEY, 0))
     print_debug_msg(f"Last highest ID from last run: {last_highest_id_last_run}")
+
     last_highest_id_context = int(ctx.get(LAST_FETCH_KEY, 0))
     if last_highest_id_last_run != last_highest_id_context and last_highest_id_last_run > 0:
-        # if there is inconsistency between last run and context, we need to update the context
+        # There's an inconsistency: we want to force the integration context to reflect last_run's ID.
         print_debug_msg(
-            f"Updating context data with last highest ID from last run: {last_highest_id_last_run}."
+            f"Updating context data with last highest ID from last run: {last_highest_id_last_run}. "
             f"ID from context: {last_highest_id_context}"
         )
-        safely_update_context_data(ctx | {LAST_FETCH_KEY: int(last_highest_id_last_run)}, version, should_update_last_fetch=True)
+
+        partial_changes = {
+            LAST_FETCH_KEY: last_highest_id_last_run,
+            SAMPLE_INCIDENTS_KEY: ctx.get(SAMPLE_INCIDENTS_KEY, [])[:SAMPLE_SIZE],
+        }
+
+        safely_update_context_data_partial(partial_changes)
+
+        print_debug_msg(f"Updated context last-fetch key from {last_highest_id_context} to {last_highest_id_last_run}.")
 
 
 def long_running_execution_command(client: Client, params: dict):
@@ -3845,12 +4025,14 @@ def qradar_ips_local_destination_get_command(client: Client, args: dict[str, Any
 
 def qradar_reset_last_run_command() -> str:
     """
-    Puts the reset flag inside integration context.
+    Puts the reset flag inside integration context in a concurrency-safe way.
     Returns:
         (str): 'fetch-incidents was reset successfully'.
     """
-    ctx, version = get_integration_context_with_version()
-    safely_update_context_data(ctx, version, should_add_reset_key=True)
+    # Set RESET_KEY to True to identify whether reset was triggered during long running command execution
+    partial_changes = {RESET_KEY: True}
+    safely_update_context_data_partial(partial_changes)
+
     return "fetch-incidents was reset successfully."
 
 
@@ -4061,7 +4243,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
     demisto.debug(f"Updating offense. Offense last update was {offense_last_update}")
     entries = []
     if offense.get("status") == "CLOSED" and argToBoolean(params.get("close_incident", False)):
-        demisto.debug(f"Offense is closed: {offense}")
+        demisto.debug(f"Offense {offense_id} is closed: {offense}.")
         try:
             if closing_reason := offense.get("closing_reason_id", ""):
                 closing_reason = client.closing_reasons_list(closing_reason).get("text")
@@ -4111,7 +4293,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
                 f"Not fetching events again."
             )
             # delete the offense from the queue
-            delete_offense_from_context(offense_id, context_data, context_version)
+            delete_offense_from_context(offense_id)
             already_mirrored = True
         else:
             events, status = get_remote_events(
@@ -4179,23 +4361,26 @@ def add_modified_remote_offenses(
 
     Returns: The new modified records ids
     """
-    new_context_data = context_data.copy()
+
+    # We'll keep local references to the relevant sub-dicts, just as before:
+    mirrored_offenses_queries = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
+    finished_offenses_queue = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
     changed_ids_ctx = []
+
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
-        # We query the search queue, to see if some searches were finished.
-        # If so - move it to finished queue and add to modified ids.
-        print_context_data_stats(new_context_data, "Get Modified Remote Data - Before update")
-        mirrored_offenses_queries = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
-        finished_offenses_queue = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
+        print_context_data_stats(context_data, "Get Modified Remote Data - Before update")
+
         current_concurrent_searches = get_current_concurrent_searches(context_data)
         offense_ids_to_search = []
 
+        # Move completed queries from 'queried' to 'finished' or mark them 'ERROR'
         for offense_id, search_id in mirrored_offenses_queries.copy().items():
             if search_id in {QueryStatus.WAIT.value, QueryStatus.ERROR.value}:
-                # if search_id is waiting or error, we will try to search again
+                # re-submit search
                 offense_ids_to_search.append(offense_id)
                 continue
-            # If the search finished, move it to finished queue
+
+            # see if the existing search completed
             _, status = poll_offense_events(client, search_id, should_get_events=False, offense_id=int(offense_id))
             if status == QueryStatus.ERROR.value:
                 time.sleep(FAILURE_SLEEP)
@@ -4213,21 +4398,36 @@ def add_modified_remote_offenses(
             else:
                 print_debug_msg(f"offense {offense_id}, search query {search_id}, status is {status}")
 
+        # Create new search for any WAIT/ERROR offense if concurrency limit not reached
         for offense_id in offense_ids_to_search:
             if current_concurrent_searches >= MAX_SEARCHES_QUEUE:
                 print_debug_msg(f"Reached maximum concurrent searches ({MAX_SEARCHES_QUEUE}), will try again later.")
                 break
             current_concurrent_searches += 1
-            search_id = create_events_search(client, fetch_mode, events_columns, events_limit, int(offense_id))
-            mirrored_offenses_queries[offense_id] = search_id
+            new_search_id = create_events_search(client, fetch_mode, events_columns, events_limit, int(offense_id))
+            mirrored_offenses_queries[offense_id] = new_search_id
             changed_ids_ctx.append(offense_id)
 
-        new_context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses_queries})
-        new_context_data.update({MIRRORED_OFFENSES_FINISHED_CTX_KEY: finished_offenses_queue})
+    # Build partial_changes dict with only the keys we want to write
+    partial_changes = {
+        LAST_MIRROR_KEY: new_last_update_modified,
+        LAST_MIRROR_CLOSED_KEY: new_last_update_closed,
+    }
 
-    new_context_data.update({LAST_MIRROR_KEY: new_last_update_modified, LAST_MIRROR_CLOSED_KEY: new_last_update_closed})
-    print_context_data_stats(new_context_data, "Get Modified Remote Data - After update")
-    safely_update_context_data(new_context_data, version, offense_ids=changed_ids_ctx, should_update_last_mirror=True)
+    # If we are in "Mirror Offense & Events" mode, also update the queries/finished sub-dicts
+    if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+        partial_changes[MIRRORED_OFFENSES_QUERIED_CTX_KEY] = mirrored_offenses_queries
+        partial_changes[MIRRORED_OFFENSES_FINISHED_CTX_KEY] = finished_offenses_queue
+
+    # Now safely merge these partial changes.
+    safely_update_context_data_partial(
+        partial_changes,
+        override_keys=[MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY],
+    )
+
+    # Do final logging for debugging if desired
+    print_context_data_stats(context_data, "Get Modified Remote Data - After update")
+
     return new_modified_records_ids
 
 
@@ -5171,21 +5371,43 @@ def migrate_integration_ctx(ctx: dict) -> dict:
         MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses,
         MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
         MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
-        "samples": [],
+        SAMPLE_INCIDENTS_KEY: [],
     }
+
+
+def qradar_print_context_command() -> CommandResults:
+    """Returns a redacted snapshot of integration context metrics for debugging.
+
+    Returns:
+        CommandResults: Command results with human-readable output and context output.
+    """
+    ctx, _ = get_integration_context_with_version()
+    queried = ctx.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {}) or {}
+    finished = ctx.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {}) or {}
+    fetched = ctx.get(MIRRORED_OFFENSES_FETCHED_CTX_KEY, {}) or {}
+    in_progress = {k: v for k, v in queried.items() if v not in QueryStatus.values()}
+    waiting = [k for k, v in queried.items() if v in QueryStatus.values()]
+    concurrent_searches_count = get_current_concurrent_searches(ctx)
+
+    summary = {
+        "queried_count": len(queried),
+        "finished_count": len(finished),
+        "fetched_count": len(fetched),
+        "in_progress_count": len(in_progress),
+        "waiting_markers_count": len(waiting),
+        "concurrent_active": concurrent_searches_count,
+        "samples_count": len(ctx.get(SAMPLE_INCIDENTS_KEY, [])),
+    }
+    readable = tableToMarkdown("Summary", [summary], removeNull=True)
+    return CommandResults(readable_output=readable, outputs_prefix="QRadar.Debug", outputs={"snapshot": summary})
 
 
 def validate_integration_context() -> None:
     """
-    The new context structure consists two dictionaries of queried offenses and finished offenses.
-    The structure consists the actual objects and JSON of them.
-
-    Because some customers already have instances with the old context, we will try to convert the old context to the new one.
-    to make them be compatible with new changes.
-    Returns:
-        (None): Modifies context to be compatible.
+    The new context structure consists of two dictionaries of queried offenses
+    and finished offenses. Some older instances might not have them, so we fix that.
     """
-    context_data, context_version = get_integration_context_with_version()
+    context_data, _ = get_integration_context_with_version()
     new_ctx = context_data.copy()
     try:
         print_context_data_stats(context_data, "Checking ctx")
@@ -5196,14 +5418,18 @@ def validate_integration_context() -> None:
         extract_works = False
 
     if not extract_works:
+        # Scenario: The old context structure is invalid/unreadable.
         cleared_ctx = migrate_integration_ctx(new_ctx)
         print_debug_msg(f"Change ctx context data was cleared and changing to {cleared_ctx}")
-        safely_update_context_data(cleared_ctx, context_version, should_force_update=True)
+        # Merge the entire new dict. This effectively replaces the old context.
+        safely_update_context_data_partial(cleared_ctx, override_keys=list(cleared_ctx.keys()))
         print_debug_msg(f"Change ctx context data was cleared and changed to {cleared_ctx}")
+
     elif MIRRORED_OFFENSES_FETCHED_CTX_KEY not in context_data:
+        # Scenario: context is fine, but missing the 'mirrored_offenses_fetched' sub-dict.
         print_debug_msg(f"Adding {MIRRORED_OFFENSES_FETCHED_CTX_KEY} to context")
-        new_ctx[MIRRORED_OFFENSES_FETCHED_CTX_KEY] = {}
-        safely_update_context_data(new_ctx, context_version, should_force_update=True)
+        partial_changes: dict = {MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}}
+        safely_update_context_data_partial(partial_changes)
 
 
 """ MAIN FUNCTION """
@@ -5444,6 +5670,9 @@ def main() -> None:  # pragma: no cover
 
         elif command == "qradar-log-source-update":
             return_results(qradar_log_source_update_command(client, args))
+
+        elif command == "qradar-print-context":
+            return_results(qradar_print_context_command())
 
         else:
             raise NotImplementedError(f"""Command '{command}' is not implemented.""")

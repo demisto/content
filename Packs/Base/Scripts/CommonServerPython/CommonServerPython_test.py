@@ -2,19 +2,29 @@
 import copy
 import gzip
 import json
+import time
 import os
 import re
 import sys
 import urllib
 import uuid
 import warnings
+try:
+    from typing import Optional, List, Any, Dict
+except ImportError:
+    Optional = List = Any = Dict = None
+
+try:
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import MagicMock
+
 
 import dateparser
 from freezegun import freeze_time
-import pytest
 import pytz
 import requests
-from pytest import raises, mark
+import pytest
 
 import CommonServerPython
 import demistomock as demisto
@@ -23,17 +33,17 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid,
                                 get_demisto_version, IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger,
                                 b64_encode, parse_date_range, return_outputs, is_filename_valid, convert_dict_values_bytes_to_str,
-                                argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch,
+                                argToBoolean, arg_to_bool_or_none, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch,
                                 FeedIndicatorType, encode_string_results, safe_load_json, remove_empty_elements,
                                 aws_table_to_markdown, is_demisto_version_ge, appendContext, auto_detect_indicator_type,
                                 handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, url_to_clickable_markdown,
                                 WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, remove_duplicates_from_list_arg,
-                                DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics,
+                                DBotScoreType, DBotScoreReliability, Common, ExecutionMetrics,
                                 response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
-                                censor_request_logs, censor_request_logs, safe_sleep, get_server_config, b64_decode,
+                                censor_request_logs, safe_sleep, get_server_config, b64_decode,
                                 get_engine_base_url, is_integration_instance_running_on_engine, find_and_remove_sensitive_text, stringEscapeMD,
-                                execute_polling_command,
+                                execute_polling_command, QuickActionPreview, MirrorObject, get_pack_version, ExecutionTimeout, is_ip_address_internal
                                 )
 
 EVENTS_LOG_ERROR = \
@@ -301,6 +311,24 @@ COMPLEX_DATA_WITH_URLS = [(
           }
          }
     ])]
+
+
+@pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
+def test_is_ip_address_internal():
+    """
+    Given:
+        - A set of valid IP addresses including both private and public IPs.
+    When:
+        - Calling is_ip_address_internal on each IP address.
+    Then:
+        - Assert that the function returns True for private/internal IPs.
+        - Assert that the function returns False for public/external IPs.
+    """
+    assert is_ip_address_internal('10.0.0.1') == True
+    assert is_ip_address_internal('127.0.0.1') == True
+    assert is_ip_address_internal('8.8.8.8') == False # Google DNS
+    assert is_ip_address_internal('1.1.1.1') == False # Cloudflare DNS
+
 
 
 class TestTableToMarkdown:
@@ -644,6 +672,16 @@ class TestTableToMarkdown:
             '| Cactus |\n'
         )
         assert table_single_key_dict == expected_single_key_dict_tbl
+
+        t = {"dummy_key1": {"dummy_key2": "dummy_value"}}
+        table_single_key_dict_nested = tableToMarkdown('TABLE 1', t)
+        expected_single_key_dict_nested_tbl = (
+            '### TABLE 1\n'
+            '|dummy_key1|\n'
+            '|---|\n'
+            '| dummy_key2: dummy_value |\n'
+        )
+        assert table_single_key_dict_nested == expected_single_key_dict_nested_tbl
 
     @staticmethod
     def test_dict_with_special_character():
@@ -992,7 +1030,7 @@ class TestTableToMarkdown:
         Then:
             Validate that the script ran successfully.
         """
-        data = {'key': 'value', 'listtest': [1, 2, 3, 4]} 
+        data = {'key': 'value', 'listtest': [1, 2, 3, 4]}
         table = tableToMarkdown("tableToMarkdown test", data, sort_headers=False, is_auto_json_transform=True)
         assert table
 
@@ -1285,7 +1323,7 @@ def test_get_error_need_raise_error_on_non_error_input():
     assert False
 
 
-@mark.parametrize('data,data_expected,filename', [
+@pytest.mark.parametrize('data,data_expected,filename', [
     ("this is a test", b"this is a test", "test.txt"),
     ("this is a test", b"this is a test", "../../../test.txt"),
     (u"עברית", u"עברית".encode('utf-8'), "test.txt"),
@@ -1732,7 +1770,7 @@ def test_exception_in_return_error(mocker):
     expected = {'EntryContext': None, 'Type': 4, 'ContentsFormat': 'text', 'Contents': 'Message'}
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(IntegrationLogger, '__call__', return_value='Message')
-    with raises(SystemExit, match='0'):
+    with pytest.raises(SystemExit, match='0'):
         return_error("Message", error=ValueError("Error!"))
     results = demisto.results.call_args[0][0]
     assert expected == results
@@ -1745,7 +1783,7 @@ def test_return_error_get_modified_remote_data(mocker):
     mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
     mocker.patch.object(demisto, 'results')
     err_msg = 'Test Error'
-    with raises(SystemExit):
+    with pytest.raises(SystemExit):
         return_error(err_msg)
     assert demisto.results.call_args[0][0]['Contents'] == 'skip update. error: ' + err_msg
 
@@ -1755,7 +1793,7 @@ def test_return_error_get_modified_remote_data_not_implemented(mocker):
     mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
     mocker.patch.object(demisto, 'results')
     err_msg = 'Test Error'
-    with raises(SystemExit):
+    with pytest.raises(SystemExit):
         try:
             raise NotImplementedError('Command not implemented')
         except:
@@ -1836,17 +1874,17 @@ class TestBuildDBotEntry(object):
 
     def test_build_malicious_dbot_entry_wrong_indicator_type(self):
         from CommonServerPython import build_malicious_dbot_entry, DemistoException
-        with raises(DemistoException, match='Wrong indicator type'):
+        with pytest.raises(DemistoException, match='Wrong indicator type'):
             build_malicious_dbot_entry('8.8.8.8', 'notindicator', 'Vendor', 'Google DNS')
 
     def test_illegal_dbot_score(self):
         from CommonServerPython import build_dbot_entry, DemistoException
-        with raises(DemistoException, match='illegal DBot score'):
+        with pytest.raises(DemistoException, match='illegal DBot score'):
             build_dbot_entry('1', 'ip', 'Vendor', 8)
 
     def test_illegal_indicator_type(self):
         from CommonServerPython import build_dbot_entry, DemistoException
-        with raises(DemistoException, match='illegal indicator type'):
+        with pytest.raises(DemistoException, match='illegal indicator type'):
             build_dbot_entry('1', 'NOTHING', 'Vendor', 2)
 
     def test_file_indicators(self):
@@ -2832,7 +2870,7 @@ class TestBaseClient:
             -  An unsuccessful request returns a DemistoException regardless the bad status code.
         """
         from CommonServerPython import DemistoException
-        with raises(DemistoException, match='{}'.format(status)):
+        with pytest.raises(DemistoException, match='{}'.format(status)):
             self.client._http_request(method,
                                       '',
                                       full_url='http://httpbin.org/status/{}'.format(status),
@@ -2848,7 +2886,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         text = 'notjson'
         requests_mock.get('http://example.com/api/v2/event', text=text)
-        with raises(DemistoException, match="Failed to parse json") as exception:
+        with pytest.raises(DemistoException, match="Failed to parse json") as exception:
             self.client._http_request('get', 'event')
         assert exception.value.res
         assert exception.value.res.text == text
@@ -2990,7 +3028,7 @@ class TestBaseClient:
     def test_http_request_not_ok(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', status_code=500)
-        with raises(DemistoException, match="[500]"):
+        with pytest.raises(DemistoException, match="[500]"):
             self.client._http_request('get', 'event')
 
     def test_http_request_not_ok_but_ok(self, requests_mock):
@@ -3001,13 +3039,13 @@ class TestBaseClient:
     def test_http_request_not_ok_with_json(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', status_code=500, content=str.encode(json.dumps(self.text)))
-        with raises(DemistoException, match="Error in API call"):
+        with pytest.raises(DemistoException, match="Error in API call"):
             self.client._http_request('get', 'event')
 
     def test_http_request_not_ok_with_json_parsing(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', status_code=500, content=str.encode(json.dumps(self.text)))
-        with raises(DemistoException) as exception:
+        with pytest.raises(DemistoException) as exception:
             self.client._http_request('get', 'event')
         message = str(exception.value)
         response_json_error = json.loads(message.split('\n')[1])
@@ -3016,25 +3054,25 @@ class TestBaseClient:
     def test_http_request_timeout(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectTimeout)
-        with raises(DemistoException, match="Connection Timeout Error"):
+        with pytest.raises(DemistoException, match="Connection Timeout Error"):
             self.client._http_request('get', 'event')
 
     def test_http_request_ssl_error(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError)
-        with raises(DemistoException, match="SSL Certificate Verification Failed"):
+        with pytest.raises(DemistoException, match="SSL Certificate Verification Failed"):
             self.client._http_request('get', 'event', resp_type='response')
 
     def test_http_request_ssl_error_insecure(cls, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError('test ssl'))
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(requests.exceptions.SSLError, match="^test ssl$"):
+        with pytest.raises(requests.exceptions.SSLError, match="^test ssl$"):
             client._http_request('get', 'event', resp_type='response')
 
     def test_http_request_proxy_error(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ProxyError)
-        with raises(DemistoException, match="Proxy Error"):
+        with pytest.raises(DemistoException, match="Proxy Error"):
             self.client._http_request('get', 'event', resp_type='response')
 
     def test_http_request_connection_error_with_errno(self, requests_mock):
@@ -3043,13 +3081,13 @@ class TestBaseClient:
         err.errno = 104
         err.strerror = "Connection reset by peer test"
         requests_mock.get('http://example.com/api/v2/event', exc=err)
-        with raises(DemistoException, match="Error Number: \[104\]\\nMessage: Connection reset by peer test"):
+        with pytest.raises(DemistoException, match="Error Number: \[104\]\\nMessage: Connection reset by peer test"):
             self.client._http_request('get', 'event', resp_type='response')
 
     def test_http_request_connection_error_without_errno(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError("Generic error"))
-        with raises(DemistoException, match="Generic error"):
+        with pytest.raises(DemistoException, match="Generic error"):
             self.client._http_request('get', 'event', resp_type='response')
 
     def test_text_exception_parsing(self, requests_mock):
@@ -3060,7 +3098,7 @@ class TestBaseClient:
                           status_code=400,
                           reason=reason,
                           text=text)
-        with raises(DemistoException, match='- {}\n{}'.format(reason, text)):
+        with pytest.raises(DemistoException, match='- {}\n{}'.format(reason, text)):
             self.client._http_request('get', 'event', resp_type='text')
 
     def test_json_exception_parsing(self, requests_mock):
@@ -3071,7 +3109,7 @@ class TestBaseClient:
                           status_code=400,
                           reason=reason,
                           json=json_response)
-        with raises(DemistoException, match='- {}\n.*{}'.format(reason, json_response["error"])):
+        with pytest.raises(DemistoException, match='- {}\n.*{}'.format(reason, json_response["error"])):
             self.client._http_request('get', 'event', resp_type='text')
 
     def test_exception_response_json_parsing_when_ok_code_is_invalid(self, requests_mock):
@@ -3245,7 +3283,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectTimeout)
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException):
+        with pytest.raises(DemistoException):
             client._http_request('get', 'event', resp_type='response', with_metrics=True)
         assert client.execution_metrics.timeout_error == 1
 
@@ -3260,7 +3298,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError)
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201))
-        with raises(DemistoException):
+        with pytest.raises(DemistoException):
             client._http_request('get', 'event', resp_type='response', with_metrics=True)
         assert client.execution_metrics.ssl_error == 1
 
@@ -3275,7 +3313,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ProxyError)
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException):
+        with pytest.raises(DemistoException):
             client._http_request('get', 'event', resp_type='response', with_metrics=True)
         assert client.execution_metrics.proxy_error == 1
 
@@ -3290,7 +3328,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError)
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException):
+        with pytest.raises(DemistoException):
             client._http_request('get', 'event', resp_type='response', with_metrics=True)
         assert client.execution_metrics.connection_error == 1
 
@@ -3305,7 +3343,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.RetryError)
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException):
+        with pytest.raises(DemistoException):
             client._http_request('get', 'event', resp_type='response', with_metrics=True)
         assert client.execution_metrics.retry_error == 1
 
@@ -3320,7 +3358,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', status_code=401, text="err")
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException, match="Error in API call"):
+        with pytest.raises(DemistoException, match="Error in API call"):
             client._http_request('get', 'event', with_metrics=True)
         assert client.execution_metrics.auth_error == 1
 
@@ -3335,7 +3373,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', status_code=429, text="err")
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException, match="Error in API call"):
+        with pytest.raises(DemistoException, match="Error in API call"):
             client._http_request('get', 'event', with_metrics=True)
         assert client.execution_metrics.quota_error == 1
 
@@ -3350,7 +3388,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', status_code=500, text="err")
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException, match="Error in API call"):
+        with pytest.raises(DemistoException, match="Error in API call"):
             client._http_request('get', 'event', with_metrics=True)
         assert client.execution_metrics.service_error == 1
 
@@ -3365,7 +3403,7 @@ class TestBaseClient:
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', status_code=400, text="err")
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException, match="Error in API call"):
+        with pytest.raises(DemistoException, match="Error in API call"):
             client._http_request('get', 'event', with_metrics=True)
         assert client.execution_metrics.general_error == 1
 
@@ -3398,7 +3436,7 @@ class TestBaseClient:
         requests_mock.get('http://example.com/api/v2/event', status_code=400, text="err")
         demisto_results_mock = mocker.patch.object(demisto, 'results')
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException, match="Error in API call"):
+        with pytest.raises(DemistoException, match="Error in API call"):
             client._http_request('get', 'event', with_metrics=True)
         del client
         demisto_results_mock.assert_called_once
@@ -3422,7 +3460,7 @@ class TestBaseClient:
         requests_mock.get('http://example.com/api/v2/event', status_code=400, text="err")
         demisto_results_mock = mocker.patch.object(demisto, 'results')
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(DemistoException, match="Error in API call"):
+        with pytest.raises(DemistoException, match="Error in API call"):
             client._http_request('get', 'event')
         del client
         demisto_results_mock.assert_not_called
@@ -3540,6 +3578,22 @@ def test_http_client_debug_int_logger_sensitive_query_params(mocker):
         assert 'dummy' not in arg[0][0]
         if 'apikey' in arg[0][0]:
             assert 'apikey=<XX_REPLACED>' in arg[0][0]
+
+
+def test_safe_strptime():
+    """
+    Given: A string and a format that is missing the milliseconds
+    When: Calling safe_strptime
+    Then: Verify the result is as expected
+    """
+    from CommonServerPython import safe_strptime
+
+    assert safe_strptime("2024-01-15 17:00:00Z", "%Y-%m-%d %H:%M:%S.%fZ") == datetime(2024, 1, 15, 17, 0, 0)
+    assert safe_strptime("2024-01-15 17:00:00", "%Y-%m-%d %H:%M:%S") == datetime(2024, 1, 15, 17, 0, 0)
+    assert safe_strptime("2024-01-15 17:00:00", "%Y-%m-%d %H:%M:%S", strptime=time.strptime) == time.strptime("2024-01-15 17:00:00", "%Y-%m-%d %H:%M:%S")
+
+    with pytest.raises(ValueError):
+        safe_strptime("2024-01-15 17:00:00", "%Y-%m-%dT%H:%M:%S")
 
 
 class TestParseDateRange:
@@ -3744,15 +3798,37 @@ class TestReturnOutputs:
         assert 'text' == results['ContentsFormat']
 
 
-def test_argToBoolean():
-    assert argToBoolean('true') is True
-    assert argToBoolean('yes') is True
-    assert argToBoolean('TrUe') is True
-    assert argToBoolean(True) is True
+@pytest.mark.parametrize(
+    "input_value,expected_result",
+    [
+        # True values
+        pytest.param('true', True, id='string_true_lowercase'),
+        pytest.param('yes', True, id='string_yes_lowercase'),
+        pytest.param('TrUe', True, id='string_true_mixed_case'),
+        pytest.param(True, True, id='boolean_true'),
+        pytest.param('y', True, id='string_y_lowercase'),
+        pytest.param('Y', True, id='string_y_uppercase'),
+        pytest.param('t', True, id='string_t_lowercase'),
+        pytest.param('T', True, id='string_t_uppercase'),
+        pytest.param('on', True, id='string_on_lowercase'),
+        pytest.param('ON', True, id='string_on_uppercase'),
+        pytest.param('1', True, id='string_one'),
 
-    assert argToBoolean('false') is False
-    assert argToBoolean('no') is False
-    assert argToBoolean(False) is False
+        # False values
+        pytest.param('false', False, id='string_false_lowercase'),
+        pytest.param('no', False, id='string_no_lowercase'),
+        pytest.param(False, False, id='boolean_false'),
+        pytest.param('n', False, id='string_n_lowercase'),
+        pytest.param('N', False, id='string_n_uppercase'),
+        pytest.param('f', False, id='string_f_lowercase'),
+        pytest.param('F', False, id='string_f_uppercase'),
+        pytest.param('off', False, id='string_off_lowercase'),
+        pytest.param('OFF', False, id='string_off_uppercase'),
+        pytest.param('0', False, id='string_zero'),
+    ]
+)
+def test_argToBoolean(input_value, expected_result):
+    assert argToBoolean(input_value) is expected_result
 
 
 batch_params = [
@@ -3973,12 +4049,12 @@ def test_append_context(mocker, context_mock, data_mock, key, expected_answer):
     mocker.patch.object(demisto, 'results')
 
     if "TypeError" not in expected_answer:
-        with raises(SystemExit, match='0'):
+        with pytest.raises(SystemExit, match='0'):
             appendContext(key, data_mock)
             assert expected_answer in demisto.results.call_args[0][0]['Contents']
 
     else:
-        with raises(TypeError) as e:
+        with pytest.raises(TypeError) as e:
             appendContext(key, data_mock)
             assert expected_answer in e.value
 
@@ -4975,7 +5051,7 @@ class TestExecuteCommand:
 
         demisto_execute_mock = mocker.patch.object(demisto, 'executeCommand', return_value=error_entries)
 
-        with raises(DemistoException, match='Failed to execute'):
+        with pytest.raises(DemistoException, match='Failed to execute'):
             execute_command('bad', {'arg1': 'value'})
 
         assert demisto_execute_mock.call_count == 1
@@ -4985,7 +5061,7 @@ class TestExecuteCommand:
         from CommonServerPython import execute_command
         monkeypatch.delattr(demisto, 'executeCommand')
 
-        with raises(DemistoException, match=r'Cannot run demisto.executeCommand\(\) from integrations.'):
+        with pytest.raises(DemistoException, match=r'Cannot run demisto.executeCommand\(\) from integrations.'):
             execute_command('bad', {'arg1': 'value'})
 
     @staticmethod
@@ -7660,7 +7736,7 @@ class TestIsDemistoServerGE:
         get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
         assert not is_demisto_version_ge('5.0.0')
         assert not is_demisto_version_ge('6.0.0')
-        with raises(AttributeError, match='simulate missing demistoVersion'):
+        with pytest.raises(AttributeError, match='simulate missing demistoVersion'):
             is_demisto_version_ge('4.5.0')
 
     def test_is_demisto_version_ge_dev_version(self, mocker):
@@ -8011,7 +8087,7 @@ class TestSetAndGetLastMirrorRun:
         from CommonServerPython import get_last_mirror_run
         mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
         get_last_run = mocker.patch.object(demisto, 'getLastMirrorRun')
-        with raises(DemistoException, match='You cannot use getLastMirrorRun as your version is below 6.6.0'):
+        with pytest.raises(DemistoException, match='You cannot use getLastMirrorRun as your version is below 6.6.0'):
             get_last_mirror_run()
             assert get_last_run.called is False
 
@@ -8038,7 +8114,7 @@ class TestSetAndGetLastMirrorRun:
         from CommonServerPython import set_last_mirror_run
         mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
         set_last_run = mocker.patch.object(demisto, 'setLastMirrorRun', return_value={})
-        with raises(DemistoException, match='You cannot use setLastMirrorRun as your version is below 6.6.0'):
+        with pytest.raises(DemistoException, match='You cannot use setLastMirrorRun as your version is below 6.6.0'):
             set_last_mirror_run({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
             assert set_last_run.called is False
 
@@ -8644,6 +8720,23 @@ class TestFetchWithLookBack:
         assert calculate_new_offset(1, 2, 3) == 0
         assert calculate_new_offset(1, 2, None) == 3
 
+    def test_remove_old_incidents_ids(self):
+        """
+        Test that the remove_old_incidents_ids function removes old incident IDs from the last run object.
+        Given:
+            A last run object with incident IDs and their addition times.
+        When:
+            Calling remove_old_incidents_ids with the last run object and a look back period.
+        Then:
+            Make sure that the old incident IDs are removed from the last run object and the latest incident IDs is returned.
+        """
+        from CommonServerPython import remove_old_incidents_ids
+
+        assert remove_old_incidents_ids(
+            {"inc1": 1, "inc2": 2, "inc3": 3}, 1000, 1) == {"inc3": 3}
+        assert remove_old_incidents_ids(
+            {"inc1": 1, "inc2": 2, "inc3": 2}, 1000, 1) == {"inc2": 2, "inc3": 2}
+
 
 class TestTracebackLineNumberAdgustment:
     @staticmethod
@@ -8741,85 +8834,6 @@ Exception: WTF?!!!'''
 Exception: WTF?!!!'''
         result = CommonServerPython.fix_traceback_line_numbers(traceback)
         assert result == expected_traceback
-
-
-PACK_VERSION_INFO = [
-    (
-        {'context': {'IntegrationBrand': 'PaloAltoNetworks_PrismaCloudCompute'}, 'integration': True},
-        ''
-    ),
-    (
-        {'context': {'ScriptName': 'test-script'}, 'integration': False},
-        ''
-    ),
-    (
-        {},
-        'test-pack'
-    ),
-    (
-        {'context': {'IntegrationBrand': 'PagerDuty v2'}, 'integration': True},
-        ''
-    )
-]
-
-
-def get_pack_version_mock_internal_http_request(method, uri, body):
-    if method == 'POST':
-        if uri == '/contentpacks/marketplace/search':
-            if 'integrationsQuery' in body:  # whether its an integration that needs to be searched
-                integration_brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
-                if integration_brand == 'PaloAltoNetworks_PrismaCloudCompute':
-                    return {
-                        'body': '{"packs":[{"currentVersion":"1.0.0","contentItems":'
-                                '{"integration":[{"name":"Palo Alto Networks - Prisma Cloud Compute"}]}}]}'
-                    }
-                elif integration_brand == 'PagerDuty v2':
-                    return {
-                        'body': '{"packs":[{"currentVersion":"1.0.0","contentItems":'
-                                '{"integration":[{"name":"PagerDuty v2"}]}}]}'
-                    }
-            elif 'automationQuery' in body:  # whether its a script/automation that needs to be searched
-                return {
-                    'body': '{"packs":[{"currentVersion":"1.0.0",'
-                            '"contentItems":{"automation":[{"name":"test-script"}]}}]}'
-                }
-            else:  # whether its a pack that needs to be searched
-                return {
-                    'body': '{"packs":[{"currentVersion":"1.0.0","name":"test-pack"}]}'
-                }
-        if uri == '/settings/integration/search':
-            # only used in an integration where the brand/name/id is not equal to the display name
-            return {
-                'body': '{"configurations":[{"id":"PaloAltoNetworks_PrismaCloudCompute",'
-                        '"display":"Palo Alto Networks - Prisma Cloud Compute"}]}'
-            }
-    return {}
-
-
-@pytest.mark.parametrize(
-    'calling_context_mock, pack_name', PACK_VERSION_INFO
-)
-def test_get_pack_version(mocker, calling_context_mock, pack_name):
-    """
-    Given -
-        Case1: an integration that its display name is not the same as the integration brand/name/id.
-        Case2: a script/automation.
-        Case3: a pack name.
-        Case4: an integration that its display name is the same as the integration brand/name/id.
-
-    When -
-        executing the get_pack_version function.
-
-    Then -
-        Case1: the pack version of which the integration is a part of is returned.
-        Case2: the pack version of which the script is a part of is returned.
-        Case3: the pack version of the requested pack is returned.
-        Case4: the pack version of which the integration is a part of is returned.
-    """
-    from CommonServerPython import get_pack_version
-    mocker.patch('demistomock.callingContext', calling_context_mock)
-    mocker.patch.object(demisto, 'internalHttpRequest', side_effect=get_pack_version_mock_internal_http_request)
-    assert get_pack_version(pack_name=pack_name) == '1.0.0'
 
 
 TEST_CREATE_INDICATOR_RESULT_WITH_DBOTSCOR_UNKNOWN = [
@@ -9802,12 +9816,12 @@ def test_censor_request_logs(request_log, expected_output):
         case 3: A request log with a sensitive data under the 'Authorization' header, but with no 'Bearer' prefix.
         case 4: A request log with a sensitive data under the 'Authorization' header, but with no 'send b' prefix at the beginning.
         case 5: A request log with no sensitive data.
-        case 6: A request log with a sensitive data under the 'Authorization' header, with a "LOG" prefix (which used in cases 
+        case 6: A request log with a sensitive data under the 'Authorization' header, with a "LOG" prefix (which used in cases
                 like HMAC signature authentication).
     When:
         Running censor_request_logs function.
     Then:
-        Assert the function returns the exactly same log with the sensitive data masked. 
+        Assert the function returns the exactly same log with the sensitive data masked.
     """
     assert censor_request_logs(request_log) == expected_output
 
@@ -9982,18 +9996,18 @@ def test_get_server_config_fail(mocker):
                               "Test-instanec-without-xsoar-engine-configures"
                          ])
 def test_is_integration_instance_running_on_engine(mocker, instance_name, expected_result):
-    """ Tests the 'is_integration_instance_running_on_engine' function's logic. 
+    """ Tests the 'is_integration_instance_running_on_engine' function's logic.
 
-        Given:  
+        Given:
                 1. A name of an instance that has an engine configured (and relevant mocked responses).
                 2. A name of an instance that doesn't have an engine configured (and relevant mocked responses).
 
-        When:  
-            - Running the 'is_integration_instance_running_on_engine' funcution. 
+        When:
+            - Running the 'is_integration_instance_running_on_engine' funcution.
 
         Then:
-            - Verify that: 
-                1. The result is the engine's id. 
+            - Verify that:
+                1. The result is the engine's id.
                 2. The result is an empty string.
     """
     mock_response = {
@@ -10009,14 +10023,14 @@ def test_is_integration_instance_running_on_engine(mocker, instance_name, expect
 
 
 def test_get_engine_base_url(mocker):
-    """ Tests the 'get_engine_base_url' function's logic. 
+    """ Tests the 'get_engine_base_url' function's logic.
 
-        Given:  
+        Given:
             - Mocked response of the internalHttpRequest call for the '/engines' endpoint, including 2 engines.
-            - An id of an engine. 
+            - An id of an engine.
 
-        When:  
-            - Running the 'is_integration_instance_running_on_engine' funcution. 
+        When:
+            - Running the 'is_integration_instance_running_on_engine' funcution.
 
         Then:
             - Verify that base url of the given engine id was returened.
@@ -10031,7 +10045,440 @@ def test_get_engine_base_url(mocker):
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
     res = get_engine_base_url('1111')
     assert res == '11.111.111.33:443'
-    
+
+
+class TestMirrorObjectInitialization:
+    """
+    Tests for the MirrorObject dataclass initialization and __post_init__ logic.
+    """
+
+    def test_initialization_with_all_fields(self, mocker):
+        """
+        Given: Valid object_url and ticket_id.
+        When:  MirrorObject is initialized.
+        Then:  The object is created with the correct attributes, and no debug message is logged.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        object_url = "http://example.com/ticket/123"
+        object_id = "JIRA-123"
+        object_name = "TicketName"
+
+        # When
+        mirror_obj = MirrorObject(object_url=object_url, object_id=object_id, object_name=object_name)
+
+        # Then
+        assert mirror_obj.object_url == object_url, "object_url should be initialized correctly."
+        assert mirror_obj.object_id == object_id, "ticket_id should be initialized correctly."
+        mock_demisto_debug.assert_not_called()
+
+    def test_initialization_with_no_fields(self, mocker):
+        """
+        Given: No object_url and no ticket_id (both None).
+        When:  MirrorObject is initialized.
+        Then:  The object is created with None attributes, and a debug message is logged for both missing fields.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        expected_log_message = "MirrorObject: Initialized with missing mandatory fields: object_url, object_id, object_name"
+
+        # When
+        mirror_obj = MirrorObject(object_url=None, object_id=None, object_name=None)
+
+        # Then
+        assert mirror_obj.object_url is None, "object_url should be None."
+        assert mirror_obj.object_id is None, "ticket_id should be None."
+        assert mirror_obj.object_name is None, "object_name should be None."
+        mock_demisto_debug.assert_called_once_with(expected_log_message)
+
+    def test_initialization_with_only_ticket_url(self, mocker):
+        """
+        Given: Only object_url is provided (ticket_id is None).
+        When:  MirrorObject is initialized.
+        Then:  The object is created, and a debug message is logged for the missing ticket_id.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        object_url = "http://example.com/ticket/123"
+        expected_log_message = "MirrorObject: Initialized with missing mandatory fields: object_id, object_name"
+
+        # When
+        mirror_obj = MirrorObject(object_url=object_url, object_id=None)
+
+        # Then
+        assert mirror_obj.object_url == object_url
+        assert mirror_obj.object_id is None
+        mock_demisto_debug.assert_called_once_with(expected_log_message)
+
+    def test_initialization_with_only_ticket_id(self, mocker):
+        """
+        Given: Only ticket_id is provided (object_url is None).
+        When:  MirrorObject is initialized.
+        Then:  The object is created, and a debug message is logged for the missing object_url.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        object_id = "JIRA-123"
+        expected_log_message = "MirrorObject: Initialized with missing mandatory fields: object_url, object_name"
+
+        # When
+        mirror_obj = MirrorObject(object_url=None, object_id=object_id)
+
+        # Then
+        assert mirror_obj.object_url is None
+        assert mirror_obj.object_id == object_id
+        mock_demisto_debug.assert_called_once_with(expected_log_message)
+
+    @pytest.mark.parametrize(
+        "ticket_url_in, ticket_id_in, ticket_name_in, expected_missing_fields, should_log",
+        [
+            ("http://url.com", "ID-1", "TestTicket", [], False),
+            (None, "ID-1", "TestTicket", ["object_url"], True),
+            ("http://url.com", None, "TestTicket", ["object_id"], True),
+            (None, None, None, ["object_url", "object_id", "object_name"], True),
+        ],
+    )
+    def test_post_init_logging_parametrized(
+        self,
+        mocker,
+        ticket_url_in,
+        ticket_id_in,
+        ticket_name_in,
+        expected_missing_fields,
+        should_log,
+    ):
+        """
+        Given: Various combinations of object_url and ticket_id.
+        When:  MirrorObject is initialized.
+        Then:  demisto.debug is called (or not) with the expected message based on missing fields.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+
+        # When
+        MirrorObject(object_url=ticket_url_in, object_id=ticket_id_in, object_name=ticket_name_in)
+
+        # Then
+        if should_log:
+            assert mock_demisto_debug.call_count == 1, "demisto.debug should have been called once."
+            logged_message = mock_demisto_debug.call_args[0][0]
+            assert "MirrorObject: Initialized with missing mandatory fields: {}".format(
+                ", ".join(expected_missing_fields)
+            ) == logged_message, "The debug log message was not as expected."
+        else:
+            mock_demisto_debug.assert_not_called()
+
+
+class TestMirrorObjectToContext:
+    """
+    Tests for the MirrorObject.to_context() method.
+    """
+
+    @pytest.mark.parametrize(
+        "object_url, object_id, expected_dict",
+        [
+            (
+                "http://example.com/ticket/123",
+                "JIRA-123",
+                {"object_url": "http://example.com/ticket/123", "object_id": "JIRA-123", 'object_name': None},
+            ),
+            (None, "JIRA-123", {"object_url": None, "object_id": "JIRA-123", 'object_name': None}),
+            ("http://example.com/ticket/123", None, {"object_url": "http://example.com/ticket/123", "object_id": None, 'object_name': None}),
+            (None, None, {"object_url": None, "object_id": None, 'object_name': None}),
+            ("", "", {"object_url": "", "object_id": "", 'object_name': None}), # Testing with empty strings
+        ],
+    )
+    def test_to_context_various_inputs(
+        self,
+        mocker,
+        object_url,
+        object_id,
+        expected_dict,
+    ):
+        """
+        Given: A MirrorObject initialized with various combinations of object_url and ticket_id.
+        When:  The to_context() method is called.
+        Then:  A dictionary representation of the object is returned with the correct key-value pairs.
+        """
+        # Given
+        mirror_obj = MirrorObject(object_url=object_url, object_id=object_id)
+
+        # When
+        context_dict = mirror_obj.to_context()
+
+        # Then
+        assert context_dict == expected_dict, "The context dictionary does not match the expected output."
+
+    def test_to_context_returns_dict(self, mocker):
+        """
+        Given: A MirrorObject.
+        When:  to_context() is called.
+        Then:  The return type is a dict.
+        """
+        # Given
+        mirror_obj = CommonServerPython.MirrorObject()
+
+        # When
+        result = mirror_obj.to_context()
+
+        # Then
+        assert isinstance(result, dict), "to_context() should return a dictionary."
+
+
+
+class TestQuickActionPreviewInitialization:
+    """
+    Test suite for the initialization and __post_init__ logic of the QuickActionPreview class.
+    """
+    ALL_QA_PREVIEW_FIELD_NAMES = [
+        'id', 'title', 'description', 'status', 'assignee', 'creation_date', 'severity'
+    ]
+
+    def test_initialization_with_all_fields_provided_non_none(self, mocker):
+        """
+        Given: All fields are provided with non-None string values.
+        When:  A QuickActionPreview instance is created.
+        Then:  The instance's attributes are set correctly, and demisto.debug is not called.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        field_values = {
+            "id": "ID123",
+            "title": "Sample Title",
+            "description": "Detailed description.",
+            "status": "Open",
+            "assignee": "John Doe",
+            "creation_date": "2023-01-01T12:00:00Z",
+            "severity": "High"
+        }
+
+        # When
+        preview = QuickActionPreview(**field_values)
+
+        # Then
+        for field_name, expected_value in field_values.items():
+            assert getattr(preview, field_name) == expected_value, "{} was not initialized correctly.".format(field_name)
+        mock_demisto_debug.assert_not_called()
+
+    def test_initialization_with_all_fields_none(self, mocker):
+        """
+        Given: All fields default to None.
+        When:  A QuickActionPreview instance is created.
+        Then:  demisto.debug is called with a message containing all field names.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+
+        # When
+        QuickActionPreview() # All fields default to None
+
+        # Then
+        mock_demisto_debug.assert_called_once()
+        actual_log_message = mock_demisto_debug.call_args[0][0]
+        for field_name in self.ALL_QA_PREVIEW_FIELD_NAMES:
+            assert field_name in actual_log_message, "Expected '{}' to be in the log message.".format(field_name)
+
+    def test_initialization_with_some_fields_none(self, mocker):
+        """
+        Given: Some fields are provided, and others are None.
+        When:  A QuickActionPreview instance is created.
+        Then:  demisto.debug is called with a message containing only the names of the None fields.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        field_values = {
+            "id": "ID456",
+            "title": None,
+            "description": "Another description.",
+            "status": None,
+            "assignee": "Jane Roe",
+            "creation_date": None,
+            "severity": "Medium"
+        }
+        expected_missing = ["title", "status", "creation_date"]
+        expected_present = ["id", "description", "assignee", "severity"]
+
+        # When
+        QuickActionPreview(**field_values)
+
+        # Then
+        mock_demisto_debug.assert_called_once()
+        actual_log_message = mock_demisto_debug.call_args[0][0]
+
+        # Check that the names of missing fields are in the log
+        for field_name in expected_missing:
+            assert field_name in actual_log_message, "Expected '{}' to be logged as missing.".format(field_name)
+
+        # Check that the names of present fields are NOT in the log
+        for field_name in expected_present:
+            assert field_name not in actual_log_message, "Did not expect '{}' to be logged as missing.".format(field_name)
+
+
+    def test_initialization_with_empty_strings_not_logged_as_missing(self, mocker):
+        """
+        Given: Some fields are empty strings, others are None.
+        When:  A QuickActionPreview instance is created.
+        Then:  Empty strings are not logged as missing; only None fields are.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        field_values = {
+            "id": "",
+            "title": "A Title",
+            "description": None,
+            "status": "",
+            "assignee": "User",
+            "creation_date": "2023-02-02",
+            "severity": None
+        }
+        expected_missing = ["description", "severity"]
+        not_expected_missing = ["id", "title", "status", "assignee", "creation_date"]
+
+        # When
+        QuickActionPreview(**field_values)
+
+        # Then
+        mock_demisto_debug.assert_called_once()
+        actual_log_message = mock_demisto_debug.call_args[0][0]
+
+        # Check that only the None fields are mentioned in the log
+        for field_name in expected_missing:
+            assert field_name in actual_log_message, "Expected '{}' to be logged as missing.".format(field_name)
+
+        # Check that fields with values (even empty strings) are NOT in the log
+        for field_name in not_expected_missing:
+            assert field_name not in actual_log_message, "Did not expect '{}' to be logged as missing.".format(field_name)
+
+    @pytest.mark.parametrize(
+        "init_kwargs, expected_logged_missing_fields",
+        [
+            (
+                {"id": "1", "title": "t", "description": "d", "status": "s", "assignee": "a", "creation_date": "cd", "severity": "sev"},
+                [] # No missing fields
+            ),
+            (
+                {"id": None, "title": "t", "description": "d", "status": "s", "assignee": "a", "creation_date": "cd", "severity": "sev"},
+                ["id"]
+            ),
+            (
+                {"id": "1", "title": None, "description": "d", "status": "s", "assignee": "a", "creation_date": "cd", "severity": None},
+                ["title", "severity"] # Order matters
+            ),
+            (
+                {"title": "Present", "status": "Also Present"}, # Others are None by default
+                ["id", "description", "assignee", "creation_date", "severity"]
+            ),
+            (
+                {}, # All fields are None by default
+                ALL_QA_PREVIEW_FIELD_NAMES
+            ),
+        ],
+        ids=[
+            "all_present",
+            "id_missing",
+            "title_and_severity_missing",
+            "only_title_and_status_present",
+            "all_missing_default_init",
+        ]
+    )
+    def test_post_init_logging_parametrized(
+        self,
+        mocker,
+        init_kwargs,
+        expected_logged_missing_fields
+    ):
+        """
+        Given: Various combinations of field initializations for QuickActionPreview.
+        When:  A QuickActionPreview instance is created.
+        Then:  demisto.debug is called (or not called) with the correctly formatted message,
+               listing None fields in their definition order.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+
+        # When
+        QuickActionPreview(**init_kwargs) # type: ignore
+
+        # Then
+        if expected_logged_missing_fields:
+            actual_log_message = mock_demisto_debug.call_args[0][0]
+            for field_name in expected_logged_missing_fields:
+                assert field_name in actual_log_message, "Expected '{}' to be logged as missing.".format(field_name)
+        else:
+            mock_demisto_debug.assert_not_called()
+
+
+class TestQuickActionPreviewToContext:
+    """
+    Test suite for the to_context method of the QuickActionPreview class.
+    """
+
+    @pytest.mark.parametrize(
+        "init_kwargs, expected_dict",
+        [
+            ( # All fields present
+                {"id": "1", "title": "t", "description": "d", "status": "s", "assignee": "a", "creation_date": "cd", "severity": "sev"},
+                {"id": "1", "title": "t", "description": "d", "status": "s", "assignee": "a", "creation_date": "cd", "severity": "sev"}
+            ),
+            ( # Some fields None
+                {"id": "2", "title": None, "description": "desc", "status": "Open", "assignee": None, "creation_date": "date", "severity": "High"},
+                {"id": "2", "title": None, "description": "desc", "status": "Open", "assignee": None, "creation_date": "date", "severity": "High"}
+            ),
+            ( # All fields None (default initialization)
+                {},
+                {"id": None, "title": None, "description": None, "status": None, "assignee": None, "creation_date": None, "severity": None}
+            ),
+            ( # Fields with empty strings
+                {"id": "", "title": "A Title", "description": "", "status": "Done", "assignee": "", "creation_date": "Never", "severity": ""},
+                {"id": "", "title": "A Title", "description": "", "status": "Done", "assignee": "", "creation_date": "Never", "severity": ""}
+            ),
+        ],
+        ids=[
+            "all_values_present",
+            "some_values_none",
+            "all_values_none_default_init",
+            "empty_string_values",
+        ]
+    )
+    def test_to_context_returns_correct_dictionary(
+        self,
+        mocker,
+        init_kwargs,
+        expected_dict
+    ):
+        """
+        Given: A QuickActionPreview initialized with various field values.
+        When:  The to_context() method is called.
+        Then:  A dictionary is returned that accurately represents the QuickActionPreview's attributes,
+               including None values and empty strings.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        preview = QuickActionPreview(**init_kwargs) # type: ignore
+
+        # When
+        actual_context_dict = preview.to_context()
+
+        # Then
+        assert actual_context_dict == expected_dict, \
+            "The dictionary from to_context() does not match the expected output."
+
+    def test_to_context_return_type_is_dict(self, mocker):
+        """
+        Given: Any QuickActionPreview instance.
+        When:  The to_context() method is called.
+        Then:  The returned type is a dictionary.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        preview = QuickActionPreview()
+
+        # When
+        result = preview.to_context()
+
+        # Then
+        assert isinstance(result, dict), "The to_context() method should always return a dict."
+
 
 
 @pytest.mark.parametrize('input_text, pattern, expected_output, call_count', [
@@ -10122,10 +10569,10 @@ def test_execute_polling_command(mocker):
             return entries[1]
 
     mock_execute_command = mocker.patch.object(demisto, "executeCommand", side_effect=mock_polling_command_entry)
-    
+
     command_name = "demo-polling-command"
     original_call_args = {"endpoint_id": "my_endpoint", "interval_in_seconds": 1}
-    
+
     command_results = execute_polling_command(command_name, original_call_args)
 
     # Check that command has been executed twice
@@ -10135,7 +10582,7 @@ def test_execute_polling_command(mocker):
     mock_first_call_inputs = mock_execute_command.call_args_list[0][0]
     assert mock_first_call_inputs[0] == command_name
     assert mock_first_call_inputs[1] == original_call_args
-    
+
     # Check inputs of second execution (expect polling args to be used)
     mock_second_call_inputs = mock_execute_command.call_args_list[1][0]
     assert mock_second_call_inputs[0] == command_name
@@ -10144,7 +10591,7 @@ def test_execute_polling_command(mocker):
     # Check outputs of first execution
     assert command_results[0].outputs == entries[0][0]["EntryContext"]
     assert command_results[0].readable_output == entries[0][0]["HumanReadable"]
-    
+
     assert command_results[1].outputs == entries[1][0]["EntryContext"]
     assert command_results[1].readable_output == entries[1][0]["HumanReadable"]
 
@@ -10158,3 +10605,176 @@ def test_stringEscapeMD():
     st = "somethig~issue~"
     result = stringEscapeMD(st)
     assert result == "somethig\~issue\~"
+
+def test_arg_to_bool_or_none_with_none():
+    """
+    Given: A None value is passed to arg_to_bool_or_none function.
+    When: The function processes the None input.
+    Then: It should return None without any conversion.
+    """
+    result = arg_to_bool_or_none(None)
+    assert result is None
+
+
+def test_arg_to_bool_or_none_with_string():
+    """
+    Given: A string value 'true' is passed to arg_to_bool_or_none function.
+    When: The function processes the string input.
+    Then: It should return the boolean representation using argToBoolean.
+    """
+    result = arg_to_bool_or_none("true")
+    assert result is True
+
+
+
+CONSTANT_PACK_VERSION = '1.0.0'
+
+
+def test_get_pack_version():
+    """
+    Given: A global CONSTANT_PACK_VERSION
+    When: Using the function get_pack_version.
+    Then: assert verify the correct version is returned.
+    """
+
+    with open('CommonServerPython.py', 'r') as f:
+        code = f.read()
+
+    exec(code, globals())
+    version = get_pack_version()
+    assert version == '1.0.0'
+
+
+
+# The unit test below will fail if run on Windows systems due to limited signal handling capabilities compared to Unix systems
+@pytest.mark.parametrize(
+    "sleep_time, expected_is_finished",
+    [
+        pytest.param(3, False, id="Slow execution"),
+        pytest.param(0, True, id="Fast execution"),
+    ],
+)
+def test_execution_timeout_context_manager(sleep_time, expected_is_finished):
+    """
+    Given:
+        - An execution timeout value of 2 seconds.
+
+    When:
+        - When using `ExecutionTimeout` context manager with a simulated "slow" and "fast" executions.
+
+    Assert:
+        - Case A (Slow): Ensure `is_finished` is False since `time.sleep` timed out (`sleep_time` > `execution_timeout`).
+        - Case B (Fast): Ensure `is_finished` is True since `time.sleep` finished in time (`sleep_time` < `execution_timeout`).
+    """
+    execution_timeout = 2  # Slow: Sleep one second more than timeout. Fast: Don't sleep.
+
+    is_finished = False
+    with ExecutionTimeout(seconds=execution_timeout):
+        time.sleep(sleep_time)
+        is_finished = True  # Slow: This line will not be reached. Fast: Line reached, variable updated.
+
+    assert is_finished == expected_is_finished
+
+
+# The unit test below will fail if run on Windows systems due to limited signal handling capabilities compared to Unix systems
+@pytest.mark.parametrize(
+    "sleep_time, expected_return_value",
+    [
+        pytest.param(3, "I TIMED OUT", id="Slow execution"),
+        pytest.param(0, "I AM DONE", id="Fast execution"),
+    ],
+)
+def test_execution_timeout_decorator(sleep_time, expected_return_value):
+    """
+    Given:
+        - An execution timeout value of 2 seconds.
+
+    When:
+        - When using `ExecutionTimeout.limit_time` decorator with a simulated "slow" and "fast" executions.
+
+    Assert:
+        - Case A (Slow): Ensure return value is "I TIMED OUT" since `do_logic` timed out (`sleep_time` > `execution_timeout`).
+        - Case B (Fast): Ensure return value is "I AM DONE" since `do_logic` finished in time (`sleep_time` < `execution_timeout`).
+    """
+    execution_timeout = 2  # Slow: Sleep one second more than timeout. Fast: Don't sleep.
+
+    @ExecutionTimeout.limit_time(execution_timeout, default_return_value="I TIMED OUT")
+    def do_logic():
+        time.sleep(sleep_time)
+        return "I AM DONE"
+
+    assert do_logic() == expected_return_value
+
+
+
+class TestTimeSensitive:
+    def test_http_request_time_sensitive(self, mocker):
+        """
+        Given:
+           - A BaseClient object
+           - Time-sensitive mode is enabled
+        When:
+           - Calling _http_request
+        Then:
+           - Ensure the timeout is calculated correctly based on the remaining time.
+        """
+        from CommonServerPython import BaseClient, is_time_sensitive
+        mocker.patch('CommonServerPython.is_time_sensitive', return_value=True)
+        mocker.patch('time.time', side_effect=[100, 105])  # First call for deadline, second for remaining time
+        client = BaseClient('http://example.com', timeout=60)
+        client._time_sensitive_total_timeout = 15
+        client._time_sensitive_deadline = 115  # 100 + 15
+
+        mock_session = mocker.patch.object(client, '_session')
+        mock_session.request.return_value.ok = True
+        mock_session.request.return_value.status_code = 200
+
+        client._http_request('get', 'test')
+
+        # The timeout passed to the request should be deadline - current_time
+        # 115 - 105 = 10
+        assert mock_session.request.call_args[1]['timeout'] == 10
+
+    def test_http_request_time_sensitive_budget_exceeded_before_call(self, mocker):
+        """
+        Given:
+           - A BaseClient object
+           - Time-sensitive mode is enabled
+           - The time budget is already exceeded
+        When:
+           - Calling _http_request
+        Then:
+           - Ensure a DemistoException is raised.
+        """
+        from CommonServerPython import BaseClient, DemistoException, is_time_sensitive
+        mocker.patch('CommonServerPython.is_time_sensitive', return_value=True)
+        mocker.patch('time.time', return_value=120)
+        client = BaseClient('http://example.com')
+        client._time_sensitive_total_timeout = 15
+        client._time_sensitive_deadline = 115  # 100 + 15
+
+        with pytest.raises(DemistoException, match="Time-sensitive command execution time limit .* reached before performing the API request"):
+            client._http_request('get', 'test')
+
+    def test_http_request_time_sensitive_timeout_during_call(self, mocker):
+        """
+        Given:
+           - A BaseClient object
+           - Time-sensitive mode is enabled
+        When:
+           - Calling _http_request and it times out
+        Then:
+           - Ensure a DemistoException is raised with a time-sensitive budget exceeded message.
+        """
+        from CommonServerPython import BaseClient, DemistoException, is_time_sensitive
+        mocker.patch('CommonServerPython.is_time_sensitive', return_value=True)
+        mocker.patch('time.time', side_effect=[100, 105])  # First for deadline, second for remaining time
+        client = BaseClient('http://example.com')
+        client._time_sensitive_total_timeout = 15
+        client._time_sensitive_deadline = 115  # 100 + 15
+
+        mocker.patch.object(client, '_session')
+        client._session.request.side_effect = requests.exceptions.ConnectTimeout
+
+        with pytest.raises(DemistoException, match="Time-sensitive command execution time limit .* exceeded"):
+            client._http_request('get', 'test')

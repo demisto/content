@@ -158,7 +158,10 @@ class Client:
                 self.headers["If-Modified-Since"] = last_modified
 
         result: list[dict] = []
-        r = self.http_request(url, **kwargs)
+        if self.post_data:
+            r = self.http_post(url, **kwargs)
+        else:
+            r = self.http_get(url, **kwargs)
 
         try:
             r.raise_for_status()
@@ -176,14 +179,13 @@ class Client:
         return result, True
 
     @cache
-    def http_request(self, url, **kwargs) -> requests.Response:
-        if not self.post_data:
-            r = requests.get(url=url, verify=self.verify, auth=self.auth, cert=self.cert, headers=self.headers, **kwargs)
-        else:
-            r = requests.post(
-                url=url, data=self.post_data, verify=self.verify, auth=self.auth, cert=self.cert, headers=self.headers, **kwargs
-            )
-        return r
+    def http_get(self, url, **kwargs) -> requests.Response:
+        return requests.get(url=url, verify=self.verify, auth=self.auth, cert=self.cert, headers=self.headers, **kwargs)
+
+    def http_post(self, url, **kwargs) -> requests.Response:
+        return requests.post(
+            url=url, data=self.post_data, verify=self.verify, auth=self.auth, cert=self.cert, headers=self.headers, **kwargs
+        )
 
 
 def get_no_update_value(response: requests.Response, feed_name: str) -> bool:

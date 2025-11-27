@@ -2,7 +2,7 @@
     "name": "SentinelOne",
     "description": "Endpoint protection",
     "support": "partner",
-    "currentVersion": "3.2.42",
+    "currentVersion": "3.3.0",
     "author": "SentinelOne",
     "url": "https://www.sentinelone.com/support/",
     "email": "support@sentinelone.com",
@@ -23,6 +23,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

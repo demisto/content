@@ -1,5 +1,5 @@
 category: Email
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -1148,9 +1148,9 @@ script:
     - description: The ID of the rule to delete.
       name: rule_id
       required: true
-    description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
+    description: Deletes a specific email rule by ID from a user's mailbox using the Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.4834757
   isfetch: true
   runonce: false
   script: '-'

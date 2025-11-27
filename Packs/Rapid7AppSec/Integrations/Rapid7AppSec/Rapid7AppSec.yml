@@ -740,6 +740,6 @@ script:
 fromversion: 6.9.0
 tests:
 - No tests
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

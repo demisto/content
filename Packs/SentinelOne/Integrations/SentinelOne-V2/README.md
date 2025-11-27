@@ -21,7 +21,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Define which Threats should be fetched. |  | False |
 | Fetch limit: The maximum number of threats or alerts to fetch |  | False |
 | Site IDs | Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites. | False |
-| Block Site IDs | Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites. | False |
+| Block Site IDs | Comma-separated string of site IDs where the hash should be blocked. If left blank and no other scopes are provided in the sentinelone-add-hash-to-blocklist command, the hash will be blocked globally. If filled, the hash will be blocked only within the specified site scopes. When used with sentinelone-add-hash-to-blocklist, these IDs are combined with any site_ids passed as command arguments to define the final scope. |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | API Token (Deprecated) | Use the "API Token \(Recommended\)" parameter instead. | False |
@@ -324,7 +324,7 @@ Returns the details of an agent according to the agent ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | A comma-separated list of agent IDs. | Required |
+| agent_id | A comma-separated string of agent IDs. | Required |
 
 #### Context Output
 
@@ -1059,7 +1059,7 @@ Deletes Custom Detection Rules that match the specified input filter. Relevant f
 ### sentinelone-get-blocklist
 
 ***
-Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `global` flag is `true`, then group_ids, site_ids, and account_ids are ignored.
+Retrieve the blocklist ("blacklist" in SentinelOne documentation). You can filter by SHA1 or SHA256 hash. If the global flag is true, then group_ids, site_ids, and account_ids are ignored.
 
 #### Base Command
 
@@ -1076,6 +1076,8 @@ Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `
 | offset | The number of records to skip (for paging). Default is 0. | Optional |
 | limit | The maximum number of records to return. Default is 1000. | Optional |
 | hash | Hash to search for in the blocklist. | Optional |
+| sha1 | SHA1 hash to search for in the blocklist. | Optional |
+| sha256Value | SHA256 hash to search for in the blocklist. | Optional |
 
 #### Context Output
 
@@ -1096,7 +1098,9 @@ Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `
 ### sentinelone-add-hash-to-blocklist
 
 ***
-Add a hash to the global blocklist in SentinelOne.
+Add a hash to the blocklist in SentinelOne.  
+If a scope is provided (site, account, or group), the hash will be added to that specific scope.  
+If no scope is provided, the hash will be added to the global blocklist.
 
 #### Base Command
 
@@ -1106,10 +1110,14 @@ Add a hash to the global blocklist in SentinelOne.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sha1 | SHA1 hash to add to the global blocklist. | Optional |
+| sha1 | SHA1 hash to add to the blocklist. | Optional |
+| sha256Value | SHA256 hash to add to the blocklist. | Optional |
 | source | String describing the source of the block. Default is XSOAR. | Optional |
 | os_type | Type of operating system. Possible values are: windows, linux, macos. | Required |
 | description | Note stored in SentinelOne about the block. Default is Blocked from XSOAR. | Optional |
+| site_ids | Comma-separated string of site IDs to add the hash to. | Optional |
+| account_ids | Comma-separated string of account IDs to add the hash to. | Optional |
+| group_ids | Comma-separated string of group IDs to add the hash to. | Optional |
 
 #### Context Output
 
@@ -1121,7 +1129,9 @@ Add a hash to the global blocklist in SentinelOne.
 ### sentinelone-remove-hash-from-blocklist
 
 ***
-Remove a hash from the global blocklist in SentinelOne
+Remove a hash from the blocklist in SentinelOne.  
+If a scope is provided (site, account, or group), the hash will be removed from that specific scope.  
+If no scope is provided, the hash will be removed from the global blocklist.
 
 #### Base Command
 
@@ -1131,8 +1141,12 @@ Remove a hash from the global blocklist in SentinelOne
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sha1 | SHA1 hash to remove from the global blocklist. | Optional |
+| sha1 | SHA1 hash to remove from the blocklist. | Optional |
+| sha256Value | SHA256 hash to remove from the blocklist. | Optional |
 | os_type | Optional operating system type. If not supplied, will remove the SHA1 hash across all platforms. Possible values are: windows, macos, linux. | Optional |
+| site_ids | Comma-separated string of site IDs to remove the hash from. | Optional |
+| account_ids | Comma-separated string of account IDs to remove the hash from. | Optional |
+| group_ids | Comma-separated string of group IDs to remove the hash from. | Optional |
 
 #### Context Output
 
@@ -2068,3 +2082,26 @@ To set up the mirroring:
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and SentinelOne v2.
+
+### sentinelone-threat-download-from-cloud
+
+***
+Download a file associated with the threat from the Cloud (BinaryVault).
+
+#### Base Command
+
+`sentinelone-threat-download-from-cloud`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| threat_id | Please provide the Valid Threat ID. Example: 14629133470822878. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Threat.ID | String | The threat ID. |
+| SentinelOne.Threat.Downloadable | Boolean | Whether the file is downloadable. |
+| SentinelOne.Threat.ZippedFile | String | Details of the zipped folder. |

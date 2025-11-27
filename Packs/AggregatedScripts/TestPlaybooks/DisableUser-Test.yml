@@ -1,0 +1,2649 @@
+id: DisableUser - Test
+version: -1
+name: DisableUser - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 32d9bddb-82be-43ac-8448-c52478536f81
+    type: start
+    task:
+      id: 32d9bddb-82be-43ac-8448-c52478536f81
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 5af4e506-8408-49be-9e04-25ec55f627c1
+    type: title
+    task:
+      id: 5af4e506-8408-49be-9e04-25ec55f627c1
+      version: -1
+      name: Case 1 - Disable by user_name Okta v2
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 326a4b55-8645-4b92-a795-005c3499a8ed
+    type: regular
+    task:
+      id: 326a4b55-8645-4b92-a795-005c3499a8ed
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f2d90b04-1fa8-4dc9-966a-5562dbf58915
+    type: regular
+    task:
+      id: f2d90b04-1fa8-4dc9-966a-5562dbf58915
+      version: -1
+      name: Get Timestamp
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 47f4a734-d223-44de-9975-42dcf59467e4
+    type: regular
+    task:
+      id: 47f4a734-d223-44de-9975-42dcf59467e4
+      version: -1
+      name: Create User Okta
+      description: Creates a new user with an option of setting a password, recovery question, and answer. The new user will immediately be able to log in after activation with the assigned password. This flow is common when developing a custom user registration experience.
+      script: '|||okta-create-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      activate:
+        simple: "true"
+      email:
+        simple: ${TimeNowUnix}@gmail.com
+      firstName:
+        simple: ${TimeNowUnix}
+      lastName:
+        simple: ${TimeNowUnix}
+      login:
+        simple: ${TimeNowUnix}@gmail.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: be4927ee-4189-42b8-bb70-62a6d5d7ecf6
+    type: regular
+    task:
+      id: be4927ee-4189-42b8-bb70-62a6d5d7ecf6
+      version: -1
+      name: Disable User - by user name and brand
+      description: This script disables users for multiple services.
+      scriptName: disable-user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      brands:
+        simple: Okta v2
+      user_name:
+        simple: ${TimeNowUnix}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 6d8d08b9-7e88-4f66-b661-611edf598f2b
+    type: condition
+    task:
+      id: 6d8d08b9-7e88-4f66-b661-611edf598f2b
+      version: -1
+      name: Verify Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "65"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DisableUser.Result
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: isTrue
+          left:
+            value:
+              simple: DisableUser.Disabled
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 7c6fc2ea-df07-46d9-bc36-84ba9a1392c9
+    type: regular
+    task:
+      id: 7c6fc2ea-df07-46d9-bc36-84ba9a1392c9
+      version: -1
+      name: Disable User - by user name and brand
+      description: This script disables users for multiple services.
+      scriptName: disable-user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      brands:
+        simple: Okta v2
+      user_name:
+        simple: ${TimeNowUnix}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 6a1d3f29-df40-424a-8d2b-c67e0093d893
+    type: condition
+    task:
+      id: 6a1d3f29-df40-424a-8d2b-c67e0093d893
+      version: -1
+      name: Verify Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DisableUser.Result
+            iscontext: true
+          right:
+            value:
+              simple: Failed
+      - - operator: isTrue
+          left:
+            value:
+              simple: DisableUser.Disabled
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: c06a1cd2-041c-4069-b7bd-4caeac326aed
+    type: regular
+    task:
+      id: c06a1cd2-041c-4069-b7bd-4caeac326aed
+      version: -1
+      name: Delete Okta User
+      description: Deletes the specified user.
+      script: '|||okta-delete-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      userId:
+        simple: ${Account.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 7dc7eb97-8003-4a05-a1de-b34dcbd464da
+    type: title
+    task:
+      id: 7dc7eb97-8003-4a05-a1de-b34dcbd464da
+      version: -1
+      name: Case 2 - Disable By ID Okta v2
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: a4eff7fb-2a65-413e-87a6-47651f45ad82
+    type: regular
+    task:
+      id: a4eff7fb-2a65-413e-87a6-47651f45ad82
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: af57633d-5eb0-4661-8cd8-b30dfedf5f9d
+    type: regular
+    task:
+      id: af57633d-5eb0-4661-8cd8-b30dfedf5f9d
+      version: -1
+      name: Get Timestamp
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: e447f520-bf09-40d9-8b11-7f07d5c1bf99
+    type: regular
+    task:
+      id: e447f520-bf09-40d9-8b11-7f07d5c1bf99
+      version: -1
+      name: Create User Okta
+      description: Creates a new user with an option of setting a password, recovery question, and answer. The new user will immediately be able to log in after activation with the assigned password. This flow is common when developing a custom user registration experience.
+      script: '|||okta-create-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      activate:
+        simple: "true"
+      email:
+        simple: ${TimeNowUnix}@gmail.com
+      firstName:
+        simple: ${TimeNowUnix}
+      lastName:
+        simple: ${TimeNowUnix}
+      login:
+        simple: ${TimeNowUnix}@gmail.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 1fb85d20-d88d-4b29-888d-f9b42e01f58f
+    type: regular
+    task:
+      id: 1fb85d20-d88d-4b29-888d-f9b42e01f58f
+      version: -1
+      name: Disable User - by id and brand
+      description: This script disables users for multiple services.
+      scriptName: disable-user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      brands:
+        simple: Okta v2
+      user_id:
+        simple: ${Account.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 6fc7fe62-885f-4d74-87b1-acdf0f7d2623
+    type: condition
+    task:
+      id: 6fc7fe62-885f-4d74-87b1-acdf0f7d2623
+      version: -1
+      name: Verify Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DisableUser.Result
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: isTrue
+          left:
+            value:
+              simple: DisableUser.Disabled
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 45bb180a-c703-47e3-b452-11ae7a16e973
+    type: regular
+    task:
+      id: 45bb180a-c703-47e3-b452-11ae7a16e973
+      version: -1
+      name: Delete Okta User
+      description: Deletes the specified user.
+      script: '|||okta-delete-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      userId:
+        simple: ${Account.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: b66be76c-d54e-40ae-b489-846fe77d77fe
+    type: title
+    task:
+      id: b66be76c-d54e-40ae-b489-846fe77d77fe
+      version: -1
+      name: Case 3 - Disable By Email Active Directory Query v2
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: a1dd3552-eb8b-4f57-9e91-1937fe662d7a
+    type: regular
+    task:
+      id: a1dd3552-eb8b-4f57-9e91-1937fe662d7a
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 199ef9b1-cabb-4e0d-8a5a-1c8406bb5c67
+    type: regular
+    task:
+      id: 199ef9b1-cabb-4e0d-8a5a-1c8406bb5c67
+      version: -1
+      name: Get Timestamp
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: ca8895dc-e05f-48f8-a2e6-a27f51107dca
+    type: regular
+    task:
+      id: ca8895dc-e05f-48f8-a2e6-a27f51107dca
+      version: -1
+      name: Create User - Active Directory Query v2
+      description: Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
+      script: '|||ad-create-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      display-name:
+        simple: ${TimeNowUnix}
+      email:
+        simple: ${TimeNowUnix}@demisto.local
+      password:
+        simple: ${TimeNowUnix}
+      user-dn:
+        simple: CN=${TimeNowUnix},CN=Users,DC=demisto,DC=local
+      username:
+        simple: ${TimeNowUnix}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 273bd530-fc6e-4094-a222-c63ca1f87934
+    type: regular
+    task:
+      id: 273bd530-fc6e-4094-a222-c63ca1f87934
+      version: -1
+      name: Disable User - by email brand Active Directory
+      description: This script disables users for multiple services.
+      scriptName: disable-user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      brands:
+        simple: Active Directory Query v2
+      user_email:
+        simple: ${TimeNowUnix}@demisto.local
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 0359896d-2fda-451f-a6ac-f2549a173463
+    type: condition
+    task:
+      id: 0359896d-2fda-451f-a6ac-f2549a173463
+      version: -1
+      name: Verify Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DisableUser.Result
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: isTrue
+          left:
+            value:
+              simple: DisableUser.Disabled
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 978c8499-a09a-4783-ac84-dfb612a7569d
+    type: title
+    task:
+      id: 978c8499-a09a-4783-ac84-dfb612a7569d
+      version: -1
+      name: Case 4 - Disable 2 users with same username
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 73932ec9-cd7f-4790-a4d3-f1a9f93676b5
+    type: regular
+    task:
+      id: 73932ec9-cd7f-4790-a4d3-f1a9f93676b5
+      version: -1
+      name: Delete User
+      description: Deletes an Active Directory user.
+      script: '|||ad-delete-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      user-dn:
+        simple: CN=${TimeNowUnix},CN=Users,DC=demisto,DC=local
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 0d9af43c-0457-4ab4-8f6e-54318599488a
+    type: regular
+    task:
+      id: 0d9af43c-0457-4ab4-8f6e-54318599488a
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 6b5b19bf-6146-462e-89ff-9393a9c3fd75
+    type: regular
+    task:
+      id: 6b5b19bf-6146-462e-89ff-9393a9c3fd75
+      version: -1
+      name: Get Timestamp
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+      - "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 8b15345f-9351-4f9f-8d60-147a591b8e00
+    type: regular
+    task:
+      id: 8b15345f-9351-4f9f-8d60-147a591b8e00
+      version: -1
+      name: Create User - Active Directory Query v2
+      description: Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
+      script: '|||ad-create-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      display-name:
+        simple: ${TimeNowUnix}
+      email:
+        simple: ${TimeNowUnix}@demisto.local
+      password:
+        simple: ${TimeNowUnix}
+      user-dn:
+        simple: CN=${TimeNowUnix},CN=Users,DC=demisto,DC=local
+      username:
+        simple: ${TimeNowUnix}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 6268614a-342b-4712-874d-f70af2cb9544
+    type: regular
+    task:
+      id: 6268614a-342b-4712-874d-f70af2cb9544
+      version: -1
+      name: Create User Okta
+      description: Creates a new user with an option of setting a password, recovery question, and answer. The new user will immediately be able to log in after activation with the assigned password. This flow is common when developing a custom user registration experience.
+      script: '|||okta-create-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      activate:
+        simple: "true"
+      email:
+        simple: ${TimeNowUnix}@gmail.com
+      firstName:
+        simple: ${TimeNowUnix}
+      lastName:
+        simple: ${TimeNowUnix}
+      login:
+        simple: ${TimeNowUnix}@gmail.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: a949d917-5d56-4890-8284-96b64afd531c
+    type: regular
+    task:
+      id: a949d917-5d56-4890-8284-96b64afd531c
+      version: -1
+      name: Disable User - by name
+      description: This script disables users for multiple services.
+      scriptName: disable-user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      user_name:
+        simple: ${TimeNowUnix}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: cbf22926-a493-4336-91ab-00ab1af2ff48
+    type: condition
+    task:
+      id: cbf22926-a493-4336-91ab-00ab1af2ff48
+      version: -1
+      name: Verify Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DisableUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DisableUser.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Okta v2
+                accessor: Result
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: DisableUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DisableUser.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Okta v2
+                accessor: Disabled
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DisableUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DisableUser.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                accessor: Result
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: DisableUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DisableUser.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                accessor: Disabled
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 904ef111-ebc3-4e85-ab80-a18a7f9f1b09
+    type: regular
+    task:
+      id: 904ef111-ebc3-4e85-ab80-a18a7f9f1b09
+      version: -1
+      name: Delete User Active Directory
+      description: Deletes an Active Directory user.
+      script: '|||ad-delete-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      user-dn:
+        simple: CN=${TimeNowUnix},CN=Users,DC=demisto,DC=local
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 203e17fa-e65a-4faf-b5eb-86e6463720b9
+    type: regular
+    task:
+      id: 203e17fa-e65a-4faf-b5eb-86e6463720b9
+      version: -1
+      name: Delete Okta User
+      description: Deletes the specified user.
+      script: '|||okta-delete-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      userId:
+        simple: ${Account.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 9ba20a29-36fd-4258-b5b9-1af45dd3ce7f
+    type: title
+    task:
+      id: 9ba20a29-36fd-4258-b5b9-1af45dd3ce7f
+      version: -1
+      name: Case 5 - brand filtering
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 402d1937-7e7c-4dbf-8da6-50aaa1de8b5d
+    type: regular
+    task:
+      id: 402d1937-7e7c-4dbf-8da6-50aaa1de8b5d
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: bdc225da-a707-45aa-8baa-bdc305f21839
+    type: regular
+    task:
+      id: bdc225da-a707-45aa-8baa-bdc305f21839
+      version: -1
+      name: Get Timestamp
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 389157ec-5e57-4833-8238-502aab50dfe5
+    type: regular
+    task:
+      id: 389157ec-5e57-4833-8238-502aab50dfe5
+      version: -1
+      name: Create User - Active Directory Query v2
+      description: Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
+      script: '|||ad-create-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      display-name:
+        simple: ${TimeNowUnix}
+      email:
+        simple: ${TimeNowUnix}@demisto.local
+      password:
+        simple: ${TimeNowUnix}
+      user-dn:
+        simple: CN=${TimeNowUnix},CN=Users,DC=demisto,DC=local
+      username:
+        simple: ${TimeNowUnix}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 2b14036e-ba47-46c5-8694-37f389dc5d21
+    type: regular
+    task:
+      id: 2b14036e-ba47-46c5-8694-37f389dc5d21
+      version: -1
+      name: Create User Okta
+      description: Creates a new user with an option of setting a password, recovery question, and answer. The new user will immediately be able to log in after activation with the assigned password. This flow is common when developing a custom user registration experience.
+      script: '|||okta-create-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      activate:
+        simple: "true"
+      email:
+        simple: ${TimeNowUnix}@gmail.com
+      firstName:
+        simple: ${TimeNowUnix}
+      lastName:
+        simple: ${TimeNowUnix}
+      login:
+        simple: ${TimeNowUnix}@gmail.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 06c16431-31c6-4eeb-b9ec-75fd10a3e59b
+    type: regular
+    task:
+      id: 06c16431-31c6-4eeb-b9ec-75fd10a3e59b
+      version: -1
+      name: Disable User - by name one brand
+      description: This script disables users for multiple services.
+      scriptName: disable-user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      brands:
+        simple: Okta v2
+      user_name:
+        simple: ${TimeNowUnix}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: d173a718-2024-477f-b589-09944edda993
+    type: condition
+    task:
+      id: d173a718-2024-477f-b589-09944edda993
+      version: -1
+      name: Verify Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DisableUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DisableUser.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Okta v2
+                accessor: Result
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: DisableUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DisableUser.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Okta v2
+                accessor: Disabled
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: DisableUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DisableUser.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                accessor: Result
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: DisableUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DisableUser.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                accessor: Disabled
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 16b16d49-4a30-4a30-81d5-2870b760178f
+    type: regular
+    task:
+      id: 16b16d49-4a30-4a30-81d5-2870b760178f
+      version: -1
+      name: Delete User Active Directory
+      description: Deletes an Active Directory user.
+      script: '|||ad-delete-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      user-dn:
+        simple: CN=${TimeNowUnix},CN=Users,DC=demisto,DC=local
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: ac09080d-f7ae-441f-8fe5-453a18f9d917
+    type: regular
+    task:
+      id: ac09080d-f7ae-441f-8fe5-453a18f9d917
+      version: -1
+      name: Delete Okta User
+      description: Deletes the specified user.
+      script: '|||okta-delete-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      userId:
+        simple: ${Account.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 6440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: b1168834-3657-4007-b1e2-c30b3e10f32f
+    type: title
+    task:
+      id: b1168834-3657-4007-b1e2-c30b3e10f32f
+      version: -1
+      name: Case 6 - user name, id, email from  brands
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 99e739df-a472-4cd3-8d80-fef0a01c1c6a
+    type: regular
+    task:
+      id: 99e739df-a472-4cd3-8d80-fef0a01c1c6a
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 47b63e91-7ac7-4298-8836-a787a0f834de
+    type: regular
+    task:
+      id: 47b63e91-7ac7-4298-8836-a787a0f834de
+      version: -1
+      name: Get Timestamp
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+      - "48"
+      - "49"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: aa908e91-5438-4497-8a00-62111fa627e3
+    type: regular
+    task:
+      id: aa908e91-5438-4497-8a00-62111fa627e3
+      version: -1
+      name: Create User - Active Directory Query v2
+      description: Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
+      script: '|||ad-create-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      display-name:
+        simple: ${TimeNowUnix}
+      email:
+        simple: ${TimeNowUnix}@demisto.local
+      password:
+        simple: ${TimeNowUnix}
+      user-dn:
+        simple: CN=${TimeNowUnix},CN=Users,DC=demisto,DC=local
+      username:
+        simple: ${TimeNowUnix}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 419754d1-2b8e-4f7e-885c-2c4c0339381f
+    type: regular
+    task:
+      id: 419754d1-2b8e-4f7e-885c-2c4c0339381f
+      version: -1
+      name: Create User Okta
+      description: Creates a new user with an option of setting a password, recovery question, and answer. The new user will immediately be able to log in after activation with the assigned password. This flow is common when developing a custom user registration experience.
+      script: '|||okta-create-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      activate:
+        simple: "true"
+      email:
+        simple: ${TimeNowUnix}@gmail.com
+      firstName:
+        simple: ${TimeNowUnix}
+      lastName:
+        simple: ${TimeNowUnix}
+      login:
+        simple: ${TimeNowUnix}@gmail.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: d736ac1e-7178-4d50-8b22-18c641d65dd7
+    type: regular
+    task:
+      id: d736ac1e-7178-4d50-8b22-18c641d65dd7
+      version: -1
+      name: Create User Microsoft
+      description: |-
+        Creates a new user.
+        Permissions: - User.ReadWrite.All (Delegated & Application).
+      script: '|||msgraph-user-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      account_enabled:
+        simple: "true"
+      display_name:
+        simple: ${TimeNowUnix}a
+      mail_nickname:
+        simple: ${TimeNowUnix}a
+      password:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: a
+              suffix: {}
+          - operator: substring
+            args:
+              from:
+                value:
+                  simple: "0"
+              to:
+                value:
+                  simple: "7"
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '!'
+      user_principal_name:
+        simple: ${TimeNowUnix}a@demistodev.onmicrosoft.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 7110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: b11845e9-3dda-44f5-b8a6-d057bb25b602
+    type: regular
+    task:
+      id: b11845e9-3dda-44f5-b8a6-d057bb25b602
+      version: -1
+      name: Disable User - by name/email/id all brands
+      description: This script disables users for multiple services.
+      scriptName: disable-user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      user_email:
+        simple: ${TimeNowUnix}@demisto.local
+      user_id:
+        simple: ${MSGraphUser.ID}
+      user_name:
+        simple: ${TimeNowUnix}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 013feb63-504d-4e7c-83d4-a660231581a9
+    type: regular
+    task:
+      id: 013feb63-504d-4e7c-83d4-a660231581a9
+      version: -1
+      name: Delete User Active Directory
+      description: Deletes an Active Directory user.
+      script: '|||ad-delete-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      user-dn:
+        simple: CN=${TimeNowUnix},CN=Users,DC=demisto,DC=local
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 1a238405-f115-4730-8918-86d33250faa9
+    type: regular
+    task:
+      id: 1a238405-f115-4730-8918-86d33250faa9
+      version: -1
+      name: Delete Okta User
+      description: Deletes the specified user.
+      script: '|||okta-delete-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      username:
+        simple: ${TimeNowUnix}@gmail.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 455045be-7d1a-4865-ac12-1e9828139091
+    type: regular
+    task:
+      id: 455045be-7d1a-4865-ac12-1e9828139091
+      version: -1
+      name: Delete MSGraph
+      description: |-
+        Deletes an existing user.
+        Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Application).
+      script: '|||msgraph-user-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      user:
+        simple: ${MSGraphUser.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 7620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: bc6b300c-d66b-4370-bdbb-5a014cc3792a
+    type: title
+    task:
+      id: bc6b300c-d66b-4370-bdbb-5a014cc3792a
+      version: -1
+      name: Sad Flows
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "55"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: a7d7ad76-ac1e-49f5-a293-9255842b4c1b
+    type: title
+    task:
+      id: a7d7ad76-ac1e-49f5-a293-9255842b4c1b
+      version: -1
+      name: Case 1 - Non existent user
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 2d8914f2-2c3d-445f-8515-d5cde96a61b5
+    type: regular
+    task:
+      id: 2d8914f2-2c3d-445f-8515-d5cde96a61b5
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 8110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 5c0e60ec-3733-4fde-a6d7-9ed5f987ea1b
+    type: condition
+    task:
+      id: 5c0e60ec-3733-4fde-a6d7-9ed5f987ea1b
+      version: -1
+      name: Verify Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+      - "52"
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: DisableUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DisableUser.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Okta v2
+                accessor: Disabled
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: DisableUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DisableUser.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft Graph User
+                accessor: Disabled
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: DisableUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DisableUser.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                accessor: Disabled
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DisableUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DisableUser.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Okta v2
+                accessor: Result
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DisableUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DisableUser.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                accessor: Result
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DisableUser
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DisableUser.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft Graph User
+                accessor: Result
+            iscontext: true
+          right:
+            value:
+              simple: Success
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: b6b7a37a-4e45-4261-9b76-1309e4b7d440
+    type: regular
+    task:
+      id: b6b7a37a-4e45-4261-9b76-1309e4b7d440
+      version: -1
+      name: Disable Non Existent user
+      description: This script disables users for multiple services.
+      scriptName: disable-user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "60"
+      '#none#':
+      - "68"
+    scriptarguments:
+      user_id:
+        simple: test123123312334127y67
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 8270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: b80ebf8c-d900-4427-9f98-94e3359a8ac2
+    type: title
+    task:
+      id: b80ebf8c-d900-4427-9f98-94e3359a8ac2
+      version: -1
+      name: Case 2 - No Arguments
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "61"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 8530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: c9d2db73-8fbc-4738-8a0a-76c71d7d4243
+    type: regular
+    task:
+      id: c9d2db73-8fbc-4738-8a0a-76c71d7d4243
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 8680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: f7af9321-3c2a-4bf0-a597-e03202610ff4
+    type: regular
+    task:
+      id: f7af9321-3c2a-4bf0-a597-e03202610ff4
+      version: -1
+      name: Disable No Arguments
+      description: This script disables users for multiple services.
+      scriptName: disable-user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "64"
+      '#none#':
+      - "68"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 8900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 11bf340f-8439-4867-98d3-245a60c3d7d4
+    type: title
+    task:
+      id: 11bf340f-8439-4867-98d3-245a60c3d7d4
+      version: -1
+      name: Case 3 - Non Existent Brand
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "66"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 9130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: f2930bea-9e70-4cb6-8505-5852e449bf71
+    type: title
+    task:
+      id: f2930bea-9e70-4cb6-8505-5852e449bf71
+      version: -1
+      name: Disable Same user again
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 3b87250a-81f8-476f-a0a0-cb8477708a38
+    type: regular
+    task:
+      id: 3b87250a-81f8-476f-a0a0-cb8477708a38
+      version: -1
+      name: Disable Non Existent brand
+      description: This script disables users for multiple services.
+      scriptName: disable-user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "67"
+      '#none#':
+      - "68"
+    scriptarguments:
+      user_id:
+        simple: test123123453215
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 9280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 93603a80-e3b8-4e25-961e-a79c49ad4fbb
+    type: title
+    task:
+      id: 93603a80-e3b8-4e25-961e-a79c49ad4fbb
+      version: -1
+      name: Pass
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 9500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 469543dd-5733-437a-a0be-5c656e9c1b04
+    type: condition
+    task:
+      id: 469543dd-5733-437a-a0be-5c656e9c1b04
+      version: -1
+      name: Failure
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: "1"
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 9630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 9650,
+        "width": 1690,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0
+description: This TestPlaybook validates the DisableUser command across multiple integrations, covering both happy and sad flows.

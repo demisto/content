@@ -1,5 +1,7 @@
+import base64
 import dateparser
 import demistomock as demisto
+import time
 import urllib3
 from CommonServerPython import *
 
@@ -11,7 +13,10 @@ urllib3.disable_warnings()
 
 VENDOR = "fireeye"
 PRODUCT = "etp"
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+
+EVENTS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # for "_TIME" field in the events dataset
+ACTIVITY_LOG_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%zZ"  # for "from" and "to" time filters in user activity log API
+
 LOG_LINE = f"{VENDOR}_{PRODUCT}:"
 DEFAULT_FIRST_FETCH = "3 days"
 DEFAULT_MAX_FETCH = 1000
@@ -62,17 +67,94 @@ class Client(BaseClient):  # pragma: no cover
         base_url: str,
         verify_certificate: bool,
         proxy: bool,
-        api_key: str,
-        outbound_traffic: bool,
-        hide_sensitive: bool,
+        client_id: str = "",
+        client_secret: str = "",
+        scope: str = "",
+        api_key: str = "",
+        outbound_traffic: bool = False,
+        hide_sensitive: bool = False,
     ) -> None:
         super().__init__(base_url, verify_certificate, proxy)
-        self._headers = {
-            "x-fireeye-api-key": api_key,
-            "Content-Type": "application/json",
-        }
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.scope = scope
+        self.api_key = api_key
         self.outbound_traffic = outbound_traffic
         self.hide_sensitive = hide_sensitive
+        self.access_token = ""
+
+        # Set up headers based on authentication method
+        self._headers = {"Content-Type": "application/json"}
+
+        auth_method = get_authentication_method(client_id, client_secret, api_key)
+        if auth_method == "oauth2":
+            demisto.debug(f"{LOG_LINE} Using OAuth2 authentication (Client ID/Secret)")
+            self.access_token = self._get_valid_oauth_token()
+            self._headers["Authorization"] = f"Bearer {self.access_token}"
+        elif auth_method == "api_key":
+            demisto.debug(f"{LOG_LINE} Using API Key authentication")
+            self._headers["x-fireeye-api-key"] = self.api_key
+
+    def _get_valid_oauth_token(self) -> str:
+        """
+        Get a valid OAuth access token, reusing cached token if still valid.
+        Returns the access token or raises ValueError if authentication fails.
+        """
+        context = get_integration_context()
+        cached_token = context.get("access_token", "")
+        token_expiry = context.get("token_expiry", 0)
+
+        # Check if cached token is still valid (with 60-second buffer)
+        current_time = time.time()
+        is_expired = current_time >= (token_expiry - 60)
+
+        if cached_token and not is_expired:
+            demisto.debug(f"{LOG_LINE} Using cached OAuth token")
+            return cached_token
+
+        # Need to fetch new token
+        demisto.debug(f"{LOG_LINE} Fetching new OAuth token")
+        return self._fetch_oauth_token()
+
+    def _fetch_oauth_token(self) -> str:
+        """
+        Fetch a new OAuth access token using this client instance and cache it in integration context.
+        Returns the access token or raises ValueError if authentication fails.
+        """
+        try:
+            # Trellix OAuth2 endpoint
+            token_url = "https://auth.trellix.com/auth/realms/IAM/protocol/openid-connect/token"
+
+            credentials = f"{self.client_id}:{self.client_secret}"
+            encoded_credentials = base64.b64encode(credentials.encode()).decode()
+
+            auth_data = {"grant_type": "client_credentials", "scope": self.scope}
+
+            response = requests.post(
+                token_url,
+                headers={"Content-Type": "application/x-www-form-urlencoded", "Authorization": f"Basic {encoded_credentials}"},
+                data=auth_data,
+                verify=self._verify,
+            )
+            response.raise_for_status()
+
+            result = response.json()
+            access_token = result.get("access_token", "")
+            expires_in = result.get("expires_in", 600)  # Default to 10 minutes
+
+            if not access_token:
+                raise ValueError("Failed to obtain access token from OAuth2 authentication")
+
+            # Cache token in integration context
+            token_expiry = int(time.time()) + int(expires_in)
+            set_integration_context({"access_token": access_token, "token_expiry": token_expiry})
+
+            demisto.debug(f"{LOG_LINE} OAuth2 authentication successful, token cached")
+            return access_token
+
+        except Exception as e:
+            demisto.error(f"{LOG_LINE} OAuth2 authentication failed: {str(e)}")
+            raise ValueError(f"OAuth2 authentication failed: {str(e)}")
 
     def get_alerts(self, from_LastModifiedOn: str, size: int, outbound: bool = False) -> dict:
         req_body = assign_params(
@@ -105,6 +187,11 @@ class Client(BaseClient):  # pragma: no cover
         time = {"from": from_LastModifiedOn}
         if to_LastModifiedOn:
             time["to"] = to_LastModifiedOn
+        else:
+            # API requires "to" time
+            demisto.debug(f"{LOG_LINE} empty to_LastModifiedOn. Setting to now.")
+            utc_now = datetime.now(timezone.utc)
+            time["to"] = datetime.strftime(utc_now, ACTIVITY_LOG_DATE_FORMAT)
 
         req_body = assign_params(
             size=size,
@@ -212,6 +299,11 @@ class EventCollector:
                 demisto.debug(f"{LOG_LINE} getting events of type {event_type.name}")
                 if event_type.client_max_fetch > 0:
                     next_run, new_events = self.get_events(event_type=event_type, last_run=next_run)
+                    # annotate direction for non-activity events
+                    if event_type.name != "activity_log":
+                        direction = "outbound" if event_type in OUTBOUND_EVENT_TYPES else "inbound"
+                        for evt in new_events:
+                            evt.setdefault("direction_source", direction)
                     events += new_events
 
         demisto.debug(f"{LOG_LINE} fetched {len(events)} to load. Setting last_run")
@@ -283,7 +375,7 @@ class EventCollector:
         demisto.debug(f"Converting {start_time=} to string")
         # formatting to iso z format without microseconds due to api lack of support,
         # api response should be already in this format.
-        iso_start_time = f"{datetime.strftime(start_time.astimezone(timezone.utc), '%Y-%m-%dT%H:%M:%S%z')}Z"
+        iso_start_time = datetime.strftime(start_time.astimezone(timezone.utc), ACTIVITY_LOG_DATE_FORMAT)
 
         while results_left and ((not iso_end_time) or iso_end_time >= iso_start_time):
             demisto.debug(f"{LOG_LINE} getting user activity: {results_left=}, {iso_start_time=}, {iso_end_time=}")
@@ -314,7 +406,7 @@ class EventCollector:
                     # Getting last item's modification date, Assuming Asc order.
                     # We have to format as the response are not have to be in invalid format
                     end_time = parse_special_iso_format(dedup_data[-1]["attributes"]["time"])
-                    iso_end_time = f"{datetime.strftime(end_time.astimezone(timezone.utc), '%Y-%m-%dT%H:%M:%S%z')}Z"
+                    iso_end_time = datetime.strftime(end_time.astimezone(timezone.utc), ACTIVITY_LOG_DATE_FORMAT)
 
                 else:
                     demisto.debug("Avoiding infinite loop due to multiple alerts in the same time blocking pagination.")
@@ -430,6 +522,11 @@ class EventCollector:
                 last_run_time = parse_special_iso_format(next_run_time)
             case _:
                 raise DemistoException("Event's type format is undefined.")
+
+        if event_type.name != "activity_log":
+            direction = "outbound" if event_type in OUTBOUND_EVENT_TYPES else "inbound"
+            for evt in events:
+                evt["direction_source"] = direction
 
         demisto.debug(f"{LOG_LINE} Got {len(events)} events to load with type {event_type.name}. Setting last_run")
         last_run.get_last_run_event(event_type.name).set_ids(last_run_ids)
@@ -569,7 +666,7 @@ def format_activity_log(events: list[dict]):
         # Removing Z letter and adding ":" to get valid iso format
         valid_event_time = f"{event_time[:-3]}:{event_time[-3:-1]}"
         create_time = datetime.fromisoformat(valid_event_time)
-        event_data["_TIME"] = create_time.strftime(DATE_FORMAT) if create_time else None
+        event_data["_TIME"] = create_time.strftime(EVENTS_DATE_FORMAT) if create_time else None
         event_data["event_type"] = "activity"
 
 
@@ -623,16 +720,95 @@ def _get_max_events_to_fetch(params_max_fetch: str | int, arg_limit: str | int) 
         raise ValueError("Please provide a valid integer value for a fetch limit.")
 
 
+def validate_authentication_params(client_id: str, client_secret: str, api_key: str, scope: str) -> None:
+    """
+    Validate authentication parameters.
+
+    Args:
+        client_id: The Client ID for OAuth2 authentication.
+        client_secret: The Client Secret for OAuth2 authentication.
+        api_key: The API Key.
+        scope: The space-separated OAuth Scopes.
+
+    Raises: ValueError if authentication configuration is invalid or over-configured.
+    """
+    has_client_id = bool(client_id)
+    has_client_secret = bool(client_secret)
+    has_api_key = bool(api_key)
+    has_scopes = bool(scope)
+
+    # CHECK FOR AMBIGUOUS OVER-CONFIGURATION
+    if has_client_id and has_client_secret and has_api_key:
+        raise ValueError(
+            "Both OAuth2 (Client ID/Secret) and API Key were provided. " "Please configure only one authentication method."
+        )
+
+    # OAUTH2 VALIDATION
+    if has_client_id or has_client_secret:
+        # Check for incomplete OAuth2 configuration
+        if has_client_id and not has_client_secret:
+            raise ValueError(
+                "Client ID provided but Client Secret is missing. "
+                "Both Client ID and Client Secret are required for OAuth2 authentication."
+            )
+
+        if has_client_secret and not has_client_id:
+            raise ValueError(
+                "Client Secret provided but Client ID is missing. "
+                "Both Client ID and Client Secret are required for OAuth2 authentication."
+            )
+
+        # Check for required SCOPES when using OAuth2
+        if not has_scopes:
+            raise ValueError(
+                "Client ID and Client Secret provided, but the 'OAuth Scopes' parameter is missing. "
+                "Scopes are required for OAuth2 authentication."
+            )
+        return
+
+    # NO AUTHENTICATION METHOD PROVIDED
+    if not has_api_key:
+        raise ValueError("No authentication credentials provided.")
+
+
+def get_authentication_method(client_id: str, client_secret: str, api_key: str) -> str:
+    """
+    Determine which authentication method to use based on provided credentials.
+
+    Args:
+        client_id: The Client ID for OAuth2 authentication.
+        client_secret: The Client Secret for OAuth2 authentication.
+        api_key: The API Key.
+
+    Returns: 'oauth2' for Client ID/Secret, 'api_key' for API Key
+    """
+    if client_id and client_secret:
+        demisto.debug(f"{LOG_LINE} Authentication: Using OAuth2 (Client ID/Secret)")
+        return "oauth2"
+    elif api_key:
+        demisto.debug(f"{LOG_LINE} Authentication: Using API Key")
+        return "api_key"
+    else:
+        raise ValueError("No authentication credentials provided.")
+
+
 def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
 
+    # Extract authentication parameters - prioritize OAuth2 over legacy API Key
+    client_id = params.get("oauth_credentials", {}).get("identifier", "")
+    client_secret = params.get("oauth_credentials", {}).get("password", "")
+    scope = params.get("oauth_scopes", "etp.conf.ro etp.rprt.ro").strip()
     api_key = params.get("credentials", {}).get("password", "")
     base_url = params.get("url", "").rstrip("/")
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     outbound_traffic = argToBoolean(params.get("outbound_traffic", False))
     hide_sensitive = argToBoolean(params.get("hide_sensitive", True))
+
+    # Validate authentication configuration
+    validate_authentication_params(client_id, client_secret, api_key, scope)
 
     last_run = demisto.getLastRun()
 
@@ -663,6 +839,9 @@ def main() -> None:  # pragma: no cover
             base_url=base_url,
             verify_certificate=verify,
             proxy=proxy,
+            client_id=client_id,
+            client_secret=client_secret,
+            scope=scope,
             api_key=api_key,
             outbound_traffic=outbound_traffic,
             hide_sensitive=hide_sensitive,

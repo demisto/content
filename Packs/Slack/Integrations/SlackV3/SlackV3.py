@@ -5,7 +5,8 @@ import ssl
 import threading
 from typing import Literal, TypedDict, get_args
 from urllib.parse import urlparse
-
+from datetime import UTC
+import dateparser
 import aiohttp
 import demistomock as demisto  # noqa: F401
 import slack_sdk
@@ -19,7 +20,6 @@ from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
 
 """ CONSTANTS """
-
 ALLOWED_HTTP_VERBS = Literal["POST", "GET"]
 SEVERITY_DICT = {"Unknown": 0, "Low": 1, "Medium": 2, "High": 3, "Critical": 4}
 
@@ -59,7 +59,7 @@ APP_TOKEN: str
 PROXY_URL: Optional[str]
 PROXIES: dict
 DEDICATED_CHANNEL: str
-ASYNC_CLIENT: slack_sdk.web.async_client.AsyncWebClient
+ASYNC_CLIENT: AsyncWebClient
 CLIENT: slack_sdk.WebClient
 USER_CLIENT: slack_sdk.WebClient
 ALLOW_INCIDENTS: bool
@@ -94,19 +94,35 @@ EXTENSIVE_LOGGING: bool
 
 
 def get_war_room_url(url: str) -> str:
-    # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-107526
-    if is_xsiam() or is_platform():
-        incident_id = demisto.callingContext.get("context", {}).get("Inv", {}).get("id")
-        incident_url = urlparse(url)
-        war_room_url = f"{incident_url.scheme}://{incident_url.netloc}/incidents"
-        # executed from the incident War Room
-        if incident_id and incident_id.startswith("INCIDENT-"):
-            war_room_url += f"/war_room?caseId={incident_id.split('-')[-1]}"
-        # executed from the alert War Room
-        else:
-            war_room_url += f"/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
+    """
+    Constructs a war room URL based on the input URL and incident context.
+    Workarounds for known bugs:
+    - CRTX-107526 for XSIAM URLs
+    - CRTX-183586 for platform URLs
+    """
+    incident_id = demisto.callingContext.get("context", {}).get("Inv", {}).get("id")
+    parsed_url = urlparse(url)
+    base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
 
-        return war_room_url
+    # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-107526
+    if is_xsiam():
+        if incident_id and incident_id.startswith("INCIDENT-"):
+            # Executed from the incident War Room
+            case_id = incident_id.split("-")[-1]
+            return f"{base_url}/incidents/war_room?caseId={case_id}"
+
+        # Executed from the alert War Room
+        return f"{base_url}/incidents/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
+
+    # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-183586
+    if is_platform():
+        if incident_id and incident_id.startswith("INCIDENT-"):
+            # Executed from the cases War Room
+            case_id = incident_id.split("-")[-1]
+            return f"{base_url}/cases/war_room?caseId={case_id}"
+
+        # Executed from the issue War Room
+        return f"{base_url}/issue-view/{incident_id}"
 
     return url
 
@@ -184,7 +200,7 @@ def next_expiry_time() -> float:
     Returns:
         A float representation of a new expiry time with an offset of 5 seconds
     """
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     unix_timestamp = now.timestamp()
     unix_timestamp_plus_5_seconds = unix_timestamp + 5
     return unix_timestamp_plus_5_seconds
@@ -550,7 +566,12 @@ def send_slack_request_sync(
                 retry_after = int(headers["Retry-After"])
                 total_try_time += retry_after
                 if total_try_time < MAX_LIMIT_TIME:
-                    time.sleep(retry_after)
+                    try:
+                        safe_sleep(retry_after)
+                    except ValueError:
+                        raise DemistoException(
+                            f"Got rate limit error (sync) and reached docker timeout. Body is: {body!s}\n{api_error}"
+                        )
                     continue
             raise
         break
@@ -729,6 +750,7 @@ def mirror_investigation():
             "Mirroring is enabled, however long running is disabled. For mirrors to work correctly,"
             " long running must be enabled."
         )
+    demisto.debug(f"SlackV3 integration: This is the arguments for the mirror-investigation command: {demisto.args()}")
     mirror_type = demisto.args().get("type", "all")
     auto_close = demisto.args().get("autoclose", "true")
     mirror_direction = demisto.args().get("direction", "both")
@@ -1478,7 +1500,7 @@ def fetch_context(force_refresh: bool = False) -> dict:
     :return: dict: Either a cached copy of the integration context, or the context itself.
     """
     global CACHED_INTEGRATION_CONTEXT, CACHE_EXPIRY
-    now = int(datetime.now(timezone.utc).timestamp())
+    now = int(datetime.now(UTC).timestamp())
     if (now >= CACHE_EXPIRY) or force_refresh:
         demisto.debug(
             f"Cached context has expired or forced refresh. forced refresh value is {force_refresh}. Fetching new context"
@@ -1581,9 +1603,9 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             if len(actions) > 0:
                 channel = data.get("channel", {}).get("id", "")
                 entitlement_json = actions[0].get("value")
-                entitlement_string = json.loads(entitlement_json)
                 if entitlement_json is None:
                     return
+                entitlement_string = json.loads(entitlement_json)
                 if actions[0].get("action_id") == "xsoar-button-submit":
                     demisto.debug("Handling a SlackBlockBuilder response.")
                     if state:
@@ -1637,8 +1659,8 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             await process_mirror(channel, text, user)
         reset_listener_health()
         return
-    except Exception as e:
-        await handle_listen_error(f"Error occurred while listening to Slack: {e}")
+    except Exception:
+        await handle_listen_error(f"Error occurred while listening to Slack:\n{traceback.format_exc()}")
 
 
 async def get_user_by_id_async(client: AsyncWebClient, user_id: str) -> dict:
@@ -1806,7 +1828,6 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     Returns:
         The slack conversation
     """
-
     conversation_to_search = conversation_name.lower()
     conversation: dict = {}
     # Checks if the channel is defined in the integration params
@@ -2713,20 +2734,115 @@ def list_channels():
     )
 
 
+def to_unix_seconds_str(time: str) -> str:
+    """
+    Converts a time string to Unix timestamp in seconds.
+
+    Args:
+        s (str): The time string to convert. Can be a numeric Unix seconds string,
+                or a human-readable/ISO format date string.
+
+    Returns:
+        str: Unix timestamp as a string.
+
+    Raises:
+        ValueError: If the time string cannot be parsed.
+    """
+
+    parsed_datetime = dateparser.parse(
+        time,
+        settings={
+            "TIMEZONE": "UTC",
+            "RETURN_AS_TIMEZONE_AWARE": True,
+            "TO_TIMEZONE": "UTC",
+            "PREFER_DAY_OF_MONTH": "first",
+            "DATE_ORDER": "YMD",
+        },
+    )
+
+    if parsed_datetime is None:
+        raise ValueError(
+            f"Could not parse time string: {time}. "
+            "Expected either a numeric Unix timestamp (seconds) or a human-readable date string "
+            "(e.g., '2023-01-01', 'yesterday', '2023-01-01T12:00:00Z')."
+        )
+
+    return f"{parsed_datetime.timestamp()}"
+
+
+def get_direct_message_channel_id_by_username(username):
+    """
+    Gets the direct message channel ID for a given username.
+
+    Args:
+        username (str): The Slack username to get the DM channel ID for.
+
+    Returns:
+        str or None: The channel ID of the direct message conversation with the user,
+                    or None if the conversation doesn't exist or an error occurs.
+    """
+    user_info = get_user_by_name(username)
+    if not user_info or not user_info.get("id"):
+        return None
+
+    user_id = user_info["id"]
+    raw_response = send_slack_request_sync(
+        CLIENT, "conversations.open", http_verb="POST", body={"users": user_id, "prevent_creation": True}
+    )
+
+    return raw_response["channel"].get("id")
+
+
+def resolve_conversation_id_from_name(channel_name):
+    """
+    Resolves a channel ID from a given channel name.
+
+    This function attempts to find the channel ID by first checking if the channel_name
+    corresponds to a username for a direct message channel. If that fails, it tries to
+    find a channel with the given name.
+
+    Args:
+        channel_name (str): The name of the channel or username to resolve.
+
+    Returns:
+        str: The channel ID corresponding to the given channel name.
+
+    Raises:
+        DemistoException: If no channel ID could be found for the given channel name.
+    """
+    # Try to get channel id in case channel_name is user name
+    if (channel_id := get_direct_message_channel_id_by_username(channel_name)) is None:
+        demisto.debug("Did not find conversation ID by username, attempting to find by channel name")
+        conversation_info = get_conversation_by_name(channel_name)
+        channel_id = conversation_info.get("id")
+
+    if not channel_id:
+        raise DemistoException(f"Channel '{channel_name}' does not exist.")
+
+    return channel_id
+
+
 def conversation_history():
     """
     Fetches a conversation's history of messages
     and events
     """
     args = demisto.args()
-    channel_id = args.get("channel_id")
+    conversation_id = args.get("channel_id") or args.get("conversation_id")
+    conversation_name = args.get("conversation_name")
     limit = arg_to_number(args.get("limit"))
-    conversation_id = args.get("conversation_id")
-    body = (
-        {"channel": channel_id, "limit": limit}
-        if not conversation_id
-        else {"channel": channel_id, "oldest": conversation_id, "inclusive": "true", "limit": 1}
-    )
+    from_time = args.get("from_time")
+
+    if not conversation_id and not conversation_name:
+        raise ValueError("Either conversation_id or conversation_name must be provided.")
+
+    if not conversation_id:
+        conversation_id = resolve_conversation_id_from_name(conversation_name)
+
+    body = {"channel": conversation_id, "limit": limit}
+    if from_time:
+        body["oldest"] = to_unix_seconds_str(from_time)
+
     readable_output = ""
     raw_response = send_slack_request_sync(CLIENT, "conversations.history", http_verb="GET", body=body)
     messages = raw_response.get("messages", "")
@@ -2773,7 +2889,7 @@ def conversation_history():
             "ThreadTimeStamp": thread_ts,
         }
         context.append(entry)
-    readable_output = tableToMarkdown(f"Channel details from Channel ID - {channel_id}", context)
+    readable_output = tableToMarkdown(f"Channel details from Channel ID - {conversation_id}", context)
     demisto.results(
         {
             "Type": entryTypes["note"],

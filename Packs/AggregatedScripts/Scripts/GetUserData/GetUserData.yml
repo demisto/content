@@ -20,12 +20,15 @@ args:
   predefined:
   - 'Active Directory Query v2'
   - 'Okta v2'
+  - 'Okta IAM'
   - 'AWS - IAM'
+  - 'AWS-ILM'
   - 'Microsoft Graph User'
   - 'Cortex XDR - IR'
   - 'Cortex Core - IR'
   - 'PrismaCloud v2'
   - 'AzureRiskyUsers'
+  - 'GSuiteAdmin'
 - description: Whether to fetch a human-readable entry for each command or just the final result. If set to true, all commands will have human-readable entries. If set to false, only the final result will be human-readable.
   name: verbose
   auto: PREDEFINED
@@ -39,6 +42,13 @@ args:
   predefined:
     - 'true'
     - 'false'
+- description: Whether to return only risky users from Core/XDR brands or all given users. If set to true, the execution might take some time.
+  auto: PREDEFINED
+  name: list_non_risky_users
+  defaultValue: 'false'
+  predefined:
+    - 'true'
+    - 'false'
 comment: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
 commonfields:
   id: get-user-data
@@ -46,7 +56,12 @@ commonfields:
 name: get-user-data
 outputs:
 - contextPath: UserData.Source
-  description: The source that the data was retrieved from.
+  description: Deprecated. Use "UserData.Brand" instead.
+- contextPath: UserData.Brand
+  description: The brand (integration) used to disable the user.
+  type: String
+- contextPath: UserData.Instance
+  description: The integration instance used to disable the user.
   type: String
 - contextPath: UserData.ID
   description: The user ID.
@@ -70,7 +85,7 @@ script: '-'
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.10.0
 tests:
-- No tests (auto formatted)
+- GetUserData - Test

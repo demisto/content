@@ -1,5 +1,5 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -27,7 +27,7 @@ configuration:
 - defaultvalue: 'C - Fairly reliable'
   display: Source Reliability
   name: integrationReliability
-  required: true
+  required: false
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data.
   options:
@@ -59,6 +59,7 @@ configuration:
   required: false
   defaultvalue: 'false'
   additionalinfo: To reduce the number of lookups made to the AbuseIPDB API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks.
+  section: Collect
 - display: Disregard quota errors
   name: disregard_quota
   type: 8
@@ -94,8 +95,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - defaultValue: '30'
-      description: The time range to return reports (in days). Default is 30.
+    - description: The time range to return reports (in days). Default is the time that was configured in the integration configuration "Maximum reports age (in days)".
       name: days
     - defaultValue: 'true'
       description: The length of the report. "true" returns the full report, "false" does not return reported categories. Default is "true".
@@ -339,7 +339,7 @@ script:
   script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 5.0.0
 tests:
 - AbuseIPDB Test

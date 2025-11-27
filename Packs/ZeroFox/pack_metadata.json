@@ -2,7 +2,7 @@
     "name": "ZeroFox",
     "description": "Cloud-based SaaS to detect risks found on social media and digital channels.",
     "support": "partner",
-    "currentVersion": "1.4.0",
+    "currentVersion": "1.4.1",
     "author": "ZeroFox",
     "url": "https://www.zerofox.com/contact-us/",
     "email": "integration-support@zerofox.com",
@@ -28,6 +28,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

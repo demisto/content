@@ -326,7 +326,7 @@ def run_polling_command(client: Client, args: dict, cmd: str, search_function: C
             # continue to look for search results
             args["af_cookie"] = af_cookie
     # get search status
-    command_results, status = results_function(args)
+    command_results, status = results_function(client, args)
     if status != "complete":
         # schedule next poll
         polling_args = {"af_cookie": args.get("af_cookie"), "interval_in_seconds": interval_in_secs, "polling": True, **args}
@@ -794,27 +794,32 @@ def search_samples(
     first_seen=None,
     last_updated=None,
     artifact_source=None,
+    use_batches=False,
 ):
     validate_no_query_and_indicators(query, [file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated])
     if not query:
         indicator_args_for_query = {"file_hash": file_hash, "domain": domain, "ip": ip, "url": url}
         used_indicator = validate_no_multiple_indicators_for_search(indicator_args_for_query)
-        search_result = []
-        for _batch in batch(indicator_args_for_query[used_indicator], batch_size=100):
-            query = build_sample_search_query(used_indicator, _batch, wildfire_verdict, first_seen, last_updated)
-            search_result.append(
-                run_search(
-                    client,
-                    "samples",
-                    query=query,
-                    scope=scope,
-                    size=size,
-                    sort=sort,
-                    order=order,
-                    artifact_source=artifact_source,
+        if use_batches:
+            search_result = []
+            for _batch in batch(indicator_args_for_query[used_indicator], batch_size=100):
+                query = build_sample_search_query(used_indicator, _batch, wildfire_verdict, first_seen, last_updated)
+                search_result.append(
+                    run_search(
+                        client,
+                        "samples",
+                        query=query,
+                        scope=scope,
+                        size=size,
+                        sort=sort,
+                        order=order,
+                        artifact_source=artifact_source,
+                    )
                 )
-            )
-        return search_result
+            return search_result
+        indicators = indicator_args_for_query[used_indicator]
+        query = build_sample_search_query(used_indicator, indicators, wildfire_verdict, first_seen, last_updated)
+
     return run_search(
         client, "samples", query=query, scope=scope, size=size, sort=sort, order=order, artifact_source=artifact_source
     )
@@ -850,16 +855,22 @@ def search_sessions(
     url=None,
     from_time=None,
     to_time=None,
+    use_batches=False,
 ):
     validate_no_query_and_indicators(query, [file_hash, domain, ip, url, from_time, to_time])
     if not query:
         indicator_args_for_query = {"file_hash": file_hash, "domain": domain, "ip": ip, "url": url}
         used_indicator = validate_no_multiple_indicators_for_search(indicator_args_for_query)
-        search_result = []
-        for _batch in batch(indicator_args_for_query[used_indicator], batch_size=100):
-            query = build_session_search_query(used_indicator, _batch, from_time, to_time)
-            search_result.append(run_search(client, "sessions", query=query, size=size, sort=sort, order=order))
-        return search_result
+        if use_batches:
+            search_result = []
+            for _batch in batch(indicator_args_for_query[used_indicator], batch_size=100):
+                query = build_session_search_query(used_indicator, _batch, from_time, to_time)
+                search_result.append(run_search(client, "sessions", query=query, size=size, sort=sort, order=order))
+            return search_result
+
+        indicators = indicator_args_for_query[used_indicator]
+        query = build_session_search_query(used_indicator, indicators, from_time, to_time)
+
     return run_search(client, "sessions", query=query, size=size, sort=sort, order=order)
 
 
@@ -1189,6 +1200,7 @@ def search_samples_command(client: Client, args):
     sort = args.get("sort")
     order = args.get("order")
     artifact_source = args.get("artifact")
+    use_batches = args.get("use_batches")
     info = search_samples(
         client,
         query=query,
@@ -1204,6 +1216,7 @@ def search_samples_command(client: Client, args):
         first_seen=first_seen,
         last_updated=last_updated,
         artifact_source=artifact_source,
+        use_batches=use_batches,
     )
     md = tableToMarkdown("Search Samples Info:", info)
     return CommandResults(
@@ -1233,6 +1246,7 @@ def search_sessions_command(client: Client, args):
     max_results = args.get("max_results")
     sort = args.get("sort")
     order = args.get("order")
+    use_batches = args.get("use_batches")
 
     if time_range:
         if from_time or to_time:
@@ -1254,6 +1268,7 @@ def search_sessions_command(client: Client, args):
         url=url,
         from_time=from_time,
         to_time=to_time,
+        use_batches=use_batches,
     )
     md = tableToMarkdown("Search Sessions Info:", info)
     cmd_results = CommandResults(
@@ -1876,6 +1891,10 @@ def get_export_list_command(client: Client, args):
 
 
 def main():
+    if is_demisto_version_ge("8.12.0") and datetime.now() > datetime(2025, 12, 1):
+        return_error("Palo Alto Networks AutoFocus v2 integration is deprecated. Please use Unit 42 Intelligence integration instead.")
+    else:
+        return_warning("AutoFocus v2 is deprecated and will stop working after December 1, 2025. Please migrate to Unit 42 Intelligence integration.")
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     reliability = PARAMS.get("integrationReliability", "B - Usually reliable")
@@ -1904,11 +1923,13 @@ def main():
                 if cmd_res is not None:
                     return_results(cmd_res)
             else:
+                args["use_batches"] = True
                 return_results(search_samples_command(client, args))
         elif command == "autofocus-search-sessions":
             if args.get("polling") == "true":
                 return_results(search_sessions_with_polling_command(client, args))
             else:
+                args["use_batches"] = True
                 return_results(search_sessions_command(client, args))
         elif command == "autofocus-samples-search-results":
             samples_search_results_command(client, args)

@@ -1,10 +1,10 @@
 {
-  "sessionId": "sessionid-abc-123",
+  "sessionId": "sessionid-abc-3",
   "tenantId": "sometenantid",
   "actorId": "someactorid",
   "beginTime": 1726082760680,
   "endTime": 1726082762722,
-  "firstObserved": 1726083300017,
+  "firstObserved": 1726083300018,
   "lastUpdated": 1726083000011,
   "noRiskEvents": 3,
   "lowEvents": 0,

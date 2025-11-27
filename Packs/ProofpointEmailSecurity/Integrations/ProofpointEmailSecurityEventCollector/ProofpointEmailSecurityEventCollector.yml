@@ -5,7 +5,7 @@ name: Proofpoint Email Security Event Collector
 display: Proofpoint Email Security Event Collector
 category: Analytics & SIEM
 description: Collects events for Proofpoint Email Security using the streaming API.
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -56,14 +56,24 @@ configuration:
   section: Collect
   advanced: true
   defaultvalue: message,maillog,audit
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  hidden:
+  - marketplacev2
+  - platform
+  defaultvalue: "false"
 script:
   script: ""
   type: python
   commands:
   - name: "proofpoint-es-get-last-run-results"
     description: Retrieves the results of a connection attempt to Proofpoint, indicating whether it was successful or failed and why. If event fetching has been initiated, this command provides the results of the most recent fetch attempt.
-  dockerimage: demisto/netutils:1.0.0.3562043
+  dockerimage: demisto/netutils:1.0.0.4887408
   longRunning: true
+  isfetchevents: true
   subtype: python3
 marketplaces:
 - marketplacev2

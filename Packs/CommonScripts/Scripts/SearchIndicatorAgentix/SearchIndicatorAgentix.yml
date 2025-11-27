@@ -1,0 +1,67 @@
+args:
+- description: A JSON array of indicator values to filter the search results (e.g., `["1.1.1.1", "8.8.8.8"]`, `["https://unit42.paloaltonetworks.com", "https://t.co/i/adsct"]`).
+  name: value
+  required: false
+  isArray: true
+- description: 'The expiration status of the indicator.'
+  name: expirationStatus
+  required: false
+  predefined:
+  - expired
+  - active
+- description: 'The type of the indicator to search can be a single value or a comma separated list of values.'
+  name: type
+  required: false
+  isArray: true
+- description: 'The IssuesIDs that are linked to the indicator can be a single value or a comma separated list of values.'
+  name: IssuesIDs
+  required: false
+  isArray: true
+- defaultValue: "25"
+  description: The number of indicators to return, defaults to a max of 25.
+  name: size
+- description: 'A comma-separated list of indicator verdicts to filter the search results by. Options: Malicious, Suspicious, Good, or Unknown.'
+  name: verdict
+  required: false
+comment: |-
+  This script searches indicators by specified fields.
+commonfields:
+  id: SearchIndicatorAgentix
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.12.12.5490952
+enabled: true
+name: SearchIndicatorAgentix
+outputs:
+- contextPath: foundIndicators.id
+  description: The id of the indicator in the XSOAR database.
+- contextPath: foundIndicators.indicator_type
+  description: The type of Indicator (i.e. IP, Domain, URL, etc).
+- contextPath: foundIndicators.value
+  description: The value of the Indicator.
+- contextPath: foundIndicators.score
+  description: The numeric score of the indicator (0 = Unknown, 1 = Good, 2 = Suspicious, 3 = Malicious).
+- contextPath: foundIndicators.verdict
+  description: The human readable score/verdict of the Indicator.
+- contextPath: foundIndicators.investigationIDs
+  description: The investigations related to the indicator.
+- contextPath: foundIndicators.expirationStatus
+  description: The expiration status of the indicator.
+- contextPath: foundIndicators.lastSeen
+  description: The timestamp of the last time the indicator was sensitive.
+
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+isInternal: true
+tags:
+- Utility
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+  - platform

@@ -136,6 +136,9 @@ response_idp_detection = {
     "cid": "20879a8064904ecfbb62c118a6a19411",
     "comment": "new test comment new test comment2 new test comment2 new test comment2 new test comment2 new test comment new test comment new test comment new test comment new test comment2 new test comment2 new test comment new test comment2 new test comment2 comment",
     "composite_id": "20879a8064904ecfbb62c118a6a19411:ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56",
+    "comments": [
+        {"falcon_user_id": "1", "timestamp": "2025-06-10T10:39:02.408980782Z", "value": "1"},
+    ],
     "confidence": 20,
     "context_timestamp": "2023-04-20T11:12:03.089Z",
     "crawl_edge_ids": {
@@ -181,12 +184,67 @@ response_idp_detection = {
     "status": "closed",
     "tactic": "Privilege Escalation",
     "tactic_id": "TA0004",
-    "tags": [],
+    "tags": ["tag"],
     "technique": "Valid Accounts",
     "technique_id": "T1078",
     "timestamp": "2023-04-20T11:12:05.686Z",
     "type": "idp-user-endpoint-app-info",
     "updated_timestamp": "2023-06-27T09:29:52.448779709Z",
+    "assigned_to_uid": "1"
+}
+
+response_ngsiem_detection = {
+    "aggregate_id": "",
+    "cid": None,
+    "comment": None,
+    "comments": [
+        {"falcon_user_id": "1", "timestamp": "2025-06-10T10:39:02.408980782Z", "value": "1"},
+    ],
+    "composite_id": "b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0:ngsiem:b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0:98998998998998998998998998998933",
+    "correlation_rule_execution_id": None,
+    "correlation_rule_id": None,
+    "correlation_rule_user_id": None,
+    "correlation_rule_user_uuid": None,
+    "crawled_timestamp": None,
+    "created_timestamp": "2025-06-10T10:37:06.018923024Z",
+    "data_domains": ["Endpoint"],
+    "detection_id": None,
+    "display_name": "ngsiem display name",
+    "end_time": None,
+    "enriched_entities": {},
+    "falcon_host_link": None,
+    "has_truncated_entities": False,
+    "id": None,
+    "name": None,
+    "original_correlation_rules_entities_count": None,
+    "original_indicator_entities_count": None,
+    "pattern_id": None,
+    "poly_id": None,
+    "product": "ngsiem",
+    "seconds_to_resolved": None,
+    "seconds_to_triaged": 0,
+    "severity": 70,
+    "severity_name": "High",
+    "show_in_ui": True,
+    "source_ips": [None],
+    "source_products": [None],
+    "source_vendors": [None],
+    "start_time": "2025-06-10T10:36:00Z",
+    "status": "new",
+    "tactic": "Impact",
+    "tactic_id": None,
+    "tags": ["Original"],
+    "technique": "Encrypt",
+    "technique_id": None,
+    "timestamp": "2025-06-10T10:37:01Z",
+    "type": "detection",
+    "updated_timestamp": "2025-06-17T14:48:59.465950243Z",
+    "usernames": [None],
+    "users": [
+        {"full_name": "", "full_name_is_enriched": False, "idp_id": "", "idp_id_is_enriched": False, "sid": "", "user_name": None}
+    ],
+    "vendor_pattern_id": None,
+    "assigned_to_uid": "1"
 }
 
 response_mobile_detection = {
@@ -281,7 +339,7 @@ context_idp_detection = {
     "name": "IDP Detection ID: 20879a8064904ecfbb62c118a6a19411:ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56",
     "occurred": "2023-04-20T11:13:10.424647Z",
     "last_updated": "2023-06-27T09:29:52.448779709Z",
-    "rawJSON": '{"added_privileges": ["AdministratorsRole"], "aggregate_id": "aggind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56", "cid": "20879a8064904ecfbb62c118a6a19411", "comment": "new test comment new test comment2 new test comment2 new test comment2 new test comment2 new test comment new test comment new test comment new test comment new test comment2 new test comment2 new test comment new test comment2 new test comment2 comment", "composite_id": "20879a8064904ecfbb62c118a6a19411:ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56", "confidence": 20, "context_timestamp": "2023-04-20T11:12:03.089Z", "crawl_edge_ids": {"Sensor": ["XNWu1KJ3f7ck@.W>%?R;<dP:4XWOiGq9#dnSpb\\"l0^f#1Kl9\'<k^`t9\\"ptE?07V_G^*\'_EU\'/Ch6&[Xsfl<UI$RnhG;AQa[gb#+-\\\\+J1O?GF\\\\U^<^9bluf^^X`dYoqOIQpM,@C%pV[2A%9a\\"T6O4b1:B1@ps8N", "N6GX$`\'=_9i\\"H:bRq0rXhf`Vd$[@1Wr?Lr\'`EGQh3P42Up,g(aNSe7C38V)J@NV=)Rg/2m^+P>?(%>fETtmdN.<_m*o\'\'\\"CCUmBn.;18rN6.!:g%ohR0te,H;Z\\\\DK\\"=MJe1?:_Y=XZj>E=nHY5ge>3^9:\'(g:)A\'RG0W,kPj.CNpo<Vk/RE^G9E!b\'?=G[!!*\'!", "XNXPaKHLg+i\\"HEWkr@-r>$W@\\"o+ta@8q\'lE4T!!e@D;nls7!2S0cEcXKeuua2Q+<<8!<pD:k1.5(j-*D`ECSL7qH1t\'ZZKh\'%UJG\'SaS8QVr:\\"4jTCn[!Z]eCQhZa>bpJ`SjuN\'Y.FcK0JOE\\"K_hb8DEP5rc6I]<!!*\'!"]}, "crawl_vertex_ids": {"Sensor": ["idpind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56", "uid:20879a8064904ecfbb62c118a6a19411:S-1-5-21-4043902054-3757442694-3243833439-1141", "ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56", "aggind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56"]}, "crawled_timestamp": "2023-04-20T12:12:10.427005199Z", "created_timestamp": "2023-04-20T11:13:10.424647Z", "description": "A user received new privileges", "display_name": "Privilege escalation (user)", "end_time": "2023-04-20T11:12:03.089Z", "falcon_host_link": "https://falcon.crowdstrike.com/identity-protection/detections/20879a8064904ecfbb62c118a6a19411:ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56?cid=20879a8064904ecfbb62c118a6a19411", "id": "ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56", "name": "IdpEntityPrivilegeEscalationUser", "objective": "Gain Access", "pattern_id": 51113, "platform": "Windows", "previous_privileges": "0", "privileges": "2177", "product": "idp", "scenario": "privilege_escalation", "seconds_to_resolved": 5869002, "seconds_to_triaged": 2250786, "severity": 2, "show_in_ui": true, "source_account_domain": "ENV11.JOHN-DOE.LOCAL", "source_account_name": "morganf", "source_account_object_sid": "S-1-5-21-4043902054-3757442694-3243833439-1141", "source_account_sam_account_name": "morganf", "source_account_upn": "test@test.com", "start_time": "2023-04-20T11:12:03.089Z", "status": "closed", "tactic": "Privilege Escalation", "tactic_id": "TA0004", "tags": [], "technique": "Valid Accounts", "technique_id": "T1078", "timestamp": "2023-04-20T11:12:05.686Z", "type": "idp-user-endpoint-app-info", "updated_timestamp": "2023-06-27T09:29:52.448779709Z", "mirror_direction": null, "mirror_instance": ""}',
+    "rawJSON": '{"added_privileges": ["AdministratorsRole"], "aggregate_id": "aggind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56", "cid": "20879a8064904ecfbb62c118a6a19411", "comment": "new test comment new test comment2 new test comment2 new test comment2 new test comment2 new test comment new test comment new test comment new test comment new test comment2 new test comment2 new test comment new test comment2 new test comment2 comment", "composite_id": "20879a8064904ecfbb62c118a6a19411:ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56", "comments": [{"falcon_user_id": "1", "timestamp": "2025-06-10T10:39:02.408980782Z", "value": "1"}], "confidence": 20, "context_timestamp": "2023-04-20T11:12:03.089Z", "crawl_edge_ids": {"Sensor": ["XNWu1KJ3f7ck@.W>%?R;<dP:4XWOiGq9#dnSpb\\"l0^f#1Kl9\'<k^`t9\\"ptE?07V_G^*\'_EU\'/Ch6&[Xsfl<UI$RnhG;AQa[gb#+-\\\\+J1O?GF\\\\U^<^9bluf^^X`dYoqOIQpM,@C%pV[2A%9a\\"T6O4b1:B1@ps8N", "N6GX$`\'=_9i\\"H:bRq0rXhf`Vd$[@1Wr?Lr\'`EGQh3P42Up,g(aNSe7C38V)J@NV=)Rg/2m^+P>?(%>fETtmdN.<_m*o\'\'\\"CCUmBn.;18rN6.!:g%ohR0te,H;Z\\\\DK\\"=MJe1?:_Y=XZj>E=nHY5ge>3^9:\'(g:)A\'RG0W,kPj.CNpo<Vk/RE^G9E!b\'?=G[!!*\'!", "XNXPaKHLg+i\\"HEWkr@-r>$W@\\"o+ta@8q\'lE4T!!e@D;nls7!2S0cEcXKeuua2Q+<<8!<pD:k1.5(j-*D`ECSL7qH1t\'ZZKh\'%UJG\'SaS8QVr:\\"4jTCn[!Z]eCQhZa>bpJ`SjuN\'Y.FcK0JOE\\"K_hb8DEP5rc6I]<!!*\'!"]}, "crawl_vertex_ids": {"Sensor": ["idpind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56", "uid:20879a8064904ecfbb62c118a6a19411:S-1-5-21-4043902054-3757442694-3243833439-1141", "ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56", "aggind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56"]}, "crawled_timestamp": "2023-04-20T12:12:10.427005199Z", "created_timestamp": "2023-04-20T11:13:10.424647Z", "description": "A user received new privileges", "display_name": "Privilege escalation (user)", "end_time": "2023-04-20T11:12:03.089Z", "falcon_host_link": "https://falcon.crowdstrike.com/identity-protection/detections/20879a8064904ecfbb62c118a6a19411:ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56?cid=20879a8064904ecfbb62c118a6a19411", "id": "ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56", "name": "IdpEntityPrivilegeEscalationUser", "objective": "Gain Access", "pattern_id": 51113, "platform": "Windows", "previous_privileges": "0", "privileges": "2177", "product": "idp", "scenario": "privilege_escalation", "seconds_to_resolved": 5869002, "seconds_to_triaged": 2250786, "severity": 2, "show_in_ui": true, "source_account_domain": "ENV11.JOHN-DOE.LOCAL", "source_account_name": "morganf", "source_account_object_sid": "S-1-5-21-4043902054-3757442694-3243833439-1141", "source_account_sam_account_name": "morganf", "source_account_upn": "test@test.com", "start_time": "2023-04-20T11:12:03.089Z", "status": "closed", "tactic": "Privilege Escalation", "tactic_id": "TA0004", "tags": ["tag"], "technique": "Valid Accounts", "technique_id": "T1078", "timestamp": "2023-04-20T11:12:05.686Z", "type": "idp-user-endpoint-app-info", "updated_timestamp": "2023-06-27T09:29:52.448779709Z", "assigned_to_uid": "1", "mirror_direction": null, "mirror_instance": ""}',
 }
 
 remote_incident_id = "inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd"
@@ -289,6 +347,12 @@ remote_detection_id = "ldt:15dbb9d8f06b89fe9f61eb46e829d986:528715079668"
 remote_idp_detection_id = "20879a8064904e:ind:20879a8064904ecfbb62c118a6a19411:26DF54C9-8803-4F97-AD22-A725EE820EA9"
 remote_mobile_detection_id = "1111111111111111111"
 remote_detection_id_new_version = "1234"
+remote_ngsiem_detection_id = (
+    "b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0:ngsiem:b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0:98998998998998998998998998998933"
+)
+remote_third_party_detection_id = (
+    "cb28a1bf5xxxxxxxxx698253914:thirdparty:cb28a1bf5axxxxxxxxxx698253914:5efcd0feb3xxxxxxxxxxab190ab39a"
+)
 
 # remote_id, close_incident, incident_status, detection_status, mirrored_object, entries
 get_remote_incident = (
@@ -367,16 +431,9 @@ get_remote_detection = (
     None,
     "in_progress",
     {
-        "behaviors.objective": "Falcon Detection Method",
-        "behaviors.scenario": "suspicious_activity",
-        "behaviors.tactic": "Malware",
-        "behaviors.technique": "Malicious File",
         "device.hostname": "FALCON-CROWDSTR",
         "incident_type": "detection",
-        "severity": 2,
         "status": "in_progress",
-        "detection_id": remote_detection_id,
-        "behaviors.display_name": "SampleTemplateDetection",
     },
     [],
 )
@@ -386,16 +443,9 @@ get_remote_detection_update = (
     None,
     "reopened",
     {
-        "behaviors.objective": "Falcon Detection Method",
-        "behaviors.scenario": "suspicious_activity",
-        "behaviors.tactic": "Malware",
-        "behaviors.technique": "Malicious File",
         "device.hostname": "FALCON-CROWDSTR",
         "incident_type": "detection",
-        "severity": 2,
         "status": "reopened",
-        "detection_id": remote_detection_id,
-        "behaviors.display_name": "SampleTemplateDetection",
     },
     [{"Contents": {"dbotIncidentReopen": True}, "ContentsFormat": "json", "Type": EntryType.NOTE}],
 )
@@ -405,16 +455,9 @@ get_remote_detection_close = (
     None,
     "closed",
     {
-        "behaviors.objective": "Falcon Detection Method",
-        "behaviors.scenario": "suspicious_activity",
-        "behaviors.tactic": "Malware",
-        "behaviors.technique": "Malicious File",
         "device.hostname": "FALCON-CROWDSTR",
         "incident_type": "detection",
-        "severity": 2,
         "status": "closed",
-        "detection_id": remote_detection_id,
-        "behaviors.display_name": "SampleTemplateDetection",
     },
     [
         {
@@ -430,16 +473,10 @@ get_remote_detection_no_close = (
     None,
     "closed",
     {
-        "behaviors.objective": "Falcon Detection Method",
-        "behaviors.scenario": "suspicious_activity",
-        "behaviors.tactic": "Malware",
-        "behaviors.technique": "Malicious File",
+
         "device.hostname": "FALCON-CROWDSTR",
         "incident_type": "detection",
-        "severity": 2,
         "status": "closed",
-        "detection_id": remote_detection_id,
-        "behaviors.display_name": "SampleTemplateDetection",
     },
     [],
 )
@@ -677,66 +714,6 @@ incident_closed = (
     set(),
     True,
 )
-detection_changed = (
-    {
-        "data": {"status": "new"},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_detection_id,
-        "status": IncidentStatus.PENDING,
-        "delta": {"status": "new"},
-    },
-    "update_detection_request",
-    [([remote_detection_id], "new")],
-    remote_detection_id,
-    None,
-    False,
-)
-detection_changed_no_close = (
-    {
-        "data": {"status": "new"},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_detection_id,
-        "status": IncidentStatus.DONE,
-        "delta": {"status": "new"},
-    },
-    "update_detection_request",
-    [([remote_detection_id], "new")],
-    remote_detection_id,
-    None,
-    False,
-)
-detection_changed_param_close = (
-    {
-        "data": {"status": "new"},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_detection_id,
-        "status": IncidentStatus.ACTIVE,
-        "delta": {"status": "new"},
-    },
-    "update_detection_request",
-    [([remote_detection_id], "new")],
-    remote_detection_id,
-    None,
-    True,
-)
-detection_closed = (
-    {
-        "data": {"status": "new"},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_detection_id,
-        "status": IncidentStatus.DONE,
-        "delta": {"closeReason": "Other"},
-    },
-    "update_detection_request",
-    [([remote_detection_id], "closed")],
-    remote_detection_id,
-    None,
-    True,
-)
 
 update_remote_system_command_args = [
     incident_changed_status,
@@ -745,10 +722,6 @@ update_remote_system_command_args = [
     incident_changed_no_close,
     incident_changed_param_close,
     incident_closed,
-    detection_changed,
-    detection_changed_no_close,
-    detection_changed_param_close,
-    detection_closed,
 ]
 
 # delta, close_in_cs_falcon_param, to_close
@@ -812,7 +785,6 @@ remote_incident_handle_tags_args = [
     add_tags,
     delete_tags,
 ]
-
 
 response_detection_new_version = {
     "agent_id": 123,

@@ -2322,6 +2322,7 @@ class STIX2XSOARParser(BaseClient):
     def get_ioc_value(ioc, id_to_obj):
         """
         Get IOC value from the indicator name/value/pattern field.
+        Uses extract_ioc_value to extract values for all supported indicator types from STIX patterns.
 
         Args:
             ioc: the indicator to get information on.
@@ -2334,8 +2335,13 @@ class STIX2XSOARParser(BaseClient):
         ioc_obj = id_to_obj.get(ioc)
         if ioc_obj:
             for key in ("name", "value", "pattern"):
-                if ("file:hashes.'SHA-256' = '" in ioc_obj.get(key, "")) and (
-                    ioc_value := Taxii2FeedClient.extract_ioc_value(ioc_obj, key)
+                field_value = ioc_obj.get(key, "")
+                if (
+                    key in ioc_obj
+                    and field_value
+                    and field_value.startswith("[")
+                    and field_value.endswith("]")
+                    and (ioc_value := STIX2XSOARParser.extract_ioc_value(ioc_obj, key))
                 ):
                     return ioc_value
             return ioc_obj.get("name") or ioc_obj.get("value")
@@ -2344,12 +2350,87 @@ class STIX2XSOARParser(BaseClient):
     @staticmethod
     def extract_ioc_value(ioc_obj, key: str = "name"):
         """
-        Extract SHA-256 from specific key, default key is name.
-        "([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])" -> 1111
+        Extract indicator values from a specific key; the default key is name.
+        Extracts values for all supported indicator types from STIX patterns.
+
+        Examples:
+        - "[file:hashes.'SHA-256' = '1111']" -> "1111" (SHA-256 hash)
+        - "[ipv4-addr:value = '1.2.3.4']" -> "1.2.3.4" (IP address)
+        - "[domain-name:value = 'example.com']" -> "example.com" (domain)
+        - "[windows-registry-key:key = 'HKEY_LOCAL_MACHINE\\Software\\Malware']" -> "HKEY_LOCAL_MACHINE\\Software\\Malware"
+        - "[windows-registry-key:value = 'MalwareValue']" -> "MalwareValue"
+
+        Returns the first found indicator value based on a priority order:
+        1. file:hashes.'SHA-256'
+        2. ipv4-addr:value
+        3. domain-name:value
+        4. url:value
+        5. Other supported indicator types defined in STIX_SUPPORTED_TYPES
+
+        If multiple indicators of the same type are found, returns the first one.
+
+        Args:
+            ioc_obj: The indicator object containing the pattern
+            key: The key in the object containing the pattern (default: "name")
+
+        Returns:
+            str: The extracted indicator value, or None if no supported indicators found
         """
         ioc_value = ioc_obj.get(key, "")
-        comps = STIX2XSOARParser.get_pattern_comparisons(ioc_value) or {}
-        return next((comp[-1].strip("'") for comp in comps.get("file", []) if ["hashes", "SHA-256"] in comp), None)
+        comparisons = STIX2XSOARParser.get_pattern_comparisons(ioc_value) or {}
+
+        # Define the structure of comparison tuples for better readability
+        # Each comparison is a tuple of (field_path, operator, value)
+        # where field_path is a list of field names, operator is a string, and value is the indicator value
+        FIELD_PATH = 0
+        VALUE = 2
+
+        # Due to backward compatibility, First check for SHA-256 hash specifically
+        sha256 = next(
+            (
+                str(comparison[VALUE]).strip("'")
+                for comparison in comparisons.get("file", [])
+                if ["hashes", "SHA-256"] in comparison
+            ),
+            None,
+        )
+        if sha256:
+            return sha256
+
+        # Define priority order for indicator types
+        priority_order = ["file", "ipv4-addr", "domain-name", "url", "email-addr", "mutex", "windows-registry-key"]
+
+        # Then check other indicator types in priority order
+        for indicator_type in priority_order:
+            if comparisons.get(indicator_type):
+                # For file type, look for other hash types if SHA-256 wasn't found
+                if indicator_type == "file":
+                    # Check for other hash types (MD5, SHA-1, etc.)
+                    for comparison in comparisons.get("file", []):
+                        field_path = comparison[FIELD_PATH]
+                        if len(comparison) >= 3 and field_path and len(field_path) >= 2 and field_path[0] == "hashes":
+                            return str(comparison[VALUE]).strip("'")
+                # For all other types, check if the field is in STIX_SUPPORTED_TYPES
+                else:
+                    # Get supported fields for this indicator type
+                    supported_fields = STIX_SUPPORTED_TYPES.get(indicator_type, ())
+                    for comparison in comparisons.get(indicator_type, []):
+                        field_path = comparison[FIELD_PATH]
+                        # Check if the comparison field is in the supported fields
+                        if field_path and len(field_path) > 0 and field_path[0] in supported_fields and comparison[VALUE]:
+                            return str(comparison[VALUE]).strip("'")
+
+        # If no indicators found in priority list, check any other supported types
+        for indicator_type, comparison_list in comparisons.items():
+            if indicator_type not in priority_order and comparison_list and indicator_type in STIX_SUPPORTED_TYPES:
+                supported_fields = STIX_SUPPORTED_TYPES.get(indicator_type, ())
+
+                for comparison in comparison_list:
+                    field_path = comparison[FIELD_PATH]
+                    if field_path and len(field_path) > 0 and field_path[0] in supported_fields and comparison[VALUE]:
+                        return str(comparison[VALUE]).strip("'")
+
+        return None
 
     def update_last_modified_indicator_date(self, indicator_modified_str: str):
         if not indicator_modified_str:

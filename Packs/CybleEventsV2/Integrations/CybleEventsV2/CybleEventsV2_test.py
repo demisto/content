@@ -6,6 +6,7 @@ Enhanced Unit Tests for CybleEventsV2 Integration -
 from CommonServerPython import GetRemoteDataResponse, GetMappingFieldsResponse, CommandResults, DemistoException
 from CybleEventsV2 import (
     Client,
+    cyble_vision_update_alerts_command,
     get_remote_data_command,
     manual_fetch,
     update_remote_system,
@@ -18,6 +19,15 @@ from CybleEventsV2 import (
     ensure_aware,
 )
 from CommonServerPython import GetModifiedRemoteDataResponse
+from CybleEventsV2 import check_response
+
+
+def test_test_response_success(mock_client):
+    mock_client._http_request = Mock(return_value={"status": "ok"})
+    with patch("CybleEventsV2.demisto", demisto_mock):
+        result = check_response(mock_client, "GET", "https://example.com", "dummy-token")
+    assert result == "ok"
+
 
 try:
     from CybleEventsV2 import (
@@ -1059,6 +1069,55 @@ class TestGetAlertById:
                 assert result is None
 
 
+@patch("CybleEventsV2.get_alert_by_id")
+@patch("CybleEventsV2.Client")
+def test_update_single_alert(mock_client_class, mock_get_alert):
+    args = {"ids": "id1", "status": "UNDER_REVIEW", "severity": "HIGH"}
+    mock_url = "https://example.com"
+    mock_token = "dummy-token"
+
+    mock_client = Mock()
+    mock_client_class.return_value = mock_client
+
+    mock_get_alert.return_value = {"id": "id1", "service": "mock_service"}
+    mock_client.update_alert.return_value = {"message": "Success"}
+
+    result = cyble_vision_update_alerts_command(mock_client, mock_url, mock_token, args)
+
+    assert isinstance(result, CommandResults)
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["id"] == "id1"
+    assert result.outputs[0]["status"] == "UNDER_REVIEW"
+    assert result.outputs[0]["user_severity"] == "HIGH"
+    mock_client.update_alert.assert_called_once()
+
+
+@patch("CybleEventsV2.Client.update_alert")
+@patch("CybleEventsV2.get_alert_by_id")
+def test_update_alert_data_success_multiple(mock_get_alert, mock_update_alert):
+    args = {"ids": "id1,id2", "status": "INFORMATIONAL,REMEDIATION_NOT_REQUIRED", "severity": "LOW,HIGH"}
+    mock_url = "https://example.com"
+    mock_token = "dummy-token"
+
+    # Mock return values for get_alert_by_id
+    mock_get_alert.side_effect = [
+        {"id": "id1", "service": "mock_service"},
+        {"id": "id2", "service": "mock_service"},
+    ]
+
+    # Mock return value for update_alert
+    mock_update_alert.return_value = {"message": "Success"}
+
+    # Create Client instance
+    client = Client(base_url=mock_url, headers={"Authorization": f"Bearer {mock_token}"}, verify=False, proxy=False)
+
+    result = cyble_vision_update_alerts_command(client, mock_url, mock_token, args)
+
+    assert result.outputs_prefix == "CybleEvents.AlertUpdate"
+    assert result.outputs[0]["id"] == "id1"
+    assert result.outputs[1]["id"] == "id2"
+
+
 def test_get_alert_payload_by_id_success():
     """Test successful alert payload retrieval"""
     # Mock client
@@ -1859,34 +1918,6 @@ class TestClientMethods(unittest.TestCase):
             result_ids = self.client.get_ids_with_retry(service, input_params)
 
             assert result_ids == ["id1", "id2"]
-
-
-# Test for test_response function
-def test_test_response_success():
-    """Test successful connection test"""
-    client = Mock()
-    client._http_request.return_value = {"status": "ok"}
-
-    from CybleEventsV2 import test_response
-
-    result = test_response(client=client, method="GET", base_url="https://test.com", token="test_token")
-
-    assert result == "ok"
-    client._http_request.assert_called_once()
-
-
-def test_test_response_empty_response():
-    """Test when response is empty"""
-    client = Mock()
-    client._http_request.return_value = None
-
-    with patch("CybleEventsV2.demisto") as mock_demisto:
-        from CybleEventsV2 import test_response
-
-        with pytest.raises(Exception, match="failed to connect"):
-            test_response(client=client, method="GET", base_url="https://test.com", token="test_token")
-
-        mock_demisto.error.assert_called()
 
 
 class TestCybleEventsLogical(unittest.TestCase):

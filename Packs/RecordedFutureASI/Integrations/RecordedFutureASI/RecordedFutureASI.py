@@ -60,7 +60,12 @@ class Client(BaseClient):
         :param snapshot: date string formatted in DATE_FORMAT
         :return: Dict with a data key that is an array of issues
         """
-        return self._http_request(method="GET", url_suffix=f"/rules/{self.project_id}/{snapshot}/issues")
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/rules/{self.project_id}/{snapshot}/issues",
+            retries=3,
+            status_list_to_retry=(502, 503, 504),
+        )
 
     def get_recent_issues(self, last_run: str | int) -> dict:
         """
@@ -69,12 +74,17 @@ class Client(BaseClient):
         :param last_run: can be a timestamp or a snapshot in DATE_FORMAT
         :return: Dict with a data key that is an array of diffs between snapshots
         """
+        params = {
+            "rule_action": "added",
+            "start": last_run,
+            "classification": MIN_SEVERITY_MAPPING[self.min_severity],
+        }
         return self._http_request(
             method="GET",
-            url_suffix=f"/rules/history/{self.project_id}/activity?"
-            f"rule_action=added&"
-            f"start={last_run}&"
-            f"classification={MIN_SEVERITY_MAPPING[self.min_severity]}",
+            url_suffix=f"/rules/history/{self.project_id}/activity",
+            params=params,
+            retries=3,
+            status_list_to_retry=(502, 503, 504),
         )
 
     def get_recent_issues_by_host(self, last_run: str | int) -> dict:
@@ -84,13 +94,18 @@ class Client(BaseClient):
         :param last_run: can be a timestamp or a snapshot in DATE_FORMAT
         :return: Dict with a data key that is an array of diffs between snapshots
         """
+        params = {
+            "rule_action": "added",
+            "last_checked": last_run,
+            "classification": MIN_SEVERITY_MAPPING[self.min_severity],
+            "limit": self.host_incident_limit,
+        }
         return self._http_request(
             method="GET",
-            url_suffix=f"/rules/history/{self.project_id}/activity/by_host/compare?"
-            f"rule_action=added&"
-            f"last_checked={last_run}&"
-            f"classification={MIN_SEVERITY_MAPPING[self.min_severity]}&"
-            f"limit={self.host_incident_limit}",
+            url_suffix=f"/rules/history/{self.project_id}/activity/by_host/compare",
+            params=params,
+            retries=3,
+            status_list_to_retry=(502, 503, 504),
         )
 
 

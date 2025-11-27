@@ -1,27 +1,52 @@
 {
     "name": "ANY.RUN",
-    "description": "ANY.RUN is a cloud-based sandbox with interactive access.",
-    "support": "xsoar",
-    "currentVersion": "1.0.25",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
-    "created": "2020-04-14T00:00:00Z",
+    "description": "Empowers SOC teams with a Cloud Sandbox for real-time malware analysis, Threat Intelligence Lookup, and high-quality feeds to enhance detection and threat coverage.",
+    "support": "partner",
+    "currentVersion": "2.1.1",
+    "author": "ANY.RUN",
+    "url": "https://any.run/",
+    "email": "support@any.run",
+    "created": "2025-07-01T00:00:00Z",
     "categories": [
-        "Forensics & Malware Analysis"
+        "Forensics & Malware Analysis",
+        "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Malware",
+        "Threat Intelligence",
+        "Feed"
+    ],
+    "useCases": [
+        "Ransomware",
+        "Malware",
+        "Phishing",
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "enrichment",
+        "lookup",
+        "indicator",
+        "ioc",
+        "sandbox",
+        "malware",
+        "phishing"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
-        "platform"
+        "platform",
+        "xpanse",
+        "xsoar_saas"
     ],
     "supportedModules": [
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam",
+        "edr",
+        "cloud",
+        "cloud_runtime_security"
     ]
 }

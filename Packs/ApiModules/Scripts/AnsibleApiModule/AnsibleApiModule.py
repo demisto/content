@@ -182,6 +182,15 @@ def generate_ansible_inventory(args: dict[str, Any], int_params: dict[str, Any],
                         new_host["ansible_become_user"] = int_params.get("become_user")
                     if int_params.get("become_password"):
                         new_host["ansible_become_pass"] = int_params.get("become_password")
+                    # If privilege escalation is enabled and no explicit become password is provided,
+                    # fall back to using the SSH password as documented in the integration helper text.
+                    # This only applies when password-based SSH authentication is used (ansible_password is set).
+                    if (
+                        new_host.get("ansible_become")
+                        and not int_params.get("become_password")
+                        and new_host.get("ansible_password")
+                    ):
+                        new_host["ansible_become_pass"] = new_host.get("ansible_password")
 
                 # ios specific
                 if host_type == "ios":

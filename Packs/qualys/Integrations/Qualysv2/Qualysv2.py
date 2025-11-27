@@ -6,7 +6,6 @@ from typing import Any
 import csv
 import io
 import requests
-import signal
 from xml.etree import ElementTree
 
 from urllib3 import disable_warnings
@@ -795,7 +794,9 @@ COMMANDS_API_DATA: dict[str, dict[str, str]] = {
     },
     "qualys-host-list-detection": {
         # show detection score `QDS` and score contributing factors `QDS_FACTORS`
-        "api_route": API_SUFFIX + "asset/host/vm/detection/?action=list&show_qds=1&show_qds_factors=1",
+        "api_route": API_SUFFIX
+        + "asset/host/vm/detection/?action=list&show_qds=1&show_qds_factors=1&\
+            host_metadata=all&show_cloud_tags=1",
         "call_method": "GET",
         "resp_type": "text",
     },
@@ -1601,54 +1602,6 @@ args_values: dict[str, Any] = {}
 # Dictionary for arguments used internally by this integration
 inner_args_values: dict[str, Any] = {}
 
-""" TIMEOUT HANDLING """
-
-
-class SignalTimeoutError(Exception):
-    """Custom exception raised when the execution timeout is reached."""
-
-
-class ExecutionTimeout:
-    """Context manager to limit the execution time of a code block.
-
-    Example:
-        >>> with ExecutionTimeout(5):
-        ...     time.sleep(10)
-    """
-
-    def __init__(self, seconds: int | float):
-        """Initializes the ExecutionTimeout context manager.
-
-        Args:
-            seconds: The maximum execution time in seconds.
-        """
-        self.seconds = int(seconds)
-
-    def _timeout_handler(self, signum, frame):
-        """Signal handler that raises a `SignalTimeoutError`."""
-        raise SignalTimeoutError
-
-    def __enter__(self) -> None:
-        """Enters the context manager by setting up the signal handler for SIGALRM and starts the timer."""
-        demisto.debug(f"Running with execution timeout: {self.seconds}")
-        signal.signal(signal.SIGALRM, self._timeout_handler)  # Set handler for SIGALRM
-        signal.alarm(self.seconds)  # start countdown for SIGALRM to be raised
-
-    def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
-        """Exits the context manager by cancelling the SIGALARM and suppressing the `SignalTimeoutError`.
-
-        Args:
-            exc_type: The type of the exception that occurred, if any.
-            exc_val: The instance of the exception that occurred, if any.
-            exc_tb: A traceback object showing where the exception occurred, if any.
-
-        Returns:
-            True if the `SignalTimeoutError` was raised and suppressed, False otherwise.
-        """
-        demisto.debug("Resetting timed signal")
-        signal.alarm(0)  # Cancel SIGALRM if it's scheduled
-        return exc_type is SignalTimeoutError  # Suppress SignalTimeoutError
-
 
 """ CLIENT CLASS """
 
@@ -1771,7 +1724,7 @@ class Client(BaseClient):
         try:
             response = self._http_request(
                 method="GET",
-                url_suffix=urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list"),
+                url_suffix=urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"),
                 resp_type="text",
                 params=params,
                 timeout=timeout,
@@ -3507,9 +3460,11 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
     set_new_limit = True
     with ExecutionTimeout(FETCH_ASSETS_COMMAND_TIME_OUT):
         # Exits code block below if it takes longer to execute than the specified timeout
-        assets, new_last_run, _, snapshot_id, set_new_limit = fetch_assets(client, last_run)
+        assets, new_last_run, _, snapshot_id, _ = fetch_assets(client, last_run)
         detection_qids: list = list({asset.get("DETECTION", {}).get("QID") for asset in assets})
         vulnerabilities, _ = fetch_vulnerabilities(client, last_run, detection_qids) if detection_qids else ([], {})
+        demisto.debug("Finished fetch for assets and vulnerabilities.")
+        set_new_limit = False
 
     # If assets request read timeout (set_new_limit flag is True) or exceeded max exceution time, make next API call smaller
     if set_new_limit:

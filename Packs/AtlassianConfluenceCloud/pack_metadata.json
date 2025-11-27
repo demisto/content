@@ -2,7 +2,7 @@
     "name": "Atlassian Confluence Cloud",
     "description": "Atlassian Confluence Cloud allows users to interact with confluence entities like content, space, users and groups. Users can also manage the space permissions.",
     "support": "xsoar",
-    "currentVersion": "1.1.3",
+    "currentVersion": "1.1.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,14 +10,11 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [
-        "confluence",
-        "confluence cloud",
-        "atlassian",
-        "event collector"
+    "tags": [
+        "IT"
     ],
+    "useCases": [],
+    "keywords": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
@@ -27,6 +24,8 @@
         "X1",
         "X3",
         "X5",
-        "ENT_PLUS"
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
     ]
 }

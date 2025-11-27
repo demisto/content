@@ -1,9 +1,9 @@
 Retrieves information about certificates stored in Venafi.
 
-## Configure Venafi TLS Protect on Cortex XSOAR
+## Configure CyberArk Certificate Manager on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Venafi TLS Protect.
+2. Search for CyberArk Certificate Manager.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
