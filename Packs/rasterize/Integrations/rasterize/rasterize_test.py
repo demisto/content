@@ -1469,7 +1469,6 @@ def test_rasterize_extract_command_success(mocker):
 
     mock_args = {"url": "https://example.com", "wait_time": "0", "max_page_load_time": "30"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mocker.patch.object(demisto, "getArg", return_value="https://example.com")
     mocker.patch("rasterize.perform_rasterize", return_value=[("# Test Content", "https://example.com")])
     mock_return_results = mocker.patch("rasterize.return_results")
 
@@ -1493,7 +1492,6 @@ def test_rasterize_extract_command_multiple_urls(mocker):
     urls = ["https://example1.com", "https://example2.com"]
     mock_args = {"url": urls, "wait_time": "0", "max_page_load_time": "30"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mocker.patch.object(demisto, "getArg", return_value=urls)
     mocker.patch(
         "rasterize.perform_rasterize",
         return_value=[("# Content 1", "https://example1.com"), ("# Content 2", "https://example2.com")],
@@ -1519,7 +1517,6 @@ def test_rasterize_extract_command_extraction_error(mocker):
 
     mock_args = {"url": "https://example.com", "wait_time": "0", "max_page_load_time": "30"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mocker.patch.object(demisto, "getArg", return_value="https://example.com")
     mocker.patch("rasterize.perform_rasterize", return_value=[("Extraction Error: Test error", "https://example.com")])
     mock_return_results = mocker.patch("rasterize.return_results")
 
@@ -1542,7 +1539,6 @@ def test_rasterize_extract_command_string_error(mocker):
 
     mock_args = {"url": "https://example.com", "wait_time": "0", "max_page_load_time": "30"}
     mocker.patch.object(demisto, "args", return_value=mock_args)
-    mocker.patch.object(demisto, "getArg", return_value="https://example.com")
     mocker.patch("rasterize.perform_rasterize", return_value=["Error: Connection failed"])
     mock_return_results = mocker.patch("rasterize.return_results")
 
@@ -1553,40 +1549,3 @@ def test_rasterize_extract_command_string_error(mocker):
     assert len(results) == 1
     assert results[0].entry_type == EntryType.ERROR
     assert "Error rasterizing" in results[0].readable_output
-
-
-def test_process_urls_string(mocker):
-    """
-    Given: A single URL as string
-    When: Calling process_urls
-    Then: Should return list with single URL
-    """
-    from rasterize import process_urls
-
-    result = process_urls("https://example.com")
-    assert result == ["https://example.com"]
-
-
-def test_process_urls_list(mocker):
-    """
-    Given: Multiple URLs as list
-    When: Calling process_urls
-    Then: Should return the same list
-    """
-    from rasterize import process_urls
-
-    urls = ["https://example1.com", "https://example2.com"]
-    result = process_urls(urls)
-    assert result == urls
-
-
-def test_process_urls_json_string():
-    """
-    Given: URLs as JSON string
-    When: Calling process_urls
-    Then: Should parse and return list
-    """
-    from rasterize import process_urls
-
-    result = process_urls('["https://example1.com", "https://example2.com"]')
-    assert result == ["https://example1.com", "https://example2.com"]

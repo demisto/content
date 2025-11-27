@@ -524,11 +524,9 @@ def extract_content_from_tab(tab: pychrome.Tab, navigation_timeout: int) -> tupl
         final_url = "N/A"
 
     try:
-        # Single JavaScript call that handles both JSON detection and content extraction
         result = tab.Runtime.evaluate(expression=_EXTRACTION_JAVASCRIPT, returnByValue=True, _timeout=navigation_timeout)
         extraction_result = result.get("result", {}).get("value", {})
 
-        # Check if we got a structured response (with type and content)
         content_type = extraction_result.get("type", "html")
         raw_content = extraction_result.get("content", "").strip()
 
@@ -1850,10 +1848,9 @@ def rasterize_extract_command():  # pragma: no cover
         Errors are handled internally and returned as CommandResults with ERROR entry type
     """
     args = demisto.args()
-    urls = demisto.getArg("url")
-    urls = process_urls(urls)
+    urls = argToList(args.get("url"))
 
-    width, height = get_width_height(demisto.args())
+    width, height = get_width_height(args)
     wait_time = int(args.get("wait_time", DEFAULT_WAIT_TIME))
     navigation_timeout = int(args.get("max_page_load_time", DEFAULT_PAGE_LOAD_TIME))
 
