@@ -9,3 +9,6 @@ ignore=BA127
 
 [file:IPEnrichment.yml]
 ignore=BA127
+
+[file:IndicatorEnrichment.yml]
+ignore=BA127
