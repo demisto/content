@@ -2154,11 +2154,11 @@ Run a PowerQuery, where you can pipe one or many search expressions into a set o
 | singularity_xdr_url | Singularity Data Lake XDR URL. | Required |
 | singularity_xdr_api_key | A Log Read Access API key. | Required |
 | query | The query, in PowerQuery syntax. | Required |
-| startTime | Start time for your query. | Optional |
-| endTime | End time for your query. | Optional |
+| start_time | Start time for your query. | Optional |
+| end_time | End time for your query. | Optional |
 | priority | Query execution priority (defaults to "low"). Default is low. | Optional |
 | recurring | Optional (defaults to false). When set to true, a materialized view of your query is created. Possible values are: true, false. Default is false. | Optional |
-| teamEmails | Comma-separated list of account emails to query, enabling Cross Team Search. | Optional |
+| team_emails | Comma-separated list of account emails to query, enabling Cross Team Search. | Optional |
 
 #### Context Output
 
