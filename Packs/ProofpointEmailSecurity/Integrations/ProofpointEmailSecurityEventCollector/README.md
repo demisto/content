@@ -1,7 +1,7 @@
 Collects events for Proofpoint using the streaming API.
 This integration was integrated and tested Proofpoint Email Security.
 
-## Configure Proofpoint Email Security Event Collector on Cortex XSOAR
+## Configure Proofpoint Email Security Event Collector in Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Proofpoint Email Security Event Collector.
@@ -12,6 +12,7 @@ This integration was integrated and tested Proofpoint Email Security.
     | Server Host | True |
     | Cluster ID | True |
     | API key | True |
+    | Fetch Events | False |
     | Fetch interval in seconds | True |
     | Use system proxy settings | False |
     | Event types to fetch | False |
@@ -29,7 +30,7 @@ Retrieves the results of a connection attempt to Proofpoint, indicating whether 
 ### proofpoint-es-get-events
 
 ***
-Retrieves events from Proofpoint Email Security PoD archive for a specified time range to backfill gaps in fetched events. This command is intended for debugging purposes and may result in duplicate events in the Cortex XSIAM dataset. Consult with engineering before using. HTTP 409 (Conflict) errors may be raised if long running execution is active. HTTP 400 (Bad Request) errors may be raised if the time range falls within the last 24 hours or is older than 30 days.
+Retrieves events from the Proofpoint Email Security PoD archive for a specified time range to backfill gaps in fetched events. This command is intended for debugging purposes and may result in duplicate events in the Cortex XSIAM dataset. Consult with engineering before using. HTTP 409 (Conflict) errors may be raised if the integration instance has "Fetch Events" enabled. HTTP 400 (Bad Request) errors may be raised if the time range falls is older than 30 days.
 
 #### Base Command
 
