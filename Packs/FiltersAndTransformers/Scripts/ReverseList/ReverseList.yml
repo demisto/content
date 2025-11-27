@@ -18,6 +18,7 @@ args:
   description: List to reverse.
   isArray: true
 scripttarget: 0
+isllm: false
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.12.8.3296088
 tests:
