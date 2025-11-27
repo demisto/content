@@ -1,0 +1,18 @@
+comment: Shows the Rubrik Suspicious File Count.
+commonfields:
+  id: RubrikSuspiciousFileCount
+  version: -1
+dockerimage: demisto/python3:3.12.12.5490952
+enabled: true
+name: RubrikSuspiciousFileCount
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+- field-change-triggered
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
