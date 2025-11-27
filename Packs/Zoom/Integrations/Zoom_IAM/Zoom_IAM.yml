@@ -74,13 +74,13 @@ configuration:
 - defaultvalue: User Profile - SCIM (Incoming)
   display: Incoming Mapper
   name: mapper_in
-  required: true
+  required: false
   type: 0
   section: Collect
 - defaultvalue: User Profile - SCIM (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
-  required: true
+  required: false
   type: 0
   section: Collect
 description: An Identity and Access Management integration template.
