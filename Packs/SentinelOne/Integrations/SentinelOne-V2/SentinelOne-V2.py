@@ -745,10 +745,10 @@ class Client(BaseClient):
         normalized_iocs: list[dict] = []
         for idx, ioc in enumerate(iocs_from_file):
             if not isinstance(ioc, dict):
-                return_error(f"IOC at index {idx} is not an object.")
+                raise DemistoException(f"IOC at index {idx} is not an object.")
             missing = [field for field in required_fields if field not in ioc or ioc.get(field) in (None, "")]
             if missing:
-                return_error(f"IOC at index {idx} missing required field(s): {', '.join(missing)}")
+                raise DemistoException(f"IOC at index {idx} missing required field(s): {', '.join(missing)}")
             # Normalize to API expectations (upper-case TYPE and METHOD)
             ioc_type = ioc.get("type", "").strip().upper()
             method = ioc.get("method", "").strip().upper()
@@ -1922,9 +1922,9 @@ def create_bulk_ioc(client: Client, args: dict) -> CommandResults:
     try:
         file_info = demisto.getFilePath(entry_id)
     except Exception as e:
-        raise ValueError(f"Failed to retrieve file info for entry_id={entry_id}. Error: {str(e)}")
+        raise DemistoException(f"Failed to retrieve file info for entry_id={entry_id}. Error: {str(e)}")
     if not file_info or not file_info.get("path"):
-        raise ValueError(f"Could not resolve file path for entry_id={entry_id}")
+        raise DemistoException(f"Could not resolve file path for entry_id={entry_id}")
     file_path = file_info["path"]
 
     # Load JSON array of IOC objects
@@ -1932,11 +1932,11 @@ def create_bulk_ioc(client: Client, args: dict) -> CommandResults:
         with open(file_path, encoding="utf-8") as json_ioc_list:
             iocs_data = json.load(json_ioc_list)
     except json.JSONDecodeError as e:
-        raise ValueError(f"Invalid JSON in uploaded file: {str(e)}")
+        raise DemistoException(f"Invalid JSON in uploaded file: {str(e)}")
     except Exception as e:
-        raise ValueError(f"Failed reading uploaded file {file_path}: {str(e)}")
+        raise DemistoException(f"Failed reading uploaded file {file_path}: {str(e)}")
     if not isinstance(iocs_data, list):
-        raise ValueError("Uploaded JSON must be an array of IOC objects.")
+        raise DemistoException("Uploaded JSON must be an array of IOC objects.")
 
     iocs = client.create_bulk_ioc_request(iocs_data, account_ids)
 
