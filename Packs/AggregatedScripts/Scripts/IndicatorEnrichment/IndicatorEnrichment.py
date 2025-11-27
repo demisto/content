@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-from typing import Any, Dict, List, Optional, Set, Tuple
 
 from AggregatedCommandApiModule import *
 
@@ -11,8 +10,7 @@ from AggregatedCommandApiModule import *
 MAX_INDICATORS = 100
 
 NO_VALID_INDICATORS_MESSAGE = (
-    "No valid indicators provided. You must provide at least one valid indicator "
-    "in arguments: indicators_list or text."
+    "No valid indicators provided. You must provide at least one valid indicator " "in arguments: indicators_list or text."
 )
 
 ERR_INDICATOR_LIMIT_EXCEEDED_TEMPLATE = (
@@ -28,11 +26,10 @@ class FatalArgException(Exception):
 
     These are surfaced to the user via `return_error` in `main()`.
     """
-    pass
 
 
 # Unified configuration for all supported indicator types
-INDICATOR_TYPE_CONFIG: Dict[str, Dict[str, str]] = {
+INDICATOR_TYPE_CONFIG: dict[str, dict[str, str]] = {
     "ip": {
         "display": "IP",
         "command": "ip-enrichment",
@@ -65,12 +62,13 @@ INDICATOR_TYPE_CONFIG: Dict[str, Dict[str, str]] = {
     },
 }
 
-SUPPORTED_INDICATOR_TYPES: Set[str] = set(INDICATOR_TYPE_CONFIG.keys())
+SUPPORTED_INDICATOR_TYPES: set[str] = set(INDICATOR_TYPE_CONFIG.keys())
 
 
 # ===============
 # Helper Functions
 # ===============
+
 
 def normalize_indicator_type(raw_type: str) -> str:
     """
@@ -110,7 +108,7 @@ def normalize_indicator_type(raw_type: str) -> str:
     return raw_type
 
 
-def run_extract_indicators(text: str) -> Dict[str, Any]:
+def run_extract_indicators(text: str) -> dict[str, Any]:
     """
     Run the `extractIndicators` command in the same way the working helper does.
 
@@ -125,7 +123,7 @@ def run_extract_indicators(text: str) -> Dict[str, Any]:
         text: Free text from which to extract indicators.
 
     Returns:
-        Dict[str, Any]: The ExtractedIndicators mapping,
+        dict[str, Any]: The ExtractedIndicators mapping,
                         e.g. {"IP": ["1.1.1.1"], "URL": ["https://..."]}
                         or {} if nothing is found.
     """
@@ -135,11 +133,7 @@ def run_extract_indicators(text: str) -> Dict[str, Any]:
     demisto.debug("IndicatorEnrichment: validating input using extractIndicators (execute_command)")
 
     # Use the same approach as your working version
-    results = execute_command(
-        "extractIndicators",
-        {"text": text},
-        extract_contents=False
-    )
+    results = execute_command("extractIndicators", {"text": text}, extract_contents=False)
 
     # Defensive check: results should be a list of entries
     if not isinstance(results, list) or not results:
@@ -166,7 +160,7 @@ def run_extract_indicators(text: str) -> Dict[str, Any]:
     return extracted
 
 
-def normalize_args(args: Dict[str, Any]) -> Tuple[str, List[str], bool, bool, bool]:
+def normalize_args(args: dict[str, Any]) -> tuple[str, list[str], bool, bool, bool]:
     """
     Normalize raw demisto args into typed values.
 
@@ -175,7 +169,7 @@ def normalize_args(args: Dict[str, Any]) -> Tuple[str, List[str], bool, bool, bo
 
     Returns:
         text: str
-        indicators_list: List[str]
+        indicators_list: list[str]
         indicators_list_provided: bool (argument key present, even if empty)
         ignore_indicator_limit: bool
         raw_context: bool
@@ -202,7 +196,7 @@ def normalize_args(args: Dict[str, Any]) -> Tuple[str, List[str], bool, bool, bo
     return text, indicators_list, indicators_list_provided, ignore_indicator_limit, raw_context
 
 
-def validate_initial_args(text: str, indicators_list: List[str], indicators_list_provided: bool) -> None:
+def validate_initial_args(text: str, indicators_list: list[str], indicators_list_provided: bool) -> None:
     """
     Validate that at least one of text or indicators_list is provided.
 
@@ -222,22 +216,18 @@ def validate_initial_args(text: str, indicators_list: List[str], indicators_list
 
     # Case 1: both missing or effectively empty AND list was not explicitly provided
     if not text_provided and not list_has_values and not indicators_list_provided:
-        demisto.debug(
-            "IndicatorEnrichment: validation failed - neither text nor indicators_list were provided."
-        )
+        demisto.debug("IndicatorEnrichment: validation failed - neither text nor indicators_list were provided.")
         raise FatalArgException(NO_VALID_INDICATORS_MESSAGE)
 
     # Case 2: indicators_list was provided but ended up empty after normalization (spaces, commas, etc.)
     if indicators_list_provided and not list_has_values and not text_provided:
-        demisto.debug(
-            "IndicatorEnrichment: validation failed - indicators_list was provided but contains no indicators."
-        )
+        demisto.debug("IndicatorEnrichment: validation failed - indicators_list was provided but contains no indicators.")
         raise FatalArgException(NO_VALID_INDICATORS_MESSAGE)
 
 
 def extract_from_text(
     text: str,
-) -> Tuple[List[Tuple[str, str]], List[Tuple[str, str]], List[str]]:
+) -> tuple[list[tuple[str, str]], list[tuple[str, str]], list[str]]:
     """
     Extract indicators from free text using extractIndicators and classify them.
 
@@ -261,9 +251,9 @@ def extract_from_text(
     extracted = run_extract_indicators(text)
     demisto.debug(f"IndicatorEnrichment: extract_from_text ExtractedIndicators: {extracted}")
 
-    supported: List[Tuple[str, str]] = []
-    unsupported: List[Tuple[str, str]] = []
-    unknown: List[str] = []
+    supported: list[tuple[str, str]] = []
+    unsupported: list[tuple[str, str]] = []
+    unknown: list[str] = []
 
     for indicator_type, values in extracted.items():
         if not values:
@@ -290,8 +280,8 @@ def extract_from_text(
 
 
 def extract_from_indicator_list(
-    indicators_list: List[str],
-) -> Tuple[List[Tuple[str, str]], List[Tuple[str, str]], List[str]]:
+    indicators_list: list[str],
+) -> tuple[list[tuple[str, str]], list[tuple[str, str]], list[str]]:
     """
     Extract indicator types from indicators_list values using auto_detect_indicator_type
     and classify them.
@@ -313,9 +303,9 @@ def extract_from_indicator_list(
     if not indicators_list:
         return [], [], []
 
-    supported: List[Tuple[str, str]] = []
-    unsupported: List[Tuple[str, str]] = []
-    unknown: List[str] = []
+    supported: list[tuple[str, str]] = []
+    unsupported: list[tuple[str, str]] = []
+    unknown: list[str] = []
 
     for raw_value in indicators_list:
         if not raw_value:
@@ -339,11 +329,11 @@ def extract_from_indicator_list(
 
 def collect_indicators(
     text: str,
-    indicators_list: List[str],
-) -> Tuple[
-    Dict[str, Set[str]],
-    Set[Tuple[str, str]],
-    Set[str],
+    indicators_list: list[str],
+) -> tuple[
+    dict[str, set[str]],
+    set[tuple[str, str]],
+    set[str],
     int,
     int,
 ]:
@@ -352,7 +342,7 @@ def collect_indicators(
 
     Args:
         text: Free text to parse for indicators.
-        indicators_list: List of explicit indicator values.
+        indicators_list: list of explicit indicator values.
 
     Returns:
         supported_buckets:   {internal_type -> {values}}
@@ -374,22 +364,20 @@ def collect_indicators(
            duplicates_count >= 1 (because 192.168.1.0 appears twice)
            total_supported = 2
     """
-    supported_buckets: Dict[str, Set[str]] = {}
-    unsupported_entries: Set[Tuple[str, str]] = set()
-    unknown_entries: Set[str] = set()
+    supported_buckets: dict[str, set[str]] = {}
+    unsupported_entries: set[tuple[str, str]] = set()
+    unknown_entries: set[str] = set()
 
     duplicates_count = 0
-    seen_supported: Set[Tuple[str, str]] = set()
-    seen_unsupported: Set[Tuple[str, str]] = set()
-    seen_unknown: Set[str] = set()
+    seen_supported: set[tuple[str, str]] = set()
+    seen_unsupported: set[tuple[str, str]] = set()
+    seen_unknown: set[str] = set()
 
     # 1) Extract from text
     supported_from_text, unsupported_from_text, unknown_from_text = extract_from_text(text)
 
     # 2) Extract from indicators_list
-    supported_from_list, unsupported_from_list, unknown_from_list = extract_from_indicator_list(
-        indicators_list
-    )
+    supported_from_list, unsupported_from_list, unknown_from_list = extract_from_indicator_list(indicators_list)
 
     # 3) Merge + dedup (text first, then list)
 
@@ -432,11 +420,11 @@ def collect_indicators(
 
 def validate_collected_indicators(
     text: str,
-    indicators_list: List[str],
+    indicators_list: list[str],
     indicators_list_provided: bool,
     total_supported: int,
-    unsupported_entries: Set[Tuple[str, str]],
-    unknown_entries: Set[str],
+    unsupported_entries: set[tuple[str, str]],
+    unknown_entries: set[str],
 ) -> Optional[CommandResults]:
     """
     Validate the collected indicators after extraction/merge.
@@ -455,8 +443,8 @@ def validate_collected_indicators(
         indicators_list:  Normalized indicators_list values.
         indicators_list_provided: True if the indicators_list arg key was present in args.
         total_supported:  Number of unique supported indicators.
-        unsupported_entries: Set of (original_type, value) for unsupported indicators.
-        unknown_entries:     Set of values for indicators classified as unknown/invalid.
+        unsupported_entries: set of (original_type, value) for unsupported indicators.
+        unknown_entries:     set of values for indicators classified as unknown/invalid.
 
     Returns:
         CommandResults if a non-fatal informational message should be returned,
@@ -475,13 +463,9 @@ def validate_collected_indicators(
         only_unknown = bool(unknown_entries) and not unsupported_entries
 
         if only_unsupported:
-            demisto.debug(
-                "IndicatorEnrichment: validation failed - indicators_list contains only unsupported indicator types."
-            )
+            demisto.debug("IndicatorEnrichment: validation failed - indicators_list contains only unsupported indicator types.")
         elif only_unknown:
-            demisto.debug(
-                "IndicatorEnrichment: validation failed - indicators_list contains only invalid/unknown indicators."
-            )
+            demisto.debug("IndicatorEnrichment: validation failed - indicators_list contains only invalid/unknown indicators.")
         else:
             demisto.debug(
                 "IndicatorEnrichment: validation failed - indicators_list contains only unsupported and/or invalid indicators."
@@ -492,9 +476,7 @@ def validate_collected_indicators(
 
     # Text-only mode: no list, no supported → NOT an error, just a message
     if text_provided and not indicators_list_provided and total_supported == 0:
-        demisto.debug(
-            "IndicatorEnrichment: text-only input and no indicators were extracted - returning informational message."
-        )
+        demisto.debug("IndicatorEnrichment: text-only input and no indicators were extracted - returning informational message.")
         return CommandResults(
             readable_output=NO_VALID_INDICATORS_MESSAGE,
             outputs={},
@@ -534,15 +516,14 @@ def enforce_indicator_limit(total_supported: int, ignore_indicator_limit: bool) 
         raise FatalArgException(message)
 
     demisto.debug(
-        f"IndicatorEnrichment: indicator count within limit "
-        f"(total_supported={total_supported}, limit={MAX_INDICATORS})."
+        f"IndicatorEnrichment: indicator count within limit " f"(total_supported={total_supported}, limit={MAX_INDICATORS})."
     )
 
 
 def run_underlying_enrichment_scripts(
-    supported_buckets: Dict[str, Set[str]],
-    args: Dict[str, Any],
-) -> Tuple[List[Tuple[str, str]], Dict[str, Any]]:
+    supported_buckets: dict[str, set[str]],
+    args: dict[str, Any],
+) -> tuple[list[tuple[str, str]], dict[str, Any]]:
     """
     Execute the underlying enrichment scripts for each supported bucket using BatchExecutor.
 
@@ -564,7 +545,7 @@ def run_underlying_enrichment_scripts(
         args:              Raw command args (used for external_enrichment, brands, additional_fields).
 
     Returns:
-        underlying_sections: List of (bucket_type, markdown HR block).
+        underlying_sections: list of (bucket_type, markdown HR block).
         merged_context:      Combined EntryContext from all child scripts.
     """
     external_enrichment = args.get("external_enrichment")
@@ -577,9 +558,9 @@ def run_underlying_enrichment_scripts(
         f"additional_fields={additional_fields}"
     )
 
-    sections: List[Tuple[str, str]] = []
-    merged_context: Dict[str, Any] = {}
-    commands: List[Tuple[str, Command]] = []
+    sections: list[tuple[str, str]] = []
+    merged_context: dict[str, Any] = {}
+    commands: list[tuple[str, Command]] = []
 
     # Build commands based on buckets and INDICATOR_TYPE_CONFIG
     for bucket_type, values in supported_buckets.items():
@@ -591,7 +572,7 @@ def run_underlying_enrichment_scripts(
             demisto.debug(f"IndicatorEnrichment: no type config found for bucket '{bucket_type}', skipping.")
             continue
 
-        cmd_args: Dict[str, Any] = {
+        cmd_args: dict[str, Any] = {
             type_cfg["arg_name"]: list(values),
         }
         if external_enrichment is not None:
@@ -629,7 +610,7 @@ def run_underlying_enrichment_scripts(
             f"IndicatorEnrichment: processing results for command {command.name} "
             f"({len(command_results)} result entries) in bucket '{bucket_type}'"
         )
-        for (result, _hr_output, error_message) in command_results:
+        for result, _hr_output, error_message in command_results:
             # Merge EntryContext into local merged_context (for building IndicatorEnrichment)
             context = result.get("EntryContext") or result.get("Contents") or {}
             if isinstance(context, dict):
@@ -640,28 +621,26 @@ def run_underlying_enrichment_scripts(
             if hr:
                 sections.append((bucket_type, hr))
             elif error_message:
-                sections.append(
-                    (bucket_type, f"### Error from {command.name}\n{error_message}")
-                )
+                sections.append((bucket_type, f"### Error from {command.name}\n{error_message}"))
 
     return sections, merged_context
 
 
 def build_error_table(
-    unsupported_entries: Set[Tuple[str, str]],
-    unknown_entries: Set[str],
-) -> List[Dict[str, str]]:
+    unsupported_entries: set[tuple[str, str]],
+    unknown_entries: set[str],
+) -> list[dict[str, str]]:
     """
     Build the error table rows for unsupported and unknown indicators.
 
     Args:
-        unsupported_entries: Set of (original_type, value) for unsupported indicators.
-        unknown_entries:     Set of values for unknown/invalid indicators.
+        unsupported_entries: set of (original_type, value) for unsupported indicators.
+        unknown_entries:     set of values for unknown/invalid indicators.
 
     Returns:
         A list of dicts suitable for tableToMarkdown.
     """
-    rows: List[Dict[str, str]] = []
+    rows: list[dict[str, str]] = []
 
     # Sort by type, then value (case-insensitive) so same types are grouped together
     for indicator_type, value in sorted(
@@ -691,10 +670,10 @@ def build_error_table(
 
 
 def build_indicator_enrichment_list(
-    merged_context: Dict[str, Any],
-    unsupported_entries: Set[Tuple[str, str]],
-    unknown_entries: Set[str],
-) -> List[Dict[str, Any]]:
+    merged_context: dict[str, Any],
+    unsupported_entries: set[tuple[str, str]],
+    unknown_entries: set[str],
+) -> list[dict[str, Any]]:
     """
     Build the unified IndicatorEnrichment list.
 
@@ -719,7 +698,7 @@ def build_indicator_enrichment_list(
     Returns:
         A list of IndicatorEnrichment objects.
     """
-    indicator_enrichment: List[Dict[str, Any]] = []
+    indicator_enrichment: list[dict[str, Any]] = []
 
     # Success objects from underlying *Enrichment(...) keys
     for ctx_key, value in merged_context.items():
@@ -772,11 +751,11 @@ def build_indicator_enrichment_list(
 
 
 def build_final_context(
-    merged_context: Dict[str, Any],
-    unsupported_entries: Set[Tuple[str, str]],
-    unknown_entries: Set[str],
+    merged_context: dict[str, Any],
+    unsupported_entries: set[tuple[str, str]],
+    unknown_entries: set[str],
     raw_context: bool,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Build the final context for this script.
 
@@ -803,7 +782,7 @@ def build_final_context(
             - Optionally *Enrichment(...) keys when raw_context=True.
     """
     # Start from everything children gave us
-    final_context: Dict[str, Any] = dict(merged_context) if merged_context else {}
+    final_context: dict[str, Any] = dict(merged_context) if merged_context else {}
 
     # Always build the aggregated IndicatorEnrichment list
     indicator_enrichment_list = build_indicator_enrichment_list(
@@ -814,7 +793,7 @@ def build_final_context(
 
     # If raw_context is False: drop raw *Enrichment(...) keys from THIS script's context
     if not raw_context and final_context:
-        keys_to_drop: List[str] = []
+        keys_to_drop: list[str] = []
         for key in list(final_context.keys()):
             for type_cfg in INDICATOR_TYPE_CONFIG.values():
                 prefix = type_cfg.get("enrichment_prefix")
@@ -838,9 +817,9 @@ def build_final_context(
 
 def build_readable_output(
     duplicates_count: int,
-    underlying_sections: List[Tuple[str, str]],
-    unsupported_entries: Set[Tuple[str, str]],
-    unknown_entries: Set[str],
+    underlying_sections: list[tuple[str, str]],
+    unsupported_entries: set[tuple[str, str]],
+    unknown_entries: set[str],
 ) -> str:
     """
     Build the markdown HumanReadable output for the command.
@@ -854,19 +833,17 @@ def build_readable_output(
 
     Args:
         duplicates_count: Number of duplicate indicator occurrences skipped.
-        underlying_sections: List of (bucket_type, markdown HR) from child scripts.
+        underlying_sections: list of (bucket_type, markdown HR) from child scripts.
         unsupported_entries: Unsupported indicators.
         unknown_entries: Unknown/invalid indicators.
 
     Returns:
         A markdown string for the War Room.
     """
-    hr_parts: List[str] = []
+    hr_parts: list[str] = []
 
     if duplicates_count > 0:
-        hr_parts.append(
-            f"Note: Removed {duplicates_count} duplicate indicator occurrences before enrichment."
-        )
+        hr_parts.append(f"Note: Removed {duplicates_count} duplicate indicator occurrences before enrichment.")
 
     # Nicely label each underlying HR section by type, using INDICATOR_TYPE_CONFIG["display"]
     for bucket_type, section_md in underlying_sections:
@@ -896,7 +873,8 @@ def build_readable_output(
 # Main Command Implementation
 # ===========================
 
-def indicator_enrichment_command(args: Dict[str, Any]) -> CommandResults:
+
+def indicator_enrichment_command(args: dict[str, Any]) -> CommandResults:
     """
     Aggregated indicator enrichment over IP, URL, Domain, CVE and File.
 
@@ -968,12 +946,10 @@ def indicator_enrichment_command(args: Dict[str, Any]) -> CommandResults:
     enforce_indicator_limit(total_supported, ignore_indicator_limit)
 
     # 6) Execute underlying enrichment scripts
-    underlying_sections: List[Tuple[str, str]] = []
-    merged_context: Dict[str, Any] = {}
+    underlying_sections: list[tuple[str, str]] = []
+    merged_context: dict[str, Any] = {}
     if total_supported > 0:
-        underlying_sections, merged_context = run_underlying_enrichment_scripts(
-            supported_buckets, args
-        )
+        underlying_sections, merged_context = run_underlying_enrichment_scripts(supported_buckets, args)
 
     # 7) Build final context (IndicatorEnrichment + raw_context behavior)
     demisto.debug(f"The merged context is: {merged_context}")

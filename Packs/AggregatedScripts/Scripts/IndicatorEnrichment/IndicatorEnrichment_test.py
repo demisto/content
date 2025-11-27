@@ -66,8 +66,10 @@ def return_handlers(mocker):
 @pytest.fixture
 def patch_demisto_args(mocker):
     """Helper fixture to patch demisto.args with a function that tests call."""
+
     def _patch(args_dict):
         return mocker.patch.object(demisto, "args", return_value=args_dict)
+
     return _patch
 
 
@@ -79,12 +81,15 @@ def mock_extract_indicators(mocker):
         mock_set = mock_extract_indicators
         mock_set([entry_dict])  # will patch execute_command to return that
     """
+
     def _set(return_value):
         def _mock_execute(name, args, extract_contents=False):
             # ensure we only intercept extractIndicators in these fixtures
             assert name == "extractIndicators"
             return return_value
+
         return mocker.patch.object(IndicatorEnrichment, "execute_command", side_effect=_mock_execute)
+
     return _set
 
 
@@ -96,13 +101,17 @@ def batch_executor_factory(mocker):
     batches is a list where each item corresponds to a command and is itself
     a list of tuples (entry_dict, hr_string, error_string).
     """
+
     def _set(batches):
         class DummyBatchExecutor:
             def __init__(self, *a, **k):
                 pass
+
             def execute_batch(self, commands, brands_to_run=None, verbose=False):
                 return batches
+
         return mocker.patch.object(IndicatorEnrichment, "BatchExecutor", return_value=DummyBatchExecutor())
+
     return _set
 
 
@@ -140,6 +149,7 @@ def assert_expected_commands():
         state, _ = capture_batch_commands
         assert_expected_commands(state, {"ip-enrichment": {"ip_list": ["1.1.1.1"]}})
     """
+
     def _assert(state, expected: dict, call_index: int = 0):
         captured_calls = state.get("captured_calls", [])
         if not captured_calls:
@@ -149,7 +159,7 @@ def assert_expected_commands():
 
         commands_list = captured_calls[call_index]
         normalized = [normalize_captured_command(c) for c in commands_list]
-        captured_map = {name: args for name, args in normalized}
+        captured_map = dict(normalized)
 
         if set(captured_map.keys()) != set(expected.keys()):
             raise AssertionError(f"Captured command names {set(captured_map.keys())} != expected {set(expected.keys())}")
@@ -169,9 +179,11 @@ def last_cmdresult(return_handlers):
     Usage: cmd = last_cmdresult(); then inspect cmd.readable_output, cmd.outputs
     """
     results_mock, _ = return_handlers
+
     def _get():
         assert results_mock.call_count >= 1, "return_results not called"
         return results_mock.call_args[0][0]
+
     return _get
 
 
@@ -198,12 +210,13 @@ def make_enrichment_entry(enrich_key: str, value: str, brand="TIM", extra_result
                 }
             ]
         },
-        "HumanReadable": hr or (
+        "HumanReadable": hr
+        or (
             "### Final Results\n"
             "|Brand|Arguments|Status|Message|\n"
             "|---|---|---|---|\n"
             f"| {brand} | {value} | Success | Found indicator from brands: {brand} |\n"
-        )
+        ),
     }
     return entry
 
@@ -306,9 +319,9 @@ class TestMainWrapper:
         mock_return_results.assert_not_called()
         mock_return_error.assert_called_once()
         msg = mock_return_error.call_args[0][0]
-        assert "No valid indicators provided" == msg
+        assert msg == "No valid indicators provided"
 
-    def test_main_handles_exception_via_return_error(self, mocker, return_handlers):
+    def test_main_handles_exception_via_return_error(self, mocker, return_handlers, capfd):
         """
         Case:
             main() is invoked with valid arguments
@@ -332,15 +345,15 @@ class TestMainWrapper:
         )
 
         mock_return_results, mock_return_error = return_handlers
-
-        # Act
-        main()
+        with capfd.disabled():
+            # Act
+            main()
 
         # Assert
         mock_return_results.assert_not_called()
         mock_return_error.assert_called_once()
         msg = mock_return_error.call_args[0][0]
-        assert ('Failed to execute !indicator-enrichment. Error: exception raised from ip-enrichment') == msg
+        assert msg == ("Failed to execute !indicator-enrichment. Error: exception raised from ip-enrichment")
 
 
 class TestArgsValidation:
@@ -369,7 +382,7 @@ class TestArgsValidation:
 
         mock_return_results.assert_not_called()
         mock_return_error.assert_called_once()
-        assert NO_VALID_INDICATORS_MESSAGE == mock_return_error.call_args[0][0]
+        assert mock_return_error.call_args[0][0] == NO_VALID_INDICATORS_MESSAGE
 
     def test_empty_indicators_list_only_calls_return_error(self, mocker, return_handlers):
         """
@@ -390,7 +403,7 @@ class TestArgsValidation:
 
         mock_return_results.assert_not_called()
         mock_return_error.assert_called_once()
-        assert NO_VALID_INDICATORS_MESSAGE == mock_return_error.call_args[0][0]
+        assert mock_return_error.call_args[0][0] == NO_VALID_INDICATORS_MESSAGE
 
     def test_both_text_and_list_empty_calls_return_error(self, mocker, return_handlers):
         """
@@ -415,7 +428,7 @@ class TestArgsValidation:
 
         mock_return_results.assert_not_called()
         mock_return_error.assert_called_once()
-        assert NO_VALID_INDICATORS_MESSAGE == mock_return_error.call_args[0][0]
+        assert mock_return_error.call_args[0][0] == NO_VALID_INDICATORS_MESSAGE
 
     def test_text_only_no_supported_indicators_returns_informational(self, mocker, return_handlers):
         """
@@ -429,15 +442,9 @@ class TestArgsValidation:
             - return_results(CommandResults(NO_VALID_INDICATORS_MESSAGE))
             - return_error is NOT called
         """
+
         def mock_execute(name, args, extract_contents=False):
-            return [{
-                "EntryContext": {
-                    "ExtractedIndicators": {
-                        "IPv6": ["fe80::1"],
-                        "Unknown": ["junk"]
-                    }
-                }
-            }]
+            return [{"EntryContext": {"ExtractedIndicators": {"IPv6": ["fe80::1"], "Unknown": ["junk"]}}}]
 
         mocker.patch.object(IndicatorEnrichment, "execute_command", side_effect=mock_execute)
         mocker.patch.object(demisto, "args", return_value={"text": "fe80::1 junk"})
@@ -449,7 +456,7 @@ class TestArgsValidation:
         mock_return_error.assert_not_called()
         mock_return_results.assert_called_once()
         result = mock_return_results.call_args[0][0]
-        assert getattr(result, "readable_output") == NO_VALID_INDICATORS_MESSAGE
+        assert result.readable_output == NO_VALID_INDICATORS_MESSAGE
 
     def test_text_only_no_valid_indicators_returns_informational(self, mocker, return_handlers):
         """
@@ -469,13 +476,15 @@ class TestArgsValidation:
         mocker.patch.object(demisto, "args", return_value={"text": "nothing"})
 
         def mock_extract(name, args, extract_contents=False):
-            return [{
-                "EntryContext": {
-                    "ExtractedIndicators": {
-                        # empty dict = no indicators parsed
+            return [
+                {
+                    "EntryContext": {
+                        "ExtractedIndicators": {
+                            # empty dict = no indicators parsed
+                        }
                     }
                 }
-            }]
+            ]
 
         mocker.patch.object(IndicatorEnrichment, "execute_command", side_effect=mock_extract)
 
@@ -490,7 +499,7 @@ class TestArgsValidation:
         mock_return_results.assert_called_once()
 
         result = mock_return_results.call_args[0][0]
-        assert IndicatorEnrichment.NO_VALID_INDICATORS_MESSAGE == result.readable_output
+        assert result.readable_output == IndicatorEnrichment.NO_VALID_INDICATORS_MESSAGE
 
     def test_indicators_list_only_unsupported_calls_return_error(self, mocker, return_handlers):
         """
@@ -521,7 +530,7 @@ class TestArgsValidation:
 
         mock_return_results.assert_not_called()
         mock_return_error.assert_called_once()
-        assert NO_VALID_INDICATORS_MESSAGE == mock_return_error.call_args[0][0]
+        assert mock_return_error.call_args[0][0] == NO_VALID_INDICATORS_MESSAGE
 
     def test_indicators_list_all_invalid_calls_return_error(self, mocker, return_handlers):
         """
@@ -534,6 +543,7 @@ class TestArgsValidation:
         Expectation:
             - return_error(NO_VALID_INDICATORS_MESSAGE)
         """
+
         def mock_detect(_):
             return None  # everything is invalid
 
@@ -546,7 +556,7 @@ class TestArgsValidation:
 
         mock_return_results.assert_not_called()
         mock_return_error.assert_called_once()
-        assert NO_VALID_INDICATORS_MESSAGE == mock_return_error.call_args[0][0]
+        assert mock_return_error.call_args[0][0] == NO_VALID_INDICATORS_MESSAGE
 
     def test_both_text_and_list_no_supported_calls_return_error(self, mocker, return_handlers):
         """
@@ -559,15 +569,9 @@ class TestArgsValidation:
         Expectation:
             - return_error(NO_VALID_INDICATORS_MESSAGE)
         """
+
         def mock_extract(name, args, extract_contents=False):
-            return [{
-                "EntryContext": {
-                    "ExtractedIndicators": {
-                        "IPv6": ["fe80::1"],
-                        "Unknown": ["junk"]
-                    }
-                }
-            }]
+            return [{"EntryContext": {"ExtractedIndicators": {"IPv6": ["fe80::1"], "Unknown": ["junk"]}}}]
 
         def mock_detect(v):
             if v == "10.0.0.0/8":
@@ -591,7 +595,7 @@ class TestArgsValidation:
 
         mock_return_results.assert_not_called()
         mock_return_error.assert_called_once()
-        assert NO_VALID_INDICATORS_MESSAGE == mock_return_error.call_args[0][0]
+        assert mock_return_error.call_args[0][0] == NO_VALID_INDICATORS_MESSAGE
 
     def test_indicator_limit_exceeded_calls_return_error(self, mocker, return_handlers):
         """
@@ -617,7 +621,13 @@ class TestArgsValidation:
 
         mock_return_results.assert_not_called()
         mock_return_error.assert_called_once()
-        assert ERR_INDICATOR_LIMIT_EXCEEDED_TEMPLATE.format(found="101",limit="100",)  == mock_return_error.call_args[0][0]
+        assert (
+            ERR_INDICATOR_LIMIT_EXCEEDED_TEMPLATE.format(
+                found="101",
+                limit="100",
+            )
+            == mock_return_error.call_args[0][0]
+        )
         mock_batch.assert_not_called()
 
     def test_indicator_limit_exceeded_ignore_flag_runs_batch(self, mocker, return_handlers):
@@ -664,8 +674,14 @@ class TestEnrichmentE2E:
     """
 
     def test_extract_supported_and_unsupported_from_text(
-        self, patch_demisto_args, mock_extract_indicators, batch_executor_factory, return_handlers, last_cmdresult,
-        capture_batch_commands, assert_expected_commands
+        self,
+        patch_demisto_args,
+        mock_extract_indicators,
+        batch_executor_factory,
+        return_handlers,
+        last_cmdresult,
+        capture_batch_commands,
+        assert_expected_commands,
     ):
         """
         Case:
@@ -682,16 +698,20 @@ class TestEnrichmentE2E:
         # Arrange
         patch_demisto_args({"text": "1.1.1.1 fe80::1 junk and a URL https://example.com"})
 
-        mock_extract_indicators([{
-            "EntryContext": {
-                "ExtractedIndicators": {
-                    "IP": ["1.1.1.1"],
-                    "IPv6": ["fe80::1"],
-                    "Unknown": ["junk"],
-                    "URL": ["https://example.com"]
+        mock_extract_indicators(
+            [
+                {
+                    "EntryContext": {
+                        "ExtractedIndicators": {
+                            "IP": ["1.1.1.1"],
+                            "IPv6": ["fe80::1"],
+                            "Unknown": ["junk"],
+                            "URL": ["https://example.com"],
+                        }
+                    }
                 }
-            }
-        }])
+            ]
+        )
 
         ip_entry = make_enrichment_entry("IPEnrichment(val.Value && val.Value == obj.Value)", "1.1.1.1")
         url_entry = make_enrichment_entry("URLEnrichment(val.Value && val.Value == obj.Value)", "https://example.com")
@@ -733,12 +753,16 @@ class TestEnrichmentE2E:
 
         expected_ctx = {
             "IndicatorEnrichment": [
-                expected_indicator_entry("IP", "1.1.1.1",
-                                         raw_obj=ip_entry["EntryContext"]["IPEnrichment(val.Value && val.Value == obj.Value)"][0]),
-                expected_indicator_entry("URL", "https://example.com",
-                                         raw_obj=url_entry["EntryContext"]["URLEnrichment(val.Value && val.Value == obj.Value)"][0]),
+                expected_indicator_entry(
+                    "IP", "1.1.1.1", raw_obj=ip_entry["EntryContext"]["IPEnrichment(val.Value && val.Value == obj.Value)"][0]
+                ),
+                expected_indicator_entry(
+                    "URL",
+                    "https://example.com",
+                    raw_obj=url_entry["EntryContext"]["URLEnrichment(val.Value && val.Value == obj.Value)"][0],
+                ),
                 expected_indicator_entry("IPv6", "fe80::1", status="Error", message="No script supports this indicator type."),
-                expected_indicator_entry("Unknown", "junk", status="Error", message="Not a valid indicator.")
+                expected_indicator_entry("Unknown", "junk", status="Error", message="Not a valid indicator."),
             ]
         }
         assert cmd.outputs == expected_ctx
@@ -751,8 +775,14 @@ class TestEnrichmentE2E:
         assert_expected_commands(state, expected)
 
     def test_merging_text_and_list_with_dedup_keeps_all_types_from_text(
-        self, patch_demisto_args, mock_extract_indicators, batch_executor_factory, return_handlers, last_cmdresult,
-        capture_batch_commands, assert_expected_commands
+        self,
+        patch_demisto_args,
+        mock_extract_indicators,
+        batch_executor_factory,
+        return_handlers,
+        last_cmdresult,
+        capture_batch_commands,
+        assert_expected_commands,
     ):
         """
         Case:
@@ -771,14 +801,9 @@ class TestEnrichmentE2E:
         # Arrange: text contains both domain+url via extractIndicators; indicators_list contains the same URL
         patch_demisto_args({"text": "Check https://google.com", "indicators_list": "https://google.com"})
 
-        mock_extract_indicators([{
-            "EntryContext": {
-                "ExtractedIndicators": {
-                    "Domain": ["google.com"],
-                    "URL": ["https://google.com"]
-                }
-            }
-        }])
+        mock_extract_indicators(
+            [{"EntryContext": {"ExtractedIndicators": {"Domain": ["google.com"], "URL": ["https://google.com"]}}}]
+        )
 
         # Build underlying entries for both domain and url
         domain_entry = make_enrichment_entry("DomainEnrichment(val.Value && val.Value == obj.Value)", "google.com")
@@ -786,8 +811,7 @@ class TestEnrichmentE2E:
 
         # capture commands & set return batches
         state, set_return = capture_batch_commands
-        set_return([[(domain_entry, domain_entry["HumanReadable"], "")],
-                    [(url_entry, url_entry["HumanReadable"], "")]])
+        set_return([[(domain_entry, domain_entry["HumanReadable"], "")], [(url_entry, url_entry["HumanReadable"], "")]])
 
         # Act
         main()
@@ -800,35 +824,39 @@ class TestEnrichmentE2E:
         # Check HR: we expect both domain and url final results present
         cmd = last_cmdresult()
         hr = cmd.readable_output
-        EXPECTED_HR = ('Note: Removed 1 duplicate indicator occurrences before enrichment.\n'
-                 '\n'
-                 '### domain-enrichment\n'
-                 '\n'
-                 '### Final Results\n'
-                 '|Brand|Arguments|Status|Message|\n'
-                 '|---|---|---|---|\n'
-                 '| TIM | google.com | Success | Found indicator from brands: TIM |\n'
-                 '\n'
-                 '\n'
-                 '### url-enrichment\n'
-                 '\n'
-                 '### Final Results\n'
-                 '|Brand|Arguments|Status|Message|\n'
-                 '|---|---|---|---|\n'
-                 '| TIM | https://google.com | Success | Found indicator from brands: TIM |\n')
+        EXPECTED_HR = (
+            "Note: Removed 1 duplicate indicator occurrences before enrichment.\n"
+            "\n"
+            "### domain-enrichment\n"
+            "\n"
+            "### Final Results\n"
+            "|Brand|Arguments|Status|Message|\n"
+            "|---|---|---|---|\n"
+            "| TIM | google.com | Success | Found indicator from brands: TIM |\n"
+            "\n"
+            "\n"
+            "### url-enrichment\n"
+            "\n"
+            "### Final Results\n"
+            "|Brand|Arguments|Status|Message|\n"
+            "|---|---|---|---|\n"
+            "| TIM | https://google.com | Success | Found indicator from brands: TIM |\n"
+        )
         assert hr == EXPECTED_HR
 
         # Expected context: both Domain and URL entries, each once
         expected_ctx = {
             "IndicatorEnrichment": [
                 expected_indicator_entry(
-                    "Domain", "google.com",
-                    raw_obj=domain_entry["EntryContext"]["DomainEnrichment(val.Value && val.Value == obj.Value)"][0]
+                    "Domain",
+                    "google.com",
+                    raw_obj=domain_entry["EntryContext"]["DomainEnrichment(val.Value && val.Value == obj.Value)"][0],
                 ),
                 expected_indicator_entry(
-                    "URL", "https://google.com",
-                    raw_obj=url_entry["EntryContext"]["URLEnrichment(val.Value && val.Value == obj.Value)"][0]
-                )
+                    "URL",
+                    "https://google.com",
+                    raw_obj=url_entry["EntryContext"]["URLEnrichment(val.Value && val.Value == obj.Value)"][0],
+                ),
             ]
         }
         assert cmd.outputs == expected_ctx
@@ -841,8 +869,14 @@ class TestEnrichmentE2E:
         assert_expected_commands(state, expected)
 
     def test_raw_context_true_includes_raw_root_and_indicator_enrichment(
-        self, patch_demisto_args, mock_extract_indicators, batch_executor_factory, return_handlers, last_cmdresult,
-        capture_batch_commands, assert_expected_commands
+        self,
+        patch_demisto_args,
+        mock_extract_indicators,
+        batch_executor_factory,
+        return_handlers,
+        last_cmdresult,
+        capture_batch_commands,
+        assert_expected_commands,
     ):
         """
         Case:
@@ -860,9 +894,7 @@ class TestEnrichmentE2E:
         patch_demisto_args({"text": "1.1.1.1", "raw_context": "true"})
 
         # extractIndicators says IP
-        mock_extract_indicators([{
-            "EntryContext": {"ExtractedIndicators": {"IP": ["1.1.1.1"]}}
-        }])
+        mock_extract_indicators([{"EntryContext": {"ExtractedIndicators": {"IP": ["1.1.1.1"]}}}])
 
         # Build an ip entry that also includes Core and EndpointData in its EntryContext --
         # this simulates an underlying script returning Core and EndpointData as part of its EntryContext
@@ -877,15 +909,14 @@ class TestEnrichmentE2E:
             "EntryContext": {
                 "Core": {"AnalyticsPrevalence": {"Ip": [{"value": False, "ip_address": "1.1.1.1"}]}},
                 "EndpointData": [
-                    {"Brand": "CrowdstrikeFalcon", "IPAddress": "1.1.1.1", "Message": "Command failed - no endpoint found"}],
-                "IPEnrichment": ip_entry["EntryContext"][
-                    "IPEnrichment(val.Value && val.Value == obj.Value)"]
+                    {"Brand": "CrowdstrikeFalcon", "IPAddress": "1.1.1.1", "Message": "Command failed - no endpoint found"}
+                ],
+                "IPEnrichment": ip_entry["EntryContext"]["IPEnrichment(val.Value && val.Value == obj.Value)"],
             },
-            "HumanReadable": ip_entry["HumanReadable"]
+            "HumanReadable": ip_entry["HumanReadable"],
         }
 
         state, set_return = capture_batch_commands
-        # return the unpacked entry (for aggregated unpacking) and the raw root so the script can copy root keys when raw_context=True
         set_return([[(raw_root, "", "")]])
 
         main()
@@ -902,7 +933,9 @@ class TestEnrichmentE2E:
         assert "IPEnrichment" in ctx
         # IndicatorEnrichment should contain the IP unpacked result with Type added
         ie = ctx["IndicatorEnrichment"]
-        assert isinstance(ie, list) and ie[0]["Type"] == "IP" and ie[0]["Value"] == "1.1.1.1"
+        assert isinstance(ie, list)
+        assert ie[0]["Type"] == "IP"
+        assert ie[0]["Value"] == "1.1.1.1"
 
         # Verify that the IPEnrichment and IndicatorEnrichment are the same besides for the "Type" key
         ip = ctx["IPEnrichment"]
@@ -910,8 +943,14 @@ class TestEnrichmentE2E:
         assert ip == ie
 
     def test_mapping_all_supported_types_calls_correct_commands(
-        self, patch_demisto_args, mock_extract_indicators, batch_executor_factory, return_handlers, last_cmdresult,
-        capture_batch_commands, assert_expected_commands
+        self,
+        patch_demisto_args,
+        mock_extract_indicators,
+        batch_executor_factory,
+        return_handlers,
+        last_cmdresult,
+        capture_batch_commands,
+        assert_expected_commands,
     ):
         """
         Case:
@@ -924,23 +963,34 @@ class TestEnrichmentE2E:
         Expectation:
             - Calls the correct underlying scripts
         """
-        patch_demisto_args({"indicators_list": ",".join([
-            "1.1.1.1",
-            "https://example.com",
-            "example.com",
-            "CVE-2025-0001",
-            "badf4752413cb0cbdc03fb95820ca167f0cdc63b597ccdb5ef43111180e088b0"
-        ])})
+        patch_demisto_args(
+            {
+                "indicators_list": ",".join(
+                    [
+                        "1.1.1.1",
+                        "https://example.com",
+                        "example.com",
+                        "CVE-2025-0001",
+                        "badf4752413cb0cbdc03fb95820ca167f0cdc63b597ccdb5ef43111180e088b0",
+                    ]
+                )
+            }
+        )
+
         # auto-detect mapping (we patch to return the exact type needed)
         def mock_detect(v):
-            if v == "1.1.1.1": return "IP"
-            if v == "https://example.com": return "URL"
-            if v == "example.com": return "Domain"
-            if v == "CVE-2025-0001": return "CVE"
-            if v.startswith("badf4752"): return "File"
+            if v == "1.1.1.1":
+                return "IP"
+            if v == "https://example.com":
+                return "URL"
+            if v == "example.com":
+                return "Domain"
+            if v == "CVE-2025-0001":
+                return "CVE"
+            if v.startswith("badf4752"):
+                return "File"
             return None
-        # Patch auto_detect_indicator_type to our mapping
-        pytest_monkey = pytest  # placeholder - we just use mocker below
+
         # patch with mocker: (we don't have mocker here so patch via the module directly with lambda in tests uses fixtures)
         IndicatorEnrichment.auto_detect_indicator_type = mock_detect
 
@@ -955,13 +1005,19 @@ class TestEnrichmentE2E:
             "url-enrichment": {"url_list": ["https://example.com"]},
             "domain-enrichment": {"domain_list": ["example.com"]},
             "cve-enrichment": {"cve_list": ["CVE-2025-0001"]},
-            "file-enrichment": {"file_hash": ["badf4752413cb0cbdc03fb95820ca167f0cdc63b597ccdb5ef43111180e088b0"]}
+            "file-enrichment": {"file_hash": ["badf4752413cb0cbdc03fb95820ca167f0cdc63b597ccdb5ef43111180e088b0"]},
         }
         assert_expected_commands(state, expected)
 
     def test_text_list_mismatch_preserve_text_type_and_log_unknown(
-        self, patch_demisto_args, mock_extract_indicators, batch_executor_factory, return_handlers, last_cmdresult,
-        capture_batch_commands, assert_expected_commands
+        self,
+        patch_demisto_args,
+        mock_extract_indicators,
+        batch_executor_factory,
+        return_handlers,
+        last_cmdresult,
+        capture_batch_commands,
+        assert_expected_commands,
     ):
         """
         Case:
@@ -980,9 +1036,11 @@ class TestEnrichmentE2E:
         patch_demisto_args({"text": "1.1.1.1", "indicators_list": "1.1.1.1"})
         # extractIndicators returns IP for text
         mock_extract_indicators([{"EntryContext": {"ExtractedIndicators": {"IP": ["1.1.1.1"]}}}])
+
         # auto_detect_indicator_type for list returns None/Unknown for that value
         def mock_detect(v):
             return None
+
         IndicatorEnrichment.auto_detect_indicator_type = mock_detect
 
         # Prepare enrichment entry for IP
@@ -1007,8 +1065,14 @@ class TestEnrichmentE2E:
         assert_expected_commands(state, expected)
 
     def test_indicator_limit_checked_after_dedup_unknown_unsupported(
-        self, patch_demisto_args, mock_extract_indicators, batch_executor_factory, return_handlers, last_cmdresult,
-        capture_batch_commands, assert_expected_commands
+        self,
+        patch_demisto_args,
+        mock_extract_indicators,
+        batch_executor_factory,
+        return_handlers,
+        last_cmdresult,
+        capture_batch_commands,
+        assert_expected_commands,
     ):
         """
         Case:
@@ -1037,6 +1101,7 @@ class TestEnrichmentE2E:
             if v == "fe80::1":
                 return "IPv6"
             return None
+
         IndicatorEnrichment.auto_detect_indicator_type = mock_detect
 
         # No text provided here
