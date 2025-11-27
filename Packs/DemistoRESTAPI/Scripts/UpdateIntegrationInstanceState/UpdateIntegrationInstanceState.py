@@ -13,7 +13,7 @@ def update_integration_instance_state(instance_name: str, enable: bool):
     search_res = demisto.executeCommand("core-api-post", {"uri": "/settings/integration/search", "body": {}})
 
     if is_error(search_res):
-        return_error(f"Failed to search integrations via API: {get_error(search_res)}")
+        raise DemistoException(f"Failed to search integrations via API: {get_error(search_res)}")
 
     instances = search_res[0]["Contents"]["response"]["instances"]
     instance_config = None

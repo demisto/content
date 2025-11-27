@@ -122,6 +122,17 @@ class EventConnection:
                     self.reconnect()
             time.sleep(self.idle_timeout)
 
+    def receive(self, timeout: int = RECEIVE_TIMEOUT) -> dict[str, Any]:
+        """Receive a new event from the websocket connection.
+
+        Args:
+            timeout (int): Maximum time to wait for a message to be received. Defaults to RECEIVE_TIMEOUT.
+
+        Returns:
+            dict[str, Any]: The raw event from the websocket.
+        """
+        return json.loads(self.connection.recv(timeout=timeout))
+
 
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
     """This function checks if the given interval has passed since the given start time
@@ -299,18 +310,18 @@ def fetch_events(
     return events
 
 
-def receive_event(connection: EventConnection, timeout: int = RECEIVE_TIMEOUT) -> dict:
+def receive_event(connection: EventConnection, timeout: int = RECEIVE_TIMEOUT) -> dict[str, Any]:
     """
     Processes a single event by parsing its timestamp and adding metadata.
 
     Args:
         connection (EventConnection): The connection to the event type.
-        event_type (str): The type of the event.
+        timeout (int): Maximum time to wait for a message to be received. Defaults to RECEIVE_TIMEOUT.
 
     Returns:
-        dict: The processed event with '_time' and 'event_type' fields.
+        dict[str, Any]: The processed event with '_time' and 'event_type' fields.
     """
-    event = json.loads(connection.connection.recv(timeout=timeout))
+    event = connection.receive(timeout=timeout)
     event_id = event.get("id", event.get("guid"))
     event_ts = event.get("ts")
     if not event_ts:
@@ -328,7 +339,7 @@ def receive_event(connection: EventConnection, timeout: int = RECEIVE_TIMEOUT) -
     return event
 
 
-def receive_events_after_disconnection(connection: EventConnection):
+def receive_events_after_disconnection(connection: EventConnection) -> list[dict]:
     """Receive events after disconnection.
 
     Args:
