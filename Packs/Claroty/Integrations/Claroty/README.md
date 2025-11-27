@@ -49,6 +49,7 @@ divide according to CVE risk and mitigate accordingly (high will have different 
     * __Site ID to fetch by__
     * __Fetch by alert type__
     * __Exclude resolved alerts__
+    * __Include only ARR completed alerts__
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Fetched Incidents Data
@@ -244,6 +245,7 @@ Admin user.
 | alert_limit | The maximum number of alerts to query. | Optional |
 | minimal_severity | Set minimal severity to query by. | Optional |
 | exclude_resolved_alerts | Returns only unresloved alerts. | Optional |
+| include_only_arr_completed_alerts | Includes only alerts that have completed their initial Automated Resolution Rules flow. Default is False. | Optional |
 
 ##### Context Output
 
@@ -276,6 +278,7 @@ Admin user.
 | Claroty.Alert.ResourceID | String | The alert resource ID (AlertID-SiteID). |
 | Claroty.Alert.Severity | String | The alert severity. |
 | Claroty.Alert.Category | String | The alert category. |
+| Claroty.Alert.InitialArrFlowCompleted | Number | Whether the alert has completed its initial Automated Resolution Rules flow. |
 
 ##### Command Example
 

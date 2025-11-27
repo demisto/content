@@ -75,6 +75,13 @@ configuration:
   type: 8
   section: Collect
   required: false
+- display: Include only ARR completed alerts
+  name: include_only_arr_completed_alerts
+  type: 8
+  section: Collect
+  additionalinfo: Includes only alerts that have completed their initial Automated Resolution Rules flow
+  defaultvalue: false
+  required: false
 description: Use the Claroty CTD integration to manage assets and alerts.
 display: Claroty
 name: Claroty
@@ -229,6 +236,7 @@ script:
       - alert_indicators
       - actionable_assets
       - category
+      - initial_arr_flow_completed
     - auto: PREDEFINED
       defaultValue: timestamp
       description: |-
@@ -269,6 +277,13 @@ script:
       - Critical
     - description: Returns only unresloved alerts.
       name: exclude_resolved_alerts
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Includes only alerts that have completed their initial Automated Resolution Rules flow.
+      name: include_only_arr_completed_alerts
+      predefined:
+      - 'True'
+      - 'False'
     description: Gets alerts from CTD.
     name: claroty-query-alerts
     outputs:
@@ -353,6 +368,9 @@ script:
     - contextPath: Claroty.Alert.Category
       description: The alert category.
       type: String
+    - contextPath: Claroty.Alert.InitialArrFlowCompleted
+      description: Whether the alert has completed its initial Automated Resolution Rules flow.
+      type: Number
   - arguments:
     - description: The ResourceId of the Alerts to resolve (in <alert_id>-<site_id> format).
       name: selected_alerts
