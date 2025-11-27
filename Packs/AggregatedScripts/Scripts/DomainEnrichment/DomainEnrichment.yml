@@ -137,7 +137,7 @@ outputs:
   type: Date
 - contextPath: DomainEnrichment.Results.AdditionalFields.DomainStatus
   description: The status of the domain.
-  type: Datee
+  type: Datte
 - contextPath: DomainEnrichment.Results.AdditionalFields.NameServers
   description: (List<String>) Name servers of the domain.  
   type: Unknown
