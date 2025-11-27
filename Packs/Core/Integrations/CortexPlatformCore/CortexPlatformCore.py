@@ -433,7 +433,7 @@ class Client(CoreClient):
             },
         )
 
-    def get_playbook_suggestion_by_issue(self, issue_id):
+    def get_playbook_suggestions_by_issue(self, issue_id):
         """
         Get playbook suggestions for a specific issue.
         Args:
@@ -441,14 +441,27 @@ class Client(CoreClient):
         Returns:
             dict: The response containing playbook suggestions.
         """
-        reply = self._http_request(
+        return self._http_request(
             method="POST",
             json_data={"alert_internal_id": issue_id},
             headers=self._headers,
             url_suffix="/incident/get_playbook_suggestion_by_alert/",
         )
 
-        return reply
+    def get_playbooks_metadata(self):
+        return self._http_request(
+            method="GET",
+            headers=self._headers,
+            full_url="/xsoar/playbooks/metadata",
+        )
+    
+    def get_quick_actions_metadata(self):
+        return self._http_request(
+            method="GET",
+            headers=self._headers,
+            full_url="/xsoar/quickactions",
+        )
+    
 
     def appsec_remediate_issue(self, request_body):
         return self._http_request(
@@ -536,60 +549,7 @@ def get_cloudsec_suggestion(client, issue, issue_id):
     return recommendation
 
 
-# def clone_client(original_client):
-#     """
-#     Create a new client instance for thread-safe execution.
-#     """
-#     return Client(
-#         base_url=original_client._base_url,
-#         verify=original_client._verify,
-#         headers=original_client._headers,
-#         timeout=original_client.timeout,
-#     )
-
-
-# def process_issue_recommendation(original_client, issue):
-#     """
-#     Process a single issue: get playbook and AppSec suggestions.
-#     """
-#     try:
-#         client = clone_client(original_client)
-#         current_issue_id = issue.get("internal_id")
-#         demisto.debug(f"recommendations: Starting to search issue recommendations for {current_issue_id}.")
-        
-#         # Build final recommendation
-#         recommendation = {
-#             "issue_id": current_issue_id,
-#             "issue_name": issue.get("alert_name"),
-#             "severity": issue.get("severity"),
-#             "description": issue.get("alert_description"),
-#             "remediation": issue.get("remediation")
-#         }
-
-#         # Get playbook suggestions
-#         playbook_response = client.get_playbook_suggestions_by_issue(current_issue_id)
-#         demisto.debug(f"recommendations: Playbook response for {current_issue_id}: {playbook_response}.")
-#         if playbook_response and isinstance(playbook_response, dict) and "reply" in playbook_response.keys():
-#             playbook_suggestions = playbook_response.get("reply", {})
-#             quick_action_suggestion = playbook_response.get("reply", {}).get("quick_action_id")
-#             recommendation["playbook_suggestions"] = playbook_suggestions
-#             recommendation["quick_action_suggestion"] = quick_action_suggestion
-        
-#         # if issue.get("alert_source") in APPSEC_SOURCES:
-#         #     demisto.debug(f"recommendations: fetching for appsec suggestion in {current_issue_id}")
-#         #     appsec_recommendation = get_appsec_suggestion(
-#         #         client, issue, current_issue_id
-#         #     )
-#         #     demisto.debug(f"recommendations: AppSec recommendations for {current_issue_id}: {appsec_recommendation}.")
-#         #     if appsec_recommendation:
-#         #         recommendation.update(appsec_recommendation)
-
-#         return recommendation
-    
-#     except Exception as e:
-#         raise DemistoException(f"Failed to process issue {issue.get('internal_id')}: {str(e)}")
-
-def populate_playbook_and_quick_action_suggestions(client, issue_id) -> triple[dict, bool, bool]:
+def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadata, pb_id_to_index, qas_metadata, qa_id_to_index):
     """
     Fetches playbook and quick-action suggestions for a given issue
     and updates the recommendation dictionary accordingly.
@@ -603,34 +563,37 @@ def populate_playbook_and_quick_action_suggestions(client, issue_id) -> triple[d
 
     response = client.get_playbook_suggestions_by_issue(issue_id)
     suggestions = response.get("reply",{})
-    demisto.debug(f"{suggestions=} for {issue_id=}")
+    demisto.debug(f"Playbooks and quick action {suggestions=} for {issue_id=}")
 
     if not suggestions:
-        return append_playbook, append_quick_action
+        return {}, append_playbook, append_quick_action
 
     # Playbook suggestion
-    playbook_id = suggestions.get("playbook_id")
-    suggestion_rule_id = suggestions.get("suggestion_rule_id")
+    playbook_id = suggestions.get("playbook_id", None)
+    suggestion_rule_id = suggestions.get("suggestion_rule_id", None)
 
     if playbook_id:
         recommendation["playbook_suggestions"] = {
             "playbook_id": playbook_id,
             "suggestion_rule_id": suggestion_rule_id,
         }
-        append_playbook = True
+        if playbook_id in pb_id_to_index.keys():
+            recommendation["playbook_suggestions"].update(pbs_metadata[pb_id_to_index[playbook_id]])
+            ## pop id (playbook_id exist - to avoid BC)
 
     # Quick action suggestion
-    quick_action_id = suggestions.get("quick_action_id")
-    quick_action_suggestion_rule_id = suggestions.get("quick_action_suggestion_rule_id")
+    quick_action_id = suggestions.get("quick_action_id", None)
+    quick_action_suggestion_rule_id = suggestions.get("quick_action_suggestion_rule_id", None)
 
     if quick_action_id:
         recommendation["quick_action_suggestions"] = {
             "quick_action_id": quick_action_id,
             "quick_action_suggestion_rule_id": quick_action_suggestion_rule_id,
         }
-        append_quick_action = True
+        if quick_action_id in qa_id_to_index.keys():
+            recommendation["quick_action_suggestions"].update(qas_metadata[qa_id_to_index[quick_action_id]])
 
-    return recommendation, append_playbook, append_quick_action
+    return recommendation, playbook_id, quick_action_id
 
 
 def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
@@ -662,48 +625,6 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     if not issue_data:
         raise DemistoException(f"No issues found with IDs: {issue_ids}")
 
-    # issue = issue_data[0]
-
-    # # Get playbook suggestions
-    # playbook_response = client.get_playbook_suggestion_by_issue(issue_id)
-    # playbook_suggestion = playbook_response.get("reply", {})
-    # demisto.debug(f"{playbook_response=}")
-
-    # recommendation = {
-    #     "issue_id": issue.get("internal_id") or issue_id,
-    #     "issue_name": issue.get("alert_name"),
-    #     "severity": issue.get("severity"),
-    #     "description": issue.get("alert_description"),
-    #     "remediation": issue.get("remediation"),
-    #     "playbook_suggestion": playbook_suggestion,
-    # }
-
-    # headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
-
-    # if issue.get("alert_source") in APPSEC_SOURCES:
-    #     headers, recommendation = get_appsec_suggestion(client, headers, issue, recommendation, issue_id)
-
-    # readable_output = tableToMarkdown(
-    #     f"Issue Recommendations for {issue_id}",
-    #     [recommendation],
-    #     headerTransform=string_to_table_header,
-    #     headers=headers,
-    # )
-
-    # if playbook_suggestion:
-    #     readable_output += "\n" + tableToMarkdown(
-    #         "Playbook Suggestions",
-    #         playbook_suggestion,
-    #         headerTransform=string_to_table_header,
-    #     )
-
-    # return CommandResults(
-    #     readable_output=readable_output,
-    #     outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.IssueRecommendations",
-    #     outputs_key_field="issue_id",
-    #     outputs=recommendation,
-    #     raw_response=response,
-    # )
     headers = [
         "issue_id",
         "issue_name",
@@ -715,6 +636,11 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     append_appsec_headers = False
     append_playbook_suggestions_header = False
     append_quick_action_suggestions_header = False
+    pbs_metadata = client.get_playbooks_metadata()
+    pb_id_to_index = {item.get("id"): index for index, item in enumerate(pbs_metadata)}
+    qas_metadata = client.get_quick_actions_metadata()
+    demisto.debug(f"Quick actions metadata: {qas_metadata}")
+    qa_id_to_index = {item.get("id"): index for index, item in enumerate(qas_metadata)}
     all_recommendations = []
 
     for issue in issue_data:
@@ -730,13 +656,13 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         }
 
         # --- Playbook and Quick Action Suggestions ---
-        recommendation_pb_qa, append_pb, append_qa = populate_playbook_and_quick_action_suggestions(
-            client, current_issue_id
+        recommendation_pb_qa, pb, qa = populate_playbook_and_quick_action_suggestions(
+            client, current_issue_id, pbs_metadata, pb_id_to_index, qas_metadata, qa_id_to_index
         )
         recommendation.update(recommendation_pb_qa)
-        if append_pb:
+        if pb:
             append_playbook_suggestions_header = True
-        if append_qa:
+        if qa:
             append_quick_action_suggestions_header = True
             
         alert_source = issue.get("alert_source")
@@ -750,17 +676,17 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
                 append_appsec_headers = True
 
         # --- CloudSec ---
-        elif alert_source in CLOUDSEC_SOURCES:
-            cloudsec_recommendation = get_cloudsec_suggestion(client, issue, recommendation)
-            demisto.debug(f"{cloudsec_recommendation=} for {current_issue_id=}")
-            if cloudsec_recommendation:
-                recommendation.update(cloudsec_recommendation)
+        # elif alert_source in CLOUDSEC_SOURCES:
+        #     cloudsec_recommendation = get_cloudsec_suggestion(client, issue, recommendation)
+        #     demisto.debug(f"{cloudsec_recommendation=} for {current_issue_id=}")
+        #     if cloudsec_recommendation:
+        #         recommendation.update(cloudsec_recommendation)
 
-        # --- Remediation Techniques ---
-        elif alert_source in REMEDIATION_TECHNIQUES_SOURCES:
-            remediation_techniques_response = issue.get("extended_fields", {}).get("remediationTechniques")
-            demisto.debug(f"Remediation recommendation of {current_issue_id=}: {remediation_techniques_response}")
-            recommendation["remediation"] = remediation_techniques_response or recommendation.get("remediation")
+        # # --- Remediation Techniques ---
+        # elif alert_source in REMEDIATION_TECHNIQUES_SOURCES:
+        #     remediation_techniques_response = issue.get("extended_fields", {}).get("remediationTechniques")
+        #     demisto.debug(f"Remediation recommendation of {current_issue_id=}: {remediation_techniques_response}")
+        #     recommendation["remediation"] = remediation_techniques_response or recommendation.get("remediation")
 
         all_recommendations.append(recommendation)
 
