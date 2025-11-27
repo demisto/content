@@ -4516,6 +4516,113 @@ script:
     - contextPath: Core.ip_block_results
       description: A list of Dictionaries, each containing ip_address, end_point, and reason (including status and error message).
       type: List
+  - arguments:
+    - description: A comma-separated list of endpoint names.
+      name: endpoint_name
+      isArray: true
+    - description: A comma-separated list of endpoint types.
+      name: endpoint_type
+      isArray: true
+    - description: A comma-separated list of endpoint statuses.
+      name: endpoint_status
+      isArray: true
+    - description: A comma-separated list of endpoint platforms.
+      name: platform
+      isArray: true
+    - description: A comma-separated list of operating systems.
+      name: operating_system
+      isArray: true
+    - description: A comma-separated list of agent versions.
+      name: agent_version
+      isArray: true
+    - description: A comma-separated list of agent OEL values.
+      name: agent_oel
+      isArray: true
+    - description: A comma-separated list of OS versions.
+      name: os_version
+      isArray: true
+    - description: A comma-separated list of IP addresses.
+      name: ip_address
+      isArray: true
+    - description: A comma-separated list of domains.
+      name: domain
+      isArray: true
+    - description: A comma-separated list of assigned prevention policies.
+      name: assigned_prevention_policy
+      isArray: true
+    - description: A comma-separated list of group names.
+      name: group_name
+      isArray: true
+    - description: A comma-separated list of endpoint tags.
+      name: tags
+      isArray: true
+    - description: A comma-separated list of endpoint IDs.
+      name: endpoint_id
+      isArray: true
+    - description: A comma-separated list of endpoint operational statuses.
+      name: operational_status
+      isArray: true
+    - description: A comma-separated list of cloud providers.
+      name: cloud_provider
+      isArray: true
+    - description: A comma-separated list of cloud regions.
+      name: cloud_region
+      isArray: true
+    name: core-list-endpoints
+    hidden: true
+    description: Retrieves endpoints based on the provided filters.
+    outputs:
+    - contextPath: Core.Endpoint.Name
+      description: The endpoint name.
+      type: String
+    - contextPath: Core.Endpoint.Type
+      description: The endpoint type.
+      type: String
+    - contextPath: Core.Endpoint.Status
+      description: The endpoint status.
+      type: String
+    - contextPath: Core.Endpoint.Platform
+      description: The endpoint platform.
+      type: String
+    - contextPath: Core.Endpoint.OperatingSystem
+      description: The operating system of the endpoint.
+      type: String
+    - contextPath: Core.Endpoint.AgentVersion
+      description: The agent version installed on the endpoint.
+      type: String
+    - contextPath: Core.Endpoint.AgentOEL
+      description: The agent OEL value.
+      type: String
+    - contextPath: Core.Endpoint.OSVersion
+      description: The operating system version.
+      type: String
+    - contextPath: Core.Endpoint.IPAddress
+      description: The endpoint IP address.
+      type: String
+    - contextPath: Core.Endpoint.Domain
+      description: The domain of the endpoint.
+      type: String
+    - contextPath: Core.Endpoint.AssignedPreventionPolicy
+      description: The assigned prevention policy.
+      type: String
+    - contextPath: Core.Endpoint.GroupNames
+      description: A list of group names the endpoint belongs to.
+      type: List
+    - contextPath: Core.Endpoint.Tags
+      description: A list of tags assigned to the endpoint.
+      type: List
+    - contextPath: Core.Endpoint.ID
+      description: The unique endpoint ID.
+      type: String
+    - contextPath: Core.Endpoint.OperationalStatus
+      description: The operational status of the endpoint.
+      type: String
+    - contextPath: Core.Endpoint.CloudProvider
+      description: The cloud provider associated with the endpoint.
+      type: String
+    - contextPath: Core.Endpoint.CloudRegion
+      description: The cloud region of the endpoint.
+      type: String
   runonce: false
   script: '-'
   subtype: python3

@@ -703,7 +703,26 @@ def core_get_contributing_event_command(client: Client, args: Dict) -> CommandRe
 
 
 def core_list_endpoints_command(client: Client, args: dict):
-    
+    preprocess_args = {
+        "endpoint_name": "HOST_NAME",
+        "endpoint_type": "AGENT_TYPE",
+        "endpoint_status": "AGENT_STATUS",
+        "platform": "OS_TYPE", 
+        "operating_system": "OS_DESC",
+        "agent_version": "AGENT_VERSION",
+        "agent_oel": "",
+        "os_version": "OS_VERSION",
+        "ip_address": "IP",
+        "domain": "DOMAIN",
+        "assigned_prevention_policy": "ACTIVE_POLICY",
+        "group_name": "GROUP_ID",
+        "tags": "TAGS",
+        "endpoint_id": "AGENT_ID",
+        "operational_status": "OPERATIONAL_STATUS",
+        "cloud_provider": "CLOUD_PROVIDER",
+        "cloud_region": "CLOUD_REGION",
+    }
+    build_
     return
 
 
