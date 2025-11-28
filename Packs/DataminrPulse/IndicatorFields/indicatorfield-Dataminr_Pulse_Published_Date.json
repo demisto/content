@@ -1,0 +1,31 @@
+{
+    "id": "indicator_dataminrpulsepublisheddate",
+    "version": -1,
+    "modified": "2025-09-16T12:59:32.239725242+05:30",
+    "name": "Dataminr Pulse Published Date",
+    "ownerOnly": false,
+    "cliName": "dataminrpulsepublisheddate",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Dataminr Pulse Vulnerability Indicator"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
