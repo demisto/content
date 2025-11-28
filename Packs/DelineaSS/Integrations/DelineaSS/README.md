@@ -1,4 +1,4 @@
-Secret Server is the only fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution.
+Secret Server and Platform is the fully featured Privileged Account Management (PAM) solution available both on premise and in the cloud. It empowers security and IT ops teams to secure and manage all types of privileged accounts and offers the fastest time to value of any PAM solution.
 This integration was integrated and tested with version 5.0 of Delinea
 ## Configure Delinea in Cortex
 
@@ -557,7 +557,7 @@ Search secret ID by multiply params
 
 
 #### Command Example
-```!delinea-user-search filter_searchfields="username" filter_searchtext="xsoar"```
+```!delinea-secret-search filter_searchfields="username" filter_searchtext="xsoar"```
 
 #### Context Example
 ```json
@@ -820,14 +820,14 @@ Delete secret
 ```
 
 
-### delinea-user-create
+### delinea-secret-server-user-create
 ***
 Create a new user
 
 
 #### Base Command
 
-`delinea-user-create`
+`delinea-secret-server-user-create`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -850,13 +850,13 @@ Create a new user
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Delinea.User.Create | String | User Model | 
+| **Path**                          | **Type** | **Description** |
+|-----------------------------------|----------|-----------------|
+| Delinea.Secret.Server.User.Create | String   | User Model      | 
 
 
 #### Command Example
-```!delinea-user-create displayname="UserOne" password="12345" username="UserOne" ```
+```!delinea-secret-server-user-create displayname="UserOne" password="12345" username="UserOne" ```
 
 #### Context Example
 ```json
@@ -908,14 +908,14 @@ Create a new user
 
 ```
 
-### delinea-user-search
+### delinea-secret-server-user-search
 ***
 Search, filter, sort, and page users
 
 
 #### Base Command
 
-`delinea-user-search`
+`delinea-secret-server-user-search`
 
 #### Input
 
@@ -936,11 +936,11 @@ Search, filter, sort, and page users
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Delinea.User.Search | String | Specify paging and sorting options for querying records and returning results | 
+| Delinea.Secret.Server.User.Search | String | Specify paging and sorting options for querying records and returning results | 
 
 
 #### Command Example
-```!delinea-user-search filter_searchfields="userName" filter_searchtext="xsoarUser"```
+```!delinea-secret-server-user-search filter_searchfields="userName" filter_searchtext="xsoarUser"```
 
 #### Context Example
 ```json
@@ -954,14 +954,14 @@ Search, filter, sort, and page users
 ```
 
 
-### delinea-user-update
+### delinea-secret-server-user-update
 ***
 Update a single user by ID
 
 
 #### Base Command
 
-`delinea-user-update`
+`delinea-secret-server-user-update`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -990,11 +990,11 @@ Update a single user by ID
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Delinea.User.Update | String | User Model | 
+| Delinea.Secret.Server.User.Update | String | User Model | 
 
 
 #### Command Example
-```!delinea-user-update id=28 displayname="myTestUser"```
+```!delinea-secret-server-user-update id=28 displayname="myTestUser"```
 
 #### Context Example
 ```json
@@ -1038,7 +1038,7 @@ Update a single user by ID
 					"timeOptionId":-1,
 					"userLcid":0,
 					"dateOptionId":-1,
-					"domainId":-1,
+					"domainId":-1
             }
         }
     }
@@ -1047,14 +1047,14 @@ Update a single user by ID
 ```
 
 
-### delinea-user-delete
+### delinea-secret-server-user-delete
 ***
 Delete a user by ID
 
 
 #### Base Command
 
-`delinea-user-delete`
+`delinea-secret-server-user-delete`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1066,11 +1066,11 @@ Delete a user by ID
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Delinea.User.Delete | String | Information about an object that was deleted | 
+| Delinea.Secret.Server.User.Delete | String | Information about an object that was deleted | 
 
 
 #### Command Example
-```!delinea-user-delete id=5 ```
+```!delinea-secret-server-user-delete id=5 ```
 
 #### Context Example
 ```json
@@ -1186,4 +1186,423 @@ NO input argumets
         "user": "secret2"
     }
 ]
+```
+
+### delinea-platform-user-create
+***
+Create a new user in Platform
+
+
+#### Base Command
+
+`delinea-platform-user-create`
+#### Input
+
+| **Argument Name**     | **Description**                                                                                                                             | **Required** |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| MobileNumber          | The user mobile number.                                                                                                                     | Optional     |
+| ID                    | The UUID of the cloud user to change.                                                                                                       | Optional     |
+| InEverybodyRole       | The user is in the Everybody role?                                                                                                          | Optional     |
+| CmaRedirectedUserUuid | The MFA redirected user UUID.                                                                                                               | Optional     |
+| OfficeNumber          | The user office number.                                                                                                                     | Optional     |
+| ReportsTo             | The user reports to this user UUID.                                                                                                         | Optional     |
+| PreferredCulture      | The user preferred culture.                                                                                                                 | Optional     |
+| DisplayName           | The user display.                                                                                                                           | Optional     |
+| Password              | Password for new user. The password used to log in.                                                                                         | Required     |
+| Name                  | The user name.                                                                                                                              | Required     |
+| AccountExp            | Account expires date/time.                                                                                                                  | Optional     |
+| PasswordNeverExpire   | Does user's password expire?                                                                                                                | Optional     |
+| Mail                  | The User email.                                                                                                                             | Optional     |
+| ServiceUser           | Whether this is a service account. Service accounts are used for automation, cannot log in using the UI, and do not consume a user license. | Optional     |
+| Description           | The User description.                                                                                                                       | Optional     |
+| HomeNumber            | The user home number.                                                                                                                       | Optional     |
+
+#### Context Output
+
+| **Path**                     | **Type** | **Description** |
+|------------------------------|----------|-----------------|
+| Delinea.Platform.User.Create | String   | Result          | 
+
+
+#### Command Example
+```!delinea-platform-user-create Password="Test@123" Name="uniquexsoar1" ServiceUser="true"```
+
+#### Context Example
+```json
+{
+    "Delinea": {
+      "Platform" : {
+          "User": {
+              "Create": {
+                  "Result": "a09eb441-f0a0-4894-a129-af4e0b3559d6",
+                  "success": true,
+                  "Message": null,
+                  "MessageID": null,
+                  "Exception": null,
+                  "ErrorID": null,
+                  "ErrorCode": null,
+                  "IsSoftError": false,
+                  "InnerExceptions": null
+            }
+          }
+        }
+      }
+    }
+```
+
+### delinea-platform-user-get
+***
+Get single user by uuid
+
+
+#### Base Command
+
+`delinea-platform-user-get`
+
+#### Input
+
+| **Argument Name**      | **Description**                                               | **Required** |
+|------------------------|---------------------------------------------------------------|--------------|
+| userUuidOrUpn          | Fetches a Platform user by uuid or upn                        | Required     |
+ 
+
+
+#### Context Output
+
+| **Path**                  | **Type** | **Description** |
+|---------------------------|----------|-----------------|
+| Delinea.Platform.User.Get | String   | User Model      | 
+
+
+#### Command Example
+```!delinea-platform-user-get userUuidOrUpn="09b9a9b0-6ce8-465f-ab03-65766d33b05e" ```
+
+#### Context Example
+
+```json
+{
+    "Delinea": {
+        "Platform": {
+          "User": {
+            "Get": {
+                "directoryServiceUuid": "09b9a9b0-6ce8-465f-ab03-65766d33b05e",
+                "directoryServiceName": "Delinea",
+                "directoryInstanceName": "Delinea",
+                "uuid": "c2c7bcc6-9560-44e0-8dff-5be221cd37ee",
+                "name": "admin@loud",
+                "displayName": "admin",
+                "state": "Active",
+                "lastLogin": "2025-09-29T13:37:19.4639582Z",
+                "lastInvite": "2025-04-16T17:38:47.0519372Z",
+                "platformMembershipType": "Employee",
+                "_drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428440b8a:identity:platformuser/platform/09b9a9b0-6ce8-465f-ab03-65766d33b05e/c2c7bcc6-9560-44e0-8dff-5be221cd37we",
+                "_links": {
+                  "self": {
+                    "href": "/api/users/c2c7bcc6-9560-44e0-8dff-5be221cd37ee",
+                    "method": "GET",
+                    "drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428440b8a:identity:platformuser/platform/09b9a9b0-6ce8-465f-ab03-65766d33b05e/c2c7bcc6-9560-44e0-8dff-5be221cd37we",
+                    "title": "PlatformUser(Platform): admin"
+                  },
+                  "directory-users": [
+                    {
+                      "href": "/api/directory-services/09B9A9B0-6CE8-465F-AB03-65766D33B05R/users/c2c7bcc6-9560-44e0-8dff-5be221cd37et",
+                      "method": "GET",
+                      "drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:user/delinea/09b9a9b0-6ce8-465f-ab03-65766d33b05e/c2c7bcc6-9560-44e0-8dff-5be221cd37we",
+                      "title": "User(Delinea): admin"
+                    }
+                  ]
+                }
+            }
+          }
+        }
+    }
+}
+```
+
+
+### delinea-platform-user-update
+***
+Update a single user by ID
+
+
+#### Base Command
+
+`delinea-platform-user-update`
+#### Input
+
+| **Argument Name**     | **Description**                                                                                                                              | **Required** |
+|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| MobileNumber          | The user mobile number.                                                                                                                      | Optional     |
+| ID                    | The UUID of the cloud user to change.                                                                                                        | Required     |
+| InEverybodyRole       | The user is in the Everybody role?                                                                                                           | Optional     |
+| CmaRedirectedUserUuid | The MFA redirected user uuid.                                                                                                                | Optional     |
+| OfficeNumber          | The user office number.                                                                                                                      | Optional     |
+| ReportsTo             | The user reports to this user UUID.                                                                                                          | Optional     |
+| PreferredCulture      | The user preferred culture.                                                                                                                  | Optional     |
+| DisplayName           | The user display.                                                                                                                            | Optional     |
+| password              | Password for new user. The password used to log in.                                                                                          | Optional     |
+| Name                  | The user name.                                                                                                                               | Optional     |
+| AccountExp            | Account expires date/time.                                                                                                                   | Optional     |
+| PasswordNeverExpire   | Does user's password expire?                                                                                                                 | Optional     |
+| Mail                  | The User email.                                                                                                                              | Optional     |
+| ServiceUser           | Whether this is an service account. Service accounts are used for automation, cannot log in using the UI, and do not consume a user license. | Optional     |
+| Description           | The User description.                                                                                                                        | Optional     |
+| HomeNumber            | The user home number.                                                                                                                        | Optional     |
+
+
+#### Context Output
+
+| **Path**                     | **Type** | **Description**                                                   |
+|------------------------------|----------|-------------------------------------------------------------------|
+| Delinea.Platform.User.Update | String   | User is successful updated then returning success: true in result | 
+
+
+#### Command Example
+```!delinea-platform-user-update ID="b02319fc-b26a-4352-8e4e-d8ea1188f160" Name="xsoarUserTest1"```
+
+#### Context Example
+```json
+{
+    "Delinea": {
+        "Platform": {
+            "User": {
+                "Update": {
+                  "success": true,
+                  "Result": null,
+                  "Message": null,
+                  "MessageID": null,
+                  "Exception": null,
+                  "ErrorID": null,
+                  "ErrorCode": null,
+                  "IsSoftError": false,
+                  "InnerExceptions": null
+               }
+            }
+        }
+    }
+}
+```
+
+
+### delinea-platform-user-delete
+***
+Delete a user by UUID or Name
+
+
+#### Base Command
+
+`delinea-platform-user-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+|-------------------|-----------------|--------------|
+| id                | User UUID       | Required     | 
+
+
+#### Context Output
+
+| **Path**                     | **Type** | **Description**                                                                   |
+|------------------------------|----------|-----------------------------------------------------------------------------------|
+| Delinea.Platform.User.Delete | String   | Information about an object that was deleted and returning sucess: true in result | 
+
+
+#### Command Example
+```!delinea-platform-user-delete id="a09eb441-f0a0-4894-a129-af4e0b3559d6" ```
+
+#### Context Example
+```json
+{
+    "Delinea": {
+        "Platform": {
+            "User": {
+                "Delete": {
+                  "success": true,
+                  "Result": null,
+                  "Message": null,
+                  "MessageID": null,
+                  "Exception": null,
+                  "ErrorID": null,
+                  "ErrorCode": null,
+                  "IsSoftError": false,
+                  "InnerExceptions": null
+               }
+            }
+        }
+    }
+}
+```
+
+
+### delinea-platform-get-all-users
+***
+Get single user by uuid
+
+
+#### Base Command
+
+`delinea-platform-get-all-users`
+
+#### Input
+
+| **Argument Name**     | **Description**                   | **Required** |
+|-----------------------|-----------------------------------|--------------|
+| filter_displayName    | Display name to filter users.     | Optional     |
+| pageSize              | Page size. Default 1000.          | Optional     |
+
+
+#### Context Output
+
+| **Path**                       | **Type** | **Description**                                                 |
+|--------------------------------|----------|-----------------------------------------------------------------|
+| Delinea.Platform.Get.All.Users | String   | Returning users based on pageSize and default page size is 1000 | 
+
+
+#### Command Example
+```!!delinea-platform-get-all-users pageSize="1" ```
+
+#### Context Example
+
+```json
+{
+    "Delinea": {
+        "Platform": {
+            "Get" : {
+                "All" : {
+                    "Users": {
+                        "users": [
+                          {
+                            "directoryServiceUuid": "09b9a9b0-6ce8-465f-ab03-65766d33b05e",
+                            "directoryServiceName": "Delinea",
+                            "directoryInstanceName": "Delinea",
+                            "uuid": "c2c7bcc6-9560-44e0-8dff-5be221cd37ee",
+                            "name": "cloudadmin@cloud",
+                            "displayName": "cloudadmin",
+                            "state": "Active",
+                            "lastLogin": "2025-09-29T13:37:19.4639582Z",
+                            "lastInvite": "2025-04-16T17:38:47.0519372Z",
+                            "platformMembershipType": "Employee",
+                            "_drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:platformuser/platform/09b9a9b0-6ce8-465f-ab03-65766d33b05e/c2c7bcc6-9560-44e0-8dff-5be221cd37ee",
+                            "_links": {
+                              "self": {
+                                "href": "/api/users/c2c7bcc6-9560-44e0-8dff-5be221cd37ee",
+                                "method": "GET",
+                                "drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:platformuser/platform/09b9a9b0-6ce8-465f-ab03-65766d33b05e/c2c7bcc6-9560-44e0-8dff-5be221cd37ee",
+                                "title": "PlatformUser(Platform): cloudadmin"
+                              },
+                              "directory-users": [
+                                {
+                                  "href": "/api/directory-services/09B9A9B0-6CE8-465F-AB03-65766D33B05E/users/c2c7bcc6-9560-44e0-8dff-5be221cd37ee",
+                                  "method": "GET",
+                                  "drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:user/delinea/09b9a9b0-6ce8-465f-ab03-65766d33b05e/c2c7bcc6-9560-44e0-8dff-5be221cd37ee",
+                                  "title": "User(Delinea): cloudadmin"
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+### delinea-platform-get-user-searchbytext
+***
+Get users search by Text
+
+#### Base Command
+
+`delinea-platform-get-user-searchbytext`
+
+#### Input
+
+| **Argument Name** | **Description**                              | **Required** |
+|-------------------|----------------------------------------------|--------------|
+| filter.searchText | Search Text is looked for in multiple fields | Required     |
+
+
+#### Context Output
+
+| **Path**                               | **Type** | **Description**                                                   |
+|----------------------------------------|----------|-------------------------------------------------------------------|
+| Delinea.Platform.Get.User.Searchbytext | String   | SearchText is looked for in multiple fields and returning results | 
+
+
+#### Command Example
+```!!delinea-platform-get-user-searchbytext filter.searchText="sail" ```
+
+#### Context Example
+
+```json
+{
+    "Delinea": {
+        "Platform": {
+            "Get" : {
+                "User" : {
+                    "Searchbytext": {
+                        "users": [
+                          {
+                            "directoryServiceUuid": "09b9a9b0-6ce8-465f-ab03-65766d33b05e",
+                            "directoryServiceName": "Delinea",
+                            "directoryInstanceName": "Delinea",
+                            "uuid": "3f4b80c0-c853-473f-9534-66e4a8331843",
+                            "name": "ren@cloud",
+                            "displayName": "sailpoint+user.service",
+                            "state": "Created",
+                            "platformMembershipType": "Employee",
+                            "_drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:platformuser/platform/09b9a9b0-6ce8-465f-ab03-65766d33b05e/3f4b80c0-c853-473f-9534-66e4a8331843",
+                            "_links": {
+                              "self": {
+                                "href": "/api/users/3f4b80c0-c853-473f-9534-66e4a8331843",
+                                "method": "GET",
+                                "drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:platformuser/platform/09b9a9b0-6ce8-465f-ab03-65766d33b05e/3f4b80c0-c853-473f-9534-66e4a8331843",
+                                "title": "PlatformUser(Platform): sailpoint+user.service"
+                              },
+                              "directory-users": [
+                                {
+                                  "href": "/api/directory-services/09B9A9B0-6CE8-465F-AB03-65766D33B05E/users/3f4b80c0-c853-473f-9534-66e4a8331843",
+                                  "method": "GET",
+                                  "drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:user/delinea/09b9a9b0-6ce8-465f-ab03-65766d33b05e/3f4b80c0-c853-473f-9534-66e4a8331843",
+                                  "title": "User(Delinea): sailpoint+user.service"
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "directoryServiceUuid": "09b9a9b0-6ce8-465f-ab03-65766d33b05e",
+                            "directoryServiceName": "Delinea",
+                            "directoryInstanceName": "Delinea",
+                            "uuid": "b977dd7d-b771-40b6-83f3-f04154a733c5",
+                            "name": "roderick@cloud",
+                            "displayName": "roderick",
+                            "state": "Active",
+                            "lastLogin": "2025-08-28T17:52:02.0344759Z",
+                            "platformMembershipType": "Employee",
+                            "_drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:platformuser/platform/09b9a9b0-6ce8-465f-ab03-65766d33b05e/b977dd7d-b771-40b6-83f3-f04154a733c5",
+                            "_links": {
+                              "self": {
+                                "href": "/api/users/b977dd7d-b771-40b6-83f3-f04154a733c5",
+                                "method": "GET",
+                                "drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:platformuser/platform/09b9a9b0-6ce8-465f-ab03-65766d33b05e/b977dd7d-b771-40b6-83f3-f04154a733c5",
+                                "title": "PlatformUser(Platform): roderick"
+                              },
+                              "directory-users": [
+                                {
+                                  "href": "/api/directory-services/09B9A9B0-6CE8-465F-AB03-65766D33B05E/users/b977dd7d-b771-40b6-83f3-f04154a733c5",
+                                  "method": "GET",
+                                  "drn": "drn:dws:76a86745-ca2c-4ff2-ac98-463428343b8a:identity:user/delinea/09b9a9b0-6ce8-465f-ab03-65766d33b05e/b977dd7d-b771-40b6-83f3-f04154a733c5",
+                                  "title": "User(Delinea): roderick"
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
 ```
