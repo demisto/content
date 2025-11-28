@@ -1,386 +1,422 @@
 import demistomock as demisto
 from CommonServerPython import *
-
 from CommonServerUserPython import *
+from enum import Enum
+from typing import Optional
 
-""" IMPORTS """
-from datetime import datetime
-from typing import *
-from urllib.parse import urlparse
-
-import pytz
+import requests
 import urllib3
-from cabby import create_client
-from dateutil import parser
-from lxml import etree
-from stix.core import STIXPackage
-
-# Disable insecure warnings
 urllib3.disable_warnings()
 
-""" CONSTANTS """
-DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f+00:00"
+import time
 
+from datetime import datetime, timedelta
+from typing import *
+
+
+""" CONSTANTS """
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S+00:00"   # Your API format
 
 class Client:
-    """
-    Client will implement the feed service.
-    Contatins the requests and return data.
-    """
+    def __init__(self, params: dict):
+        self.base_url = params.get("base_url", "").rstrip("/")
+        self.access_token = params.get("access_token", {}).get("password", "").strip()
 
-    def __init__(self, params):
-        self.params = params
-        self.creds = params.get("credentials", {})
-        self.username = self.creds.get("identifier", "")
-        self.password = self.creds.get("password", "")
-        self.collection_name = params.get("collection", "")
-        self.discovery_service = params.get("discovery_service", "")
-        self.feedReputation = params.get("feedReputation", "")
-        self.feedReliability = params.get("feedReliability", "")
-        self.tlp_color = params.get("tlp_color", "")
-        self.initial_interval = arg_to_number(params.get("initial_interval", "1"))
-        self.limit = arg_to_number(params.get("limit", "30"))
-        self.verify_certificate = not argToBoolean(params.get("insecure", False))
-        self.proxy = argToBoolean(params.get("proxy", False))
+        self.headers = {
+            "Authorization": f"Bearer {self.access_token}",
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        }
+        demisto.debug(f"Client initialized with base_url: {self.base_url}, access_token: {self.access_token}")
 
-        self.parsed_url = urlparse(self.discovery_service)
-        self.client = create_client(self.parsed_url.netloc, use_https=True, discovery_path=self.parsed_url.path)
-        self.client.set_auth(username=self.username, password=self.password, verify_ssl=self.verify_certificate)
-        if self.proxy:
-            self.client.set_proxies(handle_proxy())
-
-    def fetch(self, begin, end, collection):
-        for block in self.client.poll(collection_name=collection, begin_date=begin, end_date=end):
-            yield block.content.decode("utf-8")
-
-    def get_recursively(self, search_dict, field):
-        """
-        Takes a dict with nested lists and dicts,
-        and searches all dicts for a key of the field
-        provided.
-        """
-        fields_found = []
-        for key, value in iter(search_dict.items()):
-            if key == field:
-                fields_found.append(value)
-
-            elif isinstance(value, dict):
-                for result in self.get_recursively(value, field):
-                    fields_found.append(result)
-
-            elif isinstance(value, list):
-                for item in value:
-                    if isinstance(item, dict):
-                        for another_result in self.get_recursively(item, field):
-                            fields_found.append(another_result)
-
-        return fields_found
-
-    def build_indicators(self, args: Dict[str, Any], data: list):
-        indicators = []
-        for eachres in data:
-            indicator_obj = {"service": "Cyble Feed"}
-            multi_data = True
-            try:
-                data_r = self.get_recursively(eachres["indicators"][0]["observable"], "value")
-                if not data_r:
-                    data_r = self.get_recursively(eachres["indicators"][0]["observable"], "address_value")
-            except Exception:
-                try:
-                    data_r = self.get_recursively(eachres["observables"]["observables"][0], "value")
-                except Exception:
-                    demisto.debug(f"Found indicator without observable field: {eachres}")
-                    continue
-
-            if not data_r:
-                continue
-
-            if multi_data:
-                ind_val = {}
-                for eachindicator in data_r:
-                    typeval = auto_detect_indicator_type(eachindicator)
-                    indicator_obj["type"] = typeval
-                    if typeval:
-                        ind_val[typeval] = eachindicator
-
-                if len(data_r) == 1:
-                    indicator_obj["value"] = str(data_r[0])
-                elif indicator_obj["type"] in list(ind_val.keys()):
-                    indicator_obj["value"] = str(ind_val[indicator_obj["type"]])
-                elif len(ind_val) != 0:
-                    indicator_obj["type"] = list(ind_val.keys())[0]
-                    indicator_obj["value"] = ind_val[list(ind_val.keys())[0]]
-
-            if eachres.get("indicators"):
-                ind_content = eachres.get("indicators")
-            else:
-                ind_content = eachres.get("ttps").get("ttps")
-
-            for eachindicator in ind_content:
-                indicator_obj["title"] = eachindicator.get("title")
-                indicator_obj["time"] = eachindicator.get("timestamp")
-
-            indicator_obj["rawJSON"] = eachres
-            indicators.append(indicator_obj)
-
-        return indicators
-
-    def parse_to_json(self, content):
-        """
-        Parse the feed response to JSON
-        :param content: xml data to parse
-        """
-        if content:
-            stix_dict = STIXPackage.from_xml(etree.XML(content)).to_dict()  # parse to dictionary
-            return stix_dict
-        else:
-            return {}
-
-    def get_taxii(self, args: Dict[str, Any], is_first_fetch: bool = False):
-        """
-        Fetch Taxii events for the given parameters
-        :param args: arguments which would be used to fetch feed
-        :param is_first_fetch: indicates whether this is the first run or a subsequent run
-        :return:
-        """
-        taxii_data = []
-        save_fetch_time: str = str(args.get("begin"))
-        count = 0
-
+    def http_post(self, endpoint: str, json_body: dict):
+        url = f"{self.base_url}/{endpoint.lstrip('/')}"
+        demisto.debug(f"POST Request URL: {url}")
+        demisto.debug(f"POST Request Headers: {self.headers}")
+        demisto.debug(f"POST Request Body: {json_body}")
+        resp = requests.post(
+            url,
+            headers=self.headers,
+            json=json_body,
+            verify=False
+        )
+        demisto.debug(f"Response Status Code: {resp.status_code}")
         try:
-            if "begin" not in args or "end" not in args:
-                raise ValueError("Last fetch time retrieval failed.")
-            for data in self.fetch(args.get("begin"), args.get("end"), args.get("collection")):
-                try:
-                    skip = False
-                    response = self.parse_to_json(data)
-
-                    if response.get("indicators") or False:
-                        content = response.get("indicators")
-                    elif response.get("ttps") or False:
-                        content = response.get("ttps").get("ttps")
-                    else:
-                        continue
-
-                    for eachone in content:
-                        if eachone.get("confidence"):
-                            current_timestamp = (
-                                parser.parse(eachone["confidence"]["timestamp"])
-                                .replace(tzinfo=pytz.UTC)
-                                .strftime(DATETIME_FORMAT)
-                            )
-                            if is_first_fetch or datetime.fromisoformat(current_timestamp) > datetime.fromisoformat(
-                                save_fetch_time
-                            ):
-                                save_fetch_time = current_timestamp
-                            else:
-                                skip = True
-
-                    if not skip:
-                        taxii_data.append(response)
-                        count += 1
-                        if count == args.get("limit"):
-                            break
-                except Exception as e:
-                    demisto.debug(f"Error with formatting feeds, exception:{e}")
-                    continue
-
+            resp.raise_for_status()
+            resp_json = resp.json()
+            return resp_json
         except Exception as e:
-            demisto.debug(f"Failed to fetch feed details, exception:{e}")
-            return taxii_data, save_fetch_time
+            demisto.debug(f"HTTP request failed: {e}, Response Text: {resp.text}")
+            raise
 
-        return taxii_data, save_fetch_time
+    # ------------------------------
+    # IOC LOOKUP
+    # ------------------------------
+    def ioc_lookup(self, ioc_value: str):
+        endpoint = "/y/iocs"
+        body = {"ioc": ioc_value}
+        return self.http_post(endpoint, body)
 
-    def get_services(self):
-        """
-        Fetch the services from the feed
-        """
-        collection_list = []
-        try:
-            services = self.client.discover_services()
-            if services:
-                for service in services:
-                    if "collection" in service.type.lower():
-                        for eachone in self.get_collection(service.address):
-                            collection_list.append({"name": eachone.name})
-                        break
-        except Exception as e:
-            demisto.error(f"Failed to fetch collections, exception:{e}")
-            raise e
+    # ------------------------------
+    # Fetch multiple IOC records (POST body)
+    # ------------------------------
+    def fetch_iocs(self, start_dt: str, end_dt: str, page: int = 1, limit: int = 50):
+        endpoint = "/y/iocs"
+        body = {
+            "page": page,
+            "limit": limit,
+            "startDate": start_dt,
+            "endDate": end_dt
+        }
+        demisto.debug(f"Fetching IOCs with body: {body}")
+        return self.http_post(endpoint, body)
 
-        return collection_list
-
-    def get_collection(self, address):
-        """
-        Collection names available from the feed
-        """
-        return self.client.get_collections(uri=address)
-
-
-def get_test_response(client: Client, args: Dict[str, Any]):
+def get_time_range(hours_back: int, last_run: dict) -> Tuple[str, str]:
     """
-    Test the integration connection state
-    :param client: instance of client to communicate with server
-    :param args: Parameters
-    :return: Test Response Success or Failure
+    Determine the gte/lte timestamps for fetch.
+    Uses hours only (days no longer supported).
     """
-    ret_val = "Unable to Contact Feed Service, Please Check the parameters."
-    args["begin"] = str((datetime.utcnow() - timedelta(days=1)).replace(tzinfo=pytz.UTC))
-    args["end"] = str(datetime.utcnow().replace(tzinfo=pytz.UTC))
+    now = datetime.utcnow()
 
-    try:
-        services = client.get_taxii(args)
-    except Exception as e:
-        demisto.error(e)
-        services = None
+    # If we have last_fetch → resume from there
+    last_fetch = last_run.get("last_fetch")
+    if last_fetch:
+        gte_dt = datetime.fromisoformat(last_fetch)
+    else:
+        # First run → go back N hours
+        gte_dt = now - timedelta(hours=hours_back)
 
-    if services:
-        ret_val = "ok"
-    return ret_val
+    lte_dt = now
 
-
-def get_feed_collection(client: Client):
-    """
-    get the collections from taxii feed
-    :param client: instance of client to communicate with server
-    :return: list of collection names
-    """
-    collections = client.get_services()
-    command_results = CommandResults(outputs_prefix="CybleIntel.collection", outputs_key_field="names", outputs=collections)
-    return command_results
-
-
-def cyble_fetch_taxii(client: Client, args: Dict[str, Any]):
-    """
-    TAXII feed details will be pulled from server
-    :param client: instance of client to communicate with server
-    :param args: Parameters for fetching the feed
-    :return: TAXII feed details
-    """
-    try:
-        args["begin"] = str(parser.parse(args.get("begin", "")).replace(tzinfo=pytz.UTC)) if args.get("begin", None) else None
-        args["end"] = str(parser.parse(args.get("end", "")).replace(tzinfo=pytz.UTC)) if args.get("end", None) else None
-    except Exception as e:
-        raise ValueError(f"Invalid date format received, [{e}]")
-
-    result, time = client.get_taxii(args)
-    indicators = client.build_indicators(args, result)
-
-    entry_result = camelize(indicators)
-    hr = tableToMarkdown("Indicators", entry_result, headers=["Type", "Value", "Title", "Time", "Rawjson"])
-    command_results = CommandResults(
-        readable_output=hr, outputs_prefix="CybleIntel.Threat", outputs_key_field="details", outputs=indicators
+    demisto.debug(
+        f"Calculated fetch time range: gte={gte_dt.isoformat()}Z, lte={lte_dt.isoformat()}Z"
     )
-    return command_results
 
+    return gte_dt.isoformat(), lte_dt.isoformat()
 
-def fetch_indicators(client: Client):
-    """
-    TAXII feed details will be pulled from server
-    :param client: instance of client to communicate with server
-    :return: TAXII feed details
-    """
-    args = {}
-    last_run = demisto.getLastRun()
-    if isinstance(last_run, dict):
-        last_fetch_time = last_run.get(f"lastRun_{client.collection_name}", None)
-    else:
-        last_fetch_time = ""
-        demisto.debug(f"{last_run=} isn't of type dict. {last_fetch_time=}")
-
-    if last_fetch_time:
-        args["begin"] = str(parser.parse(last_fetch_time).replace(tzinfo=pytz.UTC))
-        is_first_fetch = False
-    else:
-        last_fetch_time = datetime.utcnow() - timedelta(days=client.initial_interval)  # type: ignore
-        args["begin"] = str(last_fetch_time.replace(tzinfo=pytz.UTC))
-        is_first_fetch = True
-
-    args["end"] = str(datetime.utcnow().replace(tzinfo=pytz.UTC))
-    args["collection"] = client.collection_name
-    args["limit"] = client.limit  # type: ignore
-    indicator, save_fetch_time = client.get_taxii(args, is_first_fetch)
-    indicators = client.build_indicators(args, indicator)
-
-    if save_fetch_time:
-        last_run[f"lastRun_{client.collection_name}"] = save_fetch_time
-        demisto.setLastRun(last_run)
-
-    return indicators
-
-
-def validate_input(args: Dict[str, Any]):
-    """
-    Check if the input params for the command are valid. Return an error if any
-    :param args: dictionary of input params
-    """
+def fmt_date(ts):
+    if not ts:
+        return "None"
+    # Convert timestamp (seconds since epoch) to readable UTC
     try:
-        # we assume all the params to be non-empty, as cortex ensures it
-        if args.get("limit") and int(args.get("limit", "1")) <= 0:
-            raise ValueError(f"Limit should be positive, limit: {args.get('limit')}")
+        return datetime.utcfromtimestamp(int(ts)).strftime("%Y-%m-%d %H:%M:%S UTC")
+    except Exception:
+        return str(ts)
 
+
+def epoch_to_iso(ts):
+    try:
+        return datetime.utcfromtimestamp(int(ts)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    except Exception:
+        return None
+
+
+class VerdictEnum(str, Enum):
+    UNKNOWN = "Unknown"
+    NOT_MALICIOUS = "Not-Malicious"
+    SUSPICIOUS = "Suspicious"
+    MALICIOUS = "Malicious"
+
+class ConfidenceLevel(str, Enum):
+    LOW = "Low"
+    MEDIUM = "Medium"
+    HIGH = "High"
+
+def calculate_verdict(risk_score: Optional[float], confidence_rating: Optional[str]):
+    if risk_score is None:
+        risk_score = 0
+    if confidence_rating is None:
+        confidence_rating = "Low"
+
+    # sanitize risk
+    try:
+        risk_score = int(risk_score)
+    except Exception:
+        risk_score = 0
+
+    risk_score = max(0, min(100, risk_score))
+
+    # normalize confidence for internal logic ONLY
+    c = confidence_rating.lower()
+    if c in ["high", "h"]:
+        confidence_level = ConfidenceLevel.HIGH
+    elif c in ["medium", "med", "m"]:
+        confidence_level = ConfidenceLevel.MEDIUM
+    else:
+        confidence_level = ConfidenceLevel.LOW
+
+    # matrix logic
+    if 0 <= risk_score <= 24:
+        if confidence_level == ConfidenceLevel.LOW:
+            verdict = VerdictEnum.UNKNOWN
+        elif confidence_level == ConfidenceLevel.MEDIUM:
+            verdict = VerdictEnum.SUSPICIOUS
+        else:
+            verdict = VerdictEnum.NOT_MALICIOUS
+
+    elif 25 <= risk_score <= 39:
+        if confidence_level == ConfidenceLevel.LOW:
+            verdict = VerdictEnum.UNKNOWN
+        else:
+            verdict = VerdictEnum.SUSPICIOUS
+
+    elif 40 <= risk_score <= 60:
+        verdict = VerdictEnum.SUSPICIOUS
+
+    elif 61 <= risk_score <= 75:
+        if confidence_level == ConfidenceLevel.HIGH:
+            verdict = VerdictEnum.MALICIOUS
+        else:
+            verdict = VerdictEnum.SUSPICIOUS
+
+    else:  # 76–100
+        if confidence_level == ConfidenceLevel.LOW:
+            verdict = VerdictEnum.SUSPICIOUS
+        else:
+            verdict = VerdictEnum.MALICIOUS
+
+    # Only return verdict. Do NOT modify confidence rating.
+    return verdict.value
+
+
+# =====================================================
+# FETCH IOCs COMMAND
+# =====================================================
+def fetch_indicators_command(client: Client, params: dict) -> int:
+    """
+    Fetch indicators in 1-hour chunks, insert per page immediately,
+    use retry for HTTP errors, enforce max 24-hour first_fetch.
+    """
+    # --- first_fetch (hours) validation ---
+    first_fetch_hours = int(params.get("first_fetch", 2))  # default 6 hrs
+
+    if first_fetch_hours < 1 :
+        first_fetch_hours=1
+    if first_fetch_hours > 3:
+        first_fetch_hours=3
+
+    limit = int(params.get("max_fetch", 100))
+
+    # honor "recreate"
+    should_reset = demisto.args().get("recreate")
+    if should_reset:
+        demisto.debug("Re-fetch triggered → resetting last_run")
+        last_run = {}
+    else:
+        last_run = demisto.getLastRun() or {}
+
+    # --- compute initial range ---
+    gte_str, final_lte_str = get_time_range(first_fetch_hours, last_run)
+    gte = datetime.fromisoformat(gte_str)
+    final_lte = datetime.fromisoformat(final_lte_str)
+
+    demisto.debug(f"[fetch] initial gte={gte.isoformat()}Z final_lte={final_lte.isoformat()}Z")
+
+    chunk_hours = 1
+    total_inserted = 0
+
+    # -------------------------
+    # Fetch loop per chunk
+    # -------------------------
+    while gte < final_lte:
+        chunk_lte_dt = min(gte + timedelta(hours=chunk_hours), final_lte)
+        chunk_gte_iso = gte.isoformat()
+        chunk_lte_iso = chunk_lte_dt.isoformat()
+
+        demisto.debug(f"[fetch] Processing chunk: {chunk_gte_iso} → {chunk_lte_iso}")
+
+        page = 1
+
+        while True:
+            demisto.debug(f"[fetch] Requesting page {page} for chunk {chunk_gte_iso} → {chunk_lte_iso}")
+
+            # -------------------------
+            # Retry mechanism (max 5 tries)
+            # -------------------------
+            retry_count = 0
+            response = None
+
+            while retry_count < 5:
+                try:
+                    resp = client.fetch_iocs(
+                        start_dt=chunk_gte_iso,
+                        end_dt=chunk_lte_iso,
+                        page=page,
+                        limit=limit
+                    )
+
+                    # enforce dict & 200
+                    if isinstance(resp, dict) and resp.get("success", True):
+                        response = resp
+                        break
+
+                    raise ValueError(f"Non-success API response: {resp}")
+
+                except Exception as e:
+                    retry_count += 1
+                    demisto.debug(f"[fetch] Attempt {retry_count}/5 failed: {e}")
+
+                    if retry_count == 5:
+                        demisto.debug("[fetch] Max retries reached → skipping this page.")
+                        response = None
+                    else:
+                        time.sleep(1)
+
+            if not response:
+                break
+
+            # Parse IOCs safely
+            data = response.get("data", {}) if isinstance(response, dict) else {}
+            ioc_list = data.get("iocs", []) if isinstance(data, dict) else []
+
+            if not ioc_list:
+                demisto.debug(f"[fetch] No IOCs returned for page {page} (chunk finished).")
+                break
+
+            # -------------------------
+            # Build indicators
+            # -------------------------
+            page_indicators = []
+            for i in ioc_list:
+                verdict = calculate_verdict(
+                    i.get("risk_score"),
+                    i.get("confidence_rating")
+                )
+
+                page_indicators.append({
+                    "value": i.get("ioc"),
+                    "type": i.get("ioc_type") or "Unknown",
+                    "rawJSON": i,
+                    "fields": {
+
+                        # confidence auto-managed by XSOAR
+                        "confidence": i.get("confidence_rating"),
+                        "cybleverdict": verdict,
+
+                        "cybleriskscore": i.get("risk_score"),
+                        "cyblefirstseen": epoch_to_iso(i.get("first_seen")),
+                        "cyblelastseen": epoch_to_iso(i.get("last_seen")),
+                        "cyblebehaviourtags": i.get("behaviour_tags") or [],
+
+                        "cyblesources": i.get("sources") or [],
+                        "cybletargetcountries": i.get("target_countries") or [],
+                        "cybletargetregions": i.get("target_regions") or [],
+                        "cybletargetindustries": i.get("target_industries") or [],
+                        "cyblerelatedmalware": i.get("related_malware") or [],
+                        "cyblerelatedthreatactors": i.get("related_threat_actors") or []
+                    }
+                })
+
+            # Insert indicators
+            try:
+                demisto.createIndicators(page_indicators)
+                demisto.debug(f"[fetch] Inserted {len(page_indicators)} indicators (page {page}).")
+            except Exception as e:
+                demisto.debug(f"[fetch] Failed to createIndicators for page {page}: {e}")
+                # decide: continue to next page or break. We'll continue.
+            total_inserted += len(page_indicators)
+            page += 1
+
+        # save last_run per chunk
         try:
-            _start_date = parser.parse(args.get("begin", "")).replace(tzinfo=pytz.UTC) if args.get("begin", None) else None
-            _end_date = parser.parse(args.get("end", "")).replace(tzinfo=pytz.UTC) if args.get("end", None) else None
+            demisto.setLastRun({"last_fetch": chunk_lte_iso})
+            demisto.debug(f"[fetch] Updated last_run → {chunk_lte_iso}")
         except Exception as e:
-            raise ValueError(f"Invalid date format received, [{e}]")
+            demisto.debug(f"[fetch] Failed to setLastRun: {e}")
 
-        if _start_date and _start_date > datetime.now(timezone.utc):
-            raise ValueError("Start date must be a date before or equal to current")
-        if _end_date and _end_date > datetime.now(timezone.utc):
-            raise ValueError("End date must be a date before or equal to current")
-        if _start_date and _end_date and _start_date > _end_date:
-            raise ValueError("Start date cannot be after end date")
+        gte = chunk_lte_dt
 
-        if not args.get("collection", False):
-            raise ValueError(f"Collection Name should be provided: {arg_to_number(args.get('collection', None))}")
-
-        return
-    except Exception as e:
-        demisto.error(f"Exception with validating inputs [{e}]")
-        raise e
+    demisto.debug(f"[fetch] Completed. total_inserted={total_inserted}")
+    return total_inserted
 
 
+# ==========================================================================
+# COMMAND: IOC LOOKUP
+# ==========================================================================
+def cyble_ioc_lookup_command(client: Client, args: dict):
+    ioc = args.get("ioc")
+    if not ioc:
+        return_error("Missing required argument: ioc")
+
+    demisto.debug(f"Running IOC lookup command for IOC: {ioc}")
+    response = client.ioc_lookup(ioc)
+    demisto.debug(f"IOC lookup API response: {response}")
+    data = response.get("data", {})
+    iocs = data.get("iocs", [])
+
+    if not iocs:
+        return CommandResults(
+            readable_output=f"No results found for IOC: {ioc}",
+            outputs_prefix="CybleIntel.IOCLookup",
+            outputs={}
+        )
+
+    item = iocs[0]
+
+    def fmt(v):
+        if isinstance(v, list):
+            return ", ".join(v)
+        return v if v is not None else "None"
+
+    table = {
+        "IOC": item.get("ioc"),
+        "IOC Type": item.get("ioc_type"),
+        "First Seen": fmt_date(item.get("first_seen")),
+        "Last Seen": fmt_date(item.get("last_seen")),
+        "Risk Score": item.get("risk_score"),
+        "Sources": fmt(item.get("sources")),
+        "Behaviour Tags": fmt(item.get("behaviour_tags")),
+        "Confidence Rating": item.get("confidence_rating"),
+        "Target Countries": fmt(item.get("target_countries")),
+        "Target Regions": fmt(item.get("target_regions")),
+        "Target Industries": fmt(item.get("target_industries")),
+        "Related Malware": fmt(item.get("related_malware")),
+        "Related Threat Actors": fmt(item.get("related_threat_actors")),
+    }
+
+    readable = tableToMarkdown("Cyble IOC Lookup", table)
+
+    return CommandResults(
+        readable_output=readable,
+        outputs_prefix="CybleIntel.IOCLookup",
+        outputs=table
+    )
+
+
+# ==========================================================================
+# MAIN
+# ==========================================================================
 def main():  # pragma: no cover
-    """
-    PARSE AND VALIDATE INTEGRATION PARAMS
-    """
-    # get the params in format
-    params = {key: value for key, value in demisto.params().items() if value is not None}
-
-    LOG(f"Command being called is {demisto.command()}")
     try:
-        if params.get("initial_interval") and int(params.get("initial_interval")) > 7:  # type: ignore
-            raise ValueError(f"Retroactive timeline should be within 7 days, given value: {params.get('initial_interval')}")
+        params = demisto.params()
+        args = demisto.args()
+        command = demisto.command()
 
         client = Client(params)
-        args = demisto.args()
 
-        if demisto.command() == "test-module":
-            if not args.get("collection", False):
-                args["collection"] = params.get("collection", "")
-            return_results(get_test_response(client, args))
+        if command == "test-module":
+            try:
+                now = datetime.utcnow()
+                start_dt = (now - timedelta(days=1)).strftime(DATETIME_FORMAT)
+                end_dt = now.strftime(DATETIME_FORMAT)
 
-        elif demisto.command() == "fetch-indicators":
-            # fetch indicators using taxii service
-            indicators = fetch_indicators(client)
-            # we submit the indicators in batches
-            for b in batch(indicators, batch_size=2000):
-                demisto.createIndicators(b)
+                client.fetch_iocs(start_dt=start_dt, end_dt=end_dt, limit=1, page=1)
+                return_results("ok")
+            except Exception as e:
+                return_error(f"Test failed: {e}")
 
-        elif demisto.command() == "cyble-vision-fetch-taxii":
-            # fetch indicators using taxii service
-            validate_input(args)
-            return_results(cyble_fetch_taxii(client, args))
+        elif command == "cyble-vision-ioc-lookup":
+            return_results(cyble_ioc_lookup_command(client, args))
 
-        elif demisto.command() == "cyble-vision-get-collection-names":
-            # fetch collections using taxii service
-            return_results(get_feed_collection(client))
 
-    # Log exceptions
+        elif command == "fetch-indicators":
+            inserted = fetch_indicators_command(client, params)
+            return_results(f"Inserted {inserted} indicators.")
+
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")
+        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
 
 
-if __name__ in ("__main__", "__builtin__", "builtins"):
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
