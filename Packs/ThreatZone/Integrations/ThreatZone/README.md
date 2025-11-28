@@ -1,15 +1,15 @@
 ThreatZone malware analysis sandboxing.
-This integration was integrated and tested with ThreatZone
+This integration was integrated and tested with ThreatZone.
 
 ## Configure ThreatZone in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g. <https://app.threat.zone>) |  | True |
-| ThreatZone API Key |  | True |
+| Server URL (e.g. <https://app.threat.zone>) | Base URL for your ThreatZone workspace. Include the scheme (https) and omit trailing slashes. | True |
+| ThreatZone API Key | API key generated in ThreatZone under Profile → API Tokens. | True |
 | Source Reliability | Reliability of the source. | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+| Trust any certificate (not secure) | When true, skip TLS certificate validation (use only for troubleshooting). | False |
+| Use system proxy settings | Route requests through the system proxy as configured in XSOAR. | False |
 
 ## Commands
 
@@ -30,8 +30,12 @@ Submits a sample to ThreatZone for sandbox analysis.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | Entry ID of the file to submit. | Required |
-| environment | Choose what environment you want to run your submission. Possible values are: w7_x64, w10_x64, w11_x64. Default is w7_x64. | Optional |
+| environment | Choose what environment you want to run your submission. Possible values are: w7_x64, w10_x64, w11_x64, macos, linux, android. Default is w7_x64. | Optional |
 | private | Privacy of the submission. Possible values are: true, false. Default is true. | Optional |
+| extension_check | Enforce MIME-based extension correction before sandbox execution. Possible values are: true, false. Default is true. | Optional |
+| auto | When true, automatically selects a sandbox environment based on the uploaded file type. Possible values are: true, false. Default is false. | Optional |
+| modules | Optional modules to enable (enter a comma-separated list or JSON array, for example ["cdr"]). | Optional |
+| analyze_config | Provide raw analyzeConfig JSON to override/add sandbox metafields. | Optional |
 | timeout | Duration of the submission analysis. Possible values are: 60, 120, 180, 300. Default is 60. | Optional |
 | work_path | The working path of the submission. Possible values are: desktop, root, appdata, windows, temp. Default is desktop. | Optional |
 | mouse_simulation | Enable mouse simulation. Possible values are: true, false. Default is false. | Optional |
@@ -39,6 +43,8 @@ Submits a sample to ThreatZone for sandbox analysis.
 | internet_connection | Enable internet connection. Possible values are: true, false. Default is false. | Optional |
 | raw_logs | Raw logs. Possible values are: true, false. Default is false. | Optional |
 | snapshot | Snapshot. Possible values are: true, false. Default is false. | Optional |
+| entrypoint | For archives, specify the filename inside the archive to execute. | Optional |
+| password | Password for password-protected archives. | Optional |
 
 #### Context Output
 
@@ -64,8 +70,10 @@ Submits a sample to ThreatZone for static analysis.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | Entry ID of the file to submit. | Required |
-| private | If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission. Possible values are: true, false. Default is false. | Optional |
-| extension_check | If extension check is true and you do not know the submission extension or mimetype then our systems automatically detects file extension and mimetype. Possible values are: true, false. Default is true. | Optional |
+| private | If this is false then everyone can see the submission. If this is true then only your workspace participants can see the submission. Possible values are: true, false. Default is false. | Optional |
+| extension_check | Enforce MIME-based extension correction before static scan. Possible values are: true, false. Default is false. | Optional |
+| entrypoint | For archives, specify the filename inside the archive to analyse. | Optional |
+| password | Password for password-protected archives. | Optional |
 
 #### Context Output
 
@@ -91,8 +99,10 @@ Submits a sample to ThreatZone for CDR.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | Entry ID of the file to submit. | Required |
-| private | If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission. Possible values are: true, false. Default is true. | Optional |
+| private | If this is false then everyone can see the submission. If this is true then only your workspace participants can see the submission. Possible values are: true, false. Default is false. | Optional |
 | extension_check | If extension check is true and you do not know the submission extension or mimetype then our systems automatically detects file extension and mimetype. Possible values are: true, false. Default is true. | Optional |
+| entrypoint | For archives, specify the filename inside the archive to sanitize. | Optional |
+| password | Password for password-protected archives. | Optional |
 
 #### Context Output
 
@@ -107,11 +117,39 @@ Submits a sample to ThreatZone for CDR.
 ### tz-get-result
 
 ***
-Retrive the analysis result from ThreatZone.
+Retrive the analysis result from ThreatZone. This command returns the raw submission payload; use the dedicated section commands for detailed artifacts, indicators, or YARA data.
 
 #### Base Command
 
 `tz-get-result`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uuid | UUID of the submission. | Required |
+| details | When true, include inline Indicators, IOCs, YARA matches, artifacts, and configuration data in the readable output. Possible values are: true, false. Default is false. | Optional |
+| download_sanitized | When true and the submission is a CDR analysis, download the sanitized file after the analysis completes. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatZone.Submission | Unknown | Raw submission data returned by ThreatZone. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Reliability | String | The reliability of the source providing the intelligence data. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+
+### tz-get-indicator-result
+
+***
+Retrieves dynamic behaviour indicators for a submission from ThreatZone.
+
+#### Base Command
+
+`tz-get-indicator-result`
 
 #### Input
 
@@ -123,23 +161,96 @@ Retrive the analysis result from ThreatZone.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatZone.Analysis.STATUS | String | The status of the submission scanning process. |
-| ThreatZone.Analysis.LEVEL | String | Threat Level of the scanned file. \(malicious, suspicious or informative\). |
-| ThreatZone.Analysis.INFO | String | Contains the file name, scan process status and public status. |
-| ThreatZone.Analysis.REPORT | String | The analysis report of the submission. |
-| ThreatZone.Analysis.MD5 | String | The md5 hash of the submission. |
-| ThreatZone.Analysis.SHA1 | String | The sha1 hash of the submission. |
-| ThreatZone.Analysis.SHA256 | String | The sha256 hash of the submission. |
-| ThreatZone.Analysis.UUID | String | The UUID of the submission. |
-| ThreatZone.IOC.URL | List | The URL data extracted from IOC. |
-| ThreatZone.IOC.IP | List | The IP data extracted from IOC. |
-| ThreatZone.IOC.DOMAIN | List | The DOMAIN data extracted from IOC. |
-| ThreatZone.IOC.EMAIL | List | The EMAIL data extracted from IOC. |
-| DBotScore.Indicator | String | The indicator that was tested. |
-| DBotScore.Reliability | String | The reliability of the source providing the intelligence data. |
-| DBotScore.Score | Number | The actual score. |
-| DBotScore.Type | String | The indicator type. |
-| DBotScore.Vendor | unknown | The vendor used to calculate the score. |
+| ThreatZone.Submission.Indicators.UUID | String | The UUID of the submission. |
+| ThreatZone.Submission.Indicators.Data | Unknown | Dynamic behaviour indicators returned by ThreatZone. |
+
+### tz-get-ioc-result
+
+***
+Retrieves Indicators of Compromise for a submission from ThreatZone.
+
+#### Base Command
+
+`tz-get-ioc-result`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uuid | UUID of the submission. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatZone.Submission.IOCs.UUID | String | The UUID of the submission. |
+| ThreatZone.Submission.IOCs.Data | Unknown | Indicators of Compromise returned by ThreatZone. |
+
+### tz-get-yara-result
+
+***
+Retrieves matched YARA rules for a submission from ThreatZone.
+
+#### Base Command
+
+`tz-get-yara-result`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uuid | UUID of the submission. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatZone.Submission.YaraMatches.UUID | String | The UUID of the submission. |
+| ThreatZone.Submission.YaraMatches.Data | Unknown | Matched YARA rules returned by ThreatZone. |
+
+### tz-get-artifact-result
+
+***
+Retrieves analysis artifacts for a submission from ThreatZone.
+
+#### Base Command
+
+`tz-get-artifact-result`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uuid | UUID of the submission. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatZone.Submission.Artifacts.UUID | String | The UUID of the submission. |
+| ThreatZone.Submission.Artifacts.Data | Unknown | Analysis artifacts returned by ThreatZone. |
+
+### tz-get-config-result
+
+***
+Retrieves configuration extractor results for a submission from ThreatZone.
+
+#### Base Command
+
+`tz-get-config-result`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uuid | UUID of the submission. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatZone.Submission.Config.UUID | String | The UUID of the submission. |
+| ThreatZone.Submission.Config.Data | Unknown | Configuration extractor results returned by ThreatZone. |
 
 ### tz-get-sanitized
 
@@ -171,6 +282,63 @@ Downloads and uploads sanitized file from ThreatZone API to WarRoom & Context Da
 | InfoFile.SHA512 | String | SHA512 hash of the file sanitized by CDR. |
 | InfoFile.SSDeep | String | SSDeep hash of the file sanitized by CDR. |
 
+### tz-download-html-report
+
+***
+Downloads the HTML report for a submission and uploads it to the War Room.
+
+#### Base Command
+
+`tz-download-html-report`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uuid | UUID of the submission. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Extension | String | Extension of the HTML report. |
+| InfoFile.Name | String | The name of the downloaded HTML report. |
+| InfoFile.Size | Number | Size of the downloaded HTML report. |
+| InfoFile.EntryID | String | EntryID of the downloaded HTML report. |
+| InfoFile.Info | String | Info for the downloaded HTML report. |
+| InfoFile.MD5 | String | MD5 hash of the downloaded HTML report. |
+| InfoFile.SHA1 | String | SHA1 hash of the downloaded HTML report. |
+| InfoFile.SHA256 | String | SHA256 hash of the downloaded HTML report. |
+| InfoFile.SHA512 | String | SHA512 hash of the downloaded HTML report. |
+| InfoFile.SSDeep | String | SSDeep hash of the downloaded HTML report. |
+
+### tz-url-analysis
+
+***
+Submits a URL to ThreatZone for analysis.
+
+#### Base Command
+
+`tz-url-analysis`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url | URL to analyse. | Required |
+| private | Mark the submission as workspace-private. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatZone.Submission.URL.UUID | String | UUID of the URL submission. |
+| ThreatZone.Submission.URL.URL | String | The URL submitted for analysis. |
+| ThreatZone.Limits.E_Mail | String | The owner e-mail of current plan. |
+| ThreatZone.Limits.API_Limit | String | The remaining/total API request limits of the current plan. |
+| ThreatZone.Limits.Concurrent_Limit | String | The remaining/total concurrent analysis limits of the current plan. |
+| ThreatZone.Limits.Daily_Submission_Limit | String | The remaining/total daily submission limits of the current plan. |
+
 ### tz-check-limits
 
 ***
@@ -184,6 +352,7 @@ Check the plan limits from ThreatZone API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| detailed | When true, include plan file limits, enabled modules, and account metadata. | Optional |
 
 #### Context Output
 
@@ -193,6 +362,13 @@ Check the plan limits from ThreatZone API.
 | ThreatZone.Limits.API_Limit | String | The remaining/total API request limits of the current plan. |
 | ThreatZone.Limits.Concurrent_Limit | String | The remaining/total concurrent analysis limits of the current plan. |
 | ThreatZone.Limits.Daily_Submission_Limit | String | The remaining/total daily submission limits of the current plan. |
+| ThreatZone.Plan.File_Size_Limit_MiB | Number | Maximum upload size for the workspace plan (MiB). |
+| ThreatZone.Plan.Allowed_Extensions | List | The list of permitted file extensions for uploads. |
+| ThreatZone.Plan.Modules | List | Enabled ThreatZone modules for the workspace. |
+| ThreatZone.Metadata.Full_Name | String | Full name of the authenticated user. |
+| ThreatZone.Metadata.Workspace | String | Workspace identifier or name associated with the account. |
+| ThreatZone.Metadata.Plan_Name | String | Name of the active ThreatZone plan. |
+| ThreatZone.Metadata.Plan_Status | String | Status of the active ThreatZone plan. |
 
 #### Command Example
 
