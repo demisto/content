@@ -1,0 +1,552 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "Cypho Incident Dashboard",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "33146190-9bf2-11f0-9977-5df2c3419aae",
+            "id": "33146190-9bf2-11f0-9977-5df2c3419aae",
+            "reflectDimensions": true,
+            "w": 5,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2023-08-17T15:22:49.571350145+04:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.27",
+                "modified": "2023-08-17T15:22:52.510790078+04:00",
+                "name": "Cypho: Top 10 Incident Types",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "type"
+                    ],
+                    "showGraphValues": false
+                },
+                "prevName": "Active Incidents - Pie chart",
+                "propagationLabels": [],
+                "query": "-category:job name:Cypho",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "e3f14210-9bf4-11f0-9977-5df2c3419aae",
+            "id": "e3f14210-9bf4-11f0-9977-5df2c3419aae",
+            "reflectDimensions": true,
+            "w": 12,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2025-09-28T02:46:02.491835366+04:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "1f10d33e-8c66-4411-810b-c3c6a8eea2d3",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2025-09-28T02:46:02.496424611+04:00",
+                "name": "Cypho Active Incidents by Type",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "occurred(d)",
+                        "type"
+                    ],
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Cypho Active Incidents by Type",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-category:job  and -status:closed name:Cypho",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "line"
+            },
+            "x": 0,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "e4e40680-9bf4-11f0-9977-5df2c3419aae",
+            "id": "e4e40680-9bf4-11f0-9977-5df2c3419aae",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2025-09-28T02:50:05.332227288+04:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "3ba00bc3-8327-4eb3-8702-640998ef09a2",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2025-09-28T02:50:05.332775129+04:00",
+                "name": "Cypho Unassigned Incident",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": 5
+                            },
+                            "#FF1744": {
+                                "value": 20
+                            },
+                            "#FF9000": {
+                                "value": 10
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "enablePagination": true,
+                    "valuesFormat": "regular"
+                },
+                "prevName": "Cypho Unassigned Incident",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-category:job and -status:closed and owner:\"\" name:Cypho",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 9,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "e56fcbc0-9bf4-11f0-9977-5df2c3419aae",
+            "id": "e56fcbc0-9bf4-11f0-9977-5df2c3419aae",
+            "reflectDimensions": true,
+            "w": 9,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2025-09-28T02:50:58.095428813+04:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "cf735070-23c7-49de-82dd-4f0250af38ae",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2025-09-28T02:50:58.09619748+04:00",
+                "name": "Cypho Unassigned Incident By Name",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "enablePagination": true,
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "id",
+                            "width": 110
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "name",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "type",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "status",
+                            "width": 80
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "owner",
+                            "width": 160
+                        }
+                    ]
+                },
+                "prevName": "Cypho Unassigned Incident By Name",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-category:job and -status:closed and owner:\"\" name:Cypho",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "sort": [
+                    {
+                        "asc": false,
+                        "field": "id",
+                        "fieldType": ""
+                    }
+                ],
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 0,
+            "y": 7
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "439f5160-9bf6-11f0-9977-5df2c3419aae",
+            "id": "439f5160-9bf6-11f0-9977-5df2c3419aae",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2025-09-28T03:04:02.430726138+04:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "16615552-f367-4b0b-8749-c9c54d64d726",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2025-09-28T03:04:02.431224026+04:00",
+                "name": "Cypho Active Incidents by Severity",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "cyphorisklevel"
+                    ],
+                    "showGraphValues": false,
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Cypho Active Incidents by Severity",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-status:Closed and -category:job name:Cypho",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 9,
+            "y": 1
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "f7da7810-9bf8-11f0-9977-5df2c3419aae",
+            "id": "f7da7810-9bf8-11f0-9977-5df2c3419aae",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2025-09-28T03:18:30.144297911+04:00",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "40d59303-bade-4257-809b-d7a94b919e19",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2025-09-28T03:18:30.145173454+04:00",
+                "name": "Cypho Command execution errors",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "command"
+                    ],
+                    "hideLegend": false,
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "showGraphValues": false
+                },
+                "prevName": "Cypho Command execution errors",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration command:*cypho*",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 9,
+            "y": 7
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "f85eea50-9bf8-11f0-9977-5df2c3419aae",
+            "id": "f85eea50-9bf8-11f0-9977-5df2c3419aae",
+            "reflectDimensions": true,
+            "w": 12,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2025-09-28T03:21:52.673349953+04:00",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "2b17f5d0-f50b-4499-80b3-9874ed9a4767",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2025-09-28T03:21:52.673872809+04:00",
+                "name": "Cypho Errors by Incident Type per Command (top 5)",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "command",
+                        "incidentType"
+                    ],
+                    "hideLegend": false,
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "referenceLine": {
+                        "type": "max"
+                    },
+                    "showGraphValues": true,
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Cypho Errors by Incident Type per Command (top 5)",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration command:*cypho*",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 0,
+            "y": 11
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "d0f88700-9de7-11f0-9540-3b5ba4d06096",
+            "id": "d0f88700-9de7-11f0-9540-3b5ba4d06096",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "2025-09-28T02:53:50.670004452+04:00",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "a75956c4-9108-4fc4-84f7-b6ba82b9d44a",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2025-09-30T14:25:13.730289038+04:00",
+                "name": "Cypho Incidents Status by User",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "cyphostatus"
+                    ],
+                    "showGraphValues": false,
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Cypho Incidents Status by User",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-category:job and -status:archived and -status:Closed name:Cypho",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 2,
+                "widgetType": "pie"
+            },
+            "x": 5,
+            "y": 0
+        }
+    ],
+    "name": "Cypho Incident Dashboard",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": 7,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "",
+    "isPredefined": true
+}
