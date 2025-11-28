@@ -22,3 +22,9 @@ cisos
 workflows
 cortext
 dropdown
+bidirectional
+DMARC
+programmatically
+
+[file:incidentfield-Bitsight_Remediation_Status.json]
+ignore=IF115
