@@ -1,7 +1,5 @@
-import demistomock as demisto  # noqa
-from CommonServerPython import *  # noqa
-from CommonServerUserPython import *  # noqa
-
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # IMPORTS
 
 import json
@@ -10,6 +8,7 @@ import requests
 import dateparser
 import uuid
 from enum import Enum
+
 from MicrosoftApiModule import *  # noqa: E402
 from typing import Literal
 
@@ -1179,24 +1178,54 @@ def list_watchlist_items_command(client, args):
     """
 
     # prepare the request
+    limit = arg_to_number(args.get('limit',50))
+    all_results = argToBoolean(args.get('all_results', False))
+
     alias = args.get("watchlist_alias", "")
     url_suffix = f"watchlists/{alias}/watchlistItems"
     item_id = args.get("watchlist_item_id")
+    next_link = args.get("next_link","").replace("%20", " ")
+
     if item_id:
         url_suffix += f"/{item_id}"
 
-    # request
-    result = client.http_request("GET", url_suffix)
+    result = client.http_request("GET", url_suffix, full_url=next_link)
+    raw_items = [result] if item_id else result.get("value", [])
+    next_link = result.get("nextLink")
 
-    # prepare result
-    raw_items = [result] if item_id else result.get("value")
+    while next_link and (all_results or len(raw_items) < limit):
+        full_url = next_link.replace("%20", " ") if isinstance(next_link, str) else None
+        result = client.http_request("GET", url_suffix, full_url=full_url)
+        raw_items += [result] if item_id else result.get("value", [])
+        next_link = result.get("nextLink")
+
+    if not all_results and len(raw_items) >= limit:
+        raw_items = raw_items[:limit]
+
     items = [{"WatchlistAlias": alias, **watchlist_item_data_to_xsoar_format(item)} for item in raw_items]
+
     readable_output = tableToMarkdown(
         "Watchlist items results",
         items,
         headers=["ID", "ItemsKeyValue"],
         headerTransform=pascalToSpace,
         removeNull=True,
+    )
+    result = {"WatchlistItem":items}
+    if next_link:
+        next_link_item = {
+            "Description": NEXT_LINK_DESCRIPTION,
+            "URL": next_link,
+        }
+        result["NextLink"] = next_link_item
+
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="AzureSentinel",
+        outputs=result,
+        outputs_key_field="ID",
+        raw_response=result,
     )
 
     return CommandResults(
