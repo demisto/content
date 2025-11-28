@@ -1485,6 +1485,7 @@ def set_retry_mechanism_arguments(context: dict, next_request_time: float = 0.0,
     """
     context = context or {}
     next_counter = delay_request_counter + 1
+    demisto.debug("Dummy log")
 
     context["next_request_time"] = next_request_time
     context["delay_request_counter"] = next_counter
@@ -1592,6 +1593,7 @@ def azure_tag_formatter(arg):
         tag = json.loads(arg)
         tag_name = next(iter(tag))
         tag_value = tag[tag_name]
+        tag_value2 = tag[tag_name]
         return f"tagName eq '{tag_name}' and tagValue eq '{tag_value}'"
     except Exception as e:
         raise Exception(
