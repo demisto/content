@@ -2814,6 +2814,9 @@ class Taxii2FeedClient(STIX2XSOARParser):
         """
         get_objects = self.collection_to_fetch.get_objects
         if self.objects_to_fetch:
+            # Always include extension-definition to ensure custom fields are fetched
+            if "extension-definition" not in self.objects_to_fetch:
+                self.objects_to_fetch.append("extension-definition")
             if (
                 "relationship" not in self.objects_to_fetch and len(self.objects_to_fetch) > 1
             ):  # when fetching one type no need to fetch relationship
