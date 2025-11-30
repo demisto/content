@@ -299,6 +299,12 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> tuple[list[d
 def ad_get_user(command: Command, additional_fields=False) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     readable_outputs_list = []
     command.args["attributes"] = demisto.args().get("attributes")
+    sid = command.args.get("user_sid")
+    demisto.debug(f"The user sid {sid}")
+    if sid:
+        demisto.debug(f"Using a user sid {sid}, inserting the custom-field-type args")
+        command.args["custom-field-type"] = "objectSid"
+
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
 
     readable_outputs_list.extend(readable_errors)
@@ -756,6 +762,7 @@ def main():
         users_ids = argToList(args.get("user_id", []))
         users_names = argToList(args.get("user_name", []))
         users_emails = argToList(args.get("user_email", []))
+        users_sid = argToList(args.get("user_sid", []))
         domain = args.get("domain", "")
         verbose = argToBoolean(args.get("verbose", False))
         brands_to_run = argToList(args.get("brands", []))
@@ -765,8 +772,9 @@ def main():
 
         if domain and not users_names:
             raise ValueError("When specifying the domain argument, the user_name argument must also be provided.")
-        if not any((users_ids, users_names, users_emails)):
-            raise ValueError("At least one of the following arguments must be specified: user_id, user_name or user_email.")
+        if not any((users_ids, users_names, users_emails, users_sid)):
+            raise ValueError("At least one of the following arguments must be specified:"
+                             " user_id, user_name, user_email or users_sid.")
 
         command_results_list: list[CommandResults] = []
         users_outputs: list[dict] = []
@@ -1029,6 +1037,29 @@ def main():
             if readable_output and outputs:
                 users_outputs.extend(outputs)
                 users_readables.extend(readable_output)
+
+        #################################
+        ### Running for Users SID ###
+        #################################
+        for user_sid in users_sid:
+            demisto.debug(f"Start getting user data for {user_sid=}")
+
+            #################################
+            ### Running for Active Directory Query v2 ###
+            #################################
+            readable_output, outputs = get_data(
+                modules=modules,
+                brand_name="Active Directory Query v2",
+                command_name="ad-get-user",
+                arg_name="custom-field-data",
+                arg_value=user_sid,
+                cmd=ad_get_user,
+                additional_fields=additional_fields,
+            )
+            if readable_output and outputs:
+                users_outputs.extend(outputs)
+                users_readables.extend(readable_output)
+
 
         #################################
         ### Running for Users Emails ###
