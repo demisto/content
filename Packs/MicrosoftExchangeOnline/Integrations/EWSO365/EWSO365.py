@@ -1815,7 +1815,14 @@ def test_module(client: EWSClient, max_fetch):  # pragma: no cover
                 "Check user permissions. You can try !ews-find-folders command to "
                 "get all the folders structure that the user has permissions to"
             )
-
+    except Exception as e:
+        if "403" in str(e):
+            error_message_simple = (
+                f"Got invalid response with status code: 403."
+                f" Please make sure you have the right permissions to your application.\n"
+            )
+            raise DemistoException(error_message_simple)
+        raise DemistoException(str(e))
     return "ok"
 
 
@@ -1941,17 +1948,19 @@ def sub_main():  # pragma: no cover
                 sys.exit(0)
             error_message_simple = log_message + " Please retry your request."
 
-        if isinstance(e, ConnectionError):
+        elif isinstance(e, ConnectionError):
             error_message_simple = f"Could not connect to the server.\nAdditional information: {e!s}"
-        else:
-            if is_test_module and isinstance(e, MalformedResponseError):
-                error_message_simple = "Got invalid response from the server.\n"
+
+        elif is_test_module and isinstance(e, MalformedResponseError):
+            error_message_simple = (
+                f"Got invalid response from the server with status code {str(e)}.\n"
+            )
 
         # Legacy error handling
-        if "Status code: 401" in debug_log:
+        elif "Status code: 401" in debug_log:
             error_message_simple = "Got unauthorized from the server. "
 
-        if "Status code: 503" in debug_log:
+        elif "Status code: 503" in debug_log:
             error_message_simple = "Got timeout from the server. Probably the server is not reachable with the current settings. "
 
         if not error_message_simple:
