@@ -1857,12 +1857,12 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
             readable_output=f"Playbook '{playbook_id}' executed successfully for all issue IDs: {', '.join(issue_ids)}",
         )
 
-    # Non-empty response contains error messages for specific issue IDs
     error_messages = []
 
     for issue_id, error_message in response.items():
         error_messages.append(f"Issue ID {issue_id}: {error_message}")
 
+    demisto.debug(f"Playbook run errors: {error_messages}")
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
 

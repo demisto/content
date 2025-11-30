@@ -4878,9 +4878,9 @@ def test_run_playbook_command_multiple_errors_response():
 
     mock_client = Mock()
     mock_client.run_playbook.return_value = {
-        "issue_1": "Access denied",
-        "issue_2": "Invalid issue state",
-        "issue_3": "Timeout occurred",
+        "issue_1": "Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert",
+        "issue_2": "Skipping execution of playbook multi_fail_playbook for alert issue_2, failed creating investigation playbook",
+        "issue_3": "Skipping execution of playbook multi_fail_playbook for alert issue_3, failed creating investigation playbook",
     }
 
     args = {"playbook_id": "multi_fail_playbook", "issue_ids": ["issue_1", "issue_2", "issue_3"]}
@@ -4890,9 +4890,18 @@ def test_run_playbook_command_multiple_errors_response():
 
     error_message = str(exc_info.value)
     assert "multi_fail_playbook" in error_message
-    assert "Issue ID issue_1: Access denied" in error_message
-    assert "Issue ID issue_2: Invalid issue state" in error_message
-    assert "Issue ID issue_3: Timeout occurred" in error_message
+    assert (
+        "Issue ID issue_1: Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert"
+        in error_message
+    )
+    assert (
+        "Issue ID issue_2: Skipping execution of playbook multi_fail_playbook for alert issue_2, failed creating investigation playbook"
+        in error_message
+    )
+    assert (
+        "Issue ID issue_3: Skipping execution of playbook multi_fail_playbook for alert issue_3, failed creating investigation playbook"
+        in error_message
+    )
 
 
 def test_run_playbook_command_string_issue_ids():
