@@ -395,38 +395,70 @@ _EXTRACTION_JAVASCRIPT = """
                          '').toLowerCase();
     const isJson = contentType.includes('application/json') ||
                    contentType.includes('application/ld+json');
-    
+
     if (isJson) {
-        // Extract JSON content from <pre> tag (how browsers display JSON) or body
         const jsonContent = document.querySelector('pre') ?
                             document.querySelector('pre').textContent :
                             document.body.textContent;
         return { type: 'json', content: jsonContent };
     }
 
+    // --- Metadata and Tag Extraction ---
+    let metadataOutput = [];
+
+    // Function to safely extract content from a meta tag
+    function getMetaContent(selector) {
+        const element = document.querySelector(selector);
+        return element ? element.content.trim() : '';
+    }
+
+    // Extract Title, Description, and Tags from the <head>
+    const title = document.title.trim();
+    if (title) metadataOutput.push(`# ${title}`);
+
+    const description = getMetaContent('meta[name="description"]');
+    if (description) metadataOutput.push(`\\n**Description:** ${description}`);
+
+    const ogTags = getMetaContent('meta[property="og:tags"], meta[name="keywords"]');
+    if (ogTags) metadataOutput.push(`\\n**Tags:** ${ogTags}`);
+
+    // Append a separator after metadata
+    if (metadataOutput.length > 0) metadataOutput.push('\\n\\n---\\n\\n');
+
     // --- HTML/Markdown Extraction ---
-    // --- Configuration ---
-    const MAIN_CONTENT_SELECTORS = 'main, article, .main-content, .post, .entry, .container';
-    const IGNORE_SELECTORS = 'nav, header, footer, aside, script, style, noscript, form, iframe, button, '
+    const MAIN_CONTENT_SELECTORS = 'article, [class*="pan-article-content-wrapper"], [class*="post-content"], #main-article-body';
+
+    const IGNORE_SELECTORS = 'nav, header, footer, aside, script, style, noscript, form, iframe, button, video, audio, '
         + '[role="navigation"], [role="banner"], [role="contentinfo"], [role="complementary"], '
-        + '.sidebar, #comments, .comment-area';
+        + '.sidebar, #comments, .comment-area, '
+        + '[class*="table-of-contents"], [id*="table-of-contents"], .article-sidebar-container, '
+        + '.related-content, .widget, .subscribe-form, .product-nav, .additional-resources, .share-buttons, '
+        + '.related-posts, .related-articles, [id^="related-articles"], [id^="related-resources"], '
+        + '[class*="product-list"], [class*="subscribe"], '
+        + '.share-widget, .tag-list, .article-footer, .resources-container, .products-and-services, '
+        + '[class*="nav-column"], [class*="mega-dropdown-menu"], [class*="services-list"], '
+        + '[class*="sub-menu-col"], [class*="tab-pane"], '
+        + '[class*="copyright"], [class*="footer-columns"], .pan-footer-container, [data-type*="script"], '
+        + '[class*="site-nav"], [class*="mobile-header"], [id^="main-nav-menu"]';
 
-    // --- 1. Find and Clean Main Content ---
-    const mainElement = document.querySelector(MAIN_CONTENT_SELECTORS) || document.body;
+    const traversalRoot = document.querySelector(MAIN_CONTENT_SELECTORS) || document.body;
+    const markdownOutput = metadataOutput;
 
-    // Remove noise elements before traversal.
-    mainElement.querySelectorAll(IGNORE_SELECTORS).forEach(el => el.remove());
-
-    const markdownOutput = [];
-
-    // --- 2. Single-Pass Traversal for Structure ---
     function traverse(node) {
         if (node.nodeType === 3) { // TEXT_NODE
             const text = node.textContent.trim();
             if (text) markdownOutput.push(text + ' ');
         } else if (node.nodeType === 1) { // ELEMENT_NODE
+            if (node.matches(IGNORE_SELECTORS)) {
+                 return;
+            }
+
             const tag = node.tagName.toLowerCase();
             const children = Array.from(node.childNodes);
+
+            if (tag === 'div' && node.textContent.trim().length === 0 && node.children.length === 0) {
+                 return;
+            }
 
             let [prefix, suffix, skipChildren] = ['', '', false];
 
@@ -440,16 +472,50 @@ _EXTRACTION_JAVASCRIPT = """
                     const level = parseInt(tag[1], 10);
                     [prefix, suffix] = [`\\n\\n${'#'.repeat(level)} `, '\\n\\n'];
                     break;
+
+                // Table support with proper markdown formatting
+                case 'table':
+                    [prefix, suffix] = ['\\n\\n', '\\n\\n'];
+                    break;
+                case 'thead':
+                    break;
+                case 'tbody':
+                    break;
+                case 'tr':
+                    const isHeaderRow = node.parentNode.tagName.toLowerCase() === 'thead';
+                    if (isHeaderRow) {
+                        // Header row
+                        [prefix, suffix] = ['| ', ' |\\n'];
+                    } else {
+                        // Check if this is first body row (need separator)
+                        const prevRow = node.previousElementSibling;
+                        const needsSeparator = !prevRow || prevRow.parentNode?.tagName?.toLowerCase() === 'thead';
+                        if (needsSeparator) {
+                            const colCount = node.querySelectorAll('td, th').length;
+                            const separator = '|' + ' --- |'.repeat(colCount) + '\\n';
+                            [prefix, suffix] = [separator + '| ', ' |\\n'];
+                        } else {
+                            [prefix, suffix] = ['| ', ' |\\n'];
+                        }
+                    }
+                    break;
+                case 'td':
+                case 'th':
+                    [prefix, suffix] = [' ', ' |'];
+                    break;
+
                 case 'p':
                 case 'div':
                     [prefix, suffix] = ['\\n\\n', '\\n\\n'];
                     break;
+
                 case 'li':
                     const listSymbol = node.parentNode.tagName.toLowerCase() === 'ol'
                         ? `${Array.from(node.parentNode.children).indexOf(node) + 1}. `
                         : '* ';
                     prefix = `\\n${listSymbol}`;
                     break;
+
                 case 'a':
                     const href = node.getAttribute('href');
                     const text = node.textContent.trim();
@@ -485,17 +551,28 @@ _EXTRACTION_JAVASCRIPT = """
         }
     }
 
-    traverse(mainElement);
+    traverse(traversalRoot);
 
-    // --- 3. Final Cleanup ---
+    // Final Cleanup
     let finalContent = markdownOutput.join('').trim();
 
-    // Standardize whitespace and clean up newlines.
     finalContent = finalContent.replace(/ +/g, ' ');
     finalContent = finalContent.replace(/\\n\\n\\n+/g, '\\n\\n');
     finalContent = finalContent.replace(/[ \\t]*\\n[ \\t]*/g, '\\n');
     finalContent = finalContent.replace(/ ([.,;:!?])/g, '$1');
+    finalContent = finalContent.replace(/\\*\\*\\n\\n/g, '**');
+    finalContent = finalContent.replace(/\\*\\* \\*\\* /g, ' ');
+
+    // Table cleanup
+    finalContent = finalContent.replace(/\\|(\\s*?)\\|(\\s*?)-\\|/g, '|');
+    finalContent = finalContent.replace(/\\|\\s*?\\n/g, '\\n');
+
     finalContent = finalContent.trim();
+
+    // Fallback check
+    if (finalContent.length < 1000) {
+        return { type: 'html', content: document.body.textContent.trim() };
+    }
 
     return { type: 'html', content: finalContent };
 })();
