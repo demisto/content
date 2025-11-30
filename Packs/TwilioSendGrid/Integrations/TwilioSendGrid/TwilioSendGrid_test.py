@@ -58,9 +58,10 @@ def mock_events() -> list[dict[str, Any]]:
         ("2024-01-15T10:00:00Z", None, "last_event_time > TIMESTAMP '2024-01-15T10:00:00Z'"),
     ],
 )
-def test_build_query_filter(from_time: str, to_time: str | None, expected_query: str):
+def test_build_query_filter(from_time: str, to_time: str | None, expected_query: str, capfd):
     """Test the build_query_filter function."""
-    assert build_query_filter(from_time, to_time) == expected_query
+    with capfd.disabled():
+        assert build_query_filter(from_time, to_time) == expected_query
 
 
 @freeze_time("2024-01-15 12:00:00")
@@ -68,12 +69,13 @@ def test_build_query_filter(from_time: str, to_time: str | None, expected_query:
     "last_run, expected_time",
     [
         ({"last_event_time": "2024-01-15T10:00:00Z"}, "2024-01-15T10:00:00Z"),
-        ({}, "2024-01-15T11:30:00Z"),
+        ({}, "2024-01-15T11:59:00Z"),  # Changed from 11:30 to 11:59 (1 minute ago)
     ],
 )
-def test_get_last_event_time(last_run: dict[str, Any], expected_time: str):
+def test_get_last_event_time(last_run: dict[str, Any], expected_time: str, capfd):
     """Test the get_last_event_time function."""
-    assert get_last_event_time(last_run) == expected_time
+    with capfd.disabled():
+        assert get_last_event_time(last_run) == expected_time
 
 
 def test_enrich_events(mock_events: list[dict[str, Any]]):
@@ -86,43 +88,45 @@ def test_enrich_events(mock_events: list[dict[str, Any]]):
         assert event["source_log_type"] == "email_activity"
 
 
-def test_update_last_run(mock_events: list[dict[str, Any]]):
+def test_update_last_run(mock_events: list[dict[str, Any]], capfd):
     """Test the update_last_run function."""
-    last_run: dict[str, Any] = {}
-    previous_ids = {"msg_xyz789abc123"}
-    updated_last_run = update_last_run(last_run, mock_events, previous_ids)
+    with capfd.disabled():
+        last_run: dict[str, Any] = {}
+        previous_ids = {"msg_xyz789abc123"}
+        updated_last_run = update_last_run(last_run, mock_events, previous_ids)
 
-    assert "last_event_time" in updated_last_run
-    assert "previous_ids" in updated_last_run
-    assert updated_last_run["last_event_time"] == "2024-01-15T10:40:00Z"
-    assert set(updated_last_run["previous_ids"]) == previous_ids
+        assert "last_event_time" in updated_last_run
+        assert "previous_ids" in updated_last_run
+        assert updated_last_run["last_event_time"] == "2024-01-15T10:40:00Z"
+        assert set(updated_last_run["previous_ids"]) == previous_ids
 
 
-def test_deduplicate_events(mock_events: list[dict[str, Any]]):
+def test_deduplicate_events(mock_events: list[dict[str, Any]], capfd):
     """Test the deduplicate_events function."""
-    # Scenario 1: No duplicates
-    unique_events, new_ids = deduplicate_events(mock_events, set(), "2024-01-15T10:00:00Z")
-    assert len(unique_events) == 3
-    assert len(new_ids) == 1
+    with capfd.disabled():
+        # Scenario 1: No duplicates
+        unique_events, new_ids = deduplicate_events(mock_events, set(), "2024-01-15T10:00:00Z")
+        assert len(unique_events) == 3
+        assert len(new_ids) == 1
 
-    # Scenario 2: One duplicate
-    previous_ids = {"msg_abc123def456"}
-    unique_events, new_ids = deduplicate_events(mock_events, previous_ids, "2024-01-15T10:30:00Z")
-    assert len(unique_events) == 2
-    assert "msg_abc123def456" not in [e["msg_id"] for e in unique_events]
+        # Scenario 2: One duplicate
+        previous_ids = {"msg_abc123def456"}
+        unique_events, new_ids = deduplicate_events(mock_events, previous_ids, "2024-01-15T10:30:00Z")
+        assert len(unique_events) == 2
+        assert "msg_abc123def456" not in [e["msg_id"] for e in unique_events]
 
-    # Scenario 3: All duplicates
-    previous_ids = {e["msg_id"] for e in mock_events}
-    unique_events, new_ids = deduplicate_events(mock_events, previous_ids, "2024-01-15T10:40:00Z")
-    assert len(unique_events) == 0
+        # Scenario 3: All duplicates
+        previous_ids = {e["msg_id"] for e in mock_events}
+        unique_events, new_ids = deduplicate_events(mock_events, previous_ids, "2024-01-15T10:40:00Z")
+        assert len(unique_events) == 0
 
 
 """ CLIENT CLASS TESTS """
 
 
-def test_client_get_email_activity_success(client: Client, mock_events: list[dict[str, Any]]):
+def test_client_get_email_activity_success(client: Client, mock_events: list[dict[str, Any]], capfd):
     """Test the get_email_activity method for a successful API call."""
-    with patch.object(client, "_http_request") as mock_http:
+    with capfd.disabled(), patch.object(client, "_http_request") as mock_http:
         mock_http.return_value = {"messages": mock_events}
         query = "last_event_time > TIMESTAMP '2024-01-15T10:00:00Z'"
         events = client.get_email_activity(query=query, limit=100)
@@ -148,13 +152,15 @@ def test_client_get_email_activity_success(client: Client, mock_events: list[dic
     ],
 )
 def test_client_get_email_activity_error_handling(
-    client: Client, status_code: int, error_message: str, expected_exception: str
+    client: Client, status_code: int, error_message: str, expected_exception: str, capfd
 ):
     """Test the error handling in the get_email_activity method."""
-    with patch.object(client, "_http_request") as mock_http:
-        mock_http.side_effect = Exception(f"[{status_code}] {error_message}")
+    from CommonServerPython import DemistoException
 
-        with pytest.raises(Exception) as excinfo:
+    with capfd.disabled(), patch.object(client, "_http_request") as mock_http:
+        mock_http.side_effect = DemistoException(f"[{status_code}] {error_message}")
+
+        with pytest.raises(DemistoException) as excinfo:
             client.get_email_activity(query="test", limit=100)
 
         assert expected_exception in str(excinfo.value)
@@ -174,25 +180,28 @@ def test_client_invalid_limit(client: Client):
 """ COMMAND FUNCTION TESTS """
 
 
-def test_sg_test_module_success(client: Client):
+def test_sg_test_module_success(client: Client, capfd):
     """Test the sg_test_module for a successful connection."""
-    with patch.object(client, "get_email_activity", return_value=[]) as mock_get_activity:
+    with capfd.disabled(), patch.object(client, "get_email_activity", return_value=[]) as mock_get_activity:
         result = sg_test_module(client)
         assert result == "ok"
         mock_get_activity.assert_called_once()
 
 
-def test_sg_test_module_failure(client: Client):
+def test_sg_test_module_failure(client: Client, capfd):
     """Test the sg_test_module for a failed connection."""
-    with patch.object(client, "get_email_activity", side_effect=Exception("API error")):
-        with pytest.raises(Exception) as excinfo:
-            sg_test_module(client)
-        assert "Test failed: API error" in str(excinfo.value)
+    with (
+        capfd.disabled(),
+        patch.object(client, "get_email_activity", side_effect=Exception("API error")),
+        pytest.raises(Exception) as excinfo,
+    ):
+        sg_test_module(client)
+    assert "Test failed: API error" in str(excinfo.value)
 
 
-def test_get_events_command(client: Client, mock_events: list[dict[str, Any]]):
+def test_get_events_command(client: Client, mock_events: list[dict[str, Any]], capfd):
     """Test the get_events_command."""
-    with patch.object(client, "get_email_activity", return_value=mock_events) as mock_get_activity:
+    with capfd.disabled(), patch.object(client, "get_email_activity", return_value=mock_events) as mock_get_activity:
         args = {"limit": "10"}
         last_run: dict[str, Any] = {}
         events, results = get_events_command(client, args, last_run)
@@ -203,9 +212,9 @@ def test_get_events_command(client: Client, mock_events: list[dict[str, Any]]):
 
 
 @patch("TwilioSendGrid.send_events_to_xsiam")
-def test_fetch_events_command(mock_send_events: MagicMock, client: Client, mock_events: list[dict[str, Any]]):
+def test_fetch_events_command(mock_send_events: MagicMock, client: Client, mock_events: list[dict[str, Any]], capfd):
     """Test the fetch_events_command with the producer-consumer model."""
-    with patch.object(client, "get_email_activity") as mock_get_activity:
+    with capfd.disabled(), patch.object(client, "get_email_activity") as mock_get_activity:
         # Simulate two batches of events
         mock_get_activity.side_effect = [mock_events, []]
         last_run: dict[str, Any] = {}
@@ -218,9 +227,9 @@ def test_fetch_events_command(mock_send_events: MagicMock, client: Client, mock_
 
 
 @patch("TwilioSendGrid.send_events_to_xsiam")
-def test_fetch_events_command_no_events(mock_send_events: MagicMock, client: Client):
+def test_fetch_events_command_no_events(mock_send_events: MagicMock, client: Client, capfd):
     """Test the fetch_events_command when no new events are found."""
-    with patch.object(client, "get_email_activity", return_value=[]) as mock_get_activity:
+    with capfd.disabled(), patch.object(client, "get_email_activity", return_value=[]) as mock_get_activity:
         last_run: dict[str, Any] = {"last_event_time": "2024-01-15T12:00:00Z"}
         events, next_run = fetch_events_command(client, last_run, max_fetch=100)
 
@@ -237,21 +246,22 @@ def test_fetch_events_command_no_events(mock_send_events: MagicMock, client: Cli
 @patch("TwilioSendGrid._event_consumer")
 @patch("TwilioSendGrid._event_producer")
 def test_fetch_events_producer_consumer_orchestration(
-    mock_producer: MagicMock, mock_consumer: MagicMock, mock_send_events: MagicMock, client: Client
+    mock_producer: MagicMock, mock_consumer: MagicMock, mock_send_events: MagicMock, client: Client, capfd
 ):
     """Test that the main producer-consumer function orchestrates the threads correctly."""
-    last_run: dict[str, Any] = {}
-    fetch_events_command(client, last_run, max_fetch=100)
+    with capfd.disabled():
+        last_run: dict[str, Any] = {}
+        fetch_events_command(client, last_run, max_fetch=100)
 
-    # Assert that producer and consumer threads were started
-    assert mock_producer.called
-    assert mock_consumer.called
+        # Assert that producer and consumer threads were started
+        assert mock_producer.called
+        assert mock_consumer.called
 
 
 @patch("queue.Queue")
-def test_producer_stops_when_no_events(mock_queue: MagicMock, client: Client):
+def test_producer_stops_when_no_events(mock_queue: MagicMock, client: Client, capfd):
     """Test that the producer stops when the API returns no events."""
-    with patch.object(client, "get_email_activity", return_value=[]) as mock_get_activity:
+    with capfd.disabled(), patch.object(client, "get_email_activity", return_value=[]) as mock_get_activity:
         metrics = ProducerConsumerMetrics()
         stop_event = threading.Event()
         event_queue: queue.Queue = mock_queue()
@@ -264,23 +274,24 @@ def test_producer_stops_when_no_events(mock_queue: MagicMock, client: Client):
 
 
 @patch("TwilioSendGrid.send_events_to_xsiam")
-def test_consumer_processes_batch(mock_send_events: MagicMock, mock_events: list[dict[str, Any]]):
+def test_consumer_processes_batch(mock_send_events: MagicMock, mock_events: list[dict[str, Any]], capfd):
     """Test that the consumer correctly processes a batch of events."""
-    metrics = ProducerConsumerMetrics()
-    stop_event = threading.Event()
-    event_queue: queue.Queue = queue.Queue()
-    last_run: dict[str, Any] = {"previous_ids": [], "last_event_time": "2024-01-15T10:00:00Z"}
+    with capfd.disabled():
+        metrics = ProducerConsumerMetrics()
+        stop_event = threading.Event()
+        event_queue: queue.Queue = queue.Queue()
+        last_run: dict[str, Any] = {"previous_ids": [], "last_event_time": "2024-01-15T10:00:00Z"}
 
-    # Put a batch in the queue
-    event_batch = EventBatch(events=mock_events, batch_id=1)
-    event_queue.put(event_batch)
+        # Put a batch in the queue
+        event_batch = EventBatch(events=mock_events, batch_id=1)
+        event_queue.put(event_batch)
 
-    # Stop the consumer after one loop
-    stop_event.set()
+        # Stop the consumer after one loop
+        stop_event.set()
 
-    _event_consumer(event_queue, stop_event, metrics, last_run)
+        _event_consumer(event_queue, stop_event, metrics, last_run)
 
-    mock_send_events.assert_called_once()
-    assert metrics.events_consumed == 3
-    assert "last_event_time" in last_run
-    assert last_run["last_event_time"] == "2024-01-15T10:40:00Z"
+        mock_send_events.assert_called_once()
+        assert metrics.events_consumed == 3
+        assert "last_event_time" in last_run
+        assert last_run["last_event_time"] == "2024-01-15T10:40:00Z"

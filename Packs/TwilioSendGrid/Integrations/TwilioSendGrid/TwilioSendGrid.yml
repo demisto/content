@@ -14,10 +14,12 @@ configuration:
   section: Connect
 - display: API Secret Key
   name: api_key
-  type: 4
+  type: 9
   required: true
   section: Connect
-- additionalinfo: Maximum number of email activity messages to fetch per API call (1-1000).
+  hiddenusername: true
+  displaypassword: API Secret Key
+- additionalinfo: Maximum number of email activity messages to fetch per fetch run. The API is limited to 1000 events per call, so multiple calls will be made if needed.
   defaultvalue: '10000'
   display: Maximum Email Activity Messages per fetch
   name: max_fetch
@@ -59,7 +61,7 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: Maximum number of events to retrieve (1-1000). Default is 1000.
+    - description: Maximum number of events to retrieve. The API is limited to 1000 events per call, so multiple calls will be made if needed. Default is 10000.
       name: limit
       defaultValue: '10000'
       required: false

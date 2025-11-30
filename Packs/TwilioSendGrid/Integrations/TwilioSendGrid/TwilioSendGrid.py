@@ -1,5 +1,5 @@
 import urllib3
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from typing import Any
 import threading
 import queue
@@ -49,7 +49,7 @@ class EventBatch:
 
     events: list[dict[str, Any]]
     batch_id: int
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     status: EventBatchStatus = field(default=EventBatchStatus.PENDING)
     retry_count: int = 0
 
@@ -172,10 +172,10 @@ class Client(BaseClient):
                 )
             elif "429" in error_msg:
                 demisto.info(f"Rate limit hit: {error_msg}")
-                raise
+                raise DemistoException("Rate limit hit")
             elif "5" in error_msg and any(code in error_msg for code in ["500", "502", "503", "504"]):
                 demisto.info(f"Server error: {error_msg}")
-                raise
+                raise DemistoException("Server error")
             else:
                 demisto.error(f"API request failed: {error_msg}")
                 raise
@@ -222,7 +222,7 @@ def get_last_event_time(last_run: dict[str, Any]) -> str:
 
     # First fetch - default to 1 minute ago
     demisto.debug("First fetch - defaulting to 1 minute ago")
-    first_fetch_dt = datetime.utcnow() - timedelta(minutes=1)
+    first_fetch_dt = datetime.now(UTC) - timedelta(minutes=1)
 
     return first_fetch_dt.strftime(DATE_FORMAT)
 
@@ -588,9 +588,9 @@ def main() -> None:  # pragma: no cover
         proxy = params.get("proxy", False)
         max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH
 
-        # Validate max_fetch
-        if max_fetch < 1 or max_fetch > MAX_EVENTS_PER_FETCH:
-            raise DemistoException(f"Maximum Email Activity Messages per fetch must be between 1 and {MAX_EVENTS_PER_FETCH}")
+        # Validate max_fetch (can be higher than MAX_EVENTS_PER_FETCH since we make multiple API calls)
+        if max_fetch < 1:
+            raise DemistoException("Maximum Email Activity Messages per fetch must be at least 1")
 
         # Initialize client
         client = Client(base_url=server_url, api_key=api_key, verify=verify_certificate, proxy=proxy)
