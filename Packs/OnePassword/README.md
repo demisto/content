@@ -31,6 +31,8 @@ Every call to the 1Password Events API must be authorized with a bearer token. T
 5. Click **Issue Token** to generate a new bearer token.
 6. Save the token in a secure location and use it in configuring this integration instance.
 
+For more information please about authorization, refer to [this documentation](https://developer.1password.com/docs/events-api/authorization)
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The API server URL depends on the domain where the account is hosted. Refer to the integration Help section for more details. | True |
