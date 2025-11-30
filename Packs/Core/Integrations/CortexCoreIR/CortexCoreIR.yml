@@ -4523,22 +4523,48 @@ script:
     - description: A comma-separated list of endpoint types.
       name: endpoint_type
       isArray: true
+      auto: PREDEFINED
+      predefined:
+      - mobile
+      - server
+      - workstation
+      - containerized
+      - serverless
     - description: A comma-separated list of endpoint statuses.
       name: endpoint_status
       isArray: true
+      auto: PREDEFINED
+      predefined:
+      - connected
+      - lost
+      - disconnected
+      - uninstalled
+      - vdi pending login
+      - forensics offline
     - description: A comma-separated list of endpoint platforms.
       name: platform
       isArray: true
+      auto: PREDEFINED
+      predefined:
+      - windows
+      - mac
+      - linux
+      - android
+      - ios
+      - serverless
     - description: A comma-separated list of operating systems.
       name: operating_system
       isArray: true
-    - description: A comma-separated list of agent versions.
+    - description: A comma-separated list of agent versions. For example, 8.9.0.14028.
       name: agent_version
       isArray: true
-    - description: A comma-separated list of agent OEL values.
-      name: agent_oel
-      isArray: true
-    - description: A comma-separated list of OS versions.
+    - description: Whether the endpoint has a supported version or the agent is EOL.
+      name: supported_version
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: A comma-separated list of OS versions. For example, 10.0.22621.
       name: os_version
       isArray: true
     - description: A comma-separated list of IP addresses.
@@ -4548,7 +4574,7 @@ script:
       name: domain
       isArray: true
     - description: A comma-separated list of assigned prevention policies.
-      name: assigned_prevention_policy
+      name: assigned_prevention_policy ######### check the values in the filter data 
       isArray: true
     - description: A comma-separated list of group names.
       name: group_name
@@ -4562,12 +4588,31 @@ script:
     - description: A comma-separated list of endpoint operational statuses.
       name: operational_status
       isArray: true
+      auto: PREDEFINED
+      predefined:
+      - protected
+      - partially protected
+      - unprotected
     - description: A comma-separated list of cloud providers.
       name: cloud_provider
       isArray: true
+      auto: PREDEFINED
+      predefined:
+      - aws
+      - azure
+      - gcp
+      - alibaba
+      - oracle
+      - on_prem
     - description: A comma-separated list of cloud regions.
       name: cloud_region
       isArray: true
+    - defaultValue: '0'
+      description: Page number (for pagination). The default is 0 (the first page).
+      name: page
+    - defaultValue: '100'
+      description: Maximum number of cases to return per page. The default and maximum value is 100.
+      name: limit
     name: core-list-endpoints
     hidden: true
     description: Retrieves endpoints based on the provided filters.

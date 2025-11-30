@@ -2,12 +2,14 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 from copy import deepcopy
-
+from CortexPlatformCore import FilterBuilder, build_webapp_request_data
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Core - IR"
+AGENTS_TABLE = "AGENTS_TABLE"
+MAX_GET_ENDPOINTS_LIMIT = 100
 
 XSOAR_RESOLVED_STATUS_TO_Core = {
     "Other": "resolved_other",
@@ -55,8 +57,53 @@ ERROR_CODE_MAP = {
     -192: "IPV6_BLOCKING_IS_DISABLED",
     -191: "IP_IS_LOCAL_ADDRESS",
 }
-
-
+ENDPOINT_TYPE = {
+    "mobile": "AGENT_TYPE_MOBILE",
+    "server": "AGENT_TYPE_SERVER",
+    "workstation": "AGENT_TYPE_WORKSTATION",
+    "containerized": "AGENT_TYPE_CONTAINERIZED",
+    "serverless": "AGENT_TYPE_SERVERLESS"
+}
+ENDPOINT_STATUS = {
+    "connected": "STATUS_010_CONNECTED",
+    "lost": "STATUS_020_LOST",
+    "disconnected": "STATUS_040_DISCONNECTED",
+    "uninstalled": "STATUS_050_UNINSTALLED",
+    "vdi pending login": "STATUS_060_VDI_PENDING_LOG_ON",
+    "forensics offline": "STATUS_070_FORENSICS_OFFLINE"
+}
+ENDPOINT_PLATFORM = {
+    "windows": "AGENT_OS_WINDOWS",
+    "mac": "AGENT_OS_MAC",
+    "linux": "AGENT_OS_LINUX",
+    "android": "AGENT_OS_ANDROID",
+    "ios": "AGENT_OS_IOS",
+    "serverless": "AGENT_OS_SERVERLESS"
+}
+ENDPOINT_OPERATIONAL_STATUS = {
+    "protected": "PROTECTED",
+    "partially protected": "PARTIALLY_PROTECTED",
+    "unprotected": "UNPROTECTED"
+}
+ENDPOINT_FIELDS = {
+    "endpoint_name": "HOST_NAME",
+    "endpoint_type": "AGENT_TYPE",
+    "endpoint_status": "AGENT_STATUS",
+    "platform": "OS_TYPE", 
+    "operating_system": "OS_DESC",
+    "agent_version": "AGENT_VERSION",
+    "supported_version": "SUPPORTED_VERSION",
+    "os_version": "OS_VERSION",
+    "ip_address": "IP",
+    "domain": "DOMAIN",
+    "assigned_prevention_policy": "ACTIVE_POLICY",
+    "group_name": "GROUP_ID",
+    "tags": "TAGS",
+    "endpoint_id": "AGENT_ID",
+    "operational_status": "OPERATIONAL_STATUS",
+    "cloud_provider": "CLOUD_PROVIDER",
+    "cloud_region": "CLOUD_REGION",
+}
 class Client(CoreClient):
     def test_module(self):
         """
@@ -231,6 +278,13 @@ class Client(CoreClient):
                 raise DemistoException(f"Got 404 when querying for alert ID {alert_id}, alert not found.")
             else:
                 raise e
+            
+    def get_webapp_data(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/get_data",
+            json_data=request_data,
+        )
 
 
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
@@ -701,29 +755,79 @@ def core_get_contributing_event_command(client: Client, args: Dict) -> CommandRe
         raw_response=alerts,
     )
 
+# def map_endpoint_format(endpoint_list):
+#     """
+#     Maps and prepares endpoints data for consistent output formatting.
+
+#     Args:
+#         endpoint_list (list): Raw endpoint list from client response.
+
+#     Returns:
+#         dict: Formatted endpoint results with markdown table and outputs.
+#     """
+#     if not endpoint_list or not isinstance(endpoint_list, list):
+#         return {}
+
+#     # Transform endpoint data for better readability
+#     formatted_endpoints = []
+#     for endpoint in data:
+#         formatted_endpoint = {
+            
+#         }
+        
 
 def core_list_endpoints_command(client: Client, args: dict):
-    preprocess_args = {
-        "endpoint_name": "HOST_NAME",
-        "endpoint_type": "AGENT_TYPE",
-        "endpoint_status": "AGENT_STATUS",
-        "platform": "OS_TYPE", 
-        "operating_system": "OS_DESC",
-        "agent_version": "AGENT_VERSION",
-        "agent_oel": "",
-        "os_version": "OS_VERSION",
-        "ip_address": "IP",
-        "domain": "DOMAIN",
-        "assigned_prevention_policy": "ACTIVE_POLICY",
-        "group_name": "GROUP_ID",
-        "tags": "TAGS",
-        "endpoint_id": "AGENT_ID",
-        "operational_status": "OPERATIONAL_STATUS",
-        "cloud_provider": "CLOUD_PROVIDER",
-        "cloud_region": "CLOUD_REGION",
-    }
-    build_
-    return
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) or MAX_GET_ENDPOINTS_LIMIT
+    page_from = page * MAX_GET_ENDPOINTS_LIMIT
+    page_to = page * MAX_GET_ENDPOINTS_LIMIT + limit
+    
+    operational_status = [ENDPOINT_OPERATIONAL_STATUS[operational_status] for operational_status in argToList(args.get('operational_status'))]
+    endpoint_type = [ENDPOINT_TYPE[endpoint_type] for endpoint_type in argToList(args.get('endpoint_type'))]
+    endpoint_status = [ENDPOINT_STATUS[status] for status in argToList(args.get('endpoint_status'))]
+    platform = [ENDPOINT_PLATFORM[platform] for platform in argToList(args.get('platform'))]
+    
+    filter_builder = FilterBuilder()
+    filter_builder.add_field(ENDPOINT_FIELDS["endpoint_status"], FilterType.EQ, endpoint_status)
+    filter_builder.add_field(ENDPOINT_FIELDS["operational_status"], FilterType.EQ, operational_status)
+    filter_builder.add_field(ENDPOINT_FIELDS["endpoint_type"], FilterType.EQ, endpoint_type)
+    filter_builder.add_field(ENDPOINT_FIELDS["platform"], FilterType.EQ, platform)
+    filter_builder.add_field(ENDPOINT_FIELDS["endpoint_name"], FilterType.EQ, argToList(args.get('endpoint_name')))
+    filter_builder.add_field(ENDPOINT_FIELDS["operating_system"], FilterType.EQ, argToList(args.get('operating_system')))
+    filter_builder.add_field(ENDPOINT_FIELDS["agent_version"], FilterType.EQ, argToList(args.get('agent_version')))
+    filter_builder.add_field(ENDPOINT_FIELDS["os_version"], FilterType.EQ, argToList(args.get('os_version')))
+    filter_builder.add_field(ENDPOINT_FIELDS["ip_address"], FilterType.EQ, argToList(args.get('ip_address')))
+    filter_builder.add_field(ENDPOINT_FIELDS["domain"], FilterType.EQ, argToList(args.get('domain')))
+    filter_builder.add_field(ENDPOINT_FIELDS["group_name"], FilterType.EQ, argToList(args.get('group_name')))
+    filter_builder.add_field(ENDPOINT_FIELDS["tags"], FilterType.EQ, argToList(args.get('tags')))
+    filter_builder.add_field(ENDPOINT_FIELDS["endpoint_id"], FilterType.EQ, argToList(args.get('endpoint_id')))
+    filter_builder.add_field(ENDPOINT_FIELDS["cloud_provider"], FilterType.EQ, argToList(args.get('cloud_provider')))
+    filter_builder.add_field(ENDPOINT_FIELDS["cloud_region"], FilterType.EQ, argToList(args.get('cloud_region')))
+    filter_builder.add_field(ENDPOINT_FIELDS["supported_version"], FilterType.EQ, arg_to_bool_or_none(args.get('supported_version')))
+    
+    request_data = build_webapp_request_data(
+        table_name=AGENTS_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=page_to,
+        sort_field="AGENT_NAME",
+        sort_order="ASC",
+        start_page=page_from,
+    )
+    demisto.info(f"{request_data=}")
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+    demisto.debug(f"Raw endpoint data retrieved from API: {data}")
+    # data = map_endpoint_format(data)
+    # demisto.debug(f"Endpoint data after mapping and formatting: {data}")
+    
+    return CommandResults(
+        readable_output=tableToMarkdown("Endpoints", data, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Endpoint",
+        outputs_key_field="AGENT_ID",
+        outputs=data,
+        raw_response=data,
+    )
 
 
 def polling_block_ip_status(args, client) -> PollResult:
