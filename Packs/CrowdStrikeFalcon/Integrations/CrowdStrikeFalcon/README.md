@@ -15,12 +15,13 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | IDP Detections fetch query | Supported in Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
 | Mobile Detections fetch query | Supported in Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
 | OFP Detections fetch query | Supported in Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
+| CNAPP Detections fetch query | Supported in Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
 | IOM fetch query | Supported in Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | False |
 | IOA fetch query | Supported in Cortex XSOAR only. In the query parameter format: `cloud_provider=aws&amp;aws_account_id=1234`. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to the [documentation on CSPM Registration Keyword Arguments](https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13). | False |
 | Detections from On-Demand Scans fetch query | Supported in Cortex XSOAR only. Use the Falcon Query Language. For more information, refer to the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).| False|
 | Close Mirrored XSOAR Incident | Supported in Cortex XSOAR only. When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident. | False |
 | Close Mirrored CrowdStrike Falcon Incident or Detection | Supported in Cortex XSOAR only. When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
-| Fetch types | Supported in Cortex XSOAR only. Choose what to fetch - Options: Endpoint Incident, Endpoint Detection, IDP Detection, Indicator of Misconfiguration, Indicator of Attack, Mobile Detection, On-Demand Scans Detection, OFP Detection. You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.| False |
+| Fetch types | Supported in Cortex XSOAR only. Choose what to fetch - Options: Endpoint Incident, Endpoint Detection, IDP Detection, Indicator of Misconfiguration, Indicator of Attack, Mobile Detection, On-Demand Scans Detection, OFP Detection, CNAPP Alert. You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'.| False |
 | Reopen Statuses | Supported in Cortex XSOAR only. CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
 | Advanced: Time in minutes to look back when fetching incidents and detections | Supported in Cortex XSOAR only. Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created. | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Supported in Cortex XSOAR only. | False |
@@ -54,6 +55,7 @@ In order to use the CrowdStrike Falcon integration, the API client must have the
 - Identity Protection Detections - Read and Write
 - Identity Protection Timeline - Read
 - Identity Protection Assessment - Read
+- Falcon Container Image - Read
 
 ## Incident Mirroring (Cortex XSOAR Only)
 
@@ -6481,6 +6483,16 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
     - Mobile Detection
     - On-Demand Scans Detection
     - OFP Detection
+    - CNAPP Alert
 
   - Notes:
     - Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: "Endpoint Detection" and "OFP Detection".
+    - For CNAPP Alerts, you will need one of the following subscriptions:
+        - Falcon Cloud Security with Containers CNAPP
+        - Falcon Cloud Security CNAPP
+        - Falcon Cloud Security with Containers Runtime Protection
+        - Falcon for Managed Containers Runtime Protection
+        - Falcon Cloud Security Proactive
+        - Falcon Cloud Security with Containers
+        - Falcon for Managed Containers
+
