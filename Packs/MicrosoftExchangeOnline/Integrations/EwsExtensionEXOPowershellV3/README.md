@@ -17,7 +17,9 @@ which utilizes the [EXO v3 module](https://learn.microsoft.com/en-us/powershell/
 ## Step-By-Step Configuration Instructions
 
 ### App authentication
+
 To use this integration, you need to connect an application with a certificate.
+
 1. Create the application:
    1. Access **portal.azure.com**.
    2. Navigate to **Home** > **App registrations**.
@@ -30,9 +32,9 @@ To use this integration, you need to connect an application with a certificate.
    9. Under Exchange, click the **ExchangeManageAsApp** checkbox.
    10. Click **Add permissions**.
    11. Click **Grant admin consent for XSOAR**.
-   
+
 2. Create the certificate in Cortex XSOAR.
-   1. Run the **CreateCertificate** command in the Playground to acquire the certificate. 
+   1. Run the **CreateCertificate** command in the Playground to acquire the certificate.
 
       ***!CreateCertificate days=<# of days> password=\<password>***
 
@@ -42,12 +44,10 @@ To use this integration, you need to connect an application with a certificate.
    3. Open the downloaded txt file and copy the text.
    4. In the integration instance configuration, paste the text in the **Certificate** field.
 
-
 3. Attach the .cer file to your Azure app.
     1. In the Cortex XSOAR Playground, download the publickey.cer file
     2. In the Azure application, in the left menu, click **Certificates & secrets**.
     3. In the Certificates tab, upload the publickey.cer file.
-
 
 4. Assign Azure AD roles to the application.
    1. You have two options:
@@ -71,9 +71,10 @@ Note: The information in the Playground is sensitive information. You should del
 8. In the Azure app, navigate to **Home** > **App registration** > **\<application name>** and copy the Application (client) ID.
 9. In Cortex XSOAR, in the integration instance configuration, paste the application ID in **The application ID from the Azure portal** field.
 
-
 ### Verify that the admin account has sufficient Exchange Online permissions
+
 For the integration to work, the Azure AD application's service principal must have the correct permissions assigned in the Exchange Online role groups.
+
 1. Open the Microsoft Purview Portal: https://purview.microsoft.com/
 2. Log in using an admin account that can manage role assignments for the Azure AD application (for example, a Global Administrator or Privileged Role Administrator).
 3. In the top bar, select: **Settings → Roles and scopes**
@@ -84,7 +85,7 @@ For the integration to work, the Azure AD application's service principal must h
 6. Open the role and verify that the **service principal of the Azure AD application used by the integration** is listed.
 7. If not listed, click **Edit → Add Users** and assign the required roles.
 
-* Note - for more information go to the official [Microsoft Documentation.](https://learn.microsoft.com/en-us/defender-office-365)
+- Note - for more information go to the official [Microsoft Documentation.](https://learn.microsoft.com/en-us/defender-office-365)
 
 ## Troubleshooting and Testing
 
@@ -93,7 +94,7 @@ For the integration to work, the Azure AD application's service principal must h
 #### **`The role assigned to application <app-id> isn't supported in this scenario.`**
 
 **Scenario:**  
-When running `test-module`, you receive the error:  
+When running 'Test', you receive the error:  
 *“The role assigned to application <app-id> isn't supported in this scenario. Please check online documentation for assigning correct Directory Roles to Azure AD Application for EXO App-Only Authentication.”*
 
 **Solution:**  
