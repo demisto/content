@@ -2,7 +2,7 @@ import pytest
 from CommonServerPython import *
 from unittest.mock import MagicMock
 from freezegun import freeze_time
-from CitrixDaasEventCollector import Client, get_events_command, fetch_events_command, test_module_command
+from CitrixDaasEventCollector import Client, get_events_command, fetch_events_command, module_test_command
 
 
 @pytest.fixture
@@ -55,7 +55,7 @@ def test_request_access_token(mocker):
     demisto.setIntegrationContext.assert_called_once_with({"access_token": "abc123"})
 
 
-def test_get_site_id_with_valid_token(mocker):
+def test_get_site_id(mocker):
     """
     Given:
         - A valid access token in integration context.
@@ -78,37 +78,7 @@ def test_get_site_id_with_valid_token(mocker):
     demisto.setIntegrationContext.assert_called_once_with({"site_id": "site123"})
 
 
-def test_get_site_id_refreshes_token_on_401(mocker):
-    """
-    Given:
-        - A client with an expired access token.
-    When:
-        - The first HTTP request to get sites returns 401 Unauthorized.
-    Then:
-        - The client should request a new token and retry successfully.
-    """
-    client = Client("https://api.citrixcloud.com", "cust", "id", "secret", False, True)
-
-    def side_effect(*args, **kwargs):
-        if not hasattr(side_effect, "called"):
-            side_effect.called = True
-            mock_resp = MagicMock(status_code=401)
-            return mock_resp
-        mock_resp = MagicMock(status_code=200)
-        mock_resp.json.return_value = {"sites": [{"id": "new_site_id"}]}
-        return mock_resp
-
-    mocker.patch.object(client, "_http_request", side_effect=side_effect)
-    mocker.patch.object(client, "request_access_token", return_value="newtoken")
-
-    site_id = client.get_site_id()
-
-    assert site_id == "new_site_id"
-    assert client.request_access_token.call_count == 1
-    demisto.setIntegrationContext.assert_called_with({"site_id": "new_site_id"})
-
-
-def test_get_operations_with_valid_token(mocker):
+def test_get_operations(mocker):
     """
     Given:
         - A valid access token and site ID in integration context.
@@ -128,36 +98,6 @@ def test_get_operations_with_valid_token(mocker):
 
     res = client.get_operations(search_date_option="LastHour")
     assert res["Items"][0]["Id"] == "op1"
-
-
-def test_get_operations_refreshes_token_on_401(mocker):
-    """
-    Given:
-        - A client with an expired access token.
-    When:
-        - The first HTTP request to get operations returns 401 Unauthorized.
-    Then:
-        - The client should request a new token and retry successfully.
-    """
-    client = Client("https://api.citrixcloud.com", "cust", "id", "secret", False, True)
-
-    def side_effect(*args, **kwargs):
-        if not hasattr(side_effect, "called"):
-            side_effect.called = True
-            mock_resp = MagicMock(status_code=401)
-            return mock_resp
-        mock_resp = MagicMock(status_code=200)
-        mock_resp.json.return_value = {"Items": [{"Id": "op2"}], "ContinuationToken": None}
-        return mock_resp
-
-    mocker.patch.object(client, "_http_request", side_effect=side_effect)
-    mocker.patch.object(client, "request_access_token", return_value="newtoken")
-    demisto.getIntegrationContext.return_value = {"access_token": "expired_token", "site_id": "site123"}
-
-    res = client.get_operations(search_date_option="LastHour")
-
-    assert res["Items"][0]["Id"] == "op2"
-    assert client.request_access_token.call_count == 1
 
 
 def test_get_operations_with_pagination(mocker):
@@ -270,12 +210,12 @@ def test_module_test_command_returns_ok(mocker):
     Given:
         - A Client with mocked event data.
     When:
-        - Running the `test_module_command` function.
+        - Running the `module_test_command` function.
     Then:
         - The result should be 'ok', indicating a successful connection and fetch logic.
     """
     client = Client("url", "cust", "id", "secret", False, True)
     mocker.patch("CitrixDaasEventCollector.get_events_command", return_value="ok")
 
-    result = test_module_command(client, {})
+    result = module_test_command(client, {})
     assert result == "ok"

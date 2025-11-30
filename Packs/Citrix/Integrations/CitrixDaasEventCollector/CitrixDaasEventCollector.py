@@ -289,7 +289,7 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
     return operations, last_run
 
 
-def test_module_command(client: Client, args: dict):
+def module_test_command(client: Client, args: dict):
     get_events_command(client, args)
     return "ok"
 
@@ -315,7 +315,7 @@ def main():
         )
 
         if command == "test-module":
-            result = test_module_command(client, args)
+            result = module_test_command(client, args)
             return_results(result)
 
         elif command == "citrix-daas-get-events":
