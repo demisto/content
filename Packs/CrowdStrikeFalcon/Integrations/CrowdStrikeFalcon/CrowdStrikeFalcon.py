@@ -3581,9 +3581,6 @@ def fetch_items(command="fetch-incidents"):
         demisto.debug("CrowdStrikeFalconMsg: Start fetch CNAPP alert")
         demisto.debug(f"CrowdStrikeFalconMsg: Current CNAPP alert last_run object: {cnapp_alerts_last_run}")
 
-        if LEGACY_VERSION:
-            raise DemistoException(f"{CNAPP_ALERT_TYPE} is not supported in legacy version.")
-
         fetched_cnapp_alerts, cnapp_alerts_last_run = fetch_cnapp_incidents(
             cnapp_alerts_last_run,
             is_fetch_events=is_fetch_events,
