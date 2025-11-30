@@ -509,6 +509,31 @@
                 },
                 "severity": {
                     "simple": "severity"
+                },
+                "dbotMirrorDirection": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_direction",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_id",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorInstance": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_instance",
+                        "transformers": []
+                    }
                 }
             }
         }
