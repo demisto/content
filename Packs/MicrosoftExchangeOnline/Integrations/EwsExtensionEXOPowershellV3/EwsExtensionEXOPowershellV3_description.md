@@ -57,8 +57,9 @@ Note: The information in the Playground is sensitive information. You should del
 
 
 ### Verify that the admin account has sufficient Exchange Online permissions
+For the integration to work, the Azure AD application's service principal must have the correct permissions assigned in the Exchange Online role groups.
 1. Open the Microsoft Purview Portal: https://purview.microsoft.com/
-2. Log in using an admin account that manages the Azure AD application (for example, a Global Administrator or Privileged Role Administrator).
+2. Log in using an admin account that can manage role assignments for the Azure AD application (for example, a Global Administrator or Privileged Role Administrator).
 3. In the top bar, select: **Settings → Roles and scopes**
 4. In the left sidebar, select: **Role Groups**
 5. Search for the following role groups:
