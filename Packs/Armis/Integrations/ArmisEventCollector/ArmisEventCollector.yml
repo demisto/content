@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: ArmisEventCollector
+  id: ArmisEventCollector_beta
   version: -1
 configuration:
 - defaultvalue: https://<armis-instance>.armis.com
@@ -82,8 +82,8 @@ configuration:
   type: 8
   required: false
 description: Collects alerts, devices and activities from Armis resources.
-display: Armis Event Collector
-name: ArmisEventCollector
+display: Armis Event Collector (Beta)
+name: ArmisEventCollector_beta
 supportlevelheader: xsoar
 script:
   commands:
