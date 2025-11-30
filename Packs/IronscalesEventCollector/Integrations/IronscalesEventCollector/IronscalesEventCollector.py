@@ -2,6 +2,7 @@ import copy
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
+from collections import defaultdict
 
 
 # Disable insecure warnings
@@ -122,6 +123,13 @@ class Client(BaseClient):  # pragma: no cover
         incidents_ids_sorted_by_time = [incident.get("incidentID") for incident in incidents_sorted_by_time]
         return incidents_ids_sorted_by_time
 
+    def get_mailbox_mitigation_details(self, incident_ids: list, page_number: int):
+        return self._http_request(
+            method="POST",
+            url_suffix=f"/mitigation/{self.company_id}/details/",
+            params={"incidents": incident_ids, "page": page_number},
+        )
+
 
 """ HELPER FUNCTIONS """
 
@@ -197,6 +205,45 @@ def get_incident_ids_to_fetch(
         incident_ids,
         start_time=first_fetch,
     )
+
+
+def enrich_events_with_mailbox_details(client: Any, events: list[dict[str, Any]]) -> None:
+    """Adds mailbox mitigation details per event.
+
+    Args:
+        client (Client): The instance of IronScales API client.
+        events (list[dict]): List of new formatted events (based on raw incidents).
+    """
+    if not events:
+        demisto.debug("No events found. Skipping mailbox enrichment.")
+        return
+
+    incident_ids = list({event.get("incidentID") for event in events})
+    demisto.debug(f"Starting mailbox enrichment on {len(incident_ids)} incident IDs.")
+
+    per_incident_mitigations = defaultdict(list)  # To group mailbox mitigations per incidentID
+    current_page = 1
+    total_pages = 1  # Ensure loop runs at least once
+
+    while current_page <= total_pages:
+        demisto.debug(f"Getting mailbox mitigation details using {current_page=}.")
+        response = client.get_mailbox_mitigation_details(incident_ids, page_number=current_page)
+        mitigations = response.get("mitigations", [])
+        demisto.debug(f"Got {len(mitigations)} mailbox mitigation details using {current_page=}.")
+
+        # Group mitigations from the current page
+        for mitigation in response.get("mitigations", []):
+            incident_id = mitigation.get("incidentID")
+            per_incident_mitigations[incident_id].append(mitigation)
+
+        total_pages = response.get("total_pages", 0)
+        current_page += 1
+
+    demisto.debug(f"Mapping grouped mailbox mitigations to {len(events)} events.")
+    for event in events:
+        incident_id = event.get("incidentID")
+        event["mitigations"] = per_incident_mitigations.get(incident_id, [])
+    demisto.debug(f"Finished running mailbox enrichment on {len(incident_ids)} incident IDs.")
 
 
 def incident_to_events(incident: dict[str, Any]) -> List[dict[str, Any]]:
@@ -327,6 +374,7 @@ def fetch_events_command(
     max_fetch: int,
     last_id: Optional[int] = None,
     last_timestamp_ids: List[int] = [],
+    mailbox_enrichment: bool = False,
 ) -> tuple[List[dict[str, Any]], int, list[Any] | None]:
     """Fetches IRONSCALES incidents as events to XSIAM.
     Note: each report of incident will be considered as an event.
@@ -336,6 +384,7 @@ def fetch_events_command(
         first_fetch (datetime): First fetch time.
         max_fetch (int): Maximum number of events to fetch.
         last_id (Optional[int]): The ID of the most recent incident ingested in previous runs. Defaults to None.
+        mailbox_enrichment (bool): Whether to fetch the affected mailboxes per incident. Defaults to False.
 
     Returns:
         Tuple[List[Dict[str, Any]], int]:
@@ -354,6 +403,12 @@ def fetch_events_command(
         )
     else:
         events, last_id, last_timestamp_ids = open_incidents_trimmer(incident_ids, client, max_fetch, last_id)
+
+    if mailbox_enrichment:
+        demisto.debug(f"Fetch Mailbox is enabled. Running mailbox enrichment on {len(events)} events.")
+        enrich_events_with_mailbox_details(client=client, events=events)
+    else:
+        demisto.debug("Fetch Mailbox is disabled. Skipping mailbox enrichment.")
 
     return events, last_id, last_timestamp_ids
 
@@ -394,17 +449,19 @@ def main():
                 send_events_to_xsiam(events, VENDOR, PRODUCT)
 
         elif command == "fetch-events":
-            if demisto.getLastRun().get("last_incident_time"):
-                first_fetch = arg_to_datetime(demisto.getLastRun().get("last_incident_time")) or first_fetch
+            last_run = demisto.getLastRun()
+            if last_run.get("last_incident_time"):
+                first_fetch = arg_to_datetime(last_run.get("last_incident_time")) or first_fetch
             events, last_id, last_timestamp_ids = fetch_events_command(
                 client=client,
                 first_fetch=first_fetch,
                 max_fetch=max_fetch,
-                last_id=demisto.getLastRun().get("last_id"),
-                last_timestamp_ids=demisto.getLastRun().get("last_timestamp_ids", []),
+                last_id=last_run.get("last_id"),
+                last_timestamp_ids=last_run.get("last_timestamp_ids", []),
+                mailbox_enrichment=params.get("mailbox_enrichment", False),
             )
 
-            send_events_to_xsiam(events, VENDOR, PRODUCT)
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
             demisto.setLastRun(
                 {
