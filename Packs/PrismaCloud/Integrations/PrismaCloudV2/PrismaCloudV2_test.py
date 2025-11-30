@@ -308,8 +308,11 @@ def test_config_search_command(mocker, prisma_cloud_v2_client):
     """
     from PrismaCloudV2 import config_search_command
 
-    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request")
+    mock_response = {"totalRows": 0, "items": [], "heuristicSearch": True, "preview": False}
+    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request", return_value=mock_response)
+
     args = {"query": "config from cloud.resource where cloud.region = 'AWS Ohio' ", "limit": "1"}
+
     config_search_command(prisma_cloud_v2_client, args)
     http_request.assert_called_with(
         "POST",
@@ -2280,37 +2283,29 @@ def test_remove_additional_resource_fields(prisma_cloud_v2_client):
     """
     from PrismaCloudV2 import remove_additional_resource_fields
 
-    input = {
-        "data": {
-            "items": [
-                {
-                    "data": {
-                        "disks": [{"mode": "READ_WRITE", "shieldedInstanceInitialState": "s_val"}],
-                        "metadata": {
-                            "items": [
-                                {"key": "configure-sh", "value": "configure_sh_val"},
-                                {"key": "not-removed-value", "value": "not_removed_value_val"},
-                            ]
-                        },
-                    }
-                }
-            ]
+    input = [
+        {
+            "data": {
+                "disks": [{"mode": "READ_WRITE", "shieldedInstanceInitialState": "s_val"}],
+                "metadata": {
+                    "items": [
+                        {"key": "configure-sh", "value": "configure_sh_val"},
+                        {"key": "not-removed-value", "value": "not_removed_value_val"},
+                    ]
+                },
+            }
         }
-    }
-    expected = {
-        "data": {
-            "items": [
-                {
-                    "data": {
-                        "disks": [{"mode": "READ_WRITE"}],
-                        "metadata": {"items": [{"key": "not-removed-value", "value": "not_removed_value_val"}]},
-                    }
-                }
-            ]
-        }
-    }
+    ]
 
-    remove_additional_resource_fields(input_dict=input)
+    expected = [
+        {
+            "data": {
+                "disks": [{"mode": "READ_WRITE"}],
+                "metadata": {"items": [{"key": "not-removed-value", "value": "not_removed_value_val"}]},
+            }
+        }
+    ]
+    remove_additional_resource_fields(items=input)
 
     assert input == expected
 
