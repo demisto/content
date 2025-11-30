@@ -9,12 +9,10 @@ which utilizes the [EXO v3 module](https://learn.microsoft.com/en-us/powershell/
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Name | The name of the integration | True |
-| Exchange Online URL | https://outlook.office365.com | True |
+| Exchange Online URL | <https://outlook.office365.com> | True |
 | Certificate | A txt certificate encoded in Base64. | True |
 | The organization used in app-only authentication. |  | True |
 | The application ID from the Azure portal |  | True |
-
-## Step-By-Step Configuration Instructions
 
 ### App authentication
 
@@ -36,7 +34,7 @@ To use this integration, you need to connect an application with a certificate.
 2. Create the certificate in Cortex XSOAR.
    1. Run the **CreateCertificate** command in the Playground to acquire the certificate.
 
-      ***!CreateCertificate days=<# of days> password=\<password>***
+      ***!CreateCertificate days=<# of days> password=`password`***
 
      *Note: Remember your password since you will need it to create your integration instance.*
 
@@ -53,7 +51,7 @@ To use this integration, you need to connect an application with a certificate.
    1. You have two options:
       - Assign Azure AD roles to the application.
       - Assign custom role groups to the application using service principals.
-   2. In the Azure AD portal at https://portal.azure.com/, start typing "roles and administrators" in the Search box at the
+   2. In the Azure AD portal at <https://portal.azure.com/>, start typing "roles and administrators" in the Search box at the
       top of the page, and then select **Microsoft Entra roles and administrators** from the results in the Services section.
    3. On the Roles and administrators page that opens, find and select one of the supported roles by clicking on the
       name of the role (not the checkbox) in the results.
@@ -68,14 +66,14 @@ Note: The information in the Playground is sensitive information. You should del
 5. In Cortex XSOAR, in the integration instance configuration, enter your saved password in the **Password** field.
 6. In Azure, go to Entra ID (Overview blade) and copy the **Primary domain** field.
 7. In Cortex XSOAR, in the integration instance configuration, paste the Domain name in **The organization used in app-only authentication** field.
-8. In the Azure app, navigate to **Home** > **App registration** > **\<application name>** and copy the Application (client) ID.
+8. In the Azure app, navigate to **Home** > **App registration** > **application name** and copy the Application (client) ID.
 9. In Cortex XSOAR, in the integration instance configuration, paste the application ID in **The application ID from the Azure portal** field.
 
 ### Verify that the admin account has sufficient Exchange Online permissions
 
 For the integration to work, the Azure AD application's service principal must have the correct permissions assigned in the Exchange Online role groups.
 
-1. Open the Microsoft Purview Portal: https://purview.microsoft.com/
+1. Open the Microsoft Purview Portal: <https://purview.microsoft.com/>
 2. Log in using an admin account that can manage role assignments for the Azure AD application (for example, a Global Administrator or Privileged Role Administrator).
 3. In the top bar, select: **Settings → Roles and scopes**
 4. In the left sidebar, select: **Role Groups**
@@ -91,11 +89,11 @@ For the integration to work, the Azure AD application's service principal must h
 
 ### Common Issues and Solutions
 
-#### **`The role assigned to application <app-id> isn't supported in this scenario.`**
+#### **`The role assigned to application 'app-id' isn't supported in this scenario.`**
 
 **Scenario:**  
 When running 'Test', you receive the error:  
-*“The role assigned to application <app-id> isn't supported in this scenario. Please check online documentation for assigning correct Directory Roles to Azure AD Application for EXO App-Only Authentication.”*
+*“The role assigned to application `app-id` isn't supported in this scenario. Please check online documentation for assigning correct Directory Roles to Azure AD Application for EXO App-Only Authentication.”*
 
 **Solution:**  
 Verify that the application has the correct directory role assigned in the **Entra ID portal**.  
@@ -103,17 +101,15 @@ See the **“Step-By-Step Configuration Instructions”** section above for deta
 
 ---
 
-#### **`The term <cmdlet> is not recognized as a name of a cmdlet…`**
+#### **`The term 'cmdlet' is not recognized as a name of a cmdlet…`**
 
 **Scenario:**  
 When running a command, you receive an error similar to:  
-*“The term <cmdlet> is not recognized as a name of a cmdlet, function, script file, or executable program…”*
+*“The term `cmdlet` is not recognized as a name of a cmdlet, function, script file, or executable program…”*
 
 **Solution:**  
 Make sure the **service principal of the Azure AD application used by the integration** has sufficient **Exchange Online permissions**.  
 Refer to the **“Exchange Online permissions”** section above to confirm the correct roles are assigned and detailed guidance.
-
----
 
 ## Commands
 
@@ -584,11 +580,11 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | list_type | List type to retrieve items from. | Required |
-| list_subtype | List subtype to retrieve items from.  | Optional |
+| list_subtype | List subtype to retrieve items from. | Optional |
 | action | Action to filter entries by. | Required |
 | expiration_date | Enter a specific date and time to filter entries by using format "YYYY-MM-DD HH:MM:SSz" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used. | Optional |
 | no_expiration | Filter list items that are set to never expire. | Optional |
-| entry | Specif8ic entry value to retrieve. | Optional |
+| entry | Specific entry value to retrieve. | Optional |
 
 #### Context Output
 
