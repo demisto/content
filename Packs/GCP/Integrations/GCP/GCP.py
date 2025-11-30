@@ -2437,7 +2437,7 @@ def health_check(shared_creds: dict, project_id: str, connector_id: str) -> Heal
         connector_id (str): The connector ID for the Cloud integration.
 
     Returns:
-        HealthCheckError or a list of HealthCheckError or None: A list of HealthCheckError if there's at least one issue,
+        A list of HealthCheckError or None: A list of HealthCheckError if there's at least one issue,
         None if successful.
     """
     try:
