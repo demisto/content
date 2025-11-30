@@ -45,16 +45,6 @@ To use this integration, you need to connect an application with a certificate.
    4. On the Assignments page that opens, select **Add assignments**.
    5. In the Add assignments flyout that opens, find and select the app that you created in Step 1.
 
-#### Verify that the admin account has sufficient Exchange Online permissions
-1. Open the Microsoft Purview Portal: https://purview.microsoft.com/
-2. Log in using an admin account that manages the Azure AD application (for example, a Global Administrator or Privileged Role Administrator).
-3. In the top bar, select: **Settings → Roles and scopes**
-4. In the left sidebar, select: **Role Groups**
-5. Search for the following role group:
-   - **Security Administrator**
-6. Open the role and verify that the **service principal of the Azure AD application used by the integration** is listed.
-7. If not listed, click **Edit → Add Users** and assign the required roles.
-
 Note: The information in the Playground is sensitive information. You should delete the information by running the following command:
 
    ***!DeleteContext all=yes***
@@ -66,3 +56,18 @@ Note: The information in the Playground is sensitive information. You should del
 9. In Cortex XSOAR, in the integration instance configuration, paste the application ID in **The application ID from the Azure portal** field.
 
 
+### Verify that the admin account has sufficient Exchange Online permissions
+1. Open the Microsoft Purview Portal: https://purview.microsoft.com/
+2. Log in using an admin account that manages the Azure AD application (for example, a Global Administrator or Privileged Role Administrator).
+3. In the top bar, select: **Settings → Roles and scopes**
+4. In the left sidebar, select: **Role Groups**
+5. Search for the following role groups:
+   - **Organization Management** – the most privileged role and fully supported for this integration.
+   - **Security Administrator** – a highly privileged security role that also provides full access.
+   - **Security Operator** – a less-privileged option.  
+     *Note:* This role only works when assigned directly in the Exchange admin center at  
+     https://admin.exchange.microsoft.com → **Roles** → **Admin Roles**.
+6. Open the role and verify that the **service principal of the Azure AD application used by the integration** is listed.
+7. If not listed, click **Edit → Add Users** and assign the required roles.
+
+* Note - for more information go to the official [Microsoft Documentation.](https://learn.microsoft.com/en-us/defender-office-365)
