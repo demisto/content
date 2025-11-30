@@ -12,7 +12,7 @@ from CommonServerPython import *  # noqa: F401, F403
 urllib3.disable_warnings()
 
 """
-SAP BTP (Business Technology Platform) Integration
+SAP BTP (Business Technology Platform)
 
 Sections:
 - Constants and helpers
@@ -37,6 +37,8 @@ class IntegrationConfig:
     DEFAULT_LIMIT = 5000
     MAX_PAGE_SIZE = 500
     CACHE_BUFFER_SECONDS = 60
+    DEFAULT_TOKEN_TTL_HOURS = 6
+    DEFAULT_TOKEN_TTL_SECONDS = DEFAULT_TOKEN_TTL_HOURS * 60 * 60
 
 
 class AuthType(StrEnum):
@@ -47,9 +49,10 @@ class AuthType(StrEnum):
 
 
 class ContextKeys(StrEnum):
-    """Keys used for Integration Context (Caching)."""
+    """Keys used for Integration Context (Caching) and API Response."""
 
     ACCESS_TOKEN = "access_token"
+    EXPIRES_IN = "expires_in"
     VALID_UNTIL = "valid_until"
 
 
@@ -70,6 +73,68 @@ class ApiValues(StrEnum):
 
     AUDIT_ENDPOINT = "/auditlog/v2/auditlogrecords"
     GRANT_TYPE_CLIENT_CREDENTIALS = "client_credentials"
+
+
+class DefaultValues(StrEnum):
+    """Default values for command arguments."""
+
+    FROM_TIME = "now"  # Default time range for get-events command
+
+
+def parse_date_or_use_current(date_string: str | None) -> datetime:
+    """Parse a date string or return current datetime if parsing fails.
+
+    Args:
+        date_string: ISO 8601 date string or None
+
+    Returns:
+        Parsed datetime object or current datetime if parsing fails or input is None
+    """
+    if not date_string:
+        current_time = datetime.now()
+        demisto.debug(f"No date provided, using current time: {current_time}")
+        return current_time
+
+    parsed_datetime = dateparser.parse(date_string)
+    if parsed_datetime:
+        demisto.debug(f"Parsed date '{date_string}' to: {parsed_datetime}")
+        return parsed_datetime
+
+    demisto.debug(f"Failed to parse date '{date_string}', using current time")
+    return datetime.now()
+
+
+def create_mtls_cert_files(certificate: str, private_key: str) -> tuple[str, str]:
+    """Create temporary certificate files for mTLS authentication.
+
+    Args:
+        certificate: PEM-encoded certificate content
+        private_key: PEM-encoded private key content
+
+    Returns:
+        Tuple of (cert_file_path, key_file_path)
+
+    Raises:
+        DemistoException: If file creation fails
+    """
+    demisto.debug("Creating temporary mTLS certificate files")
+
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".pem") as cert_file:
+            cert_file.write(certificate)
+            cert_file.flush()
+            cert_path = cert_file.name
+
+        with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".key") as key_file:
+            key_file.write(private_key)
+            key_file.flush()
+            key_path = key_file.name
+
+        demisto.debug(f"mTLS certificate files created: cert={cert_path}, key={key_path}")
+        return cert_path, key_path
+
+    except Exception as e:
+        raise DemistoException(f"Failed to create mTLS certificate files: {e}")
 
 
 def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
@@ -185,7 +250,7 @@ class Client(BaseClient):
 
         demisto.debug(f"Client initialized: base_url={base_url}, verify_ssl={verify}, proxy={proxy}, auth_type={auth_type}")
 
-    def _get_token(self) -> str:
+    def _get_access_token(self) -> str:
         """Get or refresh OAuth2 access token with caching.
 
         Returns:
@@ -228,14 +293,16 @@ class Client(BaseClient):
             request_kwargs["data"] = token_params
 
         token_response = self._http_request(**request_kwargs)
+        demisto.debug(f"Token request completed, response contains {len(token_response)} fields")
 
-        access_token = token_response.get("access_token")
+        access_token = token_response.get(ContextKeys.ACCESS_TOKEN)
         if not access_token:
-            demisto.debug(f"Token response missing 'access_token': {token_response}")
+            demisto.debug(f"Token response missing '{ContextKeys.ACCESS_TOKEN}': {token_response}")
             raise DemistoException("Failed to obtain access token from SAP BTP")
 
-        token_expires_in = token_response.get("expires_in", 43199)
+        token_expires_in = token_response.get(ContextKeys.EXPIRES_IN, IntegrationConfig.DEFAULT_TOKEN_TTL_SECONDS)
         token_valid_until = current_timestamp + token_expires_in - IntegrationConfig.CACHE_BUFFER_SECONDS
+        demisto.debug(f"Token will expire in {token_expires_in}s, caching until {token_valid_until}")
 
         new_context = {ContextKeys.ACCESS_TOKEN: access_token, ContextKeys.VALID_UNTIL: str(token_valid_until)}
         set_integration_context(new_context)
@@ -258,7 +325,7 @@ class Client(BaseClient):
         Returns:
             JSON response or (json_body, headers) tuple if return_full_response=True
         """
-        access_token = self._get_token()
+        access_token = self._get_access_token()
         auth_headers = {APIKeys.HEADER_AUTH: f"Bearer {access_token}"}
 
         demisto.debug(f"Executing {method} request to {url_suffix}")
@@ -277,9 +344,11 @@ class Client(BaseClient):
         if return_full_response:
             response_body = http_response.json()
             response_headers = http_response.headers
-            demisto.debug(f"Response received with {len(response_headers)} headers")
+            body_size = len(response_body) if isinstance(response_body, list) else len(response_body.keys())
+            demisto.debug(f"Response received: {body_size} items/fields, {len(response_headers)} headers")
             return response_body, response_headers
 
+        demisto.debug(f"Response received successfully (status: {http_response.status_code})")
         return http_response
 
     def get_audit_log_events(
@@ -320,6 +389,10 @@ class Client(BaseClient):
         demisto.debug(f"Retrieved {len(events_list)} events from API")
 
         next_page_handle = self._extract_pagination_handle(response_headers)
+        if next_page_handle:
+            demisto.debug("Pagination handle available for next page")
+        else:
+            demisto.debug("No pagination handle - this is the last page")
 
         return events_list, next_page_handle
 
@@ -374,22 +447,73 @@ def test_module(client: Client) -> str:
         raise
 
 
+def fetch_events_with_pagination(
+    client: Client, created_after: str, max_events: int
+) -> list[dict[str, Any]]:
+    """Fetch events with automatic pagination handling.
+
+    Args:
+        client: SAP BTP API client
+        created_after: ISO 8601 timestamp to filter events
+        max_events: Maximum number of events to fetch
+
+    Returns:
+        List of event dictionaries
+    """
+    events: list[dict[str, Any]] = []
+    pagination_handle: str | None = None
+
+    demisto.debug(f"Starting pagination loop: max_events={max_events}")
+
+    while len(events) < max_events:
+        remaining_events = max_events - len(events)
+        demisto.debug(
+            f"Fetching page: current_count={len(events)}, "
+            f"remaining={remaining_events}, has_handle={pagination_handle is not None}"
+        )
+
+        page_events, pagination_handle = client.get_audit_log_events(
+            created_after=created_after,
+            limit=remaining_events,
+            pagination_handle=pagination_handle
+        )
+
+        if not page_events:
+            demisto.debug("No more events returned, ending pagination")
+            break
+
+        events.extend(page_events)
+        demisto.debug(f"Added {len(page_events)} events, total: {len(events)}")
+
+        if not pagination_handle:
+            demisto.debug("No next page handle, ending pagination")
+            break
+
+    demisto.debug(f"Pagination complete: fetched {len(events)} total events")
+    return events
+
+
 def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Get audit log events manually."""
+    """Get audit log events manually.
+
+    Args:
+        client: SAP BTP API client
+        args: Command arguments from demisto.args()
+
+    Returns:
+        CommandResults with events data
+    """
     demisto.debug("Starting execution of command: Get Events")
 
-    from_time = args.get("from", "3 days")
+    from_time = args.get("from", DefaultValues.FROM_TIME)
     limit = arg_to_number(args.get("limit")) or IntegrationConfig.DEFAULT_LIMIT
-    demisto.debug(f"Parsed arguments: {from_time=}, {limit=}")
+    demisto.debug(f"Parsed arguments: from={from_time}, limit={limit}")
 
-    parsed_date = dateparser.parse(from_time)
-    if not parsed_date:
-        raise DemistoException(f"Invalid date format: {from_time}")
-    created_after = parsed_date.strftime(IntegrationConfig.DATE_FORMAT)
-    demisto.debug(f"Formatted timestamp: {created_after}")
+    start_datetime = parse_date_or_use_current(from_time if from_time != DefaultValues.FROM_TIME else None)
+    created_after = start_datetime.strftime(IntegrationConfig.DATE_FORMAT)
+    demisto.debug(f"Fetching events from: {created_after}")
 
-    demisto.debug(f"Fetching events with limit={limit}")
-    events, _ = client.get_audit_log_events(created_after=created_after, limit=int(limit))
+    events = fetch_events_with_pagination(client, created_after, int(limit))
     demisto.debug(f"Retrieved {len(events)} events")
 
     readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Events", events, removeNull=True)
@@ -404,7 +528,12 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
 
 def fetch_events_command(client: Client, args: dict[str, Any]) -> None:
-    """Fetch events and send to XSIAM (scheduled job)."""
+    """Fetch events and send to XSIAM (scheduled job).
+
+    Args:
+        client: SAP BTP API client
+        args: Command arguments from demisto.args()
+    """
     demisto.debug("Starting execution of command: Fetch Events")
 
     args.update(demisto.params())
@@ -413,54 +542,32 @@ def fetch_events_command(client: Client, args: dict[str, Any]) -> None:
     last_fetch_timestamp = last_run.get("last_fetch")
     demisto.debug(f"Last run: {last_run}")
 
-    # Parse last fetch time or use current time for first run
-    if last_fetch_timestamp:
-        last_fetch_datetime = dateparser.parse(last_fetch_timestamp)
-        demisto.debug(f"Parsed last fetch time: {last_fetch_datetime}")
-    else:
-        last_fetch_datetime = None
-
-    if not last_fetch_datetime:
-        last_fetch_datetime = datetime.now()
-        demisto.debug(f"First run or invalid last run. Using current time: {last_fetch_datetime}")
-
+    last_fetch_datetime = parse_date_or_use_current(last_fetch_timestamp)
     created_after = last_fetch_datetime.strftime(IntegrationConfig.DATE_FORMAT)
-    max_events_to_fetch = arg_to_number(args.get("max_fetch")) or IntegrationConfig.DEFAULT_LIMIT
-    demisto.debug(f"Fetch parameters: {created_after=}, {max_events_to_fetch=}")
 
-    events: list[dict[str, Any]] = []
-    pagination_handle: str | None = None
+    max_events_to_fetch = args.get("max_fetch", IntegrationConfig.DEFAULT_LIMIT)
+    demisto.debug(f"Fetch parameters: created_after={created_after}, max_events={max_events_to_fetch}")
 
-    demisto.debug(f"Starting fetch loop with max_events_to_fetch={max_events_to_fetch}")
-    while len(events) < int(max_events_to_fetch):
-        remaining_events = int(max_events_to_fetch) - len(events)
-        demisto.debug(f"Fetching page: current_count={len(events)}, remaining={remaining_events}, handle={pagination_handle}")
-        page_events, pagination_handle = client.get_audit_log_events(
-            created_after=created_after, limit=remaining_events, pagination_handle=pagination_handle
-        )
-
-        if not page_events:
-            demisto.debug("No more events returned, breaking fetch loop")
-            break
-        events.extend(page_events)
-        demisto.debug(f"Added {len(page_events)} events, total now: {len(events)}")
-        if not pagination_handle:
-            demisto.debug("No next page handle, breaking fetch loop")
-            break
+    events = fetch_events_with_pagination(client, created_after, int(max_events_to_fetch))
 
     if events:
-        demisto.debug(f"Sorting {len(events)} events by time")
+        demisto.debug(f"Fetched {len(events)} events, sorting by time")
         events.sort(key=lambda x: x.get("time", ""))
-        last_event_time = events[-1].get("time")
-        if last_event_time:
-            demisto.debug(f"Updating last run to: {last_event_time}")
-            demisto.setLastRun({"last_fetch": last_event_time})
 
-        demisto.debug(f"Sending {len(events)} events to XSIAM")
+        first_event_time = events[0].get("time")
+        last_event_time = events[-1].get("time")
+        demisto.debug(f"Event time range: {first_event_time} to {last_event_time}")
+
+        if last_event_time:
+            demisto.setLastRun({"last_fetch": last_event_time})
+            demisto.debug(f"Updated last run to: {last_event_time}")
+        else:
+            demisto.debug("Warning: Last event has no 'time' field, last run not updated")
+
         send_events_to_xsiam(events, vendor=IntegrationConfig.VENDOR, product=IntegrationConfig.PRODUCT)
-        demisto.debug(f"Successfully sent {len(events)} events to XSIAM.")
+        demisto.debug(f"Successfully sent {len(events)} events to XSIAM")
     else:
-        demisto.debug("No events to send to XSIAM")
+        demisto.debug(f"No events fetched from {created_after}, nothing to send to XSIAM")
 
     demisto.debug("Command 'Fetch Events' execution finished successfully.")
 
@@ -497,20 +604,7 @@ def main() -> None:
 
         cert_data = None
         if config["auth_type"] == AuthType.MTLS:
-            demisto.debug("Setting up mTLS certificate files")
-
-            with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".pem") as cert_file:
-                cert_file.write(config["certificate"])
-                cert_file.flush()
-                cert_path = cert_file.name
-
-            with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".key") as key_file:
-                key_file.write(config["key"])
-                key_file.flush()
-                key_path = key_file.name
-
-            cert_data = (cert_path, key_path)
-            demisto.debug(f"mTLS certificate files created: cert={cert_path}, key={key_path}")
+            cert_data = create_mtls_cert_files(config["certificate"], config["key"])
 
         demisto.debug(f"Initializing {INTEGRATION_NAME} Client")
         client = Client(
@@ -535,8 +629,9 @@ def main() -> None:
 
         if result:
             return_results(result)
-
-        demisto.debug(f"Command '{command}' completed successfully")
+            demisto.debug(f"Command '{command}' returned results successfully")
+        else:
+            demisto.debug(f"Command '{command}' completed successfully (no results to return)")
 
     except Exception as error:
         error_msg = f"Failed to execute {command=}. Error: {str(error)}"
