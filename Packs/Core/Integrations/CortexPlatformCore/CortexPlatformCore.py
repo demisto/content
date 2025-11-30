@@ -44,7 +44,7 @@ WEBAPP_COMMANDS = [
     "core-get-asset-coverage-histogram",
     "core-create-appsec-policy",
     "core-get-appsec-issues",
-    "core-update-cases",
+    "core-update-case",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -1615,6 +1615,7 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
 
     return builder.to_dict()
 
+
 def parse_custom_fields(custom_fields: list[str]) -> dict:
     """
     Parse custom fields from the input format 'fieldname:value'
@@ -1627,13 +1628,14 @@ def parse_custom_fields(custom_fields: list[str]) -> dict:
     """
     parsed_fields = {}
     for field in custom_fields:
-        parts = field.split(':', 1)
+        parts = field.split(":", 1)
         if len(parts) == 2:
             field_name, value = parts
             sanitized_name = f"{''.join(char for char in field_name if char.isalnum())}"
             if sanitized_name and sanitized_name not in parsed_fields:
                 parsed_fields[sanitized_name] = value
     return parsed_fields
+
 
 def create_policy_build_scope(args: dict) -> dict:
     """
@@ -1958,7 +1960,10 @@ def update_cases_command(client: Client, args: dict) -> CommandResults:
         client.unassigned_case(case_ids)
         assignee = ""
 
-    if resolve_reason or resolve_all_alerts or resolved_comment and not status == "resolved":
+    if status == "resolved" and not resolve_reason:
+        raise ValueError("In order to set the case to resolved, you must provide a resolve reason")
+
+    if (resolve_reason or resolve_all_alerts or resolved_comment) and not status == "resolved":
         raise ValueError(
             "In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to 'resolved'"
         )
@@ -2117,7 +2122,7 @@ def main():  # pragma: no cover
 
         elif command == "core-get-appsec-issues":
             return_results(get_appsec_issues_command(client, args))
-        elif command == "core-update-cases":
+        elif command == "core-update-case":
             return_results(update_cases_command(client, args))
 
     except Exception as err:

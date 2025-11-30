@@ -4841,44 +4841,44 @@ def test_create_appsec_issues_filter_and_tables_no_matching_table():
     with pytest.raises(DemistoException, match="No matching issue type found for the given filter combination"):
         create_appsec_issues_filter_and_tables(args)
 
-@pytest.mark.parametrize("custom_fields,expected", [
-    ([], {}),
-    (["username:john_doe", "email:john@example.com", "department:IT"], {
-        "username": "john_doe",
-        "email": "john@example.com",
-        "department": "IT"
-    }),
-    (["user-name:john", "email_address:john@example.com", "dept#1:IT"], {
-        "username": "john",
-        "emailaddress": "john@example.com",
-        "dept1": "IT"
-    }),
-    (["user name:john doe", "email address:john@example.com"], {
-        "username": "john doe",
-        "emailaddress": "john@example.com"
-    }),
-    (["username:", "email:john@example.com"], {
-        "username": "",
-        "email": "john@example.com"
-    }),
-    (["username", "email:john@example.com"], {
-        "email": "john@example.com"
-    }),
-    (["timestamp:2023:12:01:10:30", "url:https://example.com:8080"], {
-        "timestamp": "2023:12:01:10:30",
-        "url": "https://example.com:8080"
-    }),
-])
+
+@pytest.mark.parametrize(
+    "custom_fields,expected",
+    [
+        ([], {}),
+        (
+            ["username:john_doe", "email:john@example.com", "department:IT"],
+            {"username": "john_doe", "email": "john@example.com", "department": "IT"},
+        ),
+        (
+            ["user-name:john", "email_address:john@example.com", "dept#1:IT"],
+            {"username": "john", "emailaddress": "john@example.com", "dept1": "IT"},
+        ),
+        (["user name:john doe", "email address:john@example.com"], {"username": "john doe", "emailaddress": "john@example.com"}),
+        (["username:", "email:john@example.com"], {"username": "", "email": "john@example.com"}),
+        (["username", "email:john@example.com"], {"email": "john@example.com"}),
+        (
+            ["timestamp:2023:12:01:10:30", "url:https://example.com:8080"],
+            {"timestamp": "2023:12:01:10:30", "url": "https://example.com:8080"},
+        ),
+    ],
+)
 def test_parse_custom_fields(custom_fields, expected):
     from CortexPlatformCore import parse_custom_fields
+
     result = parse_custom_fields(custom_fields)
     assert result == expected
 
-@pytest.mark.parametrize("custom_fields,expected", [
-    ([], {}),
-    (["$#%$#%:john_doe", ":value"], {}),
-])
+
+@pytest.mark.parametrize(
+    "custom_fields,expected",
+    [
+        ([], {}),
+        (["$#%$#%:john_doe", ":value"], {}),
+    ],
+)
 def test_parse_custom_fields_empty_values(custom_fields, expected):
     from CortexPlatformCore import parse_custom_fields
+
     result = parse_custom_fields(custom_fields)
     assert result == expected
