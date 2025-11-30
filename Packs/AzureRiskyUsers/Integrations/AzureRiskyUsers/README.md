@@ -557,3 +557,139 @@ Read the properties and relationships of a riskDetection object.
 >|Id|User Id|User Display Name|User Principal Name|Risk Detail|Risk Event Type|Risk Level|Risk State|Ip Address|Detection Timing Type|Last Updated Date Time|Location|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 6565 | 999 | Svetlana Israeli | SvetlanaI@test.com | userPassedMFADrivenByRiskBasedPolicy | unfamiliarFeatures | low | remediated | 3.3.3.3 | realtime | 2021-07-03T13:38:04.6531838Z | city: Lviv<br/>state: L'vivs'ka Oblast'<br/>countryOrRegion: UA<br/>geoCoordinates: {"latitude": 49, "longitude": 24} |
+
+### azure-risky-users-confirm-safe
+
+***
+Confirms user(s) as safe (post-investigation).
+
+#### Base Command
+
+`azure-risky-users-confirm-safe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | A comma-separated list of User IDs or UPNs of the user(s) to confirm as safe. Results may not be immediately visible due to processing delays in Azure. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Remediation.UserID | String | The ID of the user. |
+| Remediation.UserPrincipalName | String | The UPN of the user. This key will be populated only if the user's UPN is provided. |
+| Remediation.Success | Boolean | Whether the new state was applied successfully. |
+| Remediation.RiskState | String | The new risk state of the user. |
+
+#### Command Example
+
+```!azure-risky-users-confirm-safe user=user_id_1,name2@test.com,name3@test.com```
+
+#### Context Example
+
+```json
+[
+    {
+        "UserID": "user_id_1",
+        "UserPrincipalName": "",
+        "Success": true,
+        "RiskState": "confirmedSafe"
+    },
+    {
+        "UserID": "user_id_2",
+        "UserPrincipalName": "name2@test.com",
+        "Success": true,
+        "RiskState": "confirmedSafe"
+    },
+    {
+        "UserID": "user_id_3",
+        "UserPrincipalName": "name3@test.com",
+        "Success": false,
+        "RiskState": ""
+    }
+]
+```
+
+#### Human Readable Output
+
+> ### Successfully confirmed users as safe
+>
+> |UserID|UserPrincipalName|Success|RiskState|
+> |---|---|---|---|
+> | user_id_1 |  | true | confirmedSafe |
+> | user_id_2 | name2@test.com | true | confirmedSafe |
+
+> ### Unable to confirm users as safe
+>
+> |User|Error|
+> |---|---|
+> | name3@test.com | Error: confirmation failed. |
+
+### azure-risky-users-confirm-compromise
+
+***
+Confirms user(s) as compromised.
+
+#### Base Command
+
+`azure-risky-users-confirm-compromise`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user | A comma-separated list of User IDs or UPNs of the user(s) to confirm as compromised. Results may not be immediately visible due to processing delays in Azure. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Remediation.UserID | String | The ID of the user. |
+| Remediation.UserPrincipalName | String | The UPN of the user. This key will be populated only if the user's UPN is provided. |
+| Remediation.Success | Boolean | Whether the new state was applied successfully. |
+| Remediation.RiskState | String | The new risk state of the user. |
+
+#### Command Example
+
+```!azure-risky-users-confirm-compromise user=user_id_1,name2@test.com,name3@test.com```
+
+#### Context Example
+
+```json
+[
+    {
+        "UserID": "user_id_1",
+        "UserPrincipalName": "",
+        "Success": true,
+        "RiskState": "confirmedCompromised"
+    },
+    {
+        "UserID": "user_id_2",
+        "UserPrincipalName": "name2@test.com",
+        "Success": true,
+        "RiskState": "confirmedCompromised"
+    },
+    {
+        "UserID": "user_id_3",
+        "UserPrincipalName": "name3@test.com",
+        "Success": false,
+        "RiskState": ""
+    }
+]
+```
+
+#### Human Readable Output
+
+> ### Successfully confirmed users as compromised
+>
+> |UserID|UserPrincipalName|Success|RiskState|
+> |---|---|---|---|
+> | user_id_1 |  | true | confirmedCompromised |
+> | user_id_2 | name2@test.com | true | confirmedCompromised |
+
+> ### Unable to confirm users as compromised
+>
+> |User|Error|
+> |---|---|
+> | name3@test.com | Error: confirmation failed. |
