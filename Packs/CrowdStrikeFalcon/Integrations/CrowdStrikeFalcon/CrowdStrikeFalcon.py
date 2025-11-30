@@ -3284,7 +3284,7 @@ def fetch_cnapp_incidents(cnapp_last_run, is_fetch_events, look_back, limit, fet
             time=FETCH_TIME, date_format=DATE_FORMAT, dateparser_settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True}
         )
     else:
-        last_seen = cnapp_last_run.get("last_seen", "")
+        last_seen = cnapp_last_run.get("time", "")
     filter = f"last_seen:>'{last_seen}'"
     if filter_arg:
         filter = f"{filter}&{filter_arg}"
