@@ -4530,7 +4530,7 @@ script:
       - workstation
       - containerized
       - serverless
-    - description: A comma-separated list of endpoint statuses.
+    - description: A comma-separated list of endpoint connection statuses.
       name: endpoint_status
       isArray: true
       auto: PREDEFINED
@@ -4552,22 +4552,22 @@ script:
       - android
       - ios
       - serverless
-    - description: A comma-separated list of operating systems.
+    - description: A comma-separated list of operating system names (e.g., Windows, macOS, Linux).
       name: operating_system
       isArray: true
-    - description: A comma-separated list of agent versions. For example, 8.9.0.14028.
+    - description: A comma-separated list of agent versions (e.g., 8.9.0.14028).
       name: agent_version
       isArray: true
-    - description: Whether the endpoint has a supported version or the agent is EOL.
-      name: supported_version
+    - description: Indicates whether the endpoint is running an End-of-Life (EOL) agent version.
+      name: agent_eol
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: A comma-separated list of OS versions. For example, 10.0.22621.
+    - description: A comma-separated list of OS versions (e.g., 10.0.22621).
       name: os_version
       isArray: true
-    - description: A comma-separated list of IP addresses.
+    - description: A comma-separated list of endpoint IP addresses.
       name: ip_address
       isArray: true
     - description: A comma-separated list of domains.
@@ -4576,7 +4576,7 @@ script:
     - description: A comma-separated list of assigned prevention policies.
       name: assigned_prevention_policy ######### check the values in the filter data 
       isArray: true
-    - description: A comma-separated list of group names.
+    - description: A comma-separated list of group names assigned to the endpoints.
       name: group_name
       isArray: true
     - description: A comma-separated list of endpoint tags.
@@ -4585,7 +4585,7 @@ script:
     - description: A comma-separated list of endpoint IDs.
       name: endpoint_id
       isArray: true
-    - description: A comma-separated list of endpoint operational statuses.
+    - description: A comma-separated list of endpoint operational protection statuses.
       name: operational_status
       isArray: true
       auto: PREDEFINED
@@ -4608,10 +4608,10 @@ script:
       name: cloud_region
       isArray: true
     - defaultValue: '0'
-      description: Page number (for pagination). The default is 0 (the first page).
+      description: Page number for pagination. Default is 0.
       name: page
     - defaultValue: '100'
-      description: Maximum number of cases to return per page. The default and maximum value is 100.
+      description: Maximum number of results per page. Default and maximum is 100.
       name: limit
     name: core-list-endpoints
     hidden: true
@@ -4635,8 +4635,8 @@ script:
     - contextPath: Core.Endpoint.AgentVersion
       description: The agent version installed on the endpoint.
       type: String
-    - contextPath: Core.Endpoint.AgentOEL
-      description: The agent OEL value.
+    - contextPath: Core.Endpoint.AgentEOL
+      description: Is agent EOL.
       type: String
     - contextPath: Core.Endpoint.OSVersion
       description: The operating system version.

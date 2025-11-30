@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 from copy import deepcopy
-from CortexPlatformCore import FilterBuilder, build_webapp_request_data
+from CortexPlatformCore import FilterBuilder, build_webapp_request_data, FilterType
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
@@ -92,7 +92,7 @@ ENDPOINT_FIELDS = {
     "platform": "OS_TYPE", 
     "operating_system": "OS_DESC",
     "agent_version": "AGENT_VERSION",
-    "supported_version": "SUPPORTED_VERSION",
+    "agent_eol": "SUPPORTED_VERSION",
     "os_version": "OS_VERSION",
     "ip_address": "IP",
     "domain": "DOMAIN",
@@ -793,7 +793,7 @@ def core_list_endpoints_command(client: Client, args: dict):
     filter_builder.add_field(ENDPOINT_FIELDS["endpoint_type"], FilterType.EQ, endpoint_type)
     filter_builder.add_field(ENDPOINT_FIELDS["platform"], FilterType.EQ, platform)
     filter_builder.add_field(ENDPOINT_FIELDS["endpoint_name"], FilterType.EQ, argToList(args.get('endpoint_name')))
-    filter_builder.add_field(ENDPOINT_FIELDS["operating_system"], FilterType.EQ, argToList(args.get('operating_system')))
+    filter_builder.add_field(ENDPOINT_FIELDS["operating_system"], FilterType.CONTAINS, argToList(args.get('operating_system')))
     filter_builder.add_field(ENDPOINT_FIELDS["agent_version"], FilterType.EQ, argToList(args.get('agent_version')))
     filter_builder.add_field(ENDPOINT_FIELDS["os_version"], FilterType.EQ, argToList(args.get('os_version')))
     filter_builder.add_field(ENDPOINT_FIELDS["ip_address"], FilterType.EQ, argToList(args.get('ip_address')))
@@ -803,7 +803,7 @@ def core_list_endpoints_command(client: Client, args: dict):
     filter_builder.add_field(ENDPOINT_FIELDS["endpoint_id"], FilterType.EQ, argToList(args.get('endpoint_id')))
     filter_builder.add_field(ENDPOINT_FIELDS["cloud_provider"], FilterType.EQ, argToList(args.get('cloud_provider')))
     filter_builder.add_field(ENDPOINT_FIELDS["cloud_region"], FilterType.EQ, argToList(args.get('cloud_region')))
-    filter_builder.add_field(ENDPOINT_FIELDS["supported_version"], FilterType.EQ, arg_to_bool_or_none(args.get('supported_version')))
+    filter_builder.add_field(ENDPOINT_FIELDS["agent_eol"], FilterType.EQ, not arg_to_bool_or_none(args.get('agent_eol')))
     
     request_data = build_webapp_request_data(
         table_name=AGENTS_TABLE,
