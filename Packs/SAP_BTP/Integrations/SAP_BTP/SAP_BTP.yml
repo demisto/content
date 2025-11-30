@@ -1,6 +1,6 @@
 category: Cloud Services
 commonfields:
-  id: SAP-BTP
+  id: SAP_BTP
   version: -1
 sectionorder:
 - Connect
@@ -82,15 +82,15 @@ configuration:
 
 description: Collect audit log events from SAP Business Technology Platform (BTP)
 display: SAP BTP (Business Technology Platform)
-name: SAP-BTP
+name: SAP_BTP
 script:
   commands:
   - name: sap-btp-get-events
     description: Retrieve audit log events from SAP BTP
     arguments:
     - name: from
-      description: Time to fetch events from (e.g., "3 days", "2 hours", "1 month", "2024-01-01")
-      defaultValue: 3 days
+      description: Time to fetch events from (e.g., "now", "3 days", "2 hours", "1 month", "2024-01-01")
+      defaultValue: now
     - name: limit
       description: Maximum number of events to retrieve
       defaultValue: '50'

@@ -188,9 +188,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         demisto.debug("Using Non-mTLS authentication with valid credentials")
 
     else:
-        raise DemistoException(
-            f"Invalid authentication type '{auth_type}'. Please select either 'mTLS' or 'Non-mTLS'."
-        )
+        raise DemistoException(f"Invalid authentication type '{auth_type}'. Please select either 'mTLS' or 'Non-mTLS'.")
 
     return {
         "base_url": base_url,
@@ -307,7 +305,9 @@ class Client(BaseClient):
         new_context = {ContextKeys.ACCESS_TOKEN: access_token, ContextKeys.VALID_UNTIL: str(token_valid_until)}
         set_integration_context(new_context)
 
-        demisto.debug(f"New token cached successfully (expires in {token_expires_in}s, valid until {time.ctime(token_valid_until)})")
+        demisto.debug(
+            f"New token cached successfully (expires in {token_expires_in}s, valid until {time.ctime(token_valid_until)})"
+        )
 
         return access_token
 
@@ -447,9 +447,7 @@ def test_module(client: Client) -> str:
         raise
 
 
-def fetch_events_with_pagination(
-    client: Client, created_after: str, max_events: int
-) -> list[dict[str, Any]]:
+def fetch_events_with_pagination(client: Client, created_after: str, max_events: int) -> list[dict[str, Any]]:
     """Fetch events with automatic pagination handling.
 
     Args:
@@ -473,9 +471,7 @@ def fetch_events_with_pagination(
         )
 
         page_events, pagination_handle = client.get_audit_log_events(
-            created_after=created_after,
-            limit=remaining_events,
-            pagination_handle=pagination_handle
+            created_after=created_after, limit=remaining_events, pagination_handle=pagination_handle
         )
 
         if not page_events:
