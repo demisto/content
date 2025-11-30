@@ -14,6 +14,38 @@ INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 
+CASE_FIELDS = {
+    "case_id_list": "CASE_ID",
+    "case_domain": "INCIDENT_DOMAIN",
+    "case_name": "NAME",
+    "case_description": "DESCRIPTION",
+    "status": "STATUS_PROGRESS",
+    "severity": "SEVERITY",
+    "creation_time": "CREATION_TIME",
+    "asset_ids": "UAI_ASSET_IDS",
+    "asset_groups": "UAI_ASSET_GROUP_IDS",
+    "assignee": "ASSIGNED_USER_PRETTY",
+    "assignee_email": "ASSIGNED_USER",
+    "name": "CONTAINS",
+    "description": "DESCRIPTION",
+    "last_updated": "LAST_UPDATE_TIME",
+    "hosts": "HOSTS",
+    "starred": "CASE_STARRED",
+    "tags": "CURRENT_TAGS",
+}
+
+CASE_SEVERITY = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
+
+CASE_STATUS = {
+    "new": "STATUS_010_NEW",
+    "under_investigation": "STATUS_020_UNDER_INVESTIGATION",
+    "resolved": "STATUS_025_RESOLVED",
+}
+
+CASE_TAGS = {
+    "DOM:Security": "DOM:1",
+    "DOM:Posture": "DOM:5",
+}
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -39,6 +71,7 @@ WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
     "core-search-asset-groups",
     "core-get-issue-recommendations",
+    "core-get-cases",
     "core-update-issue",
     "core-get-asset-coverage",
     "core-get-asset-coverage-histogram",
@@ -52,6 +85,7 @@ VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
+CASES_TABLE = "CASE_MANAGER_TABLE"
 
 
 class AppsecIssues:
@@ -212,6 +246,8 @@ class FilterBuilder:
         EQ = ("EQ", "OR")
         RANGE = ("RANGE", "OR")
         CONTAINS = ("CONTAINS", "OR")
+        CASE_HOST_EQ = ("CASE_HOSTS_EQ", "OR")
+        CONTAINS_IN_LIST = ("CONTAINS_IN_LIST", "OR")
         GTE = ("GTE", "OR")
         ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
         JSON_WILDCARD = ("JSON_WILDCARD", "OR")
@@ -377,6 +413,26 @@ def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
                 new_key = key.replace(original, new)
                 data[new_key] = data.pop(key)
     return data
+
+
+def determine_assignee_filter_field(assignee: str) -> str:
+    """
+    Determine whether the assignee should be filtered by email or pretty name.
+
+    Args:
+        assignee (str): The assignee value to filter on.
+
+    Returns:
+        str: The appropriate field to filter on based on the input.
+    """
+    if not assignee:
+        return CASE_FIELDS["assignee"]
+    elif "@" in assignee:
+        # If the assignee contains '@', use the email field
+        return CASE_FIELDS["assignee_email"]
+    else:
+        # Otherwise, use the pretty name field
+        return CASE_FIELDS["assignee"]
 
 
 def issue_to_alert(args: dict | str) -> dict | str:
@@ -754,6 +810,7 @@ def build_webapp_request_data(
     sort_field: str | None,
     on_demand_fields: list | None = None,
     sort_order: str | None = "DESC",
+    start_page: int = 0,
 ) -> dict:
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
@@ -761,7 +818,7 @@ def build_webapp_request_data(
     sort = [{"FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field), "ORDER": sort_order}] if sort_field else []
     filter_data = {
         "sort": sort,
-        "paging": {"from": 0, "to": limit},
+        "paging": {"from": start_page, "to": limit},
         "filter": filter_dict,
     }
     demisto.debug(f"{filter_data=}")
@@ -897,20 +954,295 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def extract_ids(case_extra_data: dict) -> list:
+    """
+    Extract a list of IDs from a command result.
+
+    Args:
+        command_res: The result of a command. It can be either a dictionary or a list.
+        field_name: The name of the field that contains the ID.
+
+    Returns:
+        A list of the IDs extracted from the command result.
+    """
+    if not case_extra_data:
+        return []
+
+    field_name = "issue_id"
+    issues = case_extra_data.get("issues", {})
+    issues_data = issues.get("data", {}) if issues else {}
+    issue_ids = [c.get(field_name) for c in issues_data if isinstance(c, dict) and field_name in c]
+    demisto.debug(f"Extracted issue ids: {issue_ids}")
+    return issue_ids
+
+
+def get_case_extra_data(client, args):
+    """
+    Calls the core-get-case-extra-data command and parses the output to a standard structure.
+
+    Args:
+        args: The arguments to pass to the core-get-case-extra-data command.
+
+    Returns:
+        A dictionary containing the case data with the following keys:
+            issue_ids: A list of IDs of issues in the case.
+            network_artifacts: A list of network artifacts in the case.
+            file_artifacts: A list of file artifacts in the case.
+    """
+    demisto.debug(f"Calling core-get-case-extra-data, {args=}")
+    # Set the base URL for this API call to use the public API v1 endpoint
+    client._base_url = "api/webapp/public_api/v1"
+    case_extra_data = get_extra_data_for_case_id_command(client, args).outputs
+    demisto.debug(f"After calling core-get-case-extra-data, {case_extra_data=}")
+    issue_ids = extract_ids(case_extra_data)
+    case_data = case_extra_data.get("case", {})
+    notes = case_data.get("notes")
+    xdr_url = case_data.get("xdr_url")
+    starred_manually = case_data.get("starred_manually")
+    manual_description = case_data.get("manual_description")
+    detection_time = case_data.get("detection_time")
+    manual_description = case_extra_data.get("manual_description")
+    network_artifacts = case_extra_data.get("network_artifacts")
+    file_artifacts = case_extra_data.get("file_artifacts")
+    extra_data = {
+        "issue_ids": issue_ids,
+        "network_artifacts": network_artifacts,
+        "file_artifacts": file_artifacts,
+        "notes": notes,
+        "detection_time": detection_time,
+        "xdr_url": xdr_url,
+        "starred_manually": starred_manually,
+        "manual_description": manual_description,
+    }
+    return extra_data
+
+
+def add_cases_extra_data(client, case_data):
+    # for each case id in the entry context, get the case extra data
+    for case in case_data:
+        case_id = case.get("case_id")
+        extra_data = get_case_extra_data(client, {"case_id": case_id, "limit": 1000})
+        case.update({"CaseExtraData": extra_data})
+
+    return case_data
+
+
+def map_case_format(case_list):
+    """
+    Maps a list of case data from the API response format to a standardized internal format.
+
+    Args:
+        case_list (list): List of case dictionaries from the API response.
+                         Each case should contain fields like CASE_ID, NAME, STATUS, etc.
+
+    Returns:
+        dict or list: Returns an empty dict if case_list is invalid or empty,
+                     otherwise returns a list of mapped case dictionaries with
+                     standardized field names and processed values.
+    """
+    if not case_list or not isinstance(case_list, list):
+        return {}
+
+    mapped_cases = []
+    for case_data in case_list:
+        mapped_case = {
+            "case_id": str(case_data.get("CASE_ID")),
+            "case_name": case_data.get("NAME"),
+            "description": case_data.get("DESCRIPTION"),
+            "creation_time": case_data.get("CREATION_TIME"),
+            "modification_time": case_data.get("LAST_UPDATE_TIME"),
+            "resolved_timestamp": case_data.get("RESOLVED_TIMESTAMP"),
+            "status": case_data.get("STATUS", "").split("_")[-1].lower(),
+            "severity": case_data.get("SEVERITY", "").split("_")[-1].lower(),
+            "case_domain": case_data.get("INCIDENT_DOMAIN"),
+            "original_tags": [tag.get("tag_name") for tag in case_data.get("ORIGINAL_TAGS", [])],
+            "tags": [tag.get("tag_name") for tag in case_data.get("CURRENT_TAGS", [])],
+            "issue_count": case_data.get("ACC_ALERT_COUNT"),
+            "critical_severity_issue_count": case_data.get("CRITICAL_SEVERITY_ALERTS"),
+            "high_severity_issue_count": case_data.get("HIGH_SEVERITY_ALERTS"),
+            "med_severity_issue_count": case_data.get("MEDIUM_SEVERITY_ALERTS"),
+            "low_severity_issue_count": case_data.get("LOW_SEVERITY_ALERTS"),
+            "rule_based_score": case_data.get("CALCULATED_SCORE"),
+            "aggregated_score": case_data.get("SCORE"),
+            "manual_score": case_data.get("MANUAL_SCORE"),
+            "predicted_score": case_data.get("SCORTEX"),
+            "wildfire_hits": case_data.get("WF_HITS"),
+            "assigned_user_pretty_name": case_data.get("ASSIGNED_USER_PRETTY"),
+            "assigned_user_mail": case_data.get("ASSIGNED_USER"),
+            "resolve_comment": case_data.get("RESOLVED_COMMENT"),
+            "issues_grouping_status": case_data.get("CASE_GROUPING_STATUS", "").split("_")[-1],
+            "starred": case_data.get("CASE_STARRED"),
+            "case_sources": case_data.get("INCIDENT_SOURCES"),
+            "custom_fields": case_data.get("EXTENDED_FIELDS"),
+            "hosts": case_data.get("HOSTS") or [],
+            "users": case_data.get("USERS") or [],
+            "issue_categories": case_data.get("ALERT_CATEGORIES"),
+            "mitre_techniques_ids_and_names": case_data.get("MITRE_TECHNIQUES"),
+            "mitre_tactics_ids_and_names": case_data.get("MITRE_TACTICS"),
+            "manual_severity": case_data.get("USER_SEVERITY"),
+            "host_count": len(case_data.get("HOSTS", []) or []),
+            "user_count": len(case_data.get("USERS", []) or []),
+            "asset_accounts": case_data.get("UAI_ASSET_ACCOUNTS", []),
+            "asset_categories": case_data.get("UAI_ASSET_CATEGORIES", []),
+            "asset_classes": case_data.get("UAI_ASSET_CLASSES", []),
+            "asset_group_ids": case_data.get("UAI_ASSET_GROUP_IDS", []),
+            "asset_ids": case_data.get("UAI_ASSET_IDS", []),
+            "asset_names": case_data.get("UAI_ASSET_NAMES", []),
+            "asset_providers": case_data.get("UAI_ASSET_PROVIDERS", []),
+            "asset_regions": case_data.get("UAI_ASSET_REGIONS", []),
+            "asset_types": case_data.get("UAI_ASSET_TYPES", []),
+        }
+
+        mapped_cases.append(mapped_case)
+
+    return mapped_cases
+
+
 def get_cases_command(client, args):
     """
-    Retrieve a list of Cases from XDR, filtered by some filters.
+    Retrieves cases from Cortex platform based on provided filtering criteria.
+
+    Args:
+        client: The Cortex platform client instance for making API requests.
+        args (dict): Dictionary containing filter parameters including page number,
+                    limits, time ranges, status, severity, and other case attributes.
+
+    Returns:
+        List of mapped case objects containing case details and metadata.
     """
-    args = preprocess_get_cases_args(args)
-    _, _, raw_incidents = get_incidents_command(client, args)
-    mapped_raw_cases = preprocess_get_cases_outputs(raw_incidents)
-    return CommandResults(
-        readable_output=tableToMarkdown("Cases", mapped_raw_cases, headerTransform=string_to_table_header),
-        outputs_prefix="Core.Case",
-        outputs_key_field="case_id",
-        outputs=mapped_raw_cases,
-        raw_response=mapped_raw_cases,
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) or MAX_GET_INCIDENTS_LIMIT
+
+    limit = page * MAX_GET_INCIDENTS_LIMIT + limit
+    page = page * MAX_GET_INCIDENTS_LIMIT
+
+    sort_by_modification_time = args.get("sort_by_modification_time")
+    sort_by_creation_time = args.get("sort_by_creation_time")
+    since_creation_start_time = args.get("since_creation_time")
+    since_creation_end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") if since_creation_start_time else None
+    since_modification_start_time = args.get("since_modification_time")
+    since_modification_end_time = datetime.now().strftime("%Y-%m-%dT%H:%M:%S") if since_modification_start_time else None
+    gte_creation_time = args.get("gte_creation_time")
+    lte_creation_time = args.get("lte_creation_time")
+    gte_modification_time = args.get("gte_modification_time")
+    lte_modification_time = args.get("lte_modification_time")
+
+    sort_field, sort_order = get_cases_sort_order(sort_by_creation_time, sort_by_modification_time)
+
+    status_values = [CASE_STATUS[status] for status in argToList(args.get("status"))]
+    severity_values = [CASE_SEVERITY[severity] for severity in argToList(args.get("severity"))]
+    tag_values = [CASE_TAGS.get(tag, tag) for tag in argToList(args.get("tag"))]
+    filter_builder = FilterBuilder()
+    filter_builder.add_time_range_field(CASE_FIELDS["creation_time"], gte_creation_time, lte_creation_time)
+    filter_builder.add_time_range_field(CASE_FIELDS["last_updated"], gte_modification_time, lte_modification_time)
+    filter_builder.add_time_range_field(CASE_FIELDS["creation_time"], since_creation_start_time, since_creation_end_time)
+    filter_builder.add_time_range_field(CASE_FIELDS["last_updated"], since_modification_start_time, since_modification_end_time)
+    filter_builder.add_field(CASE_FIELDS["status"], FilterType.EQ, status_values)
+    filter_builder.add_field(CASE_FIELDS["severity"], FilterType.EQ, severity_values)
+    filter_builder.add_field(CASE_FIELDS["case_id_list"], FilterType.EQ, argToList(args.get("case_id_list")))
+    filter_builder.add_field(CASE_FIELDS["case_domain"], FilterType.EQ, argToList(args.get("case_domain")))
+    filter_builder.add_field(CASE_FIELDS["case_name"], FilterType.CONTAINS, argToList(args.get("case_name")))
+    filter_builder.add_field(CASE_FIELDS["case_description"], FilterType.CONTAINS, argToList(args.get("case_description")))
+    filter_builder.add_field(CASE_FIELDS["starred"], FilterType.EQ, [argToBoolean(x) for x in argToList(args.get("starred"))])
+    filter_builder.add_field(CASE_FIELDS["asset_ids"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_ids")))
+    filter_builder.add_field(CASE_FIELDS["asset_groups"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_groups")))
+    filter_builder.add_field(CASE_FIELDS["hosts"], FilterType.CASE_HOST_EQ, argToList(args.get("hosts")))
+    filter_builder.add_field(CASE_FIELDS["tags"], FilterType.ARRAY_CONTAINS, tag_values)
+    filter_builder.add_field_with_mappings(
+        determine_assignee_filter_field(args.get("assignee")),
+        FilterType.CONTAINS,
+        argToList(args.get("assignee")),
+        {
+            "unassigned": FilterType.IS_EMPTY,
+            "assigned": FilterType.NIS_EMPTY,
+        },
     )
+
+    request_data = build_webapp_request_data(
+        table_name=CASES_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=limit,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        start_page=page,
+    )
+    demisto.info(f"{request_data=}")
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+    demisto.debug(f"Raw case data retrieved from API: {data}")
+    data = map_case_format(data)
+    demisto.debug(f"Case data after mapping and formatting: {data}")
+
+    filter_count = int(reply.get("FILTER_COUNT", "0"))
+    returned_count = len(data)
+
+    command_results = []
+
+    command_results.append(
+        CommandResults(
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CasesMetadata",
+            outputs={"filter_count": filter_count, "returned_count": returned_count},
+        )
+    )
+
+    get_enriched_case_data = argToBoolean(args.get("get_enriched_case_data", "false"))
+    # In case enriched case data was requested
+    if get_enriched_case_data and len(data) <= 10:
+        if isinstance(data, dict):
+            data = [data]
+
+        case_extra_data = add_cases_extra_data(client, data)
+
+        command_results.append(
+            CommandResults(
+                readable_output=tableToMarkdown("Cases", case_extra_data, headerTransform=string_to_table_header),
+                outputs_prefix="Core.Case",
+                outputs_key_field="case_id",
+                outputs=case_extra_data,
+                raw_response=case_extra_data,
+            )
+        )
+
+    else:
+        if get_enriched_case_data:
+            command_results.append(
+                CommandResults(
+                    readable_output="Cannot retrieve enriched case data for more than 10 cases. "
+                    "Only standard case data will be shown. "
+                    "Try using a more specific query, "
+                    "for example specific case IDs you want to get enriched data for.",
+                    entry_type=4,
+                )
+            )
+
+        command_results.append(
+            CommandResults(
+                readable_output=tableToMarkdown("Cases", data, headerTransform=string_to_table_header),
+                outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+                outputs_key_field="case_id",
+                outputs=data,
+                raw_response=data,
+            )
+        )
+
+    return command_results
+
+
+def get_cases_sort_order(sort_by_creation_time, sort_by_modification_time):
+    if sort_by_creation_time and sort_by_modification_time:
+        raise ValueError("Should be provide either sort_by_creation_time or sort_by_modification_time. Can't provide both")
+
+    if sort_by_creation_time:
+        sort_field = "CREATION_TIME"
+        sort_order = sort_by_creation_time
+    elif sort_by_modification_time:
+        sort_field = "LAST_UPDATE_TIME"
+        sort_order = sort_by_modification_time
+    else:
+        sort_field = "LAST_UPDATE_TIME"
+        sort_order = "DESC"
+    return sort_field, sort_order
 
 
 def get_issue_id(args) -> str:
@@ -1017,7 +1349,7 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
     """
     case_id = args.get("case_id")
     issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
-    response = client.get_incident_data(case_id, issues_limit)
+    response = client.get_incident_data(case_id, issues_limit, full_alert_fields=True)
     mapped_response = preprocess_get_case_extra_data_outputs(response)
     return CommandResults(
         readable_output=tableToMarkdown("Case", mapped_response, headerTransform=string_to_table_header),
