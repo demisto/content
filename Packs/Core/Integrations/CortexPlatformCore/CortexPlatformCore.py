@@ -754,6 +754,7 @@ def build_webapp_request_data(
     sort_field: str | None,
     on_demand_fields: list | None = None,
     sort_order: str | None = "DESC",
+    start_page: int = 0,
 ) -> dict:
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
@@ -761,7 +762,7 @@ def build_webapp_request_data(
     sort = [{"FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field), "ORDER": sort_order}] if sort_field else []
     filter_data = {
         "sort": sort,
-        "paging": {"from": 0, "to": limit},
+        "paging": {"from": start_page, "to": limit},
         "filter": filter_dict,
     }
     demisto.debug(f"{filter_data=}")
