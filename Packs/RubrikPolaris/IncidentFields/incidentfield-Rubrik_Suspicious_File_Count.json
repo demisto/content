@@ -1,0 +1,33 @@
+{
+    "id": "incident_rubriksuspiciousfilecount",
+    "version": -1,
+    "modified": "2025-10-09T12:44:15.036132219+05:30",
+    "name": "Rubrik Suspicious File Count",
+    "ownerOnly": false,
+    "description": "The count of suspicious files.",
+    "cliName": "rubriksuspiciousfilecount",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Rubrik Radar",
+        "Rubrik Threat Monitoring Object"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}
