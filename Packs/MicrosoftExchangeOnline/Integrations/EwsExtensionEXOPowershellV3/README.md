@@ -81,13 +81,38 @@ For the integration to work, the Azure AD application's service principal must h
 5. Search for the following role groups:
    - **Organization Management** – the most privileged role and fully supported for this integration.
    - **Security Administrator** – a highly privileged security role that also provides full access.
-   - **Security Operator** – a less-privileged option.  
-     *Note:* This role only works when assigned directly in the Exchange admin center at  
-     https://admin.exchange.microsoft.com → **Roles** → **Admin Roles**.
 6. Open the role and verify that the **service principal of the Azure AD application used by the integration** is listed.
 7. If not listed, click **Edit → Add Users** and assign the required roles.
 
 * Note - for more information go to the official [Microsoft Documentation.](https://learn.microsoft.com/en-us/defender-office-365)
+
+## Troubleshooting and Testing
+
+### Common Issues and Solutions
+
+#### **`The role assigned to application <app-id> isn't supported in this scenario.`**
+
+**Scenario:**  
+When running `test-module`, you receive the error:  
+*“The role assigned to application <app-id> isn't supported in this scenario. Please check online documentation for assigning correct Directory Roles to Azure AD Application for EXO App-Only Authentication.”*
+
+**Solution:**  
+Verify that the application has the correct directory role assigned in the **Entra ID portal**.  
+See the **“Step-By-Step Configuration Instructions”** section above for detailed guidance.
+
+---
+
+#### **`The term <cmdlet> is not recognized as a name of a cmdlet…`**
+
+**Scenario:**  
+When running a command, you receive an error similar to:  
+*“The term <cmdlet> is not recognized as a name of a cmdlet, function, script file, or executable program…”*
+
+**Solution:**  
+Make sure the **service principal of the Azure AD application used by the integration** has sufficient **Exchange Online permissions**.  
+Refer to the **“Exchange Online permissions”** section above to confirm the correct roles are assigned and detailed guidance.
+
+---
 
 ## Commands
 
