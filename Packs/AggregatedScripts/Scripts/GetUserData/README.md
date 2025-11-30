@@ -27,6 +27,7 @@ This script is used in the following playbooks and scripts.
 | --- | --- |
 | user_id | List of users IDs of the user to retrieve. |
 | user_name | List of names of the users to retrieve. |
+| user_sid | List of users security identifiers to retrieve. Supported by Azure AD only.|
 | user_email | List of emails of the users to retrieve. |
 | attributes | list of AD user's attributes to retrieve, separated by comma. |
 | domain | The domain to retrieve users from. Available only for the iam-get-user command. |
