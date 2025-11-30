@@ -179,6 +179,9 @@ script:
       required: true
     description: Unblock a user.
     name: msgraph-user-unblock
+    prettyname: Enable User Account [EntraID]
+    quickaction: false
+    quickaction:platform: true
     compliantpolicies:
     - User Soft Remediation
   - arguments:
