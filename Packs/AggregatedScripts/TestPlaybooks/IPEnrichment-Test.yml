@@ -6,14 +6,16 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e701f0d0-6334-4271-8a44-04c0e088d0c3
+    taskid: 1f72457a-8d09-4e77-8d0d-2424202e41f2
     type: start
     task:
-      id: e701f0d0-6334-4271-8a44-04c0e088d0c3
+      id: 1f72457a-8d09-4e77-8d0d-2424202e41f2
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "10"
@@ -22,7 +24,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
+          "x": 787.5,
           "y": 50
         }
       }
@@ -35,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: fee0cf2c-917a-4920-82a1-e264cf622601
+    taskid: a8353369-197b-4e62-857c-fadf3c3a36f3
     type: regular
     task:
-      id: fee0cf2c-917a-4920-82a1-e264cf622601
+      id: a8353369-197b-4e62-857c-fadf3c3a36f3
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -51,6 +53,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "36"
@@ -62,8 +66,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 370
+          "x": 787.5,
+          "y": 390
         }
       }
     note: false
@@ -75,10 +79,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 1960d7ed-a66e-40e1-8d44-0d00bdc204c1
+    taskid: e7c7a499-55b8-4f50-80c4-a57c012a23dc
     type: regular
     task:
-      id: 1960d7ed-a66e-40e1-8d44-0d00bdc204c1
+      id: e7c7a499-55b8-4f50-80c4-a57c012a23dc
       version: -1
       name: Run ip enrichment script
       description: This script gathers ip reputation data from multiple integrations
@@ -87,6 +91,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "13"
@@ -107,8 +113,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 710
+          "x": 787.5,
+          "y": 760
         }
       }
     note: false
@@ -120,15 +126,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: d33d2374-51a8-4544-8110-dc7ebd198cef
+    taskid: 17651cb6-32f8-4d54-8a01-bd4111937d5d
     type: title
     task:
-      id: d33d2374-51a8-4544-8110-dc7ebd198cef
+      id: 17651cb6-32f8-4d54-8a01-bd4111937d5d
       version: -1
       name: Case 2 - External Enrichment
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "51"
@@ -137,8 +145,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1115,
-          "y": 1390
+          "x": 1002.5,
+          "y": 1500
         }
       }
     note: false
@@ -150,15 +158,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 7705f95e-9ca7-4b89-846e-1658f117a9d1
+    taskid: abcf330c-2b67-46cc-88f3-b34d633a39ba
     type: title
     task:
-      id: 7705f95e-9ca7-4b89-846e-1658f117a9d1
+      id: abcf330c-2b67-46cc-88f3-b34d633a39ba
       version: -1
       name: Case 1 - Base
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "1"
@@ -167,8 +177,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 210
+          "x": 787.5,
+          "y": 220
         }
       }
     note: false
@@ -180,16 +190,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 9d3655db-5069-4fc0-8cb0-c3a66682abad
+    taskid: 0b357afc-a99c-4215-8ea9-71e8789c9d1b
     type: condition
     task:
-      id: 9d3655db-5069-4fc0-8cb0-c3a66682abad
+      id: 0b357afc-a99c-4215-8ea9-71e8789c9d1b
       version: -1
       name: Endpoint Data Returned
       description: Make sure Context output from wildfire
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "7"
@@ -217,8 +229,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1220
+          "x": 152.5,
+          "y": 1315
         }
       }
     note: false
@@ -230,16 +242,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: fe9a9470-9fd3-4a39-82b2-89b539b29677
+    taskid: cf7533c9-b406-4465-8836-9a59f36ee7ba
     type: condition
     task:
-      id: fe9a9470-9fd3-4a39-82b2-89b539b29677
+      id: cf7533c9-b406-4465-8836-9a59f36ee7ba
       version: -1
       name: Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "7"
@@ -298,8 +312,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1220
+          "x": 582.5,
+          "y": 1315
         }
       }
     note: false
@@ -311,16 +325,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: c3b4a71b-8175-451b-8847-685174b51bc5
+    taskid: 1683740b-2246-493c-8c14-43f1e3899eba
     type: condition
     task:
-      id: c3b4a71b-8175-451b-8847-685174b51bc5
+      id: 1683740b-2246-493c-8c14-43f1e3899eba
       version: -1
       name: No additional fields
       description: Additional fields empty
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "7"
@@ -339,8 +355,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1220
+          "x": 1012.5,
+          "y": 1315
         }
       }
     note: false
@@ -352,15 +368,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 0bed4b91-4612-4e60-8136-95f5f3b91ef6
+    taskid: 32b2d51e-6f33-44c1-8986-9c38ec21e0af
     type: title
     task:
-      id: 0bed4b91-4612-4e60-8136-95f5f3b91ef6
+      id: 32b2d51e-6f33-44c1-8986-9c38ec21e0af
       version: -1
       name: Case 3 - Brands No Internal
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "52"
@@ -369,8 +387,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1115,
-          "y": 2570
+          "x": 1002.5,
+          "y": 2780
         }
       }
     note: false
@@ -382,15 +400,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 9a5ddb38-39e3-4c1e-8118-00fead568a3e
+    taskid: dcd7cfd1-9c0f-45c2-8743-ed0dd5ddebe4
     type: title
     task:
-      id: 9a5ddb38-39e3-4c1e-8118-00fead568a3e
+      id: dcd7cfd1-9c0f-45c2-8743-ed0dd5ddebe4
       version: -1
       name: Case 4 - External Enrichment + Additional Fields
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "59"
@@ -399,8 +419,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 3410
+          "x": 1125,
+          "y": 3690
         }
       }
     note: false
@@ -412,15 +432,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 87ad9b3f-7e79-459c-861b-35f89d76bed5
+    taskid: e06255b4-1a7e-44ce-8397-c6aba4ffd5af
     type: title
     task:
-      id: 87ad9b3f-7e79-459c-861b-35f89d76bed5
+      id: e06255b4-1a7e-44ce-8397-c6aba4ffd5af
       version: -1
       name: Case 5 Multiple Inputs
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "84"
@@ -429,8 +451,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 4250
+          "x": 1125,
+          "y": 4600
         }
       }
     note: false
@@ -442,10 +464,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: bfe7c77b-7365-47c0-87cb-556a651dac43
+    taskid: 0b598e2f-d647-4ad2-8f02-caea8af85174
     type: regular
     task:
-      id: bfe7c77b-7365-47c0-87cb-556a651dac43
+      id: 0b598e2f-d647-4ad2-8f02-caea8af85174
       version: -1
       name: Get Endpoint IP Address
       description: Gets the list of host group members.
@@ -453,6 +475,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "5"
@@ -461,8 +485,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 540
+          "x": 787.5,
+          "y": 575
         }
       }
     note: false
@@ -474,10 +498,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: c47639ba-75df-4a44-8bf7-6b56511d1dcb
+    taskid: bdaaa256-78ec-4056-8162-3cae5a117dcb
     type: regular
     task:
-      id: c47639ba-75df-4a44-8bf7-6b56511d1dcb
+      id: bdaaa256-78ec-4056-8162-3cae5a117dcb
       version: -1
       name: Run ip enrichment script
       description: This script gathers ip reputation data from multiple integrations
@@ -486,6 +510,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "40"
@@ -507,8 +533,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1115,
-          "y": 1890
+          "x": 1002.5,
+          "y": 2040
         }
       }
     note: false
@@ -520,10 +546,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 81be5600-1f0d-4d46-87b2-63867514ad94
+    taskid: 7aa277ce-9a08-4f9e-8167-0ce871cf7832
     type: regular
     task:
-      id: 81be5600-1f0d-4d46-87b2-63867514ad94
+      id: 7aa277ce-9a08-4f9e-8167-0ce871cf7832
       version: -1
       name: Get Endpoint IP Address
       description: Gets the list of host group members.
@@ -531,6 +557,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "38"
@@ -539,8 +567,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1115,
-          "y": 1720
+          "x": 1002.5,
+          "y": 1855
         }
       }
     note: false
@@ -552,16 +580,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: e2f2896c-83c4-456f-836a-a291a876dc47
+    taskid: 45519290-9aef-4aa6-84e1-55efc16bd9c4
     type: condition
     task:
-      id: e2f2896c-83c4-456f-836a-a291a876dc47
+      id: 45519290-9aef-4aa6-84e1-55efc16bd9c4
       version: -1
       name: Both Indicator Exists
       description: Make sure the Virus Total indicator returned from tim
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "20"
@@ -613,8 +643,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 255,
-          "y": 2400
+          "x": 142.5,
+          "y": 2595
         }
       }
     note: false
@@ -626,16 +656,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 3c87cc95-0eda-467b-83a4-c6a66405dfc8
+    taskid: a6aa0611-2b98-4b46-8201-7c062837b1e2
     type: condition
     task:
-      id: 3c87cc95-0eda-467b-83a4-c6a66405dfc8
+      id: a6aa0611-2b98-4b46-8201-7c062837b1e2
       version: -1
       name: Endpoint Data Returned
       description: Make sure Context output from wildfire
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "20"
@@ -663,8 +695,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
-          "y": 2400
+          "x": 572.5,
+          "y": 2595
         }
       }
     note: false
@@ -676,16 +708,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 6e5b5bcb-512e-4390-8337-18006e1bf1ee
+    taskid: 878c9776-324e-43b1-8792-686f778800f9
     type: condition
     task:
-      id: 6e5b5bcb-512e-4390-8337-18006e1bf1ee
+      id: 878c9776-324e-43b1-8792-686f778800f9
       version: -1
       name: No additional fields
       description: Additional fields empty
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "20"
@@ -704,8 +738,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1115,
-          "y": 2400
+          "x": 1002.5,
+          "y": 2595
         }
       }
     note: false
@@ -717,10 +751,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 057eca65-f14b-499f-8c12-6362eada87d4
+    taskid: 579c7722-14c4-46ea-8412-2ef0321197d8
     type: regular
     task:
-      id: 057eca65-f14b-499f-8c12-6362eada87d4
+      id: 579c7722-14c4-46ea-8412-2ef0321197d8
       version: -1
       name: Run ip enrichment script
       description: This script gathers ip reputation data from multiple integrations
@@ -729,6 +763,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "48"
@@ -752,8 +788,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1115,
-          "y": 3070
+          "x": 1002.5,
+          "y": 3320
         }
       }
     note: false
@@ -765,10 +801,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 66f17d8b-9a2b-4c09-8829-b7bdcab2cc0c
+    taskid: fb2d2ba7-ea89-4d65-8989-4482218aaa42
     type: regular
     task:
-      id: 66f17d8b-9a2b-4c09-8829-b7bdcab2cc0c
+      id: fb2d2ba7-ea89-4d65-8989-4482218aaa42
       version: -1
       name: Get Endpoint IP Address
       description: Gets the list of host group members.
@@ -776,6 +812,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "45"
@@ -784,8 +822,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1115,
-          "y": 2900
+          "x": 1002.5,
+          "y": 3135
         }
       }
     note: false
@@ -797,16 +835,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: a08dcafe-d7b3-4353-8430-1dd23dcfa8d9
+    taskid: 36bcaecb-cc44-4e8e-8589-e5908c5dfa80
     type: condition
     task:
-      id: a08dcafe-d7b3-4353-8430-1dd23dcfa8d9
+      id: 36bcaecb-cc44-4e8e-8589-e5908c5dfa80
       version: -1
       name: Virus Total Indicator Exists
       description: Make sure the Virus Total indicator returned from tim
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "28"
@@ -838,8 +878,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 3240
+          "x": 480,
+          "y": 3505
         }
       }
     note: false
@@ -851,16 +891,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: f36ad019-5a80-46dc-8a80-9f219dbcea11
+    taskid: e1fc9fa8-a1c3-47e9-8b97-f874c91bb3ca
     type: condition
     task:
-      id: f36ad019-5a80-46dc-8a80-9f219dbcea11
+      id: e1fc9fa8-a1c3-47e9-8b97-f874c91bb3ca
       version: -1
       name: No Endpoint Data Returned
       description: Make sure Context output from wildfire
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "28"
@@ -888,8 +930,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 3240
+          "x": 50,
+          "y": 3505
         }
       }
     note: false
@@ -901,16 +943,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: c8bdb931-433b-4d2e-816c-793c27c1e411
+    taskid: f63247c2-acb2-448f-8e60-a56081dc7818
     type: condition
     task:
-      id: c8bdb931-433b-4d2e-816c-793c27c1e411
+      id: f63247c2-acb2-448f-8e60-a56081dc7818
       version: -1
       name: No additional fields
       description: Additional fields empty
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "28"
@@ -929,8 +973,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 3240
+          "x": 910,
+          "y": 3505
         }
       }
     note: false
@@ -942,10 +986,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: f26f80af-afec-4ce9-842f-f19451972184
+    taskid: 938ee7a9-c26a-429e-8ab8-3b412d66df32
     type: regular
     task:
-      id: f26f80af-afec-4ce9-842f-f19451972184
+      id: 938ee7a9-c26a-429e-8ab8-3b412d66df32
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -958,6 +1002,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "39"
@@ -969,8 +1015,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1115,
-          "y": 1550
+          "x": 1002.5,
+          "y": 1670
         }
       }
     note: false
@@ -982,10 +1028,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 590d31dc-4329-485c-8db9-2eafb12795ac
+    taskid: 51b2b71b-823c-4a03-830e-72a49da8f5c0
     type: regular
     task:
-      id: 590d31dc-4329-485c-8db9-2eafb12795ac
+      id: 51b2b71b-823c-4a03-830e-72a49da8f5c0
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -998,6 +1044,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "46"
@@ -1009,8 +1057,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1115,
-          "y": 2730
+          "x": 1002.5,
+          "y": 2950
         }
       }
     note: false
@@ -1022,10 +1070,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: b34e73cf-1e03-4729-8ee3-5532360894a6
+    taskid: e965c4ea-fd8e-48cf-84ba-0aa39cda4501
     type: regular
     task:
-      id: b34e73cf-1e03-4729-8ee3-5532360894a6
+      id: e965c4ea-fd8e-48cf-84ba-0aa39cda4501
       version: -1
       name: Run ip enrichment script
       description: This script gathers ip reputation data from multiple integrations
@@ -1034,6 +1082,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "56"
@@ -1054,8 +1104,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 3910
+          "x": 1125,
+          "y": 4230
         }
       }
     note: false
@@ -1067,10 +1117,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: fa80f04c-1b91-4263-8cf4-e592d67866cd
+    taskid: 7a22f44e-76e9-455d-874a-081bfdcbaa43
     type: regular
     task:
-      id: fa80f04c-1b91-4263-8cf4-e592d67866cd
+      id: 7a22f44e-76e9-455d-874a-081bfdcbaa43
       version: -1
       name: Get Endpoint IP Address
       description: Gets the list of host group members.
@@ -1078,6 +1128,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "53"
@@ -1086,8 +1138,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 3740
+          "x": 1125,
+          "y": 4045
         }
       }
     note: false
@@ -1099,16 +1151,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: f251d7f1-7830-4357-80c0-330ccd0e0f2b
+    taskid: 0415f1db-ced5-445c-8632-ea35ce84881a
     type: condition
     task:
-      id: f251d7f1-7830-4357-80c0-330ccd0e0f2b
+      id: 0415f1db-ced5-445c-8632-ea35ce84881a
       version: -1
       name: Virus Total Indicator Exists
       description: Make sure the Virus Total indicator returned from tim
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "35"
@@ -1140,8 +1194,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 4080
+          "x": 695,
+          "y": 4415
         }
       }
     note: false
@@ -1153,16 +1207,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: d5ac41b1-2ff3-48ec-883a-792c92d6938d
+    taskid: 00404f17-c6d5-4f4e-87ee-8b36363ee6fb
     type: condition
     task:
-      id: d5ac41b1-2ff3-48ec-883a-792c92d6938d
+      id: 00404f17-c6d5-4f4e-87ee-8b36363ee6fb
       version: -1
       name: Endpoint Data Returned
       description: Make sure Context output from wildfire
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "35"
@@ -1190,8 +1246,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 4080
+          "x": 265,
+          "y": 4415
         }
       }
     note: false
@@ -1203,16 +1259,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 37d78d7c-5ca7-4e69-85fc-573c4e5fbf47
+    taskid: 15b8e53f-f624-4e73-8b44-c5465e9e2787
     type: condition
     task:
-      id: 37d78d7c-5ca7-4e69-85fc-573c4e5fbf47
+      id: 15b8e53f-f624-4e73-8b44-c5465e9e2787
       version: -1
       name: additional fields Exists
       description: Additional fields empty
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "35"
@@ -1229,8 +1287,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 4080
+          "x": 1125,
+          "y": 4415
         }
       }
     note: false
@@ -1242,10 +1300,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 911a09b5-a7a9-4a3e-8e4e-452fd6f09589
+    taskid: d3c89a54-e877-4a3b-8f87-11f13bd432b9
     type: regular
     task:
-      id: 911a09b5-a7a9-4a3e-8e4e-452fd6f09589
+      id: d3c89a54-e877-4a3b-8f87-11f13bd432b9
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -1258,6 +1316,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "54"
@@ -1269,8 +1329,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 3570
+          "x": 1125,
+          "y": 3860
         }
       }
     note: false
@@ -1282,16 +1342,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 03c2c8a7-cad0-4866-8a5e-066e1620fe22
+    taskid: 3a7dd353-b69e-4ef3-8621-390f2cd1decd
     type: condition
     task:
-      id: 03c2c8a7-cad0-4866-8a5e-066e1620fe22
+      id: 3a7dd353-b69e-4ef3-8621-390f2cd1decd
       version: -1
       name: Core Returned
       description: Make sure Context output from wildfire
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "61"
@@ -1313,8 +1375,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1882.5,
-          "y": 880
+          "x": 1555,
+          "y": 945
         }
       }
     note: false
@@ -1326,10 +1388,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: af17a5d3-4dd1-42fd-87e7-9e190c4dcfec
+    taskid: 78a7a3a2-f367-423a-852f-e947e70bc96e
     type: regular
     task:
-      id: af17a5d3-4dd1-42fd-87e7-9e190c4dcfec
+      id: 78a7a3a2-f367-423a-852f-e947e70bc96e
       version: -1
       name: Run core-get-IP-analytics-prevalence
       description: Get the prevalence of an ip, identified by ip_address.
@@ -1337,6 +1399,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "62"
@@ -1349,8 +1413,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 1050
+          "x": 1442.5,
+          "y": 1130
         }
       }
     note: false
@@ -1362,15 +1426,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 453b3dda-dbd4-4741-8148-5027a6086933
+    taskid: 0f473383-77b5-460b-8370-2f4e91d51ae6
     type: condition
     task:
-      id: 453b3dda-dbd4-4741-8148-5027a6086933
+      id: 0f473383-77b5-460b-8370-2f4e91d51ae6
       version: -1
       name: Make sure analytics not exists
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "7"
@@ -1387,8 +1453,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 1220
+          "x": 1442.5,
+          "y": 1315
         }
       }
     note: false
@@ -1400,16 +1466,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: e2af38c6-0f1e-4d35-87c4-a91f0c3b1d0f
+    taskid: 991589fa-d4d1-4d7c-8632-a6b5cf37be6e
     type: condition
     task:
-      id: e2af38c6-0f1e-4d35-87c4-a91f0c3b1d0f
+      id: 991589fa-d4d1-4d7c-8632-a6b5cf37be6e
       version: -1
       name: Core Returned
       description: Make sure Context output from wildfire
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "64"
@@ -1431,8 +1499,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1657.5,
-          "y": 2060
+          "x": 1545,
+          "y": 2225
         }
       }
     note: false
@@ -1444,10 +1512,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: c41c6a49-a93d-4e82-8ef3-ec33ca563435
+    taskid: ab4b1ef2-18e3-4313-88b1-add0e0117b09
     type: regular
     task:
-      id: c41c6a49-a93d-4e82-8ef3-ec33ca563435
+      id: ab4b1ef2-18e3-4313-88b1-add0e0117b09
       version: -1
       name: Run core-get-IP-analytics-prevalence
       description: Get the prevalence of an ip, identified by ip_address.
@@ -1455,6 +1523,8 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "65"
@@ -1467,8 +1537,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1545,
-          "y": 2230
+          "x": 1432.5,
+          "y": 2410
         }
       }
     note: false
@@ -1480,15 +1550,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: fad567ac-8e5f-47b3-8b08-468685d87041
+    taskid: 498ff1f3-7fb7-4ab4-85a2-2c3f4e0480c1
     type: condition
     task:
-      id: fad567ac-8e5f-47b3-8b08-468685d87041
+      id: 498ff1f3-7fb7-4ab4-85a2-2c3f4e0480c1
       version: -1
       name: Make sure analytics not exists
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "20"
@@ -1505,8 +1577,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1545,
-          "y": 2400
+          "x": 1432.5,
+          "y": 2595
         }
       }
     note: false
@@ -1518,15 +1590,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: c46442b7-d2fb-40f1-8ec3-8c2f71bee134
+    taskid: daca0581-d71b-41d2-8768-8c5243ef517f
     type: condition
     task:
-      id: c46442b7-d2fb-40f1-8ec3-8c2f71bee134
+      id: daca0581-d71b-41d2-8768-8c5243ef517f
       version: -1
       name: Make sure analytics not exists
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "28"
@@ -1543,8 +1617,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
-          "y": 3240
+          "x": 1340,
+          "y": 3505
         }
       }
     note: false
@@ -1556,105 +1630,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: 7c3e6694-7352-44d0-814c-697d1d1731e3
+    taskid: 11490c77-37db-4ff6-8c22-c8b90dce52f1
     type: condition
     task:
-      id: 7c3e6694-7352-44d0-814c-697d1d1731e3
+      id: 11490c77-37db-4ff6-8c22-c8b90dce52f1
       version: -1
       name: Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "20"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: IPEnrichment.Value
-            iscontext: true
-          right:
-            value:
-              simple: ${CrowdStrike.Device.[0].ExternalIP}
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: IPEnrichment
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: IPEnrichment.Value
-                      iscontext: true
-                    right:
-                      value:
-                        simple: CrowdStrike.Device.[0].ExternalIP
-                      iscontext: true
-                accessor: MaxScore
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: IPEnrichment
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: IPEnrichment.Value
-                      iscontext: true
-                    right:
-                      value:
-                        simple: CrowdStrike.Device.[0].ExternalIP
-                      iscontext: true
-                accessor: MaxVerdict
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: IPEnrichment.Status
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: IPEnrichment.TIMScore
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1995,
-          "y": 2400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "68":
-    id: "68"
-    taskid: 4e7a7b61-edff-4510-8a1b-20e78caaa2d4
-    type: condition
-    task:
-      id: 4e7a7b61-edff-4510-8a1b-20e78caaa2d4
-      version: -1
-      name: Main Keys Exists
-      description: MaxScore And MaxVerdict enriched for https://google.com
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "28"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1716,7 +1706,95 @@ tasks:
       {
         "position": {
           "x": 1882.5,
-          "y": 3240
+          "y": 2595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 1f2af165-4d2d-41c4-8fdb-4569e1c46fff
+    type: condition
+    task:
+      id: 1f2af165-4d2d-41c4-8fdb-4569e1c46fff
+      version: -1
+      name: Main Keys Exists
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IPEnrichment.Value
+            iscontext: true
+          right:
+            value:
+              simple: ${CrowdStrike.Device.[0].ExternalIP}
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike.Device.[0].ExternalIP
+                      iscontext: true
+                accessor: MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdStrike.Device.[0].ExternalIP
+                      iscontext: true
+                accessor: MaxVerdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: IPEnrichment.Status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: IPEnrichment.TIMScore
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 3505
         }
       }
     note: false
@@ -1728,16 +1806,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 92a95a6d-b073-4a0e-8ed6-4bc4950c756c
+    taskid: 1233e8a5-4cdd-445b-8dcb-e5dd08973c3e
     type: condition
     task:
-      id: 92a95a6d-b073-4a0e-8ed6-4bc4950c756c
+      id: 1233e8a5-4cdd-445b-8dcb-e5dd08973c3e
       version: -1
       name: Main Keys Exists
       description: MaxScore And MaxVerdict enriched for https://google.com
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "35"
@@ -1801,8 +1881,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1667.5,
-          "y": 4080
+          "x": 1555,
+          "y": 4415
         }
       }
     note: false
@@ -1814,15 +1894,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 3505c3ba-b666-4cb5-82be-e98fe54337d2
+    taskid: 88ec40bd-5e9c-4d53-8ebc-b062b0fd67a7
     type: title
     task:
-      id: 3505c3ba-b666-4cb5-82be-e98fe54337d2
+      id: 88ec40bd-5e9c-4d53-8ebc-b062b0fd67a7
       version: -1
       name: Case 1 - Bad Input
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "72"
@@ -1831,8 +1913,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 5080
+          "x": 1125,
+          "y": 6220
         }
       }
     note: false
@@ -1844,10 +1926,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: f4f8d8c1-e360-4138-8836-7118f7a0d147
+    taskid: 918174c5-ed9f-4a2a-8554-f224719e4c94
     type: regular
     task:
-      id: f4f8d8c1-e360-4138-8836-7118f7a0d147
+      id: 918174c5-ed9f-4a2a-8554-f224719e4c94
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -1860,6 +1942,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "73"
@@ -1871,8 +1955,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 5240
+          "x": 1125,
+          "y": 6390
         }
       }
     note: false
@@ -1884,10 +1968,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 8cd46a5f-a49d-4276-8ba9-68a2db83f43b
+    taskid: 5cc9dfd5-5d8d-4e2a-83b7-01c233a809bc
     type: regular
     task:
-      id: 8cd46a5f-a49d-4276-8ba9-68a2db83f43b
+      id: 5cc9dfd5-5d8d-4e2a-83b7-01c233a809bc
       version: -1
       name: Run ip enrichment script
       description: This script gathers ip reputation data from multiple integrations
@@ -1896,6 +1980,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#error#':
       - "74"
@@ -1916,8 +2002,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 5410
+          "x": 1125,
+          "y": 6575
         }
       }
     note: false
@@ -1929,15 +2015,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: f15bacae-9993-40f9-8287-d195449ec426
+    taskid: e578f32e-d9f9-4fc2-81b8-533552db1590
     type: title
     task:
-      id: f15bacae-9993-40f9-8287-d195449ec426
+      id: e578f32e-d9f9-4fc2-81b8-533552db1590
       version: -1
       name: Case 2 - Bad Brand
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "76"
@@ -1946,8 +2034,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 827.5,
-          "y": 5580
+          "x": 715,
+          "y": 6760
         }
       }
     note: false
@@ -1959,15 +2047,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: 6f7b1f08-4cc5-41a7-8cd3-ffb0f177a776
+    taskid: f6375960-b1b6-4e1a-802f-c2b4fdd84bb7
     type: condition
     task:
-      id: 6f7b1f08-4cc5-41a7-8cd3-ffb0f177a776
+      id: f6375960-b1b6-4e1a-802f-c2b4fdd84bb7
       version: -1
       name: Failure
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1983,8 +2073,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 6080
+          "x": 1125,
+          "y": 7300
         }
       }
     note: false
@@ -1996,10 +2086,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: 89e23a18-ecbf-4b85-8634-69a768574721
+    taskid: 7cf93515-b4a4-4852-8861-512b48004b66
     type: regular
     task:
-      id: 89e23a18-ecbf-4b85-8634-69a768574721
+      id: 7cf93515-b4a4-4852-8861-512b48004b66
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -2012,6 +2102,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "77"
@@ -2023,8 +2115,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 827.5,
-          "y": 5740
+          "x": 715,
+          "y": 6930
         }
       }
     note: false
@@ -2036,10 +2128,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: 1f2712e6-6d56-4ea2-8fb3-63fafe57ae56
+    taskid: 140ef084-fb38-4c91-8f6c-5a4a7384c427
     type: regular
     task:
-      id: 1f2712e6-6d56-4ea2-8fb3-63fafe57ae56
+      id: 140ef084-fb38-4c91-8f6c-5a4a7384c427
       version: -1
       name: Run ip enrichment script
       description: This script gathers ip reputation data from multiple integrations
@@ -2048,6 +2140,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#error#':
       - "78"
@@ -2070,8 +2164,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 827.5,
-          "y": 5910
+          "x": 715,
+          "y": 7115
         }
       }
     note: false
@@ -2083,22 +2177,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 1eed142a-b25e-4d64-8895-ca646d143ed9
+    taskid: 248d1cbe-f733-4b1b-8c91-9597b43573df
     type: title
     task:
-      id: 1eed142a-b25e-4d64-8895-ca646d143ed9
+      id: 248d1cbe-f733-4b1b-8c91-9597b43573df
       version: -1
       name: Pass
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 6085
+          "x": 695,
+          "y": 7307.5
         }
       }
     note: false
@@ -2110,10 +2206,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: 25b42dcb-43a1-4d93-8bd9-70e4fbda7507
+    taskid: bc23ea98-c4a4-4db4-838a-d35910349976
     type: regular
     task:
-      id: 25b42dcb-43a1-4d93-8bd9-70e4fbda7507
+      id: bc23ea98-c4a4-4db4-838a-d35910349976
       version: -1
       name: Run ip enrichment script
       description: This script gathers ip reputation data from multiple integrations
@@ -2122,6 +2218,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "83"
@@ -2141,8 +2239,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 4580
+          "x": 1125,
+          "y": 4955
         }
       }
     note: false
@@ -2154,16 +2252,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 0f4aea93-7f79-4075-8027-d432c7c5c771
+    taskid: 14b6a219-0dc2-46f4-8337-9145754db279
     type: condition
     task:
-      id: 0f4aea93-7f79-4075-8027-d432c7c5c771
+      id: 14b6a219-0dc2-46f4-8337-9145754db279
       version: -1
       name: additional fields Exists
       description: Additional fields empty
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "86"
@@ -2180,8 +2280,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 4750
+          "x": 480,
+          "y": 5140
         }
       }
     note: false
@@ -2193,10 +2293,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 52de41e0-6289-424e-8563-fe90bdf03a50
+    taskid: 59c8b117-ce61-4d2d-8765-62c468a84e0e
     type: regular
     task:
-      id: 52de41e0-6289-424e-8563-fe90bdf03a50
+      id: 59c8b117-ce61-4d2d-8765-62c468a84e0e
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -2209,6 +2309,8 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "79"
@@ -2220,8 +2322,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 4410
+          "x": 1125,
+          "y": 4770
         }
       }
     note: false
@@ -2233,16 +2335,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: 26559a02-a000-4c16-8c17-9075ed861a97
+    taskid: 5cfe6a8a-8238-4773-8992-e0139817cfe5
     type: condition
     task:
-      id: 26559a02-a000-4c16-8c17-9075ed861a97
+      id: 5cfe6a8a-8238-4773-8992-e0139817cfe5
       version: -1
       name: Main Keys For 1.1.1.1
       description: MaxScore And MaxVerdict enriched for https://google.com
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "86"
@@ -2336,8 +2440,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 4750
+          "x": 910,
+          "y": 5140
         }
       }
     note: false
@@ -2349,25 +2453,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: b2dbb1c8-6915-4d1f-8b00-6a79e50ac180
+    taskid: 5c58dcbd-2668-4c13-b301-49e727c0916d
     type: title
     task:
-      id: b2dbb1c8-6915-4d1f-8b00-6a79e50ac180
+      id: 5c58dcbd-2668-4c13-b301-49e727c0916d
       version: -1
-      name: Sad Flows
+      name: Case 6 One Invalid One Valid
       type: title
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "70"
+      - "90"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 4920
+          "x": 1125,
+          "y": 5325
         }
       }
     note: false
@@ -2379,16 +2485,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: 9762a46b-6b0d-4915-8073-262332146640
+    taskid: 8e80e32d-d0fd-43f1-8d85-89cb81da7f37
     type: condition
     task:
-      id: 9762a46b-6b0d-4915-8073-262332146640
+      id: 8e80e32d-d0fd-43f1-8d85-89cb81da7f37
       version: -1
       name: Main Keys For 8.8.8.8
       description: MaxScore And MaxVerdict enriched for https://google.com
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
     nexttasks:
       "yes":
       - "86"
@@ -2482,8 +2590,338 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
-          "y": 4750
+          "x": 1340,
+          "y": 5140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: ed6eea68-2f6c-4afe-ae4a-b65572d2ea83
+    type: regular
+    task:
+      id: ed6eea68-2f6c-4afe-ae4a-b65572d2ea83
+      version: -1
+      name: Run ip enrichment script
+      description: This script gathers ip reputation data from multiple integrations
+        and returns an ip entity with consolidated information to the context.
+      scriptName: ip-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "91"
+      - "92"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      external_enrichment:
+        simple: "true"
+      ip_list:
+        simple: 1.1.1.1,8.8.8.8/24
+      verbose:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 5680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: a517fcc6-475a-41ea-8446-e747787f85a0
+    type: regular
+    task:
+      id: a517fcc6-475a-41ea-8446-e747787f85a0
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 5495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: 929d8fe2-2f7f-49a3-8dc9-47d2239db2df
+    type: condition
+    task:
+      id: 929d8fe2-2f7f-49a3-8dc9-47d2239db2df
+      version: -1
+      name: Main Keys For 1.1.1.1
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "93"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IPEnrichment.Value
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 1.1.1.1
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 1.1.1.1
+                accessor: MaxScore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 1.1.1.1
+                accessor: MaxVerdict
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 1.1.1.1
+                accessor: Status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 1.1.1.1
+                accessor: TIMScore
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: a1724668-8fdb-4bb7-af59-de8b6184ff14
+    type: condition
+    task:
+      id: a1724668-8fdb-4bb7-af59-de8b6184ff14
+      version: -1
+      name: Invalid Entry for 8.8.8.8/24
+      description: MaxScore And MaxVerdict enriched for https://google.com
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "yes":
+      - "93"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 8.8.8.8/24
+                accessor: Value
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8/24
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 8.8.8.8/24
+                accessor: Status
+            iscontext: true
+          right:
+            value:
+              simple: Error
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IPEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPEnrichment.Value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 8.8.8.8/24
+                accessor: Message
+            iscontext: true
+          right:
+            value:
+              simple: Invalid
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 5865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 42c59b99-8dbf-4493-867b-e868711b3338
+    type: title
+    task:
+      id: 42c59b99-8dbf-4493-867b-e868711b3338
+      version: -1
+      name: Sad Flows
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "70"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 6050
         }
       }
     note: false
@@ -2500,9 +2938,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 6100,
+        "height": 7325,
         "width": 2212.5,
-        "x": 162.5,
+        "x": 50,
         "y": 50
       }
     }
@@ -2511,7 +2949,4 @@ inputs: []
 outputs: []
 sourceplaybookid: 110f76de-5574-4854-853e-8675a01d8eb0
 dirtyInputs: true
-marketplaces:
-- platform
-- marketplacev2
-- xsoar
+adopted: true
