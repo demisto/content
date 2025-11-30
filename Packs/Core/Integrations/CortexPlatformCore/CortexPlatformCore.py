@@ -1953,13 +1953,15 @@ def update_cases_command(client: Client, args: dict) -> list[CommandResults]:
     if status and not CASE_STATUS.get(status):
         supported_statuses = list(CASE_STATUS.keys())
         error_messages.append(
-            f"Warning: Status didn't change. The only supported status values are {supported_statuses}. Provided value: {status}."
+            f"Warning: Status didn't change. The only supported status values are {supported_statuses}."
+            f" Provided value: {status}."
         )
 
     if user_defined_severity and not CASE_SEVERITY.get(user_defined_severity, False):
         supported_severities = list(CASE_SEVERITY.keys())
         error_messages.append(
-            f"Warning: Severity didn't change. The only supported severity values are {supported_severities}. Provided value: {user_defined_severity}."
+            f"Warning: Severity didn't change. The only supported severity values are {supported_severities}."
+            f" Provided value: {user_defined_severity}."
         )
 
     demisto.debug("\n".join(error_messages) if error_messages else "No validation errors.")
