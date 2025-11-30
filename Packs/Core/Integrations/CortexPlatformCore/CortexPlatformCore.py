@@ -454,26 +454,6 @@ def arg_to_float(arg: Optional[str]):
     raise ValueError(f'"{arg}" is not a valid number')
 
 
-def determine_assignee_filter_field(assignee: str) -> str:
-    """
-    Determine whether the assignee should be filtered by email or pretty name.
-
-    Args:
-        assignee (str): The assignee value to filter on.
-
-    Returns:
-        str: The appropriate field to filter on based on the input.
-    """
-    if not assignee:
-        return CASE_FIELDS["assignee"]
-    elif "@" in assignee:
-        # If the assignee contains '@', use the email field
-        return CASE_FIELDS["assignee_email"]
-    else:
-        # Otherwise, use the pretty name field
-        return CASE_FIELDS["assignee"]
-
-
 def preprocess_get_cases_args(args: dict):
     demisto.debug(f"original args: {args}")
     args["limit"] = min(int(args.get("limit", MAX_GET_INCIDENTS_LIMIT)), MAX_GET_INCIDENTS_LIMIT)
@@ -1939,14 +1919,14 @@ def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def update_cases_command(client: Client, args: dict) -> CommandResults:
+def update_cases_command(client: Client, args: dict) -> list[CommandResults]:
     """
     Updates a case with new information based on provided arguments.
     """
     case_ids = argToList(args.get("case_id"))
     case_name = args.get("case_name", "")
     description = args.get("description", "")
-    assignee = args.get("assignee", "")
+    assignee = args.get("assignee", "").lower()
     status = args.get("status", "")
     notes = args.get("notes", "")
     starred = args.get("starred", "")
@@ -1960,44 +1940,54 @@ def update_cases_command(client: Client, args: dict) -> CommandResults:
         client.unassigned_case(case_ids)
         assignee = ""
 
-    if status == "resolved" and not resolve_reason:
-        raise ValueError("In order to set the case to resolved, you must provide a resolve reason")
+    if status == "resolved" and (not resolve_reason or not CASE_STATUS_RESOLVED_REASON.get(resolve_reason, False)):
+        raise ValueError("In order to set the case to resolved, you must provide a resolve reason.")
 
     if (resolve_reason or resolve_all_alerts or resolved_comment) and not status == "resolved":
         raise ValueError(
-            "In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to 'resolved'"
+            "In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to 'resolved.'"
         )
 
-    # Build request_data with mapped and filtered values
-    request_data = {
-        "request_data": {
-            "newIncidentInterface": True,
-            **{
-                "caseName": case_name if case_name else None,
-            },
-            **{"description": description if description else None},
-            **{
-                "assignedUser": assignee
-                if assignee and determine_assignee_filter_field(assignee) == CASE_FIELDS["assignee_email"]
-                else None
-            },
-            **{
-                "assignedUserPrettyName": assignee
-                if assignee and determine_assignee_filter_field(assignee) == CASE_FIELDS["assignee"]
-                else None
-            },
-            **{"notes": notes if notes else None},
-            **{"starred": starred if starred else None},
-            **{"status": CASE_STATUS.get(status) if status else None},
-            **{"userSeverity": CASE_SEVERITY.get(user_defined_severity) if user_defined_severity else None},
-            **{"resolve_reason": CASE_STATUS_RESOLVED_REASON.get(resolve_reason) if resolve_reason else None},
-            **{"caseResolvedComment": resolved_comment if resolved_comment else None},
-            **{"resolve_all_alerts": resolve_all_alerts if resolve_all_alerts else None},
-            **{"CustomFields": custom_fields if custom_fields else None},
-        }
-    }
+    error_messages = []
 
-    demisto.info(f"Updating cases {case_ids} with request data: {request_data}")
+    if status and not CASE_STATUS.get(status):
+        supported_statuses = list(CASE_STATUS.keys())
+        error_messages.append(
+            f"Warning: Status didn't change. The only supported status values are {supported_statuses}. Provided value: {status}."
+        )
+
+    if user_defined_severity and not CASE_SEVERITY.get(user_defined_severity, False):
+        supported_severities = list(CASE_SEVERITY.keys())
+        error_messages.append(
+            f"Warning: Severity didn't change. The only supported severity values are {supported_severities}. Provided value: {user_defined_severity}."
+        )
+
+    demisto.debug("\n".join(error_messages) if error_messages else "No validation errors.")
+    # Build request_data with mapped and filtered values
+
+    case_update_payload = {
+        "caseName": case_name if case_name else None,
+        "description": description if description else None,
+        "assignedUser": assignee if assignee else None,
+        "notes": notes if notes else None,
+        "starred": starred if starred else None,
+        "status": CASE_STATUS.get(status) if status else None,
+        "userSeverity": CASE_SEVERITY.get(user_defined_severity) if user_defined_severity else None,
+        "resolve_reason": CASE_STATUS_RESOLVED_REASON.get(resolve_reason) if resolve_reason else None,
+        "caseResolvedComment": resolved_comment if resolved_comment else None,
+        "resolve_all_alerts": resolve_all_alerts if resolve_all_alerts else None,
+        "CustomFields": custom_fields if custom_fields else None,
+    }
+    remove_nulls_from_dictionary(case_update_payload)
+
+    if not case_update_payload:
+        raise ValueError("No valid update parameters provided for case update.")
+
+    request_data = {"request_data": case_update_payload}
+
+    request_data["request_data"]["newIncidentInterface"] = True
+
+    demisto.info(f"Executing case update for cases {case_ids} with request data: {request_data}")
     responses = client.update_case(request_data, case_ids)
     replies = []
     for resp in responses:
@@ -2011,13 +2001,22 @@ def update_cases_command(client: Client, args: dict) -> CommandResults:
             reply["caseDomain"] = reply.pop("incidentDomain")
         replies.append(reply)
 
-    return CommandResults(
-        readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
-        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
-        outputs_key_field="case_id",
-        outputs=replies,
-        raw_response=responses,
+    command_results = []
+    command_results.append(
+        CommandResults(
+            readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
+            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+            outputs_key_field="case_id",
+            outputs=replies,
+            raw_response=responses,
+        )
     )
+
+    if error_messages:
+        demisto.debug("\n".join(error_messages))
+        command_results.append(CommandResults(readable_output="\n".join(error_messages), entry_type=4))
+
+    return command_results
 
 
 def main():  # pragma: no cover
