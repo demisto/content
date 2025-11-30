@@ -2268,7 +2268,7 @@ script:
         - contextPath: Core.AppsecIssue.backlog_status
           description: The backlog status of the issue.
           type: String
-    - name: core-update-case
+    - name: core-update-cases
       description: Updates the properties of a case. This command does not provide an explicit indication of success.
       arguments:
         - name: case_id
@@ -2283,7 +2283,7 @@ script:
           description: The new description for the case.
           type: String
         - name: assignee
-          description: The new assignee for the case. Use the special value "unassigned" to remove an existing assignee.
+          description: The email address of the new assignee. Use the special value "unassigned" to remove an existing assignee.
           type: String
         - auto: PREDEFINED
           name: status

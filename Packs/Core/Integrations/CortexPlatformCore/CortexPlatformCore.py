@@ -44,7 +44,7 @@ WEBAPP_COMMANDS = [
     "core-get-asset-coverage-histogram",
     "core-create-appsec-policy",
     "core-get-appsec-issues",
-    "core-update-case",
+    "core-update-cases",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -1615,6 +1615,25 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
 
     return builder.to_dict()
 
+def parse_custom_fields(custom_fields: list[str]) -> dict:
+    """
+    Parse custom fields from the input format 'fieldname:value'
+
+    Args:
+        custom_fields (list[str]): List of custom fields in 'fieldname:value' format
+
+    Returns:
+        dict: Dictionary of sanitized custom field names and values
+    """
+    parsed_fields = {}
+    for field in custom_fields:
+        parts = field.split(':', 1)
+        if len(parts) == 2:
+            field_name, value = parts
+            sanitized_name = f"{''.join(char for char in field_name if char.isalnum())}"
+            if sanitized_name and sanitized_name not in parsed_fields:
+                parsed_fields[sanitized_name] = value
+    return parsed_fields
 
 def create_policy_build_scope(args: dict) -> dict:
     """
@@ -1918,7 +1937,7 @@ def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def update_case_command(client: Client, args: dict) -> CommandResults:
+def update_cases_command(client: Client, args: dict) -> CommandResults:
     """
     Updates a case with new information based on provided arguments.
     """
@@ -1933,7 +1952,7 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     resolve_reason = args.get("resolve_reason", "")
     resolved_comment = args.get("resolved_comment", "")
     resolve_all_alerts = args.get("resolve_all_alerts", "")
-    custom_fields = args.get("custom_fields", "")
+    custom_fields = parse_custom_fields(argToList(args.get("custom_fields", "")))
 
     if assignee == "unassigned":
         client.unassigned_case(case_ids)
@@ -1962,19 +1981,19 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
                 if assignee and determine_assignee_filter_field(assignee) == CASE_FIELDS["assignee"]
                 else None
             },
-            **{"status": CASE_STATUS[status] if status else None},
             **{"notes": notes if notes else None},
             **{"starred": starred if starred else None},
-            **{"userSeverity": CASE_SEVERITY[user_defined_severity] if user_defined_severity else None},
-            **{"resolve_reason": CASE_STATUS_RESOLVED_REASON[resolve_reason] if resolve_reason else None},
+            **{"status": CASE_STATUS.get(status) if status else None},
+            **{"userSeverity": CASE_SEVERITY.get(user_defined_severity) if user_defined_severity else None},
+            **{"resolve_reason": CASE_STATUS_RESOLVED_REASON.get(resolve_reason) if resolve_reason else None},
             **{"caseResolvedComment": resolved_comment if resolved_comment else None},
             **{"resolve_all_alerts": resolve_all_alerts if resolve_all_alerts else None},
-            **{"customFields": custom_fields if custom_fields else None},
+            **{"CustomFields": custom_fields if custom_fields else None},
         }
     }
 
+    demisto.info(f"Updating cases {case_ids} with request data: {request_data}")
     responses = client.update_case(request_data, case_ids)
-
     replies = []
     for resp in responses:
         reply = resp.get("reply", {})
@@ -2098,8 +2117,8 @@ def main():  # pragma: no cover
 
         elif command == "core-get-appsec-issues":
             return_results(get_appsec_issues_command(client, args))
-        elif command == "core-update-case":
-            return_results(update_case_command(client, args))
+        elif command == "core-update-cases":
+            return_results(update_cases_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
