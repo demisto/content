@@ -174,15 +174,16 @@ class IndicatorInstance:
         Evaluates the instance's internal state to determine the final verdict (SUCCESS/FAILURE)
         and generates the appropriate Human Readable/ Context message.
         """
-        # Case 1 – Invalid indicator (highest priority)
         valid = bool(self.extracted_value)
         found = bool(self.tim_context)
-
+        
+        # Case 1 – Invalid indicator (highest priority)
         if not valid:
             self.final_status = Status.FAILURE
             self.context_message = "Invalid"
             return
 
+        # Case 2 – Valid + Successful enrichment pipeline
         elif self.enriched and found:
             self.final_status = Status.SUCCESS
             return
