@@ -2,58 +2,122 @@ category: Cloud Services
 commonfields:
   id: SAP-BTP
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
-  name: url
+- name: url
+  display: Server URL (Service Key URL)
   required: true
   type: 0
-- display: API Key
-  additionalinfo: The API Key to use for the connection
-  name: apikey
+  section: Connect
+  additionalinfo: SAP Service Key field 'url' (e.g., https://auditlog-management.cfapps.us10.hana.ondemand.com)
+- name: client_id
+  display: Client ID (Username)
   required: true
+  type: 0
+  section: Connect
+  additionalinfo: SAP Service Key field 'uaa.clientid'. Required for both mTLS and Non-mTLS authentication.
+- name: auth_type
+  display: Authentication Type
+  required: true
+  type: 15
+  section: Connect
+  defaultvalue: Non-mTLS
+  options:
+  - mTLS
+  - Non-mTLS
+  additionalinfo: Select authentication method. mTLS (recommended) requires Certificate + Private Key. Non-mTLS requires Client Secret.
+- name: certificate
+  display: Certificate
+  required: false
+  type: 12
+  section: Connect
+  additionalinfo: For mTLS authentication (recommended). Body of certificate.pem file in PEM format.
+- name: key
+  display: Private Key
+  required: false
+  type: 14
+  section: Connect
+  additionalinfo: For mTLS authentication (recommended). Body of key.pem file in PEM format.
+- name: client_secret
+  display: Client Secret (Password)
+  required: false
   type: 4
-- display: Trust any certificate (not secure)
-  name: insecure
+  section: Connect
+  additionalinfo: For Non-mTLS authentication. SAP Service Key field 'uaa.clientsecret'.
+- name: insecure
+  display: Trust any certificate (not secure)
   required: false
   type: 8
-- display: Use system proxy settings
-  name: proxy
+  defaultvalue: "false"
+  section: Connect
+  advanced: true
+- name: proxy
+  display: Use system proxy settings
   required: false
+  defaultvalue: "false"
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: SAP-BTP
+  section: Connect
+  advanced: true
+- name: isFetchEvents
+  display: Fetch events
+  type: 8
+  defaultvalue: 'false'
+  required: true
+  section: Collect
+- name: incidentType
+  display: Incident type
+  required: false
+  type: 13
+  section: Collect
+- name: max_fetch
+  display: The maximum number of audit logs per fetch
+  required: false
+  defaultvalue: '5000'
+  type: 0
+  section: Collect
+  advanced: true
+  additionalinfo: Maximum number of events to fetch per cycle (default 5000)
+
+description: Collect audit log events from SAP Business Technology Platform (BTP)
+display: SAP BTP (Business Technology Platform)
 name: SAP-BTP
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy2
-      required: false
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    execution: false
-    name: baseintegration-dummy
+  - name: sap-btp-get-events
+    description: Retrieve audit log events from SAP BTP
+    arguments:
+    - name: from
+      description: Time to fetch events from (e.g., "3 days", "2 hours", "1 month", "2024-01-01")
+      defaultValue: 3 days
+    - name: limit
+      description: Maximum number of events to retrieve
+      defaultValue: '50'
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: SAPBTP.Event.uuid
+      description: Unique identifier of the event
       type: String
-  isfetch: false
+    - contextPath: SAPBTP.Event.user
+      description: User associated with the event
+      type: String
+    - contextPath: SAPBTP.Event.time
+      description: Timestamp of the event
+      type: Date
+    - contextPath: SAPBTP.Event.ip
+      description: IP address associated with the event
+      type: String
+    - contextPath: SAPBTP.Event.data
+      description: Event data payload
+      type: Unknown
+  isfetch: true
+  isfetchevents: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
-fromversion: 6.1.0
+  dockerimage: demisto/python3:3.12.11.4508456
+fromversion: 6.10.0
 marketplaces:
 - xsoar
 - marketplacev2
