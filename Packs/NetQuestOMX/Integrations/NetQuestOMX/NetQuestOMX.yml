@@ -1,5 +1,5 @@
 category: Utilities
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -36,7 +36,7 @@ configuration:
   required: false
   section: Collect
   hidden:
-    - xsoar
+  - xsoar
   additionalinfo: Whether to collect events.
 - display: Statistic types to fetch
   name: statistic_types_to_fetch
@@ -86,7 +86,7 @@ script:
       description: A boolean field that indicates whether any address ranges in the list have been merged to eliminate overlaps or contiguous entries.
       type: boolean
     - contextPath: NetQuest.AddressList.CountsBefore
-      description:  A dictionary that stores the number of occurrences of each IP address or address range before any processing or modifications were applied.
+      description: A dictionary that stores the number of occurrences of each IP address or address range before any processing or modifications were applied.
       type: Dictionary
     - contextPath: NetQuest.AddressList.CountsAfter
       description: A dictionary that stores the number of occurrences of each IP address or address range after processing or modifications have been applied.
@@ -133,7 +133,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetchevents: true
   isfetchevents:xsoar: false
 fromversion: 6.10.0

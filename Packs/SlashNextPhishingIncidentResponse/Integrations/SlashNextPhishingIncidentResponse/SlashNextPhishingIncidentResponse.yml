@@ -2,8 +2,9 @@ commonfields:
   id: SlashNext Phishing Incident Response
   version: -1
 name: SlashNext Phishing Incident Response
-display: SlashNext Phishing Incident Response
+display: SlashNext Phishing Incident Response (Deprecated)
 category: Data Enrichment & Threat Intelligence
+deprecated: true
 description: "SlashNext Phishing Incident Response integration allows Cortex XSOAR users to fully automate analysis of suspicious URLs. For example, IR teams responsible for abuse inbox management can extract links or domains out of suspicious emails and automatically analyze them with the SlashNext SEER threat detection cloud to get definitive, binary verdicts (malicious or benign) along with IOCs, screen shots, and more. Automating URL analysis can save IR teams hundreds of hours versus manually triaging these emails or checking URLs and domains against less accurate phishing databases and domain reputation services."
 configuration:
 - display: SlashNext API Base URL
@@ -54,7 +55,7 @@ configuration:
   type: 1
   required: false
 script:
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   type: python
   subtype: python3
   script: '-'

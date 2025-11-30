@@ -8,7 +8,7 @@ from CommonServerPython import *  # noqa: F401
 
 OAUTH_TOKEN_GENERATOR_URL = "https://zoom.us/oauth/token"
 OAUTH_OGV_TOKEN_GENERATOR_URL = "https://zoomgov.com/oauth/token"
-# The token’s time to live is 1 hour,
+# The token's time to live is 1 hour,
 # two minutes were subtract for extra safety.
 TOKEN_LIFE_TIME = timedelta(minutes=58)
 # the lifetime for an JWT token is 90 minutes == 5400 seconds

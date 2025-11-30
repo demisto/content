@@ -2,7 +2,7 @@
     "name": "Oracle Cloud Infrastructure (OCI)",
     "description": "Oracle Cloud Infrastructure (OCI)",
     "support": "xsoar",
-    "currentVersion": "1.0.30",
+    "currentVersion": "1.0.31",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -21,6 +21,8 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam",
+        "cloud_posture"
     ]
 }

@@ -24,14 +24,14 @@ configuration:
   defaultvalue: "50000"
   advanced: true
   type: 0
-  required: true
+  required: false
   section: Collect
 - display: Maximum number of audit events per fetch
   name: max_audit_events_per_fetch
   defaultvalue: "100000"
   advanced: true
   type: 0
-  required: true
+  required: false
   section: Collect
 - display: Trust any certificate (not secure)
   name: insecure

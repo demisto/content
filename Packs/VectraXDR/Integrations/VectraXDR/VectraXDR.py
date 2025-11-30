@@ -32,12 +32,13 @@ VALID_ENTITY_TYPE = ["account", "host"]
 VALID_GROUP_TYPE = ["account", "host", "ip", "domain"]
 VALID_IMPORTANCE_VALUE = ["high", "medium", "low", "never_prioritize"]
 VALID_ENTITY_STATE = ["active", "inactive"]
+VALID_CLOSE_REASON = ["benign", "remediated"]
 DEFAULT_URGENCY_SCORE_LOW_THRESHOLD = 30
 DEFAULT_URGENCY_SCORE_MEDIUM_THRESHOLD = 50
 DEFAULT_URGENCY_SCORE_HIGH_THRESHOLD = 80
 MAX_MIRRORING_LIMIT = 5000
 MAX_OUTGOING_NOTE_LIMIT = 8000
-PACK_VERSION = get_pack_version() or "1.0.0"
+PACK_VERSION = get_pack_version() or "1.2.0"
 UTM_PIVOT = f"?pivot=Vectra-XSOAR-{PACK_VERSION}"
 EMPTY_ASSIGNMENT = [
     {
@@ -91,6 +92,9 @@ ENDPOINTS = {
     "RESOLVE_ASSIGNMENT_ENDPOINT": "/api/v3.3/assignments/{}/resolve",
     "ASSIGNMENT_OUTCOME_ENDPOINT": "/api/v3.3/assignment_outcomes/",
     "DOWNLOAD_DETECTION_PCAP": "/api/v3.3/detections/{}/pcap",
+    "DETECTION_CLOSE_ENDPOINT": "/api/v3.4/detections/close",
+    "DETECTION_OPEN_ENDPOINT": "/api/v3.4/detections/open",
+    "DETECTION_TAG_ENDPOINT": "/api/v3.3/tagging/detection/{}",
 }
 USER_AGENT = f"VectraXDR-XSOAR-{PACK_VERSION}"
 PAGE_SIZE = 200
@@ -98,6 +102,8 @@ ENTITY_IMPORTANCE = {"low": 0, "medium": 1, "high": 2}
 ENTITY_IMPORTANCE_LABEL = {0: "Low", 1: "Medium", 2: "High"}
 SEVERITY = {"low": 1, "medium": 2, "high": 3, "critical": 4}
 MIRROR_DIRECTION = {"Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
+TAGS_REGEX = re.compile(r"^[\w:._ -]+$", re.U)
+
 
 """ CLIENT CLASS """
 
@@ -153,7 +159,7 @@ class VectraClient(BaseClient):
         """
         # Set the headers for the request, including the User-Agent and Authorization.
         headers = {"User-Agent": USER_AGENT, "Authorization": f"Bearer {self._token}"}
-        demisto.debug(f"Making API request at {method} {url_suffix} with params:{params} and body:{data or json_data}")
+        demisto.debug(f"Making API request at {method} {url_suffix} with params: {params} and body: {data or json_data}")
         # Make the HTTP request using the _http_request method, passing the necessary parameters.
         res = self._http_request(
             method=method,
@@ -294,6 +300,7 @@ class VectraClient(BaseClient):
         tags: str = None,
         ordering: str = None,
         state: str = "active",
+        name: str = None,
     ) -> dict:
         """List entities.
 
@@ -308,6 +315,7 @@ class VectraClient(BaseClient):
             tags (str): Filter entities by tags (default: None).
             ordering (str): Specify the ordering of the entities (default: None).
             state (str): Filter entities by state (default: 'active').
+            name (str): Filter entities by name (default: None).
 
         Returns:
             Dict: Response from the API containing the list of entities.
@@ -322,6 +330,7 @@ class VectraClient(BaseClient):
             tags=tags,
             state=state,
             ordering=ordering,
+            name=name,
         )
         entities = self.http_request(method="GET", url_suffix=ENDPOINTS["ENTITY_ENDPOINT"], params=params, response_type="json")
         return entities
@@ -347,6 +356,7 @@ class VectraClient(BaseClient):
         detection_category: str = None,
         detection_type: str = None,
         entity_id: int = None,
+        entity_type: str = None,
         page: int = None,
         page_size: int = None,
         last_timestamp: Optional[datetime] = None,
@@ -362,6 +372,7 @@ class VectraClient(BaseClient):
             detection_category (str, optional): Filter by detection category.
             detection_type (str, optional): Filter by detection type.
             entity_id (int, optional): Filter by entity ID.
+            entity_type (str, optional): Filter by entity type.
             page (int, optional): Page number of the results.
             page_size (int, optional): Number of results per page.
             last_timestamp (str, optional): Filter by last timestamp greater than or equal to the provided value.
@@ -377,6 +388,7 @@ class VectraClient(BaseClient):
             detection_category=detection_category,
             detection_type=detection_type,
             entity_id=entity_id,
+            type=entity_type,
             page=page,
             page_size=page_size,
             last_timestamp_gte=last_timestamp,
@@ -772,6 +784,77 @@ class VectraClient(BaseClient):
             method="PATCH", url_suffix="{}/{}".format(ENDPOINTS["GROUP_ENDPOINT"], group_id), json_data=body, response_type="json"
         )
         return group
+
+    def close_detections_request(self, detection_ids: List[str], reason: str) -> dict:
+        """
+        Close detections with a specific reason.
+
+        Args:
+            detection_ids (List[str]): List of detection IDs to close.
+            reason (str): The close reason (benign or remediated).
+
+        Returns:
+            Dict: Response from the API.
+
+        Raises:
+            ValueError: If detection_ids is empty or reason is invalid.
+        """
+        data = {"detectionIdList": detection_ids, "reason": reason}
+        res = self.http_request(
+            method="PATCH", url_suffix=ENDPOINTS["DETECTION_CLOSE_ENDPOINT"], json_data=data, response_type="json"
+        )
+        return res
+
+    def open_detections_request(self, detection_ids: List[str]) -> dict:
+        """
+        Open detections with provided detection IDs.
+
+        Args:
+            detection_ids (List[str]): List of detection IDs to open.
+
+        Returns:
+            Dict: Response from the API.
+        """
+        data = {"detectionIdList": detection_ids}
+        res = self.http_request(
+            method="PATCH", url_suffix=ENDPOINTS["DETECTION_OPEN_ENDPOINT"], json_data=data, response_type="json"
+        )
+        return res
+
+    def list_detection_tags_request(self, detection_id: int) -> dict:
+        """
+        List tags for the specified detection.
+
+        Args:
+            detection_id (int): The ID of the detection to list tags for.
+
+        Returns:
+            Dict: Response from the API containing the tags.
+        """
+        res = self.http_request(
+            method="GET", url_suffix=ENDPOINTS["DETECTION_TAG_ENDPOINT"].format(detection_id), response_type="json"
+        )
+        return res
+
+    def update_detection_tags_request(self, detection_id: int = None, tags: List = None) -> dict:
+        """
+        Update tags to a detection.
+
+        Args:
+            detection_id (int): The ID of the detection to add the tags to.
+            tags (List): Tags to set for detection.
+
+        Returns:
+            Dict: Response from the API containing the updated tags.
+        """
+        data = {"tags": tags}
+        res = self.http_request(
+            method="PATCH",
+            url_suffix=ENDPOINTS["DETECTION_TAG_ENDPOINT"].format(detection_id),
+            json_data=data,
+            response_type="json",
+        )
+        return res
 
 
 """ HELPER FUNCTIONS """
@@ -1933,6 +2016,140 @@ def get_group_unassign_and_assign_command_hr(group: dict, changed_members: List,
     return human_readable
 
 
+def add_refetch_id_to_integration_context(entity_id: str, entity_type: str):
+    """
+    Adds the entity ID and type to the integration context.
+
+    Args:
+        entity_id (str): The ID of the entity.
+        entity_type (str): The type of the entity.
+    """
+    if not entity_id or not entity_type:
+        raise ValueError("Both 'entity_id' and 'entity_type' arguments are required.")
+
+    if entity_type not in VALID_ENTITY_TYPE:
+        raise ValueError(ERRORS["INVALID_COMMAND_ARG_VALUE"].format("entity_type", ", ".join(VALID_ENTITY_TYPE)))
+
+    # Get current integration context
+    integration_context = get_integration_context()
+
+    # Initialize refetch_ids if it doesn't exist
+    if "refetch_ids" not in integration_context:
+        integration_context["refetch_ids"] = []
+
+    # Create the refetch entry
+    refetch_entry = f"{entity_id}-{entity_type}"
+
+    demisto.debug(f"Adding entity id to the integration context: {refetch_entry}")
+
+    # Add to refetch list if not already present
+    if refetch_entry not in integration_context["refetch_ids"]:
+        integration_context["refetch_ids"].append(refetch_entry)
+
+        # Update integration context
+        set_integration_context(integration_context)
+
+    demisto.debug(f"Updated entity ids list in the integration context: {integration_context['refetch_ids']}")
+
+
+def validate_entity_detections_mark_asclosed_command_args(args: dict[str, Any]):
+    """
+    Validate the arguments provided for marking entity detections as closed.
+
+    Args:
+        args (Dict): A dictionary containing the arguments for marking entity detections as closed.
+
+    Raises:
+        ValueError: If the provided entity_id is not a positive integer.
+        ValueError: If the entity_type is missing or not one of the valid types.
+        ValueError: If the close_reason is missing or not one of the valid values.
+    """
+    entity_id = args.get("entity_id")
+    entity_type = args.get("entity_type")
+    close_reason = args.get("close_reason")
+
+    validate_positive_integer_arg(entity_id, arg_name="entity_id", required=True)
+
+    if not entity_type:
+        raise ValueError(ERRORS["REQUIRED_ARGUMENT"].format("entity_type"))
+    if entity_type and entity_type.lower() not in VALID_ENTITY_TYPE:
+        raise ValueError(ERRORS["INVALID_COMMAND_ARG_VALUE"].format("entity_type", ", ".join(VALID_ENTITY_TYPE)))
+
+    if not close_reason:
+        raise ValueError(ERRORS["REQUIRED_ARGUMENT"].format("close_reason"))
+    if close_reason and close_reason.lower() not in VALID_CLOSE_REASON:
+        raise ValueError(ERRORS["INVALID_COMMAND_ARG_VALUE"].format("close_reason", ", ".join(VALID_CLOSE_REASON)))
+
+
+def validate_detections_mark_asclosed_args(args: Dict[str, Any]):
+    """
+    Validate the arguments for marking detections as closed.
+
+    Args:
+        args (Dict[str, Any]): The arguments for marking detections as closed.
+        close_reason (str): The close reason.
+
+    Raises:
+        ValueError: If the detection IDs are empty or contain invalid values.
+        ValueError: If the close_reason is missing or not one of the valid values.
+    """
+    detection_ids = args.get("detection_ids")
+    close_reason = args.get("close_reason", "").lower()
+
+    # Convert string into list
+    detection_ids = argToList(detection_ids)
+
+    # Validate detection_ids
+    if not detection_ids:
+        raise ValueError(ERRORS["REQUIRED_ARGUMENT"].format("detection_ids"))
+    all(validate_positive_integer_arg(detection_id, arg_name="detection_ids") for detection_id in detection_ids)
+
+    # Validate close_reason
+    if not close_reason:
+        raise ValueError(ERRORS["REQUIRED_ARGUMENT"].format("close_reason"))
+    if close_reason and close_reason.lower() not in VALID_CLOSE_REASON:
+        raise ValueError(ERRORS["INVALID_COMMAND_ARG_VALUE"].format("close_reason", ", ".join(VALID_CLOSE_REASON)))
+
+
+def validate_detection_tag_add_command_args(args: dict[Any, Any]):
+    """
+    Validates the arguments provided for the detection tag add command.
+
+    Args:
+        args (dict[Any, Any]): The arguments dictionary.
+
+    Raises:
+        ValueError: If any of the arguments are invalid.
+    """
+    detection_id = args.get("detection_id")
+    # Validate detection_id value
+    validate_positive_integer_arg(detection_id, arg_name="detection_id", required=True)
+    tags = argToList(args.get("tags", ""))
+    valid_tags = [tag.strip() for tag in tags if isinstance(tag, str) and tag.strip()]
+    # Validate Tags value
+    if not valid_tags:
+        raise ValueError(ERRORS["REQUIRED_ARGUMENT"].format("tags"))
+
+
+def get_valid_and_dropped_tags(tags: list[str]) -> tuple[list[str], list[str]]:
+    """
+    Return (valid_tags, dropped_tags) using TAG_REGEX.fullmatch().
+
+    Note: does not strip/mutate inputs. If you want trimming, do it before calling.
+    """
+    valid: list[str] = []
+    invalid: list[str] = []
+    for t in tags:
+        if TAGS_REGEX.fullmatch(t):
+            valid.append(t)
+        else:
+            invalid.append(t)
+    if invalid:
+        demisto.debug(f"Dropping invalid tags which contains invalid characters: {invalid}")
+    demisto.debug(f"Provided Valid tags(s): {valid}")
+    return valid, invalid
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -2046,6 +2263,25 @@ def fetch_incidents(client: VectraClient, params: dict[str, Any]) -> List:
     # Retrieve the already fetched IDs from the last run
     already_fetched = last_run.get("already_fetched", [])
 
+    # Get the refetch IDs from the integration context
+    integration_context = get_integration_context()
+    refetch_ids = integration_context.get("refetch_ids", [])
+
+    # Remove refetch IDs from already_fetched and create the removed_ids list
+    removed_ids = []
+    for refetch_id in refetch_ids:
+        if refetch_id in already_fetched:
+            removed_ids.append(refetch_id)
+            already_fetched.remove(refetch_id)
+
+    demisto.debug(f"Removed closed entity ids from last run checkpoint: {removed_ids}")
+
+    # Update integration context with empty refetch_ids
+    integration_context["refetch_ids"] = []
+
+    # Set the updated integration context
+    set_integration_context(integration_context)
+
     # Extract the IDs to check from the current response
     ids_to_check = [f"{item['id']}-{item['type']}" for item in response["results"]]
 
@@ -2064,10 +2300,13 @@ def fetch_incidents(client: VectraClient, params: dict[str, Any]) -> List:
 
             # Check if the entity has detections
             if len(detection_set) != 0:
-                detections_ids = ",".join([url.split("/")[-1] for url in detection_set])
                 # Fetch detections data using detections API call
+                # Used entity_id and entity_type to list detections
                 detections_data = client.list_detections_request(
-                    detection_type=detection_type, detection_category=detection_category, ids=detections_ids
+                    detection_type=detection_type,
+                    detection_category=detection_category,
+                    entity_id=entity_id,
+                    entity_type=entity_type,
                 )
                 detections = detections_data.get("results", [])
                 # Add detection details to the entity
@@ -2192,6 +2431,7 @@ def vectra_entity_list_command(client: VectraClient, args: dict[str, Any]):
         prioritized = argToBoolean(prioritized)
     state = args.get("state", "")
     tags = args.get("tags", "")
+    name = args.get("name", "")
 
     # Call Vectra API to retrieve entities
     response = client.list_entities_request(
@@ -2204,6 +2444,7 @@ def vectra_entity_list_command(client: VectraClient, args: dict[str, Any]):
         is_prioritized=prioritized,
         state=state,
         tags=tags,
+        name=name,
     )
     count = response.get("count")
     if count == 0:
@@ -2307,9 +2548,8 @@ def vectra_entity_detection_list_command(client: VectraClient, args: dict[str, A
             readable_output="##### Couldn't find any matching detections for provided entity ID and type.",
             raw_response={},
         )
-    # Call Vectra API to retrieve entities
+    # Used entity_id and entity_type to list detections
     response = client.list_detections_request(
-        ids=detections_ids,
         page=page,
         page_size=page_size,
         detection_category=detection_category,
@@ -2318,6 +2558,8 @@ def vectra_entity_detection_list_command(client: VectraClient, args: dict[str, A
         last_timestamp=last_timestamp,
         state=state,
         tags=tags,
+        entity_id=entity_id,
+        entity_type=entity_type,
     )
     count = response.get("count", 0)
     if count == 0:
@@ -2481,7 +2723,12 @@ def vectra_entity_note_update_command(client: VectraClient, args: dict[str, Any]
     note_id = arg_to_number(args.get("note_id"), arg_name="note_id", required=True)
 
     # Call Vectra API to update entity note
-    notes = client.update_entity_note_request(entity_id=entity_id, entity_type=entity_type, note=note, note_id=note_id)  # type: ignore
+    notes = client.update_entity_note_request(
+        entity_id=entity_id,  # type: ignore
+        entity_type=entity_type,  # type: ignore
+        note=note,  # type: ignore
+        note_id=note_id,  # type: ignore
+    )
     if notes:
         notes["note_id"] = notes["id"]
         notes.update({"entity_id": entity_id, "entity_type": entity_type})
@@ -2515,7 +2762,11 @@ def vectra_entity_note_remove_command(client: VectraClient, args: dict[str, Any]
     note_id = arg_to_number(args.get("note_id"), arg_name="note_id", required=True)
 
     # Call Vectra API to remove note
-    response = client.remove_entity_note_request(entity_id=entity_id, entity_type=entity_type, note_id=note_id)  # type: ignore
+    response = client.remove_entity_note_request(
+        entity_id=entity_id,  # type: ignore
+        entity_type=entity_type,  # type: ignore
+        note_id=note_id,  # type: ignore
+    )
     if response.status_code == 204:
         human_readable = "##### The note has been successfully removed from the entity."
     else:
@@ -2571,7 +2822,7 @@ def vectra_entity_tag_add_command(client: VectraClient, args: dict[str, Any]):
     if tags_resp and isinstance(tags_resp, list):
         tags_resp = [tag.strip() for tag in tags_resp if isinstance(tag, str) and tag.strip()]
         if tags_resp:
-            tags_resp = f'**{"**, **".join(tags_resp)}**'
+            tags_resp = f"**{'**, **'.join(tags_resp)}**"
             human_readable += f"\nUpdated list of tags: {tags_resp}"
 
     res["entity_type"] = entity_type
@@ -2637,7 +2888,7 @@ def vectra_entity_tag_remove_command(client: VectraClient, args: dict[str, Any])
     if tags_resp and isinstance(tags_resp, list):
         tags_resp = [tag.strip() for tag in tags_resp if isinstance(tag, str) and tag.strip()]
         if tags_resp:
-            tags_resp = f'**{"**, **".join(tags_resp)}**'
+            tags_resp = f"**{'**, **'.join(tags_resp)}**"
             human_readable += f"\nUpdated list of tags: {tags_resp}"
 
     res["entity_type"] = entity_type
@@ -2687,7 +2938,7 @@ def vectra_entity_tag_list_command(client: VectraClient, args: dict[str, Any]):
     if tags_resp and isinstance(tags_resp, list):
         tags_resp = [tag.strip() for tag in tags_resp if isinstance(tag, str) and tag.strip()]
         if tags_resp:
-            tags_resp = f'**{"**, **".join(tags_resp)}**'
+            tags_resp = f"**{'**, **'.join(tags_resp)}**"
             human_readable = f"##### List of tags: {tags_resp}"
 
     existing_tag_res["entity_type"] = entity_type
@@ -3070,8 +3321,9 @@ def vectra_entity_detections_mark_fixed_command(client: VectraClient, args: dict
     detection_set = response.get("detection_set")
     detection_ids = [url.split("/")[-1] for url in detection_set] if detection_set else ""
 
+    hr_string = f"There are no detections to mark as fixed for this entity ID:{entity_id}."
     if not detection_ids:
-        return CommandResults(readable_output=f"There are no detections to mark as fixed for this entity ID:{entity_id}.")
+        return CommandResults(readable_output=hr_string)
 
     # Call Vectra API to mark detection as fixed
     res = client.mark_or_unmark_detection_fixed_request(detection_ids=detection_ids, mark="True")  # type: ignore
@@ -3083,8 +3335,7 @@ def vectra_entity_detections_mark_fixed_command(client: VectraClient, args: dict
         == "Successfully marked detections"
     ):
         human_readable = (
-            f"##### The detections ({', '.join(detection_ids)}) of the provided entity ID have been "
-            f"successfully marked as fixed."
+            f"##### The detections ({', '.join(detection_ids)}) of the provided entity ID have been successfully marked as fixed."
         )
     else:
         raise DemistoException("Something went wrong.")
@@ -3199,7 +3450,8 @@ def vectra_group_unassign_command(client: VectraClient, args: dict[str, Any]):
         updated_members = ids
     if not removed_members:
         members_list = [re.escape(member) for member in members_list]
-        return CommandResults(readable_output=f"##### Member(s) {', '.join(members_list)} do not exist in the group.")
+        hr_string = f"##### Member(s) {', '.join(members_list)} do not exist in the group."
+        return CommandResults(readable_output=hr_string)
     # Call Vectra API to unassign members in group
     res = client.update_group_members_request(group_id=group_id, members=updated_members)
     updated_group = remove_empty_elements(res)
@@ -3278,6 +3530,309 @@ def vectra_group_assign_command(client: VectraClient, args: dict[str, Any]):
     )
 
 
+def vectra_entity_detections_mark_asclosed_command(client: VectraClient, args: dict[str, Any]):
+    """
+    Mark the provided entity detections as closed.
+
+    Args:
+        client (VectraClient): An instance of the VectraClient class.
+        args (Dict[str, Any]): The command arguments.
+
+    Raises:
+        ValueError: If entity_id, entity_type, or close_reason arguments are missing or invalid.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    validate_entity_detections_mark_asclosed_command_args(args)
+    # Get function arguments
+    entity_id = args.get("entity_id")
+    entity_type = args.get("entity_type", "").lower()
+    close_reason = args.get("close_reason", "").lower()
+
+    # Get entity details to retrieve detection IDs
+    response = client.get_entity_request(entity_id=entity_id, entity_type=entity_type)
+    detection_set = response.get("detection_set")
+    detection_ids = [url.split("/")[-1] for url in detection_set] if detection_set else []
+
+    hr_string = f"There are no active detections to mark as closed for this entity ID: {entity_id}."
+    if not detection_ids:
+        return CommandResults(readable_output=hr_string)
+
+    # Call Vectra API to close detections
+    res = client.close_detections_request(detection_ids=detection_ids, reason=close_reason)
+    res_message = res.get("_meta", {}).get("message", "")
+    if res.get("_meta", {}).get("level").lower() == "success" and "successfully closed detections" in res_message.lower():
+        human_readable = (
+            f"##### The detections ({', '.join(detection_ids)}) of the provided entity ID have been"
+            f" successfully closed as {close_reason}."
+        )
+    else:
+        message = "Something went wrong."
+        if res_message:
+            message += f" Message: {res_message}."
+        raise DemistoException(message)
+
+    return CommandResults(readable_output=human_readable)
+
+
+def vectra_detections_mark_asclosed_command(client: VectraClient, args: dict[str, Any]):
+    """
+    Mark the provided detection IDs as closed.
+
+    Args:
+        client (VectraClient): An instance of the VectraClient class.
+        args (Dict[str, Any]): The command arguments.
+
+    Raises:
+        ValueError: If detection_ids or close_reason arguments are missing or invalid.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    # Validate arguments
+    validate_detections_mark_asclosed_args(args)
+
+    # Get function arguments
+    detection_ids = args.get("detection_ids")
+    close_reason = args.get("close_reason", "").lower()
+
+    # Convert string into list
+    detection_ids_list = argToList(detection_ids)
+
+    # Call Vectra API to close detections
+    res = client.close_detections_request(detection_ids=detection_ids_list, reason=close_reason)
+
+    res_message = res.get("_meta", {}).get("message", "")
+    if res.get("_meta", {}).get("level", "").lower() == "success" and "successfully closed detections" in res_message.lower():
+        human_readable = f"##### The provided detection IDs have been successfully closed as {close_reason}."
+    else:
+        message = "Something went wrong."
+        if res_message:
+            message += f" Message: {res_message}."
+        raise DemistoException(message)
+
+    return CommandResults(readable_output=human_readable)
+
+
+def vectra_detections_mark_asopen_command(client: VectraClient, args: dict[str, Any]):
+    """
+    Open detection with provided detection IDs.
+
+    Args:
+        client (VectraClient): An instance of the VectraClient class.
+        args (Dict[str, Any]): The command arguments.
+
+    Raises:
+        ValueError: If detection_ids argument is missing or empty.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    # Get function arguments
+    detection_ids = args.get("detection_ids")
+    # Convert string into list
+    detection_ids_list = argToList(detection_ids)
+
+    # Validate detection_ids
+    if not detection_ids_list:
+        raise ValueError(ERRORS["REQUIRED_ARGUMENT"].format("detection_ids"))
+    all(validate_positive_integer_arg(detection_id, arg_name="detection_ids") for detection_id in detection_ids_list)
+
+    # Call Vectra API to open detections
+    res = client.open_detections_request(detection_ids_list)
+
+    res_message = res.get("_meta", {}).get("message", "")
+    if res.get("_meta", {}).get("level", "").lower() == "success" and "successfully re-opened detections" in res_message.lower():
+        human_readable = "##### The provided detection IDs have been successfully re-opened."
+    else:
+        message = "Something went wrong."
+        if res_message:
+            message += f" Message: {res_message}."
+        raise DemistoException(message)
+
+    return CommandResults(readable_output=human_readable)
+
+
+def vectra_detection_tag_list_command(client: VectraClient, args: dict[str, Any]):
+    """
+    List tags for a detection.
+
+    Args:
+        client (VectraClient): An instance of the VectraClient class.
+        args (Dict[str, Any]): The command arguments provided by the user.
+
+    Returns:
+        CommandResults: The command results containing the outputs, readable output, raw response, and outputs key field.
+    """
+    detection_id = args.get("detection_id")
+    # Validate detection_id value
+    validate_positive_integer_arg(detection_id, arg_name="detection_id", required=True)
+
+    # Get function arguments
+    detection_id = arg_to_number(detection_id)
+
+    # Call Vectra API to get existing detection tags
+    existing_tag_res = client.list_detection_tags_request(detection_id=detection_id)  # type: ignore
+    existing_tag_res_status = existing_tag_res.get("status", "")
+    if (
+        not existing_tag_res_status
+        or not isinstance(existing_tag_res_status, str)
+        or existing_tag_res_status.lower() != "success"
+    ):
+        message = "Something went wrong."
+        if existing_tag_res.get("message"):
+            message += f" Message: {existing_tag_res.get('message')}."
+        raise DemistoException(message)
+
+    tags_resp = existing_tag_res.get("tags", [])
+
+    human_readable = "##### No tags were found for the given detection ID."
+
+    if tags_resp and isinstance(tags_resp, list):
+        tags_resp = [tag.strip() for tag in tags_resp if isinstance(tag, str) and tag.strip()]
+        if tags_resp:
+            tags_resp_formatted = f"**{', '.join(tags_resp)}**"
+            human_readable = f"##### List of tags: {tags_resp_formatted}"
+
+    existing_tag_res["detection_id"] = detection_id
+    del existing_tag_res["status"]
+
+    return CommandResults(
+        outputs_prefix="Vectra.Detection.Tags",
+        outputs=createContext(remove_empty_elements(existing_tag_res)),
+        readable_output=human_readable,
+        raw_response=existing_tag_res,
+        outputs_key_field=["tag_id", "detection_id"],
+    )
+
+
+def vectra_detection_tag_add_command(client: VectraClient, args: dict[str, Any]):
+    """
+    Add tags to a detection.
+
+    Args:
+        client (VectraClient): An instance of the VectraClient class.
+        args (Dict[str, Any]): The command arguments provided by the user.
+
+    Returns:
+        CommandResults: The command results containing the outputs, readable output, raw response, and outputs key field.
+    """
+    validate_detection_tag_add_command_args(args)
+    # Get function arguments
+    detection_id = arg_to_number(args.get("detection_id"), arg_name="detection_id", required=True)
+    tags = [tag.strip() for tag in argToList(args.get("tags", "")) if isinstance(tag, str) and tag.strip()]
+
+    existing_tag_res = client.list_detection_tags_request(detection_id=detection_id)  # type: ignore
+    existing_tag_res_status = existing_tag_res.get("status", "")
+    if (
+        not existing_tag_res_status
+        or not isinstance(existing_tag_res_status, str)
+        or existing_tag_res_status.lower() != "success"
+    ):
+        message = "Something went wrong."
+        if existing_tag_res.get("message"):
+            message += f" Message: {existing_tag_res.get('message')}."
+        raise DemistoException(message)
+
+    tags_resp = existing_tag_res.get("tags", [])
+    tags = list(dict.fromkeys(tags_resp + tags))
+
+    res = existing_tag_res
+    if len(dict.fromkeys(tags_resp)) != len(tags):
+        # Call Vectra API to add detection tags
+        res = client.update_detection_tags_request(detection_id=detection_id, tags=tags)  # type: ignore
+        res_status = res.get("status", "")
+        if not res_status or not isinstance(res_status, str) or res_status.lower() != "success":
+            message = "Something went wrong."
+            if res.get("message"):
+                message += f" Message: {res.get('message')}."
+            raise DemistoException(message)
+
+    human_readable = "##### Tags have been successfully added to the detection."
+    tags_resp = res.get("tags", [])
+    if tags_resp and isinstance(tags_resp, list):
+        tags_resp = [tag.strip() for tag in tags_resp if isinstance(tag, str) and tag.strip()]
+        if tags_resp:
+            tags_resp = f"**{'**, **'.join(tags_resp)}**"
+            human_readable += f"\nUpdated list of tags: {tags_resp}"
+
+    res["detection_id"] = detection_id
+    del res["status"]
+
+    return CommandResults(
+        outputs_prefix="Vectra.Detection.Tags",
+        outputs=createContext(remove_empty_elements(res)),
+        readable_output=human_readable,
+        raw_response=res,
+        outputs_key_field=["tag_id", "detection_id"],
+    )
+
+
+def vectra_detection_tag_remove_command(client: VectraClient, args: dict[str, Any]):
+    """
+    Removes associated tags for the specified detection using Vectra API.
+
+    Args:
+        client (VectraClient): An instance of the VectraClient class.
+        args (Dict[str, Any]): The command arguments provided by the user.
+
+    Returns:
+        CommandResults: The command results containing the outputs, readable output, raw response, and outputs key field.
+    """
+    validate_detection_tag_add_command_args(args)
+    # Get function arguments
+    detection_id = arg_to_number(args.get("detection_id"), arg_name="detection_id", required=True)
+    input_tags = [tag.strip() for tag in argToList(args.get("tags", "")) if isinstance(tag, str) and tag.strip()]
+
+    # Call Vectra API to get existing detection tags
+    existing_tag_res = client.list_detection_tags_request(detection_id=detection_id)  # type: ignore
+    existing_tag_res_status = existing_tag_res.get("status", "")
+    if (
+        not existing_tag_res_status
+        or not isinstance(existing_tag_res_status, str)
+        or existing_tag_res_status.lower() != "success"
+    ):
+        message = "Something went wrong."
+        if existing_tag_res.get("message"):
+            message += f" Message: {existing_tag_res.get('message')}."
+        raise DemistoException(message)
+    tags_resp = existing_tag_res.get("tags", [])
+    # Filtering set of tags from existing tags response with the provide set of input tags
+    updated_tags = [tag.strip() for tag in tags_resp if tag.strip() not in input_tags]
+
+    res = existing_tag_res
+    # Only update tags if there is any update required with the specified tags
+    if len(dict.fromkeys(tags_resp)) != len(updated_tags):
+        # Call Vectra API to update detection tags
+        res = client.update_detection_tags_request(detection_id=detection_id, tags=updated_tags)  # type: ignore
+        res_status = res.get("status", "")
+        if not res_status or not isinstance(res_status, str) or res_status.lower() != "success":
+            message = "Something went wrong."
+            if res.get("message"):
+                message += f" Message: {res.get('message')}."
+            raise DemistoException(message)
+
+    human_readable = "##### Specified tags have been successfully removed for the detection."
+    tags_resp = res.get("tags", [])
+    if tags_resp and isinstance(tags_resp, list):
+        tags_resp = [tag.strip() for tag in tags_resp if isinstance(tag, str) and tag.strip()]
+        if tags_resp:
+            tags_resp = f"**{'**, **'.join(tags_resp)}**"
+            human_readable += f"\nUpdated list of tags: {tags_resp}"
+
+    res["detection_id"] = detection_id
+    del res["status"]
+
+    return CommandResults(
+        outputs_prefix="Vectra.Detection.Tags",
+        outputs=createContext(remove_empty_elements(res)),
+        readable_output=human_readable,
+        raw_response=res,
+        outputs_key_field=["tag_id", "detection_id"],
+    )
+
+
 def test_module(client: VectraClient) -> str:
     """
     Tests the connection to the Vectra server.
@@ -3307,7 +3862,10 @@ def get_modified_remote_data_command(client: VectraClient, args: dict) -> GetMod
         GetModifiedRemoteDataResponse: List of incidents IDs which are modified since the last update.
     """
     command_args = GetModifiedRemoteDataArgs(args)
-    command_last_run_date = dateparser.parse(command_args.last_update, settings={"TIMEZONE": "UTC"}).strftime(DATE_FORMAT)  # type: ignore
+    command_last_run_date = dateparser.parse(
+        command_args.last_update,  # type: ignore
+        settings={"TIMEZONE": "UTC"},  # type: ignore
+    ).strftime(DATE_FORMAT)
     modified_entities_ids = []
 
     demisto.debug(f"Last update date of get-modified-remote-data command is {command_last_run_date}.")
@@ -3321,7 +3879,7 @@ def get_modified_remote_data_command(client: VectraClient, args: dict) -> GetMod
             # Extract the query parameters
             query_params = parse_qs(parsed_url.query)
             page = arg_to_number(query_params.get("page", [""])[0], arg_name="page")  # type: ignore
-            page_size = arg_to_number(query_params.get("page_size", [""])[0], arg_name="page_size")  # type: ignore [assignment]
+            page_size = arg_to_number(query_params.get("page_size", [""])[0], arg_name="page_size")  # type: ignore
             command_last_run_date = query_params.get("last_modified_timestamp_gte", [""])[0]
 
         try:
@@ -3368,7 +3926,7 @@ def get_modified_remote_data_command(client: VectraClient, args: dict) -> GetMod
     return GetModifiedRemoteDataResponse(modified_incident_ids=updated_incident_ids)
 
 
-def get_remote_data_command(client: VectraClient, args: dict) -> GetRemoteDataResponse:
+def get_remote_data_command(client: VectraClient, args: dict, params: dict) -> GetRemoteDataResponse:
     """
     Get remote data for a specific entity from the Vectra platform and prepare it for mirroring in XSOAR.
 
@@ -3377,6 +3935,7 @@ def get_remote_data_command(client: VectraClient, args: dict) -> GetRemoteDataRe
         args (Dict): A dictionary containing the arguments for retrieving remote data.
             - id (str): The ID of the entity to retrieve.
             - lastUpdate (str): The timestamp of the last update received for this entity.
+        params (Dict): A dictionary containing the parameters required for updating the remote system.
 
     Returns:
         GetRemoteDataResponse: An object containing the remote incident data and any new entries to return to XSOAR.
@@ -3405,7 +3964,6 @@ def get_remote_data_command(client: VectraClient, args: dict) -> GetRemoteDataRe
     detection_set = remote_incident_data.get("detection_set", [])
 
     entity_urgency_score = remote_incident_data.get("urgency_score")
-    params = demisto.params()
 
     # Calculate severity based on urgency score using the urgency_score_to_severity function.
     severity = urgency_score_to_severity(entity_urgency_score, params)  # type: ignore
@@ -3413,10 +3971,13 @@ def get_remote_data_command(client: VectraClient, args: dict) -> GetRemoteDataRe
     remote_incident_data["urgency_score_based_severity"] = severity
 
     # Collect the detections if the detection set is not empty.
+    # Used entity_id and entity_type to list detections
     if len(detection_set) != 0:
-        detections_ids = ",".join([url.split("/")[-1] for url in detection_set])
         detections_data = client.list_detections_request(
-            detection_type=params.get("detection_type"), detection_category=params.get("detection_category"), ids=detections_ids
+            detection_type=params.get("detection_type"),  # type: ignore
+            detection_category=params.get("detection_category"),  # type: ignore
+            entity_id=int(vectra_entity_id),  # type: ignore
+            entity_type=vectra_entity_type,
         )
         detections = detections_data.get("results", [])
     else:
@@ -3447,7 +4008,7 @@ def get_remote_data_command(client: VectraClient, args: dict) -> GetRemoteDataRe
         demisto.debug(f"Nothing new in the Vectra entity {entity_id_type}.")
     else:
         demisto.debug(f"The Vectra entity {entity_id_type} is updated.")
-        if detections:
+        if detections and not argToBoolean(params.get("refetch_closed_incidents", False)):
             reopen_in_xsoar(new_entries_to_return, entity_id_type)
 
     notes = remote_incident_data.get("notes")
@@ -3472,10 +4033,10 @@ def get_remote_data_command(client: VectraClient, args: dict) -> GetRemoteDataRe
             new_entries_to_return.append(
                 {
                     "Type": EntryType.NOTE,
-                    "Contents": f'[Mirrored From Vectra]\n'
-                    f'Added By: {note.get("created_by")}\n'
-                    f'Added At: {note.get("date_created")} UTC\n'
-                    f'Note: {note.get("note")}',
+                    "Contents": f"[Mirrored From Vectra]\n"
+                    f"Added By: {note.get('created_by')}\n"
+                    f"Added At: {note.get('date_created')} UTC\n"
+                    f"Note: {note.get('note')}",
                     "ContentsFormat": EntryFormat.TEXT,
                     "Note": True,
                 }
@@ -3484,13 +4045,14 @@ def get_remote_data_command(client: VectraClient, args: dict) -> GetRemoteDataRe
     return GetRemoteDataResponse(remote_incident_data, new_entries_to_return)
 
 
-def update_remote_system_command(client: VectraClient, args: dict) -> str:
+def update_remote_system_command(client: VectraClient, args: dict, params: dict) -> str:
     """
     Update a remote system based on changes in the XSOAR incident.
 
     Args:
         client (VectraClient): An instance of the VectraClient class.
         args (Dict): A dictionary containing the arguments required for updating the remote system.
+        params (Dict): A dictionary containing the parameters required for updating the remote system.
 
     Returns:
         str: The ID of the updated remote entity.
@@ -3505,14 +4067,14 @@ def update_remote_system_command(client: VectraClient, args: dict) -> str:
     xsoar_incident_id = parsed_args.data.get("id", "")
     demisto.debug(f"XSOAR Incident ID: {xsoar_incident_id}")
     new_entries = parsed_args.entries
-    xsoar_tags: List = parsed_args.delta.get("tags", [])
+    xsoar_tags: List = parsed_args.delta.get("tags") or []
     remote_entity_type = parsed_args.data.get("vectraxdrentitytype", "").lower()
 
     # For notes
     if new_entries:
         for entry in new_entries:
             entry_id = entry.get("id")
-            demisto.debug(f'Sending the entry with ID: {entry_id} and Type: {entry.get("type")}')
+            demisto.debug(f"Sending the entry with ID: {entry_id} and Type: {entry.get('type')}")
             # Get note content and user
             entry_content = re.sub(r"([^\n])\n", r"\1\n\n", entry.get("contents", ""))
             if len(entry_content) > MAX_OUTGOING_NOTE_LIMIT:
@@ -3534,8 +4096,9 @@ def update_remote_system_command(client: VectraClient, args: dict) -> str:
 
     # For tags
     res = client.list_entity_tags_request(entity_id=mirror_entity_id, entity_type=remote_entity_type)
-    vectra_tags = res.get("tags")
+    vectra_tags = res.get("tags") or []
     if xsoar_tags:
+        xsoar_tags = get_valid_and_dropped_tags(xsoar_tags)[0]
         demisto.debug(f"Sending the tags: {xsoar_tags}")
         client.update_entity_tags_request(entity_id=mirror_entity_id, entity_type=remote_entity_type, tags=xsoar_tags)
     # Check if all tags from XSOAR removed
@@ -3549,6 +4112,9 @@ def update_remote_system_command(client: VectraClient, args: dict) -> str:
         close_notes = parsed_args.data.get("closeNotes", "")
         close_reason = parsed_args.data.get("closeReason", "")
         close_user_id = parsed_args.data.get("closingUserId", "")
+
+        if argToBoolean(params.get("refetch_closed_incidents", False)):
+            add_refetch_id_to_integration_context(mirror_entity_id, remote_entity_type)
 
         if len(close_notes) > MAX_OUTGOING_NOTE_LIMIT:
             demisto.info(
@@ -3606,6 +4172,12 @@ def main():
         "vectra-group-list": vectra_group_list_command,
         "vectra-group-assign": vectra_group_assign_command,
         "vectra-group-unassign": vectra_group_unassign_command,
+        "vectra-entity-detections-mark-asclosed": vectra_entity_detections_mark_asclosed_command,
+        "vectra-detections-mark-asclosed": vectra_detections_mark_asclosed_command,
+        "vectra-detections-mark-asopen": vectra_detections_mark_asopen_command,
+        "vectra-detection-tag-list": vectra_detection_tag_list_command,
+        "vectra-detection-tag-add": vectra_detection_tag_add_command,
+        "vectra-detection-tag-remove": vectra_detection_tag_remove_command,
     }
     try:
         result = None
@@ -3630,9 +4202,9 @@ def main():
         elif command == "get-modified-remote-data":
             result = get_modified_remote_data_command(client, args)  # type: ignore
         elif command == "get-remote-data":
-            result = get_remote_data_command(client, args)  # type: ignore
+            result = get_remote_data_command(client, args, params)  # type: ignore
         elif command == "update-remote-system":
-            result = update_remote_system_command(client, args)
+            result = update_remote_system_command(client, args, params)
         elif command in commands:
             # remove nulls from dictionary and trim space from args
             remove_nulls_from_dictionary(trim_spaces_from_args(args))

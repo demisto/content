@@ -2,8 +2,11 @@ category: IT Services
 commonfields:
   id: AWS - Lambda
   version: -1
+sectionorder:
+- Connect
 configuration:
 - display: AWS Default Region
+  section: Connect
   name: defaultRegion
   options:
   - us-east-1
@@ -30,49 +33,61 @@ configuration:
   name: roleArn
   type: 0
   required: false
+  section: Connect
 - display: Role Session Name
   name: roleSessionName
   type: 0
   required: false
+  section: Connect
 - display: Role Session Duration
   name: sessionDuration
   type: 0
   required: false
+  section: Connect
 - display: Access Key
   name: credentials
   type: 9
   displaypassword: Secret Key
   required: false
+  section: Connect
 - display: Access Key
   name: access_key
   type: 0
   hidden: true
   required: false
+  section: Connect
 - display: Secret Key
   name: secret_key
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: Timeout
   name: timeout
   defaultvalue: 60,10
   additionalinfo: "The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used. You may also override the value at the aws-lambda-invoke command."
   type: 0
   required: false
+  section: Connect
 - display: Retries
   name: retries
   type: 0
   defaultvalue: '5'
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. You may also override the value when executing the aws-lambda-invoke command."
   required: false
+  section: Connect
 - display: PrivateLink service URL.
   name: endpoint_url
   type: 0
   required: false
+  section: Connect
+  advanced: true
 - display: STS PrivateLink URL
   name: sts_endpoint_url
   type: 0
   required: false
+  section: Connect
+  advanced: true
 - display: AWS STS Regional Endpoints
   additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
   name: sts_regional_endpoint
@@ -87,11 +102,15 @@ configuration:
   type: 8
   required: false
   defaultvalue: "false"
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
   defaultvalue: "false"
+  section: Connect
+  advanced: true
 description: Amazon Web Services Serverless Compute service (lambda).
 display: AWS - Lambda
 name: AWS - Lambda

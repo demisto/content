@@ -75,16 +75,16 @@ class Client(BaseClient):
             config_ids: Unique identifier for each security configuration. To report on more than one configuration, separate
                       integer identifiers with semicolons, e.g. 12892;29182;82912.
             offset: This token denotes the last message. If specified, this operation fetches only security events that have
-                    occurred from offset. This is a required parameter for offset mode and you can’t use it in time-based
+                    occurred from offset. This is a required parameter for offset mode and you can't use it in time-based
                     requests.
             limit: Defines the approximate maximum number of security events each fetch returns, in both offset and
                    time-based modes. The default limit is 10000. Expect requests to return a slightly higher number of
                    security events than you set in the limit parameter, because data is stored in different buckets.
             from_epoch: The start of a specified time range, expressed in Unix epoch seconds.
-                        This is a required parameter to get time-based results for a set period, and you can’t use it in
+                        This is a required parameter to get time-based results for a set period, and you can't use it in
                         offset mode.
-            to_epoch: The end of a specified time range, expressed in Unix epoch seconds. You can’t use this parameter in
-                      offset mode and it’s an optional parameter in time-based mode. If omitted, the value defaults to the
+            to_epoch: The end of a specified time range, expressed in Unix epoch seconds. You can't use this parameter in
+                      offset mode and it's an optional parameter in time-based mode. If omitted, the value defaults to the
                       current time.
 
         Returns:
@@ -229,7 +229,7 @@ def date_format_converter(from_format: str, date_before: str, readable_format: s
 
 def decode_message(msg: str) -> Sequence[str | None]:
     """
-        Follow these steps for data members that appear within the event’s attackData section:
+        Follow these steps for data members that appear within the event's attackData section:
             1. If the member name is prefixed rule, URL-decode the value.
             2. The result is a series of base64-encoded chunks delimited with semicolons.
             3. Split the value at semicolon (;) characters.
@@ -419,15 +419,15 @@ def get_events_command(
         config_ids: Unique identifier for each security configuration. To report on more than one configuration, separate
                   integer identifiers with semicolons, e.g. 12892;29182;82912.
         offset: This token denotes the last message. If specified, this operation fetches only security events that have
-                occurred from offset. This is a required parameter for offset mode and you can’t use it in time-based requests.
+                occurred from offset. This is a required parameter for offset mode and you can't use it in time-based requests.
         limit: Defines the approximate maximum number of security events each fetch returns, in both offset and
                time-based modes. The default limit is 10000. Expect requests to return a slightly higher number of
                security events than you set in the limit parameter, because data is stored in different buckets.
         from_epoch: The start of a specified time range, expressed in Unix epoch seconds.
-                    This is a required parameter to get time-based results for a set time_stamp, and you can’t use it in
+                    This is a required parameter to get time-based results for a set time_stamp, and you can't use it in
                     offset mode.
-        to_epoch: The end of a specified time range, expressed in Unix epoch seconds. You can’t use this parameter in
-                  offset mode and it’s an optional parameter in time-based mode. If omitted, the value defaults to the
+        to_epoch: The end of a specified time range, expressed in Unix epoch seconds. You can't use this parameter in
+                  offset mode and it's an optional parameter in time-based mode. If omitted, the value defaults to the
                   current time.
         time_stamp: timestamp (<number> <time unit>, e.g., 12 hours, 7 days of events
 

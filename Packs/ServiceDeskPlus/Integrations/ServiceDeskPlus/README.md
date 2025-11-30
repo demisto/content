@@ -1,8 +1,8 @@
 IT Service Management
 
-## Configure ServiceDeskPlus on Cortex XSOAR
+## Configure ServiceDeskPlus in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. In Cortex XSOAR, navigate to **Settings** > **Integrations** > **Instances**. In Cortex XSIAM, navigate to **Settings** > **Automation & Feed Integrations**.
 2. Search for ServiceDeskPlus.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -12,10 +12,11 @@ To create an instance of the Service Desk Plus integration, you need to get a Cl
 Follow the next steps to create an instance:
 
 1. Select the data center in which your data resides.
-2. Register your app using [ZOHO App Registration](https://api-console.zoho.com). Make sure you copy the Client ID and Client Secret of the app to the Cortex XSOAR instance and click the **Done** button.
+2. Register the app using [ZOHO App Registration](https://api-console.zoho.com). Copy the **Client ID** and **Client Secret**, then paste them into the integration instance and click **Done**.
 3. In the registered app, select the **Generate Code** tab and define the scopes for the app.
-4. From the Cortex XSOAR CLI run the command `!service-desk-plus-generate-refresh-token` and paste the generated code into the code parameter.
-5. Copy the generated refresh token to the Cortex XSOAR instance and click the **Test** button to validate the instance.
+4. In the War Room or Playground, run the ***!service-desk-plus-generate-refresh-token*** command and paste the generated code into the **Refresh Token** parameter.
+5. Click the **Test** button to validate the instance.
+6. If the test is successful, click **Save** to save the instance.
 
 ## Instance Creation Flow for On-Premise
 
@@ -23,9 +24,10 @@ To create an instance of the Service Desk Plus integration, you need to get a On
 
 Follow the next steps to create an instance:
 
-1. Enter the On-Premise Server URL info.
-2. Enter the Technician Key.
+1. Enter the **On-Premise Server URL**.
+2. Enter the **Technician Key**.
 3. Click the **Test** button to validate the instance.
+4. If the test is successful, click **Save** to save the instance.
 
 **NOTES**
 
@@ -216,6 +218,7 @@ Create new requests
 | subject | Subject of this request | Required |
 | description | Description of this request | Optional |
 | request_type | Type of this request. Choose one of the listed options or provide a dictionary representing a request_type object. | Optional |
+| impact_details | Description about the impact of the request; must not exceed 250 characters. | Optional |
 | impact | Impact of this request. Choose one of the listed options or provide a dictionary representing an impact object. | Optional |
 | status | Indicates the current status of this request. Choose one of the listed options or provide a dictionary representing a status object. | Optional |
 | mode | The mode in which the request is created. Choose one of the listed options or provide a dictionary representing a mode object. | Optional |
@@ -260,7 +263,7 @@ Create new requests
 
 #### Command Example
 
-```!service-desk-plus-request-create subject="Create New Request" requester="{'name':'First Last'}"```
+```!service-desk-plus-request-create subject="Create New Request" requester="{'name':'First Last'}" impact_details="Workflow affected"```
 
 #### Context Example
 
@@ -290,6 +293,7 @@ Create new requests
             "HasProject": false,
             "HasRequestInitiatedChange": false,
             "Id": "123640000000276021",
+            "ImpactDetails": "Workflow affected",
             "IsEscalated": false,
             "IsFcr": false,
             "IsFirstResponseOverdue": false,

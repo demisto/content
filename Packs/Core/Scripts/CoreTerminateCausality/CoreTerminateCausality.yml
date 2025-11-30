@@ -1,0 +1,82 @@
+commonfields:
+  id: CoreTerminateCausality
+  version: -1
+name: CoreTerminateCausality
+script: ''
+type: python
+tags:
+- Utilities
+comment: A polling wrapper script; Terminate a process tree by its causality ID.
+enabled: true
+args:
+- description: The agent ID.
+  name: agent_id
+  isArray: false
+  required: true
+- description: The causality ID.
+  name: causality_id
+  isArray: true
+  required: true
+- description: The process name.
+  name: process_name
+  isArray: false
+  required: false
+- description: The incident ID.
+  name: incident_id
+  isArray: false
+  required: false
+outputs:
+- contextPath: Core.TerminateCausality.action_id
+  description: The action id.
+  type: String
+- contextPath: Core.GetActionStatus
+  description: The action status command results.
+  type: Unknown
+- contextPath: Core.GetActionStatus.endpoint_id
+  description: Endpoint ID.
+  type: string
+- contextPath: Core.GetActionStatus.status
+  description: The status of the specific endpoint ID.
+  type: string
+- contextPath: Core.GetActionStatus.action_id
+  description: The specified action ID.
+  type: number
+- contextPath: Core.GetActionStatus.ErrorReasons.bucket
+  description: The bucket in which the error occurred.
+  type: String
+- contextPath: Core.GetActionStatus.ErrorReasons.file_name
+  description: The name of the file that caused the error.
+  type: String
+- contextPath: Core.GetActionStatus.ErrorReasons.file_path
+  description: The path of the file that caused the error.
+  type: String
+- contextPath: Core.GetActionStatus.ErrorReasons.file_size
+  description: The size of the file that caused the error.
+  type: Number
+- contextPath: Core.GetActionStatus.ErrorReasons.missing_files
+  description: The missing files that caused the error.
+  type: Unknown
+- contextPath: Core.GetActionStatus.ErrorReasons.errorData
+  description: The error reason data.
+  type: String
+- contextPath: Core.GetActionStatus.ErrorReasons.terminated_by
+  description: The instance ID which terminated the action and caused the error.
+  type: String
+- contextPath: Core.GetActionStatus.ErrorReasons.errorDescription
+  description: The error reason description.
+  type: String
+- contextPath: Core.GetActionStatus.ErrorReasons.terminate_result
+  description: The error reason terminate result.
+  type: Unknown
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.11.4508456
+fromversion: 6.1.0
+isInternal: true
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform
+supportedModules:
+- agentix_xsiam
+- xsiam

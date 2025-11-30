@@ -32,7 +32,7 @@ Requirements:
 
 For any response action, you need the following integrations:
 - EWS Extension Online Powershell v3 integration.
-- Azure Active Directory Users.
+- Entra ID Users.
 
 ## Dependencies
 
@@ -40,32 +40,31 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Containment Plan - Clear User Sessions
-* PAN-OS - Block IP
+This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CoreIOCs
-* CortexCoreIR
-* CortexCoreXQLQueryEngine
-* EWSO365
+This playbook does not use any integrations.
 
 ### Scripts
 
 * AnyMatch
 * BetweenHours
+* IncreaseAlertSeverity
 * SetAndHandleEmpty
+* block-external-ip
+* clear-user-session
+* disable-user
+* domain-enrichment
+* get-user-data
+* ip-enrichment
 
 ### Commands
 
 * closeInvestigation
 * core-get-cloud-original-alerts
-* core-list-risky-users
-* domain
 * ews-mail-flow-rule-disable
 * ews-rule-disable
-* ip
-* msgraph-user-account-disable
 
 ## Playbook Inputs
 

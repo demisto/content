@@ -112,7 +112,8 @@ def main():  # pragma: no cover
     pollingCommand = args.get("pollingCommand")
     pollingCommandArgName = args.get("pollingCommandArgName")
     tag = args.get("tag")
-    playbookId = f' playbookId="{args.get("playbookId", "")}"'
+    if playbookId := args.get("playbookId", ""):
+        playbookId = f' playbookId="{playbookId}"'
 
     interval = int(args.get("interval"))
     timeout = int(args.get("timeout"))

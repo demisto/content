@@ -1,6 +1,6 @@
 category: Network Security
 deprecated: true
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:

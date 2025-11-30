@@ -25,6 +25,7 @@ The Create ServiceNow Ticket playbook provides an example for how to use the Mir
 
 - Audit
 - Syslog Transactions
+- Case
 
 ### Configure ServiceNow Event Collector on XSIAM Tenant
 
@@ -35,6 +36,15 @@ The Create ServiceNow Ticket playbook provides an example for how to use the Mir
 5. Insert your credentials (user name and password).
 6. Scroll down to the **Collect** section.
 7. Mark **Fetch Events** and select the desire event types to fetch (Audit and Syslog Transactions)
+
+#### Important
+
+To use ServiceNow on Cortex XSIAM, ensure your user account has the **rest_api_explorer** and **web_service_admin** roles.
+These roles are required to make API calls. To use the **Case** API endpoint, users must have one of the following roles:  
+
+- csm_ws_integration
+- sn_customerservice.customer
+- sn_customerservice.consumer
 
 ### For more information on ServiceNow platform
 

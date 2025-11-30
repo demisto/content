@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 jobs:
-  check_label_job:
+  check_partner_approved_label_job:
     runs-on: ubuntu-latest
     if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == true && contains(github.head_ref, 'xsoar-bot-contrib-ContributionTestPack') == false
     steps:

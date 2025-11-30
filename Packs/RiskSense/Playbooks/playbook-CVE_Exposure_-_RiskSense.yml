@@ -1,8 +1,7 @@
 id: CVE Exposure - RiskSense
 version: -1
 name: CVE Exposure - RiskSense
-description: Block IPs and apply the tag to assets that are vulnerable to the specified
-  CVE.
+description: Block IPs and apply the tag to assets that are vulnerable to the specified CVE.
 starttaskid: "0"
 tasks:
   "0":
@@ -40,8 +39,7 @@ tasks:
       id: 5c12e6b5-bebc-4667-845d-eeb7d826155a
       version: -1
       name: Is RiskSense enabled?
-      description: Returns 'yes' if RiskSense is enabled. Otherwise returns
-        'no'.
+      description: Returns 'yes' if RiskSense is enabled. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -77,8 +75,7 @@ tasks:
       id: e1a7f22d-c964-4537-80f8-c71c9ee58cd1
       version: -1
       name: Apply tag to found assets
-      description: Apply the new or existing tag to the asset, or creates a new tag if
-        the tag does not exist in RiskSense.
+      description: Apply the new or existing tag to the asset, or creates a new tag if the tag does not exist in RiskSense.
       script: '|||risksense-apply-tag'
       type: regular
       iscommand: true
@@ -156,9 +153,7 @@ tasks:
       id: 16aa966e-1fd7-45c8-8d54-1107fd958cdf
       version: -1
       name: Get open findings related to CVEs
-      description: A detailed host finding view with the severity level. Displays
-        vulnerability information like CVE, threats associated with current findings,
-        and origin of findings.
+      description: A detailed host finding view with the severity level. Displays vulnerability information like CVE, threats associated with current findings, and origin of findings.
       script: '|||risksense-get-host-findings'
       type: regular
       iscommand: true
@@ -301,9 +296,7 @@ tasks:
       id: ea128f99-f05a-47c6-8893-1c42fa831a2a
       version: -1
       name: Get asset information with owner
-      description: Gets details of the supplied host. The host details can be searched
-        based on input parameters like fieldname (Host Name, IP Address, Criticality,
-        etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by, and sort direction.
+      description: Gets details of the supplied host. The host details can be searched based on input parameters like fieldname (Host Name, IP Address, Criticality, etc), operator (EXACT, IN, LIKE, BETWEEN), page, size, sort by, and sort direction.
       script: '|||risksense-get-hosts'
       type: regular
       iscommand: true
@@ -357,8 +350,7 @@ tasks:
       id: 4083fb31-386a-4e65-8a14-78b53786244d
       version: -1
       name: Apply tag to found asset findings
-      description: Apply the new or existing tag to the asset, or creates a new tag if
-        it does not exist in RiskSense.
+      description: Apply the new or existing tag to the asset, or creates a new tag if it does not exist in RiskSense.
       script: '|||risksense-apply-tag'
       type: regular
       iscommand: true
@@ -520,15 +512,12 @@ inputs:
 - key: CVES
   value: {}
   required: true
-  description: Specify Common Vulnerabilities and Exposures (CVE). You can mention
-    multiple CVEs using a comma-separated list.
+  description: Specify Common Vulnerabilities and Exposures (CVE). You can mention multiple CVEs using a comma-separated list.
   playbookInputQuery:
 - key: TagName
   value: {}
   required: true
-  description: Tags in RiskSense can be applied to assets, web applications, and vulnerabilities.
-    Tags are useful in the soft grouping, workflow creation and to identify compliance-related
-    assets.
+  description: Tags in RiskSense can be applied to assets, web applications, and vulnerabilities. Tags are useful in the soft grouping, workflow creation and to identify compliance-related assets.
   playbookInputQuery:
 outputs:
 - contextPath: RiskSense.TagAssociation

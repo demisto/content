@@ -1,0 +1,26 @@
+{
+  "GoogleChronicleBackstory.RetroHunt(val.retrohuntId == obj.retrohuntId)": [
+    {
+      "eventEndTime": "2025-07-08T10:00:00Z",
+      "eventStartTime": "2025-07-01T10:00:00Z",
+      "progressPercentage": 100,
+      "retrohuntEndTime": "2025-07-08T12:15:00.000000Z",
+      "retrohuntId": "oh_dummy_retrohunt_id_1",
+      "retrohuntStartTime": "2025-07-08T12:00:00.000000Z",
+      "ruleId": "ru_dummy_rule_id",
+      "state": "DONE",
+      "versionId": "ru_dummy_rule_id@v_dummy_revision_id"
+    },
+    {
+      "eventEndTime": "2025-07-08T10:00:00Z",
+      "eventStartTime": "2025-07-01T10:00:00Z",
+      "progressPercentage": 100,
+      "retrohuntEndTime": "2025-07-08T12:15:00.000000Z",
+      "retrohuntId": "oh_dummy_retrohunt_id_2",
+      "retrohuntStartTime": "2025-07-08T12:00:00.000000Z",
+      "ruleId": "ru_dummy_rule_id",
+      "state": "DONE",
+      "versionId": "ru_dummy_rule_id@v_dummy_revision_id"
+    }
+  ]
+}

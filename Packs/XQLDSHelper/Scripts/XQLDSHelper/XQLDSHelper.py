@@ -38,7 +38,9 @@ def to_float(val: Any) -> float | int:
 
 
 def get_target_type():
-    if is_xsiam() or is_platform():
+    if is_platform():
+        return "issues"
+    elif is_xsiam():
         return "alerts"
     else:
         return "incidents"
@@ -535,6 +537,71 @@ class Cache:
         return entry if isinstance(entry, dict) else None
 
 
+class CoreLock:
+    """
+    This class provides locking to prevent the concurrent execution of multiple tasks.
+    """
+
+    def __init__(
+        self,
+        module: str,
+        name: str | None,
+        info: str | None,
+        timeout: int | None,
+        using: str | None,
+    ) -> None:
+        """Initializes a lock instance.
+
+        :param module: The name for the locking functions must be either core-lock or demisto-lock.
+        :param name: The name to identify the lock.
+        :param info: Additional information to provide for the lock.
+        :param timeout: Timeout (seconds) for wait on lock to be freed.
+        :param using: The name of an lock integration instance.
+        """
+        if module == "core-lock":
+            self.__func_lock = "core-lock-get"
+            self.__func_unlock = "core-lock-release"
+        elif module == "demisto-lock":
+            self.__func_lock = "demisto-lock-get"
+            self.__func_unlock = "demisto-lock-release"
+        else:
+            raise DemistoException(f"locking module must be either core-lock or demisto-lock - {module}")
+
+        self.__name = name
+        self.__info = info
+        self.__timeout = timeout
+        self.__using = using
+
+    def lock(
+        self,
+    ) -> None:
+        """Acquire a specific lock via *-lock-get."""
+        args = assign_params(
+            name=self.__name,
+            info=self.__info,
+            timeout=self.__timeout,
+            using=self.__using,
+        )
+        args_str = ", ".join(f"{k}={v}" for k, v in args.items()) or "default"
+
+        demisto.debug(f"Attempting to acquire lock: {self.__func_lock} - {args_str}")
+        execute_command(self.__func_lock, args, extract_contents=False)
+        demisto.debug(f"Lock successfully acquired: {self.__func_lock} - {args_str}")
+
+    def unlock(
+        self,
+    ) -> None:
+        """Release a specific lock via core-lock-release."""
+        args = assign_params(
+            name=self.__name,
+            using=self.__using,
+        )
+        args_str = ", ".join(f"{k}={v}" for k, v in args.items()) or "default"
+
+        execute_command(self.__func_unlock, args, extract_contents=False)
+        demisto.debug(f"Lock released: {self.__func_unlock} - {args_str}")
+
+
 class XQLQuery:
     """
     This class executes XQL queries.
@@ -584,12 +651,14 @@ class XQLQuery:
         retry_interval: int = DEFAULT_RETRY_INTERVAL,
         retry_max: int = DEFAULT_RETRY_MAX,
         query_timeout_duration: int = DEFAULT_QUERY_TIMEOUT_DURATION,
+        core_lock: CoreLock | None = None,
     ) -> None:
         self.__xql_query_instance = xql_query_instance
         self.__polling_interval = polling_interval
         self.__retry_interval = retry_interval
         self.__retry_max = max(retry_max, 0)
         self.__query_timeout_duration = max(query_timeout_duration, 0)
+        self.__core_lock = core_lock
 
     def query(
         self,
@@ -600,75 +669,82 @@ class XQLQuery:
         :param query_params: The query parameters.
         :return: The execution ID ans list of fields retrieved.
         """
-        # Start the query
-        time_frame = f"between {query_params.get_earliest_time_iso()} and {query_params.get_latest_time_iso()}"
-        demisto.debug(f"Run XQL: {query_params.query_name} {time_frame}: {query_params.normalized_query_string}")
+        if self.__core_lock:
+            self.__core_lock.lock()
 
-        for retry_count in range(self.__retry_max + 1):
-            res = demisto.executeCommand(
-                "xdr-xql-generic-query",
-                assign_params(
-                    query_name=query_params.query_name,
-                    query=query_params.normalized_query_string,
-                    time_frame=time_frame,
-                    parse_result_file_to_context="true",
-                    using=self.__xql_query_instance,
-                ),
-            )
-            error_message = self.__get_error_message(res)
-            if error_message is None:
-                break
+        try:
+            # Start the query
+            time_frame = f"between {query_params.get_earliest_time_iso()} and {query_params.get_latest_time_iso()}"
+            demisto.debug(f"Run XQL: {query_params.query_name} {time_frame}: {query_params.normalized_query_string}")
 
-            if retry_count >= self.__retry_max or all(
-                x not in error_message
-                for x in [
-                    "reached max allowed amount of parallel running queries",
-                    "maximum allowed number of parallel running queries has been reached",
-                ]
-            ):
-                raise DemistoException(f"Failed to execute xdr-xql-generic-query. Error details:\n{error_message}")
-
-            time.sleep(self.__retry_interval)
-
-        # Poll and retrieve the record set
-        response = self.__get_response(res)
-
-        execution_id = response.get("execution_id")
-        if not execution_id:
-            raise DemistoException("No execution_id in the response.")
-
-        timeout_time = None
-
-        while True:
-            status = response.get("status", "")
-            if status == "SUCCESS":
-                return execution_id, (response.get("results") or [])
-            elif status == "PENDING":
-                current_time = time.time()
-                if timeout_time is None:
-                    timeout_time = current_time + self.__query_timeout_duration
-
-                remaining_time = timeout_time - current_time
-                if remaining_time <= 0:
-                    raise DemistoException(f"Unable to get query results within {self.__query_timeout_duration} seconds.")
-
-                time.sleep(min(remaining_time, self.__polling_interval))
-
+            for retry_count in range(self.__retry_max + 1):
                 res = demisto.executeCommand(
-                    "xdr-xql-get-query-results",
+                    "xdr-xql-generic-query",
                     assign_params(
-                        query_id=execution_id,
+                        query_name=query_params.query_name,
+                        query=query_params.normalized_query_string,
+                        time_frame=time_frame,
                         parse_result_file_to_context="true",
                         using=self.__xql_query_instance,
                     ),
                 )
-                if is_error(res):
-                    error_message = get_error(res)
-                    raise DemistoException(f"Failed to execute xdr-xql-get-query-results. Error details:\n{error_message}")
+                error_message = self.__get_error_message(res)
+                if error_message is None:
+                    break
 
-                response = self.__get_response(res)
-            else:
-                raise DemistoException(f"Failed to get query results - {response}")
+                if retry_count >= self.__retry_max or all(
+                    x not in error_message
+                    for x in [
+                        "reached max allowed amount of parallel running queries",
+                        "maximum allowed number of parallel running queries has been reached",
+                    ]
+                ):
+                    raise DemistoException(f"Failed to execute xdr-xql-generic-query. Error details:\n{error_message}")
+
+                time.sleep(self.__retry_interval)
+
+            # Poll and retrieve the record set
+            response = self.__get_response(res)
+
+            execution_id = response.get("execution_id")
+            if not execution_id:
+                raise DemistoException("No execution_id in the response.")
+
+            timeout_time = None
+
+            while True:
+                status = response.get("status", "")
+                if status == "SUCCESS":
+                    return execution_id, (response.get("results") or [])
+                elif status == "PENDING":
+                    current_time = time.time()
+                    if timeout_time is None:
+                        timeout_time = current_time + self.__query_timeout_duration
+
+                    remaining_time = timeout_time - current_time
+                    if remaining_time <= 0:
+                        raise DemistoException(f"Unable to get query results within {self.__query_timeout_duration} seconds.")
+
+                    time.sleep(min(remaining_time, self.__polling_interval))
+
+                    res = demisto.executeCommand(
+                        "xdr-xql-get-query-results",
+                        assign_params(
+                            query_id=execution_id,
+                            parse_result_file_to_context="true",
+                            using=self.__xql_query_instance,
+                        ),
+                    )
+                    if is_error(res):
+                        error_message = get_error(res)
+                        raise DemistoException(f"Failed to execute xdr-xql-get-query-results. Error details:\n{error_message}")
+
+                    response = self.__get_response(res)
+                else:
+                    raise DemistoException(f"Failed to get query results - {response}")
+        finally:
+            if self.__core_lock:
+                self.__core_lock.unlock()
 
 
 class Query:
@@ -2110,33 +2186,28 @@ class Main:
     def __build_query_params(
         args: dict[Hashable, Any],
         query_name: str,
-        template: dict[Hashable, Any],
-        formatter: Formatter,
+        query_node: dict[Hashable, Any],
         context: ContextData,
     ) -> QueryParams:
         """Build query parameters
 
         :param args: The argument parameters.
         :param query_name: The name of the query.
-        :param template: The template.
-        :param formatter: The formatter to process variable substitution.
+        :param query_node: The node of the query information.
         :param context: The context data.
         :return: Query parameters.
         """
-        query_node = formatter.build(
-            template=demisto.get(template, "query"),
-            context=context,
-        )
-
         earliest_time_base, latest_time_base = Main.__get_base_time(
             args=args,
             query_node=query_node,
             context=context,
         )
+        if not (query_string := query_node.get("xql")):
+            raise DemistoException("Query string is required.")
 
         return QueryParams(
             query_name=query_name,
-            query_string=query_node.get("xql"),
+            query_string=query_string,
             earliest_time=Main.__parse_date_time(
                 demisto.get(query_node, "time_range.earliest_time", args.get("earliest_time", "24 hours ago")), earliest_time_base
             ),
@@ -2144,6 +2215,27 @@ class Main:
                 demisto.get(query_node, "time_range.latest_time", args.get("latest_time", "now")), latest_time_base
             ),
         )
+
+    @staticmethod
+    def __create_lock(
+        query_node: dict[Hashable, Any],
+    ) -> CoreLock | None:
+        """Create a locking instance if possible.
+
+        :param query_node: The node of the query information.
+        :return: A lock instance.
+        """
+        if locking := demisto.get(query_node, "locking"):
+            module = locking.get("module") or "core-lock"
+            timeout = locking.get("timeout")
+            return CoreLock(
+                module=module,
+                name=locking.get("name"),
+                info=locking.get("info"),
+                timeout=None if timeout is None else arg_to_number(timeout),
+                using=locking.get("using"),
+            )
+        return None
 
     def __arg_to_int(
         self,
@@ -2255,11 +2347,14 @@ class Main:
             variable_substitution=self.__variable_substitution,
             keep_symbol_to_null=True,
         )
+        query_node = formatter.build(
+            template=demisto.get(self.__template, "query"),
+            context=self.__context,
+        )
         query_params = self.__build_query_params(
             args=self.__args,
             query_name=self.__template_name,
-            template=self.__template,
-            formatter=formatter,
+            query_node=query_node,
             context=self.__context,
         )
         cache = Cache(name=self.__template_name, repo=self.__cache_repo)
@@ -2281,6 +2376,7 @@ class Main:
                         retry_interval=self.__retry_interval,
                         retry_max=self.__max_retries,
                         query_timeout_duration=self.__query_timeout_duration,
+                        core_lock=self.__create_lock(query_node),
                     )
                     if need_query
                     else None,

@@ -26,11 +26,6 @@ TIME_24_HOURS_AGO_STRING = datetime.strftime(TIME_24_HOURS_AGO, DATE_FORMAT)
 TIME_48_HOURS_AGO = datetime.now() - timedelta(hours=48)
 TIME_48_HOURS_AGO_STRING = datetime.strftime(TIME_48_HOURS_AGO, DATE_FORMAT)
 
-TEST_FETCH_FIRST_RUN = ({}, TIME_12_HOURS_AGO, 720, 710)
-TEST_FETCH_FIRST_RUN_WITH_DELTA_OVER_24_HOURS = ({}, TIME_48_HOURS_AGO, 2880, 2870)
-TEST_FETCH_NOT_FIRST_RUN = ({"last_fetch": TIME_6_HOURS_AGO_STRING}, 48, 360, 350)
-FETCH_TIMES_TEST_DATA = [TEST_FETCH_FIRST_RUN, TEST_FETCH_FIRST_RUN_WITH_DELTA_OVER_24_HOURS, TEST_FETCH_NOT_FIRST_RUN]
-
 DATE_YESTERDAY_IN_EPOCH = int((datetime.now() - datetime(1970, 1, 1)).total_seconds()) - 24 * 60 * 60
 DATE_TOMORROW_IN_EPOCH = int((datetime.now() - datetime(1970, 1, 1)).total_seconds()) + 24 * 60 * 60
 
@@ -222,7 +217,6 @@ GET_BLOB_DATA_RESPONSE_FOR_AUDIT_ACTIVEDIRECTORY = [
     }
 ]
 
-
 CONTENT_RECORD_CREATED_ONE_HOUR_AGO = [
     {
         "CreationTime": TIME_ONE_HOUR_AGO_STRING,
@@ -385,21 +379,21 @@ def create_client(timeout: int = 15):
 
 
 @pytest.mark.parametrize(
-    "last_run, first_fetch_delta, expected_start_time_in_hours_from_now, expected_end_time_in_hours_from_now",
-    FETCH_TIMES_TEST_DATA,
+    "last_run, first_fetch_delta, expected_start_time_in_minutes_from_now, expected_end_time_in_minutes_from_now",
+    [({}, TIME_12_HOURS_AGO, 720, 0), ({}, TIME_48_HOURS_AGO, 2880, 1440), ({"last_fetch": TIME_6_HOURS_AGO_STRING}, 48, 360, 0)],
 )
 def test_fetch_times_range(
-    last_run, first_fetch_delta, expected_start_time_in_hours_from_now, expected_end_time_in_hours_from_now
+    last_run, first_fetch_delta, expected_start_time_in_minutes_from_now, expected_end_time_in_minutes_from_now
 ):
     from MicrosoftManagementActivity import get_fetch_start_and_end_time
 
     fetch_start_time_str, fetch_end_time_str = get_fetch_start_and_end_time(last_run, first_fetch_delta)
 
     end_time_datetime = datetime.strptime(fetch_end_time_str, DATE_FORMAT)
-    assert is_time_in_expected_delta(end_time_datetime, expected_end_time_in_hours_from_now)
+    assert is_time_in_expected_delta(end_time_datetime, expected_end_time_in_minutes_from_now)
 
     start_time_datetime = datetime.strptime(fetch_start_time_str, DATE_FORMAT)
-    assert is_time_in_expected_delta(start_time_datetime, expected_start_time_in_hours_from_now)
+    assert is_time_in_expected_delta(start_time_datetime, expected_start_time_in_minutes_from_now)
 
 
 TEST_NO_SUBSCRIPTIONS_SPECIFIED = ({}, ["audit.general", "Audit.AzureActiveDirectory"])
@@ -693,4 +687,40 @@ def test_fetch_start_time(mocker):
     fetch_start_time_str, fetch_end_time_str = get_fetch_start_and_end_time(last_run, first_fetch_datetime)
 
     assert fetch_start_time_str == "2023-08-02T14:22:49"
-    assert fetch_end_time_str == "2023-08-02T14:32:49"
+    assert fetch_end_time_str == "2023-08-03T14:22:49"
+
+
+def test_test_module_with_auth_code(mocker):
+    """
+    Given:
+        - Various configurations of valid auth_code and redirect_uri.
+    When:
+        - Calling test_module function.
+    Then:
+        - Ensure the appropriate error is raised based on the configuration.
+    """
+    import MicrosoftManagementActivity
+    from MicrosoftManagementActivity import main
+
+    redirect_uri = "redirect_uri"
+    tenant_id = "tenant_id"
+    client_id = "client_id"
+    mocked_params = {
+        "redirect_uri": redirect_uri,
+        "credentials_auth_code": {"password": "test_auth_code"},
+        "self_deployed": True,
+        "refresh_token": tenant_id,
+        "auth_id": client_id,
+        "enc_key": "client_secret",
+    }
+    mocker.patch.object(demisto, "params", return_value=mocked_params)
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(MicrosoftManagementActivity, "return_results")
+    mock_return_error = mocker.patch.object(MicrosoftManagementActivity, "return_error")
+
+    main()
+
+    expected_error = "Please run the !ms-management-activity-list-subscriptions command"
+    assert mock_return_error.called
+    error_message = mock_return_error.call_args[0][0]
+    assert expected_error in error_message

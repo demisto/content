@@ -1331,7 +1331,7 @@ def test_ip_lookup_command_success(mock_return, requests_mock, mocker):
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "command", return_value="ip")
     mocker.patch.object(demisto, "args", return_value=args)
-
+    mocker.patch("Ignite.is_ip_address_internal", return_value=False)
     main()
 
     assert hr_output_for_ip_lookup_reputation == mock_return.call_args.args[0].get("HumanReadable")
@@ -1364,6 +1364,7 @@ def test_ip_lookup_command_community_search_success(mock_return, requests_mock, 
 
     community_search_url = f'{MOCK_URL}{URL_SUFFIX["COMMUNITY_SEARCH"]}'
     requests_mock.post(community_search_url, json=ip_lookup_community_search_reputation, status_code=200)
+    mocker.patch("Ignite.is_ip_address_internal", return_value=False)
 
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
     args = {"ip": "0.0.0.1"}
@@ -1408,6 +1409,7 @@ def test_ip_lookup_command_success_when_empty_response(mock_return, requests_moc
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "command", return_value="ip")
     mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch("Ignite.is_ip_address_internal", return_value=False)
 
     main()
 

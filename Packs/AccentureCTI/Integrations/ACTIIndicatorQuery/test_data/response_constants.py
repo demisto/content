@@ -1,3 +1,4 @@
+# ruff: noqa: RUF001
 URL_RES_JSON = {
     "results": [
         {

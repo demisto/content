@@ -444,6 +444,15 @@
 								"index": 11,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "doppelscreenshoturl",
+								"height": 26,
+								"id": "ba6e5b77-1234-4f2b-bbbb-7c123456abcd",
+								"index": 12,
+								"sectionItemType": "field",
+								"startCol": 0
 							}
 						],
 						"maxW": 3,

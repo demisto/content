@@ -322,6 +322,45 @@ class TestFetchEvents:
         # 1000 workbench + 1000 oat + 500 search detections + 500 audit logs
         assert len(send_events_to_xsiam_mocker.call_args.kwargs["events"]) == 3000
 
+    def test_fetch_events_main_flow_timeout(self, mocker):
+        """
+        Given:
+           - get_observed_attack_techniques_logs times out
+           - last_run = {"oat_detection_start_time": "2023-01-01T14:59:59Z", "dedup_found_oat_logs": [1000]}
+           - max_fetch = 1000 and log_types = "Observed Attack Techniques"
+
+        When:
+           - running fetch-events through the main flow
+
+        Then:
+           - Assert last run updated with half max_fetch and nextTrigger 30
+           - Assert no events were sent to XSIAM
+        """
+        from TrendMicroVisionOneEventCollector import main
+
+        mocker.patch.object(demisto, "params", return_value={"max_fetch": 1000, "log_types": ["Observed Attack Techniques"]})
+        mocker.patch.object(demisto, "command", return_value="fetch-events")
+
+        last_run = {"oat_detection_start_time": "2023-01-01T14:59:59Z", "dedup_found_oat_logs": [1000]}
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+
+        get_observed_attack_techniques_logs_mocker = mocker.patch(
+            "TrendMicroVisionOneEventCollector.get_observed_attack_techniques_logs",
+            side_effect=SignalTimeoutError,  # assume logic times out and timeout handler in ExecutionTimeout class throws error
+        )
+
+        set_last_run_mocker = mocker.patch.object(demisto, "setLastRun")
+        send_events_to_xsiam_mocker = mocker.patch("TrendMicroVisionOneEventCollector.send_events_to_xsiam")
+
+        main()
+
+        assert get_observed_attack_techniques_logs_mocker.call_count == 1
+
+        assert set_last_run_mocker.call_args.args[0] == {**last_run, "max_fetch": 500, "nextTrigger": "30"}
+
+        assert send_events_to_xsiam_mocker.call_count == 1
+        assert send_events_to_xsiam_mocker.call_args.kwargs["events"] == []
+
     def test_get_workbench_logs_no_last_run(self, mocker, client: Client):
         """
         Given:

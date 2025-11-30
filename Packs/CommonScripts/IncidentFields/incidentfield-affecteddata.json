@@ -5,7 +5,7 @@
     "name": "Affected data",
     "ownerOnly": false,
     "placeholder": "",
- "description": "\"‘personal data’ means any information relating to an identified or identifiable natural person (‘data subject’); an identifiable natural person is one who can be identified, directly or indirectly, in particular by reference to an identifier such as a name, an identification number, location data, an online identifier or to one or more factors specific to the physical, physiological, genetic, mental, economic, cultural or social identity of that natural person;\" - GDPR Art. 4",
+    "description": "\"\u2018personal data\u2019 means any information relating to an identified or identifiable natural person (\u2018data subject\u2019); an identifiable natural person is one who can be identified, directly or indirectly, in particular by reference to an identifier such as a name, an identification number, location data, an online identifier or to one or more factors specific to the physical, physiological, genetic, mental, economic, cultural or social identity of that natural person;\" - GDPR Art. 4",
     "cliName": "affecteddata",
     "type": "multiSelect",
     "closeForm": false,
@@ -44,6 +44,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

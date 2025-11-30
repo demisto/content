@@ -1,5 +1,5 @@
 category: IT Services
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -142,7 +142,7 @@ script:
       description: Set the minimum TLS version to be permitted on requests to storage. The default interpretation is TLS 1.0 for this property.
       type: String
     - contextPath: AzureStorage.StorageAccount.properties.allowSharedKeyAccess
-      description: Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests, including shared access signatures, must be authorized with Azure Active Directory (Azure AD).
+      description: Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests, including shared access signatures, must be authorized with Entra ID (Azure AD).
       type: Boolean
     - contextPath: AzureStorage.StorageAccount.properties.creationTime
       description: Gets the creation date and time of the storage account in UTC.
@@ -446,7 +446,7 @@ script:
       description: Set the minimum TLS version to be permitted on requests to storage. The default interpretation is TLS 1.0 for this property.
       type: String
     - contextPath: AzureStorage.StorageAccount.properties.allowSharedKeyAccess
-      description: Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests, including shared access signatures, must be authorized with Azure Active Directory (Azure AD).
+      description: Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests, including shared access signatures, must be authorized with Entra ID (Azure AD).
       type: Boolean
     - contextPath: AzureStorage.StorageAccount.properties.creationTime
       description: Gets the creation date and time of the storage account in UTC.
@@ -1013,7 +1013,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: azure-storage-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.5490413
   runonce: false
   script: '-'
   subtype: python3

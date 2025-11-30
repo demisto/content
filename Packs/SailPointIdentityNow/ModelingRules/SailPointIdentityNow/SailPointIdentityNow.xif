@@ -1,17 +1,17 @@
 [MODEL: dataset= "sailpoint_identitynow_raw"]
 alter
-    src_name = actor -> name,
-    dst_name = `target` -> name,
-    objects = objects-> []
+    get_src_name = actor -> name,
+    get_dst_name = `target` -> name,
+    get_objects = objects-> []
 | alter
-    src_email = arrayindex(regextract(src_name, "(?:\w+)\@\S+"),0),
-    dst_email = arrayindex(regextract(dst_name, "(?:\w+)\@\S+"),0),
-    objects = arraymap(objects , trim("@element", "\""))
+    set_src_email = arrayindex(regextract(get_src_name, "\S+\@\S+"),0),
+    set_dst_email = arrayindex(regextract(get_dst_name, "\S+\@\S+"),0),
+    set_objects = arraymap(get_objects , trim("@element", "\""))
 | alter
     xdm.event.original_event_type = action,
     xdm.event.id = id,
     xdm.alert.name = name,
-    xdm.event.tags = objects,
+    xdm.event.tags = set_objects,
     xdm.event.operation_sub_type = operation,
     xdm.source.user.ou = org,
     xdm.source.cloud.region = pod,
@@ -22,8 +22,14 @@ alter
     xdm.target.resource.type = "Stack",
     xdm.target.ipv4 = if(incidr(ipAddress, "0.0.0.0/0"), ipAddress),
     xdm.target.ipv6  = arrayindex(regextract(ipAddress, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"), 0),
-    xdm.source.user.username = if(src_email != null, arrayindex(regextract(src_email, "(\w+)\@"),0), src_name),
-    xdm.source.user.upn = src_email,
-    xdm.target.user.username = if(dst_email != null, arrayindex(regextract(dst_email, "(\w+)\@"),0), dst_name),
-    xdm.target.user.upn = dst_email,
+    xdm.source.user.username = if(
+        set_src_email != null, arrayindex(regextract(set_src_email, "(\S+)\@"),0),
+        get_src_name !~= "@", get_src_name
+    ),
+    xdm.source.user.upn = set_src_email,
+    xdm.target.user.username = if(
+        set_dst_email != null, arrayindex(regextract(set_dst_email, "(\S+)\@"),0), 
+        get_dst_name !~= "@", get_dst_name
+    ),
+    xdm.target.user.upn = set_dst_email,
     xdm.event.description = attributes;

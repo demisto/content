@@ -280,6 +280,13 @@ def copy_blob(client, source_bucket_name, destination_bucket_name, source_object
     return blob_copy
 
 
+def delete_blob(client, blob_name, bucket_name):
+    bucket = client.get_bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    blob_delete = blob.delete()
+    return blob_delete
+
+
 def gcs_list_bucket_objects(client, default_bucket, args):
     bucket_name = get_bucket_name(args, default_bucket)
     prefix = args.get("prefix", None)
@@ -342,6 +349,21 @@ def gcs_copy_file(client, default_bucket, args):
             "Type": entryTypes["note"],
             "ContentsFormat": formats["text"],
             "Contents": f"File was successfully copied to bucket {destination_bucket_name} as {destination_object_name}",
+        }
+    )
+
+
+def gcs_delete_file(client, default_bucket, args):
+    blob_name = args["object_name"]
+    bucket_name = args.get("bucket_name", default_bucket)
+
+    delete_blob(client, blob_name, bucket_name)
+
+    demisto.results(
+        {
+            "Type": entryTypes["note"],
+            "ContentsFormat": formats["text"],
+            "Contents": f"File {blob_name} was successfully deleted from bucket {bucket_name}",
         }
     )
 
@@ -626,6 +648,9 @@ def main():
 
         elif command == "gcs-copy-file":
             gcs_copy_file(client, default_bucket, args)
+
+        elif command == "gcs-delete-file":
+            gcs_delete_file(client, default_bucket, args)
 
         #
         # Bucket policy (ACL)

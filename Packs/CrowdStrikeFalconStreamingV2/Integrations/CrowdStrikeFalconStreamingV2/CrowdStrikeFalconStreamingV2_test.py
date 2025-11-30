@@ -2,7 +2,7 @@ import json
 
 import demistomock as demisto
 import pytest
-from CrowdStrikeFalconStreamingV2 import get_sample_events, merge_integration_context
+from CrowdStrikeFalconStreamingV2 import get_sample_events, merge_integration_context, replace_deprecated_event_types
 
 
 def test_get_sample_events_with_results(mocker):
@@ -90,7 +90,7 @@ def test_get_sample_events_with_results(mocker):
             },
             "metadata": {
                 "eventCreationTime": 1592479032000,
-                "eventType": "DetectionSummaryEvent",
+                "eventType": "EppDetectionSummaryEvent",
                 "offset": 70628,
                 "version": "1.0",
             },
@@ -160,3 +160,48 @@ def test_merge_integration_context(mocker, current_integration_context, updated_
     else:
         # Case C
         assert not demisto.setIntegrationContext.called
+
+
+@pytest.mark.parametrize(
+    "input_event_types, expected_output",
+    [
+        ([], ""),
+        (["AuthActivityAuditEvent"], "AuthActivityAuditEvent"),
+        (["DetectionSummaryEvent"], "EppDetectionSummaryEvent"),
+        (["AuthActivityAuditEvent", "DetectionSummaryEvent"], "AuthActivityAuditEvent,EppDetectionSummaryEvent"),
+        (["DetectionSummaryEvent", "AuthActivityAuditEvent"], "EppDetectionSummaryEvent,AuthActivityAuditEvent"),
+        (["DetectionSummaryEvent", "DetectionSummaryEvent"], "EppDetectionSummaryEvent,EppDetectionSummaryEvent"),
+        (["EppDetectionSummaryEvent", "AuthActivityAuditEvent"], "EppDetectionSummaryEvent,AuthActivityAuditEvent"),
+        (
+            ["UserActivityAuditEvent", "DetectionSummaryEvent", "ProcessRollup2Event"],
+            "UserActivityAuditEvent,EppDetectionSummaryEvent,ProcessRollup2Event",
+        ),  # noqa: E501
+    ],
+)
+def test_replace_deprecated_event_types(input_event_types, expected_output):
+    """
+    Given:
+     - Case A: Empty list of event types
+     - Case B: List with only non-deprecated event types
+     - Case C: List with only deprecated DetectionSummaryEvent
+     - Case D: List with deprecated event at the end
+     - Case E: List with deprecated event at the beginning
+     - Case F: List with multiple deprecated events
+     - Case G: List with already updated EppDetectionSummaryEvent
+     - Case H: List with mixed event types including deprecated one in the middle
+
+    When:
+     - Calling replace_deprecated_event_types function
+
+    Then:
+     - Case A: Return empty string
+     - Case B: Return original event types unchanged
+     - Case C: Return EppDetectionSummaryEvent
+     - Case D: Return list with DetectionSummaryEvent replaced with EppDetectionSummaryEvent
+     - Case E: Return list with DetectionSummaryEvent replaced with EppDetectionSummaryEvent
+     - Case F: Return list with all DetectionSummaryEvent instances replaced
+     - Case G: Return list unchanged (already using new event type)
+     - Case H: Return list with only DetectionSummaryEvent replaced, others unchanged
+    """
+    result = replace_deprecated_event_types(input_event_types)
+    assert result == expected_output

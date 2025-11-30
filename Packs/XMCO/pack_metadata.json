@@ -2,7 +2,7 @@
     "name": "XMCO",
     "description": "XMCO is a cybersecurity consulting firm",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.5",
     "author": "XMCO",
     "url": "https://xmco.freshdesk.com/",
     "email": "leportail@xmco.fr",
@@ -29,6 +29,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

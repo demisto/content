@@ -1,7 +1,7 @@
 commonfields:
   id: Symantec Endpoint Security
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Symantec Endpoint Security

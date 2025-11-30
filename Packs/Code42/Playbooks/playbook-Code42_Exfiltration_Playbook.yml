@@ -939,6 +939,17 @@ tasks:
               field:
                 value:
                   simple: sha256
+      XFC ID:
+        complex:
+          root: incident.code42fileevents.file
+          accessor: event
+          transformers:
+          - operator: uniq
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: xfcEventId
     separatecontext: true
     continueonerrortype: ""
     loop:

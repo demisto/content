@@ -1,0 +1,2482 @@
+id: GetEndpointData-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: GetEndpointData-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4bf7950b-e0fd-471c-8929-71fe90259bd1
+    type: start
+    task:
+      id: 4bf7950b-e0fd-471c-8929-71fe90259bd1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d7d7c6d4-50d8-4c6c-80db-1d3417e6ef04
+    type: regular
+    task:
+      id: d7d7c6d4-50d8-4c6c-80db-1d3417e6ef04
+      version: -1
+      name: Get Endpoint from Active Directory
+      description: Retrieves detailed information about a computer account. The computer
+        can be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filters are provided, all computers are returned.
+      script: '|||ad-get-computer'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4cbbee52-810a-4269-8e1b-a2e5d0ace8f6
+    type: regular
+    task:
+      id: 4cbbee52-810a-4269-8e1b-a2e5d0ace8f6
+      version: -1
+      name: Get Endpoint Data by Hostname
+      description: This script gathers endpoint data from multiple integrations and
+        creates a single endpoint entity with consolidated information in the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      endpoint_hostname:
+        complex:
+          root: ActiveDirectory.Computers
+          accessor: name
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7b9c6062-37ab-4a8f-8253-4526bacd9eaf
+    type: condition
+    task:
+      id: 7b9c6062-37ab-4a8f-8253-4526bacd9eaf
+      version: -1
+      name: 'Verify Results Command Successful - Active Directory '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: EndpointData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: EndpointData.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                accessor: Message
+            iscontext: true
+          right:
+            value:
+              simple: Command successful
+      - - operator: isNotExists
+          left:
+            value:
+              simple: EndpointData.AdditionalFields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e34c9e99-21d4-43fb-8647-867b9fff9fe9
+    type: title
+    task:
+      id: e34c9e99-21d4-43fb-8647-867b9fff9fe9
+      version: -1
+      name: Case 1 - Get Endpoint by Hostname
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c90d56f5-7458-4688-8c6d-979e368ce37c
+    type: title
+    task:
+      id: c90d56f5-7458-4688-8c6d-979e368ce37c
+      version: -1
+      name: Case 2 - Get Endpoint by ID
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: efbbec73-88db-4774-865b-df506bda6f10
+    type: regular
+    task:
+      id: efbbec73-88db-4774-865b-df506bda6f10
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: c6ce4682-8064-4307-a366-fdbdf57ec68d
+    type: regular
+    task:
+      id: c6ce4682-8064-4307-a366-fdbdf57ec68d
+      version: -1
+      name: Get Endpoint ID from Core
+      description: This script gathers endpoint data from multiple integrations and
+       creates a single endpoint entity with consolidated information in the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 2230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0c33a31c-5114-4cc8-8f3d-3452a9ed67a9
+    type: condition
+    task:
+      id: 0c33a31c-5114-4cc8-8f3d-3452a9ed67a9
+      version: -1
+      name: Verify Results Command Successful - Crowdstrike Falcon
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: EndpointData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: EndpointData.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex Core - IR
+                accessor: Message
+            iscontext: true
+          right:
+            value:
+              simple: Command successful
+      - - operator: isNotExists
+          left:
+            value:
+              simple: EndpointData.AdditionalFields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 8b26c1f2-0071-40c2-8dba-a659bf04ab50
+    type: regular
+    task:
+      id: 8b26c1f2-0071-40c2-8dba-a659bf04ab50
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 14c616ab-4f58-45f9-8697-512235cea3d6
+    type: title
+    task:
+      id: 14c616ab-4f58-45f9-8697-512235cea3d6
+      version: -1
+      name: Case 3 - Get Endpoint by IP
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 3a9428ff-a111-41b6-8110-b01db39d138a
+    type: regular
+    task:
+      id: 3a9428ff-a111-41b6-8110-b01db39d138a
+      version: -1
+      name: Get IP from Crowdstrike Falcon
+      description: Gets the list of host group members.
+      script: '|||cs-falcon-list-host-group-members'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: cf761ee7-6ea1-4148-88f9-667b3811890f
+    type: regular
+    task:
+      id: cf761ee7-6ea1-4148-88f9-667b3811890f
+      version: -1
+      name: Get Endpoint Data by IP Address
+      description: This script gathers endpoint data from multiple integrations and
+       creates a single endpoint entity with consolidated information in the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      endpoint_ip:
+        simple: ${CrowdStrike.Device.ExternalIP}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 2733b1d0-532b-4dc4-8dd6-1bc6f48792ac
+    type: condition
+    task:
+      id: 2733b1d0-532b-4dc4-8dd6-1bc6f48792ac
+      version: -1
+      name: Verify Results Command Successful - Crowdstrike Falcon
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: EndpointData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: EndpointData.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdstrikeFalcon
+                accessor: Message
+            iscontext: true
+          right:
+            value:
+              simple: Command successful
+      - - operator: isNotExists
+          left:
+            value:
+              simple: EndpointData.AdditionalFields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: ef94c5d7-2100-4bc9-8d8d-54b4874076b7
+    type: regular
+    task:
+      id: ef94c5d7-2100-4bc9-8d8d-54b4874076b7
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 34030f35-fe27-43a9-87e7-4f7e24aabd31
+    type: title
+    task:
+      id: 34030f35-fe27-43a9-87e7-4f7e24aabd31
+      version: -1
+      name: Case 4 - Wrong Brand
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: b69d70f4-df28-4ab0-82a7-60f14d4c47e1
+    type: regular
+    task:
+      id: b69d70f4-df28-4ab0-82a7-60f14d4c47e1
+      version: -1
+      name: Get ID from Crowdstrike Falcon
+      description: Gets the list of host group members.
+      script: '|||cs-falcon-list-host-group-members'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 6d3758be-2a44-4f7a-87ab-3117dc57ba6e
+    type: regular
+    task:
+      id: 6d3758be-2a44-4f7a-87ab-3117dc57ba6e
+      version: -1
+      name: Get Endpoint Data by ID
+      description: This script gathers endpoint data from multiple integrations and
+       creates a single endpoint entity with consolidated information in the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      brands:
+        simple: Active Directory Query v2
+      endpoint_id:
+        simple: ${CrowdStrike.Device.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: f316f428-30f5-4393-844c-1dbd604e650b
+    type: condition
+    task:
+      id: f316f428-30f5-4393-844c-1dbd604e650b
+      version: -1
+      name: Verify Results - No Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: EndpointData
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: EndpointData.AdditionalFields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: de06a6b2-d348-4a67-8ed9-93ef3fae06b8
+    type: regular
+    task:
+      id: de06a6b2-d348-4a67-8ed9-93ef3fae06b8
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: afa5fd13-6c51-4fbf-9a68-a28e54521b85
+    type: title
+    task:
+      id: afa5fd13-6c51-4fbf-9a68-a28e54521b85
+      version: -1
+      name: Case 5 - Same Endpoint ID and IP
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 5430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 04ff7a91-b285-4e02-8244-fbd9cf2cf5f7
+    type: regular
+    task:
+      id: 04ff7a91-b285-4e02-8244-fbd9cf2cf5f7
+      version: -1
+      name: Get IP + ID from Crowdstrike Falcon
+      description: Gets the list of host group members.
+      script: '|||cs-falcon-list-host-group-members'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 5760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: a2350bfc-801b-4230-937c-8c971ee56ad9
+    type: regular
+    task:
+      id: a2350bfc-801b-4230-937c-8c971ee56ad9
+      version: -1
+      name: Get Endpoint Data by IP Address
+      description: This script gathers endpoint data from multiple integrations and
+        creates a single endpoint entity with consolidated information in the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      brands:
+        simple: CrowdstrikeFalcon
+      endpoint_id:
+        complex:
+          root: CrowdStrike.Device
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+      endpoint_ip:
+        complex:
+          root: CrowdStrike.Device
+          accessor: LocalIP
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 5930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: aee12c67-9af2-4d3a-aebe-ec0c7914195b
+    type: condition
+    task:
+      id: aee12c67-9af2-4d3a-aebe-ec0c7914195b
+      version: -1
+      name: Verify Only One Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: EndpointData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: EndpointData.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdstrikeFalcon
+                accessor: Message
+            iscontext: true
+          right:
+            value:
+              simple: Command successful
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: EndpointData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: EndpointData.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdstrikeFalcon
+                accessor: ID
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 6100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: e60e392e-b4b2-4e99-8368-46c4c7f9b837
+    type: regular
+    task:
+      id: e60e392e-b4b2-4e99-8368-46c4c7f9b837
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 5590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: a39453e0-6f34-43c3-aa97-9f2656df8c40
+    type: title
+    task:
+      id: a39453e0-6f34-43c3-aa97-9f2656df8c40
+      version: -1
+      name: Case 6 - List of ID
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 6270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 3bf2d5aa-a434-4d6f-8a6d-c5b6f3b694c2
+    type: regular
+    task:
+      id: 3bf2d5aa-a434-4d6f-8a6d-c5b6f3b694c2
+      version: -1
+      name: Get ID from Crowdstrike Falcon
+      description: Gets the list of host group members.
+      script: '|||cs-falcon-list-host-group-members'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 6600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 29ef9d76-82e9-4552-95b5-30273c6de4d2
+    type: regular
+    task:
+      id: 29ef9d76-82e9-4552-95b5-30273c6de4d2
+      version: -1
+      name: Get Endpoint Data by IP Address
+      description: This script gathers endpoint data from multiple integrations and
+       creates a single endpoint entity with consolidated information in the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      brands:
+        simple: CrowdstrikeFalcon
+      endpoint_id:
+        simple: ${CrowdStrike.Device.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 6770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 665ceb32-0cc4-4770-8e31-d6029ae14798
+    type: condition
+    task:
+      id: 665ceb32-0cc4-4770-8e31-d6029ae14798
+      version: -1
+      name: Verify All Successful
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: EndpointData
+                accessor: ID
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CrowdStrike.Device
+                accessor: ID
+                transformers:
+                - operator: count
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: EndpointData
+                accessor: Message
+                transformers:
+                - operator: uniq
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: EndpointData
+                accessor: Message
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: Command successful
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 6940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: dc97a030-d3a4-4652-8dfa-e7f8a6f32cdb
+    type: regular
+    task:
+      id: dc97a030-d3a4-4652-8dfa-e7f8a6f32cdb
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 6430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: fec51c46-aadc-488f-8f62-83bd08150de3
+    type: title
+    task:
+      id: fec51c46-aadc-488f-8f62-83bd08150de3
+      version: -1
+      name: Sad Flows
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 7950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: b4d0c259-f964-4eaf-8e78-d226648fb2f2
+    type: title
+    task:
+      id: b4d0c259-f964-4eaf-8e78-d226648fb2f2
+      version: -1
+      name: Case 1 - No Arguments
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 8110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 0deabc63-92a7-40c1-8ab3-40e20591762f
+    type: title
+    task:
+      id: 0deabc63-92a7-40c1-8ab3-40e20591762f
+      version: -1
+      name: Case 7 - Additional Fields
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 7110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: fe367f8a-ebe4-4e4c-8db2-5fd6feaac282
+    type: regular
+    task:
+      id: fe367f8a-ebe4-4e4c-8db2-5fd6feaac282
+      version: -1
+      name: Get ID from Crowdstrike Falcon
+      description: Gets the list of host group members.
+      script: '|||cs-falcon-list-host-group-members'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 7440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 0af25641-b91b-488c-8cbe-06326a151d40
+    type: regular
+    task:
+      id: 0af25641-b91b-488c-8cbe-06326a151d40
+      version: -1
+      name: Get Endpoint Data by IP Address
+      description: This script gathers endpoint data from multiple integrations and
+        creates a single endpoint entity with consolidated information in the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      endpoint_id:
+        complex:
+          root: CrowdStrike.Device
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 7610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 71434bc6-7ed8-42e5-8953-980004c18d6e
+    type: condition
+    task:
+      id: 71434bc6-7ed8-42e5-8953-980004c18d6e
+      version: -1
+      name: Verify Additional Fields
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: EndpointData.AdditionalFields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 7780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: cf559167-6891-4394-8b38-74d88ca7c37b
+    type: regular
+    task:
+      id: cf559167-6891-4394-8b38-74d88ca7c37b
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 7270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 93f8fc64-3ca4-45d3-88ec-518c348bac4a
+    type: regular
+    task:
+      id: 93f8fc64-3ca4-45d3-88ec-518c348bac4a
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 8270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 427c0424-0703-4d8b-8b37-fe71721698a0
+    type: regular
+    task:
+      id: 427c0424-0703-4d8b-8b37-fe71721698a0
+      version: -1
+      name: Get Endpoint Data No Arguments
+      description: This script gathers endpoint data from multiple integrations and
+        creates a single endpoint entity with consolidated information in the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "55"
+      '#none#':
+      - "58"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 8440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: d3086441-0212-4d04-855f-8f5c9596cd6d
+    type: title
+    task:
+      id: d3086441-0212-4d04-855f-8f5c9596cd6d
+      version: -1
+      name: Case 2 - Non existsent user
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 8615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 54da3fdd-d6a5-4001-8e07-7ae6f0009401
+    type: regular
+    task:
+      id: 54da3fdd-d6a5-4001-8e07-7ae6f0009401
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 8780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: d6a68ed5-ef47-4332-844a-291ee0401b54
+    type: regular
+    task:
+      id: d6a68ed5-ef47-4332-844a-291ee0401b54
+      version: -1
+      name: 'Get Endpoint Data Non existent '
+      description: This script gathers endpoint data from multiple integrations and
+       creates a single endpoint entity with consolidated information in the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      additional_fields:
+        simple: "false"
+      brands:
+        simple: CrowdstrikeFalcon
+      endpoint_hostname:
+        simple: abcdefghijklmnopqrstuv
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 8950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 9367d24c-ab86-4bd6-824f-70c83629169a
+    type: condition
+    task:
+      id: 9367d24c-ab86-4bd6-824f-70c83629169a
+      version: -1
+      name: Failure
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: "1"
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 8610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 5cfe464c-0f13-4760-8e07-99ca98986eeb
+    type: condition
+    task:
+      id: 5cfe464c-0f13-4760-8e07-99ca98986eeb
+      version: -1
+      name: Verify No Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: EndpointData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: EndpointData.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CrowdstrikeFalcon
+                accessor: Message
+            iscontext: true
+          right:
+            value:
+              simple: Command failed - no endpoint found
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 9120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 998ecc6d-29cd-4def-8975-ba2827fe5a39
+    type: title
+    task:
+      id: 998ecc6d-29cd-4def-8975-ba2827fe5a39
+      version: -1
+      name: Case 3 - Non Existent Brand
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 9290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: d8d7e8b9-ae20-46b5-8cdf-15df6783cb0e
+    type: regular
+    task:
+      id: d8d7e8b9-ae20-46b5-8cdf-15df6783cb0e
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 9450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: de82b6b4-cb00-4c4e-8bd9-0df0896c5012
+    type: regular
+    task:
+      id: de82b6b4-cb00-4c4e-8bd9-0df0896c5012
+      version: -1
+      name: 'Get Endpoint Data Non existent '
+      description: This script gathers endpoint data from multiple integrations and creates a single endpoint entity with consolidated information in the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      brands:
+        simple: nononononon
+      endpoint_id:
+        simple: ${CrowdStrike.Device.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 9790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 6d393667-0a4c-485f-8e09-f82a63262026
+    type: condition
+    task:
+      id: 6d393667-0a4c-485f-8e09-f82a63262026
+      version: -1
+      name: Verify No Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "65"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: EndpointData
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 9960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 948313d5-1ffd-4a6f-8e54-39e3bde30e15
+    type: regular
+    task:
+      id: 948313d5-1ffd-4a6f-8e54-39e3bde30e15
+      version: -1
+      name: Get ID from Crowdstrike Falcon
+      description: Gets the list of host group members.
+      script: '|||cs-falcon-list-host-group-members'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 9620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: eca2eac4-18d7-4fa2-8b13-13141434c8e6
+    type: title
+    task:
+      id: eca2eac4-18d7-4fa2-8b13-13141434c8e6
+      version: -1
+      name: Pass
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 10130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: a30bb25a-1e1c-4eef-8890-f80258f2df88
+    type: regular
+    task:
+      id: a30bb25a-1e1c-4eef-8890-f80258f2df88
+      version: -1
+      name: Get core Endpoint
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
+      script: Cortex Core - IR|||core-get-endpoints
+      type: regular
+      iscommand: true
+      brand: Cortex Core - IR
+    nexttasks:
+      '#none#':
+      - "71"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: be50ed1c-ee0b-4991-83ac-623200333f8e
+    type: condition
+    task:
+      id: be50ed1c-ee0b-4991-83ac-623200333f8e
+      version: -1
+      name: Check if Core IR Enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "68"
+      "yes":
+      - "66"
+    scriptarguments:
+      brandname:
+        simple: Cortex Core - IR
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 7adb6564-db79-4f17-80ee-646931a95b26
+    type: condition
+    task:
+      id: 7adb6564-db79-4f17-80ee-646931a95b26
+      version: -1
+      name: Check If XDR enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "69"
+      "yes":
+      - "70"
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 3659fe58-ec45-4f3a-8dee-de8d07b37af6
+    type: regular
+    task:
+      id: 3659fe58-ec45-4f3a-8dee-de8d07b37af6
+      version: -1
+      name: Fail
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Cortex Core - IR and Cortex XDR - IR not enabled
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: f5ea1e57-4d40-4f90-b850-6f128a00b0de
+    type: regular
+    task:
+      id: f5ea1e57-4d40-4f90-b850-6f128a00b0de
+      version: -1
+      name: Get Endpoint ID from XDR
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set. (Start by counting from 0).
+      script: Cortex XDR - IR|||xdr-get-endpoints
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: f69478ef-3204-4fcd-88c2-ef14e52915b3
+    type: condition
+    task:
+      id: f69478ef-3204-4fcd-88c2-ef14e52915b3
+      version: -1
+      name: Are there any available endpoints?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Core.Endpoint.endpoint_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 444c0cc8-629f-4a79-bafe-ab825ea3f810
+    type: condition
+    task:
+      id: 444c0cc8-629f-4a79-bafe-ab825ea3f810
+      version: -1
+      name: Are there any available endpoints?
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set. (Start by counting from 0).
+      type: condition
+      iscommand: false
+      brand: Cortex XDR - IR
+    nexttasks:
+      "yes":
+      - "73"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Endpoint.endpoint_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 9de63531-6bb7-4253-9553-b91ad717084b
+    type: regular
+    task:
+      id: 9de63531-6bb7-4253-9553-b91ad717084b
+      version: -1
+      name: Get Endpoint ID from Core
+      description: This script gathers endpoint data from multiple integrations and creates a single endpoint entity with consolidated information in the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: PaloAltoNetworksXDR.Endpoint
+          accessor: endpoint_id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 2230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: f98d11b7-3e5e-451e-ad5b-fdde42331cd8
+    type: condition
+    task:
+      id: f98d11b7-3e5e-451e-ad5b-fdde42331cd8
+      version: -1
+      name: Verify Results Command Successful - Crowdstrike Falcon
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: EndpointData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: EndpointData.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex XDR - IR
+                accessor: Message
+            iscontext: true
+          right:
+            value:
+              simple: Command successful
+      - - operator: isNotExists
+          left:
+            value:
+              simple: EndpointData.AdditionalFields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 3c4ec8af-0949-4ab3-8d8c-75c8aebdaf0d
+    type: condition
+    task:
+      id: 3c4ec8af-0949-4ab3-8d8c-75c8aebdaf0d
+      version: -1
+      name: Is Active Directory Enabled? (XSIAM)
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "78"
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: Active Directory Query v2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 6df31ddd-50ad-421a-8693-566a1a130a66
+    type: regular
+    task:
+      id: 6df31ddd-50ad-421a-8693-566a1a130a66
+      version: -1
+      name: Get Endpoint From FireEye
+      description: Returns information on all hosts.
+      script: '|||fireeye-hx-get-all-hosts-information'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "79"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 27b40447-95f6-4d3a-96ae-c54d922e7900
+    type: regular
+    task:
+      id: 27b40447-95f6-4d3a-96ae-c54d922e7900
+      version: -1
+      name: Get Endpoint Data by Hostname
+      description: This script gathers endpoint data from multiple integrations and
+       creates a single endpoint entity with consolidated information in the context.
+      scriptName: get-endpoint-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      endpoint_hostname:
+        complex:
+          root: FireEyeHX.Hosts
+          accessor: Host Name
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: bb26fc87-53a2-4b55-b0ca-f8f834fd18ab
+    type: condition
+    task:
+      id: bb26fc87-53a2-4b55-b0ca-f8f834fd18ab
+      version: -1
+      name: Verify Results - FireEye
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: EndpointData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: EndpointData.ID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: FireEyeHX.Hosts.[0].Agent ID
+                      iscontext: true
+                accessor: Message
+            iscontext: true
+          right:
+            value:
+              simple: Command successful
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 10140,
+        "width": 1362.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+dirtyInputs: true
+marketplaces:
+- platform
+- marketplacev2
+- xsoar

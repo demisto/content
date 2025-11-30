@@ -2,7 +2,7 @@
     "name": "SOCRadarTakedown",
     "description": "Submit and manage takedown requests for phishing domains, social media impersonation, source code leaks, and rogue mobile apps through the SOCRadar platform. This pack helps security teams automate the process of reporting and tracking malicious content for removal.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Community Contributor",
     "url": "",
     "email": "",
@@ -28,5 +28,16 @@
         "xsoar",
         "marketplacev2",
         "platform"
+    ],
+    "supportedModules": [
+        "C1",
+        "C3",
+        "X0",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "xsiam",
+        "agentix"
     ]
 }

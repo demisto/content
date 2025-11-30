@@ -268,6 +268,41 @@ def test_remove_hash_from_blocklist_global(mocker, requests_mock):
     assert outputs["status"] == "Removed 1 entries from blocklist"
 
 
+def test_remove_hash_from_blocklist_global_sha256(mocker, requests_mock):
+    """
+    When:
+        A SHA256 hash is removed from the blocklist globally (no scope)
+    Return:
+        Status that it has been removed from the blocklist
+    """
+    sha256 = "3a7bd3e2360a3d5bca2c7e6f3c4d7b1a2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8"
+    url = (
+        "https://usea1.sentinelone.net/web/api/v2.1/restrictions"
+        "?tenant=True&skip=0&limit=4&sortBy=updatedAt&sortOrder=asc&value__contains=" + sha256
+    )
+    raw_blockist_response = util_load_json("test_data/remove_hash_from_blocklist_sha256.json")
+    requests_mock.get(url, json=raw_blockist_response)
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-remove-hash-from-blocklist")
+    mocker.patch.object(demisto, "args", return_value={"sha256Value": sha256})
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert outputs["hash"] == sha256
+    assert outputs["status"] == "Removed 1 entries from blocklist"
+
+
 def test_remove_hash_from_blocklist_multiple_site_scope(mocker, requests_mock):
     mocker.patch.object(sys, "exit")
     """

@@ -1,5 +1,5 @@
 category: Forensics & Malware Analysis
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -34,7 +34,7 @@ configuration:
   required: false
 - display: Source Reliability
   name: integrationReliability
-  required: true
+  required: false
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
@@ -1264,7 +1264,7 @@ script:
     - contextPath: InfoFile.Type
       description: The web artifacts file type.
       type: string
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.5490952
   runonce: false
   script: '-'
   subtype: python3

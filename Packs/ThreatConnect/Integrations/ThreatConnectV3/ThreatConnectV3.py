@@ -845,6 +845,7 @@ def list_groups(
         "AssociatedIndicators",
         "AssociatedGroups",
         "securityLabels",
+        "Web Link",
     ]
 
     for group in response.get("data"):
@@ -860,6 +861,7 @@ def list_groups(
                 "AssociatedIndicators": group.get("associatedIndicators"),
                 "AssociatedGroups": group.get("associatedGroups"),
                 "securityLabels": group.get("securityLabels"),
+                "Web Link": group.get("webLink", ""),
             }
         )
     context = {"TC.Groups(val.ID && val.ID === obj.ID)": content}
@@ -1311,6 +1313,8 @@ def tc_add_indicator_command(
     if indicator_type == "File":
         hash_type = args.get("hashType", "md5")
         payload[hash_type] = indicator
+    if indicator_type == "CIDR":
+        payload["Block"] = indicator
 
     url = "/api/v3/indicators"
     response = client.make_request(Method.POST, url, payload=json.dumps(payload))

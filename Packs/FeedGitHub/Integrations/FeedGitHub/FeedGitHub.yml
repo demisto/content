@@ -190,9 +190,9 @@ script:
     - defaultValue: '50'
       description: The maximum number of results to return.
       name: limit
-    description: Gets indicators from the feed within a specified date range and up to a maximum limit..
+    description: Retrieves indicators from the feed within a specified date range and up to a maximum limit.
     name: github-get-indicators
-  dockerimage: demisto/taxii2:1.0.0.3534828
+  dockerimage: demisto/taxii2:1.0.0.5113063
   feed: true
   isfetch: false
   longRunning: false
@@ -209,6 +209,6 @@ marketplaces:
 - platform
 tests:
 - No tests (auto formatted)
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

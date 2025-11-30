@@ -1,4 +1,7 @@
 category: Utilities
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: XSOAR-Web-Server
   version: -1
@@ -7,20 +10,24 @@ configuration:
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Long running instance
   name: longRunning
   type: 8
   required: false
+  section: Connect
 - additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a port, an unused port for the XSOAR Web Server will automatically be generated when the instance is saved. However, if using an engine, you must enter a port."
   display: Server Listening Port
   name: longRunningPort
   required: true
   type: 0
+  section: Connect
 - additionalinfo: The URL on which the user should send the response to.
   display: "XSOAR external URL"
   name: xsoar-external-url
   required: true
   type: 0
+  section: Connect
 description: 'This is a simple web-server that as of now, supports handling configurable user responses (like Yes/No/Maybe) and data collection tasks that can be used to fetch key value pairs. What makes it different from Data collection tasks is that, the URL to perform a certain action is predictable and written to the incident context when an action is setup.This URL can be inserted to for eg: an HTML email.  User clicks are  are recorded in the integration context and can be polled by Scheduled Commands/ Generic Polling.'
 display: XSOAR-Web-Server
 name: XSOAR-Web-Server
@@ -98,7 +105,7 @@ script:
       name: xsoarproxy
     description: setup a form submission job that can take multiple values from multiple users.
     name: xsoar-ws-setup-form-submission
-  dockerimage: demisto/bottle:1.0.0.2057122
+  dockerimage: demisto/bottle:1.0.0.3189500
   longRunning: true
   longRunningPort: true
   script: ''
@@ -107,3 +114,14 @@ script:
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+triggers:
+  - conditions:
+      - name: engine
+        operator: not_exists
+      - name: isEngineGroup
+        operator: not_exists
+    effects:
+      - name: longRunningPort
+        action:
+          hidden: true
+          required: false

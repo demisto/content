@@ -1,7 +1,7 @@
 commonfields:
   id: IntSights
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: IntSights

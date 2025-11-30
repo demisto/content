@@ -109,3 +109,8 @@ pipeline_jobs_folder/
 
 # Ignore windsurf config
 .windsurf
+
+# Ignore AI configuration file
+AGENTS.md
+plan.md
+report.md

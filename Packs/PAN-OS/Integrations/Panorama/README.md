@@ -383,6 +383,7 @@ Run any command supported in the API.
 | job-id | Job ID. | Optional |
 | query | Query string. | Optional |
 | vsys | The name of the virtual system to be configured. If no vsys is mentioned, this command will not use the vsys parameter. | Optional |
+| newname | The object's new name, used when action=rename. If no value is provided, the name defaults to 'newname'.| Optional |
 
 #### Context Output
 
@@ -9894,6 +9895,7 @@ Gathers the name, expiration date, and expiration status of certificates configu
 
 ***
 Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content.
+When running from a Panorama instance, the `target` argument must be specified.
 
 #### Base Command
 
@@ -9903,7 +9905,7 @@ Checks for the latest available dynamic update versions and returns a list of la
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| target | Serial number of the firewall on which to run the command. Mandatory for Panorama instances. | Optional |
 
 #### Context Output
 

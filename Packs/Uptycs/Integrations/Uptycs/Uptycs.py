@@ -6,7 +6,7 @@ import json
 ###############################################################################
 import os
 from datetime import datetime, timedelta
-from signal import SIG_DFL, SIGPIPE, signal  # type: ignore[no-redef]
+from signal import SIG_DFL, SIGPIPE, signal as signal_func
 from urllib.parse import unquote
 
 import demistomock as demisto
@@ -14,7 +14,7 @@ import jwt
 import requests
 from CommonServerPython import *
 
-signal(SIGPIPE, SIG_DFL)  # type: ignore[operator]
+signal_func(SIGPIPE, SIG_DFL)
 
 ###############################################################################
 # packages to handle IOerror

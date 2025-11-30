@@ -2,7 +2,7 @@ category: IT Services
 commonfields:
   id: VenafiTLSProtect
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -34,7 +34,7 @@ configuration:
   required: false
   section: Connect
 description: Retrieves information about certificates stored in Venafi.
-display: Venafi TLS Protect
+display: CyberArk Certificate Manager
 name: VenafiTLSProtect
 script:
   commands:
@@ -308,7 +308,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4508456
 fromversion: 6.9.0
 tests:
 - VenafiV2_Test

@@ -1,0 +1,43 @@
+category: Utilities
+commonfields:
+  id: unshortenMe
+  version: -1
+configuration:
+- additionalinfo: The token assigned to your unshortenMe profile.
+  section: Connect
+  displaypassword: Token
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+description: Unshorten.me is a free service to Un-Shorten the URLs created by URL shortening services. Unshorten.me can un-shorten URLs created by different services like goo.gl (Google), fb.me (Facebook), t.co (Twitter), bit.ly, TinyURL, ow.ly among others.
+display: unshortenMe
+name: unshortenMe
+script:
+  commands:
+  - arguments:
+    - description: The shortened URL.
+      name: shortUrl
+      required: true
+    description: The response will contain the unshortened URL corresponding to the provided short URL and success status.
+    name: unshorten-me-unshorten-url
+    outputs:
+    - contextPath: unshortenMe.unshortened_url
+      description: The original URL.
+      type: string
+    - contextPath: unshortenMe.shortened_url
+      description: The shortened URL.
+      type: string
+    - contextPath: unshortenMe.success
+      description: The status of the unshorten operation.
+      type: boolean
+  dockerimage: demisto/python3:3.12.11.4508456
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+tests:
+- unshortenMe Test
+sectionorder:
+- Connect
+fromversion: 6.10.0

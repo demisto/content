@@ -1,0 +1,184 @@
+commonfields:
+  id: GetCaseExtraData
+  version: -1
+name: GetCaseExtraData
+isInternal: true  
+script: '-'
+type: python
+comment: Retrieves extra data fields of a specific case, including issues and key artifacts.
+enabled: true
+args:
+- description: A comma separated list of case IDs.
+  isArray: true
+  name: case_id
+  required: true
+- defaultValue: '1000'
+  description: Maximum number of issues to return per case. The maximum is 1000.
+  name: issues_limit
+outputs:
+  - contextPath: Core.CaseExtraData.case_id
+    description: The unique identifier for the case.
+    type: String
+  - contextPath: Core.CaseExtraData.case_name
+    description: The name assigned to the case.
+    type: String
+  - contextPath: Core.CaseExtraData.creation_time
+    description: The timestamp (in epoch format) when the case was created.
+    type: Number
+  - contextPath: Core.CaseExtraData.modification_time
+    description: The timestamp (in epoch format) when the case was last modified.
+    type: Number
+  - contextPath: Core.CaseExtraData.detection_time
+    description: The timestamp when the activity related to the case was first detected.
+    type: String
+  - contextPath: Core.CaseExtraData.status
+    description: The current status of the case (e.g., 'new', 'under_investigation', 'closed').
+    type: String
+  - contextPath: Core.CaseExtraData.severity
+    description: The severity level of the case (e.g., 'low', 'medium', 'high', 'critical').
+    type: String
+  - contextPath: Core.CaseExtraData.description
+    description: A detailed textual description of the case.
+    type: String
+  - contextPath: Core.CaseExtraData.assigned_user_mail
+    description: The email address of the user assigned to the case.
+    type: String
+  - contextPath: Core.CaseExtraData.assigned_user_pretty_name
+    description: The display name of the user assigned to the case.
+    type: String
+  - contextPath: Core.CaseExtraData.issue_count
+    description: The total number of issues associated with the case.
+    type: Number
+  - contextPath: Core.CaseExtraData.low_severity_issue_count
+    description: The total number of low-severity issues within the case.
+    type: Number
+  - contextPath: Core.CaseExtraData.med_severity_issue_count
+    description: The total number of medium-severity issues within the case.
+    type: Number
+  - contextPath: Core.CaseExtraData.high_severity_issue_count
+    description: The total number of high-severity issues within the case.
+    type: Number
+  - contextPath: Core.CaseExtraData.critical_severity_issue_count
+    description: The total number of critical-severity issues within the case.
+    type: Number
+  - contextPath: Core.CaseExtraData.user_count
+    description: The number of unique users involved in the case.
+    type: Number
+  - contextPath: Core.CaseExtraData.host_count
+    description: The number of unique hosts involved in the case.
+    type: Number
+  - contextPath: Core.CaseExtraData.notes
+    description: A collection of notes or comments added to the case by analysts.
+    type: Array
+  - contextPath: Core.CaseExtraData.resolve_comment
+    description: The comment entered by a user when resolving the case.
+    type: String
+  - contextPath: Core.CaseExtraData.manual_severity
+    description: The severity level manually set by a user, which may override the calculated severity for the case.
+    type: String
+  - contextPath: Core.CaseExtraData.manual_description
+    description: A description of the case that was manually entered by a user.
+    type: String
+  - contextPath: Core.CaseExtraData.xdr_url
+    description: The direct URL to view the case in the Cortex XDR platform.
+    type: String
+  - contextPath: Core.CaseExtraData.starred
+    description: A flag indicating whether the case has been starred or marked as a favorite.
+    type: Boolean
+  - contextPath: Core.CaseExtraData.hosts
+    description: A comma-separated list of hostnames involved in the case.
+    type: Array
+  - contextPath: Core.CaseExtraData.case_sources
+    description: The products or sources that contributed issues to this case (e.g., 'XDR Agent', 'Firewall').
+    type: String
+  - contextPath: Core.CaseExtraData.rule_based_score
+    description: The case's risk score as calculated by automated detection rules.
+    type: Number
+  - contextPath: Core.CaseExtraData.manual_score
+    description: A risk score manually assigned to the case by a user.
+    type: Number
+  - contextPath: Core.CaseExtraData.wildfire_hits
+    description: The number of times a file associated with this case was identified as malicious by WildFire.
+    type: Number
+  - contextPath: Core.CaseExtraData.issues_grouping_status
+    description: The current status of the issue grouping or clustering process for this case.
+    type: String
+  - contextPath: Core.CaseExtraData.mitre_techniques_ids_and_names
+    description: A list of MITRE ATT&CK technique IDs and names observed in the case.
+    type: Array
+  - contextPath: Core.CaseExtraData.mitre_tactics_ids_and_names
+    description: A list of MITRE ATT&CK tactic IDs and names observed in the case.
+    type: Array
+  - contextPath: Core.CaseExtraData.issue_categories
+    description: A comma-separated list of categories for the issues included in the case.
+    type: String
+  - contextPath: Core.CaseExtraData.issue_ids
+    description: IDs of related issues.
+    type: Array
+  - contextPath: Core.CaseExtraData.network_artifacts.total_count
+    description: The total number of network artifacts associated with the case.
+    type: Number
+  - contextPath: Core.CaseExtraData.network_artifacts.data.type
+    description: The type of network artifact (e.g., 'IP Address', 'Domain').
+    type: String
+  - contextPath: Core.CaseExtraData.network_artifacts.data.issue_count
+    description: The number of issues in the case that involve this network artifact.
+    type: Number
+  - contextPath: Core.CaseExtraData.network_artifacts.data.is_manual
+    description: A flag indicating whether the network artifact was added manually by a user.
+    type: Boolean
+  - contextPath: Core.CaseExtraData.network_artifacts.data.network_domain
+    description: The domain name of the network artifact.
+    type: String
+  - contextPath: Core.CaseExtraData.network_artifacts.data.network_remote_ip
+    description: The remote IP address of the network artifact.
+    type: String
+  - contextPath: Core.CaseExtraData.network_artifacts.data.network_remote_port
+    description: The remote port number of the network artifact.
+    type: String
+  - contextPath: Core.CaseExtraData.network_artifacts.data.network_country
+    description: The country associated with the network artifact's IP address.
+    type: String
+  - contextPath: Core.CaseExtraData.file_artifacts.total_count
+    description: The total number of file artifacts associated with the case.
+    type: Number
+  - contextPath: Core.CaseExtraData.file_artifacts.data.issue_count
+    description: The number of issues in the case that involve this file artifact.
+    type: Number
+  - contextPath: Core.CaseExtraData.file_artifacts.data.file_name
+    description: The name of the file artifact.
+    type: String
+  - contextPath: Core.CaseExtraData.file_artifacts.data.File_sha256
+    description: The SHA256 hash of the file artifact.
+    type: String
+  - contextPath: Core.CaseExtraData.file_artifacts.data.file_signature_status
+    description: The digital signature status of the file artifact.
+    type: String
+  - contextPath: Core.CaseExtraData.file_artifacts.data.file_wildfire_verdict
+    description: The verdict from WildFire for this file (e.g., 'malicious', 'benign').
+    type: String
+  - contextPath: Core.CaseExtraData.file_artifacts.data.is_malicous
+    description: A flag indicating whether the file artifact is considered malicious.
+    type: Boolean
+  - contextPath: Core.CaseExtraData.file_artifacts.data.is_manual
+    description: A flag indicating whether the file artifact was added manually by a user.
+    type: Boolean
+  - contextPath: Core.CaseExtraData.file_artifacts.data.is_process
+    description: A flag indicating whether the file artifact is a process executable.
+    type: Boolean
+  - contextPath: Core.CaseExtraData.file_artifacts.data.low_confidence
+    description: A flag indicating whether the verdict on the file artifact has low confidence.
+    type: Boolean
+  - contextPath: Core.CaseExtraData.file_artifacts.data.type
+    description: The type of the file artifact.
+    type: String
+dependson:
+  must:
+  - core-get-case-extra-data
+subtype: python3
+dockerimage: demisto/python3:3.12.12.5490952
+fromversion: 6.6.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform

@@ -31,17 +31,17 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SearchIncidentsV2
+* SearchAlertsV2
 * SetMultipleValues
+* file-enrichment
+* quarantine-file
 
 ### Commands
 
 * closeInvestigation
 * core-get-hash-analytics-prevalence
 * core-get-quarantine-status
-* core-quarantine-files
 * core-terminate-causality
-* file
 
 ## Playbook Inputs
 

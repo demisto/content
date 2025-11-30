@@ -2,7 +2,7 @@
     "name": "Cymulate",
     "description": "You can now verify your security posture on-demand using the Cymulate integration, which allows you to launch simulations of cyberattacks, breach, and attacks against yourself",
     "support": "partner",
-    "currentVersion": "2.0.30",
+    "currentVersion": "2.0.32",
     "author": "Cymulate",
     "url": "",
     "email": "support@cymulate.com",
@@ -26,6 +26,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

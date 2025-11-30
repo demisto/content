@@ -2,6 +2,9 @@ category: Utilities
 commonfields:
   id: AWS - System Manager
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: AWS Default Region
   name: defaultRegion
@@ -26,35 +29,42 @@ configuration:
   - us-gov-west-1
   type: 15
   required: true
+  section: Connect
 - display: Role Arn
   name: roleArn
   type: 0
   required: false
+  section: Connect
 - display: Role Session Name
   name: roleSessionName
   type: 0
   required: false
+  section: Connect
 - display: Role Session Duration
   name: sessionDuration
   type: 0
   required: false
+  section: Connect
 - display: Access Key
   name: credentials
   type: 9
   displaypassword: Secret Key
   required: false
+  section: Connect
 - display: Timeout
   name: timeout
   defaultvalue: 60,10
   additionalinfo: "The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used."
   type: 0
   required: false
+  section: Connect
 - display: Retries
   name: retries
   type: 0
   defaultvalue: 5
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   required: false
+  section: Connect
 - display: AWS STS Regional Endpoints
   additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
   name: sts_regional_endpoint
@@ -68,10 +78,12 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: AWS Systems Manager is the operations hub for your AWS applications and resources and a secure end-to-end management solution for hybrid cloud environments that enables safe and secure operations at scale.
 display: AWS - System Manager
 name: AWS - System Manager
@@ -2385,7 +2397,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.3575453
+  dockerimage: demisto/boto3py3:1.0.0.5533693
 fromversion: 6.9.0
 marketplaces:
 - xsoar

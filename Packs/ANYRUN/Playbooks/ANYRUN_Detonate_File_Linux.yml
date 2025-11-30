@@ -2,7 +2,7 @@ id: ANYRUN Detonate File Linux
 version: -1
 fromversion: 6.0.0
 name: ANYRUN Detonate File Linux
-description: This playbook submits a file extracted from an incident attachment to the ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. It helps to automate malware detonation and behavior observation on Ubuntu OS.
+description: This playbook submits a file extracted from an incident attachment to the ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. It helps to automate malware detonation and behavior observation on Linux OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -43,7 +43,7 @@ tasks:
       id: 7a25c747-44e0-470d-bf56-94cea07030c7
       version: -1
       name: '[ANY.RUN] Detonate File Linux'
-      description: Perform File analysis using Ubuntu VM.
+      description: Perform File analysis using Linux VM.
       script: '|||anyrun-detonate-file-linux'
       type: regular
       iscommand: true
@@ -409,7 +409,7 @@ inputs:
   value:
     simple: ubuntu
   required: false
-  description: Operation system
+  description: Operation system. Possible values - ubuntu, debian
   playbookInputQuery:
 - key: opt_network_connect
   value:

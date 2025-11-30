@@ -4,6 +4,7 @@ from collections import defaultdict
 from collections.abc import Callable
 from copy import deepcopy
 from mimetypes import guess_type
+from urllib.parse import urlparse
 
 
 import demistomock as demisto  # noqa: F401
@@ -263,8 +264,14 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         # content in HTML format, using a 3rd party package, rather than complex format.
         # We also supply the fields: *all to return all the fields from an issue (specifically the field that holds
         # data about the attachments in the issue), otherwise, it won't get returned in the query.
+        if self.api_version == "2" or "startAt" in query_params:
+            # Use old endpoint for backwards compatibility and for on-prem instances
+            url_suffix = f"rest/api/{self.api_version}/search"
+        else:
+            url_suffix = f"rest/api/{self.api_version}/search/jql"
+
         query_params |= {"expand": "renderedFields,transitions,names", "fields": ["*all"]}
-        return self.http_request(method="GET", url_suffix=f"rest/api/{self.api_version}/search", params=query_params)
+        return self.http_request(method="GET", url_suffix=url_suffix, params=query_params)
 
     # Board Requests
     def get_issues_from_backlog(
@@ -1493,26 +1500,39 @@ def prepare_pagination_args(page: int | None = None, page_size: int | None = Non
         return {"start_at": DEFAULT_PAGE, "max_results": limit}
 
 
-def create_query_params(jql_query: str, start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
+def create_query_params(
+    jql_query: str, start_at: int | None = None, max_results: int | None = None, next_page_token: str = ""
+) -> Dict[str, Any]:
     """Create the query parameters when issuing a query.
 
     Args:
         jql_query (str): The JQL query. The Jira Query Language string, used to search for issues in a project using
         SQL-like syntax.
-        start_at (int | None, optional): The starting index of the returned issues. Defaults to None.
+        start_at (int | None, optional): The starting index of the returned issues. Defaults to None. (Deprecated, kept for BC)
         max_results (int | None, optional): The maximum number of issues to return per page. Defaults to None.
+        next_page_token (str | None, optional): A token to the next page from a previous query.
 
     Returns:
         Dict[str, Any]: The query parameters to be sent when issuing a query request to the API.
     """
-    start_at = start_at or 0
     max_results = max_results or DEFAULT_PAGE_SIZE
-    demisto.debug(f"Querying with: {jql_query}\nstart_at: {start_at}\nmax_results: {max_results}\n")
-    return {
+    demisto.debug(
+        f"Querying with: {jql_query}\n"
+        f"next_page_token: {next_page_token}\n"
+        f"max_results: {max_results}\n"
+        f"startAt: {start_at}"
+    )
+    query = {
         "jql": jql_query,
-        "startAt": start_at,
         "maxResults": max_results,
     }
+    if next_page_token:
+        query["nextPageToken"] = next_page_token
+    elif start_at:
+        # Old endpoint call, kept for backwards compatibility and on-prem
+        query["startAt"] = start_at
+
+    return query
 
 
 def get_issue_fields_id_to_name_mapping(client: JiraBaseClient) -> Dict[str, str]:
@@ -1551,7 +1571,7 @@ def create_files_to_upload(file_mime_type: str, file_name: str, file_bytes: byte
         tuple([Dict[tuple(str, bytes, str)]], str): The dift is The file object of new attachment (file name, content in
         bytes, mime type), and the str is the mime type to upload with the file.
     """
-    # guess_type can return a None mime type if the type can’t be guessed (missing or unknown suffix). In this case, we should use
+    # guess_type can return a None mime type if the type can't be guessed (missing or unknown suffix). In this case, we should use
     # a default mime type
     mime_type_to_upload = file_mime_type if file_mime_type else guess_type(file_name)[0] or "application-type"
     demisto.debug(f"In create_files_to_upload {mime_type_to_upload=}")
@@ -2057,11 +2077,31 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> list[Co
     """
     jql_query = args.get("query", "")
     start_at = arg_to_number(args.get("start_at", ""))
+    next_page_token = args.get("next_page_token", "")
     max_results = arg_to_number(args.get("max_results", DEFAULT_PAGE_SIZE)) or DEFAULT_PAGE_SIZE
     headers = args.get("headers", "")
     specific_fields = argToList(args.get("fields", ""))
-    query_params = create_query_params(jql_query=jql_query, start_at=start_at, max_results=max_results)
-    res = client.run_query(query_params=query_params)
+
+    if client.api_version == "2" and next_page_token:
+        raise DemistoException("The next_page_token argument is not supported for Jira OnPrem instances.")
+
+    query_params = create_query_params(
+        jql_query=jql_query, start_at=start_at, max_results=max_results, next_page_token=next_page_token
+    )
+
+    try:
+        res = client.run_query(query_params=query_params)
+
+    except DemistoException as e:
+        if start_at and "Error in API call [410]" in str(e):
+            # Old endpoint was used but is already removed in this jira instance
+            demisto.debug(f"Got error when using old query issues endpoint. Error message: {str(e)}")
+            raise DemistoException(
+                "The start_at argument is no longer supported in this Jira instance." "Please use next_page_token instead."
+            )
+        else:
+            raise e
+
     if issues := res.get("issues", []):
         issue_fields_id_to_name_mapping = res.get("names", {}) or {}
         command_results: list[CommandResults] = []
@@ -2084,6 +2124,15 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> list[Co
                     ),
                     raw_response=issue,
                 ),
+            )
+
+        if next_page_token := res.get("nextPageToken", ""):
+            command_results.append(
+                CommandResults(
+                    outputs_prefix="Jira.Query.nextPageToken",
+                    outputs=next_page_token,
+                    readable_output=f"Use the next_page_token argument to fetch the next page. Token: {next_page_token}",
+                )
             )
         return command_results
     return CommandResults(readable_output="No issues matched the query.")
@@ -3496,11 +3545,24 @@ def jira_test_authorization(client: JiraBaseClient, args: Dict[str, Any]) -> Com
     return CommandResults(readable_output="Successful connection.")
 
 
-def jira_test_module(client: JiraBaseClient) -> str:
-    """This method will return an error since in order for the user to test the connectivity of the instance,
-    they have to run a separate command, therefore, pressing the `test` button on the configuration screen will
-    show them the steps in order to test the instance.
+def jira_test_module(client: JiraBaseClient, params: Dict[str, Any]) -> str:
     """
+    Tests for basic configuration issues in the instance.
+    Tests the connectivity for basic authentication methods, otherwise provides users with further authentication instructions.
+    """
+    url = params.get("server_url", "").rstrip("/")
+    cloudid = params.get("cloud_id")
+
+    if is_jira_cloud_url(url) and not cloudid:
+        raise DemistoException(
+            "Cloud ID is required for Jira Cloud instances. Refer to the integration help section for more information."
+        )
+    if cloudid and url != "https://api.atlassian.com/ex/jira":
+        raise DemistoException(
+            "Jira Cloud instances must use the default Server URL: `https://api.atlassian.com/ex/jira`."
+            " Please update the Server URL in the instance configuration."
+        )
+
     if client.is_basic_auth or client.is_pat_auth:
         client.jira_test_instance_connection()  # raises on failure
         return "ok"
@@ -3510,7 +3572,7 @@ def jira_test_module(client: JiraBaseClient) -> str:
             " and complete the process in the URL that is returned. You will then be redirected"
             " to the callback URL. Copy the authorization code found in the query parameter"
             " `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish"
-            " the process."
+            " the process. Then you can test it by running the `!jira-oauth-test` command."
         )
 
 
@@ -3796,28 +3858,23 @@ def create_fetch_incidents_query(
         str: The query to use to fetch the appropriate incidents.
     """
     issue_field_in_fetch_query_error_message = "The issue field to fetch by cannot be in the fetch query"
-    if issue_field_to_fetch_from in fetch_query:
+    tokens = re.findall(r"\w+", fetch_query)
+    if issue_field_to_fetch_from in tokens:
         raise DemistoException(issue_field_in_fetch_query_error_message)
     error_message = f"Could not create the proper fetch query for the issue field {issue_field_to_fetch_from}"
     exclude_issue_ids_query = f" AND ID NOT IN ({', '.join(map(str, issue_ids_to_exclude))}) " if issue_ids_to_exclude else " "
     if issue_field_to_fetch_from == "id":
-        if "id" not in fetch_query:
-            return f"{fetch_query} AND id >= {last_fetch_id}{exclude_issue_ids_query}ORDER BY id ASC"
-        error_message = f"{error_message}\n{issue_field_in_fetch_query_error_message}"
+        return f"{fetch_query} AND id >= {last_fetch_id}{exclude_issue_ids_query}ORDER BY id ASC"
     elif issue_field_to_fetch_from == "created date":
-        if "created" not in fetch_query:
-            return (
-                f'{fetch_query} AND created >= "{last_fetch_created_time or first_fetch_interval}"{exclude_issue_ids_query}'
-                "ORDER BY created ASC"
-            )
-        error_message = f"{error_message}\n{issue_field_in_fetch_query_error_message}"
+        return (
+            f'{fetch_query} AND created >= "{last_fetch_created_time or first_fetch_interval}"{exclude_issue_ids_query}'
+            "ORDER BY created ASC"
+        )
     elif issue_field_to_fetch_from == "updated date":
-        if "updated" not in fetch_query:
-            return (
-                f'{fetch_query} AND updated >= "{last_fetch_updated_time or first_fetch_interval}"{exclude_issue_ids_query}'
-                "ORDER BY updated ASC"
-            )
-        error_message = f"{error_message}\n{issue_field_in_fetch_query_error_message}"
+        return (
+            f'{fetch_query} AND updated >= "{last_fetch_updated_time or first_fetch_interval}"{exclude_issue_ids_query}'
+            "ORDER BY updated ASC"
+        )
     raise DemistoException(error_message)
 
 
@@ -4697,6 +4754,59 @@ def validate_auth_params(username: str, api_key: str, client_id: str, client_sec
         raise DemistoException("To use OAuth 2.0, the 'Client ID' and 'Client Secret' parameters are mandatory.")
 
 
+def is_jira_cloud_url(url: str) -> bool:
+    """
+    Check if the given URL is a Jira Cloud Server URL.
+
+    Args:
+        url (str): The URL to parse.
+
+    Returns:
+        bool: True if the URL is a Jira Cloud URL, False otherwise.
+    """
+    try:
+        hostname = urlparse(url).hostname or ""
+        return hostname.endswith((".atlassian.net", ".atlassian.com"))
+
+    except (ValueError, AttributeError):
+        return False
+
+
+def add_config_error_messages(err: str, cloud_id: str, server_url: str) -> str:
+    """
+    Provide additional information for error messages that result from incorrect configurations.
+
+        Args:
+            err (str): The original error message.
+            cloud_id (str): The cloud ID.
+            server_url (str): The server URL.
+
+        Returns:
+            str: The error message with additional information if applicable.
+    """
+
+    if "404" in err and cloud_id and server_url.rstrip("/") != "https://api.atlassian.com/ex/jira":
+        err = f"""
+(Error 404) Jira Cloud instances must use the default Server URL: `https://api.atlassian.com/ex/jira`.
+Update the Server URL in the instance configuration and try again.
+
+
+Original error: {err}
+            """
+
+    elif "410" in err and not cloud_id and is_jira_cloud_url(server_url):
+        err = f"""
+(Error 410) The requested endpoint has been removed from Jira On-Prem.
+This appears to be a Jira Cloud instance. Please update the Cloud ID in the instance configuration and try again.
+Refer to the integration help section for more information.
+
+
+Original error: {err}
+            """
+
+    return err
+
+
 def main():  # pragma: no cover
     params: Dict[str, Any] = demisto.params()
     args = map_v2_args_to_v3(demisto.args())
@@ -4817,7 +4927,7 @@ def main():  # pragma: no cover
         demisto.debug(f"The configured Jira client is: {type(client)}")
 
         if command == "test-module":
-            return_results(jira_test_module(client=client))
+            return_results(jira_test_module(client=client, params=params))
         elif command in commands:
             return_results(commands[command](client, args))
         elif command == "fetch-incidents":
@@ -4872,7 +4982,13 @@ def main():  # pragma: no cover
             raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as e:
-        return_error(str(e))
+        err = add_config_error_messages(str(e), cloud_id, server_url)
+        return_error(err)
+
+    finally:
+        # XSUP-57873
+        client._return_execution_metrics_results()
+        client.execution_metrics.metrics = None
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

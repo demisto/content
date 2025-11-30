@@ -5,7 +5,7 @@
     "cvv": "123",
     "expiry_month": 4,
     "expiry_year": 2026,
-    "brand": "Demo Bank",
+    "brand": "RiskAssess Demo",
     "external_link": "https://platform.ctm360.com/cbs/leaks/compromised_cards?filters=[]&searchQuery=LC-A1E4B2F49&selectedSearchField=leak_id",
     "id": "LC-A1E4B2F49",
     "status": "new",

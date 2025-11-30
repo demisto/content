@@ -2,9 +2,9 @@ category: Network Security
 commonfields:
   id: FortiGate
   version: -1
-sectionOrder:
-  - Connect
-  - Collect
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server

@@ -1,0 +1,163 @@
+{
+    "list": [
+        {
+            "id": "evt_001",
+            "timestamp": "2025-01-15T10:30:00Z",
+            "type": "ssh_connection",
+            "details": {
+                "server": "srv_web01",
+                "project": "proj_prod", 
+                "user": "usr_john",
+                "client": "client_laptop01",
+                "from_address": "192.168.1.100",
+                "ssh_algorithm": "rsa-sha2-256"
+            }
+        },
+        {
+            "id": "evt_002", 
+            "timestamp": "2025-01-15T10:31:15Z",
+            "type": "ssh_connection",
+            "details": {
+                "server": "srv_web01",
+                "project": "proj_prod",
+                "user": "usr_jane", 
+                "client": "client_laptop02",
+                "from_address": "192.168.1.101",
+                "ssh_algorithm": "rsa-sha2-256"
+            }
+        },
+        {
+            "id": "evt_003",
+            "timestamp": "2025-01-15T10:32:30Z", 
+            "type": "file_transfer",
+            "details": {
+                "server": "srv_db01",
+                "project": "proj_prod",
+                "user": "usr_john",
+                "client": "client_laptop01",
+                "from_address": "192.168.1.100", 
+                "file_path": "/opt/data/backup.sql"
+            }
+        },
+        {
+            "id": "evt_004",
+            "timestamp": "2025-01-15T10:33:45Z",
+            "type": "command_execution", 
+            "details": {
+                "server": "srv_web02",
+                "project": "proj_staging",
+                "user": "usr_bob",
+                "client": "client_desktop01",
+                "from_address": "192.168.1.102",
+                "command": "sudo systemctl restart nginx"
+            }
+        }
+    ],
+    "related_objects": {
+        "srv_web01": {
+            "type": "server",
+            "object": {
+                "name": "web-server-01",
+                "ip": "10.0.1.10",
+                "region": "us-east-1",
+                "role": "web",
+                "os": "Ubuntu 20.04"
+            }
+        },
+        "srv_web02": {
+            "type": "server", 
+            "object": {
+                "name": "web-server-02",
+                "ip": "10.0.1.11",
+                "region": "us-east-1", 
+                "role": "web",
+                "os": "Ubuntu 20.04"
+            }
+        },
+        "srv_db01": {
+            "type": "server",
+            "object": {
+                "name": "database-server-01",
+                "ip": "10.0.2.10",
+                "region": "us-east-1",
+                "role": "database",
+                "os": "CentOS 8"
+            }
+        },
+        "proj_prod": {
+            "type": "project",
+            "object": {
+                "name": "production-environment",
+                "environment": "prod",
+                "team": "platform",
+                "created_at": "2024-01-01T00:00:00Z"
+            }
+        },
+        "proj_staging": {
+            "type": "project", 
+            "object": {
+                "name": "staging-environment",
+                "environment": "staging",
+                "team": "platform", 
+                "created_at": "2024-01-01T00:00:00Z"
+            }
+        },
+        "usr_john": {
+            "type": "user",
+            "object": {
+                "email": "john.doe@company.com",
+                "name": "John Doe",
+                "role": "senior-engineer",
+                "department": "engineering",
+                "team": "platform"
+            }
+        },
+        "usr_jane": {
+            "type": "user",
+            "object": {
+                "email": "jane.smith@company.com", 
+                "name": "Jane Smith",
+                "role": "engineer",
+                "department": "engineering",
+                "team": "platform"
+            }
+        },
+        "usr_bob": {
+            "type": "user",
+            "object": {
+                "email": "bob.wilson@company.com",
+                "name": "Bob Wilson", 
+                "role": "devops-engineer",
+                "department": "engineering",
+                "team": "devops"
+            }
+        },
+        "client_laptop01": {
+            "type": "client",
+            "object": {
+                "name": "john-macbook-pro",
+                "type": "laptop",
+                "os": "macOS",
+                "owner": "john.doe@company.com"
+            }
+        },
+        "client_laptop02": {
+            "type": "client", 
+            "object": {
+                "name": "jane-macbook-air",
+                "type": "laptop",
+                "os": "macOS",
+                "owner": "jane.smith@company.com"
+            }
+        },
+        "client_desktop01": {
+            "type": "client",
+            "object": {
+                "name": "bob-workstation",
+                "type": "desktop",
+                "os": "Linux",
+                "owner": "bob.wilson@company.com"
+            }
+        }
+    }
+}

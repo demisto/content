@@ -151,7 +151,7 @@ script:
     - contextPath: TAXIIServer.ServerInfo.description
       description: The server description.
       type: String
-  dockerimage: demisto/flask-nginx:1.0.0.117310
+  dockerimage: demisto/flask-nginx:1.0.0.3748048
   longRunning: true
   longRunningPort: true
   script: '-'
@@ -160,3 +160,14 @@ script:
 tests:
 - TAXII2 Server Performance Test
 fromversion: 6.1.0
+triggers:
+  - conditions:
+      - name: engine
+        operator: not_exists
+      - name: isEngineGroup
+        operator: not_exists
+    effects:
+      - name: longRunningPort
+        action:
+          hidden: true
+          required: false

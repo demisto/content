@@ -1,3 +1,4 @@
+# ruff: noqa: RUF001
 RESPONSE_DATA = {
     "data": [
         {

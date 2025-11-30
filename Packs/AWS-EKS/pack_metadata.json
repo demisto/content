@@ -2,7 +2,7 @@
     "name": "AWS - EKS",
     "description": "The AWS EKS integration allows for the management and operation of Amazon Elastic Kubernetes Service (EKS) clusters.",
     "support": "xsoar",
-    "currentVersion": "1.0.10",
+    "currentVersion": "1.0.11",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -31,6 +31,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

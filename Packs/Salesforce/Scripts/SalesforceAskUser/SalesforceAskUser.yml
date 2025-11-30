@@ -24,15 +24,15 @@ args:
 - name: task
   description: Which task should we close with the reply. If none then no playbook tasks will be closed.
 - name: option1
-  description: First option for a user reply.
+  description: First option for a user reply. Options cannot contain whitespaces.
   defaultValue: "yes"
 - name: option2
-  description: Second option for the user reply.
+  description: Second option for the user reply. Options cannot contain whitespaces.
   defaultValue: "no"
 - name: oid
   description: Object ID of Subject.
 - name: additionalOptions
-  description: A comma delimited list of additional options (in case more than 2 options are needed).
+  description: A comma delimited list of additional options (in case more than 2 options are needed). Options cannot contain whitespaces.
 - name: text
   description: Chatter comment text. If not given, a default post message will be generated based on option arguments.
 - name: link
@@ -42,6 +42,6 @@ dependson:
   must:
   - salesforce-push-comment
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.11.4508456
 tests:
 - No tests (auto formatted)

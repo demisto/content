@@ -1,0 +1,380 @@
+args:
+- description: A comma-separated list of IPs to enrich.
+  name: ip_list
+  required: true
+  isArray: true
+- name: external_enrichment
+  description: "Whether to call external integrations for enrichment:
+    - 'true': enrich using enabled external integrations (e.g., VirusTotal (API v3), AlienVault OTX v2) and run internal commands.
+    - 'false': use only existing TIM data and run internal commands; skip external integrations.
+    If the 'brands' argument is provided, this flag is ignored and enrichment/internal commands will run only on the brands provided."
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+  required: false
+- name: verbose
+  description: Retrieve a human-readable entry for each command; if false, only the final result is summarized and errors are suppressed.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+  required: false
+- name: brands
+  description: |
+    A list of integration brands to run enrichment against.  
+    Example: `"VirusTotal (API v3), AlienVault OTX v2"`.
+    - If provided, only the selected brands are used.
+    - If left empty, the script runs enrichment on all enabled integrations,
+      depending on the `external_enrichment` flag.
+    - In order to run get-endpoint-data add Core to the brands list.
+    - In order to run core-get-IP-analytics-prevalence, add Cortex Core - IR to the brands list.
+    To see the available brands for the `ip` command, run: `!ProvidesCommand command=ip`.
+  isArray: true
+  required: false
+- name: additional_fields
+  description: |
+    When set to true, the output includes an `AdditionalFields` object
+    for each of the indicator result.  
+    `AdditionalFields` contains all fields returned by TIM or the integrations
+    that are not part of the standard output keys: `Address`, `DetectionEngines`, 
+    `PositiveDetections`, `Score`, and `Brand`.  
+    When set to false, only the standard keys are returned.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  defaultValue: 'false'
+comment: This script gathers IP reputation data from multiple integrations and returns an IP entity with consolidated information in the context.
+commonfields:
+  id: ip-enrichment
+  version: -1
+enabled: false
+name: ip-enrichment
+outputs:
+# IPEnrichment
+- contextPath: IPEnrichment.Value
+  description: The IP address.
+  type: string
+- contextPath: IPEnrichment.MaxScore
+  description: The max score of all the indicators found.
+  type: number
+- contextPath: IPEnrichment.MaxVerdict
+  description: The max verdict of all the indicators found.
+  type: string
+- contextPath: IPEnrichment.TIMScore
+  description: The TIM score of the IP address.
+  type: number
+- contextPath: IPEnrichment.Results
+  description: A list of all indicators found for the IP address.
+  type: array
+- contextPath: IPEnrichment.Status
+  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified.'
+  type: string
+- contextPath: IPEnrichment.ModifiedTime
+  description: The time the indicator was last modified.
+  type: Date
+# IPEnrichment results main keys
+- contextPath: IPEnrichment.Results.Source
+  description: The source of the indicator.
+  type: string
+- contextPath: IPEnrichment.Results.Brand
+  description: The brand of the indicator.
+  type: string
+- contextPath: IPEnrichment.Results.DetectionEngines
+  description: The detection engines of the indicator.
+  type: number
+- contextPath: IPEnrichment.Results.PositiveDetections
+  description: The positive detections of the indicator.
+  type: number
+- contextPath: IPEnrichment.Results.ASOwner
+  description: Registered owner of the Autonomous System announcing the IP prefix.
+  type: string
+- contextPath: IPEnrichment.Results.Score
+  description: The score of the indicator.
+  type: number
+- contextPath: IPEnrichment.Results.Verdict
+  description: The verdict of the indicator.
+  type: string
+- contextPath: IPEnrichment.Results.Address
+  description: The IP address of the indicator.
+  type: string
+- contextPath: IPEnrichment.Results.Reliability
+  description: The reliability of the Brand.
+  type: string
+# IPEnrichment results additional fields
+- contextPath: IPEnrichment.Results.AdditionalFields
+  description: All fields extracted from the indicator other then the main keys ("Brand", "Score", "Verdict", "DetectionEngines", "PositiveDetections", "Address").
+  type: list
+- contextPath: IPEnrichment.Results.AdditionalFields.Relationships.EntityA
+  description: The source of the relationship.
+  type: string
+- contextPath: IPEnrichment.Results.AdditionalFields.Relationships.EntityB
+  description: The destination of the relationship.
+  type: string
+- contextPath: IPEnrichment.Results.AdditionalFields.Relationships.Relationship
+  description: The name of the relationship.
+  type: string
+- contextPath: IPEnrichment.Results.AdditionalFields.Relationships.EntityAType
+  description: The type of the source of the relationship.
+  type: string
+- contextPath: IPEnrichment.Results.AdditionalFields.Relationships.EntityBType
+  description: The type of the destination of the relationship.
+  type: string
+- contextPath: IPEnrichment.Results.AdditionalFields.ASN
+  description: 'The autonomous system name for the IP address, for example: "AS8948".'
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Hostname
+  description: The hostname that is mapped to this IP address.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Geo.Location
+  description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Geo.Country
+  description: The country in which the IP address is located.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Geo.Description
+  description: Additional information about the location.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Malicious.Vendor
+  description: The vendor reporting the IP address as malicious.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Malicious.Description
+  description: A description explaining why the IP address was reported as malicious.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Tags
+  description: (List) Tags of the IP.
+  type: Unknown
+- contextPath: IPEnrichment.Results.AdditionalFields.FeedRelatedIndicators.value
+  description: Indicators that are associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.FeedRelatedIndicators.type
+  description: The type of the indicators that are associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.FeedRelatedIndicators.description
+  description: The description of the indicators that are associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.MalwareFamily
+  description: The malware family associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Organization.Name
+  description: The organization of the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Organization.Type
+  description: The organization type of the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Region
+  description: The region in which the IP is located.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Port
+  description: Ports that are associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Internal
+  description: Whether or not the IP is internal or external.
+  type: Bool
+- contextPath: IPEnrichment.Results.AdditionalFields.UpdatedDate
+  description: The date that the IP was last updated.
+  type: Date
+- contextPath: IPEnrichment.Results.AdditionalFields.Registrar.Abuse.Name
+  description: The name of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Registrar.Abuse.Address
+  description: The address of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Registrar.Abuse.Country
+  description: The country of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Registrar.Abuse.Network
+  description: The network of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Registrar.Abuse.Phone
+  description: The phone number of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Registrar.Abuse.Email
+  description: The email address of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Campaign
+  description: The campaign associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.TrafficLightProtocol
+  description: The Traffic Light Protocol (TLP) color that is suitable for the IP.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.CommunityNotes.note
+  description: Notes on the IP that were given by the community.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.CommunityNotes.timestamp
+  description: The time in which the note was published.
+  type: Date
+- contextPath: IPEnrichment.Results.AdditionalFields.Publications.source
+  description: The source in which the article was published.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Publications.title
+  description: The name of the article.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Publications.link
+  description: A link to the original article.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.Publications.timestamp
+  description: The time in which the article was published.
+  type: Date
+- contextPath: IPEnrichment.Results.AdditionalFields.ThreatTypes.threatcategory
+  description: The threat category associated to this indicator by the source vendor, for example, Phishing, Control, TOR, etc.
+  type: String
+- contextPath: IPEnrichment.Results.AdditionalFields.ThreatTypes.threatcategoryconfidence
+  description: Threat Category Confidence is the confidence level provided by the vendor for the threat type category. For example, a confidence level of 90 for the 'malware' threat type category means that the vendor is confident that its 90% malware.
+  type: String
+# Core.AnalyticsPrevalence
+- contextPath: Core.AnalyticsPrevalence.Ip.value
+  description: Whether the IP address is prevalent or not.
+  type: Boolean
+- contextPath: Core.AnalyticsPrevalence.Ip.data.global_prevalence.value
+  description: The global prevalence of the IP.
+  type: Number
+- contextPath: Core.AnalyticsPrevalence.Ip.data.local_prevalence.value
+  description: The local prevalence of the IP.
+  type: Number
+- contextPath: Core.AnalyticsPrevalence.Ip.data.prevalence.value
+  description: The prevalence of the IP.
+  type: Number
+# Endpoint
+- contextPath: EndpointData.Hostname.value
+  description: The endpoint's hostname.
+  type: String
+- contextPath: EndpointData.Hostname.source
+  description: The vendor from which the hostname of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.EntityA.value
+  description: The source of the relationship.
+  type: String
+- contextPath: EndpointData.EntityA.source
+  description: The vendor from which EntityA of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.EntityB.value
+  description: The destination of the relationship.
+  type: String
+- contextPath: EndpointData.EntityB.source
+  description: The vendor from which EntityB of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.Relationship.value
+  description: The name of the relationship.
+  type: String
+- contextPath: EndpointData.Relationship.source
+  description: The vendor from which the relationship of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.EntityAType.value
+  description: The type of the source of the relationship.
+  type: String
+- contextPath: EndpointData.EntityAType.source
+  description: The vendor from which the type of the source of the relationship of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.EntityBType.value
+  description: The type of the destination of the relationship.
+  type: String
+- contextPath: EndpointData.EntityBType.source
+  description: The vendor from which the type of the destination of the relationship of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.ID.value
+  description: The endpoint's ID.
+  type: String
+- contextPath: EndpointData.ID.source
+  description: The vendor from which the ID of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.IPAddress
+  description: The endpoint's IP address.
+  type: String
+- contextPath: EndpointData.Domain.value
+  description: The endpoint's domain.
+  type: String
+- contextPath: EndpointData.Domain.source
+  description: The vendor from which the domain of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.MACAddress.value
+  description: The endpoint's MAC address.
+  type: String
+- contextPath: EndpointData.MACAddress.source
+  description: The vendor from which the MAC address of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.DHCPServer.value
+  description: The DHCP server of the endpoint.
+  type: String
+- contextPath: EndpointData.DHCPServer.source
+  description: The vendor from which the DHCP server of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.OS.value
+  description: The endpoint's operating system.
+  type: String
+- contextPath: EndpointData.OS.source
+  description: The vendor from which the operating system of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.OSVersion.value
+  description: The endpoint's operating system version.
+  type: String
+- contextPath: EndpointData.OSVersion.source
+  description: The vendor from which the operating system version of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.BIOSVersion.value
+  description: The endpoint's BIOS version.
+  type: String
+- contextPath: EndpointData.BIOSVersion.source
+  description: The vendor from which the BIOS version of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.Model.value
+  description: The model of the machine or device.
+  type: String
+- contextPath: EndpointData.Model.source
+  description: The vendor from which the model of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.Memory.value
+  description: Amount of memory on this endpoint.
+  type: Integer
+- contextPath: EndpointData.Memory.source
+  description: The vendor from which the amount of memory of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.Processors.value
+  description: The number of processors.
+  type: Integer
+- contextPath: EndpointData.Processors.source
+  description: The vendor from which the processors of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.Processor.value
+  description: The model of the processor.
+  type: String
+- contextPath: EndpointData.Processor.source
+  description: The vendor from which the processor of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.IsIsolated.value
+  description: The endpoint's isolation status.
+  type: String
+- contextPath: EndpointData.IsIsolated.source
+  description: The vendor from which the isolation of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.Status.value
+  description: The endpoint's status.
+  type: String
+- contextPath: EndpointData.Status.source
+  description: The vendor from which the status of this endpoint was retrieved.
+  type: String
+- contextPath: EndpointData.Vendor.value
+  description: The integration name of the endpoint vendor.
+  type: String
+- contextPath: EndpointData.Vendor.source
+  description: The vendor from which the Vendor of this endpoint was retrieved.
+  type: String
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.11.4819260
+fromversion: 6.10.0
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+tests:
+- IPEnrichment-Test

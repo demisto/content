@@ -546,6 +546,8 @@ def main():  # pragma: no cover
     """
     main function, parses params and runs command functions
     """
+    if is_demisto_version_ge("8.12.0") and datetime.now() > datetime(2025, 12, 1):
+        return_error("Unit 42 Intel Objects Feed integration is deprecated. Please use Unit 42 Feed integration instead.")
 
     params = demisto.params()
 

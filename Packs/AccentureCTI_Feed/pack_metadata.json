@@ -2,7 +2,7 @@
     "name": "Accenture CTI Feed",
     "description": "Accenture Cyber Threat Intelligence Feed",
     "support": "partner",
-    "currentVersion": "1.1.45",
+    "currentVersion": "1.1.46",
     "author": "Accenture",
     "url": "https://www.accenture.com/us-en/services/security/cyber-defense",
     "email": "CTI.AcctManagement@accenture.com",
@@ -31,6 +31,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

@@ -2,7 +2,7 @@
     "name": "Wiz",
     "description": "Integrate with Wiz for bidirectional Issue management, Detections investigation, and fetching of resource information. \n",
     "support": "partner",
-    "currentVersion": "2.0.0",
+    "currentVersion": "2.0.1",
     "author": "Wiz Inc.",
     "url": "https://wiz.io/",
     "email": "support@wiz.io",
@@ -35,6 +35,7 @@
         "X3",
         "X5",
         "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

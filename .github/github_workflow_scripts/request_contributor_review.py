@@ -9,9 +9,9 @@ import sys
 
 import urllib3
 from sendgrid.helpers.mail import Email, Content, Mail
+from utils import ORGANIZATION_NAME, REPO_NAME, GITHUB_API_BASE_URL
 
-REPO_OWNER = "demisto"
-REPO_NAME = "content"
+
 PACKS_FOLDER = "Packs"
 CONTENT_REPO_FULL_PATH = os.environ.get("GITHUB_WORKSPACE") or os.path.abspath(os.path.join(__file__, "../../../.."))
 PACKS_FULL_PATH = os.path.join(CONTENT_REPO_FULL_PATH, PACKS_FOLDER)
@@ -25,7 +25,7 @@ EMAIL_FROM = "do-not-reply@xsoar-contrib.pan.dev"  # disable-secrets-detection
 
 
 def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
-    user_endpoint = f"https://api.github.com/users/{github_user}"
+    user_endpoint = f"{GITHUB_API_BASE_URL}/users/{github_user}"
     headers = {"Authorization": "Bearer " + github_token} if github_token else {}
 
     response = requests.get(user_endpoint, headers=headers, verify=verify_ssl)
@@ -39,7 +39,7 @@ def check_if_user_exists(github_user, github_token=None, verify_ssl=True):
 
 
 def get_pr_author(pr_number, github_token, verify_ssl):
-    pr_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}"
+    pr_endpoint = f"{GITHUB_API_BASE_URL}/repos/{ORGANIZATION_NAME}/{REPO_NAME}/pulls/{pr_number}"
     headers = {"Authorization": "Bearer " + github_token} if github_token else {}
 
     response = requests.get(pr_endpoint, headers=headers, verify=verify_ssl)
@@ -54,7 +54,7 @@ def get_pr_author(pr_number, github_token, verify_ssl):
 
 
 def get_pr_modified_files_and_packs(pr_number, github_token, verify_ssl):
-    pr_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/pulls/{pr_number}/files"
+    pr_endpoint = f"{GITHUB_API_BASE_URL}/repos/{ORGANIZATION_NAME}/{REPO_NAME}/pulls/{pr_number}/files"
 
     headers = {"Authorization": "Bearer " + github_token} if github_token else {}
 
@@ -72,7 +72,7 @@ def get_pr_modified_files_and_packs(pr_number, github_token, verify_ssl):
 
 
 def tag_user_on_pr(reviewers: set, pr_number: str, pack: str, pack_files: set, github_token: str = None, verify_ssl: bool = True):
-    comments_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues/{pr_number}/comments"
+    comments_endpoint = f"{GITHUB_API_BASE_URL}/repos/{ORGANIZATION_NAME}/{REPO_NAME}/issues/{pr_number}/comments"
     headers = {"Authorization": "Bearer " + github_token} if github_token else {}
 
     reviewers_comment = "\n".join({f"- @{r}" for r in reviewers})
@@ -95,7 +95,7 @@ def tag_user_on_pr(reviewers: set, pr_number: str, pack: str, pack_files: set, g
 def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl, pack):
     result_tagged_reviewers = set()
 
-    comments_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues/{pr_number}/comments"
+    comments_endpoint = f"{GITHUB_API_BASE_URL}/repos/{ORGANIZATION_NAME}/{REPO_NAME}/issues/{pr_number}/comments"
     headers = {"Authorization": "Bearer " + github_token} if github_token else {}
 
     response = requests.get(comments_endpoint, headers=headers, verify=verify_ssl)

@@ -338,12 +338,6 @@ Returns list of aliases created for a Lambda function. For each alias, the respo
 | AWS.Lambda.Aliases.RoutingConfig.AdditionalVersionWeights | string | The name of the second alias, and the percentage of traffic that is routed to it. |
 | AWS.Lambda.Aliases.RevisionId | string | Represents the latest updated revision of the function or alias. |
 
-#### Command Example
-
-``````
-
-#### Human Readable Output
-
 ### aws-lambda-invoke
 
 ***

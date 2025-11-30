@@ -26,6 +26,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
+| XFC ID | XFC Event ID to search for | | Optional |
 | MD5 | MD5 hash to search for | File.MD5 | Optional |
 | SHA256 | SHA256 hash to search for | File.SHA256 | Optional |
 | Filename | The name of the file to save as. |  | Optional |

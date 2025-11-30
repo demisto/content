@@ -7,18 +7,22 @@ configuration:
   name: client_id
   required: true
   type: 0
+  section: Connect
 - display: Sixgill API client secret
   name: client_secret
   required: true
   type: 4
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: By enriching CVEs with the DVE Score, Cortex XSOAR customers gain deeper visibility with relevant threat intel from the deep and dark web with dynamic attributes such as where they are trending, POC exploit details, and more. Loaded with extra-context, this allows users to accurately understand the real impact of CVEs to effectively prioritize critical vulnerabilities.
 display: Cybersixgill DVE Enrichment
 name: Cybersixgill_DVE_Enrichment
@@ -28,7 +32,7 @@ script:
     - default: true
       isArray: true
       name: cve_id
-      description: 'cves id list.'
+      description: 'comma separated list of cves id.'
       required: true
     description: Returns information for each CVE in the input list.
     name: cybersixgill-cve-enrich
@@ -91,7 +95,28 @@ script:
       type: String
       description: The raw JSON of the CVE entich information.
 
-  dockerimage: demisto/sixgill:1.0.0.3557591
+  - arguments:
+    - default: true
+      isArray: true
+      name: cve_id
+      description: comma separated list of cves id.
+      required: true
+    description: Returns remediation for each CVE in the input list.
+    name: cybersixgill-cve-remediation
+    outputs:
+    - contextPath: Sixgill.CVE.value
+      description: CVE ID.
+      type: String
+    - contextPath: Sixgill.CVE.Description
+      description: Description of the given DVE remediation.
+      type: String
+    - contextPath: Sixgill.CVE.Solutions
+      description: Possible remediation solutions for the CVE ID.
+      type: String
+    - contextPath: Sixgill.CVE.rawJSON
+      description: The raw JSON of the CVE entich information.
+      type: String
+  dockerimage: demisto/sixgill:1.0.0.4887903
   runonce: false
   script: '-'
   subtype: python3
@@ -99,3 +124,5 @@ script:
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
+sectionorder:
+- Connect

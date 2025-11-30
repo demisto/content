@@ -43,19 +43,19 @@ This playbook does not use any integrations.
 * GetTime
 * Set
 * SetAndHandleEmpty
+* clear-user-session
+* disable-user
+* get-user-data
+* ip-enrichment
 
 ### Commands
 
-* azure-risky-users-list
 * azure-risky-users-risk-detections-list
 * closeInvestigation
 * core-get-cloud-original-alerts
-* core-list-risky-users
-* ip
 * microsoft-365-defender-advanced-hunting
-* msgraph-user-account-disable
 * msgraph-user-get
-* msgraph-user-session-revoke
+* msgraph-user-tap-policy-delete
 
 ## Playbook Inputs
 
@@ -71,4 +71,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Azure Temporary Access Pass TAP registered to an account](./../doc_files/Azure_Temporary_Access_Pass_TAP_registered_to_an_account.png)
+![Azure Temporary Access Pass TAP registered to an account](../doc_files/Azure_Temporary_Access_Pass_TAP_registered_to_an_account.png)

@@ -240,6 +240,6 @@ fromversion: 5.5.0
 tests:
 - Elasticsearch_Fetch_Custom_Indicators_Test
 - Elasticsearch_Fetch_Demisto_Indicators_Test
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

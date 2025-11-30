@@ -1,5 +1,5 @@
 category: Vulnerability Management
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -438,11 +438,166 @@ script:
     - contextPath: Cyberwatch.SecurityIssue.editable
       description: Security Issue editability.
       type: boolean
+  - name: cyberwatch-list-sysadmin-assets
+    description: Get a list of assets from Cyberwatch Sysadmin (/assets/servers) view.
+    arguments:
+    - name: page
+      description: Get a specific Sysadmin asset page. If not specified, get all assets.
+      required: false
+      isArray: false
+    - name: per_page
+      description: Specify the number of Sysadmin assets per page. Default 500.
+      required: false
+      isArray: false
+      defaultValue: 500
+    outputs:
+    - contextPath: Cyberwatch.SysadminAsset.id
+      description: Sysadmin Asset ID.
+      type: number
+    - contextPath: Cyberwatch.SysadminAsset.hostname
+      description: Sysadmin Asset hostname.
+      type: string
+    - contextPath: Cyberwatch.SysadminAsset.last_communication
+      description: Sysadmin Asset last communication date.
+      type: date
+    - contextPath: Cyberwatch.SysadminAsset.category
+      description: Sysadmin Asset category.
+      type: string
+  - name: cyberwatch-fetch-sysadmin-asset
+    description: Get details for a Sysadmin Asset from Cyberwatch (/assets/servers/<ID>).
+    arguments:
+    - name: id
+      description: The Sysadmin Asset ID to fetch (/assets/servers/<ID>).
+      required: true
+      isArray: false
+    outputs:
+    - contextPath: Cyberwatch.SysadminAsset.id
+      description: Sysadmin Asset ID.
+      type: number
+    - contextPath: Cyberwatch.SysadminAsset.hostname
+      description: Sysadmin Asset hostname.
+      type: string
+    - contextPath: Cyberwatch.SysadminAsset.description
+      description: Sysadmin Asset description.
+      type: string
+    - contextPath: Cyberwatch.SysadminAsset.last_communication
+      description: Sysadmin Asset last communication date.
+      type: date
+    - contextPath: Cyberwatch.SysadminAsset.category
+      description: Sysadmin Asset category.
+      type: string
+    - contextPath: Cyberwatch.SysadminAsset.deploying_period_id
+      description: Deploying period ID.
+      type: number
+    - contextPath: Cyberwatch.SysadminAsset.rebooting_period_id
+      description: Rebooting period ID.
+      type: number
+    - contextPath: Cyberwatch.SysadminAsset.policy_id
+      description: Policy ID.
+      type: number
+    - contextPath: Cyberwatch.SysadminAsset.ignoring_policy_id
+      description: Ignoring policy ID.
+      type: number
+  - name: cyberwatch-list-compliance-assets
+    description: Get a list of assets from Cyberwatch Compliance (/compliance/assets) view.
+    arguments:
+    - name: page
+      description: Get a specific Compliance asset page. If not specified, get all assets.
+      required: false
+      isArray: false
+    - name: per_page
+      description: Specify the number of Compliance assets per page. Default 500.
+      required: false
+      isArray: false
+      defaultValue: 500
+    outputs:
+    - contextPath: Cyberwatch.ComplianceAsset.id
+      description: Compliance Asset ID.
+      type: number
+    - contextPath: Cyberwatch.ComplianceAsset.hostname
+      description: Compliance Asset hostname.
+      type: string
+    - contextPath: Cyberwatch.ComplianceAsset.status
+      description: Compliance status summary for the asset.
+      type: string
+    - contextPath: Cyberwatch.ComplianceAsset.compliance_rules_failed_count
+      description: Number of failed compliance rules.
+      type: number
+    - contextPath: Cyberwatch.ComplianceAsset.compliance_rules_succeed_count
+      description: Number of succeeded compliance rules.
+      type: number
+  - name: cyberwatch-fetch-compliance-asset
+    description: Get details for a Compliance Asset from Cyberwatch (/compliance/assets/<ID>).
+    arguments:
+    - name: id
+      description: The Compliance Asset ID to fetch (/compliance/assets/<ID>).
+      required: true
+      isArray: false
+    outputs:
+    - contextPath: Cyberwatch.ComplianceAsset.id
+      description: Compliance Asset ID.
+      type: number
+    - contextPath: Cyberwatch.ComplianceAsset.hostname
+      description: Compliance Asset hostname.
+      type: string
+    - contextPath: Cyberwatch.ComplianceAsset.status
+      description: Compliance status summary for the asset.
+      type: string
+    - contextPath: Cyberwatch.ComplianceAsset.compliance_rules_count
+      description: Total number of compliance rules evaluated.
+      type: number
+    - contextPath: Cyberwatch.ComplianceAsset.compliance_rules_failed_count
+      description: Number of failed compliance rules.
+      type: number
+    - contextPath: Cyberwatch.ComplianceAsset.compliance_rules_succeed_count
+      description: Number of succeeded compliance rules.
+      type: number
+    - contextPath: Cyberwatch.ComplianceAsset.compliance_repositories
+      description: List of compliance repositories names.
+      type: unknown
+  - name: cyberwatch-send-declarative-data-asset
+    description: Upload Declarative Data (airgap) built from hostname + JSON to Cyberwatch.
+    arguments:
+    - name: hostname
+      description: Asset hostname to associate with the Declarative Data.
+      required: true
+      isArray: false
+    - name: data
+      description: "JSON string of key/value pairs to include (e.g. {\"metadata\": \"metadate\"})."
+      required: true
+      isArray: false
+    outputs:
+    - contextPath: Cyberwatch.DeclarativeDataUpload.server_id
+      description: Server ID associated with the upload (if resolved by API).
+      type: number
+    - contextPath: Cyberwatch.DeclarativeDataUpload.matched_server_id
+      description: Server ID found during hostname pre-check.
+      type: number
+    - contextPath: Cyberwatch.DeclarativeDataUpload.status
+      description: Upload status.
+      type: string
+    - contextPath: Cyberwatch.DeclarativeDataUpload.message
+      description: Upload message or error.
+      type: string
+  - name: cyberwatch-get-declarative-data-asset
+    description: Retrieve Declarative Data for a Cyberwatch server.
+    arguments:
+    - name: id
+      description: Server ID to read.
+      required: true
+      isArray: false
+    outputs:
+    - contextPath: Cyberwatch.DeclarativeData.id
+      description: Server ID.
+      type: number
+    - contextPath: Cyberwatch.DeclarativeData.raw
+      description: Raw Declarative Data text returned by the API.
+      type: string
   isfetch: true
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4417419
 tests:
 - No test - no instance
 fromversion: 6.10.0

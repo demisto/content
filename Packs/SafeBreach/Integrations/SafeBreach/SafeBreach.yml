@@ -1,5 +1,7 @@
 category: Deception & Breach Simulation
 description: For enterprises using SafeBreach and XSOAR, integrating this package streamlines operations by allowing you to operate SafeBreach through XSOAR, making SafeBreach an integral part of the enterprise workflows. This integration includes commands for managing tests, insight indicators, simulators and deployments, users, API keys, integration issues, and more.
+sectionorder:
+- Connect
 commonfields:
   id: Safebreach
   version: -1
@@ -11,27 +13,32 @@ configuration:
   type: 0
   required: true
   additionalinfo: This is base URL for your instance.
+  section: Connect
 - name: credentials
   type: 9
   required: true
   additionalinfo: This is API key for your instance, this can be created in Safe Breach User                 Administration -> API keys, it must be saved as there is no way to view it again.
   displaypassword: API Key
   hiddenusername: true
+  section: Connect
 - display: Account ID
   name: account_id
   type: 1
   required: true
   additionalinfo: This is account ID of account with which we want to get data from safebreach
+  section: Connect
 - display: Verify SSL Certificate
   name: verify
   type: 8
   required: false
   additionalinfo: This Field is useful for checking if the certificate of SSL for HTTPS is valid or not
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
   additionalinfo: This Field is useful for asking integration to use default system proxy settings.
+  section: Connect
 script:
   commands:
   - deprecated: false
@@ -2039,7 +2046,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.11.4819260
   feed: false
   isfetch: false
   runonce: false

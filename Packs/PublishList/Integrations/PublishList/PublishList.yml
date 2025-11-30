@@ -1,4 +1,7 @@
 category: Utilities
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Publish List
   version: -1
@@ -9,51 +12,60 @@ configuration:
   name: longRunning
   type: 8
   required: false
+  section: Connect
 - additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for Publish List will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port."
   display: Listen Port
   name: longRunningPort
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   type: 9
   required: false
+  section: Connect
 - additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.
   display: Certificate (Required for HTTPS)
   name: certificate
   type: 12
   required: false
+  section: Connect
 - additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ or Cortex XSIAM server.
   display: Private Key (Required for HTTPS)
   name: key
   type: 14
   required: false
+  section: Connect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - additionalinfo: 'Comma separated list of list names to publish. Example: mylist1,mylist2,mylist3'
   display: Lists to Publish
   name: listsToPublish
   required: true
   type: 12
+  section: Collect
 - additionalinfo: 'For standard lists that are comma delimited, this puts each list item on a new line. '
   defaultvalue: 'false'
   display: List Items on Individual Lines
   name: commaToLineBreak
   type: 8
   required: false
+  section: Collect
 - additionalinfo: If selected, the comment "# Empty list" will be added to an empty list.
   defaultvalue: 'false'
   display: Add comment to empty list
   name: add_comment_if_empty
   type: 8
   required: false
+  section: Collect
 description: The Publish List integration is used to publish XSOAR lists for external consumption.
 display: Publish List
 name: Publish List
 script:
-  dockerimage: demisto/fastapi:0.115.12.3243695
+  dockerimage: demisto/fastapi:0.116.1.4266494
   longRunning: true
   longRunningPort: true
   script: ''
@@ -62,3 +74,14 @@ script:
 fromversion: 6.0.0
 tests:
 - No test
+triggers:
+  - conditions:
+      - name: engine
+        operator: not_exists
+      - name: isEngineGroup
+        operator: not_exists
+    effects:
+      - name: longRunningPort
+        action:
+          hidden: true
+          required: false

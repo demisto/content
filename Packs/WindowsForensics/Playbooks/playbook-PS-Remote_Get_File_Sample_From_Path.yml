@@ -3,9 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: PS Remote Get File Sample From Path
-description: This playbook leverages the Windows built-in PowerShell and WinRM capabilities
-  to connect to a Windows host to acquire a file as forensic evidence for further
-  analysis.
+description: This playbook leverages the Windows built-in PowerShell and WinRM capabilities to connect to a Windows host to acquire a file as forensic evidence for further analysis.
 starttaskid: "0"
 tasks:
   "0":
@@ -43,8 +41,7 @@ tasks:
       id: f4bd4312-f73c-4a13-8855-aef60df18da5
       version: -1
       name: Is PowerShell Remoting enabled?
-      description: Returns 'yes' if the integration is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if the integration is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -263,8 +260,7 @@ tasks:
       id: 8738dd2b-a740-44ee-800e-473c070a11a6
       version: -1
       name: Unzip file
-      description: Unzip a file using the fileName or entryID to specify a file. Unzipped
-        files will be loaded to the War Room and names will be put into the context.
+      description: Unzip a file using the fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
       scriptName: UnzipFile
       type: regular
       iscommand: false
@@ -400,15 +396,12 @@ inputs:
 - key: Host
   value: {}
   required: false
-  description: A single hostname or IP address of the machine on which the file is
-    located. For example, testpc01
+  description: A single hostname or IP address of the machine on which the file is located. For example, testpc01
   playbookInputQuery:
 - key: FilePath
   value: {}
   required: false
-  description: "The path on the host from which to retrieve the file. \nFor example,\
-    \ c:\\tmp\\test.txt.\nIn case you configure the AddHostNameToFile input as true,\
-    \ the file downloaded to XSOAR will contain the hostname."
+  description: "The path on the host from which to retrieve the file. \nFor example, c:\\tmp\\test.txt.\nIn case you configure the AddHostNameToFile input as true, the file downloaded to XSOAR will contain the hostname."
   playbookInputQuery:
 - key: ZipFile
   value:
@@ -420,8 +413,7 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: Specify true for the downloaded file name to be comprised of the host
-    name or false to keep the file name as configured in the FilePath argument.
+  description: Specify true for the downloaded file name to be comprised of the host name or false to keep the file name as configured in the FilePath argument.
   playbookInputQuery:
 outputs:
 - contextPath: AcquiredFile

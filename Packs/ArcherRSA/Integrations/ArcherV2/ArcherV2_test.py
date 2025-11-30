@@ -584,6 +584,10 @@ class TestArcherV2:
             pytest.param('{"Device Name":"Laptop\\t#406"}', "Laptop\t#406", id="Tab"),
             pytest.param('{"Device Name":"I \\u2764 Tech"}', "I \u2764 Tech", id="Unicode"),
             pytest.param('{"Device Name":"Generic Tablet 2025"}', "Generic Tablet 2025", id="No special characters"),
+            pytest.param('{"Device Name":"Path: \\user\\123"}', "Path: \\user\\123", id="Invalid unicode escape - user path"),
+            pytest.param(
+                '{"Device Name":"C:\\users\\file.txt"}', "C:\\users\\file.txt", id="Invalid unicode escape - Windows path"
+            ),
         ],
     )
     def test_generate_field_contents(self, json_fields_values: str, expected_value: str):
@@ -1372,11 +1376,12 @@ class TestArcherV2:
         When: The upload_and_associate_command is called
         Then: Files are uploaded, associated with the record, and existing attachments are preserved
         """
+        associatedField = "Supporting Documentation"
         client = Client(BASE_URL, "", "", "", "", 400)
         mock_upload_file = mocker.patch("ArcherV2.upload_file_command", return_value="123")
         mock_update_record = mocker.patch("ArcherV2.update_record_command")
-        mock_get_record = mocker.patch.object(client, "get_record", return_value=({"Attachments": ["456", "789"]}, "", ""))
-        args = {"applicationId": "app1", "contentId": "content1", "associatedField": "field1", "entryId": "entry1, entry2"}
+        mock_get_record = mocker.patch.object(client, "get_record", return_value=({associatedField: ["456", "789"]}, "", ""))
+        args = {"applicationId": "app1", "contentId": "content1", "associatedField": associatedField, "entryId": "entry1, entry2"}
 
         upload_and_associate_command(client, args)
 
@@ -1388,9 +1393,9 @@ class TestArcherV2:
             {
                 "applicationId": "app1",
                 "contentId": "content1",
-                "associatedField": "field1",
+                "associatedField": associatedField,
                 "entryId": "entry1, entry2",
-                "fieldsToValues": '{"field1": ["123", "123", "456", "789"]}',
+                "fieldsToValues": f'{{"{associatedField}": ["123", "123", "456", "789"]}}',
             },
         )
         mock_get_record.assert_called_once_with("app1", "content1", 0)

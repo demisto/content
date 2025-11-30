@@ -294,6 +294,12 @@ class Code42Client(BaseClient):
             hash_arg = self.incydr_sdk.file_events.v2.search(query).file_events[0].file.hash.sha256
         return self.incydr_sdk.files.v1.stream_file_by_sha256(hash_arg)
 
+    def download_file_by_xfc_id(self, xfc_id):
+        try:
+            return self.incydr_sdk.files.v1.stream_file_by_xfc_content_id(xfc_id)
+        except Exception as e:
+            raise Code42FileDownloadError(e)
+
     def _get_user_id(self, username):
         user_id = self.get_user(username).user_id
         if user_id:
@@ -326,7 +332,7 @@ class Code42Client(BaseClient):
                 pass
         alert.rule_names = ", ".join(rule_name_list)
         alert.beginTimeIso = datetime.fromtimestamp(alert.begin_time / 1000).replace(tzinfo=timezone.utc).isoformat()
-        console_url = self._base_url.replace("https://api", "https://console")
+        console_url = self._base_url.replace("api", "console", 1)
         alert.alertUrl = f"{console_url}/app/#/alerts/review-alerts/{alert.session_id}"
         return alert
 
@@ -370,6 +376,11 @@ class Code42LegalHoldMatterNotFoundError(Exception):
 class Code42InvalidLegalHoldMembershipError(Exception):
     def __init__(self, username, matter_name):
         super().__init__(f"User '{username}' is not an active member of legal hold matter '{matter_name}'")
+
+
+class Code42FileDownloadError(Exception):
+    def __init__(self, exception):
+        super().__init__(f"Error downloading file: {exception}")
 
 
 @logger
@@ -625,6 +636,15 @@ def download_file_command(client, args):
     file_hash = args.get("hash")
     filename = args.get("filename") or file_hash
     response = client.download_file(file_hash)
+    file_chunks = [c for c in response.iter_content(chunk_size=128) if c]
+    return fileResult(filename, data=b"".join(file_chunks))
+
+
+@logger
+def download_file_by_xfc_id_command(client, args):
+    file_xfc_event_id = args.get("xfc_id")
+    filename = args.get("filename") or file_xfc_event_id
+    response = client.download_file_by_xfc_id(file_xfc_event_id)
     file_chunks = [c for c in response.iter_content(chunk_size=128) if c]
     return fileResult(filename, data=b"".join(file_chunks))
 
@@ -988,6 +1008,7 @@ def main():
         "code42-legalhold-add-user": legal_hold_add_user_command,
         "code42-legalhold-remove-user": legal_hold_remove_user_command,
         "code42-download-file": download_file_command,
+        "code42-download-file-by-xfc-id": download_file_by_xfc_id_command,
         "code42-watchlists-list": list_watchlists_command,
         "code42-watchlists-list-included-users": list_watchlists_included_users,
         "code42-watchlists-add-user": add_user_to_watchlist_command,

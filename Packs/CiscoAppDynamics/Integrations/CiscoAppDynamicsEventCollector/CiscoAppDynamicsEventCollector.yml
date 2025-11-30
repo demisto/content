@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -74,12 +74,12 @@ script:
     description: Retrieves a list of events from the cisappdynamics instance.
     arguments:
     - auto: PREDEFINED
-      defaultValue: False
+      defaultValue: false
       description: If true, the command will create events, otherwise it will only display them. Use this for debugging purpose only.
       name: should_push_events
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
       required: true
     - description: 'The maximum number of events to fetch.'
       name: limit
@@ -89,8 +89,8 @@ script:
       description: 'Which events to fetch.'
       name: events_type_to_fetch
       predefined:
-        - 'Audit'
-        - 'Health Rule Violations Events'
+      - 'Audit'
+      - 'Health Rule Violations Events'
       defaultValue: 'Audit'
       required: false
     - description: 'The starting date from which events should be fetched. The date should be in the format "%Y-%m-%dT%H:%M:%S.%fZ". Example: 2025-01-01T11:27:08.000Z.'
@@ -100,10 +100,10 @@ script:
       name: end_date
       required: false
     outputs:
-      - contextPath: CiscoAppDynamics
-        description: The list of events.
-        type: List
-  dockerimage: demisto/python3:3.12.8.3296088
+    - contextPath: CiscoAppDynamics
+      description: The list of events.
+      type: List
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetchevents: true
   runonce: false
   script: '-'

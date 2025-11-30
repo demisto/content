@@ -1,5 +1,5 @@
 category: Utilities
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -38,7 +38,7 @@ script:
       name: langs
     - description: Turn on verbose flag to display tesseract and other used libraries versions.
       required: false
-      defaultValue: False
+      defaultValue: false
       name: verbose
     name: image-ocr-extract-text
     description: Extract text from images.

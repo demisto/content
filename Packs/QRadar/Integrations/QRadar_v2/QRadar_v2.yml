@@ -86,7 +86,7 @@ script:
       name: filter
     - description: 'If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named, are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar''s field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html'
       name: fields
-    - description: 'Range of results to return. e.g.: 0-20'
+    - description: 'Range of results to return. e.g.: 0-20.'
       name: range
     - description: Table headers to use the human readable output (if none provided, will show all table headers).
       name: headers
@@ -109,7 +109,7 @@ script:
       description: The local destination addresses that are associated with the offense. If your offense has a remote destination, you will need to use the QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip.
       type: Unknown
     - contextPath: QRadar.Offense.RemoteDestinationCount
-      description: The remote destinations that are associated with the offesne. If this value is greater than 0 that means your offense has a remote destination, you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+      description: The remote destinations that are associated with the offesne. If this value is greater than 0 that means your offense has a remote destination, you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip.
       type: Unknown
     - contextPath: QRadar.Offense.StartTime
       description: The time (ISO) when the offense was started.
@@ -124,11 +124,11 @@ script:
       description: The time (ISO) when the offense was last updated.
       type: date
     - contextPath: QRadar.Offense.OffenseType
-      description: The offense type (due to API limitations if username and password were not provided, this value will be the id of offense type)
+      description: The offense type (due to API limitations if username and password were not provided, this value will be the id of offense type).
       type: string
   - arguments:
     - default: true
-      description: Offense ID
+      description: Offense ID.
       name: offense_id
       required: true
     - description: 'Query to filter offense. For refernce please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
@@ -153,10 +153,10 @@ script:
       description: The source addresses that are associated with the offense.
       type: Unknown
     - contextPath: QRadar.Offense.DestinationAddress
-      description: The local destination addresses that are associated with the offense. If your offense has a remote destination, you will need to use the QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+      description: The local destination addresses that are associated with the offense. If your offense has a remote destination, you will need to use the QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip.
       type: Unknown
     - contextPath: QRadar.Offense.RemoteDestinationCount
-      description: The remote destination that are associated with the offesne. If this value is greater than 0, it means that your offense has a remote destination, you will need to use the QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip
+      description: The remote destination that are associated with the offesne. If this value is greater than 0, it means that your offense has a remote destination, you will need to use the QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip.
       type: Unknown
     - contextPath: QRadar.Offense.AssignedTo
       description: The user the offense is assigned to.
@@ -214,7 +214,7 @@ script:
       type: boolean
   - arguments:
     - default: true
-      description: The query expressions in AQL (for more information about Ariel Query Language, review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html")
+      description: The query expressions in AQL (for more information about Ariel Query Language, review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html").
       name: query_expression
       required: true
     - description: Table headers to use the human readable output (if none provided, will show all table headers).
@@ -249,7 +249,7 @@ script:
       description: The search id.
       name: search_id
       required: true
-    - description: 'Range of results to return. e.g.: 0-20'
+    - description: 'Range of results to return. e.g.: 0-20.'
       name: range
     - description: Table headers to use the human readable output (if none provided, will show all table headers).
       name: headers
@@ -370,7 +370,7 @@ script:
       name: filter
     - description: 'If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar''s field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html'
       name: fields
-    - description: 'Range of results to return. e.g.: 0-20'
+    - description: 'Range of results to return. e.g.: 0-20.'
       name: range
     - description: Table headers to use the human readable output (if none provided, will show all table headers).
       name: headers
@@ -600,7 +600,7 @@ script:
       description: Reference time to live.
       type: string
     - contextPath: QRadar.Reference.TimeoutType
-      description: 'Reference timeout type. Valid values are: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      description: 'Reference timeout type. Valid values are: UNKNOWN, FIRST_SEEN, LAST_SEEN.'
       type: string
     - contextPath: QRadar.Reference.Data
       description: Reference set items.
@@ -722,7 +722,7 @@ script:
       description: Number of elements.
       type: number
     - contextPath: QRadar.Reference.TimeoutType
-      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN.'
       type: string
   - arguments:
     - description: The name of the reference set to remove a value from.
@@ -754,7 +754,7 @@ script:
       description: Number of elements.
       type: number
     - contextPath: QRadar.Reference.TimeoutType
-      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN.'
       type: string
   - arguments:
     - description: 'If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar''s field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html'
@@ -943,7 +943,7 @@ script:
     - contextPath: QRadar.Properties.username
       description: The owner of the event regex property.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.12.12.5490952
   longRunning: true
   runonce: false
   script: '-'

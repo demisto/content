@@ -2,7 +2,7 @@ category: Vulnerability Management
 commonfields:
   id: AzureRiskyUsers
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 configuration:
 - display: Client ID
@@ -96,8 +96,8 @@ script:
       defaultValue: 'riskLastUpdatedDateTime desc'
       auto: PREDEFINED
       predefined:
-        - 'riskLastUpdatedDateTime desc'
-        - 'riskLastUpdatedDateTime asc'
+      - 'riskLastUpdatedDateTime desc'
+      - 'riskLastUpdatedDateTime asc'
     - description: Displays all RiskyUsers before a specific datetime. For Example "2024-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours".
       name: updated_before
     - description: Displays all RiskyUsers after a specific datetime. For Example "2024-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours".

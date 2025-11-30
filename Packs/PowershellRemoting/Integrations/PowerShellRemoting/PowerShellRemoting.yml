@@ -1,5 +1,5 @@
 category: Utilities
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -338,7 +338,7 @@ script:
     - contextPath: PsRemote.FQDN
       description: The Fully Qualified Domain Name of the host on which the command was invoked.
       type: string
-  dockerimage: demisto/powershell-ubuntu:7.4.6.116823
+  dockerimage: demisto/powershell-ubuntu:7.5.0.4903976
   script: ''
   type: powershell
 fromversion: 6.0.0

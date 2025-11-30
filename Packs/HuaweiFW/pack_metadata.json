@@ -1,0 +1,41 @@
+{
+    "name": "Huawei FW",
+    "description": "The Huawei HiSecEngine USG6500E series provides enterprise-class, next-generation firewall protection for small and medium-sized enterprises, delivering high-performance, proactive defense against advanced network threats.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM",
+        "Network Security"
+    ],
+    "tags": [
+        "Network",
+        "Security",
+        "IT",
+        "Attack",
+        "Alerts"
+    ],
+    "useCases": [
+        "Health Check",
+        "Network Security"
+    ],
+    "keywords": [
+        "ngfw",
+        "traffic",
+        "system"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
+    ]
+}

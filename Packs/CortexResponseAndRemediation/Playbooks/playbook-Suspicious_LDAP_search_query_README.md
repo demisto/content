@@ -1,4 +1,4 @@
-This playbook is designed to handle the following alerts:  
+This playbook is designed to handle the following alerts:
 - Possible LDAP enumeration by unsigned process.
 - Suspicious LDAP search query executed.
 

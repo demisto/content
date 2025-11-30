@@ -1,5 +1,5 @@
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -78,7 +78,7 @@ script:
       defaultValue: 3 days
     description: Get events.
     name: dropbox-get-events
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.5475267
   runonce: false
   script: '-'
   subtype: python3

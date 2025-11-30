@@ -2,36 +2,43 @@ category: IT Services
 commonfields:
   id: Tidy
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
-- additionalinfo: Endpoint IP/URL to be installed. (Can overide in command)
+- additionalinfo: Endpoint IP/URL to be installed. (Can override in command)
   display: Hostname
   name: hostname
   required: true
   type: 0
-- additionalinfo: Endpoint user to be installed. (Can overide in command)
+  section: Connect
+- additionalinfo: Endpoint user to be installed. (Can override in command)
   display: User
   name: user
   type: 0
   hidden: true
+  section: Connect
   required: false
-- additionalinfo: User login password. (Can overide in command)
+- additionalinfo: User login password. (Can override in command)
   display: Password
   name: password
   type: 4
   hidden: true
+  section: Connect
   required: false
 - display: User
   name: user_creds
   type: 9
   displaypassword: Password
+  section: Connect
   required: false
 - additionalinfo: The ssh key is used to login to an AWS mac machine - for testing purposes.
   display: SSH Key
   name: ssh_key
   type: 14
-
+  section: Connect
   required: false
-description: Tidy integration handle endpoints enviorment installation.
+description: Tidy integration handle endpoints environment installation.
 display: Tidy
 name: Tidy
 script:
@@ -50,7 +57,7 @@ script:
       name: versions
       required: true
     - defaultValue: 3.8.5
-      description: Python versions to define as globals in enviorment.
+      description: Python versions to define as globals in environment.
       isArray: true
       name: globals
       required: true
@@ -58,28 +65,28 @@ script:
     name: tidy-pyenv
     outputs:
     - contextPath: Tidy.Install.Status
-      description: The status of the installation
+      description: The status of the installation.
       type: String
     - contextPath: Tidy.Install.ReturnCode
-      description: The return code of the ansible execution
+      description: The return code of the ansible execution.
       type: Number
     - contextPath: Tidy.Install.Canceled
-      description: Whether the execution was canceled
+      description: Whether the execution was canceled.
       type: Boolean
     - contextPath: Tidy.Install.Errored
-      description: Whether the execution has encountered an error
+      description: Whether the execution has encountered an error.
       type: Boolean
     - contextPath: Tidy.Install.TimedOut
-      description: Whether the execution has timed out
+      description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
-      description: The name of the installed software
+      description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -95,7 +102,7 @@ script:
       name: versions
       required: true
     - defaultValue: 1.16.0
-      description: GoLang versions to define as globals in enviorment.
+      description: GoLang versions to define as globals in environment.
       isArray: true
       name: globals
       required: true
@@ -103,28 +110,28 @@ script:
     name: tidy-goenv
     outputs:
     - contextPath: Tidy.Install.Status
-      description: The status of the installation
+      description: The status of the installation.
       type: String
     - contextPath: Tidy.Install.ReturnCode
-      description: The return code of the ansible execution
+      description: The return code of the ansible execution.
       type: Number
     - contextPath: Tidy.Install.Canceled
-      description: Whether the execution was canceled
+      description: Whether the execution was canceled.
       type: Boolean
     - contextPath: Tidy.Install.Errored
-      description: Whether the execution has encountered an error
+      description: Whether the execution has encountered an error.
       type: Boolean
     - contextPath: Tidy.Install.TimedOut
-      description: Whether the execution has timed out
+      description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
-      description: The name of the installed software
+      description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -140,7 +147,7 @@ script:
       name: versions
       required: true
     - defaultValue: 12.20.1
-      description: Node.js versions to define as globals in enviorment.
+      description: Node.js versions to define as globals in environment.
       isArray: true
       name: globals
       required: true
@@ -148,28 +155,28 @@ script:
     name: tidy-nodenv
     outputs:
     - contextPath: Tidy.Install.Status
-      description: The status of the installation
+      description: The status of the installation.
       type: String
     - contextPath: Tidy.Install.ReturnCode
-      description: The return code of the ansible execution
+      description: The return code of the ansible execution.
       type: Number
     - contextPath: Tidy.Install.Canceled
-      description: Whether the execution was canceled
+      description: Whether the execution was canceled.
       type: Boolean
     - contextPath: Tidy.Install.Errored
-      description: Whether the execution has encountered an error
+      description: Whether the execution has encountered an error.
       type: Boolean
     - contextPath: Tidy.Install.TimedOut
-      description: Whether the execution has timed out
+      description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
-      description: The name of the installed software
+      description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -179,40 +186,40 @@ script:
     - description: User login password.
       name: password
       secret: true
-    - description: Comma seprated list of homebrew packages (https://formulae.brew.sh/)
+    - description: Comma separated list of homebrew packages (https://formulae.brew.sh/).
       isArray: true
       name: apps
-    - description: Comma seprated list of homebrew cask packages (https://formulae.brew.sh/cask/)
+    - description: Comma separated list of homebrew cask packages (https://formulae.brew.sh/cask/).
       isArray: true
       name: cask_apps
-    - description: Hombrew taps packages to install
+    - description: Homebrew taps packages to install.
       name: homebrew_taps
     description: Install and configure homebrew, Install additional homebrew/-cask packages.
     name: tidy-homebrew
     outputs:
     - contextPath: Tidy.Install.Status
-      description: The status of the installation
+      description: The status of the installation.
       type: String
     - contextPath: Tidy.Install.ReturnCode
-      description: The return code of the ansible execution
+      description: The return code of the ansible execution.
       type: Number
     - contextPath: Tidy.Install.Canceled
-      description: Whether the execution was canceled
+      description: Whether the execution was canceled.
       type: Boolean
     - contextPath: Tidy.Install.Errored
-      description: Whether the execution has encountered an error
+      description: Whether the execution has encountered an error.
       type: Boolean
     - contextPath: Tidy.Install.TimedOut
-      description: Whether the execution has timed out
+      description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
-      description: The name of the installed software
+      description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -222,7 +229,7 @@ script:
     - description: User login password.
       name: password
       secret: true
-    - description: GitHub access token with public keys admin permissions.. (https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)
+    - description: GitHub access token with public keys admin permissions.. (https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token).
       name: access_token
       required: true
       secret: true
@@ -230,28 +237,28 @@ script:
     name: tidy-github-ssh-key
     outputs:
     - contextPath: Tidy.Install.Status
-      description: The status of the installation
+      description: The status of the installation.
       type: String
     - contextPath: Tidy.Install.ReturnCode
-      description: The return code of the ansible execution
+      description: The return code of the ansible execution.
       type: Number
     - contextPath: Tidy.Install.Canceled
-      description: Whether the execution was canceled
+      description: Whether the execution was canceled.
       type: Boolean
     - contextPath: Tidy.Install.Errored
-      description: Whether the execution has encountered an error
+      description: Whether the execution has encountered an error.
       type: Boolean
     - contextPath: Tidy.Install.TimedOut
-      description: Whether the execution has timed out
+      description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
-      description: The name of the installed software
+      description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -269,7 +276,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: "no"
-      description: If yes, any modified files in the working repository will be discarded
+      description: If yes, any modified files in the working repository will be discarded.
       name: force
       predefined:
       - "yes"
@@ -286,28 +293,28 @@ script:
     name: tidy-git-clone
     outputs:
     - contextPath: Tidy.Install.Status
-      description: The status of the installation
+      description: The status of the installation.
       type: String
     - contextPath: Tidy.Install.ReturnCode
-      description: The return code of the ansible execution
+      description: The return code of the ansible execution.
       type: Number
     - contextPath: Tidy.Install.Canceled
-      description: Whether the execution was canceled
+      description: Whether the execution was canceled.
       type: Boolean
     - contextPath: Tidy.Install.Errored
-      description: Whether the execution has encountered an error
+      description: Whether the execution has encountered an error.
       type: Boolean
     - contextPath: Tidy.Install.TimedOut
-      description: Whether the execution has timed out
+      description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
-      description: The name of the installed software
+      description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -341,28 +348,28 @@ script:
     name: tidy-git-config
     outputs:
     - contextPath: Tidy.Install.Status
-      description: The status of the installation
+      description: The status of the installation.
       type: String
     - contextPath: Tidy.Install.ReturnCode
-      description: The return code of the ansible execution
+      description: The return code of the ansible execution.
       type: Number
     - contextPath: Tidy.Install.Canceled
-      description: Whether the execution was canceled
+      description: Whether the execution was canceled.
       type: Boolean
     - contextPath: Tidy.Install.Errored
-      description: Whether the execution has encountered an error
+      description: Whether the execution has encountered an error.
       type: Boolean
     - contextPath: Tidy.Install.TimedOut
-      description: Whether the execution has timed out
+      description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
-      description: The name of the installed software
+      description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -376,28 +383,28 @@ script:
     name: tidy-zsh
     outputs:
     - contextPath: Tidy.Install.Status
-      description: The status of the installation
+      description: The status of the installation.
       type: String
     - contextPath: Tidy.Install.ReturnCode
-      description: The return code of the ansible execution
+      description: The return code of the ansible execution.
       type: Number
     - contextPath: Tidy.Install.Canceled
-      description: Whether the execution was canceled
+      description: Whether the execution was canceled.
       type: Boolean
     - contextPath: Tidy.Install.Errored
-      description: Whether the execution has encountered an error
+      description: Whether the execution has encountered an error.
       type: Boolean
     - contextPath: Tidy.Install.TimedOut
-      description: Whether the execution has timed out
+      description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
-      description: The name of the installed software
+      description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -410,7 +417,7 @@ script:
     - description: The file to modify.
       name: path
       required: true
-    - description: Text block to be added
+    - description: Text block to be added.
       name: block
       required: true
     - defaultValue: '" "'
@@ -429,28 +436,28 @@ script:
     name: tidy-block-in-file
     outputs:
     - contextPath: Tidy.Install.Status
-      description: The status of the installation
+      description: The status of the installation.
       type: String
     - contextPath: Tidy.Install.ReturnCode
-      description: The return code of the ansible execution
+      description: The return code of the ansible execution.
       type: Number
     - contextPath: Tidy.Install.Canceled
-      description: Whether the execution was canceled
+      description: Whether the execution was canceled.
       type: Boolean
     - contextPath: Tidy.Install.Errored
-      description: Whether the execution has encountered an error
+      description: Whether the execution has encountered an error.
       type: Boolean
     - contextPath: Tidy.Install.TimedOut
-      description: Whether the execution has timed out
+      description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
-      description: The name of the installed software
+      description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -471,28 +478,28 @@ script:
     name: tidy-exec
     outputs:
     - contextPath: Tidy.Install.Status
-      description: The status of the installation
+      description: The status of the installation.
       type: String
     - contextPath: Tidy.Install.ReturnCode
-      description: The return code of the ansible execution
+      description: The return code of the ansible execution.
       type: Number
     - contextPath: Tidy.Install.Canceled
-      description: Whether the execution was canceled
+      description: Whether the execution was canceled.
       type: Boolean
     - contextPath: Tidy.Install.Errored
-      description: Whether the execution has encountered an error
+      description: Whether the execution has encountered an error.
       type: Boolean
     - contextPath: Tidy.Install.TimedOut
-      description: Whether the execution has timed out
+      description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
-      description: The name of the installed software
+      description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -506,28 +513,28 @@ script:
     name: tidy-osx-command-line-tools
     outputs:
     - contextPath: Tidy.Install.Status
-      description: The status of the installation
+      description: The status of the installation.
       type: String
     - contextPath: Tidy.Install.ReturnCode
-      description: The return code of the ansible execution
+      description: The return code of the ansible execution.
       type: Number
     - contextPath: Tidy.Install.Canceled
-      description: Whether the execution was canceled
+      description: Whether the execution was canceled.
       type: Boolean
     - contextPath: Tidy.Install.Errored
-      description: Whether the execution has encountered an error
+      description: Whether the execution has encountered an error.
       type: Boolean
     - contextPath: Tidy.Install.TimedOut
-      description: Whether the execution has timed out
+      description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
-      description: The name of the installed software
+      description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -541,28 +548,28 @@ script:
     name: tidy-demisto-server
     outputs:
     - contextPath: Tidy.Install.Status
-      description: The status of the installation
+      description: The status of the installation.
       type: String
     - contextPath: Tidy.Install.ReturnCode
-      description: The return code of the ansible execution
+      description: The return code of the ansible execution.
       type: Number
     - contextPath: Tidy.Install.Canceled
-      description: Whether the execution was canceled
+      description: Whether the execution was canceled.
       type: Boolean
     - contextPath: Tidy.Install.Errored
-      description: Whether the execution has encountered an error
+      description: Whether the execution has encountered an error.
       type: Boolean
     - contextPath: Tidy.Install.TimedOut
-      description: Whether the execution has timed out
+      description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
-      description: The name of the installed software
+      description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -572,37 +579,37 @@ script:
     - description: User login password.
       name: password
       secret: true
-    description: Set demisto developement web-client.
+    description: Set demisto development web-client.
     name: tidy-demisto-web-client
     outputs:
     - contextPath: Tidy.Install.Status
-      description: The status of the installation
+      description: The status of the installation.
       type: String
     - contextPath: Tidy.Install.ReturnCode
-      description: The return code of the ansible execution
+      description: The return code of the ansible execution.
       type: Number
     - contextPath: Tidy.Install.Canceled
-      description: Whether the execution was canceled
+      description: Whether the execution was canceled.
       type: Boolean
     - contextPath: Tidy.Install.Errored
-      description: Whether the execution has encountered an error
+      description: Whether the execution has encountered an error.
       type: Boolean
     - contextPath: Tidy.Install.TimedOut
-      description: Whether the execution has timed out
+      description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
-      description: The name of the installed software
+      description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software
+      description: Additional information about the installed software.
       type: String
   - arguments: []
     description: Install python environment.
     name: tidy-python-env
-  dockerimage: demisto/tidy:1.0.0.2020237
+  dockerimage: demisto/tidy:1.0.0.4847261
   script: ''
   subtype: python3
   type: python

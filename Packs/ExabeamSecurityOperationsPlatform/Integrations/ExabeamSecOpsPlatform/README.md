@@ -3,18 +3,20 @@ This integration was integrated and tested with version v1.0 of ExabeamSecOpsPla
 
 ## Configure Exabeam Security Operations Platform in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Server URL | True |
-| Client ID | True |
-| Client Secret | True |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
-| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  |
-| Maximum Incidents Per Fetch |  |
-| Fetch query |  |
-| Fetch incidents |  |
-| Incident type |  |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | | True |
+| Client ID | | True |
+| Client Secret | | True |
+| Trust any certificate (not secure) | | False |
+| Use system proxy settings | | False |
+| Fetch incidents | Supported on Cortex XSOAR only. | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Supported on Cortex XSOAR only. | False |
+| Maximum Incidents Per Fetch | Supported on Cortex XSOAR only. This value should not exceed 3,000 due to product's API limitations. | False |
+| Fetch query | Supported on Cortex XSOAR only. In the `key:value`. For example: `NOT stage:"CLOSED"`. | False |
+| Incident type | Supported on Cortex XSOAR only. | False |
+| Fetch events | Supported on Cortex XSIAM only. | False |
+| Maximum Number of Cases Per Fetch | Supported on Cortex XSIAM only.| False |
 
 ## Commands
 
@@ -341,3 +343,37 @@ Search for cases that match one or more search criteria. For example, you can se
 | ExabeamPlatform.Case.mitres.tacticKey | String | Key of the MITRE tactic associated with the case. |
 | ExabeamPlatform.Case.mitres.technique | String | MITRE technique associated with the case. |
 | ExabeamPlatform.Case.mitres.techniqueKey | String | Key of the MITRE technique associated with the case. |
+
+### exabeam-platform-get-events
+
+***
+Get cases from Exabeam Security Operations Platform as Cortex XSIAM events. This command is supported in Cortex XSIAM only and is intended to be used for debugging purposes as it may result in duplicate events.
+
+#### Base Command
+
+`exabeam-platform-get-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| start_time | The starting date for the case search range. For example: yyyy-MM-ddThh:mm:ssZ. Default is 1 hour ago. | Optional |
+| end_time | The ending date for the case search range. For example: yyyy-MM-ddThh:mm:ssZ. Default is now. | Optional |
+| limit | The maximum number of results to return. Default is 10. | Optional |
+| should_push_events | If true, the command will push the events to the Cortex XSIAM dataset. Otherwise, it will only display them. Default is false. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!exabeam-platform-get-events start_time="2025-08-30T00:27:53Z" limit=1 should_push_events=false```
+
+#### Human Readable Output
+
+>### Events
+>
+>| _time | alertId | approxLogTime | caseCreationTimestamp | caseId | caseNumber | destHost | destIp | hasAttachments | lastModifiedTimestamp | mitres | name | priority | product | queue | riskScore | rules | srcHost | srcIp | stage | subscriptionCode | tags | useCases | user | vendor |
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 2025-08-31T22:49:43Z | 8ccd4479-aaaa-bbbb-9a29-aaed1b7e4d69 | 1756658220000000 | 1756680583393478 | 573d2e67-aaaa-bbbb-1122-11998166047e | 1449 | | | false | 1756724116013483 | | Hello_world_rule | HIGH | Correlation Rule | Tier 1 Analyst | 200 | [ ] | | | NEW | 1234 | | | | Exabeam |

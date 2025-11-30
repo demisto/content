@@ -731,7 +731,7 @@ def test_edit_ip_destination_group(mocker):
 
     run_command_test(
         command_func=Zscaler.edit_ip_destination_group,
-        args={"ip_group_id": 2000359, "name": "Test01", "addresses": ["127.0.0.2"], "description": "Localhost v2"},
+        args={"ip_group_id": "2000359", "name": "Test01", "addresses": ["127.0.0.2"], "description": "Localhost v2"},
         response_path="test_data/responses/" + "edit_ip_destination_group.json",
         expected_result_path="test_data/results/" + "edit_ip_destination_group.json",
         mocker=mocker,

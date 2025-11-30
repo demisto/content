@@ -1,7 +1,7 @@
 commonfields:
   id: Alibaba Action Trail Event Collector
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Alibaba Action Trail Event Collector
@@ -81,7 +81,7 @@ script:
       - "True"
       - "False"
       required: true
-  dockerimage: demisto/auth-utils:1.0.0.3562326
+  dockerimage: demisto/auth-utils:1.0.0.5295726
   isfetchevents: true
   subtype: python3
 marketplaces:

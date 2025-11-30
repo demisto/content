@@ -101,10 +101,10 @@ def handle_html(html_body):
             "subtype": subtype,
             "data": base64.b64decode(m.group(3)),
             "name": name,
-            "cid": f"{name}@{randomword(8)}.{randomword(8)}"
+            "cid": f"{name}@{randomword(8)}.{randomword(8)}",
         }
         attachments.append(att)
-        clean_body += html_body[last_index: m.start(1)] + "cid:" + att["cid"]
+        clean_body += html_body[last_index : m.start(1)] + "cid:" + att["cid"]
         last_index = m.end() - 1
     clean_body += html_body[last_index:]
     return clean_body, attachments

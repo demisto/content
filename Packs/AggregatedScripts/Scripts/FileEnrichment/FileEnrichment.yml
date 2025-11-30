@@ -6,10 +6,10 @@ args:
   description: 'Hash of the file. Supported types are: MD5, SHA1, SHA256, and SHA512. For multiple values, provide a comma-separated list of file hashes.'
   required: true
   isArray: true
-- name: enrichment_brands
+- name: brands
   description: |-
     Integrations brands to use for running external enrichment. If not provided, the command will run for all available integrations that implement the file reputation command.
-    For multiple values, provide a comma-separated list of integration IDs. For example: "VirusTotal (API v3),WildFire-v2,Cortex Core - IR". Specifying enrichment_brands will force enable external_enrichment.
+    For multiple values, provide a comma-separated list of integration IDs. For example: "VirusTotal (API v3),WildFire-v2,Cortex Core - IR". Specifying brands will force enable external_enrichment.
   isArray: true
 - name: verbose
   description: Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result and suppress error entries from commands.
@@ -210,7 +210,7 @@ script: '-'
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.10.0
 tests:
-- No tests (auto formatted)
+- FileEnrichment - Test

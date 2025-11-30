@@ -1,4 +1,4 @@
-sectionOrder:
+sectionorder:
   - Connect
   - Collect
 category: Forensics & Malware Analysis
@@ -1194,7 +1194,7 @@ script:
       description: Percentages used.
       type: Number
     arguments: []
-  dockerimage: demisto/python3:3.12.11.4181428
+  dockerimage: demisto/python3:3.12.12.5490952
   runonce: false
   script: ''
   subtype: python3

@@ -1,0 +1,1 @@
+Create First you Azure Open AI environment at https://ai.azure.com

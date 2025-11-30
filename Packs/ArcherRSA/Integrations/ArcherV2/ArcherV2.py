@@ -1042,12 +1042,19 @@ def extract_from_xml(xml, path):
 def generate_field_contents(client, fields_values, level_fields, depth):
     if fields_values and not isinstance(fields_values, dict):
         demisto.debug(f"Fields values string before escaping: {fields_values}")
-        # Escape backslashes if not any of the following:
-        # \" - escaped double quote        \b - backspace
+
+        # Escape backslashes if not any of the following valid JSON escape sequences:
+        # \" - escaped double quote        \\ - escaped backslash
+        # \/ - escaped forward slash       \b - backspace
         # \f - form feed                   \n - new line
         # \r - carriage return             \t - tab
-        # \u - unicode character
-        fields_values = re.sub(r'\\(?!["bfnrtu])', r"\\\\", fields_values)
+        # \uXXXX - unicode character (where XXXX is exactly 4 hexadecimal digits)
+        #
+        # The pattern matches a backslash NOT followed by:
+        # - A double quote, backslash, forward slash, b, f, n, r, or t
+        # - The letter 'u' followed by exactly 4 hexadecimal digits
+        pattern = r'\\(?!(?:["\\/nrt]|u[0-9a-fA-F]{4}))'
+        fields_values = re.sub(pattern, r"\\\\", fields_values)
         demisto.debug(f"Fields values string after escaping: {fields_values}")
 
         try:
@@ -1461,7 +1468,7 @@ def upload_and_associate_command(client: Client, args: dict[str, str]):
         record, _, errors = client.get_record(app_id, content_id, 0)
         if errors:
             return_error(errors)
-        record_attachments = record.get("Attachments", [])
+        record_attachments = record.get(associate_field, []) or []
         demisto.debug(f"Record id {content_id} already has {record_attachments=} will add the new {attachment_ids=} as well")
         attachment_ids.extend(record_attachments)
         demisto.debug(f"All {attachment_ids=}")

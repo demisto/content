@@ -65,7 +65,7 @@ class OktaASAClient(BaseClient):
 
     def execute_audit_events_request(
         self, offset: Optional[str], count: Optional[int], descending: Optional[bool], prev: Optional[bool]
-    ) -> tuple[list,dict]:
+    ) -> tuple[list, dict]:
         """Gets audit events request.
 
         Args:
@@ -82,7 +82,7 @@ class OktaASAClient(BaseClient):
         params = assign_params(offset=offset, count=count, descending=descending, prev=prev)
         self.generate_token_if_required()
         response = self.get_audit_events_request(params)
-        return response.get("list",[]),response.get("related_objects",{})
+        return response.get("list", []), response.get("related_objects", {})
 
     def generate_token_if_required(self, hard: bool = False) -> None:
         """Checks if token refresh required and return the token.
@@ -139,11 +139,14 @@ class OktaASAClient(BaseClient):
             )
             if not events:
                 break
-            add_time_and_related_object_data_to_events(events, related_objects, add_time_mapping)
-            event_offset = events[0] if descending else events[len(events) - 1]
+
+            # Process each event with its related objects
+            processed_events = [process_and_enrich_event(event, related_objects, add_time=add_time_mapping) for event in events]
+
+            event_offset = processed_events[0] if descending else processed_events[len(processed_events) - 1]
             offset = event_offset.get("id")
             returned_timestamp = event_offset.get("timestamp")
-            results.extend(events)
+            results.extend(processed_events)
             count = min(limit - len(results), 1000)
         demisto.debug(f"{INTEGRATION_NAME}: will return {len(results)} events")
 
@@ -169,32 +172,52 @@ def is_token_expired(expires_date: str) -> bool:
     return current_utc_time > expires_datetime_date
 
 
-def add_time_and_related_object_data_to_events(events: List[Dict], related_objects: Dict, add_time_mapping: bool):
+def process_and_enrich_event(event: dict, related_objects: dict, add_time: bool = True) -> dict:
     """
-    Adds the "_time" key to the event and enhances the "server", "project" keys values of an event.
-    Related object structure is "related_objects": {"id_of_keys_to_enhance": {"type": "some_type", "object": {}}}
-    Args:
-        events: List[Dict] - list of events to add the _time key to.
-        related_objects: Dict - A dict of events related_objects to add the related objects to.
-        add_time_mapping (bool): whether to add time mapping.
-    Returns:
-        list: The events with the _time key and related object information.
-    """
-    keys_to_enhance = ["project", "server"]
-    for event in events:
-        if add_time_mapping:
-            create_time = arg_to_datetime(arg=event.get("timestamp"))
-            event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
+    Transforms an individual event by adding a _time field and dynamically merging
+    all related objects, preserving the original link ID.
+    See the unit tests for examples of how this function works.
 
-        for key in keys_to_enhance:
-            event_details = event.get("details", {})
-            id_of_key_to_enhance = event_details.get(key)
-            if not event_details or not id_of_key_to_enhance:
-                continue
-            # structure is {"type": "some_type", "object": {}}
-            related_object_dict = related_objects.get(id_of_key_to_enhance,{})
-            if  key == related_object_dict.get("type") and (related_object_data:=related_object_dict.get("object")):
-                event_details[key] = related_object_data if related_object_data else id_of_key_to_enhance
+    Args:
+        event: Individual event object.
+        related_objects: Dict of related objects mapped by ID.
+        add_time: Whether to add the _time field from timestamp.
+
+    Returns:
+        A single dictionary representing the fully enriched event.
+    """
+    processed_event = event.copy()
+
+    # 1. Add the _time field if requested
+    if add_time and (timestamp := processed_event.get("timestamp")):
+        if create_time := arg_to_datetime(arg=timestamp):
+            processed_event["_time"] = create_time.strftime(DATE_FORMAT)
+        else:
+            demisto.debug(f"{INTEGRATION_NAME}: Failed to parse timestamp '{timestamp}'. Full event: {event}")
+
+    # 2. Dynamically merge related objects that are referenced in the event details
+    event_details = processed_event.get("details", {})
+
+    for _, referenced_id in event_details.items():
+        # Skip if not a valid string ID or not found in related_objects
+        if not isinstance(referenced_id, str) or referenced_id not in related_objects:
+            continue
+
+        related_data = related_objects[referenced_id]
+        new_key_name = related_data.get("type")
+        object_data = related_data.get("object")
+
+        # Skip if missing required fields
+        if not new_key_name or not object_data:
+            demisto.debug(f"{INTEGRATION_NAME}: Invalid related object for ID '{referenced_id}'")
+            continue
+
+        enriched_object = object_data.copy()
+        enriched_object["original_link_id"] = referenced_id
+        processed_event[new_key_name] = enriched_object
+
+    return processed_event
+
 
 """COMMAND FUNCTIONS"""
 
@@ -250,7 +273,7 @@ def fetch_events_command(
     last_run: dict[str, str],
     team_name: str,
     max_audit_events_per_fetch: Optional[int],
-    add_time_mapping: bool
+    add_time_mapping: bool,
 ) -> tuple[dict[str, str], List[Dict]]:
     """
     Args:
@@ -268,7 +291,7 @@ def fetch_events_command(
     events, offset, timestamp = client.search_events(
         limit=max_audit_events_per_fetch,
         offset=last_run.get("offset") if last_run and last_run.get("team_name") == team_name else None,
-        add_time_mapping=add_time_mapping
+        add_time_mapping=add_time_mapping,
     )
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run: dict = {"offset": offset, "timestamp": timestamp, "team_name": team_name} if offset else last_run
@@ -317,8 +340,11 @@ def main() -> None:  # pragma: no cover
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
             next_run, events = fetch_events_command(
-                client=client, last_run=last_run, max_audit_events_per_fetch=max_audit_events_per_fetch, team_name=team_name,
-                add_time_mapping = True
+                client=client,
+                last_run=last_run,
+                max_audit_events_per_fetch=max_audit_events_per_fetch,
+                team_name=team_name,
+                add_time_mapping=True,
             )
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)

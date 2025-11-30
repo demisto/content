@@ -1,5 +1,5 @@
 category: Forensics & Malware Analysis
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -30,7 +30,7 @@ configuration:
   section: Connect
   advanced: true
 description: Deprecated. Use ANY.RUN TI Feeds, ANY.RUN TI Lookup, ANY.RUN Cloud Sandbox instead.
-display: ANY.RUN
+display: ANY.RUN (Deprecated)
 name: ANYRUN
 script:
   commands:

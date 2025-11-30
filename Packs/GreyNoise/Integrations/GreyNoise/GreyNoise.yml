@@ -1,4 +1,6 @@
 category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
 commonfields:
   id: GreyNoise
   version: -1
@@ -16,6 +18,7 @@ configuration:
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
   required: false
+  section: Connect
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -26,32 +29,38 @@ configuration:
   - suddenDeath
   type: 17
   required: false
+  section: Connect
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
   required: false
+  section: Connect
 - display: API Key
   name: apikey
   required: false
   type: 4
   hidden: true
+  section: Connect
 - display: API Key
   name: credentials
   required: false
   type: 9
   displaypassword: API Key
   hiddenusername: true
+  section: Connect
 - additionalinfo: Whether to allow connections without verifying SSL certificates validity.
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Whether to use XSOAR's system proxy settings to connect to the API.
   display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 defaultclassifier: 'null'
 description: GreyNoise is a cybersecurity platform that collects and analyzes Internet-wide scan and attack traffic. With this integration, users can contextualize existing alerts, filter false-positives, identify compromised devices, and track emerging threats.
 display: GreyNoise
@@ -69,6 +78,9 @@ script:
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the data.
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
@@ -110,7 +122,7 @@ script:
       description: The date the device was last observed by GreyNoise. Format is ISO8601.
       type: date
     - contextPath: GreyNoise.IP.seen
-      description: IP is in record with GreyNoise.
+      description: Whether the IP is in record with GreyNoise.
       type: boolean
     - contextPath: GreyNoise.IP.tags
       description: A list of the tags the device has been assigned over the past 90 days.
@@ -119,7 +131,7 @@ script:
       description: The overt actor the device has been associated with.
       type: string
     - contextPath: GreyNoise.IP.spoofable
-      description: Boolean indicates if IP is spoofable.
+      description: Whether the ip is spoofable.
       type: boolean
     - contextPath: GreyNoise.IP.classification
       description: Whether the device has been categorized as unknown, benign, or malicious.
@@ -173,14 +185,11 @@ script:
       description: The country code of the IP source country.
       type: string
     - contextPath: GreyNoise.IP.metadata.tor
-      description: Whether or not the device is a known Tor exit node.
+      description: Whether the device is a known Tor exit node.
       type: boolean
-    - contextPath: GreyNoise.IP.vpn
-      description: Whether the device is VPN endpoint or not.
+    - contextPath: GreyNoise.IP.tor
+      description: Whether the device is a known Tor exit node.
       type: boolean
-    - contextPath: GreyNoise.IP.vpn_service
-      description: The name of the VPN service provider of the device.
-      type: string
     - contextPath: GreyNoise.IP.raw_data.scan.port
       description: The port number(s) the devices has been observed scanning.
       type: number
@@ -208,6 +217,111 @@ script:
     - contextPath: GreyNoise.IP.bot
       description: Whether the IP is associated with known bot activity or not. Common examples include credential stuffing, content scraping, or brute force attacks.
       type: Boolean
+    - contextPath: GreyNoise.IP.found
+      description: Whether the IP was found in GreyNoise records.
+      type: boolean
+    - contextPath: GreyNoise.IP.last_seen_timestamp
+      description: The timestamp when the device was last observed by GreyNoise.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.carrier
+      description: The carrier information for the IP address.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.datacenter
+      description: The datacenter information for the IP address.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.destination_asns
+      description: The list of ASNs targeted by scanning.
+      type: array
+    - contextPath: GreyNoise.IP.metadata.destination_cities
+      description: The list of cities targeted by scanning.
+      type: array
+    - contextPath: GreyNoise.IP.metadata.destination_country_codes
+      description: The list of country codes targeted by scanning.
+      type: array
+    - contextPath: GreyNoise.IP.metadata.domain
+      description: The domain associated with the IP address.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.latitude
+      description: The latitude coordinate of the IP address location.
+      type: number
+    - contextPath: GreyNoise.IP.metadata.longitude
+      description: The longitude coordinate of the IP address location.
+      type: number
+    - contextPath: GreyNoise.IP.metadata.mobile
+      description: Whether the device is on a mobile network.
+      type: boolean
+    - contextPath: GreyNoise.IP.metadata.rdns_parent
+      description: The parent domain of the reverse DNS lookup.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.rdns_validated
+      description: Whether the reverse DNS lookup has been validated.
+      type: boolean
+    - contextPath: GreyNoise.IP.metadata.single_destination
+      description: Whether the IP targets a single destination.
+      type: boolean
+    - contextPath: GreyNoise.IP.metadata.source_city
+      description: The city where the IP is geographically located.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.tor
+      description: Whether the device is a known Tor exit node.
+      type: boolean
+    - contextPath: GreyNoise.IP.tor
+      description: Whether the device is a known Tor exit node.
+      type: boolean
+    - contextPath: GreyNoise.IP.vpn
+      description: Whether the device is a VPN endpoint or not.
+      type: boolean
+    - contextPath: GreyNoise.IP.vpn_service
+      description: The name of the VPN service provider of the device.
+      type: string
+    - contextPath: GreyNoise.IP.category
+      description: The category of the business service.
+      type: string
+    - contextPath: GreyNoise.IP.description
+      description: Description of the business service.
+      type: string
+    - contextPath: GreyNoise.IP.explanation
+      description: Explanation of why the IP is considered a business service.
+      type: string
+    - contextPath: GreyNoise.IP.riot
+      description: Whether the IP is a common business service.
+      type: boolean
+    - contextPath: GreyNoise.IP.last_updated
+      description: When was the last time the business service information was updated.
+      type: date
+    - contextPath: GreyNoise.IP.name
+      description: The name of the business service.
+      type: string
+    - contextPath: GreyNoise.IP.reference
+      description: Reference link for the business service.
+      type: string
+    - contextPath: GreyNoise.IP.trust_level
+      description: If the IP is a business service, how trustworthy is the IP.
+      type: string
+    - contextPath: GreyNoise.IP.raw_data.http.md5
+      description: MD5 hashes of HTTP requests made by the device.
+      type: array
+    - contextPath: GreyNoise.IP.raw_data.http.method
+      description: HTTP methods used by the device.
+      type: array
+    - contextPath: GreyNoise.IP.raw_data.http.path
+      description: HTTP paths the device has been observed accessing.
+      type: array
+    - contextPath: GreyNoise.IP.raw_data.http.request_header
+      description: HTTP request headers used by the device.
+      type: array
+    - contextPath: GreyNoise.IP.raw_data.http.useragent
+      description: HTTP user-agents the device has been observed using.
+      type: array
+    - contextPath: GreyNoise.IP.raw_data.source.bytes
+      description: The number of bytes sent by the source.
+      type: number
+    - contextPath: GreyNoise.IP.raw_data.tls.cipher
+      description: TLS cipher suites used by the device.
+      type: array
+    - contextPath: GreyNoise.IP.raw_data.tls.ja4
+      description: JA4 TLS/SSL fingerprints.
+      type: array
   - arguments:
     - default: true
       description: A comma-separated list of CVE IDs.
@@ -328,18 +442,31 @@ script:
     - contextPath: GreyNoise.IP.code_value
       description: Message which correlates to why GreyNoise labeled the IP as noise.
       type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.found
+      description: Whether the IP has been observed scanning the internet.
+      type: boolean
+    - contextPath: GreyNoise.IP.business_service_intelligence.found
+      description: Whether the IP is a common business service.
+      type: boolean
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.classification
+      description: If the IP has been observed, what is the GreyNoise classification.
+      type: string
+    - contextPath: GreyNoise.IP.business_service_intelligence.trust_level
+      description: If the IP is a business service, how trustworthy is the IP.
+      type: string
   - arguments:
     - description: 'The date the device was most recently observed by GreyNoise. Example: 1d, 2d, 12h, or 1m.'
       name: last_seen
     - description: The organization that owns the network the IP address belongs to.
       name: organization
     - auto: PREDEFINED
-      description: 'Classification of the device. Possible values: unknown, benign, malicious.'
+      description: 'Classification of the device. Possible values: unknown, benign, suspicious, malicious.'
       name: classification
       predefined:
       - unknown
       - benign
       - malicious
+      - suspicious
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether the IP is spoofable or not.
@@ -370,6 +497,9 @@ script:
     - contextPath: GreyNoise.IP.address
       description: The IP address of the scanning device IP.
       type: string
+    - contextPath: GreyNoise.IP.bot
+      description: Whether the IP is associated with known bot activity or not. Common examples include credential stuffing, content scraping, or brute force attacks.
+      type: Boolean
     - contextPath: GreyNoise.IP.first_seen
       description: The date the device was first observed by GreyNoise. Format is ISO8601.
       type: date
@@ -377,16 +507,46 @@ script:
       description: The date the device was last observed by GreyNoise. Format is ISO8601.
       type: date
     - contextPath: GreyNoise.IP.seen
-      description: IP is in record with GreyNoise.
+      description: Whether the IP is in record with GreyNoise.
       type: boolean
     - contextPath: GreyNoise.IP.tags
       description: A list of the tags the device has been assigned over the past 90 days.
       type: array
+    - contextPath: GreyNoise.IP.tags.category
+      description: The category of the given tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.created
+      description: The date the tag was added to the GreyNoise system.
+      type: date
+    - contextPath: GreyNoise.IP.tags.description
+      description: A description of what the tag identifies.
+      type: string
+    - contextPath: GreyNoise.IP.tags.id
+      description: The unique id of the tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.intention
+      description: The intention of the associated activity the tag identifies.
+      type: string
+    - contextPath: GreyNoise.IP.tags.name
+      description: The name of the tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.recommend_block
+      description: Indicates if IPs associated with this tag should be blocked.
+      type: boolean
+    - contextPath: GreyNoise.IP.tags.references
+      description: A list of references used to create the tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.slug
+      description: The unique slug of the tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.updated_at
+      description: The date the tag was last updated.
+      type: date
     - contextPath: GreyNoise.IP.actor
       description: The overt actor the device has been associated with.
       type: string
     - contextPath: GreyNoise.IP.spoofable
-      description: Boolean indicates if IP is spoofable.
+      description: Whether the ip is spoofable.
       type: boolean
     - contextPath: GreyNoise.IP.classification
       description: Whether the device has been categorized as unknown, benign, or malicious.
@@ -440,10 +600,13 @@ script:
       description: The country code of the IP source country.
       type: string
     - contextPath: GreyNoise.IP.metadata.tor
-      description: Whether or not the device is a known Tor exit node.
+      description: Whether the device is a known Tor exit node.
+      type: boolean
+    - contextPath: GreyNoise.IP.tor
+      description: Whether the device is a known Tor exit node.
       type: boolean
     - contextPath: GreyNoise.IP.vpn
-      description: Whether the device is VPN endpoint or not.
+      description: Whether the device is a VPN endpoint or not.
       type: boolean
     - contextPath: GreyNoise.IP.vpn_service
       description: The name of the VPN service provider of the device.
@@ -472,6 +635,201 @@ script:
     - contextPath: GreyNoise.IP.raw_data.hassh.port
       description: TCP port connection where the HASSH hash was identified.
       type: number
+    - contextPath: GreyNoise.IP.business_service_intelligence.category
+      description: The category of the business service.
+      type: string
+    - contextPath: GreyNoise.IP.business_service_intelligence.description
+      description: Description of the business service.
+      type: string
+    - contextPath: GreyNoise.IP.business_service_intelligence.explanation
+      description: Explanation of why the IP is considered a business service.
+      type: string
+    - contextPath: GreyNoise.IP.business_service_intelligence.found
+      description: Whether the IP is a common business service.
+      type: boolean
+    - contextPath: GreyNoise.IP.business_service_intelligence.last_updated
+      description: When was the last time the business service information was updated.
+      type: date
+    - contextPath: GreyNoise.IP.business_service_intelligence.name
+      description: The name of the business service.
+      type: string
+    - contextPath: GreyNoise.IP.business_service_intelligence.reference
+      description: Reference link for the business service.
+      type: string
+    - contextPath: GreyNoise.IP.business_service_intelligence.trust_level
+      description: If the IP is a business service, how trustworthy is the IP.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.actor
+      description: The overt actor the device has been associated with.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.bot
+      description: Whether the IP is associated with known bot activity or not. Common examples include credential stuffing, content scraping, or brute force attacks.
+      type: Boolean
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.classification
+      description: Whether the device has been categorized as unknown, benign, or malicious.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.cve
+      description: CVEs associated with IP.
+      type: array
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.first_seen
+      description: The date the device was first observed by GreyNoise. Format is ISO8601.
+      type: date
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.found
+      description: Whether the IP was found in GreyNoise records.
+      type: boolean
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.last_seen
+      description: The date the device was last observed by GreyNoise. Format is ISO8601.
+      type: date
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.last_seen_timestamp
+      description: The timestamp when the device was last observed by GreyNoise.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.asn
+      description: The autonomous system identification number.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.carrier
+      description: The carrier information for the IP address.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.category
+      description: Whether the device belongs to a business, isp, hosting, education, or mobile network.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.city
+      description: The city the device is geographically located in.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.country
+      description: The full name of the country.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.country_code
+      description: The two-character country code of the country.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.datacenter
+      description: The datacenter information for the IP address.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.destination_asns
+      description: The list of ASNs targeted by scanning.
+      type: array
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.destination_cities
+      description: The list of cities targeted by scanning.
+      type: array
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.destination_countries
+      description: The list of countries targeted by scanning.
+      type: array
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.destination_country_codes
+      description: The list of country codes targeted by scanning.
+      type: array
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.domain
+      description: The domain associated with the IP address.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.latitude
+      description: The latitude coordinate of the IP address location.
+      type: number
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.longitude
+      description: The longitude coordinate of the IP address location.
+      type: number
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.mobile
+      description: Whether the device is on a mobile network.
+      type: boolean
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.organization
+      description: The organization that owns the network that the IP address belongs to.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.os
+      description: The name of the operating system of the device.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.rdns
+      description: Reverse DNS lookup of the IP address.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.rdns_parent
+      description: The parent domain of the reverse DNS lookup.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.rdns_validated
+      description: Whether the reverse DNS lookup has been validated.
+      type: boolean
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.region
+      description: The full name of the region the device is geographically located in.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.sensor_count
+      description: The number of sensors that observed activity from this IP.
+      type: number
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.sensor_hits
+      description: The number of sensor events recorded from this IP.
+      type: number
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.single_destination
+      description: Whether the IP targets a single destination.
+      type: boolean
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.source_city
+      description: The city where the IP is geographically located.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.source_country
+      description: The full name of the IP source country.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.source_country_code
+      description: The country code of the IP source country.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.tor
+      description: Whether the device is a known Tor exit node.
+      type: boolean
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.raw_data.hassh.fingerprint
+      description: HASSH hash fingerprint string.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.raw_data.hassh.port
+      description: TCP port connection where the HASSH hash was identified.
+      type: number
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.raw_data.http.md5
+      description: MD5 hashes of HTTP requests made by the device.
+      type: array
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.raw_data.http.method
+      description: HTTP methods used by the device.
+      type: array
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.raw_data.http.path
+      description: HTTP paths the device has been observed accessing.
+      type: array
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.raw_data.http.request_header
+      description: HTTP request headers used by the device.
+      type: array
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.raw_data.http.useragent
+      description: HTTP user-agents the device has been observed using.
+      type: array
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.raw_data.ja3.fingerprint
+      description: The JA3 TLS/SSL fingerprint.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.raw_data.ja3.port
+      description: The corresponding TCP port for the given JA3 fingerprint.
+      type: number
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.raw_data.scan.port
+      description: The port number(s) the device has been observed scanning.
+      type: number
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.raw_data.scan.protocol
+      description: The protocol of the port the device has been observed scanning.
+      type: string
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.raw_data.source.bytes
+      description: The number of bytes sent by the source.
+      type: number
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.raw_data.tls.cipher
+      description: TLS cipher suites used by the device.
+      type: array
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.raw_data.tls.ja4
+      description: JA4 TLS/SSL fingerprints.
+      type: array
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.raw_data.web.paths
+      description: Any HTTP paths the device has been observed crawling the Internet for.
+      type: array
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.raw_data.web.useragents
+      description: Any HTTP user-agents the device has been observed using while crawling the Internet.
+      type: array
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.seen
+      description: Whether the IP is in record with GreyNoise.
+      type: boolean
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.spoofable
+      description: Whether the ip is spoofable.
+      type: boolean
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.tags
+      description: A list of the tags the device has been assigned over the past 90 days.
+      type: array
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.vpn
+      description: Whether the device is a VPN endpoint or not.
+      type: boolean
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.vpn_service
+      description: The name of the VPN service provider of the device.
+      type: string
     - contextPath: GreyNoise.Query.complete
       description: Whether all results have been fetched or not.
       type: boolean
@@ -487,9 +845,6 @@ script:
     - contextPath: GreyNoise.Query.scroll
       description: Scroll token to paginate through results.
       type: string
-    - contextPath: GreyNoise.IP.bot
-      description: Whether the IP is associated with known bot activity or not. Common examples include credential stuffing, content scraping, or brute force attacks.
-      type: Boolean
   - arguments:
     - description: 'The date the device was most recently observed by GreyNoise. Example: 1d, 2d, 12h, or 1m.'
       name: last_seen
@@ -626,7 +981,7 @@ script:
       description: The explanation of the IP if riot is "True".
       type: String
     - contextPath: GreyNoise.Riot.last_updated
-      description: The last updated time of the IP if the riot is "True".
+      description: The last time the business service information was updated.
       type: Date
     - contextPath: GreyNoise.Riot.reference
       description: The reference of the IP if riot is "True".
@@ -652,16 +1007,46 @@ script:
       description: The date the device was last observed by GreyNoise. Format is ISO8601.
       type: date
     - contextPath: GreyNoise.IP.seen
-      description: IP is in record with GreyNoise.
+      description: Whether the IP is in record with GreyNoise.
       type: boolean
     - contextPath: GreyNoise.IP.tags
       description: A list of the tags the device has been assigned over the past 90 days.
       type: array
+    - contextPath: GreyNoise.IP.tags.category
+      description: The category of the given tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.created
+      description: The date the tag was added to the GreyNoise system.
+      type: date
+    - contextPath: GreyNoise.IP.tags.description
+      description: A description of what the tag identifies.
+      type: string
+    - contextPath: GreyNoise.IP.tags.id
+      description: The unique id of the tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.intention
+      description: The intention of the associated activity the tag identifies.
+      type: string
+    - contextPath: GreyNoise.IP.tags.name
+      description: The name of the tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.recommend_block
+      description: Indicates if IPs associated with this tag should be blocked.
+      type: boolean
+    - contextPath: GreyNoise.IP.tags.references
+      description: A list of references used to create the tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.slug
+      description: The unique slug of the tag.
+      type: string
+    - contextPath: GreyNoise.IP.tags.updated_at
+      description: The date the tag was last updated.
+      type: date
     - contextPath: GreyNoise.IP.actor
       description: The overt actor the device has been associated with.
       type: string
     - contextPath: GreyNoise.IP.spoofable
-      description: Boolean indicates if IP is spoofable.
+      description: Whether the ip is spoofable.
       type: boolean
     - contextPath: GreyNoise.IP.classification
       description: Whether the device has been categorized as unknown, benign, or malicious.
@@ -690,6 +1075,12 @@ script:
     - contextPath: GreyNoise.IP.metadata.destination_county_codes
       description: The list of countries (codes) targeted by scanning.
       type: array
+    - contextPath: GreyNoise.IP.metadata.destination_asns
+      description: The list of ASNs targeted by scanning.
+      type: array
+    - contextPath: GreyNoise.IP.metadata.destination_cities
+      description: The list of cities targeted by scanning.
+      type: array
     - contextPath: GreyNoise.IP.metadata.organization
       description: The organization that owns the network that the IP address belongs to.
       type: string
@@ -699,6 +1090,12 @@ script:
     - contextPath: GreyNoise.IP.metadata.rdns
       description: Reverse DNS lookup of the IP address.
       type: string
+    - contextPath: GreyNoise.IP.metadata.rdns_parent
+      description: The parent domain of the reverse DNS lookup.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.rdns_validated
+      description: Whether the reverse DNS lookup has been validated.
+      type: boolean
     - contextPath: GreyNoise.IP.metadata.region
       description: The full name of the region the device is geographically located in.
       type: string
@@ -714,11 +1111,38 @@ script:
     - contextPath: GreyNoise.IP.metadata.source_country_code
       description: The country code of the IP source country.
       type: string
+    - contextPath: GreyNoise.IP.metadata.source_city
+      description: The city where the IP is geographically located.
+      type: string
     - contextPath: GreyNoise.IP.metadata.tor
-      description: Whether or not the device is a known Tor exit node.
+      description: Whether the device is a known Tor exit node.
+      type: boolean
+    - contextPath: GreyNoise.IP.tor
+      description: Whether the device is a known Tor exit node.
+      type: boolean
+    - contextPath: GreyNoise.IP.metadata.carrier
+      description: The carrier information for the IP address.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.datacenter
+      description: The datacenter information for the IP address.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.domain
+      description: The domain associated with the IP address.
+      type: string
+    - contextPath: GreyNoise.IP.metadata.latitude
+      description: The latitude coordinate of the IP address location.
+      type: number
+    - contextPath: GreyNoise.IP.metadata.longitude
+      description: The longitude coordinate of the IP address location.
+      type: number
+    - contextPath: GreyNoise.IP.metadata.mobile
+      description: Whether the device is on a mobile network.
+      type: boolean
+    - contextPath: GreyNoise.IP.metadata.single_destination
+      description: Whether the IP targets a single destination.
       type: boolean
     - contextPath: GreyNoise.IP.vpn
-      description: Whether the device is VPN endpoint or not.
+      description: Whether the device is a VPN endpoint or not.
       type: boolean
     - contextPath: GreyNoise.IP.vpn_service
       description: The name of the VPN service provider of the device.
@@ -747,6 +1171,30 @@ script:
     - contextPath: GreyNoise.IP.raw_data.hassh.port
       description: TCP port connection where the HASSH hash was identified.
       type: number
+    - contextPath: GreyNoise.IP.raw_data.http.md5
+      description: MD5 hashes of HTTP requests made by the device.
+      type: array
+    - contextPath: GreyNoise.IP.raw_data.http.method
+      description: HTTP methods used by the device.
+      type: array
+    - contextPath: GreyNoise.IP.raw_data.http.path
+      description: HTTP paths the device has been observed accessing.
+      type: array
+    - contextPath: GreyNoise.IP.raw_data.http.request_header
+      description: HTTP request headers used by the device.
+      type: array
+    - contextPath: GreyNoise.IP.raw_data.http.useragent
+      description: HTTP user-agents the device has been observed using.
+      type: array
+    - contextPath: GreyNoise.IP.raw_data.source.bytes
+      description: The number of bytes sent by the source.
+      type: number
+    - contextPath: GreyNoise.IP.raw_data.tls.cipher
+      description: TLS cipher suites used by the device.
+      type: array
+    - contextPath: GreyNoise.IP.raw_data.tls.ja4
+      description: JA4 TLS/SSL fingerprints.
+      type: array
     - contextPath: GreyNoise.IP.bot
       description: Whether the IP is associated with known bot activity or not. Common examples include credential stuffing, content scraping, or brute force attacks.
       type: Boolean
@@ -791,7 +1239,7 @@ script:
     - contextPath: GreyNoise.Timeline.ip_address
       description: Timeline IP address.
       type: string
-  dockerimage: demisto/greynoise:1.0.0.117184
+  dockerimage: demisto/greynoise:1.0.0.3876899
   runonce: false
   script: '-'
   subtype: python3

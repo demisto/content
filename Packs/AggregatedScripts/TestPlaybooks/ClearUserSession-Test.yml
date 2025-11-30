@@ -1,0 +1,632 @@
+id: ClearUserSession - Test
+version: -1
+name: ClearUserSession - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0a6bbf1c-4b82-4f54-8af8-661d42394985
+    type: start
+    task:
+      id: 0a6bbf1c-4b82-4f54-8af8-661d42394985
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: febf897e-b513-4a39-a4cb-8d37b8f021c1
+    type: regular
+    task:
+      id: febf897e-b513-4a39-a4cb-8d37b8f021c1
+      version: -1
+      name: MSGraph list users
+      description: |-
+        Retrieves a list of user objects.
+        Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application).
+      script: '|||msgraph-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c2f81a51-f886-42fd-bc25-5f991fce1e64
+    type: regular
+    task:
+      id: c2f81a51-f886-42fd-bc25-5f991fce1e64
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: dfd225ec-3992-4a06-a3ac-af52683d8462
+    type: regular
+    task:
+      id: dfd225ec-3992-4a06-a3ac-af52683d8462
+      version: -1
+      name: ClearUserSession
+      description: This script clears user sessions across multiple integrations for a list of usernames.
+      scriptName: clear-user-session
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      user_name:
+        simple: ${MSGraphUser.UserPrincipalName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8c6d6621-511c-492b-aea2-2240b3bf9e64
+    type: regular
+    task:
+      id: 8c6d6621-511c-492b-aea2-2240b3bf9e64
+      version: -1
+      name: MSGraph get user
+      description: |-
+        Retrieves the properties and relationships of a user object. For more information, visit: https://learn.microsoft.com/en-us/graph/api/user-get?view=graph-rest-1.0&tabs=http.
+        Permissions: - User.Read (Delegated) - User.Read.All (Application).
+      script: '|||msgraph-user-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      user:
+        complex:
+          root: MSGraphUser
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 87ab1d0b-4f87-40ed-8069-3ebfa2f3b770
+    type: condition
+    task:
+      id: 87ab1d0b-4f87-40ed-8069-3ebfa2f3b770
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SessionClearResults
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: SessionClearResults.Result
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Success
+                accessor: Brand
+            iscontext: true
+          right:
+            value:
+              simple: Microsoft Graph User
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SessionClearResults
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: SessionClearResults.Result
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Failed
+                accessor: Brand
+            iscontext: true
+          right:
+            value:
+              simple: Okta v2
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 97f81fd2-c5bb-4649-879d-9c50b4972507
+    type: title
+    task:
+      id: 97f81fd2-c5bb-4649-879d-9c50b4972507
+      version: -1
+      name: 'Case 2: Running with barnds'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 80cf11ae-6a63-4659-80db-0adea9ad3527
+    type: title
+    task:
+      id: 80cf11ae-6a63-4659-80db-0adea9ad3527
+      version: -1
+      name: 'Case 1: Running with no additional args'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 6bbff565-907b-4e7c-9a59-f79316b7df81
+    type: regular
+    task:
+      id: 6bbff565-907b-4e7c-9a59-f79316b7df81
+      version: -1
+      name: Okta V2 list users
+      description: Lists users in your organization.
+      script: '|||okta-list-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: dea58364-5ce7-4b9e-822d-22a6b1080f2c
+    type: regular
+    task:
+      id: dea58364-5ce7-4b9e-822d-22a6b1080f2c
+      version: -1
+      name: ClearUserSession
+      description: This script clears user sessions across multiple integrations for a list of usernames.
+      scriptName: clear-user-session
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      brands:
+        simple: Okta v2
+      user_name:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 62991460-79f9-48bd-896e-59c975b019a5
+    type: regular
+    task:
+      id: 62991460-79f9-48bd-896e-59c975b019a5
+      version: -1
+      name: Clear Context
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: Account,SessionClearResults
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 9665d6d5-ce04-4a3d-b462-6f20e9ea9d76
+    type: condition
+    task:
+      id: 9665d6d5-ce04-4a3d-b462-6f20e9ea9d76
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SessionClearResults.Result
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SessionClearResults.Brand
+            iscontext: true
+          right:
+            value:
+              simple: Okta v2
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 7ec3bc5d-e98e-44ae-8a77-1223bc9cfb3d
+    type: title
+    task:
+      id: 7ec3bc5d-e98e-44ae-8a77-1223bc9cfb3d
+      version: -1
+      name: 'Case 3: invalid args'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: be3f2076-8dd8-45f6-ba02-64c596753d26
+    type: regular
+    task:
+      id: be3f2076-8dd8-45f6-ba02-64c596753d26
+      version: -1
+      name: ClearUserSession
+      description: This script clears user sessions across multiple integrations for a list of usernames.
+      scriptName: clear-user-session
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      user_name:
+        simple: testtttt
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: f30d4d7d-bf70-41bd-b772-c487ad4c340e
+    type: condition
+    task:
+      id: f30d4d7d-bf70-41bd-b772-c487ad4c340e
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsString
+          left:
+            value:
+              simple: SessionClearResults.Result
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: containsString
+          left:
+            value:
+              simple: SessionClearResults.Result
+            iscontext: true
+          right:
+            value:
+              simple: Failed
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 939998fe-2b43-4b1c-8ca0-de0648150c91
+    type: title
+    task:
+      id: 939998fe-2b43-4b1c-8ca0-de0648150c91
+      version: -1
+      name: Finish
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_13_yes": 0.45,
+      "15_16_yes": 0.48,
+      "6_7_yes": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2320,
+        "width": 1490,
+        "x": -660,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: Execute multiple cases for ClearUserSession aggregated script.

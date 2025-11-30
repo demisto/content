@@ -24,6 +24,7 @@ comment: |-
   The Get field of the task must have the value ${.=[]}.
 enabled: true
 timeout: '0'
+isllm: false
 type: python
 fromversion: 5.0.0
 tests:

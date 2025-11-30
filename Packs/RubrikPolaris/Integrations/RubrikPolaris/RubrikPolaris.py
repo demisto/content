@@ -23,10 +23,12 @@ DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 HR_DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 HUMAN_READABLE_DATE_TIME_FORMAT = "%b %d, %Y at %I:%M:%S %p"
 USER_ACCESS_HYPERLINK = "{}sonar/user_intelligence?redirected_user_id={}"
+EVENT_HYPERLINK = '{}events/details/{}?clusterUuid="{}"'
+THREAT_MONITORING_HYPERLINK = "{}radar/threat_monitoring/{}"
 
 DEFAULT_IS_FETCH = False
 MAX_FETCH_MIN = 1
-MAX_FETCH_MAX = 200
+MAX_FETCH_MAX = 1000
 DEFAULT_MAX_FETCH = 20
 DEFAULT_LIMIT = 50
 DEFAULT_SORT_BY = "ID"
@@ -45,7 +47,7 @@ DEFAULT_EVENT_SORT_ORDER = "DESC"
 DEFAULT_SHOW_CLUSTER_SLA_ONLY = "True"
 DEFAULT_SORT_BY_SLA_DOMAIN = "NAME"
 DEFAULT_CLUSTER_SORT_BY = "ClusterName"
-DEFAULT_REQUEST_NAME = f"PAXSOAR-{get_pack_version() or '1.2.0'}"
+DEFAULT_REQUEST_NAME = f"PAXSOAR-{get_pack_version() or '1.6.0'}"
 DEFAULT_PRINCIPAL_SUMMARY_CATEGORY = "USERS_WITH_SENSITIVE_ACCESS"
 DEFAULT_RELIABILITY = "A - Completely reliable"
 SCAN_ID = "Scan ID"
@@ -116,9 +118,18 @@ END_CURSOR = "End Cursor"
 HAS_NEXT_PAGE = "Has Next Page"
 HAS_PREVIOUS_PAGE = "Has Previous Page"
 DEFAULT_FIRST_FETCH = "3 days"
+DEFAULT_TIME_PERIOD = "7 days"
 MAX_MATCHES_PER_OBJECT = 100
 MAXIMUM_FILE_SIZE = 5000000
 MAXIMUM_PAGINATION_LIMIT = 1000
+DEFAULT_FETCH_TYPE = ["event", "threat monitoring object"]
+EVENT_FETCH_TYPE = "event"
+THREAT_MONITORING_FETCH_TYPE = "threat monitoring object"
+IOC_MATCHES = ["MATCHES_FOUND", "NO_MATCHES", "UNSCANNED"]
+QUERANTINE_STATUS = ["QUARANTINED_MATCHES", "NO_QUARANTINED_MATCHES"]
+HUNT_STATUSES = ["ABORTED", "CANCELED", "CANCELING", "FAILED", "IN_PROGRESS", "PARTIALLY_SUCCEEDED", "PENDING", "SUCCEEDED"]
+MAX_INT_VALUE = 2**31 - 1
+MAX_LONG_VALUE = 2**63 - 1 - 512
 
 MESSAGES = {
     "NO_RECORDS_FOUND": "No {} were found for the given argument(s).",
@@ -134,6 +145,7 @@ MESSAGES = {
     "DOMAIN_NOT_FOUND": 'No details found for domain: "{}".',
     "NO_OBJECT_FOUND": "No Objects Found",
     "INVALID_FETCH_EVENT_TYPE": f"Only the following event types are supported: {', '.join(DEFAULT_EVENT_TYPES)}",
+    "INVALID_FETCH_TYPE": f"Only the following fetch types are supported: {', '.join(DEFAULT_FETCH_TYPE)}",
 }
 
 OUTPUT_PREFIX = {
@@ -175,6 +187,14 @@ OUTPUT_PREFIX = {
     "IP": "RubrikPolaris.IP",
     "DOMAIN": "RubrikPolaris.Domain",
     "ANOMALY_UPDATE_STATUS": "RubrikPolaris.AnomalyStatus",
+    "THREAT_MONITORING": "RubrikPolaris.ThreatMonitoring",
+    "PAGE_TOKEN_THREAT_MONITORING": "RubrikPolaris.PageToken.ThreatMonitoring",
+    "PAGE_TOKEN_THREAT_MONITORING_FILE": "RubrikPolaris.PageToken.ThreatMonitoringFile",
+    "THREAT_MONITORING_FILE": "RubrikPolaris.ThreatMonitoringFile",
+    "IOC_SCAN": "RubrikPolaris.IOCScan",
+    "PAGE_TOKEN_IOC_SCAN": "RubrikPolaris.PageToken.IOCScan",
+    "TURBO_IOC_SCAN": "RubrikPolaris.TurboIOCScan",
+    "ADVANCE_IOC_SCAN": "RubrikPolaris.AdvanceIOCScan",
 }
 
 ERROR_MESSAGES = {
@@ -204,6 +224,9 @@ ERROR_MESSAGES = {
     "FALSE_POSITIVE_REASON_ERROR": "Requires the {} argument when the {} argument is specified.",
     "FALSE_POSITIVE_TYPE_ERROR": "Requires the {} argument when {} argument is set to OTHER.",
     "FETCH_PARAM_REQUIRED": "Requires the '{}' parameter when fetch incidents is selected.",
+    "MISSING_TWO_REQUIRED_FIELD": "Requires both '{}' and '{}' arguments. Please provide correct input.",
+    "NEGATIVE_ARG_VALUE": "'{}' is an invalid value for '{}'. Value must be greater than zero.",
+    "INVALID_INT_VALUE": "'{}' is an invalid value for '{}'. Value must be less than or equal to {}.",
 }
 
 DBOT_SCORE_MAPPING = {
@@ -233,6 +256,12 @@ FALSE_POSITIVE_TYPE_ENUM = [
     "NFA_SCHEDULED_MAINTENANCE",
     "NFA_UNSCHEDULED_MAINTENANCE",
 ]
+
+IOC_TYPE_MAPPING = {
+    "INDICATOR_OF_COMPROMISE_TYPE_HASH": "IOC_HASH",
+    "INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE": "IOC_YARA",
+    "INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME": "IOC_FILE_PATTERN",
+}
 
 USER_ACCESS_QUERY = """query UserAccessPrincipalListQuery(
     $filter: PrincipalSummariesFilterInput,
@@ -693,9 +722,428 @@ ANOMALY_UPDATE_STATUS_MUTATION = """mutation AnomalyUpdateStatusMutation($input:
   resolveAnomaly(input: $input)
 }"""
 
+THREAT_MONITORING_MATCHED_OBJECT_LIST_QUERY = """query ThreatMonitoringMatchedObjectsQuery(
+  $first: Int
+  $after: String
+  $last: Int
+  $before: String
+  $beginTime: DateTime
+  $endTime: DateTime
+  $clusterUuidFilter: [String!]
+  $objectTypeFilter: [String!]
+  $workloadNameSearch: String
+  $matchTypeFilter: [IndicatorOfCompromiseKind!]
+) {
+  threatMonitoringMatchedObjects(
+    first: $first
+    after: $after
+    last: $last
+    before: $before
+    beginTime: $beginTime
+    endTime: $endTime
+    clusterUuidFilter: $clusterUuidFilter
+    objectTypeFilter: $objectTypeFilter
+    workloadNameSearch: $workloadNameSearch
+    matchTypeFilter: $matchTypeFilter
+  ) {
+    edges {
+      cursor
+      node {
+        objectFid
+        objectName
+        objectType
+        matchType
+        filesMatched
+        lastDetection
+        cluster {
+          id
+          name
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    stats {
+      objectsWithMatches
+      objectsWithNoMatches
+      totalObjectsScanned
+      __typename
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      __typename
+    }
+    __typename
+  }
+}
+"""
+
+THREAT_MONITORING_MATCHED_OBJECT_GET_QUERY = """query ThreatMonitoringObjectTypeQuery($fid: UUID!) {
+  hierarchyObject(fid: $fid) {
+    id
+    name
+    objectType
+    slaAssignment
+    slaPauseStatus
+    effectiveSlaDomain {
+      id
+      name
+      version
+      __typename
+    }
+    snapshotDistribution {
+      id
+      totalCount
+      scheduledCount
+      onDemandCount
+      retrievedCount
+      __typename
+    }
+    effectiveRetentionSlaDomain {
+      id
+      name
+      version
+      __typename
+    }
+    configuredSlaDomain {
+      id
+      name
+      version
+      __typename
+    }
+    effectiveSlaSourceObject {
+      fid
+      name
+      objectType
+      __typename
+    }
+    logicalPath {
+      fid
+      name
+      objectType
+      __typename
+    }
+    physicalPath {
+      fid
+      name
+      objectType
+      __typename
+    }
+    numWorkloadDescendants
+    allOrgs {
+      id
+      name
+      description
+      mfaStatus
+      allUrls
+      __typename
+    }
+    securityMetadata {
+      lowSensitiveHits
+      mediumSensitiveHits
+      highSensitiveHits
+      sensitivityStatus
+      isLaminarEnabled
+      dataTypeResults {
+        id
+        name
+        totalHits
+        totalViolatedHits
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}
+"""
+
 DEPLOYMENT_VERSION_QUERY = """query DeploymentVersionQuery {
   deploymentVersion
 }"""
+
+THREAT_MONITORING_MATCHED_FILE_LIST_QUERY = """query ThreatMonitoringMatchedFiles(
+  $first: Int
+  $after: String
+  $objectFid: UUID!
+  $filenameSearchFilter: String
+) {
+  threatMonitoringMatchedFiles(
+    first: $first
+    after: $after
+    objectFid: $objectFid
+    filenameSearchFilter: $filenameSearchFilter
+  ) {
+    edges {
+      cursor
+      node {
+        filepath
+        detectedTime
+        fileName
+        fileSize
+        matchedSnapshotDate
+        matchedSnapshotFid
+        isMatchedSnapshotExpired
+        isFirstObservedSnapshotExpired
+        matchType
+        isQuarantinedInFirstObservedSnapshot
+        objectFid
+        firstObservedSnapshotFid
+        firstObservedSnapshotDate
+        objectType
+        objectName
+        matchId
+        __typename
+      }
+      __typename
+    }
+    count
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      __typename
+    }
+    __typename
+  }
+}
+"""
+
+THREAT_MONITORING_MATCHED_FILE_DETAILS_QUERY = """query ThreatMonitoringMatchedFileDetailsV2Query(
+  $matchedSnapshotFid: UUID!,
+  $filepath: String!
+) {
+  threatMonitoringMatchedFileDetailsV2(
+    matchedSnapshotFid: $matchedSnapshotFid
+    filepath: $filepath
+  ) {
+    matchedFileMd5
+    matchedFileSha1
+    matchedFileSha256
+    iocDetails {
+      matchType
+      intelFeedName
+      malwareName
+      iocRuleAuthor
+      malwareDescription
+      iocHashHex
+      iocStatus
+      __typename
+    }
+    isQuarantinedInFirstObservedSnapshot
+    detectedSnapshotDate
+    firstDetectedSnapshotFid
+    filePath
+    fileName
+    __typename
+  }
+}
+"""
+
+List_Threat_Hunts_Query = """
+query ListThreatHuntsQuery(
+  $clusterUuidFilter: [String!],
+  $statusFilter: [ThreatHuntStatus!],
+  $matchesFoundFilter: [ThreatHuntMatchesFound!],
+  $quarantinedMatchesFilter: [ThreatHuntQuarantinedMatchType!],
+  $beginTime: DateTime,
+  $endTime: DateTime,
+  $first: Int,
+  $after: String
+) {
+  threatHunts(
+    clusterUuidFilter: $clusterUuidFilter
+    statusFilter: $statusFilter
+    matchesFoundFilter: $matchesFoundFilter
+    quarantinedMatchesFilter: $quarantinedMatchesFilter
+    beginTime: $beginTime
+    endTime: $endTime
+    first: $first
+    after: $after
+  ) {
+    edges {
+      node {
+        huntId
+        name
+        createdBy {
+          id
+          username
+          email
+          __typename
+        }
+        huntType
+        startTime
+        status
+        stats {
+          ...ThreatHuntStatsFragment
+          __typename
+        }
+        huntDetails {
+          startTime
+          endTime
+          cluster {
+            id
+            name
+            __typename
+          }
+          config {
+            name
+            indicatorsOfCompromise {
+              iocValue
+              iocKind
+              __typename
+            }
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    count
+    pageInfo{
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      __typename
+    }
+    __typename
+  }
+}
+
+fragment ThreatHuntStatsFragment on ThreatHuntStats {
+  totalProcessedSnapshots
+  totalAffectedObjects
+  totalAffectedSnapshots
+  totalUniqueMatchedPaths
+  totalSucceededScans
+  totalSnapshotsScanned
+  totalUniqueQuarantinedPaths
+  totalObjectsScanned
+  totalIocs
+  __typename
+}
+"""
+
+THREAT_HUNT_DETAILS_V2_QUERY = """query ThreatHuntDetailsV2Query($huntId: String!) {
+  threatHuntObjectMetrics(huntId: $huntId) {
+    totalObjectsScanned
+    totalAffectedObjects
+    totalUnaffectedObjects
+    totalObjectsUnscannable
+    unaffectedObjectsFromDb
+    cleanRecoverableObjectLimit
+    __typename
+  }
+  threatHuntDetailV2(huntId: $huntId) {
+    totalObjectFids
+    startTime
+    endTime
+    status
+    totalMatchedSnapshots
+    totalScannedSnapshots
+    totalUniqueFileMatches
+    clusters{
+      id
+      name
+      type
+      __typename
+    }
+    baseConfig {
+      name
+      notes
+      maxMatchesPerSnapshot
+      threatHuntType
+      ioc {
+        iocList {
+          indicatorsOfCompromise {
+            iocKind
+            iocValue
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      snapshotScanLimit {
+        scanLimit {
+          scanConfig {
+            maxSnapshotsPerObject
+            startTime
+            endTime
+            __typename
+          }
+          objectSnapshotConfig {
+            objectFid
+            snapshotFid
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      fileScanCriteria {
+        fileSizeLimits {
+          maximumSizeInBytes
+          minimumSizeInBytes
+          __typename
+        }
+        fileTimeLimits {
+          earliestCreationTime
+          earliestModificationTime
+          latestCreationTime
+          latestModificationTime
+          __typename
+        }
+        pathFilter {
+          inclusions
+          exclusions
+          exemptions
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}
+"""
+
+START_TURBO_THREAT_HUNT_MUTATION = """
+mutation StartTurboThreatHunt($input: StartTurboThreatHuntInput!){
+  startTurboThreatHunt(input: $input){
+    huntId
+    __typename
+  }
+}
+"""
+
+START_ADVANCE_THREAT_HUNT_MUTATION = """mutation StartAdvanceThreatHuntMutation($input: StartThreatHuntV2Input!) {
+    startBulkThreatHunt(input: $input) {
+        hunts {
+            huntId
+            huntName
+            config {
+                huntType
+                clusterUuids
+                objectFids
+                __typename
+            }
+            status
+            __typename
+        }
+        __typename
+    }
+}
+"""
 
 
 class MyClient(PolarisClient):
@@ -2385,6 +2833,553 @@ def validate_anomaly_status_update_command_args(
         raise ValueError(ERROR_MESSAGES["FALSE_POSITIVE_TYPE_ERROR"].format("false_positive_reason", "false_positive_type"))
 
 
+def validate_threat_monitoring_matched_object_list_command_args(
+    start_time_obj: Optional[datetime], limit: Optional[int], match_types: list
+):
+    """
+    Validate the arguments of the rubrik-threat-monitoring-matched-object-list command.
+
+    :type start_time_obj: ``Optional[datetime]``
+    :param start_time_obj: The start time of the query.
+
+    :type limit: ``Optional[int]``
+    :param limit: The number of results to return.
+
+    :type match_types: ``list``
+    :param match_types: The match types to filter by.
+    """
+    start_time_obj = validate_required_arg("start_time", start_time_obj)
+    if not limit or not 1 <= limit <= MAXIMUM_PAGINATION_LIMIT:
+        raise ValueError(ERROR_MESSAGES["INVALID_LIMIT"].format(limit))
+
+    for match_type in match_types:
+        if match_type not in IOC_TYPE_ENUM:
+            raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(match_type, "match_type", IOC_TYPE_ENUM))
+
+
+def prepare_context_hr_threat_monitoring_matched_object_list(edges: list) -> tuple:
+    """
+    Prepare human readable response and context for rubrik-threat-monitoring-matched-object-list.
+
+    :type edges: ``list``
+    :param edges: edges from the response received from the API.
+
+    :return: human readable and context for the command.
+    :rtype: ``tuple``
+    """
+    hr_content = []
+    context = []
+    for edge in edges:
+        node = edge.get("node", {})
+        node = remove_empty_elements(node)
+        context.append(node)
+        hr_content.append(
+            {
+                "Object ID": node.get("objectFid"),
+                "Object Name": node.get("objectName"),
+                "Object Type": node.get("objectType"),
+                "Total Files Matched": node.get("filesMatched"),
+                "Match Types": node.get("matchType"),
+                "Last Detection Time": node.get("lastDetection"),
+                "Cluster ID": node.get("cluster", {}).get("id"),
+                "Cluster Name": node.get("cluster", {}).get("name"),
+            }
+        )
+    hr = tableToMarkdown(
+        "Threat Monitoring Object List",
+        hr_content,
+        headers=[
+            "Object ID",
+            "Object Name",
+            "Object Type",
+            "Total Files Matched",
+            "Match Types",
+            "Last Detection Time",
+            "Cluster ID",
+            "Cluster Name",
+        ],
+        removeNull=True,
+    )
+    return context, hr
+
+
+def remove_typename(data: Union[dict, list]) -> Union[dict, list]:
+    """
+    Recursively remove "__typename" key from all the dict and list types.
+
+    :type data: ``dict`` or ``list``
+    :param data: The data which "__typename" key needs to be removed.
+
+    :return: The data with "__typename" key removed.
+    :rtype: ``dict`` or ``list``
+    """
+    if isinstance(data, dict):
+        if "__typename" in data:
+            data.pop("__typename")
+        for key, value in data.items():
+            if isinstance(value, (dict, list)):  # noqa: UP038
+                data[key] = remove_typename(value)
+    elif isinstance(data, list):
+        for index, value in enumerate(data):
+            if isinstance(value, (dict, list)):  # noqa: UP038
+                data[index] = remove_typename(value)
+    return data
+
+
+def prepare_hr_threat_monitoring_matched_objects_get(threat_monitoring_data: dict) -> str:
+    """
+    Prepare human readable response for rubrik-threat-monitoring-matched-object-get command.
+
+    :type threat_monitoring_data: ``dict``
+    :param threat_monitoring_data: The response received from the API.
+
+    :return: human readable for the command.
+    :rtype: ``str``
+    """
+    threat_monitoring_data_copy = deepcopy(threat_monitoring_data)
+
+    threat_monitoring_data_copy: dict = remove_typename(threat_monitoring_data_copy)  # type: ignore
+
+    hr_content = {
+        "ID": threat_monitoring_data.get("id"),
+        "Name": threat_monitoring_data.get("name"),
+        "Object Type": threat_monitoring_data.get("objectType"),
+        "SLA Assignment": threat_monitoring_data.get("slaAssignment"),
+        "Effective SLA Domain": threat_monitoring_data_copy.get("effectiveSlaDomain"),
+        "SLA Pause Status": threat_monitoring_data.get("slaPauseStatus"),
+        "Snapshot Distribution": threat_monitoring_data_copy.get("snapshotDistribution"),
+        "Effective Retention SLA Domain": threat_monitoring_data_copy.get("effectiveRetentionSlaDomain"),
+        "Configured SLA Domain": threat_monitoring_data_copy.get("configuredSlaDomain"),
+        "Effective SLA Source Object": threat_monitoring_data_copy.get("effectiveSlaSourceObject"),
+        "Logical Path": threat_monitoring_data_copy.get("logicalPath"),
+        "Physical Path": threat_monitoring_data_copy.get("physicalPath"),
+        "NumWorkload Descendants": threat_monitoring_data.get("numWorkloadDescendants"),
+        "All Orgs": threat_monitoring_data_copy.get("allOrgs"),
+        "Security Metadata": threat_monitoring_data_copy.get("securityMetadata"),
+    }
+
+    hr = tableToMarkdown(
+        "Threat Monitoring Object Details",
+        hr_content,
+        headers=[
+            "ID",
+            "Name",
+            "Object Type",
+            "SLA Assignment",
+            "Effective SLA Domain",
+            "SLA Pause Status",
+            "Snapshot Distribution",
+            "Effective Retention SLA Domain",
+            "Configured SLA Domain",
+            "Effective SLA Source Object",
+            "Logical Path",
+            "Physical Path",
+            "NumWorkload Descendants",
+            "All Orgs",
+            "Security Metadata",
+        ],
+        json_transform_mapping={
+            "Effective SLA Domain": JsonTransformer(is_nested=True),
+            "Snapshot Distribution": JsonTransformer(is_nested=True),
+            "Effective Retention SLA Domain": JsonTransformer(is_nested=True),
+            "Configured SLA Domain": JsonTransformer(is_nested=True),
+            "Effective SLA Source Object": JsonTransformer(is_nested=True),
+            "Logical Path": JsonTransformer(is_nested=True),
+            "Physical Path": JsonTransformer(is_nested=True),
+            "All Orgs": JsonTransformer(is_nested=True),
+            "Security Metadata": JsonTransformer(is_nested=True),
+        },
+        removeNull=True,
+    )
+    return hr
+
+
+def validate_threat_monitoring_matched_file_list_command_args(object_id: Optional[Any], limit: Optional[int]):
+    """
+    Validate the arguments of the rubrik-threat-monitoring-matched-file-list command.
+
+    :type object_id: ``Optional[Any]``
+    :param object_id: The object ID for the threat monitoring object.
+
+    :type limit: ``Optional[int]``
+    :param limit: The number of results to return.
+    """
+    validate_required_arg("object_id", object_id)
+    if not limit or not 1 <= limit <= MAXIMUM_PAGINATION_LIMIT:
+        raise ValueError(ERROR_MESSAGES["INVALID_LIMIT"].format(limit))
+
+
+def prepare_context_hr_threat_monitoring_matched_file_list(edges: list) -> tuple[list, str]:
+    """
+    Prepare context and human-readable output for matched file list.
+
+    :type edges: ``list``
+    :param edges: edges from the response received from the API.
+
+    :return: context and human-readable for the command.
+    :rtype: ``tuple[list, str]``
+    """
+    context = []
+    hr_rows = []
+    for edge in edges:
+        node = edge.get("node", {})
+        context.append(remove_empty_elements(node))
+        hr_rows.append(
+            {
+                "File Name": node.get("fileName"),
+                "File Path": node.get("filepath"),
+                "File Size": node.get("fileSize"),
+                "Matched Snapshot ID": node.get("matchedSnapshotFid"),
+                "Matched Snapshot Date": node.get("matchedSnapshotDate"),
+                "Matched Snapshot Expired": node.get("isMatchedSnapshotExpired"),
+            }
+        )
+    hr = tableToMarkdown(
+        "Threat Monitoring File List",
+        hr_rows,
+        headers=[
+            "File Name",
+            "File Path",
+            "File Size",
+            "Matched Snapshot ID",
+            "Matched Snapshot Date",
+            "Matched Snapshot Expired",
+        ],
+        removeNull=True,
+    )
+    return context, hr
+
+
+def validate_threat_monitoring_matched_file_get_command_args(matched_snapshot_id: str, file_path: str):
+    """
+    Validate the arguments of the rubrik-threat-monitoring-matched-file-get command.
+
+    :type matched_snapshot_id: ``str``
+    :param matched_snapshot_id: The ID of the snapshot to search for.
+
+    :type file_path: ``str``
+    :param file_path: The path of the file to search for.
+    """
+    if not matched_snapshot_id and not file_path:
+        raise ValueError(ERROR_MESSAGES["MISSING_TWO_REQUIRED_FIELD"].format("matched_snapshot_id", "file_path"))
+    validate_required_arg("matched_snapshot_id", matched_snapshot_id)
+    validate_required_arg("file_path", file_path)
+
+
+def prepare_context_hr_threat_monitoring_matched_file_get(file_details: Dict[str, Any]) -> str:
+    """
+    Prepare context and human-readable output for rubrik-threat-monitoring-matched-file-get command.
+
+    :type file_details: ``Dict[str, Any]``
+    :param file_details: File details from the API response.
+
+    :return: A human-readable output.
+    :rtype: ``str``
+    """
+    file_hashes = {
+        "MD5": file_details.get("matchedFileMd5"),
+        "SHA1": file_details.get("matchedFileSha1"),
+        "SHA256": file_details.get("matchedFileSha256"),
+    }
+
+    # Add IOC Details if available
+    ioc_details = deepcopy(file_details.get("iocDetails", []))
+    ioc_details = remove_typename(ioc_details)
+
+    # Prepare human readable output
+    hr_content = {
+        "File Name": file_details.get("fileName"),
+        "File Path": file_details.get("filePath"),
+        "File Hashes": file_hashes,
+        "IOC Details": ioc_details,
+        "First Detected Snapshot FID": file_details.get("firstDetectedSnapshotFid"),
+        "Detected Snapshot Date": file_details.get("detectedSnapshotDate"),
+        "Quarantined In First Observed Snapshot": file_details.get("isQuarantinedInFirstObservedSnapshot"),
+    }
+
+    hr = tableToMarkdown(
+        "Threat Monitoring File Details",
+        hr_content,
+        headers=[
+            "File Name",
+            "File Path",
+            "File Hashes",
+            "IOC Details",
+            "First Detected Snapshot FID",
+            "Detected Snapshot Date",
+            "Quarantined In First Observed Snapshot",
+        ],
+        json_transform_mapping={
+            "File Hashes": JsonTransformer(is_nested=True),
+            "IOC Details": JsonTransformer(is_nested=True),
+        },
+        removeNull=True,
+    )
+
+    return hr
+
+
+def validate_comman_fetch_params(max_fetch: Optional[int], fetch_types: list):
+    """
+    Validate the arguments of the fetch commands.
+
+    :type max_fetch: ``Optional[int]``
+    :param max_fetch: The maximum number of incidents to fetch.
+
+    :type fetch_type: ``list``
+    :param fetch_type: The type of incidents to fetch.
+
+    :return: None
+    """
+    if any(fetch_type not in DEFAULT_FETCH_TYPE for fetch_type in fetch_types):
+        raise ValueError(MESSAGES["INVALID_FETCH_TYPE"])
+
+    if (THREAT_MONITORING_FETCH_TYPE in fetch_types) and (not max_fetch or not MAX_FETCH_MIN <= max_fetch <= MAX_FETCH_MAX):
+        raise ValueError(ERROR_MESSAGES["INVALID_MAX_FETCH"])
+
+
+def validate_ioc_scan_list_v2_command_args(
+    limit: Optional[int], ioc_match: Optional[list], quarantine_status: Optional[list], hunt_status: Optional[list]
+):
+    """
+    Validate the arguments of the IOC scan list v2 command.
+
+    :type limit: ``Optional[int]``
+    :param limit: Limit value.
+
+    :type ioc_match: ``Optional[list]``
+    :param ioc_match: List of IOC match values.
+
+    :type quarantine_status: ``Optional[list]``
+    :param quarantine_status: List of quarantine status values.
+
+    :type hunt_status: ``Optional[list]``
+    :param hunt_status: List of hunt status values.
+
+    :return: None
+    :raises ValueError: If any argument is invalid.
+    """
+    if not limit or not 1 <= limit <= MAXIMUM_PAGINATION_LIMIT:
+        raise ValueError(ERROR_MESSAGES["INVALID_LIMIT"].format(limit))
+
+    if ioc_match:
+        for i_match in ioc_match:
+            if i_match not in IOC_MATCHES:
+                raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(i_match, "ioc_match", IOC_MATCHES))
+
+    if quarantine_status:
+        for q_status in quarantine_status:
+            if q_status not in QUERANTINE_STATUS:
+                raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(q_status, "quarantine_status", QUERANTINE_STATUS))
+
+    if hunt_status:
+        for h_status in hunt_status:
+            if h_status not in HUNT_STATUSES:
+                raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(h_status, "hunt_status", HUNT_STATUSES))
+
+
+def prepare_context_hr_ioc_scan_v2_list(edges: list) -> tuple:
+    """
+    Prepare context and human readable output for IOC scan list.
+
+    :type edges: ``list``
+    :param edges: List of edges from GraphQL response.
+
+    :return: Tuple of context and human readable output.
+    """
+    hr_content = []
+    context = []
+
+    for edge in edges:
+        node = edge.get("node", {})
+        node = remove_empty_elements(node)
+        context.append(node)
+        hr_content.append(
+            {
+                "Hunt ID": node.get("huntId"),
+                "Hunt Name": node.get("huntName"),
+                "Hunt Type": node.get("huntType"),
+                "Status": node.get("status"),
+                "Start Time": node.get("startTime"),
+            }
+        )
+
+    hr = tableToMarkdown(
+        "IOC Scan List",
+        hr_content,
+        headers=[
+            "Hunt ID",
+            "Hunt Name",
+            "Hunt Type",
+            "Status",
+            "Start Time",
+        ],
+        removeNull=True,
+    )
+
+    return context, hr
+
+
+def prepare_hr_ioc_scan_results_v2(ioc_scan_data: dict) -> str:
+    """
+    Prepare human readable response for rubrik-ioc-scan-results-v2.
+
+    :type ioc_scan_data: ``dict``
+    :param ioc_scan_data: ioc scan data from the response received from the API.
+
+    :return: human readable for the command.
+    :rtype: ``str``
+    """
+    hr_content = []
+    ioc_scan_data = deepcopy(ioc_scan_data)
+    basic_config = ioc_scan_data.get("baseConfig", {})
+
+    ioc_details = remove_typename(basic_config.get("ioc", {}).get("iocList", {}).get("indicatorsOfCompromise", []))
+    object_metric = remove_typename(ioc_scan_data.get("threatHuntObjectMetrics", {}))
+    scan_metric = {
+        "totalMatchedSnapshots": ioc_scan_data.get("totalMatchedSnapshots"),
+        "totalScannedSnapshots": ioc_scan_data.get("totalScannedSnapshots"),
+        "totalUniqueFileMatches": ioc_scan_data.get("totalUniqueFileMatches"),
+    }
+
+    hr_content.append(
+        {
+            "Hunt Name": basic_config.get("name"),
+            "Hunt Type": basic_config.get("threatHuntType"),
+            "Status": ioc_scan_data.get("status"),
+            "IOC Details": ioc_details,
+            "Object Metrics": object_metric,
+            "Scan Metrics": scan_metric,
+            "Start Time": ioc_scan_data.get("startTime"),
+            "End Time": ioc_scan_data.get("endTime"),
+        }
+    )
+    hr = tableToMarkdown(
+        "IOC Scan Data",
+        hr_content,
+        headers=[
+            "Hunt Name",
+            "Hunt Type",
+            "Status",
+            "IOC Details",
+            "Object Metrics",
+            "Scan Metrics",
+            "Start Time",
+            "End Time",
+        ],
+        json_transform_mapping={
+            "IOC Details": JsonTransformer(is_nested=True),
+            "Object Metrics": JsonTransformer(is_nested=True),
+            "Scan Metrics": JsonTransformer(is_nested=True),
+        },
+        removeNull=True,
+    )
+    return hr
+
+
+def validate_turbo_ioc_scan_command_args(ioc: list, max_snapshots_per_object: Optional[int]):
+    """
+    Validate the arguments of the turbo ioc scan command.
+
+    :type ioc: ``list``
+    :param ioc: list of IOC values.
+
+    :type max_snapshots_per_object: ``Optional[int]``
+    :param max_snapshots_per_object: The max snapshots per object value.
+
+    :return: None
+    """
+    if not ioc:
+        raise ValueError(ERROR_MESSAGES["MISSING_REQUIRED_FIELD"].format("ioc"))
+    if max_snapshots_per_object is not None and max_snapshots_per_object < 1:
+        raise ValueError(ERROR_MESSAGES["NEGATIVE_ARG_VALUE"].format(max_snapshots_per_object, "max_snapshots_per_object"))
+    if max_snapshots_per_object is not None and max_snapshots_per_object > MAX_INT_VALUE:
+        raise ValueError(
+            ERROR_MESSAGES["INVALID_INT_VALUE"].format(max_snapshots_per_object, "max_snapshots_per_object", MAX_INT_VALUE)
+        )
+
+
+def prepare_ioc_and_validate_advance_ioc_scan_args(
+    ioc_type: Any,
+    ioc_value: Any,
+    advance_ioc: Any,
+    max_matches_per_snapshot: Optional[int],
+    max_snapshots_per_object: Optional[int],
+    min_file_size: Optional[int],
+    max_file_size: Optional[int],
+) -> list:
+    """
+    Prepare and validate the arguments of the advance ioc scan command.
+
+    :type ioc_type: ``Any``
+    :param ioc_type: Type of IOC.
+
+    :type ioc_value: ``Any``
+    :param ioc_value: Value of IOC.
+
+    :type advance_ioc: ``Any``
+    :param advance_ioc: Advance IOC.
+
+    :type max_matches_per_snapshot: ``Optional[int]``
+    :param max_matches_per_snapshot: Maximum matches per snapshot.
+
+    :type max_snapshots_per_object: ``Optional[int]``
+    :param max_snapshots_per_object: Maximum snapshots per object.
+
+    :type min_file_size: ``Optional[int]``
+    :param min_file_size: Minimum file size.
+
+    :type max_file_size: ``Optional[int]``
+    :param max_file_size: Maximum file size.
+
+    :return: List of IOCs.
+    :rtype: ``list``
+    """
+    if ioc_type and ioc_type not in IOC_TYPE_ENUM:
+        raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(ioc_type, "ioc_type", IOC_TYPE_ENUM))
+
+    if not (ioc_type and ioc_value) and not advance_ioc:
+        raise ValueError(ERROR_MESSAGES["NO_INDICATOR_SPECIFIED"])
+
+    if max_matches_per_snapshot is not None and max_matches_per_snapshot < 1:
+        raise ValueError(ERROR_MESSAGES["NEGATIVE_ARG_VALUE"].format(max_matches_per_snapshot, "max_matches_per_snapshot"))
+    if max_matches_per_snapshot is not None and max_matches_per_snapshot > MAX_INT_VALUE:
+        raise ValueError(
+            ERROR_MESSAGES["INVALID_INT_VALUE"].format(max_matches_per_snapshot, "max_matches_per_snapshot", MAX_INT_VALUE)
+        )
+    if max_snapshots_per_object is not None and max_snapshots_per_object < 1:
+        raise ValueError(ERROR_MESSAGES["NEGATIVE_ARG_VALUE"].format(max_snapshots_per_object, "max_snapshots_per_object"))
+    if max_snapshots_per_object is not None and max_snapshots_per_object > MAX_INT_VALUE:
+        raise ValueError(
+            ERROR_MESSAGES["INVALID_INT_VALUE"].format(max_snapshots_per_object, "max_snapshots_per_object", MAX_INT_VALUE)
+        )
+    if min_file_size is not None and min_file_size < 1:
+        raise ValueError(ERROR_MESSAGES["NEGATIVE_ARG_VALUE"].format(min_file_size, "min_file_size"))
+    if min_file_size is not None and min_file_size > MAX_LONG_VALUE:
+        raise ValueError(ERROR_MESSAGES["INVALID_INT_VALUE"].format(min_file_size, "min_file_size", MAX_LONG_VALUE))
+    if max_file_size is not None and max_file_size < 1:
+        raise ValueError(ERROR_MESSAGES["NEGATIVE_ARG_VALUE"].format(max_file_size, "max_file_size"))
+    if max_file_size is not None and max_file_size > MAX_LONG_VALUE:
+        raise ValueError(ERROR_MESSAGES["INVALID_INT_VALUE"].format(max_file_size, "max_file_size", MAX_LONG_VALUE))
+
+    iocs = []
+    if advance_ioc:
+        try:
+            advance_ioc_dict = json.loads(advance_ioc)
+            for ioc_type, ioc_values in advance_ioc_dict.items():
+                if isinstance(ioc_values, list):
+                    for value in ioc_values:
+                        iocs.append({"iocKind": IOC_TYPE_MAPPING.get(ioc_type), "iocValue": value})
+                else:
+                    iocs.append({"iocKind": IOC_TYPE_MAPPING.get(ioc_type), "iocValue": ioc_values})
+        except json.JSONDecodeError:
+            raise ValueError(ERROR_MESSAGES["JSON_DECODE"].format("advance_ioc"))
+    else:
+        iocs.append({"iocKind": IOC_TYPE_MAPPING.get(ioc_type), "iocValue": ioc_value})
+
+    return iocs
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -2413,7 +3408,7 @@ def test_module(client: PolarisClient, params: Dict[str, Any]) -> str:
     return "ok"
 
 
-def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tuple[dict, list]:
+def fetch_events(client: PolarisClient, last_run: dict, params: dict, max_fetch: Optional[int]) -> tuple[dict, list]:
     """
     Fetch Rubrik Anomaly incidents.
 
@@ -2426,9 +3421,12 @@ def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tupl
     :type params: ``dict``
     :param params: arguments obtained from demisto.params()
 
-    :return:
+    :type max_fetch: ``Optional[int]``
+    :param max_fetch: The maximum number of incidents to fetch.
+
+    :return: tuple of next run object and list of incidents
+    :rtype: ``tuple[dict, list]``
     """
-    max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH), "Fetch Limit")
     event_types = argToList(params.get("event_types"), transform=lambda s: s.strip())
     event_types = [event_type.upper() for event_type in event_types if event_type]
     if not event_types:
@@ -2436,10 +3434,11 @@ def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tupl
     elif any(event_type not in DEFAULT_EVENT_TYPES for event_type in event_types):
         raise ValueError(MESSAGES["INVALID_FETCH_EVENT_TYPE"])
 
-    last_run_time = last_run.get("last_fetch", None)
-    next_page_token = last_run.get("next_page_token", "")
+    event_last_run = last_run
+    last_run_time = event_last_run.get("last_fetch", None)
+    next_page_token = event_last_run.get("next_page_token", "")
 
-    next_run = last_run.copy()
+    evnet_next_run = event_last_run.copy()
 
     if last_run_time is None:
         # if the last run has not been set (i.e on the first run)
@@ -2448,7 +3447,7 @@ def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tupl
         first_fetch = params.get("first_fetch", DEFAULT_FIRST_FETCH)
         first_fetch = arg_to_datetime(first_fetch, "First fetch time")
         last_run_time = first_fetch.strftime(DATE_TIME_FORMAT)  # type: ignore
-        next_run["last_fetch"] = last_run_time
+        evnet_next_run["last_fetch"] = last_run_time
     # removed manual fetch interval as this feature is built in XSOAR 6.0.0 and onwards
 
     filters = {"lastActivityStatus": DEFAULT_ACTIVITY_STATUSES, "severity": DEFAULT_SEVERITIES}
@@ -2466,7 +3465,7 @@ def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tupl
 
     new_next_page_token = activity_series_connection.get("pageInfo", {}).get("endCursor", "")
     if new_next_page_token:
-        next_run["next_page_token"] = new_next_page_token
+        evnet_next_run["next_page_token"] = new_next_page_token
 
     incidents = []
 
@@ -2481,13 +3480,18 @@ def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tupl
         activity_nodes = activity_connection.get("nodes", [])
         processed_incident = process_activity_nodes(activity_nodes, processed_incident)
 
+        base_url = str(client._baseurl).removesuffix("api")
+        activity_series_id = node.get("activitySeriesId", "")
+        cluster_id = node.get("cluster", {}).get("id", "")
+        processed_incident["incident_link"] = EVENT_HYPERLINK.format(base_url, activity_series_id, cluster_id)
+
         # Map Severity Level
         severity = node.get("severity", "")
         if severity == "Critical" or severity == "Warning":
-            if params.get(f"radar_{severity.lower()}_severity_mapping") is None:
-                severity_mapping = "XSOAR LOW"
+            if params.get(f"radar_{severity.lower()}_severity_mapping"):
+                severity_mapping = params.get(f"radar_{severity.lower()}_severity_mapping", "XSOAR LOW")
             else:
-                severity_mapping = params.get(f"radar_{severity.lower()}_severity_mapping", "")
+                severity_mapping = "XSOAR LOW"
 
             processed_incident["severity"] = convert_to_demisto_severity(severity_mapping)
 
@@ -2502,7 +3506,176 @@ def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tupl
                 "severity": processed_incident["severity"],
             }
         )
-    return next_run, incidents
+    return evnet_next_run, incidents
+
+
+def fetch_threat_monitoring_objects(
+    client: PolarisClient, last_run: dict, params: dict, max_fetch: Optional[int]
+) -> tuple[dict, list]:
+    """
+    Fetch Rubrik threat monitoring objects as incidents.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use
+
+    :type last_run: ``dict``
+    :param last_run: last run object obtained from demisto.getLastRun()
+
+    :type params: ``dict``
+    :param params: arguments obtained from demisto.params()
+
+    :type max_fetch: ``Optional[int]``
+    :param max_fetch: The maximum number of incidents to fetch.
+
+    :return: tuple of next run object and list of incidents
+    :rtype: ``tuple[dict, list]``
+    """
+    match_types = argToList(params.get("threat_monitoring_match_types"), transform=lambda s: s.strip())
+    object_types = argToList(params.get("threat_monitoring_object_types"), transform=lambda s: s.strip())
+
+    threat_monitoring_last_run = last_run.get("threat_monitoring", {})
+    last_run_time = threat_monitoring_last_run.get("last_fetch", None)
+    next_page_token = threat_monitoring_last_run.get("next_page_token", "")
+    match_type_filter = threat_monitoring_last_run.get("match_type_filter", [])
+    object_type_filter = threat_monitoring_last_run.get("object_type_filter", [])
+    already_fetched = threat_monitoring_last_run.get("already_fetched", [])
+
+    threat_monitoring_next_run = threat_monitoring_last_run.copy()
+
+    if last_run_time is None:
+        # if the last run has not been set (i.e on the first run)
+        # check to see if a first_fetch value has been provided. If it hasn't
+        # return the current time
+        first_fetch = params.get("first_fetch", DEFAULT_FIRST_FETCH)
+        first_fetch = arg_to_datetime(first_fetch, "First fetch time")
+        last_run_time = first_fetch.strftime(DATE_TIME_FORMAT)  # type: ignore
+        threat_monitoring_next_run["last_fetch"] = last_run_time
+
+    for match_type in match_types:
+        if match_type not in IOC_TYPE_ENUM:
+            raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(match_type, "match_type", IOC_TYPE_ENUM))
+
+    ioc_match_type = []
+    for match_type in match_types:
+        ioc_match_type.append(IOC_TYPE_MAPPING.get(match_type))
+
+    ioc_match_type.sort()
+    if isinstance(object_types, list):
+        object_types.sort()
+    if ioc_match_type != match_type_filter or object_types != object_type_filter:
+        next_page_token = ""
+
+    threat_monitoring_filters = {
+        "matchTypeFilter": ioc_match_type,
+        "objectTypeFilter": object_types,
+        "after": next_page_token,
+        "beginTime": last_run_time,
+        "first": max_fetch,
+    }
+
+    remove_nulls_from_dictionary(threat_monitoring_filters)
+
+    threat_monitoring_response = client._query_raw(
+        raw_query=THREAT_MONITORING_MATCHED_OBJECT_LIST_QUERY,
+        operation_name="ThreatMonitoringMatchedObjectsQuery",
+        variables=threat_monitoring_filters,
+        timeout=60,
+    )
+
+    edges = []
+    page_info = {}
+    threat_monitoring_data = threat_monitoring_response.get("data", {})
+    if threat_monitoring_data is not None:
+        edges = threat_monitoring_data.get("threatMonitoringMatchedObjects", {}).get("edges", [])
+        page_info = threat_monitoring_data.get("threatMonitoringMatchedObjects", {}).get("pageInfo", {})
+
+    page_cursor = remove_empty_elements(page_info)
+    new_next_page_token = page_cursor.get("endCursor")
+    if new_next_page_token:
+        threat_monitoring_next_run["next_page_token"] = new_next_page_token
+
+    if params.get("threat_monitoring_severity_mapping"):
+        severity_mapping = params.get("threat_monitoring_severity_mapping", "XSOAR HIGH")
+    else:
+        severity_mapping = "XSOAR HIGH"
+
+    incident_severity = convert_to_demisto_severity(severity_mapping)
+
+    incidents = []
+
+    for threat_object in edges:
+        node = threat_object.get("node", {})
+
+        if node.get("objectFid") in already_fetched:
+            continue
+        already_fetched.append(node.get("objectFid"))
+
+        processed_incident = {
+            "incidentClassification": "RubrikThreatMonitoringObject",
+            "message": [],
+            "severity": incident_severity,
+        }
+        processed_incident.update(node)
+
+        base_url = str(client._baseurl).removesuffix("api")
+        processed_incident["incident_link"] = THREAT_MONITORING_HYPERLINK.format(base_url, node.get("objectFid", ""))
+
+        incidents.append(
+            {
+                "name": f'Rubrik Radar Threat Monitoring Object - {processed_incident.get("objectName", "")}',
+                "occurred": processed_incident.get("lastDetection", ""),
+                "rawJSON": json.dumps(processed_incident),
+                "severity": processed_incident.get("severity"),
+            }
+        )
+
+    threat_monitoring_next_run["match_type_filter"] = ioc_match_type
+    threat_monitoring_next_run["object_type_filter"] = object_types
+    threat_monitoring_next_run["already_fetched"] = already_fetched
+    return threat_monitoring_next_run, incidents
+
+
+def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tuple[dict, list]:
+    """
+    Fetch Rubrik Anomaly incidents.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use
+
+    :type last_run: ``dict``
+    :param last_run: last run object obtained from demisto.getLastRun()
+
+    :type params: ``dict``
+    :param params: arguments obtained from demisto.params()
+
+    :return: tuple of next run object and list of incidents
+    :rtype: ``tuple[dict, list]``
+    """
+    max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH), "Fetch Limit")
+    fetch_types = argToList(params.get("rsc_fetch_types", DEFAULT_FETCH_TYPE), transform=lambda s: s.strip().lower())
+
+    validate_comman_fetch_params(max_fetch, fetch_types)
+
+    total_incidents = []
+    next_run = last_run
+    if fetch_types == [EVENT_FETCH_TYPE]:
+        evnet_next_run, incidents = fetch_events(client, last_run, params, max_fetch)
+        total_incidents.extend(incidents)
+        next_run = evnet_next_run
+    elif fetch_types == [THREAT_MONITORING_FETCH_TYPE]:
+        threat_monitoring_next_run, incidents = fetch_threat_monitoring_objects(client, last_run, params, max_fetch)
+        total_incidents.extend(incidents)
+        next_run["threat_monitoring"] = threat_monitoring_next_run
+    else:
+        new_max_fetch = max_fetch // 2  # type: ignore
+        threat_monitoring_next_run, incidents = fetch_threat_monitoring_objects(client, last_run, params, new_max_fetch)
+        total_incidents.extend(incidents)
+        new_max_fetch = max_fetch - len(incidents)  # type: ignore
+        evnet_next_run, incidents = fetch_events(client, last_run, params, new_max_fetch)
+        total_incidents.extend(incidents)
+        evnet_next_run["threat_monitoring"] = threat_monitoring_next_run
+        next_run = evnet_next_run
+    return next_run, total_incidents
 
 
 def cdm_cluster_location_command(client: PolarisClient, args: Dict[str, Any]):
@@ -4513,6 +5686,524 @@ def rubrik_radar_anomaly_status_update_command(client: PolarisClient, args: Dict
     )
 
 
+def rubrik_threat_monitoring_matched_object_list_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get the list of matched objects in the threat monitoring.
+
+    :type client: ``Client``
+    :param client: Object of Client class.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments provided by user.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    limit = arg_to_number(args.get("limit", "50"))
+    next_page_token = args.get("next_page_token")
+    start_time_obj = arg_to_datetime(args.get("start_time", "7 days"))
+    cluster_uuids = argToList(args.get("cluster_id"))
+    object_types = argToList(args.get("object_type"))
+    object_name = args.get("object_name")
+    match_types = argToList(args.get("match_type"))
+
+    validate_threat_monitoring_matched_object_list_command_args(start_time_obj, limit, match_types)
+
+    ioc_match_type = []
+    for match_type in match_types:
+        ioc_match_type.append(IOC_TYPE_MAPPING.get(match_type))
+
+    threat_monitoring_filters = {
+        "clusterUuidFilter": cluster_uuids,
+        "matchTypeFilter": ioc_match_type,
+        "objectTypeFilter": object_types,
+        "workloadNameSearch": object_name,
+        "first": limit,
+        "after": next_page_token,
+    }
+
+    if start_time_obj:
+        start_time = start_time_obj.strftime(DATE_TIME_FORMAT)  # type: ignore
+        threat_monitoring_filters["beginTime"] = start_time
+
+    remove_nulls_from_dictionary(threat_monitoring_filters)
+
+    threat_monitoring_response = client._query_raw(
+        raw_query=THREAT_MONITORING_MATCHED_OBJECT_LIST_QUERY,
+        operation_name="ThreatMonitoringMatchedObjectsQuery",
+        variables=threat_monitoring_filters,
+        timeout=60,
+    )
+
+    edges = []
+    page_info, stats_info = {}, {}
+    threat_monitoring_data = threat_monitoring_response.get("data", {})
+    if threat_monitoring_data is not None:
+        edges = threat_monitoring_data.get("threatMonitoringMatchedObjects", {}).get("edges", [])
+        page_info = threat_monitoring_data.get("threatMonitoringMatchedObjects", {}).get("pageInfo", {})
+        stats_info = threat_monitoring_data.get("threatMonitoringMatchedObjects", {}).get("stats", {})
+
+    page_cursor = remove_empty_elements(page_info)
+    page_cursor.pop("__typename", None)
+    page_cursor.update(
+        {
+            "name": "rubrik-threat-monitoring-matched-object-list",
+            "total_matched_count": stats_info.get("objectsWithMatches"),
+        }
+    )
+
+    outputs = {f"{OUTPUT_PREFIX['PAGE_TOKEN_THREAT_MONITORING']}(val.name == obj.name)": page_cursor}
+
+    if not edges:
+        return CommandResults(
+            outputs=outputs,
+            raw_response=threat_monitoring_response,
+            readable_output=MESSAGES["NO_RECORDS_FOUND"].format("threat monitoring objects"),
+        )
+
+    context, hr = prepare_context_hr_threat_monitoring_matched_object_list(edges)
+
+    if page_cursor.get("hasNextPage"):
+        hr += f"\n{MESSAGES['NEXT_RECORD']} {page_cursor.get('endCursor')}"
+
+    outputs[f"{OUTPUT_PREFIX['THREAT_MONITORING']}(val.objectFid == obj.objectFid)"] = context
+
+    return CommandResults(outputs=remove_empty_elements(outputs), raw_response=threat_monitoring_response, readable_output=hr)
+
+
+def rubrik_threat_monitoring_matched_object_get_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get the matched object in the threat monitoring.
+
+    :type client: ``Client``
+    :param client: Object of Client class.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments provided by user.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    object_id = args.get("object_id", "").strip()
+    object_id = validate_required_arg("object_id", object_id)
+
+    threat_monitoring_get_filters = {
+        "fid": object_id,
+    }
+
+    threat_monitoring_response = client._query_raw(
+        raw_query=THREAT_MONITORING_MATCHED_OBJECT_GET_QUERY,
+        operation_name="ThreatMonitoringObjectTypeQuery",
+        variables=threat_monitoring_get_filters,
+        timeout=60,
+    )
+
+    threat_monitoring_data = threat_monitoring_response.get("data", {})
+    if threat_monitoring_data:
+        threat_monitoring_data = threat_monitoring_data.get("hierarchyObject", {})
+
+    if not threat_monitoring_data:
+        return CommandResults(readable_output=MESSAGES["NO_RECORD_FOUND"].format("threat monitoring object"))
+
+    hr = prepare_hr_threat_monitoring_matched_objects_get(threat_monitoring_data)
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["THREAT_MONITORING"],
+        outputs_key_field="id",
+        outputs=remove_empty_elements(threat_monitoring_data),
+        raw_response=threat_monitoring_response,
+        readable_output=hr,
+    )
+
+
+def rubrik_threat_monitoring_matched_file_list_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get the list of matched files for a threat monitoring object.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments provided by user.
+
+    :rtype: ``CommandResults``
+    :return: Standard command result.
+    """
+    object_id = args.get("object_id", "").strip()
+    limit = arg_to_number(args.get("limit", "50"))
+    next_page_token = args.get("next_page_token")
+    file_name = args.get("file_name")
+
+    validate_threat_monitoring_matched_file_list_command_args(object_id, limit)
+
+    variables = {
+        "objectFid": object_id,
+        "first": limit,
+        "after": next_page_token,
+        "filenameSearchFilter": file_name,
+    }
+    remove_nulls_from_dictionary(variables)
+
+    response = client._query_raw(
+        raw_query=THREAT_MONITORING_MATCHED_FILE_LIST_QUERY,
+        operation_name="ThreatMonitoringMatchedFiles",
+        variables=variables,
+        timeout=60,
+    )
+
+    edges = []
+    data, page_info = {}, {}
+
+    file_list_response = response.get("data", {})
+    if file_list_response:
+        data = file_list_response.get("threatMonitoringMatchedFiles", {})
+        edges = data.get("edges", [])
+        page_info = data.get("pageInfo", {})
+
+    page_cursor = remove_empty_elements(page_info)
+    page_cursor.pop("__typename", None)
+    page_cursor.update(
+        {
+            "name": "rubrik-threat-monitoring-matched-file-list",
+            "total_matched_count": data.get("count"),
+        }
+    )
+
+    outputs = {f'{OUTPUT_PREFIX["PAGE_TOKEN_THREAT_MONITORING_FILE"]}(val.name == obj.name)': page_cursor}
+
+    if not edges:
+        return CommandResults(
+            outputs=outputs, raw_response=response, readable_output=MESSAGES["NO_RECORDS_FOUND"].format("threat monitoring files")
+        )
+
+    context, hr = prepare_context_hr_threat_monitoring_matched_file_list(edges)
+
+    if page_cursor.get("hasNextPage"):
+        hr += f"\n{MESSAGES['NEXT_RECORD']} {page_cursor.get('endCursor')}"
+
+    outputs[f"{OUTPUT_PREFIX['THREAT_MONITORING_FILE']}(val.matchId == obj.matchId)"] = context
+
+    return CommandResults(outputs=remove_empty_elements(outputs), raw_response=response, readable_output=hr)
+
+
+def rubrik_threat_monitoring_matched_file_get_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get the details of a matched file in the threat monitoring.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments provided by user.
+
+    :return: CommandResults object containing the results
+    :rtype: ``CommandResults``
+    """
+    # Get and validate arguments
+    matched_snapshot_id = args.get("matched_snapshot_id", "").strip()
+    file_path = args.get("file_path", "").strip()
+
+    # Validate required arguments
+    validate_threat_monitoring_matched_file_get_command_args(matched_snapshot_id, file_path)
+
+    # Prepare variables for the GraphQL query
+    variables = {"matchedSnapshotFid": matched_snapshot_id, "filepath": file_path}
+
+    # Make the API call
+    response = client._query_raw(
+        raw_query=THREAT_MONITORING_MATCHED_FILE_DETAILS_QUERY,
+        operation_name="ThreatMonitoringMatchedFileDetailsV2Query",
+        variables=variables,
+        timeout=60,
+    )
+
+    # Extract the file details from the response
+    file_details = {}
+    data = response.get("data", {})
+    if data:
+        file_details = data.get("threatMonitoringMatchedFileDetailsV2", {})
+
+    if not file_details:
+        return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("matched file details"), raw_response=response)
+
+    # Prepare human readable output
+    hr_content = prepare_context_hr_threat_monitoring_matched_file_get(file_details)
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["THREAT_MONITORING_FILE"],
+        outputs_key_field=["fileName", "filePath"],
+        outputs=remove_empty_elements(file_details),
+        raw_response=response,
+        readable_output=hr_content,
+    )
+
+
+def rubrik_ioc_scan_list_v2_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve the list of IOC scans.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments provided by user.
+
+    :return: Standard command result.
+    """
+    cluster_id = argToList(args.get("cluster_id"))
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+    next_page_token = args.get("next_page_token")
+    start_time_obj = arg_to_datetime(args.get("start_time", DEFAULT_TIME_PERIOD))
+    end_time_obj = arg_to_datetime(args.get("end_time"))
+    ioc_match = argToList(args.get("ioc_match"))
+    quarantine_status = argToList(args.get("quarantine_status"))
+    hunt_status = argToList(args.get("hunt_status"))
+
+    validate_ioc_scan_list_v2_command_args(limit, ioc_match, quarantine_status, hunt_status)
+
+    ioc_scan_filters = {
+        "first": limit,
+        "after": next_page_token,
+        "matchesFoundFilter": ioc_match,
+        "quarantinedMatchesFilter": quarantine_status,
+        "statusFilter": hunt_status,
+        "clusterUuidFilter": cluster_id,
+    }
+
+    if start_time_obj:
+        start_time = start_time_obj.strftime(DATE_TIME_FORMAT)
+        ioc_scan_filters["beginTime"] = start_time
+    if end_time_obj:
+        end_time = end_time_obj.strftime(DATE_TIME_FORMAT)
+        ioc_scan_filters["endTime"] = end_time
+
+    remove_nulls_from_dictionary(ioc_scan_filters)
+
+    response = client._query_raw(
+        raw_query=List_Threat_Hunts_Query, operation_name="ListThreatHuntsQuery", variables=ioc_scan_filters, timeout=60
+    )
+
+    edges = []
+    data, page_info = {}, {}
+    ioc_scan_data = response.get("data", {})
+    if ioc_scan_data:
+        data = ioc_scan_data.get("threatHunts", {})
+        edges = data.get("edges", [])
+        page_info = data.get("pageInfo", {})
+
+    page_cursor = remove_empty_elements(page_info)
+    page_cursor.pop("__typename", None)
+    page_cursor.update(
+        {
+            "name": "rubrik-ioc-scan-list-v2",
+            "total_matched_count": data.get("count"),
+        }
+    )
+
+    outputs = {f"{OUTPUT_PREFIX['PAGE_TOKEN_IOC_SCAN']}(val.name == obj.name)": page_cursor}
+
+    if not edges:
+        return CommandResults(
+            outputs=outputs, raw_response=response, readable_output=MESSAGES["NO_RECORDS_FOUND"].format("ioc scans")
+        )
+
+    context, hr = prepare_context_hr_ioc_scan_v2_list(edges)
+
+    if page_cursor.get("hasNextPage"):
+        hr += f"\n{MESSAGES['NEXT_RECORD']} {page_cursor.get('endCursor')}"
+
+    outputs[f"{OUTPUT_PREFIX['IOC_SCAN']}(val.huntId == obj.huntId)"] = context
+
+    return CommandResults(outputs=remove_empty_elements(outputs), raw_response=response, readable_output=hr)
+
+
+def rubrik_ioc_scan_results_v2_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve details of the Turbo and Advance Threat Hunt.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments provided by user.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    hunt_id = validate_required_arg("hunt_id", args.get("hunt_id"))
+
+    ioc_scan_filters = {"huntId": hunt_id}
+
+    response = client._query_raw(
+        raw_query=THREAT_HUNT_DETAILS_V2_QUERY, operation_name="ThreatHuntDetailsV2Query", variables=ioc_scan_filters, timeout=60
+    )
+
+    ioc_scan_data = {}
+    response_data = deepcopy(response.get("data", {}))
+    if response_data:
+        ioc_scan_data = response_data.get("threatHuntDetailV2", {})
+        ioc_scan_data["threatHuntObjectMetrics"] = response_data.get("threatHuntObjectMetrics", {})
+        ioc_scan_data["hunt_id"] = hunt_id
+
+    if not ioc_scan_data:
+        return CommandResults(raw_response=response, readable_output=MESSAGES["NO_RECORD_FOUND"].format("ioc scan result"))
+
+    hr = prepare_hr_ioc_scan_results_v2(ioc_scan_data)
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["IOC_SCAN"],
+        outputs_key_field="hunt_id",
+        outputs=remove_empty_elements(ioc_scan_data),
+        raw_response=response,
+        readable_output=hr,
+    )
+
+
+def rubrik_turbo_ioc_scan_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Start a new turbo threat hunt.
+
+    :type client: ``PolarisClient``
+    :param client: Object of Client class.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments provided by user.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    ioc = argToList(args.get("ioc"), transform=lambda s: s.strip())
+    scan_name = args.get("scan_name", DEFAULT_REQUEST_NAME)
+    cluster_ids = argToList(args.get("cluster_id"), transform=lambda s: s.strip())
+    start_time_obj = arg_to_datetime(args.get("start_time"))
+    end_time_obj = arg_to_datetime(args.get("end_time"))
+    max_snapshots_per_object = arg_to_number(args.get("max_snapshots_per_object"))
+
+    validate_turbo_ioc_scan_command_args(ioc, max_snapshots_per_object)
+
+    indicators_of_compromise = [{"iocKind": "IOC_HASH", "iocValue": ioc} for ioc in ioc]
+
+    scan_config = {}
+    if start_time_obj:
+        scan_config["startTime"] = start_time_obj.strftime(DATE_TIME_FORMAT)
+    if end_time_obj:
+        scan_config["endTime"] = end_time_obj.strftime(DATE_TIME_FORMAT)
+    if max_snapshots_per_object:
+        scan_config["maxSnapshotsPerObject"] = max_snapshots_per_object  # type: ignore
+
+    if not cluster_ids:
+        cluster_ids = []
+
+    input_data = {
+        "config": {
+            "baseConfig": {
+                "name": scan_name,
+                "threatHuntType": "TURBO_THREAT_HUNT",
+                "ioc": {"iocList": {"indicatorsOfCompromise": indicators_of_compromise}},
+                "snapshotScanLimit": {"scanConfig": scan_config},
+            },
+            "objectsToScan": [{"objectType": "CDM_CLUSTER", "objectIds": cluster_ids}],
+        }
+    }
+
+    response = client._query_raw(
+        raw_query=START_TURBO_THREAT_HUNT_MUTATION,
+        operation_name="StartTurboThreatHunt",
+        variables={"input": input_data},
+        timeout=60,
+    )
+
+    data = response.get("data", {})
+    hunt_data = data.get("startTurboThreatHunt", {})
+
+    readable_output = f"#### The new Turbo Threat Hunt started with ID: {hunt_data.get('huntId')}"
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["TURBO_IOC_SCAN"],
+        outputs_key_field="huntId",
+        outputs=hunt_data,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
+def rubrik_advance_ioc_scan_command(client: PolarisClient, args: Dict[str, Any]) -> CommandResults:
+    """
+    Trigger an advance threat hunt.
+
+    :type client: ``PolarisClient``
+    :param client: Rubrik Polaris client to use.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments provided by user.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    object_ids = validate_required_arg("object_id", argToList(args.get("object_id")))
+    ioc_type = args.get("ioc_type")
+    ioc_value = args.get("ioc_value")
+    scan_name = args.get("scan_name", DEFAULT_REQUEST_NAME)
+    advance_ioc = args.get("advance_ioc")
+    start_time_obj = arg_to_datetime(args.get("start_date"))
+    end_time_obj = arg_to_datetime(args.get("end_date"))
+    max_matches_per_snapshot = arg_to_number(args.get("max_matches_per_snapshot"), "max_matches_per_snapshot")
+    max_snapshots_per_object = arg_to_number(args.get("max_snapshots_per_object"), "max_snapshots_per_object")
+    min_file_size = arg_to_number(args.get("min_file_size"), "min_file_size")
+    max_file_size = arg_to_number(args.get("max_file_size"), "max_file_size")
+    paths_to_include = argToList(args.get("paths_to_include"))
+    paths_to_exclude = argToList(args.get("paths_to_exclude"))
+    paths_to_exempt = argToList(args.get("paths_to_exempt"))
+
+    iocs = prepare_ioc_and_validate_advance_ioc_scan_args(
+        ioc_type, ioc_value, advance_ioc, max_matches_per_snapshot, max_snapshots_per_object, min_file_size, max_file_size
+    )
+
+    input_data = {
+        "baseConfig": {
+            "name": scan_name,
+            "threatHuntType": "THREAT_HUNT_V2",
+            "ioc": {"iocList": {"indicatorsOfCompromise": iocs}},
+            "fileScanCriteria": {
+                "fileSizeLimits": {"maximumSizeInBytes": max_file_size, "minimumSizeInBytes": min_file_size},
+                "pathFilter": {"inclusions": paths_to_include, "exclusions": paths_to_exclude, "exemptions": paths_to_exempt},
+            },
+            "maxMatchesPerSnapshot": max_matches_per_snapshot,
+            "snapshotScanLimit": {"scanConfig": {"maxSnapshotsPerObject": max_snapshots_per_object}},
+        },
+        "objectFids": object_ids,
+    }
+
+    if start_time_obj:
+        start_time = start_time_obj.strftime(DATE_TIME_FORMAT)
+        input_data["baseConfig"]["snapshotScanLimit"]["scanConfig"]["startTime"] = start_time
+    if end_time_obj:
+        end_time = end_time_obj.strftime(DATE_TIME_FORMAT)
+        input_data["baseConfig"]["snapshotScanLimit"]["scanConfig"]["endTime"] = end_time
+
+    remove_nulls_from_dictionary(input_data)
+
+    raw_response = client._query_raw(
+        raw_query=START_ADVANCE_THREAT_HUNT_MUTATION,
+        operation_name="StartAdvanceThreatHuntMutation",
+        variables={"input": input_data},
+        timeout=60,
+    )
+
+    data = raw_response.get("data", {})
+    hunts_data = data.get("startBulkThreatHunt", {}).get("hunts", [])
+
+    hr = f"#### The new advance Threat Hunt started with ID: {hunts_data[0].get('huntId')}."
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["ADVANCE_IOC_SCAN"],
+        outputs_key_field="huntId",
+        outputs=hunts_data,
+        raw_response=raw_response,
+        readable_output=hr,
+    )
+
+
 def trim_spaces_from_args(args):
     """
     Trim spaces from values of the args dict.
@@ -4646,6 +6337,14 @@ def main() -> None:
                 "rubrik-radar-anomaly-status-update": rubrik_radar_anomaly_status_update_command,
                 "ip": ip_command,
                 "domain": domain_command,
+                "rubrik-threat-monitoring-matched-object-list": rubrik_threat_monitoring_matched_object_list_command,
+                "rubrik-threat-monitoring-matched-object-get": rubrik_threat_monitoring_matched_object_get_command,
+                "rubrik-threat-monitoring-matched-file-list": rubrik_threat_monitoring_matched_file_list_command,
+                "rubrik-threat-monitoring-matched-file-get": rubrik_threat_monitoring_matched_file_get_command,
+                "rubrik-ioc-scan-list-v2": rubrik_ioc_scan_list_v2_command,
+                "rubrik-ioc-scan-results-v2": rubrik_ioc_scan_results_v2_command,
+                "rubrik-turbo-ioc-scan": rubrik_turbo_ioc_scan_command,
+                "rubrik-advance-ioc-scan": rubrik_advance_ioc_scan_command,
             }
             if COMMAND_TO_FUNCTION.get(demisto.command()):
                 args = demisto.args()

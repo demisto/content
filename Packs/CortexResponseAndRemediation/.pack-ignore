@@ -19,6 +19,9 @@ ignore=PB106
 [file:playbook-CVE-2025-49704_and_CVE-2025-49706_and_CVE-2025-53770_and_CVE-2025-53771_-_Microsoft_SharePoint_ToolShell_vulnerability_chain.yml]
 ignore=RM116
 
+[file:playbook-Uncommon_creation_or_access_operation_of_sensitive_shadow_copy_by_a_high_risk_process.yml]
+ignore=RM116
+
 [file:README.md]
 ignore=RM104,RM106
 

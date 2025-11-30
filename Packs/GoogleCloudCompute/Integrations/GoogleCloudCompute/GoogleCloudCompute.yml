@@ -8429,7 +8429,7 @@ script:
   type: python
 tests:
 - No tests
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 fromversion: 5.0.0

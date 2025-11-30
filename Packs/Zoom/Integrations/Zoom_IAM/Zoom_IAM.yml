@@ -1,4 +1,7 @@
 category: Identity and Access Management
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Zoom_IAM
   version: -1
@@ -8,65 +11,78 @@ configuration:
   type: 0
   defaultvalue: "https://api.zoom.us/v2/"
   required: false
+  section: Connect
 - display: Account ID (OAuth)
   name: account_id
   type: 0
   required: false
+  section: Connect
 - display: Client ID (OAuth)
   name: credentials
   type: 9
   displaypassword: Client Secret (OAuth)
   required: false
+  section: Connect
 - name: creds_api_key
   displaypassword: API Key (JWT-Deprecated)
   type: 9
   additionalinfo: This authentication method is deprecated.
   hiddenusername: true
   required: false
+  section: Connect
 - name: creds_api_secret
   displaypassword: API Secret (JWT-Deprecated)
   type: 9
   additionalinfo: This authentication method is deprecated.
   hiddenusername: true
   required: false
+  section: Connect
 - display: API Key (JWT-Deprecated)
   name: api_key
   type: 4
   additionalinfo: This authentication method is deprecated.
   hidden: true
   required: false
+  section: Connect
 - display: API Secret (JWT-Deprecated)
   name: api_secret
   type: 4
   additionalinfo: This authentication method is deprecated.
   hidden: true
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Allow disabling users
   name: disable-user-enabled
   type: 8
   required: false
+  section: Connect
 - display: Allow enabling users
   name: enable-user-enabled
   type: 8
   required: false
+  section: Connect
 - defaultvalue: User Profile - SCIM (Incoming)
   display: Incoming Mapper
   name: mapper_in
-  required: true
+  required: false
   type: 0
+  section: Collect
 - defaultvalue: User Profile - SCIM (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
-  required: true
+  required: false
   type: 0
+  section: Collect
 description: An Identity and Access Management integration template.
 display: Zoom_IAM
 name: Zoom_IAM
@@ -165,7 +181,7 @@ script:
       required: true
   - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
-  dockerimage: demisto/auth-utils:1.0.0.3639076
+  dockerimage: demisto/auth-utils:1.0.0.5476008
   ismappable: true
   isremotesyncout: true
   script: '-'

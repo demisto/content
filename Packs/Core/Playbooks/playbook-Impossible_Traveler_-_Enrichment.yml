@@ -129,7 +129,7 @@ tasks:
       method:
         simple: GET
       url:
-        simple: http://www.geoplugin.net/json.gp?ip=${inputs.sourceip}
+        simple: http://ip-api.com/json/${inputs.sourceip}
     separatecontext: false
     view: |-
       {
@@ -217,13 +217,13 @@ tasks:
       value:
         complex:
           root: Coordinates
-          accessor: geoplugin_latitude
+          accessor: lat
           transformers:
           - operator: append
             args:
               item:
                 value:
-                  simple: Coordinates.geoplugin_longitude
+                  simple: Coordinates.lon
                 iscontext: true
           - operator: join
             args:
@@ -354,19 +354,18 @@ tasks:
         simple: Events.ip
       value:
         complex:
-          root: Coordinates
+          root: Coordinates.query
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Coordinates.geoplugin_request
+                  simple: Coordinates.query
                 iscontext: true
               right:
                 value:
                   simple: inputs.sourceip
                 iscontext: true
               ignorecase: true
-          accessor: geoplugin_request
     separatecontext: false
     view: |-
       {
@@ -551,14 +550,14 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Coordinates.geoplugin_request
+                  simple: Coordinates.query
                 iscontext: true
               right:
                 value:
                   simple: inputs.sourceip
                 iscontext: true
               ignorecase: true
-          accessor: geoplugin_countryCode
+          accessor: countryCode
     separatecontext: false
     view: |-
       {
@@ -752,8 +751,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1870,
-        "width": 1950,
+        "height": 1865,
+        "width": 1951,
         "x": -340,
         "y": -865
       }
@@ -824,3 +823,9 @@ supportedModules:
 - X3
 - X5
 - ENT_PLUS
+- agentix
+- cloud
+- cloud_posture
+- cloud_runtime_security
+- edr
+- xsiam

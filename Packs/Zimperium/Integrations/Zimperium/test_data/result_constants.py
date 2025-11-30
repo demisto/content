@@ -1,3 +1,4 @@
+# ruff: noqa: RUF001
 EXPECTED_SEARCH_EVENTS = [
     {
         "eventId": "c4220bdf-0c0b-489c-a915-7d71bba7197a",

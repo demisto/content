@@ -2,7 +2,7 @@ With the **Microsoft Graph Identity and Access** pack you can manage administrat
 
 ## What does this pack do?
 
-The **Azure Active Directory Identity And Access** integration enables you to:
+The **Entra ID Identity And Access** integration enables you to:
 
 - Get all members in a role ID.
 - Add a user to a role.

@@ -1,5 +1,5 @@
 category: IT Services
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -534,7 +534,7 @@ script:
       required: true
       isArray: true
     outputs: []
-  dockerimage: demisto/vmware:2.0.0.3530635
+  dockerimage: demisto/vmware:2.0.0.4871159
   script: ""
   subtype: python3
   type: python

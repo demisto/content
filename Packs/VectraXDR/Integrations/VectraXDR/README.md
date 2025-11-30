@@ -33,6 +33,7 @@ This integration supports only cloud instances of Vectra XDR. To configure an in
     | Max Fetch | The maximum number of entities to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200. | False |
     | First Fetch Time | The date or relative timestamp from which to begin fetching entities.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/>    <br/>For example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z. | False |
     | Mirroring Direction | The mirroring direction in which to mirror the entities. You can mirror "Incoming" \(from Vectra to XSOAR\), "Outgoing" \(from XSOAR to Vectra\), or in both directions. | False |
+    | Re-Fetch closed incidents via mirroring | If selected, new incidents will be created (via Outgoing Mirroring). If not selected, it reopens previously closed incidents (via Incoming Mirroring)<br/><br/>Note: This flow is triggered only when the relevant entity is still active and the previously fetched incident is closed. | False |
     | Mirror tag for notes | The tag value should be used to mirror the entity note by adding the same tag in the notes. | False |
     | Entity Type | Entity Type\(Host, Account\). | False |
     | Prioritized | Retrieve only prioritize entities based on the configuration on the Vectra platform. If not selected will fetch all entities. | False |
@@ -61,11 +62,12 @@ To fetch Vectra XDR Entity follow the next steps:
     1. Incoming - Mirrors changes from the Vectra XDR Entity into the Cortex XSOAR incident.
     2. Outgoing - Mirrors changes from the Cortex XSOAR incident to the Vectra XDR Entity.
     3. Incoming And Outgoing - Mirrors changes both Incoming and Outgoing directions on incidents.
-9. Enter the relevant tag name for mirror notes.
+9. Check the "Re-Fetch closed incidents via mirroring" option if you want to prevent reopening of closed incidents and refetch them via mirroring on modification of an entity.
+10. Enter the relevant tag name for mirror notes.
 **Note:** This value is mapped to the dbotMirrorTags incident field in Cortex XSOAR, which defines how Cortex XSOAR handles notes when you tag them in the War Room. This is required for mirroring notes from Cortex XSOAR to Vectra XDR.
-10. Provide appropriate values for filtering Entities, such as Entity Type, Prioritization, and Tags. Additionally, specify filters for detections, including  Detection Category and Detection Type.
+11. Provide appropriate values for filtering Entities, such as Entity Type, Prioritization, and Tags. Additionally, specify filters for detections, including  Detection Category and Detection Type.
 **Note:** Filters for Entities and Detections are combined using 'OR' logic, while filters within the same category(Entity, Detections) are combined using 'AND'.
-11. Adjust the Urgency Score to categorize Entity severity in Cortex XSOAR. There are three fields for this mapping:
+12. Adjust the Urgency Score to categorize Entity severity in Cortex XSOAR. There are three fields for this mapping:
     1. Input a value for 'Low' severity. Scores up to this limit are labelled as Low.
     2. The next value is for 'Medium' severity. Scores up to this limit are labelled as Medium.
     3. The third value is for 'High' severity. Scores up to this limit are labelled as High. Any score above this is marked as 'Critical' severity.
@@ -77,8 +79,12 @@ To fetch Vectra XDR Entity follow the next steps:
 * Any tags removed from the Vectra entity will not be removed in the XSOAR incident, as XSOAR doesn't allow the removal of the tags field via the backend. However, tags removed from the XSOAR incident UI will be removed from the Vectra entity.
 * New notes from the XSOAR incident will be created as notes in the Vectra entity. Updates to existing notes in the XSOAR incident will not be reflected in the Vectra entity.
 * New notes from the Vectra entity will be created as notes in the XSOAR incident. Updates to existing notes in the Vectra entity will create new notes in the XSOAR incident.
-* If a closed XSOAR incident is tied to a specific entity and new detections for that entity arise or existing detections become active again, the incident will be automatically reopened.
-* When a XSOAR incident is closed but there are still active detections on the Vectra side, and the entity is subsequently updated, the corresponding XSOAR incident for that entity will be reopened.
+* If a closed XSOAR incident is tied to a specific entity and new detections for that entity arise or existing detections become active again:
+  * If "Re-Fetch closed Incidents while Mirroring" checkbox is not selected and "Incoming Mirroring" is enabled, the incident will be automatically reopened.
+  * If "Re-Fetch closed Incidents while Mirroring" checkbox is selected and "Outgoing Mirroring" is enabled, a new incident will be created for the entity.
+* When a XSOAR incident is closed but there are still active detections on the Vectra side, and the entity is subsequently updated:
+  * If "Re-Fetch closed Incidents while Mirroring" checkbox is not selected and "Incoming Mirroring" is enabled, the corresponding XSOAR incident for that entity will be reopened.
+  * If "Re-Fetch closed Incidents while Mirroring" checkbox is selected and "Outgoing Mirroring" is enabled, a new incident will be created for the entity.
 * The mirroring settings apply only for incidents that are fetched after applying the settings.
 * The mirroring is strictly tied to Incident type "Vectra XDR Entity" & Incoming mapper "Vectra XDR  - Incoming Mapper" If you want to change or use your custom incident type/mapper then make sure changes related to these are present.
 * If you want to use the mirror mechanism and you're using custom mappers, then the incoming mapper must contain the following fields: dbotMirrorDirection, dbotMirrorId, dbotMirrorInstance, and dbotMirrorTags.
@@ -232,6 +238,7 @@ Returns a list of entities.
 | --- | --- | --- |
 | prioritized | Fetch only entities whose priority score is above the configured priority threshold will be included in the response. Possible values are: true, false. | Optional |
 | entity_type | Specify the type of the entity. Possible values are: account, host. | Optional |
+| name | Filter by matching entity name. | Optional |
 | tags | Filter by a tag or a comma-separated list of tags. | Optional |
 | state | Filter on entity activation state. Possible values are: active, inactive. | Optional |
 | ordering | Orders records by last timestamp or urgency score. Default sorting is by urgency score in descending order. Use the minus symbol (-) to sort scores in descending order. Multiple ordering fields can be specified with a comma-separated list (e.g., ordering=urgency_score,-name). | Optional |
@@ -2685,3 +2692,245 @@ Unassign members from the specified group.
 >|Group ID|Name|Group Type|Description|Members|Last Modified Timestamp|
 >|---|---|---|---|---|---|
 >| 1 | xsoar-group-accout-test | domain | xsoar-group-accout-test | \*\.domain1\.net, \*\.domain2\.com, \*\.domain3\.com | 2023-09-04T07:30:01Z |
+
+### vectra-entity-detections-mark-asclosed
+
+***
+Mark the detections of the entity as closed with the provided entity ID in the argument.
+
+#### Base Command
+
+`vectra-entity-detections-mark-asclosed`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity_id | Specify the ID of the entity. | Required |
+| entity_type | Specify the type of the entity. Possible values are: account, host. | Required |
+| close_reason | Specify the close reason. Possible values are: benign, remediated. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!vectra-entity-detections-mark-asclosed entity_id=1 entity_type=account close_reason=benign```
+
+#### Human Readable Output
+
+>##### The detections (34122, 35097) of the provided entity ID have been successfully closed as benign
+
+### vectra-detections-mark-asclosed
+
+***
+Mark detections as close with provided detection IDs in the argument.
+
+#### Base Command
+
+`vectra-detections-mark-asclosed`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| detection_ids | Provide a list of detection IDs separated by commas or a single detection ID. | Required |
+| close_reason | Specify the close reason. Possible values are: benign, remediated. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!vectra-detections-mark-asclosed detection_ids=1,2,3 close_reason=benign```
+
+#### Human Readable Output
+
+>##### The provided detection IDs have been successfully closed as benign
+
+### vectra-detections-mark-asopen
+
+***
+Open detections with provided detection IDs in the argument.
+
+#### Base Command
+
+`vectra-detections-mark-asopen`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| detection_ids | Provide a list of detection IDs separated by commas or a single detection ID. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!vectra-detections-mark-asopen detection_ids=1,2,3```
+
+#### Human Readable Output
+
+>##### The provided detection IDs have been successfully re-opened
+
+### vectra-detection-tag-list
+
+***
+Returns a list of tags for a specified detection.
+
+#### Base Command
+
+`vectra-detection-tag-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| detection_id | Specify the ID of the detection. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.Detection.Tags.tag_id | String | The ID of the tag. |
+| Vectra.Detection.Tags.detection_id | String | The ID of the Detection associated with the tag. |
+| Vectra.Detection.Tags.tags | Unknown | A list of tags linked to a detection. |
+
+#### Command example
+
+```!vectra-detection-tag-list detection_id=123```
+
+#### Context Example
+
+```json
+{
+    "Vectra": {
+        "Detection": {
+            "Tags": {
+                "detection_id": 123,
+                "tag_id": "123",
+                "tags": [
+                    "tag1",
+                    "tag2"
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>##### List of tags: **tag1, tag2**
+
+### vectra-detection-tag-add
+
+***
+Add tags to a detection.
+
+#### Base Command
+
+`vectra-detection-tag-add`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| detection_id | Specify the ID of the detection. | Required |
+| tags | Comma-separated values of tags to be added to the detection. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.Detection.Tags.tag_id | String | The ID of the tag. |
+| Vectra.Detection.Tags.detection_id | String | The ID of the detection associated with the tag. |
+| Vectra.Detection.Tags.tags | Unknown | A list of tags linked to a detection. |
+
+#### Command example
+
+```!vectra-detection-tag-add detection_id=1 tags="tag1,tag2"```
+
+#### Context Example
+
+```json
+{
+    "Vectra": {
+        "Detection": {
+            "Tags": {
+                "detection_id": 1,
+                "tag_id": 1,
+                "tags": [
+                    "tag",
+                    "tag1",
+                    "tag2"
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>##### Tags have been successfully added to the detection
+>
+>Updated list of tags: **tag**, **tag1**, **tag2**
+
+### vectra-detection-tag-remove
+
+***
+Remove tags from the detection.
+
+#### Base Command
+
+`vectra-detection-tag-remove`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| detection_id | Specify the ID of the detection. | Required |
+| tags | Comma-separated values of tags to be removed from the detection. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.Detection.Tags.tag_id | String | The ID of the tag. |
+| Vectra.Detection.Tags.detection_id | String | The ID of the detection associated with the tag. |
+| Vectra.Detection.Tags.tags | Unknown | A list of tags linked to a detection. |
+
+#### Command example
+
+```!vectra-detection-tag-remove detection_id="2" tags="tag3,tag4"```
+
+#### Context Example
+
+```json
+{
+    "Vectra": {
+        "Detection": {
+            "Tags": {
+                "detection_id": 2,
+                "tag_id": "2",
+                "tags": [
+                    "tag",
+                    "tag1",
+                    "tag2"
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>##### Specified tags have been successfully removed for the detection
+>
+>Updated list of tags: **tag**, **tag1**, **tag2**

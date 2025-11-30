@@ -1,4 +1,6 @@
 category: Vulnerability Management
+sectionorder:
+- Connect
 commonfields:
   id: PingCastle
   version: -1
@@ -8,24 +10,29 @@ configuration:
   name: apikey
   required: true
   type: 4
+  section: Connect
 - additionalinfo: Whether this instance should listen for reports
   display: Long running instance
   name: longRunning
   type: 8
   required: false
+  section: Connect
 - display: Listen port, e.g. 7000
   name: longRunningPort
   type: 0
   required: false
   additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for Ping Castle will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port."
+  section: Connect
 - display: Certificate (Required for HTTPS)
   name: certificate
   type: 12
   required: false
+  section: Connect
 - display: Private Key (Required for HTTPS)
   name: private_key
   type: 14
   required: false
+  section: Connect
 description: This integration will run a server that will listen for PingCastle XML reports.
 display: PingCastle
 name: PingCastle
@@ -45,7 +52,7 @@ script:
     - contextPath: PingCastle.Report.report
       description: The XML report sent by Ping Castle.
       type: String
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.12.11.3982393
   longRunning: true
   longRunningPort: true
   script: '-'
@@ -56,3 +63,14 @@ tests:
 defaultmapperin: PingCastle-Report-Mapper
 defaultclassifier: PingCastle-Report-Classifier
 fromversion: 5.5.0
+triggers:
+  - conditions:
+      - name: engine
+        operator: not_exists
+      - name: isEngineGroup
+        operator: not_exists
+    effects:
+      - name: longRunningPort
+        action:
+          hidden: true
+          required: false

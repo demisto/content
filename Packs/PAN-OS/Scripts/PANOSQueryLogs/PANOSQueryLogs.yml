@@ -23,8 +23,27 @@ args:
   - corr
   - system
   - decryption
-- description: "The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs. Do not use the query argument in combination with the following arguments: time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest."
-  name: query
+- description: |-
+    Filters logs by a specific URL category. Optional values are: 
+    1. Malware
+    2. Phishing
+    3. Command and Control
+    4. Dynamic DNS
+    5. Encrypted DNS
+    6. Parked
+    7. Unknown
+    8. Newly Registered Domains
+    9. Grayware
+    10. Hacking
+    11. Proxy Avoidance And Anonymizers
+    12. Ransomware
+    13. Scanning Activity
+    14. Artificial Intelligence
+    15. High Risk
+    16. Compromised Website
+
+    This argument cannot be used in combination with the following arguments: time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest. It can only be used with log_type set to "url". For all other log_type values, this argument is ignored.
+  name: url_category
 - description: |-
     The time the log was generated from the timestamp and prior to it.
     For example "2019/08/11 01:10:44, will get logs before the specified date.".
@@ -228,11 +247,10 @@ outputs:
   type: String
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.11.3982393
+dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.1.0
+isInternal: true
 tests:
 - No tests (auto formatted)
 marketplaces:
 - platform
-supportedModules:
-- agentix

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta
 import re
 from unittest import mock
 from unittest.mock import MagicMock, patch
@@ -407,7 +407,7 @@ def test_get_file_sha256_command(
 
 
 @mock.patch("FeedCyberint.is_execution_time_exceeded")
-def test_fetch_indicators_command_ok(is_execution_time_exceeded_mock, mock_client: FeedCyberint, requests_mock):
+def test_fetch_indicators_command_ok(is_execution_time_exceeded_mock, mock_client: FeedCyberint.Client, requests_mock):
     """
     Scenario:
     - Test retrieving indicators by filters from feed.
@@ -435,7 +435,7 @@ def test_fetch_indicators_command_ok(is_execution_time_exceeded_mock, mock_clien
         patch("CommonServerPython.auto_detect_indicator_type") as mock_auto_detect,
     ):
         mock_auto_detect.side_effect = lambda x: "IP" if x == "1.1.1.1" else None
-        result = FeedCyberint.fetch_indicators_command(mock_client)
+        result = FeedCyberint.fetch_indicators_command(mock_client, {})  # pass empty params dict
 
         assert result is not None
 
@@ -510,7 +510,8 @@ def test_is_execution_time_exceeded_within_limit():
     """
     Test is_execution_time_exceeded when execution time is within the timeout limit.
     """
-    start_time = datetime.now(UTC) - timedelta(seconds=5)  # Within timeout
+    # Use now to create a naive datetime consistent with implementation (datetime.now())
+    start_time = datetime.now() - timedelta(seconds=5)  # Well within 20 minute (1200s) timeout
     result = FeedCyberint.is_execution_time_exceeded(start_time)
     assert result is False, "Execution time is within the limit but returned True."
 
@@ -519,31 +520,30 @@ def test_is_execution_time_exceeded_exceeded_limit():
     """
     Test is_execution_time_exceeded when execution time exceeds the timeout limit.
     """
-    start_time = datetime.now(UTC) - timedelta(seconds=15)  # Exceeds timeout
+    start_time = datetime.now() - timedelta(seconds=FeedCyberint.EXECUTION_TIMEOUT_SECONDS + 10)  # Exceeds timeout
     result = FeedCyberint.is_execution_time_exceeded(start_time)
-    assert result is False, "Execution time exceeded the limit but returned False."
+    assert result is True, "Execution time exceeded the limit but returned False."
 
 
 @patch("FeedCyberint.datetime")
 def test_is_execution_time_exceeded_mocked(mock_datetime):
     """
     Test is_execution_time_exceeded with mocked datetime to simulate precise timing.
+    Patch now() instead of utcnow() to match implementation.
     """
-    start_time = datetime(2024, 1, 1, 12, 0, 0)
+    # Preserve ability to construct new datetime objects
+    mock_datetime.side_effect = lambda *args, **kwargs: datetime(*args, **kwargs)
+    base_time = datetime(2024, 1, 1, 12, 0, 0)
 
-    # Mock datetime.now to return a datetime with 15 seconds difference
-    mock_now = MagicMock(return_value=datetime(2024, 1, 1, 12, 0, 15))
-    mock_datetime.now = mock_now
+    # Simulate time just over the limit
+    mock_datetime.now.return_value = base_time + timedelta(seconds=FeedCyberint.EXECUTION_TIMEOUT_SECONDS + 1)
+    result = FeedCyberint.is_execution_time_exceeded(base_time)
+    assert result is True, "Execution time exceeded the limit but returned False."
 
-    result = FeedCyberint.is_execution_time_exceeded(start_time)
-    assert result is False, "Execution time exceeded the limit but returned False."
-    mock_now.assert_called_with(UTC)
-
-    # Change the mock to return a datetime with only 5 seconds difference
-    mock_now.return_value = datetime(2024, 1, 1, 12, 0, 5)
-    result = FeedCyberint.is_execution_time_exceeded(start_time)
-    assert result is False, "Execution time is within the limit but returned False."
-    mock_now.assert_called_with(UTC)
+    # Simulate time well within the limit
+    mock_datetime.now.return_value = base_time + timedelta(seconds=5)
+    result = FeedCyberint.is_execution_time_exceeded(base_time)
+    assert result is False, "Execution time is within the limit but returned True."
 
 
 def test_get_yesterday_time():
@@ -694,7 +694,7 @@ def test_test_module_forbidden_error(mock_client):
     exception.res = MagicMock(status_code=403)
     mock_client.request_daily_feed = MagicMock(side_effect=exception)
 
-    result = FeedCyberint.test_module(mock_client)
+    result = FeedCyberint.test_module(mock_client, feed_enabled=True)
 
     assert result == "Authorization Error: invalid `API Token`"
     mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
@@ -707,7 +707,7 @@ def test_test_module_unexpected_error(mock_client):
     FeedCyberint.Client.request_daily_feed = MagicMock(side_effect=exception)
 
     with pytest.raises(DemistoException, match="Unexpected error"):
-        FeedCyberint.test_module(mock_client)
+        FeedCyberint.test_module(mock_client, feed_enabled=True)
 
     FeedCyberint.Client.request_daily_feed.assert_called_once_with(limit=10, test=True)
 
@@ -718,7 +718,6 @@ def test_get_today_time(mock_datetime):
     # Define a fixed datetime for testing
     fixed_datetime = datetime(2025, 1, 2, 12, 30, 45)
     mock_datetime.now.return_value = fixed_datetime
-    mock_datetime.strftime = datetime.strftime
 
     # Call the function
     result = FeedCyberint.get_today_time()
@@ -1104,121 +1103,493 @@ def test_get_indicators_command_ok(mock_client, requests_mock):
         assert result == expected_output
 
 
-def test_test_module_success(requests_mock):
-    client = MagicMock(FeedCyberint.Client)
-    limit = 10
-    offset = 0
-    mock_response = ""
+def test_test_module_feed_enabled_success(mock_client):
+    """Test test_module with feed_enabled=True and successful request_daily_feed call."""
+    # Mock successful request_daily_feed
+    mock_client.request_daily_feed = MagicMock(return_value=[])
 
-    # Mock the HTTP request
-    url_suffix = f"/ioc/api/v1/feed/daily/{date_time}?limit={limit}&offset={offset}"
-    requests_mock.get(
-        f"{BASE_URL}{url_suffix}",
-        text=mock_response,
-        status_code=200,
-    )
+    result = FeedCyberint.test_module(mock_client, feed_enabled=True)
 
-    result = FeedCyberint.test_module(client)  # Call the function
-
-    # Assert that the function returns "ok"
     assert result == "ok"
-
-    # Check that request_daily_feed was called with the expected parameters
-    client.request_daily_feed.assert_called_once_with(limit=10, test=True)
+    mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
 
 
-def test_fetch_indicators_limit():
-    mock_client = MagicMock(FeedCyberint.Client)
-    mock_client.request_daily_feed.return_value = [
+def test_test_module_feed_disabled_success(mock_client):
+    """Test test_module with feed_enabled=False and successful retrieve_domain_from_api call."""
+    # Mock successful retrieve_domain_from_api
+    mock_client.retrieve_domain_from_api = MagicMock(return_value={})
+
+    result = FeedCyberint.test_module(mock_client, feed_enabled=False)
+
+    assert result == "ok"
+    mock_client.retrieve_domain_from_api.assert_called_once_with("checkpoint.com")
+
+
+def test_test_module_feed_enabled_unauthorized_error(mock_client):
+    """Test test_module with feed_enabled=True and unauthorized error."""
+    # Mock `request_daily_feed` to raise a DemistoException with UNAUTHORIZED status
+    exception = DemistoException("Unauthorized")
+    exception.res = MagicMock(status_code=401)
+    mock_client.request_daily_feed = MagicMock(side_effect=exception)
+
+    result = FeedCyberint.test_module(mock_client, feed_enabled=True)
+
+    assert result == "Authorization Error: invalid `API Token`"
+    mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
+
+
+def test_test_module_feed_enabled_forbidden_error(mock_client):
+    """Test test_module with feed_enabled=True and forbidden error."""
+    # Mock `request_daily_feed` to raise a DemistoException with FORBIDDEN status
+    exception = DemistoException("Forbidden")
+    exception.res = MagicMock(status_code=403)
+    mock_client.request_daily_feed = MagicMock(side_effect=exception)
+
+    result = FeedCyberint.test_module(mock_client, feed_enabled=True)
+
+    assert result == "Authorization Error: invalid `API Token`"
+    mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
+
+
+def test_test_module_feed_disabled_unauthorized_error(mock_client):
+    """Test test_module with feed_enabled=False and unauthorized error."""
+    # Mock `retrieve_domain_from_api` to raise a DemistoException with UNAUTHORIZED status
+    exception = DemistoException("Unauthorized")
+    exception.res = MagicMock(status_code=401)
+    mock_client.retrieve_domain_from_api = MagicMock(side_effect=exception)
+
+    result = FeedCyberint.test_module(mock_client, feed_enabled=False)
+
+    assert result == "Authorization Error: invalid `API Token`"
+    mock_client.retrieve_domain_from_api.assert_called_once_with("checkpoint.com")
+
+
+def test_test_module_feed_disabled_forbidden_error(mock_client):
+    """Test test_module with feed_enabled=False and forbidden error."""
+    # Mock `retrieve_domain_from_api` to raise a DemistoException with FORBIDDEN status
+    exception = DemistoException("Forbidden")
+    exception.res = MagicMock(status_code=403)
+    mock_client.retrieve_domain_from_api = MagicMock(side_effect=exception)
+
+    result = FeedCyberint.test_module(mock_client, feed_enabled=False)
+
+    assert result == "Authorization Error: invalid `API Token`"
+    mock_client.retrieve_domain_from_api.assert_called_once_with("checkpoint.com")
+
+
+def test_test_module_feed_enabled_other_error(mock_client):
+    """Test test_module with feed_enabled=True and non-auth related error."""
+    # Mock `request_daily_feed` to raise a DemistoException with a different status code
+    exception = DemistoException("Internal Server Error")
+    exception.res = MagicMock(status_code=500)
+    mock_client.request_daily_feed = MagicMock(side_effect=exception)
+
+    with pytest.raises(DemistoException, match="Internal Server Error"):
+        FeedCyberint.test_module(mock_client, feed_enabled=True)
+
+    mock_client.request_daily_feed.assert_called_once_with(limit=10, test=True)
+
+
+def test_test_module_feed_disabled_other_error(mock_client):
+    """Test test_module with feed_enabled=False and non-auth related error."""
+    # Mock `retrieve_domain_from_api` to raise a DemistoException with a different status code
+    exception = DemistoException("Internal Server Error")
+    exception.res = MagicMock(status_code=500)
+    mock_client.retrieve_domain_from_api = MagicMock(side_effect=exception)
+
+    with pytest.raises(DemistoException, match="Internal Server Error"):
+        FeedCyberint.test_module(mock_client, feed_enabled=False)
+
+    mock_client.retrieve_domain_from_api.assert_called_once_with("checkpoint.com")
+
+
+def test_fetch_indicators_with_filters(mock_client):
+    """Test fetch_indicators with various filters applied."""
+    # Mock the request_daily_feed to return test data
+    mock_indicators = [
         {
-            "ioc_value": "value1",
-            "ioc_type": "type1",
-            "detected_activity": "feed1",
-            "confidence": 60,
-            "severity_score": 5,
-            "description": "desc1",
-            "observation_date": "2024-01-01",
-        },
-        {
-            "ioc_value": "value2",
-            "ioc_type": "type2",
-            "detected_activity": "feed2",
-            "confidence": 80,
-            "severity_score": 4,
-            "description": "desc2",
-            "observation_date": "2024-01-01",
-        },
-        {
-            "ioc_value": "value3",
-            "ioc_type": "type1",
-            "detected_activity": "feed1",
-            "confidence": 70,
-            "severity_score": 6,
-            "description": "desc3",
-            "observation_date": "2024-01-01",
-        },
-        {
-            "ioc_value": "value4",
-            "ioc_type": "type2",
-            "detected_activity": "feed2",
-            "confidence": 85,
-            "severity_score": 7,
-            "description": "desc4",
-            "observation_date": "2024-01-01",
-        },
-        {
-            "ioc_value": "value5",
-            "ioc_type": "type1",
-            "detected_activity": "feed1",
+            "ioc_value": "malicious.com",
+            "ioc_type": "Domain",
+            "detected_activity": "phishing",
             "confidence": 90,
             "severity_score": 8,
-            "description": "desc5",
-            "observation_date": "2024-01-01",
+            "observation_date": "2025-01-01",
+            "description": "Phishing domain",
         },
         {
-            "ioc_value": "value6",
-            "ioc_type": "type2",
-            "detected_activity": "feed2",
-            "confidence": 65,
+            "ioc_value": "1.2.3.4",
+            "ioc_type": "IP",
+            "detected_activity": "malware",
+            "confidence": 50,
             "severity_score": 5,
-            "description": "desc6",
-            "observation_date": "2024-01-01",
+            "observation_date": "2025-01-01",
+            "description": "Malware IP",
+        },
+        {
+            "ioc_value": "safe.com",
+            "ioc_type": "Domain",
+            "detected_activity": "phishing",
+            "confidence": 30,
+            "severity_score": 3,
+            "observation_date": "2025-01-01",
+            "description": "Low confidence domain",
         },
     ]
 
-    LIMIT = 5  # Set limit to test the breaking condition
-    TLP_COLOR = "RED"
-    FEED_NAMES = ["feed1", "feed2"]
-    INDICATOR_TYPES = ["type1", "type2"]
-    CONFIDENCE_FROM = 50
-    SEVERITY_FROM = 3
+    with (
+        patch.object(mock_client, "request_daily_feed", return_value=mock_indicators),
+        patch("FeedCyberint.auto_detect_indicator_type") as mock_auto_detect,
+    ):
+        mock_auto_detect.side_effect = lambda x: "Domain" if "." in x and not x[0].isdigit() else "IP"
 
-    # Calling the fetch_indicators function with a limit set to 5
-    mock_auto_detect = MagicMock(return_value=True)
-    with patch("FeedCyberint.auto_detect_indicator_type", mock_auto_detect):
         result = FeedCyberint.fetch_indicators(
             client=mock_client,
-            tlp_color=TLP_COLOR,
-            feed_names=FEED_NAMES,
-            indicator_types=INDICATOR_TYPES,
-            confidence_from=CONFIDENCE_FROM,
-            severity_from=SEVERITY_FROM,
-            limit=LIMIT,
-            execution_start_time=datetime.now(),
+            tlp_color="RED",
+            feed_names=["phishing"],
+            indicator_types=["Domain"],
+            confidence_from=60,
+            severity_from=7,
+            feed_tags=["test"],
+            limit=10,
         )
 
-    # Check that the number of returned indicators is equal to the limit
-    assert len(result) == LIMIT
+        # Should only return the first indicator that matches all filters
+        assert len(result) == 1
+        assert result[0]["value"] == "malicious.com"
+        assert result[0]["fields"]["trafficlightprotocol"] == "RED"
+        assert "test" in result[0]["fields"]["tags"]
 
-    # Check that the loop breaks once the limit is reached
-    mock_client.request_daily_feed.assert_called_once()  # Ensures the feed was called only once
 
-    # Check the indicator values for correctness
-    assert result[0]["value"] == "value1"
-    assert result[1]["value"] == "value2"
-    assert result[2]["value"] == "value3"
-    assert result[3]["value"] == "value4"
-    assert result[4]["value"] == "value5"
+def test_fetch_indicators_with_all_types(mock_client):
+    """Test fetch_indicators with 'All' indicator types and feed names."""
+    mock_indicators = [
+        {
+            "ioc_value": "test.com",
+            "ioc_type": "Domain",
+            "detected_activity": "phishing",
+            "confidence": 80,
+            "severity_score": 8,
+            "observation_date": "2025-01-01",
+            "description": "Test domain",
+        }
+    ]
 
-    # Validate that no more indicators were appended after reaching the limit
-    assert len(result) == LIMIT  # Ensure the number of indicators is exactly the limit
+    with (
+        patch.object(mock_client, "request_daily_feed", return_value=mock_indicators),
+        patch("FeedCyberint.auto_detect_indicator_type", return_value="Domain"),
+    ):
+        result = FeedCyberint.fetch_indicators(
+            client=mock_client,
+            tlp_color="",
+            feed_names=["All"],
+            indicator_types=["All"],
+            confidence_from=0,
+            severity_from=0,
+            limit=-1,
+        )
+
+        assert len(result) == 1
+        assert result[0]["value"] == "test.com"
+
+
+def test_fetch_indicators_limit_reached(mock_client):
+    """Test fetch_indicators stops when limit is reached."""
+    mock_indicators = [
+        {
+            "ioc_value": f"test{i}.com",
+            "ioc_type": "Domain",
+            "detected_activity": "phishing",
+            "confidence": 80,
+            "severity_score": 8,
+            "observation_date": "2025-01-01",
+            "description": f"Test domain {i}",
+        }
+        for i in range(10)
+    ]
+
+    with (
+        patch.object(mock_client, "request_daily_feed", return_value=mock_indicators),
+        patch("FeedCyberint.auto_detect_indicator_type", return_value="Domain"),
+    ):
+        result = FeedCyberint.fetch_indicators(
+            client=mock_client,
+            tlp_color="",
+            feed_names=["All"],
+            indicator_types=["All"],
+            confidence_from=0,
+            severity_from=0,
+            limit=5,
+        )
+
+        assert len(result) == 5
+
+
+def test_fetch_indicators_no_type_detected(mock_client):
+    """Test fetch_indicators skips indicators with no detected type."""
+    mock_indicators = [
+        {
+            "ioc_value": "invalid",
+            "ioc_type": "Unknown",
+            "detected_activity": "phishing",
+            "confidence": 80,
+            "severity_score": 8,
+            "observation_date": "2025-01-01",
+            "description": "Invalid indicator",
+        }
+    ]
+
+    with (
+        patch.object(mock_client, "request_daily_feed", return_value=mock_indicators),
+        patch("FeedCyberint.auto_detect_indicator_type", return_value=None),
+    ):
+        result = FeedCyberint.fetch_indicators(
+            client=mock_client, tlp_color="", feed_names=["All"], indicator_types=["All"], confidence_from=0, severity_from=0
+        )
+
+        assert len(result) == 0
+
+
+def test_get_url_command_with_activities_and_entities(mock_client):
+    """Test get_url_command with detected activities and related entities."""
+    mock_response = {
+        "data": {
+            "entity": {"type": "url", "value": "http://malicious.com"},
+            "risk": {
+                "malicious_score": 95,
+                "occurrences_count": 10,
+                "detected_activities": [
+                    {
+                        "type": "phishing",
+                        "observation_date": "2025-01-01",
+                        "description": "Phishing activity",
+                        "confidence": 90,
+                        "occurrences_count": 5,
+                    }
+                ],
+                "related_entities": [{"entity_id": "123", "entity_type": "domain", "entity_name": "malicious.com"}],
+            },
+            "enrichment": {
+                "ips": ["1.2.3.4"],
+                "hostname": "malicious.com",
+                "domain": "malicious.com",
+                "related_entities": [{"entity_id": "456", "entity_type": "ip", "entity_name": "1.2.3.4"}],
+            },
+            "benign": False,
+        }
+    }
+
+    mock_client.retrieve_url_from_api = MagicMock(return_value=mock_response)
+
+    result = FeedCyberint.get_url_command(mock_client, {"value": "http://malicious.com"})
+
+    assert result.outputs["entity"]["value"] == "http://malicious.com"
+    assert result.outputs["risk"]["malicious_score"] == 95
+
+
+def test_get_ipv4_command_with_geo_and_asn(mock_client):
+    """Test get_ipv4_command with geo and ASN data."""
+    mock_response = {
+        "data": {
+            "entity": {"type": "ipv4", "value": "1.2.3.4"},
+            "risk": {"malicious_score": 85, "occurrences_count": 15, "detected_activities": [], "related_entities": []},
+            "enrichment": {
+                "geo": {"country": "US", "city": "New York"},
+                "asn": {"number": "12345", "organization": "Test ISP"},
+                "suspicious_urls": ["http://dummy.com"],
+                "suspicious_domains": ["dummy.com"],
+            },
+            "benign": False,
+        }
+    }
+
+    mock_client.retrieve_ipv4_from_api = MagicMock(return_value=mock_response)
+
+    result = FeedCyberint.get_ipv4_command(mock_client, {"value": "1.2.3.4"})
+
+    assert result.outputs["entity"]["value"] == "1.2.3.4"
+    assert result.outputs["enrichment"]["geo"]["country"] == "US"
+    assert result.outputs["enrichment"]["asn"]["number"] == "12345"
+
+
+def test_get_domain_command_with_whois(mock_client):
+    """Test get_domain_command with WHOIS data."""
+    mock_response = {
+        "data": {
+            "entity": {"type": "domain", "value": "test.com"},
+            "risk": {"malicious_score": 70, "occurrences_count": 8, "detected_activities": [], "related_entities": []},
+            "enrichment": {
+                "ips": ["1.2.3.4"],
+                "whois": {
+                    "registrant_name": "John Doe",
+                    "registrant_email": "john@example.com",
+                    "registrant_organization": "Test Org",
+                    "registrant_country": "US",
+                    "registrant_telephone": "+1234567890",
+                    "technical_contact_email": "tech@example.com",
+                    "technical_contact_name": "Tech Person",
+                    "technical_contact_organization": "Tech Org",
+                    "registrar_name": "Test Registrar",
+                    "admin_contact_name": "Admin Person",
+                    "admin_contact_organization": "Admin Org",
+                    "admin_contact_email": "admin@example.com",
+                    "created_date": "2020-01-01",
+                    "updated_date": "2024-01-01",
+                    "expiration_date": "2026-01-01",
+                },
+            },
+            "benign": False,
+        }
+    }
+
+    mock_client.retrieve_domain_from_api = MagicMock(return_value=mock_response)
+
+    result = FeedCyberint.get_domain_command(mock_client, {"value": "test.com"})
+
+    assert result.outputs["entity"]["value"] == "test.com"
+    assert result.outputs["enrichment"]["whois"]["registrant_name"] == "John Doe"
+
+
+def test_get_file_sha256_command_with_activities(mock_client):
+    """Test get_file_sha256_command with detected activities."""
+    mock_response = {
+        "data": {
+            "entity": {"type": "file", "value": "abc123"},
+            "risk": {
+                "malicious_score": 95,
+                "detected_activities": [
+                    {
+                        "type": "malware",
+                        "observation_date": "2025-01-01",
+                        "description": "Malware detected",
+                        "confidence": 95,
+                        "occurrences_count": 3,
+                    }
+                ],
+                "related_entities": [{"entity_id": "789", "entity_type": "domain", "entity_name": "malware.com"}],
+            },
+            "enrichment": {
+                "filenames": ["malware.exe", "virus.dll"],
+                "first_seen": "2024-12-01",
+                "download_urls": ["http://dummy.com/malware.exe"],
+            },
+            "benign": False,
+        }
+    }
+
+    mock_client.retrieve_file_sha256_from_api = MagicMock(return_value=mock_response)
+
+    result = FeedCyberint.get_file_sha256_command(mock_client, {"value": "abc123"})
+
+    assert result.outputs["entity"]["value"] == "abc123"
+    assert len(result.outputs["enrichment"]["filenames"]) == 2
+
+
+def test_fetch_indicators_command_feed_disabled(mock_client):
+    """Test fetch_indicators_command when feed is disabled."""
+    params = {
+        "feed": False,
+        "tlp_color": "RED",
+        "feedTags": "tag1",
+        "severity_from": "0",
+        "confidence_from": "0",
+        "feed_name": "All",
+        "indicator_type": "All",
+        "feedFetchInterval": "30",
+    }
+
+    result = FeedCyberint.fetch_indicators_command(mock_client, params)
+
+    assert result == []
+
+
+def test_fetch_indicators_command_with_yesterday(mock_client):
+    """Test fetch_indicators_command fetches from yesterday when needed."""
+    params = {
+        "feed": True,
+        "tlp_color": "RED",
+        "feedTags": "tag1",
+        "severity_from": "0",
+        "confidence_from": "0",
+        "feed_name": "All",
+        "indicator_type": "All",
+        "feedFetchInterval": "1440",
+    }
+
+    mock_indicators = [{"indicator": "test.com", "type": "Domain"}]
+
+    with (
+        patch("FeedCyberint.is_x_minutes_ago_yesterday", return_value=True),
+        patch("FeedCyberint.get_yesterday_time", return_value="2024-12-31"),
+        patch("FeedCyberint.fetch_indicators", return_value=mock_indicators),
+    ):
+        result = FeedCyberint.fetch_indicators_command(mock_client, params)
+
+        assert len(result) == 2  # Yesterday + today
+
+
+def test_process_feed_response_empty_feeds(mock_client, capfd):
+    """Test process_feed_response handles empty response."""
+    with capfd.disabled(), patch.object(mock_client, "retrieve_indicators_from_api", return_value=""):
+        result = mock_client.process_feed_response("2025-01-01", 100, 0)
+
+        assert result == []
+
+
+def test_get_today_time_format():
+    """Test get_today_time returns correctly formatted date."""
+    result = FeedCyberint.get_today_time()
+
+    # Should match DATE_FORMAT which is "%Y-%m-%d"
+    assert re.match(r"\d{4}-\d{2}-\d{2}", result)
+
+    # Should be today's date
+    today = datetime.now().strftime("%Y-%m-%d")
+    assert result == today
+
+
+def test_is_execution_time_exceeded_exact_limit():
+    """Test is_execution_time_exceeded at exact timeout limit."""
+    start_time = datetime.now() - timedelta(seconds=FeedCyberint.EXECUTION_TIMEOUT_SECONDS)
+    result = FeedCyberint.is_execution_time_exceeded(start_time)
+
+    # Should return False at exactly the limit (not exceeded yet)
+    assert result is False
+
+
+def test_main_not_implemented_command():
+    """Test main() raises NotImplementedError for unknown commands."""
+    with patch("FeedCyberint.demisto") as mock_demisto:
+        mock_demisto.params.return_value = {
+            "url": "https://example.com",
+            "access_token": {"password": "test-token"},
+            "insecure": False,
+            "proxy": False,
+        }
+        mock_demisto.command.return_value = "unknown-command"
+
+        with patch("FeedCyberint.return_error") as mock_return_error:
+            FeedCyberint.main()
+
+            mock_return_error.assert_called_once()
+            assert "not implemented" in mock_return_error.call_args[0][0].lower()
+
+
+def test_main_exception_handling():
+    """Test main() handles exceptions properly."""
+    with patch("FeedCyberint.demisto") as mock_demisto:
+        mock_demisto.params.return_value = {
+            "url": "https://example.com",
+            "access_token": {"password": "test-token"},
+            "insecure": False,
+            "proxy": False,
+        }
+        mock_demisto.command.return_value = "test-module"
+
+        with patch("FeedCyberint.Client") as mock_client_class:
+            mock_client_class.side_effect = Exception("Connection failed")
+
+            with patch("FeedCyberint.return_error") as mock_return_error:
+                FeedCyberint.main()
+
+                mock_return_error.assert_called_once()
+                assert "connection failed" in mock_return_error.call_args[0][0].lower()

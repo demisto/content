@@ -12,6 +12,7 @@
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "selectValues": [
+        "",
         "Inaccurate Data",
         "Incorrect Alert Logic"
     ],

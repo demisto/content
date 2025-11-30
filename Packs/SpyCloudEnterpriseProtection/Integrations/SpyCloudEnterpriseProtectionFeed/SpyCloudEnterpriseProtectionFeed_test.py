@@ -7,6 +7,7 @@ from SpyCloudEnterpriseProtectionFeed import (
     create_spycloud_args,
     fetch_incident,
     remove_duplicate,
+    fetch_domain_or_watchlist_data,
 )
 
 
@@ -19,6 +20,7 @@ client = Client(base_url="http://test.com/", apikey="test_123", proxy=False, ver
 WATCHLIST_DATA = util_load_json("test_data/breach_data_by_indicator.json")
 INCIDENTS = util_load_json("test_data/incidents.json")
 MODIFIED_RESPONSE = util_load_json("test_data/modified_response.json")
+DOMAIN_DATA = util_load_json("test_data/domain_data.json")
 
 
 class MockResponse:
@@ -64,6 +66,30 @@ def test_query_spy_cloud_api_success(requests_mock):
     requests_mock.get(req_url, json=WATCHLIST_DATA)
     response = client.query_spy_cloud_api(endpoint, {})
     assert response == WATCHLIST_DATA
+
+
+@pytest.mark.parametrize(
+    "raw_response, modified",
+    [
+        (WATCHLIST_DATA, MODIFIED_RESPONSE),
+    ],
+)
+def test_fetch_domain_or_watchlist_data(mocker, raw_response, modified):
+    mocker.patch.object(client, "query_spy_cloud_api", return_value=raw_response)
+    response = fetch_domain_or_watchlist_data(client, {}, {})
+    assert response == modified.get("results")[:6]
+
+
+@pytest.mark.parametrize(
+    "raw_response, modified",
+    [
+        (DOMAIN_DATA, DOMAIN_DATA),
+    ],
+)
+def test_fetch_domain_or_watchlist_data_with_domain(mocker, raw_response, modified):
+    mocker.patch.object(client, "query_spy_cloud_api", return_value=raw_response)
+    response = fetch_domain_or_watchlist_data(client, {"domain_search": "dummy.com"}, {})
+    assert response == modified.get("results")
 
 
 @pytest.mark.parametrize(

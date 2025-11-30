@@ -34,6 +34,7 @@ For *msft_azure_aks_raw*, timestamp ingestion is according to one of the followi
 * requestreceivedtime
 * TimeGenerated
 * properties.log.requestReceivedTimestamp
+* time
 
 In UTC time zone YYYY-mm-ddTHH:MM:SS.ssssZ format. E.g; 2025-02-04T11:23:29.0324070Z
 

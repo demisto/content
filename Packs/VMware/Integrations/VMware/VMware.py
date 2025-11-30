@@ -6,11 +6,9 @@ from io import StringIO
 import dateparser  # type: ignore
 import demistomock as demisto  # noqa: F401
 import pyVim.task
-import urllib3
 from CommonServerPython import *  # noqa: F401
 from pyVim.connect import Disconnect, SmartConnect
 from pyVmomi import vim, vmodl  # type: ignore
-from vmware.vapi.vsphere.client import create_vsphere_client  # pylint: disable=E0401
 
 REDIRECT_STD_OUT = argToBoolean(demisto.params().get("redirect_std_out", "false"))
 real_demisto_info = demisto.info
@@ -51,6 +49,82 @@ def parse_params(params):
     return full_url, url, port, user_name, password
 
 
+class Client(BaseClient):
+    def __init__(self, full_url: str, user_name: str, password: str, verify: bool = False, proxy: bool = False):
+        self.user_name = user_name
+        self.password = password
+        super().__init__(base_url=f"https://{full_url}", verify=verify, proxy=proxy)
+        demisto.debug("Getting session ID using username and password.")
+        self.session_id = self._get_session_id()
+        self._headers = {"vmware-api-session-id": self.session_id, "Content-Type": "application/json"}
+        demisto.debug(f"Created new client instance using {full_url=}, {verify=}, {proxy=}.")
+
+    def _get_session_id(self) -> str:
+        """Authenticates and returns a session ID."""
+        # https://developer.broadcom.com/xapis/vsphere-automation-api/latest/api/session/post/
+        auth = (self.user_name, self.password)
+        session_id_response = self._http_request(method="POST", url_suffix="/api/session", auth=auth, resp_type="text")
+        demisto.debug(f"Got {session_id_response=}.")
+        session_id = session_id_response.replace('"', "")
+        if not session_id:
+            raise DemistoException("Failed to obtain session ID. Check credentials and VCENTER_HOST.")
+        return session_id
+
+    def logout(self):
+        """Closes the session and returns HTTP 204 with empty response object."""
+        # https://developer.broadcom.com/xapis/vsphere-automation-api/latest/api/session/delete/
+        self._http_request(method="DELETE", url_suffix="/api/session", resp_type="response")
+
+    def get_category_id(self, category_name: str) -> str:
+        """Get the ID of the category by its name."""
+        # https://developer.broadcom.com/xapis/vsphere-automation-api/latest/api/cis/tagging/category/get/
+        category_list_response = self._http_request(method="GET", url_suffix="/api/cis/tagging/category")
+        # The response is a list of category IDs, not objects with names. We must iterate and get details for each.
+        demisto.debug(f"Got {category_list_response=}.")
+        for category_id in category_list_response:
+            # https://developer.broadcom.com/xapis/vsphere-automation-api/latest/api/cis/tagging/category/categoryId/get/
+            category_details_response = self._http_request(method="GET", url_suffix=f"/api/cis/tagging/category/{category_id}")
+            demisto.debug(f"For {category_id=}, got {category_details_response=}.")
+            if category_details_response.get("name") == category_name:
+                return category_id
+        raise DemistoException(f"Category '{category_name}' not found.")
+
+    def get_tag_id(self, tag_name: str, category_id: str) -> str:
+        """Get the ID of the tag by its name, filtered by category ID."""
+        # https://developer.broadcom.com/xapis/vsphere-automation-api/latest/api/cis/tagging/tag__action=list-tags-for-category/post/
+        tag_list_response = self._http_request(
+            method="POST",
+            url_suffix="/api/cis/tagging/tag?action=list-tags-for-category",
+            json_data={"category_id": category_id},
+        )
+        # The response is a list of tag IDs, not objects with names. We must iterate and get details for each.
+        demisto.debug(f"Got {tag_list_response=}.")
+        for tag_id in tag_list_response:
+            # https://developer.broadcom.com/xapis/vsphere-automation-api/latest/api/cis/tagging/tag/tagId/get/
+            tag_details_response = self._http_request(method="GET", url_suffix=f"/api/cis/tagging/tag/{tag_id}")
+            demisto.debug(f"For {tag_id=}, got {tag_details_response=}.")
+            if tag_details_response.get("name") == tag_name:
+                return tag_id
+        raise DemistoException(f"Tag '{tag_name}' not found in the specified category.")
+
+    def list_associated_objects(self, tag_id: str) -> list:
+        """Get all objects associated with the Tag ID."""
+        # https://developer.broadcom.com/xapis/vsphere-automation-api/9.0/api/cis/tagging/tag-association/tagId__action=list-attached-objects/post/
+        tag_associated_objects_response = self._http_request(
+            method="POST",
+            url_suffix=f"/api/cis/tagging/tag-association/{tag_id}?action=list-attached-objects",
+        )
+        demisto.debug(f"Got {tag_associated_objects_response=}.")
+        return tag_associated_objects_response
+
+    def list_vms(self, vm_ids: list) -> list:
+        """List VMs filtered by VM IDs."""
+        # https://developer.broadcom.com/xapis/vsphere-automation-api/v7.0u3/vcenter/api/vcenter/vm/get/index
+        filtered_vms_response = self._http_request(method="GET", url_suffix="/api/vcenter/vm", params={"vms": vm_ids})
+        demisto.debug(f"Got {filtered_vms_response=}.")
+        return filtered_vms_response
+
+
 def get_limit(args):
     """
     Args:
@@ -77,9 +151,7 @@ def get_limit(args):
     return limit, False, page_size
 
 
-def login(params):  # pragma: no cover
-    full_url, url, port, user_name, password = parse_params(params)
-
+def login(url: str, port: int, user_name: str, password: str):  # pragma: no cover
     # Preparations for SDKs connections
     s = ssl.SSLContext(ssl.PROTOCOL_TLS)
     s.verify_mode = ssl.CERT_NONE
@@ -102,26 +174,6 @@ def get_vm(si, uuid):
     if vm is None:
         raise Exception("Unable to locate Virtual Machine.")
     return vm
-
-
-def get_tag(vsphere_client, args):
-    relevant_category = None
-    relevant_tag = None
-    categories = vsphere_client.tagging.Category.list()
-    for category in categories:
-        cat_details = vsphere_client.tagging.Category.get(category)
-        if cat_details.name == args.get("category"):
-            relevant_category = cat_details.id
-            break
-    if not relevant_category:
-        raise Exception("The category {} was not found".format(args.get("category")))
-    tags = vsphere_client.tagging.Tag.list_tags_for_category(relevant_category)
-    for tag in tags:
-        tag_details = vsphere_client.tagging.Tag.get(tag)
-        if tag_details.name == args.get("tag"):
-            relevant_tag = tag_details.id
-            break
-    return relevant_tag
 
 
 def search_for_obj(content, vim_type, name, folder=None, recurse=True):
@@ -566,30 +618,39 @@ def change_nic_state(si, args):  # pragma: no cover
     return None
 
 
-def list_vms_by_tag(vsphere_client, args):
-    relevant_tag = get_tag(vsphere_client, args)
-    # Added this condition to avoid 'vsphere_client.tagging.TagAssociation.list_attached_objects' errors
-    if not relevant_tag:
-        raise Exception("The tag {} was not found".format(args.get("tag")))
-    vms = vsphere_client.tagging.TagAssociation.list_attached_objects(relevant_tag)
-    vms = [vm for vm in vms if vm.type == "VirtualMachine"]
-    vms_details = []
-    # This filter isn't needed if vms are empty, when you send an empty vms list - it returns all vms
-    if vms:
-        vms_details = vsphere_client.vcenter.VM.list(vsphere_client.vcenter.VM.FilterSpec(vms={str(vm.id) for vm in vms}))
-    data = []
-    for vm in vms_details:
-        data.append({"TagName": args.get("tag"), "Category": args.get("category"), "VM": vm.name})
-    data = createContext(data, removeNull=True)
-    ec = {"VMWareTag(val.TagName && val.Category && val.TagName == obj.TagName && va.Category == obj.Category)": data}
-    return {
-        "ContentsFormat": formats["json"],
-        "Type": entryTypes["note"],
-        "Contents": data,
-        "ReadableContentsFormat": formats["markdown"],
-        "HumanReadable": tableToMarkdown("Virtual Machines with Tag {}".format(args.get("tag")), data, removeNull=True),
-        "EntryContext": ec,
-    }
+def list_vms_by_tag(client: Client, args: dict) -> CommandResults:
+    """Lists VMs by tag using the REST API Client."""
+    category_name = args["category"]
+    tag_name = args["tag"]
+
+    # STEP 1 - Get category ID by category name
+    category_id = client.get_category_id(category_name)
+    demisto.debug(f"Got {category_id=} using {category_name=}.")
+
+    # STEP 2 - Get tag ID by tag name and category ID
+    tag_id = client.get_tag_id(tag_name, category_id)
+    demisto.debug(f"Got {tag_id=} using {tag_name=} and {category_id=}.")
+
+    # STEP 3 - Get objects associated with tag ID
+    associated_objects = client.list_associated_objects(tag_id)
+    demisto.debug(f"Got {len(associated_objects)} objects associated with {tag_id=}.")
+
+    # STEP 4 - Filter VMs for list of associated objects
+    vm_ids = [vm.get("id") for vm in associated_objects if vm.get("type") == "VirtualMachine"]
+    demisto.debug(f"Got {len(vm_ids)} VM IDs associated with {tag_id=}.")
+
+    # STEP 5 - Get VM names by VM IDs
+    associated_vms = client.list_vms(vm_ids) if vm_ids else []
+    demisto.debug(f"Got {len(associated_vms)} VMs associated with {tag_id=}.")
+
+    context_output = [{"VM": vm.get("name"), "TagName": tag_name, "Category": category_name} for vm in associated_vms]
+
+    return CommandResults(
+        readable_output=tableToMarkdown(f"VMs with category: {category_name!r} and tag: {tag_name!r}", associated_vms),
+        outputs=context_output,
+        outputs_prefix="VMwareTag",
+        outputs_key_field=["VM", "TagName", "Category"],
+    )
 
 
 def create_vm(si, args):
@@ -833,63 +894,62 @@ def test_module(si):
     return "ok"
 
 
-def vsphare_client_login(params):
-    full_url, url, port, user_name, password = parse_params(params)
-
-    session = requests.session()
-    session.verify = not params.get("insecure", False)
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-    # Connect to Vsphere automation sdk using username and password
-    return create_vsphere_client(server=full_url, username=user_name, password=password, session=session)
-
-
 def main():  # pragma: no cover
+    params = demisto.params()
+    command = demisto.command()
+    args = demisto.args()
+
+    full_url, url, port, user_name, password = parse_params(params)
+    verify = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
+
     if REDIRECT_STD_OUT:
         sys.stdout = StringIO()
     res = []
     si = None
-    result: Any
+    client = None
+    result: Any = None
     try:
-        si = login(demisto.params())
-        if demisto.command() == "test-module":
+        si = login(url, port, user_name, password)
+        if command == "test-module":
             result = test_module(si)
-        if demisto.command() == "vmware-get-vms":
-            result = get_vms(si, demisto.args())
-        if demisto.command() == "vmware-poweron":
-            result = power_on(si, demisto.args()["vm-uuid"])
-        if demisto.command() == "vmware-poweroff":
-            result = power_off(si, demisto.args()["vm-uuid"])
-        if demisto.command() == "vmware-hard-reboot":
-            result = hard_reboot(si, demisto.args()["vm-uuid"])
-        if demisto.command() == "vmware-suspend":
-            result = suspend(si, demisto.args()["vm-uuid"])
-        if demisto.command() == "vmware-soft-reboot":
-            result = soft_reboot(si, demisto.args()["vm-uuid"])
-        if demisto.command() == "vmware-create-snapshot":
-            result = create_snapshot(si, demisto.args())
-        if demisto.command() == "vmware-revert-snapshot":
-            result = revert_snapshot(si, demisto.args()["snapshot-name"], demisto.args()["vm-uuid"])
-        if demisto.command() == "vmware-get-events":
-            result = get_events(si, demisto.args())
-        if demisto.command() == "vmware-change-nic-state":
-            result = change_nic_state(si, demisto.args())
-        if demisto.command() == "vmware-list-vms-by-tag":
-            vsphere_client = vsphare_client_login(demisto.params())
-            result = list_vms_by_tag(vsphere_client, demisto.args())
-        if demisto.command() == "vmware-create-vm":
-            result = create_vm(si, demisto.args())
-        if demisto.command() == "vmware-clone-vm":
-            result = clone_vm(si, demisto.args())
-        if demisto.command() == "vmware-relocate-vm":
-            result = relocate_vm(si, demisto.args())
-        if demisto.command() == "vmware-delete-vm":
-            result = delete_vm(si, demisto.args())
-        if demisto.command() == "vmware-register-vm":
-            result = register_vm(si, demisto.args())
-        if demisto.command() == "vmware-unregister-vm":
-            result = unregister_vm(si, demisto.args())
-        res.append(result)
+        if command == "vmware-get-vms":
+            result = get_vms(si, args)
+        if command == "vmware-poweron":
+            result = power_on(si, args["vm-uuid"])
+        if command == "vmware-poweroff":
+            result = power_off(si, args["vm-uuid"])
+        if command == "vmware-hard-reboot":
+            result = hard_reboot(si, args["vm-uuid"])
+        if command == "vmware-suspend":
+            result = suspend(si, args["vm-uuid"])
+        if command == "vmware-soft-reboot":
+            result = soft_reboot(si, args["vm-uuid"])
+        if command == "vmware-create-snapshot":
+            result = create_snapshot(si, args)
+        if command == "vmware-revert-snapshot":
+            result = revert_snapshot(si, args["snapshot-name"], args["vm-uuid"])
+        if command == "vmware-get-events":
+            result = get_events(si, args)
+        if command == "vmware-change-nic-state":
+            result = change_nic_state(si, args)
+        if command == "vmware-list-vms-by-tag":
+            client = Client(full_url, user_name, password, verify=verify, proxy=proxy)
+            return_results(list_vms_by_tag(client, args))
+        if command == "vmware-create-vm":
+            result = create_vm(si, args)
+        if command == "vmware-clone-vm":
+            result = clone_vm(si, args)
+        if command == "vmware-relocate-vm":
+            result = relocate_vm(si, args)
+        if command == "vmware-delete-vm":
+            result = delete_vm(si, args)
+        if command == "vmware-register-vm":
+            result = register_vm(si, args)
+        if command == "vmware-unregister-vm":
+            result = unregister_vm(si, args)
+        if result is not None:
+            res.append(result)
     except Exception as ex:
         if hasattr(ex, "msg") and ex.msg:  # type: ignore
             message = ex.msg  # type: ignore
@@ -899,6 +959,8 @@ def main():  # pragma: no cover
 
     try:
         logout(si)
+        if client:
+            client.logout()
     except Exception as ex:
         res.append(
             {  # type: ignore

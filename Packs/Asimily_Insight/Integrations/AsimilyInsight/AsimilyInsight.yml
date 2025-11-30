@@ -2,7 +2,7 @@ category: Network Security
 commonfields:
   id: Asimily Insight
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -488,7 +488,7 @@ script:
     - contextPath: AsimilyInsight.CVE.asimilydevicefamilies
       description: Asimily Device Families.
       type: unknown
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4508456
   isfetch: true
   ismappable: false
   longRunning: false
@@ -497,7 +497,5 @@ script:
   subtype: python3
   type: python
 fromversion: '6.10.0'
-marketplaces:
-- xsoar
 tests:
 - No tests (auto formatted)

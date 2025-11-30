@@ -5,7 +5,7 @@ fromversion: 5.0.0
 name: CTIX v3
 display: CTIX v3
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 description: This is Cyware Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.
@@ -1868,7 +1868,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.11.4284848
   subtype: python3
 tests:
 - No tests (auto formatted)

@@ -2,7 +2,7 @@ category: Endpoint
 commonfields:
   id: CrowdStrike Falcon Streaming v2
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -44,12 +44,10 @@ configuration:
   type: 8
   section: Connect
   required: false
-- additionalinfo: The DetectionSummaryEvent event type will be deprecated on September 30th, 2025. Use the EppDetectionSummaryEvent event type instead.
-  defaultvalue: DetectionSummaryEvent
+- defaultvalue: EppDetectionSummaryEvent
   display: Event type to fetch
   name: event_type
   options:
-  - DetectionSummaryEvent
   - AuthActivityAuditEvent
   - CustomerIOCEvent
   - UserActivityAuditEvent

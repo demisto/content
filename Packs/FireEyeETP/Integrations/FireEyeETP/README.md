@@ -1,43 +1,53 @@
-# FireEye Email Threat Prevention (ETP)
+# Trellix Email Security - Cloud
 
 ## Overview
 
-Use the FireEye Email Threat Prevention (ETP) integration to import messages as incidents, search for messages with specific attributes, and retrieve alert data.
+Use the Trellix Email Security - Cloud integration to import messages as incidents, search for messages with specific attributes, and retrieve alert data.
 
 ## Use Cases
 
 * Search for messages using specific message attributes as indicators.
-* Import messages as Cortex XSOAR incidents, using the message status as indicator.
+* Import messages as Cortex incidents/issues, using the message status as indicator.
 
-## Prerequisites
+## Authentication Prerequisites
 
-Make sure you obtain the following information.
+To ensure a successful connection, you must select the correct authentication method based on the **Server URL** (Instance URL) you are configuring.
 
-* Valid FireEye ETP account
-* Configure an API key on the ETP Web portal. Select the product as both *Email Threat Prevention* and *Identity Access Management*. Select all entitlements.
-* Upon Authentication errors, contact FireEye Technical Support to let them know the IP address of your Cortex XSOAR Server and the URL you are accessing , e.g. https://etp.us.fireeye.com. FireEye will add these details to their Firewall rules so that the bidirectional traffic can be allowed between Cortex XSOAR and FireEye ETP.
+### Dual Authentication Methods
 
-## Configure FireEye ETP in Cortex
+We support two different authentication methods depending on the endpoint domain:
 
-* *Name*: a textual name for the integration instance.
-* *Server URL*: ETP server URL. Use the endpoint in the region that hosts your ETP service:
-  * US instance: https://etp.us.fireeye.com
-  * EMEA instance: https://etp.eu.fireeye.com
-  * US GOV instance: https://etp.us.fireeyegov.com
-* *API key*: The API key configured in the ETP Web Portal.
-* *Messages status*: All status specified messages will be imported as incidents. Valid values are:
-  * accepted
-  * deleted
-  * delivered
-  * delivered (retroactive)
-  * dropped
-  * dropped oob
-  * dropped (oob retroactive)
-  * permanent failure
-  * processing
-  * quarantined
-  * rejected
-  * temporary failure
+| Domain Used in Server URL | Authentication Method | Required Parameters |
+| :--- | :--- | :--- |
+| **Ends in `trellix.com`** | **OAuth 2.0** | **Client ID**, **Client Secret**, and **OAuth Scopes** |
+| **Ends in `fireeye.com`** | **API Key** | **API Key** (only) |
+
+### Authentication Setup (Choose One)
+
+**You must configure only one of the two authentication approaches below** based on your Server URL domain.
+
+* **1. API Key Method (For `fireeye.com` URLs):**
+  * **Configure an API key** on the ETP Web portal. Select the product as both *Email Threat Prevention* and *Identity Access Management*. Select all entitlements.
+
+* **2. OAuth 2.0 Method (For `trellix.com` URLs):**
+  * When creating the Client ID and Client Secret, ensure the corresponding user/role has **explicit permission to access the API**.
+  * **Note:** If API access permissions are not properly set for the user/role, the authentication attempt will fail with a **`400 Client Error: Bad Request`** even if the Client ID and Secret are correct.
+
+* Contact Trellix Email Security - Cloud Technical Support to let them know the IP address of your Cortex Server and the URL you are accessing, e.g. `https://etp.us.fireeye.com`. Trellix will add these details to their Firewall rules so that the bidirectional traffic can be allowed between Cortex and Trellix Email Security - Cloud.
+
+## Configure Trellix Email Security - Cloud in Cortex
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | Valid URLs (US, EMEA, USGOV): https://us.etp.trellix.com / https://etp.us.fireeye.com, https://eu.etp.trellix.com / https://etp.eu.fireeye.com, https://etp.us.fireeyegov.com | True |
+| Client ID | For the Trellix server URL (OAuth). |  |
+| Client Secret | For the Trellix server URL (OAuth).|  |
+| OAuth Scopes | For the Trellix server URL (OAuth).<br> Space-separated list of OAuth scopes. <br>**Note:** Only include scopes that your application's Client ID has already been authorized to use. The full list is: `etp.conf.ro etp.trce.rw etp.admn.ro etp.domn.ro etp.accs.rw etp.quar.rw etp.domn.rw etp.rprt.rw etp.accs.ro etp.quar.ro etp.alrt.rw etp.rprt.ro etp.conf.rw etp.trce.ro etp.alrt.ro etp.admn.rw` | False || API Key | Use the Api key for the FireEye base URL. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Alerts statuses to import | All alerts with a status specified here will be imported as incidents. Valid values are:<br>• accepted<br>• deleted<br>• delivered<br>• delivered (retroactive)<br>• dropped<br>• dropped oob<br>• dropped (oob retroactive)<br>• permanent failure<br>• processing<br>• quarantined<br>• rejected<br>• temporary failure | False |
 
 ## Fetched Incidents Data
 
@@ -358,7 +368,7 @@ Returns detailed information for any specified alert. Alerts that are more than 
 |FireEyeETP.Alerts.email.source_ip|Email source IP address|
 |FireEyeETP.Alerts.email.smtp.rcpt_to|Recipient SMTP|
 |FireEyeETP.Alerts.email.smtp.mail_from|Sender SMTP|
-|FireEyeETP.Alerts.email.etp_message_id|FireEye ETP unique message ID|
+|FireEyeETP.Alerts.email.etp_message_id|Trellix Email Security - Cloud unique message ID|
 |FireEyeETP.Alerts.email.headers.cc|Email cc recipients|
 |FireEyeETP.Alerts.email.headers.to|Email recipients|
 |FireEyeETP.Alerts.email.headers.from|Email sender|

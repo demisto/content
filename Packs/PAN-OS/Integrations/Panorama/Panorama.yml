@@ -3739,6 +3739,8 @@ script:
       - complete
       - show
       - get
+    - description: The object's new name, used when action=rename. If no value is provided, the name defaults to 'newname'.
+      name: newname
     - description: The category parameter. For example, when exporting a configuration file, use "category=configuration".
       name: category
     - description: Specifies the XML structure that defines the command. Used for operation commands (op type command). Can be retrieved from the PAN-OS web UI debugger or enabling debugging via the CLI using `debug cli on`.
@@ -6868,7 +6870,7 @@ script:
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
-    description: Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content.
+    description: Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content. When running from a Panorama instance, the 'target' argument must be specified.
     name: pan-os-check-dynamic-updates-status
     outputs:
     - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.app-version
@@ -7247,7 +7249,7 @@ script:
       description: Version of the dynamic update package.
       type: String
   - arguments:
-    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
+    - description: Serial number of the firewall on which to run the command. Mandatory for Panorama instances.
       name: target
     - description: Job ID for a running download process. Used for status polling.
       name: job_id
@@ -10658,7 +10660,7 @@ script:
     - contextPath: Panorama.Certificate.devices_using_certificate
       type: Unknown
       description: List of devices using this certificate if it was pushed from Panorama.
-  dockerimage: demisto/pan-os-python:1.0.0.3545654
+  dockerimage: demisto/pan-os-python:1.0.0.4889421
   isfetch: true
   runonce: false
   script: ''
