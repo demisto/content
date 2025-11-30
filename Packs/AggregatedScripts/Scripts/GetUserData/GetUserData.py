@@ -300,7 +300,6 @@ def ad_get_user(command: Command, additional_fields=False) -> tuple[list[Command
     readable_outputs_list = []
     command.args["attributes"] = demisto.args().get("attributes")
     sid = command.args.get("user_sid")
-    demisto.debug(f"The user sid {sid}")
     if sid:
         demisto.debug(f"Using a user sid {sid}, inserting the custom-field-type args")
         command.args["custom-field-type"] = "objectSid"
