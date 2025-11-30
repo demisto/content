@@ -44,6 +44,7 @@ WEBAPP_COMMANDS = [
     "core-get-asset-coverage-histogram",
     "core-create-appsec-policy",
     "core-get-appsec-issues",
+    "core-update-case",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -52,6 +53,42 @@ VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
+
+CASE_STATUS_RESOLVED_REASON = {
+    "known_issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
+    "duplicate": "STATUS_050_RESOLVED_DUPLICATE",
+    "false_positive": "STATUS_060_RESOLVED_FALSE_POSITIVE",
+    "true_positive": "STATUS_090_RESOLVED_TRUE_POSITIVE",
+    "security_testing": "STATUS_100_RESOLVED_SECURITY_TESTING",
+    "other": "STATUS_070_RESOLVED_OTHER",
+}
+
+CASE_FIELDS = {
+    "case_id_list": "CASE_ID",
+    "case_domain": "INCIDENT_DOMAIN",
+    "case_name": "NAME",
+    "case_description": "DESCRIPTION",
+    "status": "STATUS_PROGRESS",
+    "severity": "SEVERITY",
+    "creation_time": "CREATION_TIME",
+    "asset_ids": "UAI_ASSET_IDS",
+    "asset_groups": "UAI_ASSET_GROUP_IDS",
+    "assignee": "ASSIGNED_USER_PRETTY",
+    "assignee_email": "ASSIGNED_USER",
+    "name": "CONTAINS",
+    "description": "DESCRIPTION",
+    "last_updated": "LAST_UPDATE_TIME",
+    "hosts": "HOSTS",
+    "starred": "CASE_STARRED",
+}
+
+CASE_STATUS = {
+    "new": "STATUS_010_NEW",
+    "under_investigation": "STATUS_020_UNDER_INVESTIGATION",
+    "resolved": "STATUS_025_RESOLVED",
+}
+
+CASE_SEVERITY = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
 
 
 class AppsecIssues:
@@ -417,6 +454,26 @@ def arg_to_float(arg: Optional[str]):
     raise ValueError(f'"{arg}" is not a valid number')
 
 
+def determine_assignee_filter_field(assignee: str) -> str:
+    """
+    Determine whether the assignee should be filtered by email or pretty name.
+
+    Args:
+        assignee (str): The assignee value to filter on.
+
+    Returns:
+        str: The appropriate field to filter on based on the input.
+    """
+    if not assignee:
+        return CASE_FIELDS["assignee"]
+    elif "@" in assignee:
+        # If the assignee contains '@', use the email field
+        return CASE_FIELDS["assignee_email"]
+    else:
+        # Otherwise, use the pretty name field
+        return CASE_FIELDS["assignee"]
+
+
 def preprocess_get_cases_args(args: dict):
     demisto.debug(f"original args: {args}")
     args["limit"] = min(int(args.get("limit", MAX_GET_INCIDENTS_LIMIT)), MAX_GET_INCIDENTS_LIMIT)
@@ -588,6 +645,55 @@ class Client(CoreClient):
             headers={**self._headers, "content-type": "application/json"},
             url_suffix="/public_api/appsec/v1/policies",
         )
+
+    def update_case(self, request_data, case_ids):
+        """
+        Update multiple cases with the provided data.
+
+        Args:
+            request_data (dict): The data to update in the cases.
+            case_ids (list): List of case IDs to update.
+
+        Returns:
+            list: List of responses from the API for each case update.
+        """
+        results = []
+
+        for case_id in case_ids:
+            request_data["request_data"]["case_id"] = case_id
+            results.append(
+                self._http_request(
+                    method="POST",
+                    url_suffix="/case/set_data",
+                    headers={
+                        **self._headers,
+                        "Content-Type": "application/json",
+                    },
+                    json_data=request_data,
+                )
+            )
+
+        return results
+
+    def unassigned_case(self, case_ids):
+        """
+        Unassign multiple cases by updating them with default unassignment data.
+
+        Args:
+            case_ids (list): List of case IDs to unassign.
+        """
+        request_data = {"request_data": {"newIncidentInterface": True}}
+        for case_id in case_ids:
+            request_data["request_data"]["case_id"] = case_id
+            self._http_request(
+                method="POST",
+                url_suffix="/case/set_data",
+                headers={
+                    **self._headers,
+                    "Content-Type": "application/json",
+                },
+                json_data=request_data,
+            )
 
 
 def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommendation: dict, issue_id: str) -> tuple[list, dict]:
@@ -1510,6 +1616,27 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
     return builder.to_dict()
 
 
+def parse_custom_fields(custom_fields: list[str]) -> dict:
+    """
+    Parse custom fields from the input format 'fieldname:value'
+
+    Args:
+        custom_fields (list[str]): List of custom fields in 'fieldname:value' format
+
+    Returns:
+        dict: Dictionary of sanitized custom field names and values
+    """
+    parsed_fields = {}
+    for field in custom_fields:
+        parts = field.split(":", 1)
+        if len(parts) == 2:
+            field_name, value = parts
+            sanitized_name = f"{''.join(char for char in field_name if char.isalnum())}"
+            if sanitized_name and sanitized_name not in parsed_fields:
+                parsed_fields[sanitized_name] = value
+    return parsed_fields
+
+
 def create_policy_build_scope(args: dict) -> dict:
     """
     Build scope filters for create-policy.
@@ -1812,6 +1939,87 @@ def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def update_cases_command(client: Client, args: dict) -> CommandResults:
+    """
+    Updates a case with new information based on provided arguments.
+    """
+    case_ids = argToList(args.get("case_id"))
+    case_name = args.get("case_name", "")
+    description = args.get("description", "")
+    assignee = args.get("assignee", "")
+    status = args.get("status", "")
+    notes = args.get("notes", "")
+    starred = args.get("starred", "")
+    user_defined_severity = args.get("user_defined_severity", "")
+    resolve_reason = args.get("resolve_reason", "")
+    resolved_comment = args.get("resolved_comment", "")
+    resolve_all_alerts = args.get("resolve_all_alerts", "")
+    custom_fields = parse_custom_fields(argToList(args.get("custom_fields", "")))
+
+    if assignee == "unassigned":
+        client.unassigned_case(case_ids)
+        assignee = ""
+
+    if status == "resolved" and not resolve_reason:
+        raise ValueError("In order to set the case to resolved, you must provide a resolve reason")
+
+    if (resolve_reason or resolve_all_alerts or resolved_comment) and not status == "resolved":
+        raise ValueError(
+            "In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to 'resolved'"
+        )
+
+    # Build request_data with mapped and filtered values
+    request_data = {
+        "request_data": {
+            "newIncidentInterface": True,
+            **{
+                "caseName": case_name if case_name else None,
+            },
+            **{"description": description if description else None},
+            **{
+                "assignedUser": assignee
+                if assignee and determine_assignee_filter_field(assignee) == CASE_FIELDS["assignee_email"]
+                else None
+            },
+            **{
+                "assignedUserPrettyName": assignee
+                if assignee and determine_assignee_filter_field(assignee) == CASE_FIELDS["assignee"]
+                else None
+            },
+            **{"notes": notes if notes else None},
+            **{"starred": starred if starred else None},
+            **{"status": CASE_STATUS.get(status) if status else None},
+            **{"userSeverity": CASE_SEVERITY.get(user_defined_severity) if user_defined_severity else None},
+            **{"resolve_reason": CASE_STATUS_RESOLVED_REASON.get(resolve_reason) if resolve_reason else None},
+            **{"caseResolvedComment": resolved_comment if resolved_comment else None},
+            **{"resolve_all_alerts": resolve_all_alerts if resolve_all_alerts else None},
+            **{"CustomFields": custom_fields if custom_fields else None},
+        }
+    }
+
+    demisto.info(f"Updating cases {case_ids} with request data: {request_data}")
+    responses = client.update_case(request_data, case_ids)
+    replies = []
+    for resp in responses:
+        reply = resp.get("reply", {})
+        reply.pop("layoutId", None)
+        reply.pop("layoutRuleName", None)
+        reply.pop("sourcesList", None)
+        reply.pop("score", {}).pop("previous_score_source", None)
+        reply.pop("score", {}).pop("previous_score", None)
+        if "incidentDomain" in reply:
+            reply["caseDomain"] = reply.pop("incidentDomain")
+        replies.append(reply)
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+        outputs_key_field="case_id",
+        outputs=replies,
+        raw_response=responses,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -1914,6 +2122,8 @@ def main():  # pragma: no cover
 
         elif command == "core-get-appsec-issues":
             return_results(get_appsec_issues_command(client, args))
+        elif command == "core-update-case":
+            return_results(update_cases_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

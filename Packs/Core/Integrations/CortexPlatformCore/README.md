@@ -879,3 +879,60 @@ Retrieves application security issues based on specified filters.
 | Core.AppsecIssue.collaborator | String | The collaborator associated with the issue. |
 | Core.AppsecIssue.has_kev | Boolean | Whether the issue is part of the Known Exploited Vulnerabilities catalog \(KEV\). |
 | Core.AppsecIssue.backlog_status | String | The backlog status of the issue. |
+
+### core-update-case
+
+***
+Updates the properties of a case. This command does not provide an explicit indication of success.
+
+#### Base Command
+
+`core-update-case`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | A comma-separated list of case IDs to update. | Required |
+| case_name | The new name for the case. | Optional |
+| description | The new description for the case. | Optional |
+| assignee | The new assignee for the case. Use the special value "unassigned" to remove an existing assignee. | Optional |
+| status | The new status for the case. Possible values are: new, under_investigation, resolved. | Optional |
+| notes | Additional notes for the case. | Optional |
+| starred | Whether the case should be starred. Possible values are: true, false. | Optional |
+| user_defined_severity | The user-defined severity for the case. Possible values are: low, medium, high, critical. | Optional |
+| resolve_reason | The reason for resolving the case. Only relevant when status is set to resolved. Possible values are: known_issue, duplicate, false_positive, true_positive, security_testing, other. | Optional |
+| resolved_comment | Comment when resolving the case. Only relevant when status is set to resolved. | Optional |
+| resolve_all_alerts | Whether to resolve all alerts associated with the case. Only relevant when status is set to resolved. Possible values are: true, false. | Optional |
+| custom_fields | Custom fields for the case. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.Case.modifiedBy | String | User who last modified the case. |
+| Core.Case.notes | String | Notes associated with the case. |
+| Core.Case.userSeverity | String | User-defined severity for the case. |
+| Core.Case.name.isUser | Boolean | Whether the case name is user-defined. |
+| Core.Case.name.value | String | The name of the case. |
+| Core.Case.creationTime | Number | The creation time of the case in milliseconds. |
+| Core.Case.lastUpdateTime | Number | The last update time of the case in milliseconds. |
+| Core.Case.topCounters.HOSTS | Number | Number of hosts in the case. |
+| Core.Case.topCounters.MAL_ARTIFACTS | Number | Number of malicious artifacts in the case. |
+| Core.Case.topCounters.USERS | Number | Number of users in the case. |
+| Core.Case.assigned.mail | String | Email address of the assigned user. |
+| Core.Case.assigned.pretty | String | Display name of the assigned user. |
+| Core.Case.internalStatus | String | Internal status of the case. |
+| Core.Case.status.resolveComment | String | Comment when resolving the case. |
+| Core.Case.status.resolve_reason | String | Reason for resolving the case. |
+| Core.Case.status.value | String | Status value of the case. |
+| Core.Case.severityCounters.SEV_020_LOW | Number | Number of low severity alerts in the case. |
+| Core.Case.severityCounters.SEV_030_MEDIUM | Number | Number of medium severity alerts in the case. |
+| Core.Case.severityCounters.SEV_040_HIGH | Number | Number of high severity alerts in the case. |
+| Core.Case.severityCounters.SEV_050_CRITICAL | Number | Number of critical severity alerts in the case. |
+| Core.Case.caseDomain | String | Domain of the case. |
+| Core.Case.groupingStatus.pretty | String | Pretty display of grouping status. |
+| Core.Case.groupingStatus.raw | String | Raw grouping status value. |
+| Core.Case.groupingStatus.reason | String | Reason for the grouping status. |
+| Core.Case.tags.tag_id | String | Tag ID associated with the case. |
+| Core.Case.tags.tag_name | String | Tag name associated with the case. |
