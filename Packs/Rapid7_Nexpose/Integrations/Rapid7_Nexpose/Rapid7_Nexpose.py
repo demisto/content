@@ -356,17 +356,151 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created report configuration.
         """
-        post_data = {
-            "scope": scope,
-            "template": template_id,
-            "name": report_name,
-            "format": report_format.lower(),
+
+# bring all assets:
+        query = """WITH asset_tags AS (
+    SELECT
+        dta.asset_id,
+        json_agg(
+            json_build_object(
+                'Name', dt.tag_name,
+                'Type', dt.tag_type
+            )
+        ) AS aggregated_tags_json
+    FROM
+        dim_tag_asset dta
+    JOIN
+        dim_tag dt USING (tag_id)
+    GROUP BY
+        dta.asset_id
+),
+max_certainty AS (
+    SELECT
+        daos.asset_id,
+        MAX(daos.certainty) AS max_os_certainty
+    FROM
+        dim_asset_operating_system daos
+    GROUP BY
+        daos.asset_id
+)
+
+SELECT
+    da.last_assessed_for_vulnerabilities AS "Last Scan Date",
+    fad.last_discovered AS "Last found date",
+    da.asset_id AS "id",
+    da.host_name AS "FQDNS",
+    CASE 
+        WHEN da.ip_address LIKE '%:%' THEN NULL
+        ELSE da.ip_address
+    END AS "ipv4",
+
+    CASE 
+        WHEN da.ip_address LIKE '%:%' THEN da.ip_address
+        ELSE NULL
+    END AS "ipv6",
+    da.mac_address AS "mac_address",
+    dos.architecture AS "os_architecture",
+    dos.description AS "os_description",
+    dos.family AS "os_family",
+    dos.name AS "os_name",
+    dos.system AS "os_system_name",
+    dos.asset_type AS "os_type",
+    dos.vendor AS "os_vendor",
+    dos.version AS "os_version",
+    mc.max_os_certainty AS "os_certainty",
+    atags.aggregated_tags_json AS "Tags"
+FROM
+    dim_asset da
+LEFT JOIN
+    fact_asset_discovery fad ON da.asset_id = fad.asset_id
+LEFT JOIN
+    dim_operating_system dos ON da.operating_system_id = dos.operating_system_id
+LEFT JOIN
+    asset_tags atags ON da.asset_id = atags.asset_id
+LEFT JOIN
+    max_certainty mc ON da.asset_id = mc.asset_id
+
+ORDER BY
+    da.asset_id ASC"""
+
+
+
+
+
+
+
+
+
+
+
+# vulnerabilities query
+#         query = """WITH cve_references AS (
+#     SELECT
+#         dvr.vulnerability_id,
+#         array_to_string(array_agg(dvr.reference), ', ') AS aggregated_cves
+#     FROM
+#         dim_vulnerability_reference dvr
+#     WHERE
+#         dvr.source = 'CVE'
+#     GROUP BY
+#         dvr.vulnerability_id
+# ),
+# evidences AS (
+#     SELECT
+#         favf.vulnerability_id,
+#         string_agg(htmlToText(favi.proof), '\n') AS "evidence"
+#     FROM
+#         fact_asset_vulnerability_finding favf
+#     JOIN
+#         fact_asset_vulnerability_instance favi ON favf.vulnerability_id = favi.vulnerability_id
+#     GROUP BY
+#         favf.vulnerability_id
+# )
+# SELECT
+#     favf.asset_id AS "asset_id",
+#     dv.vulnerability_id AS "vulnerability_id",
+#     da.last_assessed_for_vulnerabilities AS "last_found",
+#     cr.aggregated_cves AS "cve",
+#     dv.nexpose_id AS "module_finding_id",
+#     dv.description AS "description",
+#     e.evidence AS "evidence",
+#     da.ip_address AS "target_ip",
+#     dse.name AS "source",
+#     dsn.scan_name AS "scan_name"
+
+# FROM
+#     fact_asset_vulnerability_finding favf
+# JOIN
+#     dim_vulnerability dv ON favf.vulnerability_id = dv.vulnerability_id
+# JOIN 
+#     dim_asset da ON favf.asset_id = da.asset_id 
+# JOIN 
+#     dim_scan dsn ON favf.scan_id = dsn.scan_id
+# JOIN 
+#     evidences e ON favf.vulnerability_id = e.vulnerability_id
+# LEFT JOIN
+#     cve_references cr ON dv.vulnerability_id = cr.vulnerability_id
+# LEFT JOIN
+#     dim_site_scan dss ON favf.scan_id = dss.scan_id
+# LEFT JOIN
+#    dim_site_scan_config dssc ON dss.site_id = dssc.site_id
+# LEFT JOIN
+#    dim_scan_engine dse ON dssc.scan_engine_id = dse.scan_engine_id
+
+# ORDER BY
+#     da.asset_id ASC"""
+
+        payload = {
+            "format": "sql-query",
+            "name" : report_name,
+            "query": query,
+            "version" :"2.3.0",
         }
 
         return self._http_request(
             url_suffix="/reports",
             method="POST",
-            json_data=post_data,
+            json_data=payload,
             resp_type="json",
         )
 
@@ -940,6 +1074,66 @@ class Client(BaseClient):
             method="GET",
             resp_type="content",
         )
+
+
+    def simple_stream_and_print(self, report_id, instance_id):
+        """
+        Streams a remote CSV file line by line, prints the data, and counts the lines.
+        """
+        
+        import requests
+        import csv
+        from io import StringIO
+        from contextlib import closing
+        url = f"{self.base_url}/api/3/reports/{report_id}/history/{instance_id}/output"
+        print(f"🚀 Starting simple stream from: {url}")
+        
+        total_lines_read = 0
+        header_row = None
+        headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        }
+        try:
+            # 1. Start the streaming GET request
+            # stream=True prevents the entire file from loading into memory.
+            with closing(requests.get(url, stream=True, auth=self._auth, headers=headers, verify=False)) as response:
+                response.raise_for_status() # Check for errors like 404 or 500
+                
+                # 2. Prepare the stream for the CSV reader
+                # iter_lines() yields bytes; we use a generator expression to decode them to strings.
+                line_generator = (line.decode('utf-8') for line in response.iter_lines())
+                
+                # The standard csv.reader handles complex CSV rules (like quotes and commas)
+                reader = csv.reader(line_generator)
+
+                # 3. Iterate, count, and print line by line
+                for row in reader:
+                    total_lines_read += 1
+                    
+                    if total_lines_read == 1:
+                        header_row = row
+                        print("\n--- Header Row (Line 1) ---")
+                        print(row)
+                        print("---------------------------\n")
+                        continue
+                    
+                    # Print the line number and the parsed data
+                    print(f"Line #{total_lines_read}: {row}")
+
+                
+                # 4. Final summary
+                print("\n" + "="*40)
+                print(f"🎉 Process Complete! Total lines read: {total_lines_read}")
+                print(f"Header columns: {header_row}")
+                print("="*40)
+
+        except requests.exceptions.RequestException as e:
+            print(f"❌ An error occurred during the request: {e}")
+            # If the file is so large that your network connection times out,
+            # increasing the timeout parameter in requests.get might help.
+
+
 
     def get_asset_vulnerability(self, asset_id: str, vulnerability_id: str) -> dict:
         """
@@ -2214,6 +2408,20 @@ class Client(BaseClient):
         )
 
         return self._http_request(method="POST", url_suffix="/asset_groups", json_data=json_data, resp_type="json")
+
+
+    def remove_report_instance(
+        self, report_id, instance_id
+    ) -> dict:
+
+        return self._http_request(method="DELETE", url_suffix=f"/reports/{report_id}/history/{instance_id}")
+
+
+    def remove_report_config(
+        self, report_id
+    ) -> dict:
+
+        return self._http_request(method="DELETE", url_suffix=f"/reports/{report_id}")
 
     def get_asset_groups(
         self,
@@ -3988,12 +4196,39 @@ def download_report_command(
         report_format = "pdf"
 
     report_data = client.download_report(report_id=report_id, instance_id=instance_id)
-
     return fileResult(
         filename=f"{name}.{report_format.lower()}",
         data=report_data,
         file_type=entryTypes["entryInfoFile"],
     )
+
+
+def stream_report_command(
+    client: Client, report_id: str, instance_id: str, name: str | None = None, report_format: str | None = None
+) -> dict:
+    """
+    Download a report file.
+
+    Note:
+        Not sure why there's a report_format parameter, as the format is set when generating the report,
+        and all the parameter seems to do here, is just change the file extension
+        (which is obviously not how file conversion works).
+        This function currently remains as it is, since removing it might break client's using it for some reason.
+
+    Args:
+        client (Client): Client to use for API requests.
+        report_id (str): ID of the report to download.
+        instance_id (str): ID of the report instance.
+        name (str | None, optional): Name to give the generated report file.
+            Defaults to None (results in using a "report <date>" format as a name).
+        report_format (str | None, optional): File format to use for the generated report.
+            Defaults to None (results in using PDF).
+
+    Returns:
+        dict: A dict generated by `CommonServerPython.fileResult` representing a War Room entry.
+    """
+    client.simple_stream_and_print(report_id=report_id, instance_id=instance_id)
+    return None
 
 
 def get_asset_tags_command(client: Client, asset_id: str) -> CommandResults | list[CommandResults]:
@@ -6344,6 +6579,37 @@ def list_site_assets_command(client: Client, site_id: str, asset_type: str, targ
     )
 
 
+def remove_report_instnace_command(
+    client: Client,
+    report_id: str,
+    instance_id: str
+):
+    res = client.remove_report_instance(report_id, instance_id)
+
+    return CommandResults(
+        outputs_prefix="Nexpose.AssetGroup",
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=f"done. {res=}",
+        raw_response=res,
+    )
+
+
+def remove_report_config_command(
+    client: Client,
+    report_id: str,
+):
+    res = client.remove_report_config(report_id)
+
+    return CommandResults(
+        outputs_prefix="Nexpose.AssetGroup",
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=f"done. {res=}",
+        raw_response=res,
+    )
+
+
 def create_asset_group_command(
     client: Client,
     name: str,
@@ -6524,6 +6790,8 @@ def main():  # pragma: no cover
             results = set_assigned_shared_credential_status_command(client=client, enabled=False, **args)
         elif command == "nexpose-download-report":
             results = download_report_command(client=client, report_format=args.pop("format"), **args)
+        elif command == "nexpose-stream-report":
+            results = stream_report_command(client=client, report_format=args.pop("format"), **args)
         elif command == "nexpose-enable-shared-credential":
             results = set_assigned_shared_credential_status_command(client=client, enabled=True, **args)
         elif command == "nexpose-get-asset":
@@ -6638,6 +6906,10 @@ def main():  # pragma: no cover
             results = get_list_asset_group_command(client=client, **args)
         elif command == "nexpose-create-asset-group":
             results = create_asset_group_command(client=client, **args)
+        elif command == "nexpose-remove-report-instance":
+            results = remove_report_instnace_command(client=client, **args)
+        elif command == "nexpose-remove-report-config":
+            results = remove_report_config_command(client=client, **args)
         else:
             raise NotImplementedError(f"Command {command} not implemented.")
 
