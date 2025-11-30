@@ -1801,9 +1801,10 @@ script:
           description: The unique identifier for the asset.
           type: String
     - arguments:
-        - description: The ID of the issue to get recommendations for.
-          name: issue_id
+        - description: Comma-separated list of IDs of the issues to get recommendations for.
+          name: issue_ids
           required: true
+          isArray: true
       name: core-get-issue-recommendations
       description: Get comprehensive recommendations for an issue, including remediation steps, playbook suggestions, and recommended actions.
       outputs:
@@ -1827,6 +1828,18 @@ script:
           type: String
         - contextPath: Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id
           description: The ID of the suggestion rule that generated this recommendation.
+          type: String
+        - contextPath: Core.IssueRecommendations.playbook_suggestions.name
+          description: The name of the suggested playbook.
+          type: String
+        - contextPath: Core.IssueRecommendations.playbook_suggestions.comment
+          description: An explanation of the suggested playbook.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.quick_action_id
+          description: The ID of the suggested quick action.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.quick_action_suggestion_rule_id
+          description: The ID of the suggestion quick action rule that generated this recommendation.
           type: String
         - contextPath: Core.IssueRecommendations.existing_code_block
           description: Original vulnerable code.
