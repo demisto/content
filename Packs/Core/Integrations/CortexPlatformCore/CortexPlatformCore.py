@@ -694,8 +694,11 @@ def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadat
             "suggestion_rule_id": suggestion_rule_id,
         }
         if playbook_id in pb_id_to_index.keys():
-            recommendation["playbook_suggestions"].update(pbs_metadata[pb_id_to_index[playbook_id]])
-            ## pop id (playbook_id exist - to avoid BC)
+            current_pb_metadata = pbs_metadata[pb_id_to_index[playbook_id]]
+            recommendation["playbook_suggestions"].update({
+                "name": current_pb_metadata.get("name"),
+                "comment": current_pb_metadata.get("comment")
+            })
 
     # Quick action suggestion
     quick_action_id = suggestions.get("quick_action_id", None)
