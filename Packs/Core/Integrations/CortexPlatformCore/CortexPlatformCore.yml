@@ -2268,7 +2268,7 @@ script:
         - contextPath: Core.AppsecIssue.backlog_status
           description: The backlog status of the issue.
           type: String
-    - name: core-update-cases
+    - name: core-update-case
       description: Updates the properties of a case. This command does not provide an explicit indication of success.
       arguments:
         - name: case_id
