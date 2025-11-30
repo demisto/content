@@ -49,7 +49,7 @@ args:
   predefined:
     - 'true'
     - 'false'
-- description: List of users security identifiers to retrieve. Supported by Azure AD only.
+- description: List of users security identifiers to retrieve. Supported by Azure AD integration only.
   name: user_sid
   isArray: true
 comment: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
