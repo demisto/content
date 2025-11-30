@@ -542,19 +542,21 @@ class XSOAR2STIXParser:
                     )
                     if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in self.types_for_indicator_sdo:
                         stix_ioc = self.convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator)
-                    demisto.debug(f"T2API: create_indicators {stix_ioc=}")
                     if self.has_extension and stix_ioc:
                         iocs.append(stix_ioc)
                         if extension_definition:
                             extensions.append(extension_definition)
                     elif stix_ioc:
                         iocs.append(stix_ioc)
+
+        demisto.info(f"T2API: indicators count: {len(iocs)}")
         if (
             not is_manifest
             and iocs
             and is_demisto_version_ge("6.6.0")
             and (relationships := self.create_relationships_objects(iocs, extensions))
         ):
+            demisto.info(f"T2API: indicators count: {len(relationships)}")
             total += len(relationships)
             iocs.extend(relationships)
             iocs = sorted(iocs, key=lambda k: k["modified"])

@@ -53,7 +53,12 @@ TAXII_REQUIRED_FILTER_FIELDS = {
 }
 TAXII_V20_REQUIRED_FILTER_FIELDS = {"tags", "identity_class"}
 TAXII_V21_REQUIRED_FILTER_FIELDS = {"ismalwarefamily", "published"}
-PAGE_SIZE = 2000
+SEARCH_AFTER_KEY_NAME = "search_after_cache"
+
+# we want to save extra space in the response for relationships items without exceed the limit.
+# so if the res size is 100 - the indicators query limit is 90.
+STIX_PERCENTAGE = 0.9
+PAGE_SIZE = int(int(demisto.params().get("res_size", 2000)) * STIX_PERCENTAGE)
 
 """ TAXII2 Server """
 
@@ -255,15 +260,31 @@ class TAXII2Server:
         """
         found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get("query")
-        iocs, _, total = find_indicators(
-            query=query, types=types, added_after=added_after, limit=limit, offset=offset, is_manifest=True
+        iocs, _, total, use_search_after = find_indicators(
+            query=query,
+            types=types,
+            added_after=added_after,
+            limit=limit,
+            offset=offset,
+            is_manifest=True,
+            collection_id=collection_id,
         )
+        demisto.debug(f"T2S: after find_indicators {iocs}")
 
         first_added = None
         last_added = None
-        objects = iocs[offset : offset + limit]
-        if iocs and not objects:
-            raise RequestedRangeNotSatisfiable
+
+        if use_search_after:
+            # returns the iocs without calculate offset
+            objects = iocs
+            demisto.info(f"T2S: total IOCs fetched for collection {collection_id} : {(offset + limit) * STIX_PERCENTAGE}")
+        else:
+            objects = iocs[offset : offset + limit]
+            if iocs and not objects:
+                raise RequestedRangeNotSatisfiable
+
+        if len(objects) < len(iocs):
+            demisto.info(f"T2S: WARNING: number of created IOCs is higher than limit {len(objects)=} {len(iocs)=}")
 
         if objects:
             first_added = objects[-1].get("date_added")
@@ -274,11 +295,12 @@ class TAXII2Server:
             "objects": objects,
         }
 
-        if self.version == TAXII_VER_2_1 and total > offset + limit:
+        if self.version == TAXII_VER_2_1 and total > (offset + limit) * STIX_PERCENTAGE:
             response["more"] = True
             response["next"] = str(limit + offset)
 
         content_range = f"items {offset}-{len(objects)}/{total}"
+        demisto.debug(f"T2S: {len(objects)=}")
         return response, first_added, last_added, content_range
 
     def get_objects(self, collection_id: str, added_after, limit: int, offset: int, types: list) -> tuple:
@@ -291,19 +313,27 @@ class TAXII2Server:
         found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get("query")
         demisto.debug(f"T2S: calling find_indicators with {query=} {types=} {added_after=} {limit=} {offset=}")
-        iocs, extensions, total = find_indicators(query=query, types=types, added_after=added_after, limit=limit, offset=offset)
-        demisto.debug(f"T2S: after find_indicators {iocs}")
+        iocs, extensions, total, use_search_after = find_indicators(
+            query=query, types=types, added_after=added_after, limit=limit, offset=offset, collection_id=collection_id
+        )
 
         first_added = None
         last_added = None
         limited_extensions = None
 
-        limited_iocs = iocs[offset : offset + limit]
-        if iocs and not limited_iocs:
-            raise RequestedRangeNotSatisfiable
+        if use_search_after:
+            # returns the iocs without calculate offset
+            objects = iocs
+            limited_iocs = iocs
+            demisto.info(f"T2S: total IOCs fetched for collection {collection_id} : {(offset + limit) * STIX_PERCENTAGE}")
+        else:
+            limited_iocs = iocs[offset : offset + limit]
+            if iocs and not limited_iocs:
+                raise RequestedRangeNotSatisfiable
+            objects = limited_iocs
 
-        objects = limited_iocs
-        demisto.debug(f"T2S: in get_objects {objects=}")
+        if len(objects) < len(iocs):
+            demisto.info(f"T2S: WARNING: number of created IOCs is higher than limit {len(objects)=} {len(iocs)=}")
 
         if SERVER.has_extension:
             limited_extensions = get_limited_extensions(limited_iocs, extensions)
@@ -320,12 +350,12 @@ class TAXII2Server:
             response = {
                 "objects": objects,
             }
-            if total > offset + limit:
+            if total > (offset + limit) * STIX_PERCENTAGE:
                 response["more"] = True
                 response["next"] = str(limit + offset)
 
         content_range = f"items {offset}-{len(limited_iocs)}/{total}"
-
+        demisto.debug(f"T2S: {len(objects)=}")
         return response, first_added, last_added, content_range
 
 
@@ -581,26 +611,39 @@ def set_field_filters(is_manifest: bool = False) -> Optional[str]:
     return field_filters
 
 
-def search_indicators(field_filters: Optional[str], query: str, limit: int) -> IndicatorsSearcher:
+def search_indicators(field_filters: Optional[str], query: str, limit: int, search_after: list = None) -> IndicatorsSearcher:
     """
     Args:
         field_filters: filter
         query: query
         limit: response items limit
+        search_after: A cursor-like list used for pagination to retrieve results
+            that come after the last item from a previous search.
 
     Returns: IndicatorsSearcher.
     """
-    indicator_searcher = IndicatorsSearcher(
+    if search_after:
+        return IndicatorsSearcher(
+            filter_fields=field_filters,
+            query=query,
+            limit=limit,
+            size=PAGE_SIZE,
+            sort=[{"field": "modified", "asc": True}, {"field": "id", "asc": True}],
+            search_after=search_after,
+        )
+
+    return IndicatorsSearcher(
         filter_fields=field_filters,
         query=query,
         limit=limit,
         size=PAGE_SIZE,
-        sort=[{"field": "modified", "asc": True}],
+        sort=[{"field": "modified", "asc": True}, {"field": "id", "asc": True}],
     )
-    return indicator_searcher
 
 
-def find_indicators(query: str, types: list, added_after, limit: int, offset: int, is_manifest: bool = False) -> tuple:
+def find_indicators(
+    query: str, types: list, added_after, limit: int, offset: int, is_manifest: bool = False, collection_id: str = None
+) -> tuple:
     """
     Args:
         query: search indicators query
@@ -609,14 +652,29 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
         limit: response items limit
         offset: response offset
         is_manifest: whether this call is for manifest or indicators
+        collection_id: collection id to query it objects
 
     Returns: Created indicators and its extensions.
     """
     new_query = create_query(query, types, added_after)
     new_limit = offset + limit
     field_filters = set_field_filters(is_manifest)
-    demisto.info(f"{INTEGRATION_NAME}: search indicators parameters is {field_filters=}, {new_query=}, {new_limit=}")
-    indicator_searcher = search_indicators(field_filters, new_query, new_limit)
+    use_search_after = False
+    limit = PAGE_SIZE
+
+    # remove old search_after values from the context cache
+    integration_context = get_integration_context(True)
+    remove_old_cache(integration_context)
+
+    # check if there is a search_after value for this collection with this offset
+    search_after_offset = int(offset * STIX_PERCENTAGE)
+    if integration_context.get(SEARCH_AFTER_KEY_NAME, {}).get(collection_id, {}).get(str(search_after_offset)):
+        search_after = integration_context[SEARCH_AFTER_KEY_NAME][collection_id][str(search_after_offset)]
+        indicator_searcher = search_indicators(field_filters, new_query, limit, search_after["search_after"])
+        use_search_after = True
+    else:
+        demisto.info(f"{INTEGRATION_NAME}: search indicators parameters is {field_filters=}, {new_query=}, {new_limit=}")
+        indicator_searcher = search_indicators(field_filters, new_query, new_limit)
 
     XSOAR2STIXParser_client = XSOAR2STIXParser(
         server_version=SERVER.version,
@@ -625,9 +683,54 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
         types_for_indicator_sdo=SERVER.types_for_indicator_sdo,
     )
     iocs, extensions, total = XSOAR2STIXParser_client.create_indicators(indicator_searcher, is_manifest)
-    demisto.debug(f"T2S: find_indicators {iocs=}")
 
-    return iocs, extensions, total
+    # in case search_after_param returns in the query result - save it to the cache for the next request
+    if indicator_searcher._search_after_param:
+        if SEARCH_AFTER_KEY_NAME not in integration_context:
+            integration_context[SEARCH_AFTER_KEY_NAME] = {}
+        if collection_id not in integration_context.get(SEARCH_AFTER_KEY_NAME):
+            integration_context[SEARCH_AFTER_KEY_NAME][collection_id] = {}
+        # Set the value
+        integration_context[SEARCH_AFTER_KEY_NAME][collection_id][
+            str(indicator_searcher._total_iocs_fetched + search_after_offset)
+        ] = {
+            "search_after": indicator_searcher._search_after_param,
+            "last_updated": datetime.now(timezone.utc).isoformat(),
+        }
+
+        set_integration_context(integration_context)
+        demisto.info(f"{integration_context=}")
+    return iocs, extensions, total, use_search_after
+
+
+def remove_old_cache(integration_context: dict) -> None:
+    """Remove expired entries from cache['search_after_cache'] if older than cache_duration_hours."""
+    now = datetime.now(timezone.utc)
+    cache_duration_hours = int(demisto.params().get("cache_duration_hours", 48))
+    expiry_time = timedelta(hours=cache_duration_hours)
+
+    search_cache = integration_context.get(SEARCH_AFTER_KEY_NAME)
+    if not isinstance(search_cache, dict):
+        return
+
+    for collection_id, time_dict in list(search_cache.items()):
+        for offset, data in list(time_dict.items()):
+            last_updated_str = data.get("last_updated")
+            if not last_updated_str:
+                continue
+
+            try:
+                last_updated = datetime.fromisoformat(last_updated_str)
+            except ValueError:
+                continue
+
+            if now - last_updated > expiry_time:
+                del time_dict[offset]
+                demisto.debug(f"remove_old_cache removed {collection_id=} {offset=} {data} from cache")
+
+        # Clean up empty nested dicts
+        if not time_dict:
+            search_cache.pop(collection_id, None)
 
 
 def parse_content_range(content_range: str) -> tuple:
@@ -1067,6 +1170,11 @@ def main():  # pragma: no cover
         elif command == "taxii-server-info":
             integration_context = get_integration_context(True)
             return_results(get_server_info_command(integration_context))
+        elif command == "taxii-delete-search-after-cache":
+            integration_context = get_integration_context(True)
+            integration_context.pop(SEARCH_AFTER_KEY_NAME, None)
+            set_integration_context(integration_context)
+            return_results("search_after_cache context deleted")
 
     except Exception as e:
         err_msg = f"Error in {INTEGRATION_NAME} Integration [{e}]"
