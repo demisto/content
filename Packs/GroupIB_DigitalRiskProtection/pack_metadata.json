@@ -1,0 +1,27 @@
+{
+    "name": "Group-IB Digital Risk Protection",
+    "description": "Group-IB Digital Risk Protection (DRP) is a cloud-based solution that continuously monitors online channels for brand abuse, scams, phishing, and other digital threats. It leverages machine learning and human analysis to detect the illegitimate use of logos, trademarks, and content across websites, social media, dark web, and more. The platform not only identifies incidents (called violations) in real-time, but also classifies and scores each violation to determine its severity, thereby prioritizing those that require urgent action. DRP implements a rigorous three-stage takedown process to maximize the elimination of confirmed threats like scam sites and phishing pages. This package includes several incident types, a classifier and mapper, a dedicated layout, and automation for updating received violations. A playbook is also provided to help you respond to violations more efficiently.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Group-IB",
+    "url": "https://www.group-ib.com/",
+    "email": "integration@group-ib.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "itemPrefix": [
+        "GIB"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Threat intelligence",
+        "Digital Risk Protection"
+    ],
+    "githubUser": [
+        "Kchekh"
+    ],
+    "marketplaces": [
+        "xsoar"
+    ]
+}
