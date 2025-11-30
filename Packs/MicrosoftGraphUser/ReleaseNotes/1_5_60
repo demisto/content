@@ -1,0 +1,10 @@
+
+#### Integrations
+
+##### Entra ID Users
+
+- Added support for ***msgraph-user-force-reset-password*** command that forces a user to reset their password the next time they log in.
+<~PLATFORM>
+- Added support for the ***msgraph-user-session-revoke*** quick action.
+- Added support for the ***msgraph-user-acount-disable*** quick action.
+</~PLATFORM>

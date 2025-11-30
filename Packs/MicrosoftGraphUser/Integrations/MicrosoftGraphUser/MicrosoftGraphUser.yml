@@ -638,7 +638,7 @@ script:
     description: |-
       Changes the password of an on-premise user. See documentation for full permissions and roles to execute this command. 
       Providing a password is required (password auto-generation is not supported).
-    execution: true
+    polling: true
     arguments:
     - description: User ID or userPrincipalName to update password for.
       name: user
@@ -652,6 +652,22 @@ script:
       name: nonsensitive_password
       required: false
       secret: false
+    - description: User ID or userPrincipalName to update password for.
+      name: password_method_id
+      hidden: true
+    - description: Polling url.
+      name: polling_url
+      hidden: true
+    outputs:
+    - contextPath: MSGraphUser.user
+      description: The user's ID.
+      type: String
+    - contextPath: MSGraphUser.status
+      description: The status of the operation.
+      type: String
+    - contextPath: MSGraphUser.polling_url
+      description: The polling url.
+      type: String
   - description: Tests connectivity to Microsoft Graph User.
     name: msgraph-user-test
   - arguments:
@@ -791,7 +807,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-user-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.4578119
+  dockerimage: demisto/crypto:1.0.0.5490413
   runonce: false
   script: '-'
   subtype: python3
