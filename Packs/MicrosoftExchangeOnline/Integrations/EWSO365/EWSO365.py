@@ -1948,19 +1948,17 @@ def sub_main():  # pragma: no cover
                 sys.exit(0)
             error_message_simple = log_message + " Please retry your request."
 
-        elif isinstance(e, ConnectionError):
+        if isinstance(e, ConnectionError):
             error_message_simple = f"Could not connect to the server.\nAdditional information: {e!s}"
-
-        elif is_test_module and isinstance(e, MalformedResponseError):
-            error_message_simple = (
-                f"Got invalid response from the server with status code {str(e)}.\n"
-            )
+        else:
+            if is_test_module and isinstance(e, MalformedResponseError):
+                error_message_simple = "Got invalid response from the server.\n"
 
         # Legacy error handling
-        elif "Status code: 401" in debug_log:
+        if "Status code: 401" in debug_log:
             error_message_simple = "Got unauthorized from the server. "
 
-        elif "Status code: 503" in debug_log:
+        if "Status code: 503" in debug_log:
             error_message_simple = "Got timeout from the server. Probably the server is not reachable with the current settings. "
 
         if not error_message_simple:
