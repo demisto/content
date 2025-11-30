@@ -16,6 +16,7 @@ def execute_jira_list_transitions_command(args: Dict[str, Any]) -> List[Dict[str
     if res and isinstance(res, list):
         return res
     else:
+        print("Got an empty list object after executing the command !jira-list-transitions")
         raise DemistoException(
             f"Error occurred while running script-JiraListTransition. expected a list as response but got:"
             f" {type(res)}. The response is: {res}"
