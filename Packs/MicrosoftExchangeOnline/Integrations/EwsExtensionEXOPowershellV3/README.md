@@ -97,7 +97,7 @@ When running 'Test', you receive the error:
 
 **Solution:**  
 Verify that the application has the correct directory role assigned in the **Entra ID portal**.  
-See the **“Step-By-Step Configuration Instructions”** section above for detailed guidance.
+See the **“App authentication”** section above for detailed guidance.
 
 ---
 
