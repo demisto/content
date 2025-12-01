@@ -126,13 +126,13 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
 
     func_res = []
     for res in res_expire:
-        res_msg = res.get("Contents", "AD expiration password command failed")
+        res_msg = res.get("Contents", "AD password command failed")
         func_res.append(
             ExpiredPasswordResult(
                 Result="Success",
-                Message="Password expiration successfully enforced"
+                Message=f"Active Directory: {res_msg}"
             )
-            if not is_error(res)
+            if res_msg == "Expired password successfully"
             else ExpiredPasswordResult(
                     Result="Failed",
                     Message=res_msg
@@ -155,12 +155,12 @@ def run_microsoft_graph_user(user: UserData, using: str) -> tuple[list[ExpiredPa
     res_cmd, hr = run_command("msgraph-user-force-reset-password", {"user": user["Username"], "using": using})
     func_res = []
     for res in res_cmd:
-        res_msg = res.get("Contents", "Microsoft Graph User expiration password command failed")
+        res_hr = res.get("HumanReadable", "Microsoft Graph User expiration password command failed")
         # Assuming successful response for MS Graph command means password reset is forced
         func_res.append(
             ExpiredPasswordResult(Result="Success", Message="Password reset successfully enforced")
-            if not is_error(res)
-            else ExpiredPasswordResult(Result="Failed", Message=res_msg)
+            if res_hr == f"User {user['Username']} will be required to change his password."
+            else ExpiredPasswordResult(Result="Failed", Message=res["Content"])
         )
     return func_res, hr
 
@@ -180,9 +180,10 @@ def run_okta_v2(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
     func_res = []
     for res in res_cmd:
         res_msg = res["HumanReadable"] or res["Contents"]
+        is_expired = "Status: PASSWORD_EXPIRED" in res_msg
         func_res.append(
             ExpiredPasswordResult(Result="Success", Message="Password expired successfully")
-            if not is_error(res)
+            if not is_expired
             else ExpiredPasswordResult(Result="Failed", Message=res_msg)
         )
     return func_res, hr
@@ -207,7 +208,7 @@ def run_gsuiteadmin(user: UserData, using: str) -> tuple[list[ExpiredPasswordRes
     for res in res_cmd:
         func_res.append(
             ExpiredPasswordResult(Result="Success", Message="Password reset successfully enforced")
-            if not is_error(res)
+            if dict_safe_get(res, ("Contents", "changePasswordAtNextLogin"))
             else ExpiredPasswordResult(Result="Failed",
                                        Message=str(res.get("Contents") or "Unable to expire password"))
         )
@@ -240,17 +241,18 @@ def run_aws_iam(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
 
     func_res = []
     for res in res_cmd:
-        res_msg = res.get("Contents", "AWS-IAM command failed")
+        res_msg = res["HumanReadable"] or res["Contents"]
         func_res.append(
             ExpiredPasswordResult(
                 Result="Success",
                 Message="IAM user login profile updated successfully, requiring password change on next sign-in."
             )
-            if not is_error(res)
+            # The AWS-IAM integration returns "The user {user} password was changed" on success
+            if res_msg == f"The user {user['Username']} password was changed"
             else ExpiredPasswordResult(
                     Result="Failed",
-                    Message=res_msg
-            )
+                    Message=f"AWS-IAM command did not confirm success. Response: {res_msg or 'No response message'}"
+                )
         )
     return func_res, hr
 
@@ -312,7 +314,7 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
 
     # Check for no users found (Status is not 'found' for any user)
     if not any(user["Status"] == "found" for user in users):
-        raise DemistoException("No user(s) were found matching the provided inputs.")
+        raise DemistoException("ExpirePassword: User(s) not found.")
 
     return users, hr
 
@@ -356,9 +358,6 @@ def expire_passwords(users: list[UserData]) -> tuple[list[ExpiredPasswordResult]
         else:
             demisto.debug(f"ExpirePassword: User: {user['Username']} not found for brand: {user['Brand']}")
 
-    if not context:
-        raise DemistoException("User(s) not found.")
-
     return context, "\n\n".join(human_readables)
 
 
@@ -394,7 +393,7 @@ def main():
                             "Message",
                         ],
                     )
-                                    + verbose_hr,
+                    + verbose_hr,
                 )
             )
         else:
