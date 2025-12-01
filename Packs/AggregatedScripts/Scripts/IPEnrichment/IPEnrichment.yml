@@ -29,7 +29,7 @@ args:
     - If provided, only the selected brands are used.
     - If left empty, the script runs enrichment on all enabled integrations,
       depending on the `external_enrichment` flag.
-    - In order to run get-endpoint-data add Core to the brands list.
+    - In order to run get-endpoint-data add Core to the brands list (executed only on internal IP addresses).
     - In order to run core-get-IP-analytics-prevalence, add Cortex Core - IR to the brands list.
     To see the available brands for the `ip` command, run: `!ProvidesCommand command=ip`.
   isArray: true
@@ -48,7 +48,7 @@ args:
   - 'false'
   required: false
   defaultValue: 'false'
-comment: This script gathers IP reputation data from multiple integrations and returns an IP entity with consolidated information in the context.
+comment: 'This script gathers IP reputation data from multiple integrations and returns an IP entity with consolidated information in the context. Note: If enabled, get-endpoint-data is executed only for internal IP addresses.'
 commonfields:
   id: ip-enrichment
   version: -1

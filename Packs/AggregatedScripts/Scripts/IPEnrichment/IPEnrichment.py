@@ -67,17 +67,21 @@ def ip_enrichment_script(
     ]
 
     # --- Command Batch 2: external enrichment + internal commands ---
+    private_ip_addresses = [
+        private_ip_address for private_ip_address in valid_inputs if is_ip_address_internal(private_ip_address)
+    ]
     command_batch2: list[Command] = []
     demisto.debug("Command Batch 2: Internal commands")
-    command_batch2.append(
-        Command(
-            name="get-endpoint-data",
-            args={"endpoint_ip": valid_inputs},
-            command_type=CommandType.INTERNAL,
-            brand="Core",
-            context_output_mapping={ENDPOINT_PATH: ENDPOINT_PATH},
+    if private_ip_addresses:
+        command_batch2.append(
+            Command(
+                name="get-endpoint-data",
+                args={"endpoint_ip": private_ip_addresses},
+                command_type=CommandType.INTERNAL,
+                brand="Core",
+                context_output_mapping={ENDPOINT_PATH: ENDPOINT_PATH},
+            )
         )
-    )
 
     if is_xsiam():
         demisto.debug("Command Batch 2: Internal commands (for XSIAM)")
