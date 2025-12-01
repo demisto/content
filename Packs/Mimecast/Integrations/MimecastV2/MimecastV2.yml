@@ -1009,6 +1009,8 @@ script:
       - DELIVERED
       - RECEIVED
       required: true
+    - description: The email address of the mailbox to search. Required when context is DELIVERED.
+      name: mailbox
     - auto: PREDEFINED
       defaultValue: PLAIN
       description: The message type to return. (Only relevant for part argument = message or all).
