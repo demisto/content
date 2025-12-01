@@ -436,9 +436,9 @@ def test_module(client: Client) -> str:
     """Test API connectivity and authentication."""
     demisto.debug("Starting execution of command: Test Module")
     try:
-        current_time = datetime.now().strftime(IntegrationConfig.DATE_FORMAT)
-        demisto.debug(f"Testing with current time: {current_time}")
-        client.get_audit_log_events(created_after=current_time, limit=1)
+        test_time = (datetime.now() - timedelta(minutes=1)).strftime(IntegrationConfig.DATE_FORMAT)
+        demisto.debug(f"Testing with time (now - 1 minute): {test_time}")
+        fetch_events_with_pagination(client, created_after=test_time, max_events=1)
         demisto.debug("Command 'Test Module' execution finished successfully.")
         return "ok"
     except Exception as e:
@@ -502,7 +502,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     demisto.debug("Starting execution of command: Get Events")
 
     from_time = args.get("from", DefaultValues.FROM_TIME)
-    limit = arg_to_number(args.get("limit")) or IntegrationConfig.DEFAULT_LIMIT
+    limit = args.get("max_fetch", IntegrationConfig.DEFAULT_LIMIT)
     demisto.debug(f"Parsed arguments: from={from_time}, limit={limit}")
 
     start_datetime = parse_date_or_use_current(from_time if from_time != DefaultValues.FROM_TIME else None)
