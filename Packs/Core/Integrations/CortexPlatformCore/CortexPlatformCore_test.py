@@ -4864,6 +4864,14 @@ def test_create_appsec_issues_filter_and_tables_no_matching_table():
     ],
 )
 def test_parse_custom_fields(custom_fields, expected):
+    """
+    Given:
+        A list of custom field strings in key:value format.
+    When:
+        The parse_custom_fields function is called.
+    Then:
+        It should return a dictionary with properly parsed and normalized keys and values.
+    """
     from CortexPlatformCore import parse_custom_fields
 
     result = parse_custom_fields(custom_fields)
@@ -4878,7 +4886,268 @@ def test_parse_custom_fields(custom_fields, expected):
     ],
 )
 def test_parse_custom_fields_empty_values(custom_fields, expected):
+    """
+    Given:
+        A list containing invalid custom field strings or empty values.
+    When:
+        The parse_custom_fields function is called.
+    Then:
+        It should return an empty dictionary filtering out invalid entries.
+    """
     from CortexPlatformCore import parse_custom_fields
 
     result = parse_custom_fields(custom_fields)
     assert result == expected
+
+
+def test_update_case_command_success():
+    """
+    Given:
+        A mock client and valid case update parameters including case_id, case_name, description, status, and assignee.
+    When:
+        The update_case_command function is called.
+    Then:
+        It should successfully update the case and return properly formatted output with expected fields.
+    """
+
+    from CortexPlatformCore import update_case_command
+
+    client = Mock()
+    client.unassigned_case = Mock()
+    client.update_case = Mock(
+        return_value=[
+            {
+                "reply": {
+                    "case_id": "123",
+                    "caseName": "Updated Case",
+                    "status": "open",
+                    "layoutId": "layout1",
+                    "layoutRuleName": "rule1",
+                    "sourcesList": ["source1"],
+                    "score": {"previous_score_source": "old", "previous_score": 5},
+                    "incidentDomain": "security",
+                }
+            }
+        ]
+    )
+
+    args = {
+        "case_id": "123",
+        "case_name": "Updated Case",
+        "description": "Updated description",
+        "status": "open",
+        "assignee": "user@example.com",
+    }
+
+    result = update_case_command(client, args)
+
+    assert len(result) == 2
+    assert result[0].outputs[0]["case_id"] == "123"
+    assert result[0].outputs[0]["caseName"] == "Updated Case"
+    assert "caseDomain" in result[0].outputs[0]
+    assert "incidentDomain" not in result[0].outputs[0]
+    assert "layoutId" not in result[0].outputs[0]
+    assert "layoutRuleName" not in result[0].outputs[0]
+    assert "sourcesList" not in result[0].outputs[0]
+
+
+def test_update_case_command_unassigned_assignee():
+    """
+    Given:
+        A mock client and case update parameters with assignee set to "unassigned".
+    When:
+        The update_case_command function is called.
+    Then:
+        It should call the unassigned_case method and successfully update the case.
+    """
+
+    from CortexPlatformCore import update_case_command
+
+    client = Mock()
+    client.unassigned_case = Mock()
+    client.update_case = Mock(return_value=[{"reply": {"case_id": "123"}}])
+
+    args = {"case_id": "123", "assignee": "unassigned", "case_name": "Test Case"}
+
+    result = update_case_command(client, args)
+
+    client.unassigned_case.assert_called_once_with(["123"])
+    assert len(result) == 1
+
+
+def test_update_case_command_resolved_status_with_reason():
+    """
+    Given:
+        A mock client and case update parameters with status set to "resolved" and a valid resolve reason.
+    When:
+        The update_case_command function is called.
+    Then:
+        It should successfully update the case to resolved status with the provided reason and comments.
+    """
+
+    from CortexPlatformCore import update_case_command
+
+    client = Mock()
+    client.update_case = Mock(return_value=[{"reply": {"case_id": "123", "status": "resolved"}}])
+
+    with (
+        patch("CortexPlatformCore.CASE_STATUS_RESOLVED_REASON", {"duplicate": True}),
+        patch("CortexPlatformCore.CASE_STATUS", {"resolved": "resolved"}),
+    ):
+        args = {
+            "case_id": "123",
+            "status": "resolved",
+            "resolve_reason": "duplicate",
+            "resolved_comment": "Duplicate case found",
+            "resolve_all_alerts": "true",
+        }
+
+        result = update_case_command(client, args)
+
+        assert len(result) == 1
+        client.update_case.assert_called_once()
+
+
+def test_update_case_command_resolved_status_without_reason():
+    """
+    Given:
+        Case update parameters with status set to "resolved" but no resolve reason provided.
+    When:
+        The update_case_command function is called.
+    Then:
+        It should raise a ValueError indicating that a resolve reason is required.
+    """
+
+    from CortexPlatformCore import update_case_command
+
+    client = Mock()
+
+    with patch("CortexPlatformCore.CASE_STATUS_RESOLVED_REASON", {}):
+        args = {"case_id": "123", "status": "resolved"}
+
+        with pytest.raises(ValueError, match="In order to set the case to resolved, you must provide a resolve reason."):
+            update_case_command(client, args)
+
+
+def test_update_case_command_resolve_params_without_resolved_status():
+    """
+    Given:
+        Case update parameters with resolve-related parameters but status not set to "resolved".
+    When:
+        The update_case_command function is called.
+    Then:
+        It should raise a ValueError indicating that resolve parameters require resolved status.
+    """
+
+    from CortexPlatformCore import update_case_command
+
+    client = Mock()
+
+    args = {"case_id": "123", "status": "open", "resolve_reason": "duplicate"}
+
+    with pytest.raises(
+        ValueError,
+        match="In order to use resolve_reason, resolve_all_alerts, or resolved_comment, "
+        "the case status must be set to 'resolved.'",
+    ):
+        update_case_command(client, args)
+
+
+def test_update_case_command_invalid_status_warning():
+    """
+    Given:
+        A mock client and case update parameters with an invalid status value.
+    When:
+        The update_case_command function is called.
+    Then:
+        It should generate a warning message about the invalid status and continue with the update.
+    """
+
+    from CortexPlatformCore import update_case_command
+
+    client = Mock()
+    client.update_case = Mock(return_value=[{"reply": {"case_id": "123"}}])
+
+    with patch("CortexPlatformCore.CASE_STATUS", {"open": "open", "closed": "closed"}):
+        args = {"case_id": "123", "status": "invalid_status", "case_name": "Test Case"}
+
+        result = update_case_command(client, args)
+
+        assert len(result) == 2
+        assert result[1].entry_type == 4
+        assert "Status didn't change" in result[1].readable_output
+        assert "invalid_status" in result[1].readable_output
+
+
+def test_update_case_command_invalid_severity_warning():
+    """
+    Given:
+        A mock client and case update parameters with an invalid severity value.
+    When:
+        The update_case_command function is called.
+    Then:
+        It should generate a warning message about the invalid severity and continue with the update.
+    """
+
+    from CortexPlatformCore import update_case_command
+
+    client = Mock()
+    client.update_case = Mock(return_value=[{"reply": {"case_id": "123"}}])
+
+    with patch("CortexPlatformCore.CASE_SEVERITY", {"low": True, "high": True}):
+        args = {"case_id": "123", "user_defined_severity": "invalid_severity", "case_name": "Test Case"}
+
+        result = update_case_command(client, args)
+
+        assert len(result) == 2
+        assert result[1].entry_type == 4
+        assert "Severity didn't change" in result[1].readable_output
+        assert "invalid_severity" in result[1].readable_output
+
+
+def test_update_case_command_no_valid_parameters():
+    """
+    Given:
+        Case update parameters containing only the case_id with no other valid update fields.
+    When:
+        The update_case_command function is called.
+    Then:
+        It should raise a ValueError indicating that no valid update parameters were provided.
+    """
+
+    from CortexPlatformCore import update_case_command
+
+    client = Mock()
+
+    args = {"case_id": "123"}
+
+    with pytest.raises(ValueError, match="No valid update parameters provided for case update."):
+        update_case_command(client, args)
+
+
+def test_update_case_command_multiple_cases():
+    """
+    Given:
+        A mock client and case update parameters with multiple case IDs provided as a list.
+    When:
+        The update_case_command function is called.
+    Then:
+        It should successfully update all cases and return output containing data for each case.
+    """
+
+    from CortexPlatformCore import update_case_command
+
+    client = Mock()
+    client.update_case = Mock(
+        return_value=[{"reply": {"case_id": "123", "caseName": "Case 1"}}, {"reply": {"case_id": "456", "caseName": "Case 2"}}]
+    )
+
+    args = {"case_id": ["123", "456"], "case_name": "Updated Cases", "status": "open"}
+
+    with patch("CortexPlatformCore.CASE_STATUS", {"open": "open"}):
+        result = update_case_command(client, args)
+
+        assert len(result) == 1
+        assert len(result[0].outputs) == 2
+        assert result[0].outputs[0]["case_id"] == "123"
+        assert result[0].outputs[1]["case_id"] == "456"

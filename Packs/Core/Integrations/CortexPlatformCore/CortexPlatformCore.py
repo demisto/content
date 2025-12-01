@@ -1919,9 +1919,12 @@ def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def update_cases_command(client: Client, args: dict) -> list[CommandResults]:
+def update_case_command(client: Client, args: dict) -> list[CommandResults]:
     """
-    Updates a case with new information based on provided arguments.
+    Updates one or more cases with the specified parameters such as name, description, assignee, status, and custom fields.
+
+    Handles case status changes including resolution with proper validation, and supports bulk updates across multiple cases.
+    Validates input parameters and returns appropriate error messages for invalid values.
     """
     case_ids = argToList(args.get("case_id"))
     case_name = args.get("case_name", "")
@@ -1964,9 +1967,10 @@ def update_cases_command(client: Client, args: dict) -> list[CommandResults]:
             f" Provided value: {user_defined_severity}."
         )
 
-    demisto.debug("\n".join(error_messages) if error_messages else "No validation errors.")
-    # Build request_data with mapped and filtered values
+    error_messages = "\n".join(error_messages) if error_messages else ""
+    demisto.debug(error_messages if error_messages else "No validation errors.")
 
+    # Build request_data with mapped and filtered values
     case_update_payload = {
         "caseName": case_name if case_name else None,
         "description": description if description else None,
@@ -1983,7 +1987,7 @@ def update_cases_command(client: Client, args: dict) -> list[CommandResults]:
     remove_nulls_from_dictionary(case_update_payload)
 
     if not case_update_payload:
-        raise ValueError("No valid update parameters provided for case update.")
+        raise ValueError(f"{(error_messages)}\nNo valid update parameters provided for case update.")
 
     request_data = {"request_data": case_update_payload}
 
@@ -2015,8 +2019,7 @@ def update_cases_command(client: Client, args: dict) -> list[CommandResults]:
     )
 
     if error_messages:
-        demisto.debug("\n".join(error_messages))
-        command_results.append(CommandResults(readable_output="\n".join(error_messages), entry_type=4))
+        command_results.append(CommandResults(readable_output=error_messages, entry_type=4))
 
     return command_results
 
@@ -2124,7 +2127,7 @@ def main():  # pragma: no cover
         elif command == "core-get-appsec-issues":
             return_results(get_appsec_issues_command(client, args))
         elif command == "core-update-case":
-            return_results(update_cases_command(client, args))
+            return_results(update_case_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
