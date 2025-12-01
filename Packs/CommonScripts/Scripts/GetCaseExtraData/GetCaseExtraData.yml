@@ -157,7 +157,7 @@ outputs:
   - contextPath: Core.CaseExtraData.file_artifacts.data.file_wildfire_verdict
     description: The verdict from WildFire for this file (e.g., 'malicious', 'benign').
     type: String
-  - contextPath: Core.CaseExtraData.file_artifacts.data.is_malicious
+  - contextPath: Core.CaseExtraData.file_artifacts.data.is_malicous
     description: A flag indicating whether the file artifact is considered malicious.
     type: Boolean
   - contextPath: Core.CaseExtraData.file_artifacts.data.is_manual
