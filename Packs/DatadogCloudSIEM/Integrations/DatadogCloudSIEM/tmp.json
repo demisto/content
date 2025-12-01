@@ -1,0 +1,269 @@
+{
+    "severity": 3,
+    "triggering_log_timestamp": 1764607192636,
+    "groupByValuesHash": "[\"trosenblatt\",\"github.com/datadog/dd-source\",\"c52dcc571a98032bbaa2e33c73a15d8c327a8f47\",\"315566\"]",
+    "random_draw": 0.04549774643687121,
+    "reducer_signal_id": "def-000-wnp-2-1-AZrayLEoAAA3M2I2ZTVhYmNm--1791202925",
+    "custom": {
+        "malicious_pr_protection": {
+            "repo": {
+                "pull_request": {
+                    "actor": {
+                        "id": "trosenblatt"
+                    },
+                    "head_commit_sha": "c52dcc571a98032bbaa2e33c73a15d8c327a8f47",
+                    "number": "315566",
+                    "url": "https://github.com/DataDog/dd-source/pull/315566"
+                },
+                "id": "github.com/datadog/dd-source"
+            },
+            "scan": {
+                "reason": "Embedded prompt injection in diff (domains/sds/apps/apis/sds-rule-agent/main.go). A large natural-language block replaces code comments and instructs iterative regex validation and use of external tools/organization logs — this attempts to change assistant behavior and request actions beyond code re",
+                "verdict": "malicious"
+            },
+            "__dd_internal": {
+                "reason_pt2": "review. Per prompt-injection handling rules, classify as malicious.",
+                "reason_pt1": "Embedded prompt injection in diff (domains/sds/apps/apis/sds-rule-agent/main.go). A large natural-language block replaces code comments and instructs iterative regex validation and use of external tools/organization logs — this attempts to change assistant behavior and request actions beyond code "
+            }
+        },
+        "relatedQuery": {
+            "query": "(source:datadog-code-security @malicious_pr_protection.scan.verdict:malicious @malicious_pr_protection.repo.id:\"github.com/datadog/dd-source\" @malicious_pr_protection.repo.pull_request.actor.id:\"trosenblatt\" @malicious_pr_protection.repo.pull_request.head_commit_sha:\"c52dcc571a98032bbaa2e33c73a15d8c327a8f47\" @malicious_pr_protection.repo.pull_request.number:\"315566\") ((* -(service:(delancie-sandwich OR observability-graph-query OR emr-spark-errors OR elasticsearch OR cassandra OR elasticsearch-observability-graph-janusg OR elasticsearch-og-janusgraph OR elasticsearch-observability-graph-pit OR com.datadog.spark.jobs.og.service_query_edge.servicequeryedge OR com.datadog.spark.jobs.og.service_edge.serviceedge))))",
+            "viewParameters": {
+                "integration_id": "security-monitoring",
+                "integration_short_name": "security_investigation"
+            },
+            "from": 1764606896000,
+            "to": 1764607496000,
+            "dataSource": "logs",
+            "queries": {
+                "verdict_malicious": "(source:datadog-code-security @malicious_pr_protection.scan.verdict:malicious @malicious_pr_protection.repo.id:\"github.com/datadog/dd-source\" @malicious_pr_protection.repo.pull_request.actor.id:\"trosenblatt\" @malicious_pr_protection.repo.pull_request.head_commit_sha:\"c52dcc571a98032bbaa2e33c73a15d8c327a8f47\" @malicious_pr_protection.repo.pull_request.number:\"315566\") ((* -(service:(delancie-sandwich OR observability-graph-query OR emr-spark-errors OR elasticsearch OR cassandra OR elasticsearch-observability-graph-janusg OR elasticsearch-og-janusgraph OR elasticsearch-observability-graph-pit OR com.datadog.spark.jobs.og.service_query_edge.servicequeryedge OR com.datadog.spark.jobs.og.service_edge.serviceedge))))"
+            },
+            "dataSources": {
+                "verdict_malicious": "logs"
+            },
+            "queryPerDataSource": {
+                "logs": "(source:datadog-code-security @malicious_pr_protection.scan.verdict:malicious @malicious_pr_protection.repo.id:\"github.com/datadog/dd-source\" @malicious_pr_protection.repo.pull_request.actor.id:\"trosenblatt\" @malicious_pr_protection.repo.pull_request.head_commit_sha:\"c52dcc571a98032bbaa2e33c73a15d8c327a8f47\" @malicious_pr_protection.repo.pull_request.number:\"315566\") ((* -(service:(delancie-sandwich OR observability-graph-query OR emr-spark-errors OR elasticsearch OR cassandra OR elasticsearch-observability-graph-janusg OR elasticsearch-og-janusgraph OR elasticsearch-observability-graph-pit OR com.datadog.spark.jobs.og.service_query_edge.servicequeryedge OR com.datadog.spark.jobs.og.service_edge.serviceedge))))"
+            }
+        },
+        "workflow": {
+            "first_seen": 1764607196000,
+            "last_seen": 1764607196000,
+            "high_cardinality": {
+                "attributes": [],
+                "tags": []
+            },
+            "rule": {
+                "defaultRuleVersion": 2,
+                "execution": "realtime",
+                "name": "Datadog Malicious PR Protection",
+                "defaultRuleId": "def-000-wnp",
+                "detectionMethod": "threshold",
+                "id": "def-000-wnp",
+                "isDefaultRule": true,
+                "type": "Log Detection",
+                "version": 2,
+                "tags": [
+                    "technique:T1556-modify-authentication-process",
+                    "tactic:TA0002-execution",
+                    "scope:datadog-code-security",
+                    "source:datadog-code-security",
+                    "mitre_platform:saas",
+                    "cwe:506",
+                    "technique:T1072-software-deployment-tools",
+                    "security:attack",
+                    "tactic:TA0003-persistence",
+                    "mitre_platform:cloud"
+                ]
+            },
+            "triage": {
+                "openTimestamp": 1764607196233,
+                "underReviewTimestamp": 1764607381195,
+                "archiveComment": "https://testaccount.crtx.us.paloaltonetworks.com/Custom/security-signal-details/59030",
+                "archiveTimestamp": 1764607381195,
+                "archiveReason": "none",
+                "cases": [],
+                "casesUpdateTimestamp": 0,
+                "hasCase": false,
+                "updateTimestamp": 1764607381195,
+                "archiveCommentTimestamp": 1764607381195,
+                "stateUpdateTimestamp": 1764607381195,
+                "stateUpdateUser": {
+                    "uuid": "e74c93f5-e6f5-11ee-9a20-ce5161746a57",
+                    "id": 6934212,
+                    "name": "Martin Guyard",
+                    "handle": "martin.guyard@datadoghq.com",
+                    "icon": "https://secure.gravatar.com/avatar/1072f583dbdbf8c5689b2d65a9cb2bb6?s=48&d=retro"
+                },
+                "state": "archived",
+                "assignee": {
+                    "uuid": "e74c93f5-e6f5-11ee-9a20-ce5161746a57",
+                    "id": 6934212,
+                    "name": "Martin Guyard",
+                    "handle": "martin.guyard@datadoghq.com",
+                    "icon": "https://secure.gravatar.com/avatar/1072f583dbdbf8c5689b2d65a9cb2bb6?s=48&d=retro"
+                },
+                "incidentIds": [],
+                "archiveCommentUser": {
+                    "uuid": "e74c93f5-e6f5-11ee-9a20-ce5161746a57",
+                    "id": 6934212,
+                    "name": "Martin Guyard",
+                    "handle": "martin.guyard@datadoghq.com",
+                    "icon": "https://secure.gravatar.com/avatar/1072f583dbdbf8c5689b2d65a9cb2bb6?s=48&d=retro"
+                },
+                "eventId": "AZrayO48AAAYEHGkm9gUrwAA",
+                "creator": {
+                    "name": "Martin Guyard",
+                    "handle": "martin.guyard@datadoghq.com"
+                },
+                "updater": {
+                    "name": "Martin Guyard",
+                    "handle": "martin.guyard@datadoghq.com"
+                }
+            },
+            "events_matched": 1
+        },
+        "datasetIds": [],
+        "groupByPaths": [
+            "custom.malicious_pr_protection.repo.pull_request.number",
+            "custom.malicious_pr_protection.repo.pull_request.head_commit_sha",
+            "custom.malicious_pr_protection.repo.pull_request.actor.id",
+            "custom.malicious_pr_protection.repo.id"
+        ],
+        "cloudEntities": {},
+        "triggeringRuleCase": {
+            "condition": "verdict_malicious>0",
+            "name": "PR flagged as Malicious",
+            "notifications": [],
+            "status": "high"
+        },
+        "title": "Datadog Malicious PR Protection - PR flagged as Malicious",
+        "queries": [
+            {
+                "distinctFields": [],
+                "metric": null,
+                "datasetIds": null,
+                "groupByPaths": [
+                    "custom.malicious_pr_protection.repo.pull_request.actor.id",
+                    "custom.malicious_pr_protection.repo.id",
+                    "custom.malicious_pr_protection.repo.pull_request.head_commit_sha",
+                    "custom.malicious_pr_protection.repo.pull_request.number"
+                ],
+                "query": "source:datadog-code-security @malicious_pr_protection.scan.verdict:malicious",
+                "name": "verdict_malicious",
+                "aggregation": "count",
+                "queryLanguage": null,
+                "aggregationDetails": {
+                    "distinctValues": [],
+                    "eventsCount": 1,
+                    "value": 1
+                },
+                "dataSource": "logs",
+                "hasOptionalGroupByFields": false
+            },
+            {
+                "distinctFields": [],
+                "metric": null,
+                "datasetIds": null,
+                "groupByPaths": [
+                    "custom.malicious_pr_protection.repo.pull_request.actor.id",
+                    "custom.malicious_pr_protection.repo.id",
+                    "custom.malicious_pr_protection.repo.pull_request.head_commit_sha",
+                    "custom.malicious_pr_protection.repo.pull_request.number"
+                ],
+                "query": "source:datadog-code-security @malicious_pr_protection.scan.verdict:benign",
+                "name": "verdict_benign",
+                "aggregation": "count",
+                "queryLanguage": null,
+                "aggregationDetails": {
+                    "distinctValues": [],
+                    "eventsCount": 0,
+                    "value": 0
+                },
+                "dataSource": "logs",
+                "hasOptionalGroupByFields": false
+            }
+        ],
+        "samples": [
+            {
+                "eventId": "AQAAAZrayO484P8h5QAAAABBWnJheUxFb0FBQTNNMkkyWlRWaFltTm0",
+                "queryIndex": 0,
+                "id": "AZrayLEoAAA3M2I2ZTVhYmNm",
+                "trackKey": {
+                    "type": "logs",
+                    "orgId": 2
+                },
+                "content": {
+                    "ingest_size_in_bytes": 1246,
+                    "custom": {
+                        "malicious_pr_protection": {
+                            "repo": {
+                                "pull_request": {
+                                    "actor": {
+                                        "id": "trosenblatt",
+                                        "url": "https://github.com/trosenblatt"
+                                    },
+                                    "head_commit_sha": "c52dcc571a98032bbaa2e33c73a15d8c327a8f47",
+                                    "number": 315566,
+                                    "url": "https://github.com/DataDog/dd-source/pull/315566"
+                                },
+                                "id": "github.com/datadog/dd-source"
+                            },
+                            "scan": {
+                                "reason": "Embedded prompt injection in diff (domains/sds/apps/apis/sds-rule-agent/main.go). A large natural-language block replaces code comments and instructs iterative regex validation and use of external tools/organization logs — this attempts to change assistant behavior and request actions beyond code review. Per prompt-injection handling rules, classify as malicious.",
+                                "verdict": "malicious"
+                            },
+                            "__dd_internal": {
+                                "reason_pt2": "review. Per prompt-injection handling rules, classify as malicious.",
+                                "reason_pt1": "Embedded prompt injection in diff (domains/sds/apps/apis/sds-rule-agent/main.go). A large natural-language block replaces code comments and instructs iterative regex validation and use of external tools/organization logs — this attempts to change assistant behavior and request actions beyond code "
+                            }
+                        }
+                    },
+                    "custom_ingest_timestamp": 1764607177000,
+                    "source": "datadog-code-security",
+                    "tiebreaker": -520150555,
+                    "message": "SAST Malicious PR Protection scanned PR (github.com/datadog/dd-source #315566)",
+                    "status": "info",
+                    "tags": ["source:datadog-code-security"],
+                    "timestamp": 1764607192636
+                }
+            }
+        ]
+    },
+    "tiebreaker": -1988097037,
+    "message": "%%%\n## Goal\n\nDetect malicious code contributions to repositories.\n\n## Strategy\n\nThis rule uses an LLM to scan the context of the pull request to detect changes with intent to cause harm (not accidental vulnerabilities).\n\n## Triage and Response\n\nPull request https://github.com/DataDog/dd-source/pull/315566 was flagged as **malicious**.\n\n**Reason:**\n> Embedded prompt injection in diff (domains/sds/apps/apis/sds-rule-agent/main.go). A large natural-language block replaces code comments and instructs iterative regex validation and use of external tools/organization logs — this attempts to change assistant behavior and request actions beyond code review. Per prompt-injection handling rules, classify as malicious.\n\n_Scan performed at head commit: c52dcc571a98032bbaa2e33c73a15d8c327a8f47_\n\n-\nReview the PR and act accordingly. To do so:\n1. **Triage**: Mark the signal as \"Under Review\"\n    * Read the reason (`@malicious_pr_protection.scan.reason`) attribute: _Does it seem justified by itself?_\n    * Review the change under https://github.com/DataDog/dd-source/pull/315566: _Do the verdict and reason seem accurate?_\n    * Consider context: _Does further context (author, linked tickets, commits, or comments) indicate benign actions or malicious actions?_\n2. **Respond**: Create a case for further inspection, declare an incident, or archive this signal.\n\n### Details\n\nCertain conditions can closely resemble behavior of attackers (for example, assignment of admin privileges or handling of secrets), and are known to introduce false positives.\n\n\n%%%",
+    "version": 3,
+    "discovery_timestamp": 1764607192636,
+    "tags": [
+        "technique:t1072-software-deployment-tools",
+        "tactic:ta0002-execution",
+        "scope:datadog-code-security",
+        "source:datadog-code-security",
+        "mitre_platform:saas",
+        "cwe:506",
+        "tactic:ta0003-persistence",
+        "technique:t1556-modify-authentication-process",
+        "security:attack",
+        "mitre_platform:cloud"
+    ],
+    "ingest_size_in_bytes": 9923,
+    "event_id": "AZrayO48AAAYEHGkm9gUrwAA",
+    "source_fragment_id": "019adacc-5af5-4347-a29e-f26e56c18f11",
+    "event_tracker_id": "AQAAAZrayO48iYAL8wAAAABBWnJheU80OEFBQVlFSEdrbTlnVXJ3QUE",
+    "datadog.index": "signal",
+    "id": "AZrayO48AAAYEHGkm9gUrwAA",
+    "tag": {
+        "cwe": "506",
+        "security": "attack",
+        "scope": "datadog-code-security",
+        "mitre_platform": ["saas", "cloud"],
+        "technique": [
+            "t1072-software-deployment-tools",
+            "t1556-modify-authentication-process"
+        ],
+        "source": "datadog-code-security",
+        "tactic": ["ta0002-execution", "ta0003-persistence"]
+    },
+    "triggering_log_id": "AZrayLEoAAA3M2I2ZTVhYmNm",
+    "timestamp": "2025-12-01T16:39:52.636Z",
+    "status": "high"
+}

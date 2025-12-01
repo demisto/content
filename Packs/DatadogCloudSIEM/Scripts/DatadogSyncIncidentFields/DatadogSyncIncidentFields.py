@@ -12,7 +12,7 @@ def main():
         if not signal_id:
             return_error("No Datadog Security Signal ID found in incident.")
 
-        result = demisto.executeCommand("datadog-signal-get", {"signal_id": signal_id})
+        result = demisto.executeCommand("datadog-get-signal", {"signal_id": signal_id})
 
         if not result or isError(result):
             return_error(f"Failed to fetch signal: {get_error(result)}")
