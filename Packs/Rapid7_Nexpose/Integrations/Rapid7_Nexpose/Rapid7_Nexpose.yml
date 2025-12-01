@@ -2541,6 +2541,10 @@ script:
     - contextPath: Nexpose.AssetGroup.description
       description: 'The description of the asset group.'
       type: String
+  
+  - name: nexpose-add-assets-to-tenant
+    description: Return a list of asset groups.
+
   runonce: false
   script: '-'
   type: python
