@@ -67,7 +67,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Type of alert to get
+      description: Type of alert to get.
       isArray: false
       name: alert_type
       predefined:
@@ -75,24 +75,24 @@ script:
       required: false
       secret: false
     - default: false
-      description: Get alerts of a specific asset
+      description: Get alerts of a specific asset.
       isArray: false
       name: asset_unique_id
       required: false
       secret: false
     deprecated: false
-    description: Get the alerts on cloud assets
+    description: Get the alerts on cloud assets.
     execution: false
     name: orca-get-alerts
     outputs:
     - contextPath: Orca.Manager.Alerts
-      description: All alerts
+      description: All alerts.
       type: String
   - name: orca-set-alert-severity
-    description: Change severity for the alert
+    description: Change severity for the alert.
     arguments:
     - name: alert_id
-      description: Alert id
+      description: Alert id.
       required: true
     - name: score
       description: The Orca Score to set. Valid range 1.0 to 10.
@@ -105,12 +105,12 @@ script:
     arguments:
     - name: alert_id
       required: true
-      description: Alert id
+      description: Alert id.
     - name: limit
-      description: Limit of the event logs
+      description: Limit of the event logs.
       defaultValue: "20"
     - name: start_at_index
-      description: Start at index
+      description: Start at index.
       defaultValue: "0"
     - name: type
       auto: PREDEFINED
@@ -133,16 +133,16 @@ script:
       - service_now_incident_unlink
       - service_now_si_incident_link
       - service_now_si_incident_unlink
-      description: Type of the event logs
+      description: Type of the event logs.
     outputs:
     - contextPath: Orca.Manager.EventLog
-      description: Alert Event Log
-    description: Get alert event log
+      description: Alert Event Log.
+    description: Get alert event log.
   - name: orca-set-alert-status
     arguments:
     - name: alert_id
       required: true
-      description: Alert id
+      description: Alert id.
     - name: status
       auto: PREDEFINED
       predefined:
@@ -152,44 +152,44 @@ script:
       - open
       - close
       - closed
-      description: Alert status
+      description: Alert status.
     outputs:
     - contextPath: Orca.Alert
       description: Changed alert.
       type: string
-    description: Get alert event log
+    description: Get alert event log.
   - name: orca-verify-alert
     arguments:
     - name: alert_id
       required: true
-      description: Alert id
+      description: Alert id.
     outputs:
     - contextPath: Orca.Alert
-      description: Set Verify Alert result
-    description: Trigger verify alert
+      description: Set Verify Alert result.
+    description: Trigger verify alert.
   - name: orca-download-malicious-file
     arguments:
     - name: alert_id
       required: true
-      description: Alert id
+      description: Alert id.
     outputs:
     - contextPath: InfoFile.Name
-      description: FileName
+      description: FileName.
       type: string
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the report
+      description: The EntryID of the report.
       type: string
     - contextPath: InfoFile.Size
-      description: File Size
+      description: File Size.
       type: number
     - contextPath: InfoFile.Type
-      description: File type e.g. "PE"
+      description: File type e.g. "PE".
       type: string
     - contextPath: InfoFile.Info
-      description: Basic information of the file
+      description: Basic information of the file.
       type: string
     description: Downloads a capture file from CS Enterprise.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   runonce: false
   script: '-'
