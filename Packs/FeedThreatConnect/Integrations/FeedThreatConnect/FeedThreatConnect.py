@@ -353,7 +353,7 @@ def create_relationships(entity_a: str, entity_a_type: str, entity_b: str, entit
             brand=INTEGRATION_NAME,
         )
         relationships_list.append(relationship_entity.to_indicator())
-        demisto.debug(f"Created relationsip between {entity_a} and {entity_b}")
+        demisto.debug(f"Created relationship between {entity_a} and {entity_b}")
     else:
         demisto.debug(
             f"WARNING: Relationships will not be created to entity A {entity_a}"
@@ -478,8 +478,11 @@ def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> tu
     Returns:
         list: indicator to populate in demisto server.
     """
-    indicators_url = build_url_with_query_params(params, "indicators", last_run)
-    groups_url = build_url_with_query_params(params, "groups", last_run)
+    indicator_tql = params.get("indicator_query")
+    group_tql = indicator_tql if params.get("use_indicator_query_for_group") else params.get("group_query")
+
+    indicators_url = build_url_with_query_params(params, "indicators", last_run, indicator_tql)
+    groups_url = build_url_with_query_params(params, "groups", last_run, group_tql)
 
     indicators = []
     groups = []
@@ -494,23 +497,26 @@ def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> tu
                         Method.GET, url_suffix="", get_next=True, full_url=indicators_next_link
                     )
                     indicators.extend(response)
+                    demisto.debug(f"Got {len(indicators_response)} indicators from the next link response")
                 if groups_next_link:
                     demisto.debug("Groups Next Link: " + groups_next_link)
                     response, _, groups_next_link = client.make_request(
                         Method.GET, url_suffix="", get_next=True, full_url=groups_next_link
                     )
                     groups.extend(response)
+                    demisto.debug(f"Got {len(groups_response)} groups from the next link response")
             elif indicators_url or groups_url:
                 demisto.debug("Indicators URL: " + indicators_url)
                 indicators_response, _, indicators_next_link = client.make_request(Method.GET, indicators_url, get_next=True)
                 indicators.extend(indicators_response)
                 indicators_url = ""
+                demisto.debug(f"Got {len(indicators_response)} indicators")
 
                 demisto.debug("Groups URL: " + groups_url)
                 groups_response, _, groups_next_link = client.make_request(Method.GET, groups_url, get_next=True)
                 groups.extend(groups_response)
                 groups_url = ""
-
+                demisto.debug(f"Got {len(groups_response)} groups")
             # Limit the number of results to not get an error from the API
             if ((len(indicators) + len(groups)) > int(demisto.params().get("fetch_limit", "2000"))) or (
                 not indicators_next_link and not groups_next_link
@@ -524,19 +530,19 @@ def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> tu
     return indicators, groups
 
 
-def build_url_with_query_params(params: dict, endpoint: str, last_run: dict):
+def build_url_with_query_params(params: dict, endpoint: str, last_run: dict, tql: str | None):
     """Setting the url for the request for each endpoint"""
     if not should_send_request(params, endpoint):
         return ""
 
     last_run_date = last_run.get(endpoint, {}).get("from_date", "")
-    demisto.debug("last run get: " + str(last_run_date))
+    demisto.debug(f"last run get for {endpoint}: {str(last_run_date)}")
     from_date = ""
     if last_run_date:
         from_date = f'AND (dateAdded > "{last_run_date}") '
 
     fields = set_fields_query(params, endpoint)
-    tql = params.get("indicator_query")
+
     if not tql:
         tql = set_tql_query(from_date, params, endpoint)
 
@@ -557,9 +563,11 @@ def should_send_request(params: dict, endpoint: str):
     """Checking if the user has indicated any indicator/group types to fetch from the API"""
     if endpoint == "indicators":
         if not argToList(params.get("indicator_type")):
+            demisto.debug("No indicator type specified, skipping indicator fetch")
             return False
     else:
         if not argToList(params.get("group_type")):
+            demisto.debug("No group type specified, skipping group fetch")
             return False
 
     return True
@@ -668,7 +676,7 @@ def get_indicators_command(client: Client, args: dict) -> dict:  # type: ignore 
 
 
 def get_owners_command(client: Client, args: dict) -> COMMAND_OUTPUT:  # pragma: no cover
-    """Get availble indicators owners from ThreatConnect - Help configure ThreatConnect Feed integraiton.
+    """Get available indicators owners from ThreatConnect - Help configure ThreatConnect Feed integration.
     Args:
         client: ThreatConnect client.
         args: The arguments from XSOAR.

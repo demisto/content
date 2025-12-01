@@ -139,6 +139,17 @@ configuration:
   name: indicator_query
   type: 12
   required: false
+- display: Use Indicator Query For Group
+  name: use_indicator_query_for_group
+  type: 8
+  additionalinfo: Use the ThreatConnect Indicator Query for group filtering. Default is "True".
+  defaultvalue: 'true'
+  required: false
+- additionalinfo: Filter results using ThreatConnect Query Language (TQL). For more information, see the ThreatConnect documentation https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article
+  display: Group Query
+  name: group_query
+  type: 12
+  required: false
 - display: Confidence Threshold
   type: 0
   additionalinfo: |
