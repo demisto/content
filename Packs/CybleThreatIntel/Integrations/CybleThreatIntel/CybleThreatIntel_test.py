@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from CybleThreatIntel import (
     Client,
@@ -10,7 +10,6 @@ from CybleThreatIntel import (
     cyble_ioc_lookup_command,
     fetch_indicators_command,
     VerdictEnum,
-    ConfidenceLevel,
 )
 
 
@@ -126,13 +125,7 @@ def test_ioc_lookup_no_results(mock_lookup, mock_return):
 # -------------------------------------------------------------------
 @patch("CybleThreatIntel.Client.ioc_lookup")
 def test_ioc_lookup_success(mock_lookup):
-    mock_lookup.return_value = {
-        "data": {
-            "iocs": [
-                {"ioc": "bad.com", "ioc_type": "domain", "first_seen": 1700000000}
-            ]
-        }
-    }
+    mock_lookup.return_value = {"data": {"iocs": [{"ioc": "bad.com", "ioc_type": "domain", "first_seen": 1700000000}]}}
 
     c = Client({"base_url": "x", "access_token": {"password": "a"}})
     result = cyble_ioc_lookup_command(c, {"ioc": "bad.com"})
@@ -151,7 +144,6 @@ def test_ioc_lookup_success(mock_lookup):
 # -------------------------------------------------------------------
 @patch("CybleThreatIntel.demisto")
 def test_fetch_indicators_retry_fail(mock_demisto):
-
     mock_demisto.args.return_value = {}
     mock_demisto.getLastRun.return_value = {}
 
@@ -164,3 +156,41 @@ def test_fetch_indicators_retry_fail(mock_demisto):
     count = fetch_indicators_command(client, params)
 
     assert count == 0
+
+
+def test_calculate_verdict_invalid_inputs():
+    assert calculate_verdict("bad", "weird") == "Unknown"
+    assert calculate_verdict(-10, "low") == "Unknown"
+    assert calculate_verdict(200, "high") == "Malicious"
+
+
+from unittest.mock import Mock
+
+
+def test_fetch_indicators_success_flow(mocker):
+    client = Mock()
+    client.fetch_iocs.return_value = {
+        "success": True,
+        "data": {"iocs": [{"ioc": "mal.com", "ioc_type": "Domain", "risk_score": 80, "confidence_rating": "High"}]},
+    }
+
+    mocker.patch("CybleThreatIntel.demisto.getLastRun", return_value={})
+    mocker.patch("CybleThreatIntel.demisto.createIndicators")
+    mocker.patch("CybleThreatIntel.demisto.setLastRun")
+    mocker.patch("CybleThreatIntel.demisto.args", return_value={})
+
+    count = fetch_indicators_command(client, {"first_fetch": 1, "max_fetch": 50})
+    assert count >= 1
+
+
+def test_calculate_verdict_invalid_inputs():
+    assert calculate_verdict("bad", "weird") == "Unknown"
+    assert calculate_verdict(-10, "low") == "Unknown"
+    assert calculate_verdict(200, "high") == "Malicious"
+
+
+def test_ioc_lookup_missing_argument(mocker):
+    client = Mock()
+    with pytest.raises(Exception) as e:
+        cyble_ioc_lookup_command(client, {})
+    assert "Missing required argument: ioc" in str(e.value)

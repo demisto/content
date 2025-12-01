@@ -6,6 +6,7 @@ from typing import Optional
 
 import requests
 import urllib3
+
 urllib3.disable_warnings()
 
 import time
@@ -15,7 +16,8 @@ from typing import *
 
 
 """ CONSTANTS """
-DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S+00:00"   # Your API format
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S+00:00"  # Your API format
+
 
 class Client:
     def __init__(self, params: dict):
@@ -25,7 +27,7 @@ class Client:
         self.headers = {
             "Authorization": f"Bearer {self.access_token}",
             "Accept": "application/json",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
         demisto.debug(f"Client initialized with base_url: {self.base_url}, access_token: {self.access_token}")
 
@@ -34,12 +36,7 @@ class Client:
         demisto.debug(f"POST Request URL: {url}")
         demisto.debug(f"POST Request Headers: {self.headers}")
         demisto.debug(f"POST Request Body: {json_body}")
-        resp = requests.post(
-            url,
-            headers=self.headers,
-            json=json_body,
-            verify=False
-        )
+        resp = requests.post(url, headers=self.headers, json=json_body, verify=False)
         demisto.debug(f"Response Status Code: {resp.status_code}")
         try:
             resp.raise_for_status()
@@ -62,14 +59,10 @@ class Client:
     # ------------------------------
     def fetch_iocs(self, start_dt: str, end_dt: str, page: int = 1, limit: int = 50):
         endpoint = "/y/iocs"
-        body = {
-            "page": page,
-            "limit": limit,
-            "startDate": start_dt,
-            "endDate": end_dt
-        }
+        body = {"page": page, "limit": limit, "startDate": start_dt, "endDate": end_dt}
         demisto.debug(f"Fetching IOCs with body: {body}")
         return self.http_post(endpoint, body)
+
 
 def get_time_range(hours_back: int, last_run: dict) -> Tuple[str, str]:
     """
@@ -88,11 +81,10 @@ def get_time_range(hours_back: int, last_run: dict) -> Tuple[str, str]:
 
     lte_dt = now
 
-    demisto.debug(
-        f"Calculated fetch time range: gte={gte_dt.isoformat()}Z, lte={lte_dt.isoformat()}Z"
-    )
+    demisto.debug(f"Calculated fetch time range: gte={gte_dt.isoformat()}Z, lte={lte_dt.isoformat()}Z")
 
     return gte_dt.isoformat(), lte_dt.isoformat()
+
 
 def fmt_date(ts):
     if not ts:
@@ -117,10 +109,12 @@ class VerdictEnum(str, Enum):
     SUSPICIOUS = "Suspicious"
     MALICIOUS = "Malicious"
 
+
 class ConfidenceLevel(str, Enum):
     LOW = "Low"
     MEDIUM = "Medium"
     HIGH = "High"
+
 
 def calculate_verdict(risk_score: Optional[float], confidence_rating: Optional[str]):
     if risk_score is None:
@@ -190,10 +184,10 @@ def fetch_indicators_command(client: Client, params: dict) -> int:
     # --- first_fetch (hours) validation ---
     first_fetch_hours = int(params.get("first_fetch", 2))  # default 6 hrs
 
-    if first_fetch_hours < 1 :
-        first_fetch_hours=1
+    if first_fetch_hours < 1:
+        first_fetch_hours = 1
     if first_fetch_hours > 3:
-        first_fetch_hours=3
+        first_fetch_hours = 3
 
     limit = int(params.get("max_fetch", 100))
 
@@ -201,9 +195,10 @@ def fetch_indicators_command(client: Client, params: dict) -> int:
     should_reset = demisto.args().get("recreate")
     if should_reset:
         demisto.debug("Re-fetch triggered → resetting last_run")
-        last_run = {}
+        last_run: Dict[str, Any] = {}
     else:
-        last_run = demisto.getLastRun() or {}
+        lr = demisto.getLastRun() or {}
+        last_run: Dict[str, Any] = lr
 
     # --- compute initial range ---
     gte_str, final_lte_str = get_time_range(first_fetch_hours, last_run)
@@ -238,12 +233,7 @@ def fetch_indicators_command(client: Client, params: dict) -> int:
 
             while retry_count < 5:
                 try:
-                    resp = client.fetch_iocs(
-                        start_dt=chunk_gte_iso,
-                        end_dt=chunk_lte_iso,
-                        page=page,
-                        limit=limit
-                    )
+                    resp = client.fetch_iocs(start_dt=chunk_gte_iso, end_dt=chunk_lte_iso, page=page, limit=limit)
 
                     # enforce dict & 200
                     if isinstance(resp, dict) and resp.get("success", True):
@@ -278,34 +268,30 @@ def fetch_indicators_command(client: Client, params: dict) -> int:
             # -------------------------
             page_indicators = []
             for i in ioc_list:
-                verdict = calculate_verdict(
-                    i.get("risk_score"),
-                    i.get("confidence_rating")
-                )
+                verdict = calculate_verdict(i.get("risk_score"), i.get("confidence_rating"))
 
-                page_indicators.append({
-                    "value": i.get("ioc"),
-                    "type": i.get("ioc_type") or "Unknown",
-                    "rawJSON": i,
-                    "fields": {
-
-                        # confidence auto-managed by XSOAR
-                        "confidence": i.get("confidence_rating"),
-                        "cybleverdict": verdict,
-
-                        "cybleriskscore": i.get("risk_score"),
-                        "cyblefirstseen": epoch_to_iso(i.get("first_seen")),
-                        "cyblelastseen": epoch_to_iso(i.get("last_seen")),
-                        "cyblebehaviourtags": i.get("behaviour_tags") or [],
-
-                        "cyblesources": i.get("sources") or [],
-                        "cybletargetcountries": i.get("target_countries") or [],
-                        "cybletargetregions": i.get("target_regions") or [],
-                        "cybletargetindustries": i.get("target_industries") or [],
-                        "cyblerelatedmalware": i.get("related_malware") or [],
-                        "cyblerelatedthreatactors": i.get("related_threat_actors") or []
+                page_indicators.append(
+                    {
+                        "value": i.get("ioc"),
+                        "type": i.get("ioc_type") or "Unknown",
+                        "rawJSON": i,
+                        "fields": {
+                            # confidence auto-managed by XSOAR
+                            "confidence": i.get("confidence_rating"),
+                            "cybleverdict": verdict,
+                            "cybleriskscore": i.get("risk_score"),
+                            "cyblefirstseen": epoch_to_iso(i.get("first_seen")),
+                            "cyblelastseen": epoch_to_iso(i.get("last_seen")),
+                            "cyblebehaviourtags": i.get("behaviour_tags") or [],
+                            "cyblesources": i.get("sources") or [],
+                            "cybletargetcountries": i.get("target_countries") or [],
+                            "cybletargetregions": i.get("target_regions") or [],
+                            "cybletargetindustries": i.get("target_industries") or [],
+                            "cyblerelatedmalware": i.get("related_malware") or [],
+                            "cyblerelatedthreatactors": i.get("related_threat_actors") or [],
+                        },
                     }
-                })
+                )
 
             # Insert indicators
             try:
@@ -346,9 +332,7 @@ def cyble_ioc_lookup_command(client: Client, args: dict):
 
     if not iocs:
         return CommandResults(
-            readable_output=f"No results found for IOC: {ioc}",
-            outputs_prefix="CybleIntel.IOCLookup",
-            outputs={}
+            readable_output=f"No results found for IOC: {ioc}", outputs_prefix="CybleIntel.IOCLookup", outputs={}
         )
 
     item = iocs[0]
@@ -376,11 +360,7 @@ def cyble_ioc_lookup_command(client: Client, args: dict):
 
     readable = tableToMarkdown("Cyble IOC Lookup", table)
 
-    return CommandResults(
-        readable_output=readable,
-        outputs_prefix="CybleIntel.IOCLookup",
-        outputs=table
-    )
+    return CommandResults(readable_output=readable, outputs_prefix="CybleIntel.IOCLookup", outputs=table)
 
 
 # ==========================================================================
@@ -408,20 +388,16 @@ def main():  # pragma: no cover
         elif command == "cyble-vision-ioc-lookup":
             return_results(cyble_ioc_lookup_command(client, args))
 
-
         elif command == "fetch-indicators":
             inserted = fetch_indicators_command(client, params)
             return_results(f"Inserted {inserted} indicators.")
 
         elif command in ["cyble-vision-fetch-taxii", "cyble-vision-get-collection-names"]:
-            return_results(
-                f"The command '{command}' is deprecated and no longer supported."
-            )
+            return_results(f"The command '{command}' is deprecated and no longer supported.")
 
     except Exception as e:
         return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-
