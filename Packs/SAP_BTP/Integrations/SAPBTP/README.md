@@ -75,6 +75,52 @@ This integration automatically collects audit log events from SAP BTP and sends 
 2. **Continuous Monitoring**: The integration automatically tracks the last collected event and fetches only new events on subsequent runs.
 3. **Automatic Pagination**: The integration handles large result sets automatically, retrieving up to the configured maximum number of events per collection cycle.
 
+## Commands
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### sap-btp-get-events
+
+***
+Retrieve audit log events from SAP BTP manually. This command allows you to fetch events for a specific time range and is useful for ad-hoc queries or testing.
+
+#### Base Command
+
+`sap-btp-get-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| from | Time to fetch events from. Supports natural language (e.g., "now", "3 days", "2 hours", "1 month") or ISO 8601 format (e.g., "2024-01-01"). Default is "now". | Optional |
+| limit | Maximum number of events to retrieve. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SAPBTP.Event.uuid | String | Unique identifier of the event. |
+| SAPBTP.Event.user | String | User associated with the event. |
+| SAPBTP.Event.time | Date | Timestamp of the event. |
+| SAPBTP.Event.ip | String | IP address associated with the event. |
+| SAPBTP.Event.data | Unknown | Event data payload. |
+
+#### Command Example
+
+```
+!sap-btp-get-events from="3 days" limit=10
+```
+
+#### Human Readable Output
+
+>### SAP BTP (Business Technology Platform) Events
+>
+>|uuid|user|time|ip|data|
+>|---|---|---|---|---|
+>| event-uuid-1 | user@example.com | 2024-01-15T10:30:00Z | 192.168.1.1 | {...} |
+>| event-uuid-2 | admin@example.com | 2024-01-15T11:45:00Z | 192.168.1.2 | {...} |
+
 ## Additional Resources
 
 For more information about SAP BTP Audit Logging, refer to the official SAP documentation:

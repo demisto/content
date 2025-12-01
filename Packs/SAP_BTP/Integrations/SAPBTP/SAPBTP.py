@@ -432,8 +432,11 @@ class Client(BaseClient):
 # =================================
 
 
-def test_module(client: Client) -> str:
-    """Test API connectivity and authentication."""
+def test_module_command(client: Client) -> str:
+    """Test API connectivity and authentication.
+
+    Note: Function name uses '_command' suffix to avoid pytest collection.
+    """
     demisto.debug("Starting execution of command: Test Module")
     try:
         test_time = (datetime.now() - timedelta(minutes=1)).strftime(IntegrationConfig.DATE_FORMAT)
@@ -576,7 +579,7 @@ def fetch_events_command(client: Client, args: dict[str, Any]) -> None:
 # =================================
 
 COMMAND_MAP: dict[str, Any] = {
-    "test-module": test_module,
+    "test-module": test_module_command,
     "sap-btp-get-events": get_events_command,
     "fetch-events": fetch_events_command,
 }

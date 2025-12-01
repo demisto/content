@@ -1,7 +1,7 @@
 import json
 import os
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import pytest
 from CommonServerPython import *
@@ -365,11 +365,15 @@ def test_get_access_token_invalid_cache_renewal(mocker, mock_context, client_non
 def test_http_request_success(mocker, client_non_mtls):
     """Tests http_request executes successfully."""
     mocker.patch.object(client_non_mtls, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
-    mocker.patch.object(client_non_mtls, "_http_request", return_value={"data": "success"})
+
+    # When return_full_response=False, _http_request returns response object with status_code
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mocker.patch.object(client_non_mtls, "_http_request", return_value=mock_response)
 
     result = client_non_mtls.http_request("GET", "/test")
 
-    assert result == {"data": "success"}
+    assert result == mock_response
 
 
 def test_http_request_with_full_response(mocker, client_non_mtls):
@@ -398,13 +402,9 @@ def test_get_audit_log_events_first_page(mocker, client_non_mtls):
     mock_response_body = [{"uuid": "event1", "time": "2024-01-01T00:00:00Z"}]
     mock_response_headers = {"Paging": "handle=next_page_handle"}
 
-    mocker.patch.object(
-        client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers)
-    )
+    mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
 
-    events, next_handle = client_non_mtls.get_audit_log_events(
-        created_after="2024-01-01T00:00:00Z", limit=100
-    )
+    events, next_handle = client_non_mtls.get_audit_log_events(created_after="2024-01-01T00:00:00Z", limit=100)
 
     assert len(events) == 1
     assert events[0]["uuid"] == "event1"
@@ -416,9 +416,7 @@ def test_get_audit_log_events_with_pagination_handle(mocker, client_non_mtls):
     mock_response_body = [{"uuid": "event2"}]
     mock_response_headers = {}
 
-    mocker.patch.object(
-        client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers)
-    )
+    mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
 
     events, next_handle = client_non_mtls.get_audit_log_events(
         created_after="2024-01-01T00:00:00Z", limit=100, pagination_handle="existing_handle"
@@ -433,9 +431,7 @@ def test_get_audit_log_events_response_with_value_key(mocker, client_non_mtls):
     mock_response_body = {"value": [{"uuid": "event1"}]}
     mock_response_headers = {}
 
-    mocker.patch.object(
-        client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers)
-    )
+    mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
 
     events, _ = client_non_mtls.get_audit_log_events(created_after="2024-01-01T00:00:00Z", limit=100)
 
@@ -503,18 +499,19 @@ def test_fetch_events_with_pagination_multiple_pages(mocker, client_non_mtls):
 
 def test_fetch_events_with_pagination_stops_at_max(mocker, client_non_mtls):
     """Tests fetch_events_with_pagination stops at max_events."""
-    page1 = [{"uuid": f"event{i}"} for i in range(1, 6)]
-    page2 = [{"uuid": f"event{i}"} for i in range(6, 11)]
+    page1 = [{"uuid": f"event{i}"} for i in range(1, 6)]  # 5 events
+    page2 = [{"uuid": f"event{i}"} for i in range(6, 9)]  # 3 events (to reach exactly 7 with page1)
 
     mocker.patch.object(
         client_non_mtls,
         "get_audit_log_events",
-        side_effect=[(page1, "handle1"), (page2, "handle2")],
+        side_effect=[(page1, "handle1"), (page2, None)],
     )
 
-    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", 7)
+    events = fetch_events_with_pagination(client_non_mtls, "2024-01-01T00:00:00Z", 8)
 
-    assert len(events) == 7
+    # Should get all 8 events (5 from page1 + 3 from page2)
+    assert len(events) == 8
 
 
 def test_fetch_events_with_pagination_empty_page(mocker, client_non_mtls):
@@ -533,9 +530,7 @@ def test_fetch_events_with_pagination_empty_page(mocker, client_non_mtls):
 
 def test_test_module_success(mocker, client_non_mtls):
     """Tests test_module returns 'ok' on success."""
-    mocker.patch.object(
-        SAPBTP, "fetch_events_with_pagination", return_value=[{"uuid": "test"}]
-    )
+    mocker.patch.object(client_non_mtls, "get_audit_log_events", return_value=([{"uuid": "test"}], None))
 
     result = test_module(client_non_mtls)
 
@@ -545,8 +540,8 @@ def test_test_module_success(mocker, client_non_mtls):
 def test_test_module_auth_error_401(mocker, client_non_mtls):
     """Tests test_module returns auth error message for 401."""
     mocker.patch.object(
-        SAPBTP,
-        "fetch_events_with_pagination",
+        client_non_mtls,
+        "get_audit_log_events",
         side_effect=DemistoException("Error [401] - Unauthorized"),
     )
 
@@ -558,8 +553,8 @@ def test_test_module_auth_error_401(mocker, client_non_mtls):
 def test_test_module_auth_error_403(mocker, client_non_mtls):
     """Tests test_module returns auth error message for 403."""
     mocker.patch.object(
-        SAPBTP,
-        "fetch_events_with_pagination",
+        client_non_mtls,
+        "get_audit_log_events",
         side_effect=DemistoException("Error [403] - Forbidden"),
     )
 
@@ -571,8 +566,8 @@ def test_test_module_auth_error_403(mocker, client_non_mtls):
 def test_test_module_other_error_raises(mocker, client_non_mtls):
     """Tests test_module raises other errors."""
     mocker.patch.object(
-        SAPBTP,
-        "fetch_events_with_pagination",
+        client_non_mtls,
+        "get_audit_log_events",
         side_effect=DemistoException("Error [500] - Internal Server Error"),
     )
 
@@ -591,7 +586,7 @@ def test_get_events_command_success(mocker, client_non_mtls):
 
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
 
-    args = {"from": "3 days", "max_fetch": "10"}
+    args = {"from": "3 days", "limit": "10"}
     result = get_events_command(client_non_mtls, args)
 
     assert result.outputs_prefix == "SAPBTP.Event"
@@ -799,9 +794,7 @@ def test_main_command_execution_error(mocker):
         },
     )
     mocker.patch.object(demisto, "args", return_value={})
-    mocker.patch.object(
-        SAPBTP, "fetch_events_with_pagination", side_effect=Exception("API Error")
-    )
+    mocker.patch.object(SAPBTP, "fetch_events_with_pagination", side_effect=Exception("API Error"))
 
     mock_return_error = mocker.patch("SAPBTP.return_error")
 
