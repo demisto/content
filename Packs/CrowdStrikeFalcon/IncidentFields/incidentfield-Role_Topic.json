@@ -1,0 +1,31 @@
+{
+    "id": "incident_crowdstrikefalconroletopic",
+    "version": -1,
+    "modified": "2025-11-26T08:41:48.125353676Z",
+    "name": "CrowdStrike Falcon Role topic",
+    "ownerOnly": false,
+    "cliName": "crowdstrikefalconroletopic",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "CrowdStrike Falcon Intelligence Recon  notification"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}
