@@ -1986,7 +1986,7 @@ def update_case_command(client: Client, args: dict) -> list[CommandResults]:
     }
     remove_nulls_from_dictionary(case_update_payload)
 
-    if not case_update_payload:
+    if not case_update_payload and assignee != "unassigned":
         raise ValueError(f"{(error_messages)}\nNo valid update parameters provided for case update.")
 
     request_data = {"request_data": case_update_payload}
