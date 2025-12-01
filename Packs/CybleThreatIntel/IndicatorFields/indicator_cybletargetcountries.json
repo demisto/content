@@ -1,6 +1,7 @@
 {
 			"id": "indicator_cybletargetcountries",
-			"version": 1,
+            "version": -1,
+            "fromversion": "5.0.0",
 			"cacheVersn": 0,
 			"modified": "2025-11-28T06:54:37.627059844Z",
 			"created": "0001-01-01T00:00:00Z",

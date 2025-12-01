@@ -1,6 +1,8 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from CybleIOC import (
+from datetime import datetime, timedelta
+
+from CybleThreatIntel import (
     Client,
     calculate_verdict,
     get_time_range,
@@ -10,8 +12,6 @@ from CybleIOC import (
     VerdictEnum,
     ConfidenceLevel,
 )
-
-from datetime import datetime, timedelta
 
 
 # -------------------------------------------------------------------
@@ -29,14 +29,14 @@ def test_client_initialization():
 # -------------------------------------------------------------------
 #   HTTP POST – SUCCESS
 # -------------------------------------------------------------------
-@patch("CybleIOC.requests.post")
+@patch("CybleThreatIntel.requests.post")
 def test_http_post_success(mock_post):
     resp = MagicMock()
     resp.status_code = 200
     resp.json.return_value = {"ok": True}
     mock_post.return_value = resp
 
-    client = Client({"base_url": "https://x.com", "access_token": {"password": "a"}})
+    client = Client({"base_url": "https://example.com", "access_token": {"password": "a"}})
     r = client.http_post("/y/iocs", {"x": 1})
 
     assert r == {"ok": True}
@@ -46,7 +46,7 @@ def test_http_post_success(mock_post):
 # -------------------------------------------------------------------
 #   HTTP POST – FAILURE
 # -------------------------------------------------------------------
-@patch("CybleIOC.requests.post")
+@patch("CybleThreatIntel.requests.post")
 def test_http_post_failure(mock_post):
     resp = MagicMock()
     resp.status_code = 500
@@ -54,7 +54,7 @@ def test_http_post_failure(mock_post):
     resp.text = "error"
     mock_post.return_value = resp
 
-    client = Client({"base_url": "https://x.com", "access_token": {"password": "a"}})
+    client = Client({"base_url": "https://example.com", "access_token": {"password": "a"}})
 
     with pytest.raises(Exception):
         client.http_post("/y/iocs", {})
@@ -110,8 +110,8 @@ def test_calculate_verdict_values(risk, conf, expected):
 # -------------------------------------------------------------------
 #   IOC LOOKUP COMMAND – NO RESULTS
 # -------------------------------------------------------------------
-@patch("CybleIOC.return_error")
-@patch("CybleIOC.Client.ioc_lookup")
+@patch("CybleThreatIntel.return_error")
+@patch("CybleThreatIntel.Client.ioc_lookup")
 def test_ioc_lookup_no_results(mock_lookup, mock_return):
     mock_lookup.return_value = {"data": {"iocs": []}}
 
@@ -124,7 +124,7 @@ def test_ioc_lookup_no_results(mock_lookup, mock_return):
 # -------------------------------------------------------------------
 #   IOC LOOKUP – WITH RESULTS
 # -------------------------------------------------------------------
-@patch("CybleIOC.Client.ioc_lookup")
+@patch("CybleThreatIntel.Client.ioc_lookup")
 def test_ioc_lookup_success(mock_lookup):
     mock_lookup.return_value = {
         "data": {
@@ -144,26 +144,15 @@ def test_ioc_lookup_success(mock_lookup):
 # -------------------------------------------------------------------
 #   FETCH INDICATORS – MAIN LOGIC
 # -------------------------------------------------------------------
-@patch("CybleIOC.demisto")
+@patch("CybleThreatIntel.demisto")
 def test_fetch_indicators_happy_path(mock_demisto):
-    """
-    Tests:
-      - page loop
-      - chunk loop
-      - setLastRun
-      - createIndicators called
-    """
-
-    # Mock demisto args/params
     mock_demisto.args.return_value = {}
     mock_demisto.getLastRun.return_value = {}
     mock_demisto.setLastRun = MagicMock()
     mock_demisto.createIndicators = MagicMock()
 
-    # Create dummy client
     client = Client({"base_url": "x", "access_token": {"password": "a"}})
 
-    # Mock API response for one page
     client.fetch_iocs = MagicMock(return_value={
         "success": True,
         "data": {
@@ -199,21 +188,18 @@ def test_fetch_indicators_happy_path(mock_demisto):
 # -------------------------------------------------------------------
 #   FETCH INDICATORS – RETRY FAILURE
 # -------------------------------------------------------------------
-@patch("CybleIOC.demisto")
+@patch("CybleThreatIntel.demisto")
 def test_fetch_indicators_retry_fail(mock_demisto):
-    """Ensure it skips after 5 retries."""
 
     mock_demisto.args.return_value = {}
     mock_demisto.getLastRun.return_value = {}
 
     client = Client({"base_url": "x", "access_token": {"password": "a"}})
 
-    # Always throw exception → triggers retries
     client.fetch_iocs = MagicMock(side_effect=Exception("fail"))
 
     params = {"first_fetch": 1, "max_fetch": 50}
 
     count = fetch_indicators_command(client, params)
 
-    # No indicators inserted
     assert count == 0
