@@ -54,11 +54,14 @@ In order to connect to the Azure Risky Users using the Cortex XSOAR Azure App wi
 
 At end of the process you'll see a message that you've logged in successfully.
 
-## Configure AzureRiskyUsers on Cortex XSOAR
+## Configure AzureRiskyUsers on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AzureRiskyUsers.
-3. Click **Add instance** to create and configure a new integration instance.
+1. Navigate to one of the following:
+   - Cortex XSOAR 8: Settings & Info > Settings > Integrations > Instances
+   - Cortex XSOAR 6: Settings > Integrations
+   - Cortex XSIAM: Settings > Configurations > Automation & Feed Integrations
+3. Search for AzureRiskyUsers.
+4. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
     | --- | --- |
@@ -70,11 +73,11 @@ At end of the process you'll see a message that you've logged in successfully.
     | Use system proxy | False |
     | Trust any certificate | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+5. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### azure-risky-users-auth-test
