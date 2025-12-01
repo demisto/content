@@ -1,6 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
+import dateparser
+from enum import Enum
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -9,6 +11,205 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
+SEARCH_ASSETS_DEFAULT_LIMIT = 100
+
+ASSET_FIELDS = {
+    "asset_names": "xdm.asset.name",
+    "asset_types": "xdm.asset.type.name",
+    "asset_tags": "xdm.asset.tags",
+    "asset_ids": "xdm.asset.id",
+    "asset_providers": "xdm.asset.provider",
+    "asset_realms": "xdm.asset.realm",
+    "asset_group_ids": "xdm.asset.group_ids",
+}
+
+
+WEBAPP_COMMANDS = ["core-get-vulnerabilities", "core-search-asset-groups", "core-get-issue-recommendations"]
+DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
+
+VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
+ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
+
+ASSET_GROUP_FIELDS = {
+    "asset_group_name": "XDM__ASSET_GROUP__NAME",
+    "asset_group_type": "XDM__ASSET_GROUP__TYPE",
+    "asset_group_description": "XDM__ASSET_GROUP__DESCRIPTION",
+    "asset_group_id": "XDM__ASSET_GROUP__ID",
+}
+
+VULNERABILITIES_SEVERITY_MAPPING = {
+    "info": "SEV_030_INFO",
+    "low": "SEV_040_LOW",
+    "medium": "SEV_050_MEDIUM",
+    "high": "SEV_060_HIGH",
+    "critical": "SEV_070_CRITICAL",
+}
+
+
+class FilterBuilder:
+    """
+    Filter class for creating filter dictionary objects.
+    """
+
+    class FilterType(str, Enum):
+        operator: str
+
+        """
+        Available type options for filter filtering.
+        Each member holds its string value and its logical operator for multi-value scenarios.
+        """
+
+        def __new__(cls, value, operator):
+            obj = str.__new__(cls, value)
+            obj._value_ = value
+            obj.operator = operator
+            return obj
+
+        EQ = ("EQ", "OR")
+        RANGE = ("RANGE", "OR")
+        CONTAINS = ("CONTAINS", "OR")
+        GTE = ("GTE", "OR")
+        ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
+        JSON_WILDCARD = ("JSON_WILDCARD", "OR")
+        IS_EMPTY = ("IS_EMPTY", "OR")
+        NIS_EMPTY = ("NIS_EMPTY", "AND")
+
+    AND = "AND"
+    OR = "OR"
+    FIELD = "SEARCH_FIELD"
+    TYPE = "SEARCH_TYPE"
+    VALUE = "SEARCH_VALUE"
+
+    class Field:
+        def __init__(self, field_name: str, filter_type: "FilterType", values: Any):
+            self.field_name = field_name
+            self.filter_type = filter_type
+            self.values = values
+
+    class MappedValuesField(Field):
+        def __init__(self, field_name: str, filter_type: "FilterType", values: Any, mappings: dict[str, "FilterType"]):
+            super().__init__(field_name, filter_type, values)
+            self.mappings = mappings
+
+    def __init__(self, filter_fields: list[Field] | None = None):
+        self.filter_fields = filter_fields or []
+
+    def add_field(self, name: str, type: "FilterType", values: Any, mapper: dict | None = None):
+        """
+        Adds a new field to the filter.
+        Args:
+            name (str): The name of the field.
+            type (FilterType): The type to use for the field.
+            values (Any): The values to filter for.
+            mapper (dict | None): An optional dictionary to map values before filtering.
+        """
+        processed_values = values
+        if mapper:
+            if not isinstance(values, list):
+                values = [values]
+            processed_values = [mapper[v] for v in values if v in mapper]
+
+        self.filter_fields.append(FilterBuilder.Field(name, type, processed_values))
+
+    def add_field_with_mappings(self, name: str, type: "FilterType", values: Any, mappings: dict[str, "FilterType"]):
+        """
+        Adds a new field to the filter with special value mappings.
+        Args:
+            name (str): The name of the field.
+            type (FilterType): The default filter type for non-mapped values.
+            values (Any): The values to filter for.
+            mappings (dict[str, FilterType]): A dictionary mapping special values to specific filter types.
+                Example:
+                    mappings = {
+                        "unassigned": FilterType.IS_EMPTY,
+                        "assigned": FilterType.NIS_EMPTY,
+                    }
+        """
+        self.filter_fields.append(FilterBuilder.MappedValuesField(name, type, values, mappings))
+
+    def add_time_range_field(self, name: str, start_time: str | None, end_time: str | None):
+        """
+        Adds a time range field to the filter.
+        Args:
+            name (str): The name of the field.
+            start_time (str | None): The start time of the range.
+            end_time (str | None): The end time of the range.
+        """
+        start, end = self._prepare_time_range(start_time, end_time)
+        if start and end:
+            self.add_field(name, FilterType.RANGE, {"from": start, "to": end})
+
+    def to_dict(self) -> dict[str, list]:
+        """
+        Creates a filter dict from a list of Field objects.
+        The filter will require each field to be one of the values provided.
+        Returns:
+            dict[str, list]: Filter object.
+        """
+        filter_structure: dict[str, list] = {FilterBuilder.AND: []}
+
+        for field in self.filter_fields:
+            if not isinstance(field.values, list):
+                field.values = [field.values]
+
+            search_values = []
+            for value in field.values:
+                if value is None:
+                    continue
+
+                current_filter_type = field.filter_type
+                current_value = value
+
+                if isinstance(field, FilterBuilder.MappedValuesField) and value in field.mappings:
+                    current_filter_type = field.mappings[value]
+                    if current_filter_type in [FilterType.IS_EMPTY, FilterType.NIS_EMPTY]:
+                        current_value = "<No Value>"
+
+                search_values.append(
+                    {
+                        FilterBuilder.FIELD: field.field_name,
+                        FilterBuilder.TYPE: current_filter_type.value,
+                        FilterBuilder.VALUE: current_value,
+                    }
+                )
+
+            if search_values:
+                search_obj = {field.filter_type.operator: search_values} if len(search_values) > 1 else search_values[0]
+                filter_structure[FilterBuilder.AND].append(search_obj)
+
+        if not filter_structure[FilterBuilder.AND]:
+            filter_structure = {}
+
+        return filter_structure
+
+    @staticmethod
+    def _prepare_time_range(start_time_str: str | None, end_time_str: str | None) -> tuple[int | None, int | None]:
+        """Prepare start and end time from args, parsing relative time strings."""
+        if end_time_str and not start_time_str:
+            raise DemistoException("When 'end_time' is provided, 'start_time' must be provided as well.")
+
+        start_time, end_time = None, None
+
+        if start_time_str:
+            if start_dt := dateparser.parse(str(start_time_str)):
+                start_time = int(start_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse start_time: {start_time_str}")
+
+        if end_time_str:
+            if end_dt := dateparser.parse(str(end_time_str)):
+                end_time = int(end_dt.timestamp() * 1000)
+            else:
+                raise ValueError(f"Could not parse end_time: {end_time_str}")
+
+        if start_time and not end_time:
+            # Set end_time to the current time if only start_time is provided
+            end_time = int(datetime.now().timestamp() * 1000)
+
+        return start_time, end_time
+
+
+FilterType = FilterBuilder.FilterType
 
 
 def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
@@ -118,6 +319,282 @@ class Client(CoreClient):
 
         return reply
 
+    def search_assets(self, filter, page_number, page_size, on_demand_fields):
+        reply = self._http_request(
+            method="POST",
+            headers=self._headers,
+            json_data={
+                "request_data": {
+                    "filters": filter,
+                    "search_from": page_number * page_size,
+                    "search_to": (page_number + 1) * page_size,
+                    "on_demand_fields": on_demand_fields,
+                },
+            },
+            url_suffix="/assets",
+        )
+
+        return reply
+
+    def search_asset_groups(self, filter):
+        reply = self._http_request(
+            method="POST",
+            headers=self._headers,
+            json_data={"request_data": {"filters": filter}},
+            url_suffix="/asset-groups",
+        )
+
+        return reply
+
+    def get_webapp_data(self, request_data: dict) -> dict:
+        return self._http_request(
+            method="POST",
+            url_suffix="/get_data",
+            json_data=request_data,
+        )
+
+    def get_playbook_suggestion_by_issue(self, issue_id):
+        """
+        Get playbook suggestions for a specific issue.
+        Args:
+            issue_id (str): The ID of the issue to get playbook suggestions for.
+        Returns:
+            dict: The response containing playbook suggestions.
+        """
+        reply = self._http_request(
+            method="POST",
+            json_data={"alert_internal_id": issue_id},
+            headers=self._headers,
+            url_suffix="/incident/get_playbook_suggestion_by_alert/",
+        )
+
+        return reply
+
+
+def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
+    """
+    Get comprehensive recommendations for an issue, including remediation steps and playbook suggestions.
+    Retrieves issue data with remediation field using the generic /api/webapp/get_data endpoint.
+    """
+    issue_id = args.get("issue_id")
+    if not issue_id:
+        raise DemistoException("issue_id is required.")
+
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("internal_id", FilterType.CONTAINS, issue_id)
+
+    request_data = build_webapp_request_data(
+        table_name="ALERTS_VIEW_TABLE",
+        filter_dict=filter_builder.to_dict(),
+        limit=1,
+        sort_field="source_insert_ts",
+        sort_order="DESC",
+        on_demand_fields=[],
+    )
+
+    # Get issue data with remediation field
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    issue_data = reply.get("DATA", [])
+
+    if not issue_data:
+        raise DemistoException(f"No issue found with ID: {issue_id}")
+
+    issue = issue_data[0]
+
+    # Get playbook suggestions
+    playbook_response = client.get_playbook_suggestion_by_issue(issue_id)
+    playbook_suggestions = playbook_response.get("reply", {})
+    demisto.debug(f"{playbook_response=}")
+
+    recommendation = {
+        "issue_id": issue.get("internal_id") or issue_id,
+        "issue_name": issue.get("alert_name"),
+        "severity": issue.get("severity"),
+        "description": issue.get("alert_description"),
+        "remediation": issue.get("remediation"),
+        "playbook_suggestions": playbook_suggestions,
+    }
+
+    headers = [
+        "issue_id",
+        "issue_name",
+        "severity",
+        "description",
+        "remediation",
+    ]
+
+    readable_output = tableToMarkdown(
+        f"Issue Recommendations for {issue_id}",
+        [recommendation],
+        headerTransform=string_to_table_header,
+        headers=headers,
+    )
+
+    if playbook_suggestions:
+        readable_output += "\n" + tableToMarkdown(
+            "Playbook Suggestions",
+            playbook_suggestions,
+            headerTransform=string_to_table_header,
+        )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.IssueRecommendations",
+        outputs_key_field="issue_id",
+        outputs=recommendation,
+        raw_response=response,
+    )
+
+
+def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves asset groups from the Cortex platform based on provided filters.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - name (str, optional): Filter by asset group names
+                         - type (str, optional): Filter by asset group type
+                         - description (str, optional): Filter by description
+                         - id (str, optional): Filter by asset group ids
+
+    Returns:
+        CommandResults: Object containing the formatted asset groups,
+                        raw response, and outputs for integration context.
+    """
+    limit = arg_to_number(args.get("limit")) or 50
+    filter_builder = FilterBuilder()
+    filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_name"], FilterType.CONTAINS, argToList(args.get("name")))
+    filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_type"], FilterType.EQ, args.get("type"))
+    filter_builder.add_field(
+        ASSET_GROUP_FIELDS["asset_group_description"], FilterType.CONTAINS, argToList(args.get("description"))
+    )
+    filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_id"], FilterType.EQ, argToList(args.get("id")))
+
+    request_data = build_webapp_request_data(
+        table_name=ASSET_GROUPS_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=limit,
+        sort_field="XDM__ASSET_GROUP__LAST_UPDATE_TIME",
+    )
+
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    data = [
+        {(k.replace("XDM__ASSET_GROUP__", "") if k.startswith("XDM__ASSET_GROUP__") else k).lower(): v for k, v in item.items()}
+        for item in data
+    ]
+
+    return CommandResults(
+        readable_output=tableToMarkdown("AssetGroups", data, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AssetGroups",
+        outputs_key_field="id",
+        outputs=data,
+        raw_response=response,
+    )
+
+
+def build_webapp_request_data(
+    table_name: str,
+    filter_dict: dict,
+    limit: int,
+    sort_field: str,
+    on_demand_fields: list | None = None,
+    sort_order: str = "DESC",
+) -> dict:
+    """
+    Builds the request data for the generic /api/webapp/get_data endpoint.
+    """
+    filter_data = {
+        "sort": [{"FIELD": sort_field, "ORDER": sort_order}],
+        "paging": {"from": 0, "to": limit},
+        "filter": filter_dict,
+    }
+    demisto.debug(f"{filter_data=}")
+
+    if on_demand_fields is None:
+        on_demand_fields = []
+
+    return {"type": "grid", "table_name": table_name, "filter_data": filter_data, "jsons": [], "onDemandFields": on_demand_fields}
+
+
+def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves vulnerabilities using the generic /api/webapp/get_data endpoint.
+    """
+    limit = arg_to_number(args.get("limit")) or 50
+    sort_field = args.get("sort_field", "LAST_OBSERVED")
+    sort_order = args.get("sort_order", "DESC")
+
+    filter_builder = FilterBuilder()
+    filter_builder.add_field("CVE_ID", FilterType.CONTAINS, argToList(args.get("cve_id")))
+    filter_builder.add_field("CVSS_SCORE", FilterType.GTE, arg_to_number(args.get("cvss_score_gte")))
+    filter_builder.add_field("EPSS_SCORE", FilterType.GTE, arg_to_number(args.get("epss_score_gte")))
+    filter_builder.add_field("INTERNET_EXPOSED", FilterType.EQ, arg_to_bool_or_none(args.get("internet_exposed")))
+    filter_builder.add_field("EXPLOITABLE", FilterType.EQ, arg_to_bool_or_none(args.get("exploitable")))
+    filter_builder.add_field("HAS_KEV", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev")))
+    filter_builder.add_field("AFFECTED_SOFTWARE", FilterType.CONTAINS, argToList(args.get("affected_software")))
+    filter_builder.add_field(
+        "PLATFORM_SEVERITY", FilterType.EQ, argToList(args.get("severity")), VULNERABILITIES_SEVERITY_MAPPING
+    )
+    filter_builder.add_field("ISSUE_ID", FilterType.CONTAINS, argToList(args.get("issue_id")))
+    filter_builder.add_time_range_field("LAST_OBSERVED", args.get("start_time"), args.get("end_time"))
+    filter_builder.add_field_with_mappings(
+        "ASSIGNED_TO",
+        FilterType.CONTAINS,
+        argToList(args.get("assignee")),
+        {
+            "unassigned": FilterType.IS_EMPTY,
+            "assigned": FilterType.NIS_EMPTY,
+        },
+    )
+
+    request_data = build_webapp_request_data(
+        table_name=VULNERABLE_ISSUES_TABLE,
+        filter_dict=filter_builder.to_dict(),
+        limit=limit,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        on_demand_fields=argToList(args.get("on_demand_fields")),
+    )
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+
+    output_keys = [
+        "ISSUE_ID",
+        "CVE_ID",
+        "CVE_DESCRIPTION",
+        "ASSET_NAME",
+        "PLATFORM_SEVERITY",
+        "EPSS_SCORE",
+        "CVSS_SCORE",
+        "ASSIGNED_TO",
+        "ASSIGNED_TO_PRETTY",
+        "AFFECTED_SOFTWARE",
+        "FIX_AVAILABLE",
+        "INTERNET_EXPOSED",
+        "HAS_KEV",
+        "EXPLOITABLE",
+        "ASSET_IDS",
+    ]
+    filtered_data = [{k: v for k, v in item.items() if k in output_keys} for item in data]
+
+    readable_output = tableToMarkdown(
+        "Vulnerabilities", filtered_data, headerTransform=string_to_table_header, sort_headers=False
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.VulnerabilityIssue",
+        outputs_key_field="ISSUE_ID",
+        outputs=filtered_data,
+        raw_response=response,
+    )
+
 
 def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     """
@@ -163,7 +640,7 @@ def get_cases_command(client, args):
     )
 
 
-def get_extra_data_for_case_id_command(client, args):
+def get_extra_data_for_case_id_command(client: CoreClient, args):
     """
     Retrieves extra data for a specific case ID.
 
@@ -190,6 +667,79 @@ def get_extra_data_for_case_id_command(client, args):
     )
 
 
+def search_assets_command(client: Client, args):
+    """
+    Search for assets in XDR based on the provided filters.
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - asset_names (list[str]): List of asset names to search for.
+                         - asset_types (list[str]): List of asset types to search for.
+                         - asset_tags (list[str]): List of asset tags to search for.
+                         - asset_ids (list[str]): List of asset IDs to search for.
+                         - asset_providers (list[str]): List of asset providers to search for.
+                         - asset_realms (list[str]): List of asset realms to search for.
+                         - asset_group_names (list[str]): List of asset group names to search for.
+    """
+    asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
+    filter = FilterBuilder()
+    filter.add_field(ASSET_FIELDS["asset_names"], FilterType.CONTAINS, argToList(args.get("asset_names", "")))
+    filter.add_field(ASSET_FIELDS["asset_types"], FilterType.EQ, argToList(args.get("asset_types", "")))
+    filter.add_field(ASSET_FIELDS["asset_tags"], FilterType.JSON_WILDCARD, safe_load_json(args.get("asset_tags", [])))
+    filter.add_field(ASSET_FIELDS["asset_ids"], FilterType.EQ, argToList(args.get("asset_ids", "")))
+    filter.add_field(ASSET_FIELDS["asset_providers"], FilterType.EQ, argToList(args.get("asset_providers", "")))
+    filter.add_field(ASSET_FIELDS["asset_realms"], FilterType.EQ, argToList(args.get("asset_realms", "")))
+    filter.add_field(ASSET_FIELDS["asset_group_ids"], FilterType.ARRAY_CONTAINS, asset_group_ids)
+    filter_str = filter.to_dict()
+
+    demisto.debug(f"Search Assets Filter: {filter_str}")
+    page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
+    page_number = arg_to_number(args.get("page_number", 0))
+    on_demand_fields = ["xdm.asset.tags"]
+    raw_response = client.search_assets(filter_str, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
+    # Remove "xdm.asset." suffix from all keys in the response
+    response = [
+        {k.replace("xdm.asset.", "") if k.startswith("xdm.asset.") else k: v for k, v in item.items()} for item in raw_response
+    ]
+    return CommandResults(
+        readable_output=tableToMarkdown("Assets", response, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
+        outputs=response,
+        raw_response=raw_response,
+    )
+
+
+def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> list[str]:
+    """
+    Retrieves the IDs of asset groups based on their names.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        group_names (list[str]): List of asset group names to retrieve IDs for.
+
+    Returns:
+        list[str]: List of asset group IDs.
+    """
+    if not group_names:
+        return []
+
+    filter = FilterBuilder()
+    filter.add_field("XDM.ASSET_GROUP.NAME", FilterType.EQ, group_names)
+    filter_str = filter.to_dict()
+
+    groups = client.search_asset_groups(filter_str).get("reply", {}).get("data", [])
+
+    group_ids = [group.get("XDM.ASSET_GROUP.ID") for group in groups if group.get("XDM.ASSET_GROUP.ID")]
+
+    if len(group_ids) != len(group_names):
+        found_groups = [group.get("XDM.ASSET_GROUP.NAME") for group in groups if group.get("XDM.ASSET_GROUP.ID")]
+        missing_groups = [name for name in group_names if name not in found_groups]
+        raise DemistoException(f"Failed to fetch asset group IDs for {missing_groups}. Ensure the asset group names are valid.")
+
+    return group_ids
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -200,7 +750,11 @@ def main():  # pragma: no cover
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
     headers: dict = {}
-    base_url = "/api/webapp/public_api/v1"
+
+    webapp_api_url = "/api/webapp"
+    public_api_url = f"{webapp_api_url}/public_api/v1"
+    data_platform_api_url = f"{webapp_api_url}/data-platform"
+
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
 
@@ -210,8 +764,14 @@ def main():  # pragma: no cover
         demisto.debug(f"Failed casting timeout parameter to int, falling back to 120 - {e}")
         timeout = 120
 
+    client_url = public_api_url
+    if command in WEBAPP_COMMANDS:
+        client_url = webapp_api_url
+    elif command in DATA_PLATFORM_COMMANDS:
+        client_url = data_platform_api_url
+
     client = Client(
-        base_url=base_url,
+        base_url=client_url,
         proxy=proxy,
         verify=verify_cert,
         headers=headers,
@@ -224,8 +784,10 @@ def main():  # pragma: no cover
             demisto.results("ok")
 
         elif command == "core-get-asset-details":
-            client._base_url = "/api/webapp/data-platform"
             return_results(get_asset_details_command(client, args))
+
+        elif command == "core-search-asset-groups":
+            return_results(search_asset_groups_command(client, args))
 
         elif command == "core-get-issues":
             # replace all dict keys that contain issue with alert
@@ -248,6 +810,14 @@ def main():  # pragma: no cover
 
         elif command == "core-get-case-extra-data":
             return_results(get_extra_data_for_case_id_command(client, args))
+        elif command == "core-search-assets":
+            return_results(search_assets_command(client, args))
+
+        elif command == "core-get-vulnerabilities":
+            return_results(get_vulnerabilities_command(client, args))
+
+        elif command == "core-get-issue-recommendations":
+            return_results(get_issue_recommendations_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

@@ -116,7 +116,7 @@ Updates a specific account storage.
 | Azure.StorageAccount.properties.isHnsEnabled | Boolean | Account HierarchicalNamespace enabled if sets to true. |
 | Azure.StorageAccount.properties.allowBlobPublicAccess | Boolean | If set to true \(default\), allows public access to all blobs or containers in the storage account. |
 | Azure.StorageAccount.properties.minimumTlsVersion | String | Sets the minimum TLS version to be permitted on requests to storage. Default is TLS 1.0. |
-| Azure.StorageAccount.properties.allowSharedKeyAccess | Boolean | Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests \(including shared access signatures\) must be authorized with Azure Active Directory \(Azure AD\). |
+| Azure.StorageAccount.properties.allowSharedKeyAccess | Boolean | Whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests \(including shared access signatures\) must be authorized with Entra ID \(Azure AD\). |
 | Azure.StorageAccount.properties.creationTime | Date | The creation date and time of the storage account in UTC. |
 | Azure.StorageAccount.properties.primaryEndpoints | String | The URLs that are used to retrieve a public blob, queue, or table object. |
 | Azure.StorageAccount.properties.primaryLocation | String | The storage account primary data center location. |
@@ -668,10 +668,10 @@ Updates a key vault in the specified subscription.
 | Azure.KeyVault.tags | unknown | Resource tags. |
 | Azure.KeyVault.properties.sku.family | String | SKU family name. |
 | Azure.KeyVault.properties.sku.name | String | SKU name to specify whether the key vault is a standard vault or a premium vault. |
-| Azure.KeyVault.properties.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
+| Azure.KeyVault.properties.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
 | Azure.KeyVault.properties.accessPolicies | unknown | An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID. |
-| Azure.KeyVault.properties.accessPolicies.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
-| Azure.KeyVault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. |
+| Azure.KeyVault.properties.accessPolicies.tenantId | String | The Entra ID tenant ID that should be used for authenticating requests to the key vault. |
+| Azure.KeyVault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Entra ID tenant for the vault. The object ID must be unique for the list of access policies. |
 | Azure.KeyVault.properties.accessPolicies.permissions | unknown | Permissions the identity has for keys, secrets and certificates. |
 | Azure.KeyVault.properties.enabledForDeployment | Boolean | Whether Azure Virtual Machines are allowed to retrieve certificates stored as secrets from the key vault. |
 | Azure.KeyVault.properties.enabledForDiskEncryption | Boolean | Whether Azure Disk Encryption is allowed to retrieve secrets from the vault and unwrap keys. |

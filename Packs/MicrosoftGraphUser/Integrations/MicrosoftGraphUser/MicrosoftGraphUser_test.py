@@ -792,7 +792,7 @@ def test_change_on_premise_password_success(requests_mock, password_field: str):
     expected_output = "The password of user user has been changed successfully."
 
     # authenticate
-    requests_mock.post("https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token", json={})
+    requests_mock.post("https://login.microsoftonline.com/tenant-id/oauth2/v2.0/token", json={})
     requests_mock.get(
         "https://graph.microsoft.com/v1.0/users/user/authentication/passwordMethods", json={"value": [{"id": "id"}]}
     )
@@ -818,6 +818,57 @@ def test_change_on_premise_password_success(requests_mock, password_field: str):
     output = change_password_user_on_premise_command(
         client=client, args={"user": "user", password_field: password, other_password_field: ""}
     )
+    assert mocked_password_change_request.call_count == 1
+    assert output.readable_output == expected_output
+
+
+def test_change_on_premise_password_empty_http_response_body(requests_mock):
+    """
+    Given
+        - A MSGraphClient and a scenario where the password reset endpoint returns an empty body with 202 status.
+    When
+        - Calling change_password_user_on_premise_command with resp_type="response" configured in the client call.
+    Then
+        - Ensure the command succeeds (no exception) and returns the success message.
+        - Ensure the POST request to resetPassword was executed once.
+    """
+    from MicrosoftGraphUser import change_password_user_on_premise_command, MsGraphClient
+
+    expected_output = "The password of user user has been changed successfully."
+
+    # Mock auth and the password method fetch
+    requests_mock.post("https://login.microsoftonline.com/tenant-id/oauth2/v2.0/token", json={})
+    requests_mock.get(
+        "https://graph.microsoft.com/v1.0/users/user/authentication/passwordMethods", json={"value": [{"id": "id"}]}
+    )
+
+    # Mock the password reset call to return 202 with an empty body to simulate an empty HTTP response
+    mocked_password_change_request = requests_mock.post(
+        "https://graph.microsoft.com/v1.0/users/user/authentication/methods/id/resetPassword",
+        text="",
+        status_code=202,
+    )
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    output = change_password_user_on_premise_command(
+        client=client,
+        args={"user": "user", "password": "new_password", "nonsensitive_password": ""},
+    )
+
     assert mocked_password_change_request.call_count == 1
     assert output.readable_output == expected_output
 

@@ -143,8 +143,8 @@ configuration:
   section: Collect
   advanced: true
   required: false
-description: Unified gateway to security insights - all from a unified Microsoft Graph User API.
-display: Azure Active Directory Users
+description: The Entra ID Users integration (formerly Azure Active Directory Users) is a Unified gateway to security insights - all from a unified Microsoft Graph User API.
+display: Entra ID Users
 name: Microsoft Graph User
 script:
   commands:

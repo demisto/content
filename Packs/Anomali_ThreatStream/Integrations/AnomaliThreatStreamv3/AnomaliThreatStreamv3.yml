@@ -2694,12 +2694,13 @@ script:
       name: submission_value
       required: true
     - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Whether the premium sandbox should be used for detonation.
+      defaultValue: 'true'
+      description: Deprecated, must be set to 'true'.
       name: premium_sandbox
       predefined:
       - 'false'
       - 'true'
+      deprecated: true
     - description: A comma-separated list of additional details for the indicator. This information is displayed in the Tag column of the ThreatStream UI.
       name: detail
     - default: true

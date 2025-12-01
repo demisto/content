@@ -760,7 +760,7 @@ script:
       description: The comment's creation time.
       type: Date
   - deprecated: true
-    description: Deprecated. Use the Azure Active Directory Users integration instead.
+    description: Deprecated. Use the Entra ID Users integration instead.
     name: msg-get-users
     outputs:
     - contextPath: MsGraph.User.Email
@@ -781,7 +781,7 @@ script:
       name: user_id
       required: true
     deprecated: true
-    description: Deprecated. Use the Azure Active Directory Users integration instead.
+    description: Deprecated. Use the Entra ID Users integration instead.
     name: msg-get-user
     outputs:
     - contextPath: MsGraph.User.Email
