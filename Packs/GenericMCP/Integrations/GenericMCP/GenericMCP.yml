@@ -8,7 +8,7 @@ configuration:
     display: Server URL
     type: 0
     required: true
-  - name: authentication
+  - name: auth_type
     section: Connect
     display: Authentication Type
     type: 15
@@ -19,14 +19,64 @@ configuration:
       - Bearer
       - Api-Key
       - RawToken
+      - OAuth 2.0 Authorization Code
+      - OAuth 2.0 Client Credentials
+      - OAuth 2.0 Dynamic Client Registration
       - No Authorization
     additionalinfo: Select the authentication method.
+  - name: oauth_credentials
+    type: 9
+    display: Client ID
+    displaypassword: Client Secret
+    section: Connect
+  - name: auth_code
+    type: 9
+    displaypassword: Authorization code
+    hiddenusername: true
+    section: Connect
+  - name: redirect_uri
+    section: Connect
+    defaultvalue: https://oproxy.demisto.ninja/authcode
+    display: Redirect URI
+    type: 0
+    advanced: true
+    hidden: true
+  - name: custom_headers
+    section: Connect
+    display: Custom headers 
+    additionalinfo: |-
+      Add custom headers to be sent with each API request.
+      Enter each header on a new line in the format: HeaderName: HeaderValue.
+    type: 12
+    advanced: true
+  - name: authorization_endpoint
+    section: Connect
+    display: Authorization Endpoint
+    type: 0
+    hidden: true
+    additionalinfo: |
+      The URL for the OAuth 2.0 authorization endpoint. If not provided, the default will be the origin of the `base_url` followed by `/oauth2/authorize`.
+      For example, if `base_url` is `https://example.com/mcp`, the default `Authorization Endpoint` will be `https://example.com/oauth2/authorize`.
+  - name: token_endpoint
+    section: Connect
+    display: Token Endpoint
+    type: 0
+    hidden: true
+    additionalinfo: |
+      The URL for the OAuth 2.0 token endpoint. If not provided, the default will be the origin of the `base_url` followed by `/oauth2/token`.
+      For example, if `base_url` is `https://example.com/mcp`, the default `Token Endpoint` will be `https://example.com/oauth2/token`.
+  - name: scope
+    section: Connect
+    display: Scope
+    type: 0
+    additionalinfo: Space-separated permission identifiers.
+    hidden: true
   - name: token
     type: 9
-    displaypassword: API Token
+    displaypassword: API Token / API Key
     hiddenusername: true
     required: false
-    additionalinfo: "API Key to access the service REST API."
+    additionalinfo: API Token or API Key to access the service REST API.
     section: Connect
   - name: credentials
     display: Username
@@ -47,23 +97,50 @@ name: GenericMCP
 script:
   commands:
   - arguments: []
-    description: Retrieves a list of available tools in the MCP server.
+    description: Retrieves a list of available tools in the GitHub MCP server.
     name: list-tools
     outputs:
-    - contextPath: ListTools.Tools.name
-      description: The name of the available tool in the MCP server.
-      type: String
+    - contextPath: ListTools.Tools.annotations
+      description: The annotations of the tool.
+      type: Unknown
     - contextPath: ListTools.Tools.description
-      description: Description of the available tool in the MCP server
+      description: The description of the tool.
+      type: String
+    - contextPath: ListTools.Tools.icons
+      description: The icons associated with the tool.
+      type: Unknown
+    - contextPath: ListTools.Tools.inputSchema.properties
+      description: The properties of the input schema for each tool.
+      type: Unknown
+    - contextPath: ListTools.Tools.inputSchema.required
+      description: The required input parameters.
+      type: String
+    - contextPath: ListTools.Tools.inputSchema.title
+      description: The title of the input schema.
       type: String
     - contextPath: ListTools.Tools.inputSchema.type
-      description: Input schema type for the tool in the MCP server
+      description: The type of the input schema.
       type: String
-    - contextPath: ListTools.Tools.inputSchema.properties
-      description: Detailed properties of the tool's input schema
+    - contextPath: ListTools.Tools.meta
+      description: Metadata about the tool.
+      type: Unknown
+    - contextPath: ListTools.Tools.name
+      description: The name of the tool.
       type: String
-    - contextPath: ListTools.Tools.inputSchema.required
-      description: Required input fields for the tool
+    - contextPath: ListTools.Tools.outputSchema.properties.result
+      description: The result of the tool execution.
+      type: Unknown
+    - contextPath: ListTools.Tools.outputSchema.required
+      description: The required fields in the output schema.
+      type: String
+    - contextPath: ListTools.Tools.outputSchema.title
+      description: The title of the output schema.
+      type: String
+    - contextPath: ListTools.Tools.outputSchema.type
+      description: The type of the output schema.
+      type: String
+    - contextPath: ListTools.Tools.title
+      description: The title of the tool.
       type: String
   - arguments:
     - name: name
@@ -72,26 +149,114 @@ script:
       description: Parameters for the tool execution.
     description: Calls a specific tool on the MCP server with optional input parameters.
     name: call-tool
-    outputs: []
+    outputs:
+    - contextPath: CallTool.Tool.type
+      description: The type of the tool output.
+      type: String
+    - contextPath: CallTool.Tool.text
+      description: The text content of the tool output.
+      type: String
+    - contextPath: CallTool.Tool.annotations.audience
+      description: The audience for the tool output annotations.
+      type: Unknown
+    - contextPath: CallTool.Tool.annotations.priority
+      description: The priority of the tool output annotations.
+      type: Unknown
+    - contextPath: CallTool.Tool.meta
+      description: Metadata associated with the tool output.
+      type: Unknown
+    - contextPath: CallTool.Tool.data
+      description: The data content of the tool output.
+      type: Unknown
+    - contextPath: CallTool.Tool.mimeType
+      description: The MIME type of the tool output.
+      type: String
+    - contextPath: CallTool.Tool.resource.uri
+      description: The URI of the resource in the tool output.
+      type: String
+    - contextPath: CallTool.Tool.resource.mimeType
+      description: The MIME type of the resource in the tool output.
+      type: String
+    - contextPath: CallTool.Tool.resource.meta
+      description: Metadata of the resource in the tool output.
+      type: Unknown
+    - contextPath: CallTool.Tool.resource.text
+      description: The text content of the resource in the tool output.
+      type: String
+    - contextPath: CallTool.Tool.resource.blob
+      description: The blob content of the resource in the tool output.
+      type: Unknown
+  - description: Test the authentication configuration with the MCP server.
+    name: generic-mcp-auth-test
+  - description: Generate an authentication login URL.
+    name: generic-mcp-generate-login-url
+  - description: Reset the authentication configuration for the MCP server.
+    name: generic-mcp-auth-reset
   script: '-'
   type: python
   subtype: python3
-  dockerimage: devdemisto/mcp:1.0.0.5820961
+  dockerimage: demisto/mcp:1.0.0.5982836
   ismcp: true
-fromversion: 6.1.0
+# fromversion: 8.13.0
 tests:
 - No tests (auto formatted)
-supportedModules:
-- C3
-- X0
-- X1
-- X3
-- X5
-- ENT_PLUS
-- exposure_management
-- cloud
-- cloud_runtime_security
-- agentix
-- cloud_posture
-- xsiam
-- edr
+triggers:
+  - conditions:
+      - name: auth_type
+        operator: equal
+        value: OAuth 2.0 Authorization Code
+    effects:
+      - name: redirect_uri
+        action:
+          hidden: false
+  - conditions:
+      - name: auth_type
+        operator: equal
+        value: OAuth 2.0 Dynamic Client Registration
+    effects:
+      - name: redirect_uri
+        action:
+          hidden: false
+  - conditions:
+      - name: auth_type
+        operator: equal
+        value: OAuth 2.0 Authorization Code
+    effects:
+      - name: authorization_endpoint
+        action:
+          hidden: false
+      - name: token_endpoint
+        action:
+          hidden: false
+  - conditions:
+      - name: auth_type
+        operator: equal
+        value: OAuth 2.0 Client Credentials
+    effects:
+      - name: token_endpoint
+        action:
+          hidden: false
+  - conditions:
+      - name: auth_type
+        operator: equal
+        value: OAuth 2.0 Client Credentials
+    effects:
+      - name: scope
+        action:
+          hidden: false
+  - conditions:
+      - name: auth_type
+        operator: equal
+        value: OAuth 2.0 Authorization Code
+    effects:
+      - name: scope
+        action:
+          hidden: false
+  - conditions:
+      - name: auth_type
+        operator: equal
+        value: OAuth 2.0 Dynamic Client Registration
+    effects:
+      - name: scope
+        action:
+          hidden: false
