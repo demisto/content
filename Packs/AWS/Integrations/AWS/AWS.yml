@@ -6668,7 +6668,463 @@ script:
       - ENABLED
       - DISABLED
     outputs: []
-    
+  - name: aws-ec2-network-interface-attribute-modify
+    description: Modifies the specified network interface attribute. You can specify only one attribute at a time. You can use this action to attach and detach security groups from an existing EC2 instance.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: network_interface_id
+        description: The ID of the network interface.
+        required: true
+      - name: ena_srd_enabled
+        description: Indicates whether ENA Express is enabled for the network interface.
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: ena_srd_udp_enabled
+        description: Indicates whether UDP traffic to and from the instance uses ENA Express. To specify this setting, you must first enable ENA Express.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: enable_primary_ipv6
+        description: If you’re modifying a network interface in a dual-stack or IPv6-only subnet, you have the option to assign a primary IPv6 IP address.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: tcp_established_timeout
+        description: Timeout (in seconds) for idle TCP connections in an established state. Min is 60 seconds. Max is 432000 seconds.
+        required: false
+      - name: udp_stream_timeout
+        description: Timeout (in seconds) for idle UDP flows classified as streams which have seen more than one request-response transaction. Min is 60 seconds. Max is 180 seconds.
+        required: false
+      - name: udp_timeout
+        description: Timeout (in seconds) for idle UDP flows that have seen traffic only in a single direction or a single request-response transaction. Min is 30 seconds. Max is 60 seconds.
+        required: false
+      - name: associate_public_ip_address
+        description: Indicates whether to assign a public IPv4 address to a network interface. This option can be enabled for any network interface but will only apply to the primary network interface (eth0).
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: associated_subnet_ids
+        description: A list of comma separated subnet IDs to associate with the network interface.
+        required: false
+      - name: description
+        description: A description for the network interface.
+        required: false
+      - name: source_dest_check
+        description: Enable or disable source/destination checks, which ensure that the instance is either the source or the destination of any traffic that it receives. If the value is true, source/destination checks are enabled; otherwise, they are disabled. The default value is true. You must disable source/destination checks if the instance runs services such as network address translation, routing, or firewalls.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: groups
+        description: A comma separated list of security groups ids. Changes the security groups for the network interface. The new set of groups you specify replaces the current set. You must specify at least one group, even if it’s just the default security group in the VPC.
+        required: false
+      - name: default_ena_queue_count
+        description: Whether to use the default number of the ENA queues.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - name: ena_queue_count
+        description: The number of ENA queues to be created with the instance.
+        required: false
+      - name: attachment_id
+        description: The ID of the network interface attachment. If modifying the delete on termination attribute, you must specify the ID of the interface attachment.
+        required: false
+      - name: delete_on_termination
+        description: Indicates whether the network interface is deleted when the instance is terminated. If modified, you must specify the ID of the interface attachment.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+  - name: aws-ec2-regions-describe
+    description: Describes the Regions that are enabled for your account, or all Regions.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: region_names
+        description: The names of the Regions. You can specify any Regions, whether they are enabled and disabled for your account.
+        required: false
+      - name: all_regions
+        description: Indicates whether to display all Regions, including Regions that are disabled for your account.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - 'true'
+          - 'false'
+      - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). A filter name and value pair that is used to return a more specific list of results from a describe operation. Filters can be used to match a set of resources by specific criteria, such as tags, attributes, or IDs. Possible filters are endpoint, opt-in-status, region-name.
+        name: filters
+    outputs:
+      - contextPath: AWS.EC2.Regions.Endpoint
+        description: The region service endpoint.
+        type: string
+      - contextPath: AWS.EC2.Regions.RegionName
+        description: The name of the region.
+        type: string
+      - contextPath: AWS.EC2.Regions.OptInStatus
+        description: The Region opt-in status. The possible values are opt-in-not-required, opted-in, and not-opted-in.
+        type: string
+  - name: aws-s3-bucket-create
+    description: Creates a new S3 bucket.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: bucket_name
+        description: The name of the bucket to create.
+        required: true
+      - name: acl
+        description: The canned ACL to apply to the bucket.
+        required: false
+        auto: PREDEFINED
+        predefined:
+          - private
+          - public-read
+          - public-read-write
+          - authenticated-read
+      - name: location_constraint
+        description: Specifies the Region where the bucket will be created. You might choose a Region to optimize latency, minimize costs, or address regulatory requirements.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: grant_full_control
+        description: Allows grantee the read, write, read ACP, and write ACP permissions on the bucket.
+        required: false
+      - name: grant_read
+        description: Allows grantee to list the objects in the bucket.
+        required: false
+      - name: grant_read_acp
+        description: Allows grantee to read the bucket ACL.
+        required: false
+      - name: grant_write
+        description: Allows grantee to create new objects in the bucket.
+        required: false
+      - name: grant_write_acp
+        description: Allows grantee to write the ACL for the applicable bucket.
+        required: false
+    outputs:
+      - contextPath: AWS.S3.Buckets.BucketName
+        description: The name of the bucket that was created.
+        type: string
+      - contextPath: AWS.S3.Buckets.Location
+        description: The AWS Region the bucket was created.
+        type: string
+      - contextPath: AWS.S3.Buckets.BucketArn
+        description: The Amazon Resource Name (ARN) of the S3 bucket.
+        type: string
+  - name: aws-s3-buckets-list
+    description: Returns a list of all buckets owned by the authenticated sender of the request.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: limit
+        description: Maximum number of buckets to be returned in response.
+        defaultvalue: 50
+        required: false
+      - name: next_page_token
+        description: The token for the next set of items to return. Use value from AWS.S3.BucketsNextPageToken.
+        required: false
+      - name: prefix
+        description: Limits the response to bucket names that begin with the specified bucket name prefix.
+        required: false
+    outputs:
+      - contextPath: AWS.S3.Buckets.Name
+        description: The name of the bucket.
+        type: string
+      - contextPath: AWS.S3.Buckets.CreationDate
+        description: Date the bucket was created. This date can change when making changes to your bucket, such as editing its bucket policy.
+        type: string
+      - contextPath: AWS.S3.Buckets.BucketRegion
+        description: BucketRegion indicates the Amazon Web Services region where the bucket is located.
+        type: string
+      - contextPath: AWS.S3.Buckets.BucketArn
+        description: The Amazon Resource Name (ARN) of the S3 bucket.
+        type: string
+      - contextPath: AWS.S3.BucketsOwner.DisplayName
+        description: Container for the display name of the owner.
+        type: string
+      - contextPath: AWS.S3.BucketsOwner.ID
+        description: Container for the ID of the owner.
+        type: string
+      - contextPath: AWS.S3.BucketsNextPageToken
+        description: BucketsNextPageToken is included in the response when there are more buckets that can be listed with pagination. The next ListBuckets request to Amazon S3 can be continued with this BucketsNextPageToken.
+        type: string
+      - contextPath: AWS.S3.BucketsPrefix
+        description: If Prefix was sent with the request, it is included in the response.
+        type: string
+  - name: aws-ssm-inventory-entries-list
+    description: A list of inventory items returned by the request.
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        required: true
+      - name: region
+        description: The AWS region.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+      - name: instance_id
+        description: The managed node ID for which you want inventory information.
+        required: true
+      - name: type_name
+        description: The type of inventory item for which you want information.
+        required: true
+      - name: limit
+        description: Maximum number of buckets to be returned in response.
+        defaultvalue: 50
+        required: false
+      - description: "One or more filters separated by ';' (for example, name=<name>,values=<values>,type=<type>;name=<name>,values=<values>,type=<type>). Use a filter to return a more specific list of results. The value of type can be from the following closed list: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists."
+        name: filters
+        required: false
+      - name: next_page_token
+        description: The token for the next set of items to return. Use AWS.SSM.Inventory.EntriesNextPageToken.
+        required: false
+    outputs:
+      - contextPath: AWS.SSM.Inventory.TypeName
+        description: The type of inventory item returned by the request.
+        type: string
+      - contextPath: AWS.SSM.Inventory.InstanceId
+        description: The managed node ID targeted by the request to query inventory information.
+        type: string
+      - contextPath: AWS.SSM.Inventory.SchemaVersion
+        description: The inventory schema version used by the managed nodes.
+        type: string
+      - contextPath: AWS.SSM.Inventory.CaptureTime
+        description: The time that inventory information was collected for the managed nodes.
+        type: string
+      - contextPath: AWS.SSM.Inventory.Entries
+        description: A list of inventory items on the managed nodes.
+        type: object
+      - contextPath: AWS.SSM.Inventory.EntriesNextPageToken
+        description: A list of inventory items on the managed nodes.
+        type: object
+
   isfetch: false
   runonce: false
   script: '-'

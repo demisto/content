@@ -74,12 +74,22 @@ def process_instance_data(instance: Dict[str, Any]) -> Dict[str, Any]:
     return instance_data
 
 
-def build_pagination_kwargs(args: Dict[str, Any], minimum_limit: int = 0) -> Dict[str, Any]:
+def build_pagination_kwargs(
+    args: Dict[str, Any],
+    minimum_limit: int = 0,
+    max_limit: int = MAX_LIMIT_VALUE,
+    next_token_name: str = "NextToken",
+    limit_name: str = "MaxResults",
+) -> Dict[str, Any]:
     """
     Build pagination parameters for AWS API calls with proper validation and limits.
 
     Args:
         args (Dict[str, Any]): Command arguments containing pagination parameters
+        minimum_limit (int): The minimum possible limit for the pagination command.
+        max_limit (int): The maximum possible limit for the pagination command.
+        next_token_name (str): The name of the next token argument in AWS
+        limit_name (str): The name of the limit argument in AWS
 
     Returns:
         Dict[str, Any]: Validated pagination parameters for AWS API
@@ -100,21 +110,21 @@ def build_pagination_kwargs(args: Dict[str, Any], minimum_limit: int = 0) -> Dic
     except (ValueError, TypeError) as e:
         raise ValueError(f"Invalid limit parameter: {limit_arg}. Must be a valid number.") from e
 
-    # Validate limit constraints
+    # Validate limit lower constraints
     if limit is not None and limit <= minimum_limit:
         raise ValueError(f"Limit must be greater than {minimum_limit}")
 
-    # AWS API constraints - most services have a max of 1000 items per request
-    if limit is not None and limit > MAX_LIMIT_VALUE:
-        demisto.debug(f"Requested limit {limit} exceeds maximum {MAX_LIMIT_VALUE}, using {MAX_LIMIT_VALUE}")
-        limit = MAX_LIMIT_VALUE
+    # AWS API upper constraints
+    if limit is not None and limit > max_limit:
+        demisto.debug(f"Requested limit {limit} exceeds maximum {max_limit}, using {max_limit}")
+        limit = max_limit
 
     # Handle pagination with next_token (for continuing previous requests)
     if next_token := args.get("next_token"):
         if (not isinstance(next_token, str)) or (len(next_token.strip()) == 0):
             raise ValueError("next_token must be a non-empty string")
-        kwargs["NextToken"] = next_token.strip()
-    kwargs.update({"MaxResults": limit})
+        kwargs[next_token_name] = next_token.strip()
+    kwargs.update({limit_name: limit})
     return kwargs
 
 
@@ -132,7 +142,7 @@ def parse_filter_field(filter_string: str | None):
     You can specify up to 50 filters and up to 200 values per filter in a single request.
     Filter strings can be up to 255 characters in length.
     Args:
-        filter_list: The name and values list
+        filter_string: The name and values list
     Returns:
         A list of dicts with the form {"Name": <key>, "Values": [<value>]}
     """
@@ -158,6 +168,41 @@ def parse_filter_field(filter_string: str | None):
             f' parsing only first {MAX_FILTER_VALUES} values.'
         )
         filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")[0:MAX_FILTER_VALUES]})
+
+    return filters
+
+
+def parse_triple_filter(filter_string: str | None):
+    """
+    Parses a list representation of name and values and type with the form of 'name=<name>,values=<values>,type=<type>'.
+    You can specify up to 50 filters, up to 200 values, and 1 type per filter in a single request.
+    Args:
+        filter_string: The name and values list
+    Returns:
+        A list of dicts with the form {"Name": <key>, "Values": [<value>]}
+    """
+    filters = []
+    list_filters = argToList(filter_string, separator=";")
+    if len(list_filters) > MAX_FILTERS:
+        list_filters = list_filters[0:50]
+        demisto.debug("Number of filter is larger then 50, parsing only first 50 filters.")
+    regex = re.compile(
+        r"^name=([\w:.-]+),values=([ \w@,.*-\/:]+),type=([\w:.-]+)",
+        flags=re.I,
+    )
+    for f in list_filters:
+        match_filter = regex.match(f)
+        if match_filter is None:
+            raise ValueError(
+                f"Could not parse field: {f}. Please make sure you provided "
+                "like so: name=<name>,values=<values>,type=<type>;name=<name>,values=<value1>,<value2>,type=<type>..."
+            )
+        demisto.debug(
+            f'Number of filter values for filter {match_filter.group(1)} is {len(match_filter.group(2).split(","))}'
+            f' if larger than {MAX_FILTER_VALUES},'
+            f' parsing only first {MAX_FILTER_VALUES} values.'
+        )
+        filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")[0:MAX_FILTER_VALUES], "Type": match_filter.group(3)})
 
     return filters
 
@@ -904,6 +949,91 @@ class S3:
             outputs=response.get("AccessControlPolicy", {}),
             raw_response=response.get("AccessControlPolicy", {}),
         )
+
+    @staticmethod
+    def bucket_create_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates a new S3 bucket.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args (dict): A dictionary containing the arguments entered to the command.
+
+        Returns:
+            CommandResults: A success message and information on the newly created bucket.
+        """
+        bucket_name = args.get("bucket_name")
+        kwargs = {
+            'Bucket': bucket_name,
+            'CreateBucketConfiguration': {
+                "LocationConstraint": args.get("location_constraint")
+            },
+            "GrantFullControl": args.get("grant_full_control"),
+            "GrantRead": args.get("grant_read"),
+            "GrantReadACP": args.get("grant_read_acp"),
+            "GrantWrite": args.get("grant_write"),
+            "GrantWriteACP": args.get("grant_write_acp"),
+        }
+        remove_empty_elements(kwargs)
+        response = client.create_bucket(**kwargs)
+
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(f"The bucket {bucket_name}, was created successfully")
+
+    @staticmethod
+    def buckets_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Returns a list of all buckets owned by the authenticated sender of the request.
+
+        Args:
+            client (BotoClient): The initialized Boto3 S3 client.
+            args (dict): A dictionary containing the following arguments: account_id, region, limit, next_page_token, prefix.
+
+        Returns:
+            CommandResults: Containing the list of buckets.
+        """
+        account_id = args.get("account_id")
+        region = args.get("region")
+        prefix = args.get("prefix")
+        kwargs = {
+            "Prefix": prefix,
+            "BucketRegion": region,  # TODO think of using a region filter argument
+        }
+        kwargs.update(build_pagination_kwargs(args, 1, 10000, "ContinuationToken", "MaxBuckets"))
+        remove_empty_elements(kwargs)
+        response = client.list_buckets(**kwargs)
+
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        next_token = response.get("ContinuationToken")
+        metadata = (
+            "Run the following command to retrieve the next batch of buckets:\n"
+            f"!aws-s3-buckets-list {account_id=} {region=} page_token={next_token}"
+            if next_token
+            else None
+        )
+        if limit := kwargs.get("MaxBuckets") != 50:
+            metadata = f"{metadata} {limit=}"
+        if prefix:
+            metadata = f"{metadata} {prefix=}"
+        buckets = response.get("Buckets")
+        # TODO if adding a bucket filter, add it to the title
+        readable_output = tableToMarkdown(
+            "The list of buckets", buckets, removeNull=True, headerTransform=pascalToSpace, metadata=metadata
+        )
+        outputs = {
+            "AWS.S3.Buckets(val.BucketArn && val.BucketArn == obj.BucketArn)": buckets,
+            "AWS.S3(true)": {
+                "BucketsOwner": response.get("Owner"),
+                "BucketsNextPageToken": response.get("ContinuationToken"),
+                "BucketsPrefix": response.get("Prefix"),
+            },
+        }
+        remove_empty_elements(outputs)
+        return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=response)
 
 
 class IAM:
@@ -2317,6 +2447,93 @@ class EC2:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(readable_output="The resources where tagged successfully")
+
+    @staticmethod
+    def network_interface_attribute_modify_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies the specified network interface attribute.
+        Args:
+            client (BotoClient): The initialized Boto3 EC2 client.
+            args (dict): A dictionary of the command arguments.
+
+        Returns:
+            CommandResults: A success message in case the modification was successful.
+        """
+        network_interface_id = args.get("network_interface_id")
+        kwargs = {
+            "EnaSrdSpecification": arg_to_bool_or_none(args.get("ena_srd_enabled")),
+            "EnaSrdUdpSpecification": {"EnaSrdUdpEnabled": arg_to_bool_or_none(args.get("ena_srd_udp_enabled"))},
+            "EnablePrimaryIpv6": arg_to_bool_or_none(args.get("enable_primary_ipv6")),
+            "ConnectionTrackingSpecification": {
+                "TcpEstablishedTimeout": arg_to_number(args.get("tcp_established_timeout")),
+                "UdpStreamTimeout": arg_to_number(args.get("udp_stream_timeout")),
+                "UdpTimeout": arg_to_number(args.get("udp_timeout")),
+            },
+            "AssociatePublicIpAddress": arg_to_bool_or_none(args.get("associate_public_ip_address")),
+            "AssociatedSubnetIds": argToList(args.get("associated_subnet_ids")),
+            "NetworkInterfaceId": network_interface_id,
+            "Description": {"Value": args.get("description")},
+            "SourceDestCheck": {"Value": arg_to_bool_or_none(args.get("source_dest_check"))},
+            "Groups": argToList(args.get("groups")),
+            "Attachment": {
+                "DefaultEnaQueueCount": arg_to_bool_or_none(args.get("default_ena_queue_count")),
+                "EnaQueueCount": arg_to_number(args.get("ena_queue_count")),
+                "AttachmentId": args.get("attachment_id"),
+                "DeleteOnTermination": arg_to_bool_or_none(args.get("delete_on_termination")),
+            },
+        }
+        remove_empty_elements(kwargs)
+        response = client.modify_network_interface_attribute(**kwargs)
+
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(f"The Network Interface attribute {network_interface_id} was modified successfully.")
+
+    @staticmethod
+    def regions_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes the Regions that are enabled for your account, or all Regions.
+
+        Args:
+            client (BotoClient): The initialized Boto3 EC2 client.
+            args (dict): A dictionary containing arguments for creating the tags.
+                  account_id (str): The account id
+                  region_names (str): The names of the regions to retrieve
+                  all_regions (bool): Indicates whether to display all Regions.
+                  filters (str): A filter name and value pair that is used to return a more specific list of results.
+                    name=<name>,values=<values>;name=<name>,values=<values>
+
+        Returns:
+            CommandResults: A list of Regions.
+        """
+        region_names = argToList(args.get("region_names", ""))
+        all_regions = arg_to_bool_or_none(args.get("all_regions"))
+        kwargs = {"RegionNames": region_names, "AllRegions": all_regions, "Filters": parse_filter_field(args.get("filters"))}
+        if (region_names and all_regions is not None) or (not region_names and all_regions is None):
+            raise DemistoException("Exactly one of the arguments 'region_name' and 'all_regions' should be provided.")
+
+        remove_empty_elements(kwargs)
+        demisto.debug(f"{kwargs=}")
+        response = client.describe_regions(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        regions = response.get("Regions")
+        readable_output = tableToMarkdown(
+            f"The regions {region_names} information:",
+            regions,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        )
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="AWS.EC2.Regions",
+            outputs=regions,
+            raw_response=response,
+            outputs_key_field="RegionName",
+        )
 
 
 class EKS:
@@ -3763,6 +3980,48 @@ class ACM:
             raise DemistoException(f"Error updating certificate options for '{arn}': {str(e)}")
 
 
+class SSM:
+    service = AWSServices.SSM
+
+    @staticmethod
+    def inventory_entries_list(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Returns an inventory item, and it's list of entries.
+        Args:
+            client: The AWS ACM boto3 client used to perform the update request.
+            args (dict): A dictionary containing the command arguments.
+
+        Returns:
+            CommandResults: An object containing an inventory item, and it's list of entries.
+        """
+        instance_id = args.get("instance_id")
+        kwargs = {
+            "InstanceId": instance_id,
+            "TypeName": args.get("type_name"),
+            "Filters": parse_triple_filter(args.get("filters")),
+        }
+        kwargs.update(build_pagination_kwargs(args, 1, 50))
+        remove_empty_elements(kwargs)
+        response = client.list_inventory_entries(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        data = {
+            "TypeName": response.get("TypeName"),
+            "InstanceId": response.get("InstanceId"),
+            "Entries": response.get("Entries")
+        }
+        headers = ["InstanceId", "TypeName", "Entries"]
+        readable_output = tableToMarkdown(f"The inventory item {instance_id} and it's entries", data, headers, headerTransform=pascalToSpace, removeNull=True)
+        response["EntriesNextPageToken"] = response.pop("NextToken")
+        return CommandResults(outputs_prefix="AWS.SSM.Inventory",
+                              outputs_key_field="InstanceId",
+                              outputs=response,
+                              readable_output=readable_output,
+                              raw_response=response)
+
+
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
     return filepath_result
@@ -3844,6 +4103,8 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-instances-terminate": EC2.terminate_instances_command,
     "aws-ec2-instances-run": EC2.run_instances_command,
     "aws-ec2-tags-create": EC2.create_tags_command,
+    "aws-ec2-regions-describe": EC2.regions_describe_command,
+    "aws-ec2-network-interface-attribute-modify": EC2.network_interface_attribute_modify_command,
     "aws-s3-bucket-policy-delete": S3.delete_bucket_policy_command,
     "aws-s3-public-access-block-get": S3.get_public_access_block_command,
     "aws-s3-bucket-encryption-get": S3.get_bucket_encryption_command,
@@ -3893,6 +4154,7 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:DescribeIpamResourceDiscoveries",
     "ec2:DescribeIpamResourceDiscoveryAssociations",
     "ec2:DescribeImages",
+    "ec2:DescribeRegions",
     "eks:DescribeCluster",
     "eks:AssociateAccessPolicy",
     "ec2:CreateSecurityGroup",
@@ -3910,6 +4172,7 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:StopInstances",
     "ec2:TerminateInstances",
     "ec2:RunInstances",
+    "ec2:ModifyNetworkInterfaceAttribute",
     "eks:UpdateClusterConfig",
     "iam:PassRole",
     "iam:DeleteLoginProfile",
