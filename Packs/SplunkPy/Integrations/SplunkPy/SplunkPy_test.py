@@ -2061,6 +2061,77 @@ def test_drilldown_enrichment(notable_data, expected_result):
 
 
 @pytest.mark.parametrize(
+    "notable_data, expected_result",
+    [
+        (
+            {
+                "event_id": "test_id",
+                "drilldown_name": "View all login attempts by system $src$",
+                "drilldown_search": "NULL",
+                "drilldown_searches": [
+                    '{"name":"View all login attempts by system $src$","search":"| from datamodel:\\"Authent'
+                    'ication\\".\\"Authentication\\" | search src=$src|s$","earliest":1715040000,'
+                    '"latest":1715126400}'
+                ],
+                "_raw": "src='test_src'",
+                "drilldown_latest": "1715126400.000000000",
+                "drilldown_earliest": "1715040000.000000000",
+            },
+            [
+                (
+                    "View all login attempts by system 'test_src'",
+                    '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"',
+                )
+            ],
+        ),
+        (
+            {
+                "event_id": "test_id",
+                "drilldown_name": "View all login attempts by system $src$",
+                "drilldown_search": '| from datamodel:"Authentication"."Authentication" | search src=$src|s$',
+                "drilldown_searches": "[]",
+                "_raw": "src='test_src'",
+                "drilldown_latest": "1715126400.000000000",
+                "drilldown_earliest": "1715040000.000000000",
+            },
+            [
+                (
+                    "View all login attempts by system 'test_src'",
+                    '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"',
+                )
+            ],
+        ),
+    ],
+)
+def test_drilldown_enrichment_fillnull(mocker: MockerFixture, notable_data, expected_result):
+    """
+    Tests the drilldown enrichment process when a 'splunk.FILLNULL_VALUE' is "NULL"
+
+    Given:
+        1. A notable data with a drilldown_search=NULL
+        2. A notable data with a drilldown_searches is empty
+    When:
+        Performing drilldown enrichment to generate search jobs and queries
+    Then:
+        - The generated queries match the expected enriched queries
+        - The fillnull value is correctly applied during query construction
+    """
+    from splunklib import client
+
+    service = Service("DONE")
+
+    mock_params = {"fetchQuery": "`notable` is cool | fillnull value=NULL"}
+    mocker.patch("demistomock.params", return_value=mock_params)
+
+    jobs_and_queries = splunk.drilldown_enrichment(service, notable_data, 5)
+    for i in range(len(jobs_and_queries)):
+        job_and_queries = jobs_and_queries[i]
+        assert job_and_queries[0] == expected_result[i][0]
+        assert job_and_queries[1] == expected_result[i][1]
+        assert isinstance(job_and_queries[2], client.Job)
+
+
+@pytest.mark.parametrize(
     "notable_data, debug_log_message",
     [
         ({"event_id": "test_id"}, "drill-down was not properly configured for notable test_id"),
