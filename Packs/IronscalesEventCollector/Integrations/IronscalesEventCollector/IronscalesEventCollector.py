@@ -138,7 +138,7 @@ class Client(BaseClient):  # pragma: no cover
         return self._http_request(
             method="POST",
             url_suffix=f"/mitigation/{self.company_id}/details/",
-            params={"incidents": incident_ids, "page": page_number},
+            json_data={"incidents": incident_ids, "page": page_number},
         )
 
 
@@ -218,7 +218,7 @@ def get_incident_ids_to_fetch(
     )
 
 
-def enrich_events_with_mailbox_details(client: Any, events: list[dict[str, Any]]) -> None:
+def enrich_events_with_mailbox_details(client: Client, events: list[dict[str, Any]]) -> None:
     """Adds mailbox mitigation details per event.
 
     Args:
@@ -229,7 +229,7 @@ def enrich_events_with_mailbox_details(client: Any, events: list[dict[str, Any]]
         demisto.debug("No events found. Skipping mailbox enrichment.")
         return
 
-    incident_ids = list({event.get("incidentID") for event in events})
+    incident_ids = list({event.get("incident_id") for event in events})
     demisto.debug(f"Starting mailbox enrichment on {len(incident_ids)} incident IDs.")
 
     per_incident_mitigations = defaultdict(list)  # To group mailbox mitigations per incidentID
@@ -244,15 +244,15 @@ def enrich_events_with_mailbox_details(client: Any, events: list[dict[str, Any]]
 
         # Group mitigations from the current page
         for mitigation in response.get("mitigations", []):
-            incident_id = mitigation.get("incidentID")
-            per_incident_mitigations[incident_id].append(mitigation)
+            incident_id = mitigation.pop("incidentID")
+            per_incident_mitigations[incident_id].append(snakify(mitigation))
 
         total_pages = response.get("total_pages", 0)
         current_page += 1
 
     demisto.debug(f"Mapping grouped mailbox mitigations to {len(events)} events.")
     for event in events:
-        incident_id = event.get("incidentID")
+        incident_id = event.get("incident_id")
         event["mitigations"] = per_incident_mitigations.get(incident_id, [])
     demisto.debug(f"Finished running mailbox enrichment on {len(incident_ids)} incident IDs.")
 
@@ -278,8 +278,9 @@ def incident_to_events(incident: dict[str, Any]) -> List[dict[str, Any]]:
 def get_events_command(client: Client, args: dict[str, Any]) -> tuple[CommandResults, List[dict[str, Any]]]:
     limit: int = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
     since_time = arg_to_datetime(args.get("since_time") or DEFAULT_FIRST_FETCH, settings=DATEPARSER_SETTINGS)
+    mailbox_enrichment: bool = argToBoolean(args.get("mailbox_enrichment", False))
     assert isinstance(since_time, datetime)
-    events, _, _ = fetch_events_command(client, since_time, limit)
+    events, _, _ = fetch_events_command(client, since_time, limit, mailbox_enrichment=mailbox_enrichment)
     message = "All Incidents" if client.all_incident else "Open Incidents"
     result = CommandResults(
         readable_output=tableToMarkdown(message, events),
