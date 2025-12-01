@@ -1,1056 +1,1027 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "ServiceNow Ticket",
-	"definitionId": "",
-	"description": "Maps incoming ServiceNow incidents fields.",
-	"feed": false,
-	"fromServerVersion": "6.0.0",
+    "defaultIncidentType": "ServiceNow Ticket",
+    "definitionId": "",
+    "description": "Maps incoming ServiceNow incidents fields.",
+    "feed": false,
+    "fromversion": "6.0.0",
     "id": "ServiceNow-incoming-mapper",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"isOverridable": false,
-	"itemVersion": "2.8.23",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 2,
-	"mapping": {
-		"ServiceNow SIR Incident": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Assignment Group": {
-					"simple": "assignment_group"
-				},
-				"Caller": {
-					"simple": "caller"
-				},
-				"Destination IP": {
-					"complex": {
-						"filters": [
-							[
-								{
-									"left": {
-										"isContext": true,
-										"value": {
-											"simple": "dest_ip"
-										}
-									},
-									"operator": "isNotEmpty"
-								}
-							]
-						],
-						"root": "dest_ip",
-						"transformers": []
-					}
-				},
-				"Escalation": {
-					"simple": "escalation"
-				},
-				"Remediation SLA": {
-					"complex": {
-						"filters": [
-							[
-								{
-									"left": {
-										"isContext": true,
-										"value": {
-											"simple": "sla_due"
-										}
-									},
-									"operator": "isNotEmpty"
-								}
-							]
-						],
-						"root": "sla_due",
-						"transformers": []
-					}
-				},
-				"ServiceNow Assigned To": {
-					"simple": "assigned_to"
-				},
-				"ServiceNow Attack Vector": {
-					"complex": {
-						"filters": [
-							[
-								{
-									"left": {
-										"isContext": true,
-										"value": {
-											"simple": "attack_vector"
-										}
-									},
-									"operator": "isNotEmpty"
-								}
-							]
-						],
-						"root": "attack_vector",
-						"transformers": []
-					}
-				},
-				"ServiceNow Business Impact": {
-					"complex": {
-						"filters": [],
-						"root": "business_criticality",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1,2,3"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - Critical,2 - High,3 - Non-Critical"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-				"ServiceNow Caller": {
-					"simple": "caller"
-				},
-				"ServiceNow Category": {
-					"simple": "category"
-				},
-				"ServiceNow Closed By": {
-					"complex": {
-						"filters": [
-							[
-								{
-									"left": {
-										"isContext": true,
-										"value": {
-											"simple": "closed_by"
-										}
-									},
-									"operator": "isNotEmpty"
-								}
-							]
-						],
-						"root": "closed_by",
-						"transformers": []
-					}
-				},
-				"ServiceNow Closed Date": {
-					"complex": {
-						"filters": [
-							[
-								{
-									"left": {
-										"isContext": true,
-										"value": {
-											"simple": "closed_at"
-										}
-									},
-									"operator": "isNotEmpty"
-								}
-							]
-						],
-						"root": "closed_at",
-						"transformers": [
-							{
-								"args": {
-									"add_utc_timezone": {
-										"isContext": false
-									},
-									"dayfirst": {
-										"isContext": false,
-										"value": {
-											"simple": "false"
-										}
-									},
-									"fuzzy": {
-										"isContext": false
-									},
-									"yearfirst": {
-										"isContext": false,
-										"value": {
-											"simple": "true"
-										}
-									}
-								},
-								"operator": "DateStringToISOFormat"
-							},
-							{
-								"args": {
-									"formatter": {
-										"isContext": false
-									}
-								},
-								"operator": "FormattedDateToEpoch"
-							},
-							{
-								"operator": "TimeStampToDate"
-							}
-						]
-					}
-				},
-				"ServiceNow Due Date": {
-					"complex": {
-						"filters": [
-							[
-								{
-									"left": {
-										"isContext": true,
-										"value": {
-											"simple": "due_date"
-										}
-									},
-									"operator": "isNotEmpty"
-								}
-							]
-						],
-						"root": "due_date",
-						"transformers": [
-							{
-								"args": {
-									"dayfirst": {
-										"isContext": false,
-										"value": {
-											"simple": "false"
-										}
-									},
-									"fuzzy": {
-										"isContext": false
-									},
-									"yearfirst": {
-										"isContext": false
-									}
-								},
-								"operator": "DateStringToISOFormat"
-							},
-							{
-								"args": {
-									"formatter": {
-										"isContext": false
-									}
-								},
-								"operator": "FormattedDateToEpoch"
-							},
-							{
-								"operator": "TimeStampToDate"
-							}
-						]
-					}
-				},
-				"ServiceNow Escalation": {
-					"complex": {
-						"filters": [],
-						"root": "escalation",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "0,1,2,3"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "Normal,Moderate,High,Overdue"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-				"ServiceNow Impact": {
-					"complex": {
-						"filters": [],
-						"root": "impact",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1,2,3"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - High,2 - Medium,3 - Low"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-				"ServiceNow Notify": {
-					"complex": {
-						"filters": [],
-						"root": "notify",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1,2,3"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - Do Not Notify,2 - Send Email,3 - Telephone"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-				"ServiceNow Opened Date": {
-					"complex": {
-						"filters": [],
-						"root": "sys_created_on",
-						"transformers": [
-							{
-								"args": {
-									"add_utc_timezone": {
-										"isContext": false
-									},
-									"dayfirst": {
-										"isContext": false,
-										"value": {
-											"simple": "false"
-										}
-									},
-									"fuzzy": {
-										"isContext": false
-									},
-									"yearfirst": {
-										"isContext": false,
-										"value": {
-											"simple": "true"
-										}
-									}
-								},
-								"operator": "DateStringToISOFormat"
-							}
-						]
-					}
-				},
-				"ServiceNow Priority": {
-					"complex": {
-						"filters": [],
-						"root": "priority",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1,2,3,4,5"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - Critical,2 - High,3 - Moderate,4 - Low,5 - Planning"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-				"ServiceNow Resolution Notes": {
-					"complex": {
-						"filters": [
-							[
-								{
-									"left": {
-										"isContext": true,
-										"value": {
-											"simple": "close_notes"
-										}
-									},
-									"operator": "isNotEmpty"
-								}
-							]
-						],
-						"root": "close_notes",
-						"transformers": []
-					}
-				},
-				"ServiceNow SIR State": {
-					"complex": {
-						"filters": [],
-						"root": "state",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "3,16,17,18,20,10,100,7"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "Closed,Analysis,Contain,Eradicate,Recover,Draft,Review,Cancelled"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-				"ServiceNow Severity": {
-					"complex": {
-						"filters": [],
-						"root": "severity",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1,2,3"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - High,2 - Medium,3 - Low"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-				"ServiceNow Ticket ID": {
-					"simple": "sys_id"
-				},
-				"ServiceNow Ticket Number": {
-					"simple": "number"
-				},
-				"ServiceNow Urgency": {
-					"complex": {
-						"filters": [],
-						"root": "urgency",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1,2,3"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - High,2 - Medium,3 - Low"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-				"Source IP": {
-					"complex": {
-						"filters": [
-							[
-								{
-									"left": {
-										"isContext": true,
-										"value": {
-											"simple": "source_ip"
-										}
-									},
-									"operator": "isNotEmpty"
-								}
-							]
-						],
-						"root": "source_ip",
-						"transformers": []
-					}
-				},
-				"State": {
-					"simple": "state"
-				},
-				"Sub Category": {
-					"simple": "subcategory"
-				},
-				"Ticket Closed Date": {
-					"complex": {
-						"filters": [
-							[
-								{
-									"left": {
-										"isContext": true,
-										"value": {
-											"simple": "closed_at"
-										}
-									},
-									"operator": "isNotEmpty"
-								}
-							]
-						],
-						"root": "closed_at",
-						"transformers": [
-							{
-								"args": {
-									"dayfirst": {
-										"isContext": false,
-										"value": {
-											"simple": "false"
-										}
-									},
-									"fuzzy": {
-										"isContext": false
-									},
-									"yearfirst": {
-										"isContext": false
-									}
-								},
-								"operator": "DateStringToISOFormat"
-							},
-							{
-								"args": {
-									"formatter": {
-										"isContext": false
-									}
-								},
-								"operator": "FormattedDateToEpoch"
-							},
-							{
-								"operator": "TimeStampToDate"
-							}
-						]
-					}
-				},
-				"Ticket Number": {
-					"simple": "number"
-				},
-				"Ticket Opened Date": {
-					"complex": {
-						"filters": [],
-						"root": "sys_created_on",
-						"transformers": [
-							{
-								"args": {
-									"dayfirst": {
-										"isContext": false,
-										"value": {
-											"simple": "false"
-										}
-									},
-									"fuzzy": {
-										"isContext": false
-									},
-									"yearfirst": {
-										"isContext": false
-									}
-								},
-								"operator": "DateStringToISOFormat"
-							},
-							{
-								"args": {
-									"formatter": {
-										"isContext": false
-									}
-								},
-								"operator": "FormattedDateToEpoch"
-							},
-							{
-								"operator": "TimeStampToDate"
-							}
-						]
-					}
-				},
-				"dbotMirrorDirection": {
-					"simple": "mirror_direction"
-				},
-				"dbotMirrorId": {
-					"simple": "sys_id"
-				},
-				"dbotMirrorInstance": {
-					"simple": "mirror_instance"
-				},
-				"dbotMirrorTags": {
-					"simple": "mirror_tags"
-				},
-				"details": {
-					"simple": "description"
-				},
-				"name": {
-					"simple": "short_description"
-				},
-				"severity": {
-					"complex": {
-						"filters": [],
-						"root": "risk_score",
-						"transformers": [
-							{
-								"args": {
-									"by": {
-										"isContext": false,
-										"value": {
-											"simple": "1"
-										}
-									}
-								},
-								"operator": "subtraction"
-							},
-							{
-								"args": {
-									"by": {
-										"isContext": false,
-										"value": {
-											"simple": "20"
-										}
-									}
-								},
-								"operator": "division"
-							},
-							{
-								"operator": "floor"
-							},
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "0,1,2,3,4"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "Informational,Low,Medium,High,Critical"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				}
-			}
-		},
-		"ServiceNow Ticket": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Assignment Group": {
-					"simple": "assignment_group"
-				},
-				"Caller": {
-					"simple": "caller_id"
-				},
-				"Escalation": {
-					"simple": "escalation"
-				},
-				"Remediation SLA": {
-					"simple": "sla_due"
-				},
-				"ServiceNow Assigned To": {
-					"simple": "assigned_to"
-				},
-				"ServiceNow Category": {
-					"simple": "category"
-				},
-				"ServiceNow Due Date": {
-					"complex": {
-						"filters": [
-							[
-								{
-									"left": {
-										"isContext": true,
-										"value": {
-											"simple": "due_date"
-										}
-									},
-									"operator": "isNotEmpty"
-								}
-							]
-						],
-						"root": "due_date",
-						"transformers": [
-							{
-								"args": {
-									"dayfirst": {
-										"isContext": false,
-										"value": {
-											"simple": "false"
-										}
-									},
-									"fuzzy": {
-										"isContext": false
-									},
-									"yearfirst": {
-										"isContext": false
-									}
-								},
-								"operator": "DateStringToISOFormat"
-							},
-							{
-								"args": {
-									"formatter": {
-										"isContext": false
-									}
-								},
-								"operator": "FormattedDateToEpoch"
-							},
-							{
-								"operator": "TimeStampToDate"
-							}
-						]
-					}
-				},
-				"ServiceNow Impact": {
-					"complex": {
-						"filters": [],
-						"root": "impact",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1,2,3"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - High,2 - Medium,3 - Low"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-				"ServiceNow Notify": {
-					"complex": {
-						"filters": [],
-						"root": "notify",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1,2,3"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - Do Not Notify,2 - Send Email,3 - Telephone"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-				"ServiceNow Priority": {
-					"complex": {
-						"filters": [],
-						"root": "priority",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1,2,3,4,5"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - Critical,2 - High,3 - Moderate,4 - Low,5 - Planning"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-				"ServiceNow State": {
-					"complex": {
-						"filters": [],
-						"root": "state",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1,2,3,6,7,8"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - New,2 - In Progress,3 - On Hold,6 - Resolved,7 - Closed,8 - Canceled"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-				"ServiceNow Ticket ID": {
-					"simple": "sys_id"
-				},
-				"ServiceNow Urgency": {
-					"complex": {
-						"filters": [],
-						"root": "urgency",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1,2,3"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1 - High,2 - Medium,3 - Low"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				},
-				"State": {
-					"simple": "state"
-				},
-				"Sub Category": {
-					"simple": "subcategory"
-				},
-				"Ticket Closed Date": {
-					"complex": {
-						"filters": [
-							[
-								{
-									"left": {
-										"isContext": true,
-										"value": {
-											"simple": "closed_at"
-										}
-									},
-									"operator": "isNotEmpty"
-								}
-							]
-						],
-						"root": "closed_at",
-						"transformers": [
-							{
-								"args": {
-									"dayfirst": {
-										"isContext": false,
-										"value": {
-											"simple": "false"
-										}
-									},
-									"fuzzy": {
-										"isContext": false
-									},
-									"yearfirst": {
-										"isContext": false
-									}
-								},
-								"operator": "DateStringToISOFormat"
-							},
-							{
-								"args": {
-									"formatter": {
-										"isContext": false
-									}
-								},
-								"operator": "FormattedDateToEpoch"
-							},
-							{
-								"operator": "TimeStampToDate"
-							}
-						]
-					}
-				},
-				"Ticket Number": {
-					"simple": "number"
-				},
-				"Ticket Opened Date": {
-					"complex": {
-						"filters": [
-							[
-								{
-									"left": {
-										"isContext": true,
-										"value": {
-											"simple": "opened_at"
-										}
-									},
-									"operator": "isNotEmpty"
-								}
-							]
-						],
-						"root": "opened_at",
-						"transformers": [
-							{
-								"args": {
-									"dayfirst": {
-										"isContext": false,
-										"value": {
-											"simple": "false"
-										}
-									},
-									"fuzzy": {
-										"isContext": false
-									},
-									"yearfirst": {
-										"isContext": false
-									}
-								},
-								"operator": "DateStringToISOFormat"
-							},
-							{
-								"args": {
-									"formatter": {
-										"isContext": false
-									}
-								},
-								"operator": "FormattedDateToEpoch"
-							},
-							{
-								"operator": "TimeStampToDate"
-							}
-						]
-					}
-				},
-				"dbotMirrorDirection": {
-					"simple": "mirror_direction"
-				},
-				"dbotMirrorId": {
-					"simple": "sys_id"
-				},
-				"dbotMirrorInstance": {
-					"simple": "mirror_instance"
-				},
-				"dbotMirrorTags": {
-					"simple": "mirror_tags"
-				},
-				"details": {
-					"simple": "description"
-				},
-				"name": {
-					"simple": "short_description"
-				},
-				"severity": {
-					"complex": {
-						"filters": [],
-						"root": "severity",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1,1 - High,2,2 - Medium,3,3 - Low"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "3,3,2,2,1,1"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				}
-			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"severity": {
-					"complex": {
-						"filters": [],
-						"root": "severity",
-						"transformers": [
-							{
-								"args": {
-									"input_values": {
-										"isContext": false,
-										"value": {
-											"simple": "1,1 - High,2,2 - Medium,3,3 - Low"
-										}
-									},
-									"mapped_values": {
-										"isContext": false,
-										"value": {
-											"simple": "3,3,2,2,1,1"
-										}
-									}
-								},
-								"operator": "MapValuesTransformer"
-							}
-						]
-					}
-				}
-			}
-		}
-	},
-	"name": "ServiceNow - Incoming Mapper",
-	"nameRaw": "ServiceNow - Incoming Mapper",
-	"packID": "",
-	"packName": "ServiceNow",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "ServiceNow-incoming-mapper",
-	"supportedModules": [
-		"X1",
-		"X3",
-		"X5",
-		"ENT_PLUS",
-		"agentix",
-		"xsiam"
-	],
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "mapping": {
+        "ServiceNow SIR Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Assignment Group": {
+                    "simple": "assignment_group"
+                },
+                "Caller": {
+                    "simple": "caller"
+                },
+                "Destination IP": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "dest_ip"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "dest_ip",
+                        "transformers": []
+                    }
+                },
+                "Escalation": {
+                    "simple": "escalation"
+                },
+                "Remediation SLA": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "sla_due"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "sla_due",
+                        "transformers": []
+                    }
+                },
+                "ServiceNow Assigned To": {
+                    "simple": "assigned_to"
+                },
+                "ServiceNow Attack Vector": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "attack_vector"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "attack_vector",
+                        "transformers": []
+                    }
+                },
+                "ServiceNow Business Impact": {
+                    "complex": {
+                        "filters": [],
+                        "root": "business_criticality",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1 - Critical,2 - High,3 - Non-Critical"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Caller": {
+                    "simple": "caller"
+                },
+                "ServiceNow Category": {
+                    "simple": "category"
+                },
+                "ServiceNow Closed By": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "closed_by"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "closed_by",
+                        "transformers": []
+                    }
+                },
+                "ServiceNow Closed Date": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "closed_at"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "closed_at",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {
+                                        "isContext": false
+                                    },
+                                    "dayfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "isContext": false
+                                    },
+                                    "yearfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "DateStringToISOFormat"
+                            },
+                            {
+                                "args": {
+                                    "formatter": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "FormattedDateToEpoch"
+                            },
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Due Date": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "due_date"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "due_date",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "dayfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "isContext": false
+                                    },
+                                    "yearfirst": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "DateStringToISOFormat"
+                            },
+                            {
+                                "args": {
+                                    "formatter": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "FormattedDateToEpoch"
+                            },
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Escalation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "escalation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "0,1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Normal,Moderate,High,Overdue"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Impact": {
+                    "complex": {
+                        "filters": [],
+                        "root": "impact",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1 - High,2 - Medium,3 - Low"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Notify": {
+                    "complex": {
+                        "filters": [],
+                        "root": "notify",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1 - Do Not Notify,2 - Send Email,3 - Telephone"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Opened Date": {
+                    "complex": {
+                        "filters": [],
+                        "root": "sys_created_on",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {
+                                        "isContext": false
+                                    },
+                                    "dayfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "isContext": false
+                                    },
+                                    "yearfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Priority": {
+                    "complex": {
+                        "filters": [],
+                        "root": "priority",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3,4,5"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1 - Critical,2 - High,3 - Moderate,4 - Low,5 - Planning"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Resolution Notes": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "close_notes"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "close_notes",
+                        "transformers": []
+                    }
+                },
+                "ServiceNow SIR State": {
+                    "complex": {
+                        "filters": [],
+                        "root": "state",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "3,16,17,18,20,10,100,7"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Closed,Analysis,Contain,Eradicate,Recover,Draft,Review,Cancelled"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1 - High,2 - Medium,3 - Low"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Ticket ID": {
+                    "simple": "sys_id"
+                },
+                "ServiceNow Ticket Number": {
+                    "simple": "number"
+                },
+                "ServiceNow Urgency": {
+                    "complex": {
+                        "filters": [],
+                        "root": "urgency",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1 - High,2 - Medium,3 - Low"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "Source IP": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "source_ip"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "source_ip",
+                        "transformers": []
+                    }
+                },
+                "State": {
+                    "simple": "state"
+                },
+                "Sub Category": {
+                    "simple": "subcategory"
+                },
+                "Ticket Closed Date": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "closed_at"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "closed_at",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "dayfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "isContext": false
+                                    },
+                                    "yearfirst": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "DateStringToISOFormat"
+                            },
+                            {
+                                "args": {
+                                    "formatter": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "FormattedDateToEpoch"
+                            },
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "Ticket Number": {
+                    "simple": "number"
+                },
+                "Ticket Opened Date": {
+                    "complex": {
+                        "filters": [],
+                        "root": "sys_created_on",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "dayfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "isContext": false
+                                    },
+                                    "yearfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "sys_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                },
+                "details": {
+                    "simple": "description"
+                },
+                "name": {
+                    "simple": "short_description"
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "risk_score",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "by": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    }
+                                },
+                                "operator": "subtraction"
+                            },
+                            {
+                                "args": {
+                                    "by": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "20"
+                                        }
+                                    }
+                                },
+                                "operator": "division"
+                            },
+                            {
+                                "operator": "floor"
+                            },
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "0,1,2,3,4"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Informational,Low,Medium,High,Critical"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "ServiceNow Ticket": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Assignment Group": {
+                    "simple": "assignment_group"
+                },
+                "Caller": {
+                    "simple": "caller_id"
+                },
+                "Escalation": {
+                    "simple": "escalation"
+                },
+                "Remediation SLA": {
+                    "simple": "sla_due"
+                },
+                "ServiceNow Assigned To": {
+                    "simple": "assigned_to"
+                },
+                "ServiceNow Category": {
+                    "simple": "category"
+                },
+                "ServiceNow Due Date": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "due_date"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "due_date",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "dayfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "isContext": false
+                                    },
+                                    "yearfirst": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "DateStringToISOFormat"
+                            },
+                            {
+                                "args": {
+                                    "formatter": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "FormattedDateToEpoch"
+                            },
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Impact": {
+                    "complex": {
+                        "filters": [],
+                        "root": "impact",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1 - High,2 - Medium,3 - Low"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Notify": {
+                    "complex": {
+                        "filters": [],
+                        "root": "notify",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1 - Do Not Notify,2 - Send Email,3 - Telephone"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Priority": {
+                    "complex": {
+                        "filters": [],
+                        "root": "priority",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3,4,5"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1 - Critical,2 - High,3 - Moderate,4 - Low,5 - Planning"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow State": {
+                    "complex": {
+                        "filters": [],
+                        "root": "state",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3,6,7,8"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1 - New,2 - In Progress,3 - On Hold,6 - Resolved,7 - Closed,8 - Canceled"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Ticket ID": {
+                    "simple": "sys_id"
+                },
+                "ServiceNow Urgency": {
+                    "complex": {
+                        "filters": [],
+                        "root": "urgency",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1 - High,2 - Medium,3 - Low"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "State": {
+                    "simple": "state"
+                },
+                "Sub Category": {
+                    "simple": "subcategory"
+                },
+                "Ticket Closed Date": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "closed_at"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "closed_at",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "dayfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "isContext": false
+                                    },
+                                    "yearfirst": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "DateStringToISOFormat"
+                            },
+                            {
+                                "args": {
+                                    "formatter": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "FormattedDateToEpoch"
+                            },
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "Ticket Number": {
+                    "simple": "number"
+                },
+                "Ticket Opened Date": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "opened_at"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "opened_at",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "dayfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "isContext": false
+                                    },
+                                    "yearfirst": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "DateStringToISOFormat"
+                            },
+                            {
+                                "args": {
+                                    "formatter": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "FormattedDateToEpoch"
+                            },
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "sys_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                },
+                "details": {
+                    "simple": "description"
+                },
+                "name": {
+                    "simple": "short_description"
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,1 - High,2,2 - Medium,3,3 - Low"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "3,3,2,2,1,1"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "1,1 - High,2,2 - Medium,3,3 - Low"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "3,3,2,2,1,1"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "name": "ServiceNow - Incoming Mapper",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS",
+        "agentix",
+        "xsiam"
+    ],
+    "type": "mapping-incoming",
+    "version": -1
 }
