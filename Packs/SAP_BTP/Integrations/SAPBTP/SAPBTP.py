@@ -133,8 +133,8 @@ def create_mtls_cert_files(certificate: str, private_key: str) -> tuple[str, str
         demisto.debug(f"mTLS certificate files created: cert={cert_path}, key={key_path}")
         return cert_path, key_path
 
-    except Exception as e:
-        raise DemistoException(f"Failed to create mTLS certificate files: {e}")
+    except Exception as error:
+        raise DemistoException(f"Failed to create mTLS certificate files. Error: {str(error)}")
 
 
 def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
@@ -270,8 +270,8 @@ class Client(BaseClient):
                     demisto.debug(f"Using cached token (valid for {seconds_remaining}s)")
                     return cached_token
                 demisto.debug(f"Cached token expired at {time.ctime(valid_until_timestamp)}, renewing")
-            except (ValueError, TypeError) as e:
-                demisto.debug(f"Invalid cached token expiration value: {e}, forcing renewal")
+            except (ValueError, TypeError) as error:
+                demisto.debug(f"Invalid cached token expiration value, forcing renewal. Error: {str(error)}")
 
         demisto.debug(f"Requesting new OAuth2 token from {self.token_url}")
 
@@ -419,8 +419,8 @@ class Client(BaseClient):
             handle_value = paging_header_value.split("handle=")[1].strip()
             demisto.debug(f"Extracted pagination handle: {handle_value[:50]}...")
             return handle_value
-        except IndexError:
-            demisto.debug(f"Failed to parse pagination handle from header: {paging_header_value}")
+        except IndexError as error:
+            demisto.debug(f"Failed to parse pagination handle from header: {paging_header_value}. Error: {str(error)}")
             return None
 
 
@@ -441,8 +441,8 @@ def test_module(client: Client) -> str:
         fetch_events_with_pagination(client, created_after=test_time, max_events=1)
         demisto.debug("Command 'Test Module' execution finished successfully.")
         return "ok"
-    except Exception as e:
-        if "401" in str(e) or "403" in str(e):
+    except Exception as error:
+        if "401" in str(error) or "403" in str(error):
             return "Authorization Error: Verify Client ID, Secret, or Certificates."
         raise
 
