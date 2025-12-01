@@ -9,7 +9,7 @@ from requests import Response
 DEMISTO_OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DEMISTO_INFORMATIONAL = 0.5
 ORCA_API_TIMEOUT = 30  # Increase timeout for ORCA API
-ORCA_API_LIMIT = 500  # limit number of returned records from ORCA API
+ORCA_API_LIMIT = 500  # limit the number of returned records from ORCA API
 STEP_INIT = "init"
 STEP_FETCH = "fetch"
 API_QUERY_ALERTS_URL = "/automations/query/alerts"
