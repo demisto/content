@@ -536,6 +536,328 @@ script:
           - Blob
           - Container
           - None
+
+  - arguments:
+    - description: The name of the Container.
+      name: container_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Retrieve properties for the specified Container.
+    name: azure-storage-container-property-get
+    outputs:
+    - contextPath: Azure.StorageContainer.Container.Property.last_modified
+      description: Last modified time of the container.
+      type: Date
+    - contextPath: Azure.StorageContainer.Container.Property.etag
+      description: The entity tag for the container.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Property.lease_status
+      description: The lease status of the container.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Property.lease_state
+      description: The lease state of the container.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Property.has_immutability_policy
+      description: Indicates whether the container has an immutability policy set on it.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Property.has_legal_hold
+      description: Indicates whether the container has a legal hold.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.name
+      description: Container name.
+      type: String
+
+  - arguments:
+    - description: |
+        The name of the Container to create. Rules for naming containers can be found here:
+        https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata
+      name: container_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Create a new Container under the specified account.
+    name: azure-storage-container-create
+
+  - arguments:
+    - description: The name of the Container to delete.
+      name: container_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Marks the specified Container for deletion. The Container and any Blobs contained within it, will be deleted during garbage collection.
+    execution: true
+    name: azure-storage-container-delete
+
+  - arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The entry ID of the file to upload as a new blob. Available from the war room while the context data contains file output.
+      name: file_entry_id
+      required: true
+    - description: The name of the Blob to create. Default is the file name.
+      name: blob_name
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Retrieve Blob from Container.
+    name: azure-storage-container-blob-create
+
+  - arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the Blob to retrieve.
+      name: blob_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Retrieve Blob from Container.
+    name: azure-storage-container-blob-get
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: Unknown
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+
+  - arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the blob.
+      name: blob_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Retrieve the tags of the specified Blob.
+    name: azure-storage-container-blob-tag-get
+    outputs:
+    - contextPath: Azure.StorageContainer.Container.Blob.Tag.Key
+      description: Tag key.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Blob.Tag.Value
+      description: Tag value.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Blob.name
+      description: Blob name.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.name
+      description: Container name.
+      type: String
+
+  - arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the blob.
+      name: blob_name
+      required: true
+    - description: 'Tags fields in JSON format: {"tag-name-1": "tag-value-1", "tag-name-2": "tag-value-2"}. The tags fields may contain at most 10 tags.'
+      name: tags
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - auto: PREDEFINED
+      description: Wether to append tags to the existing tags or not. Default is false.
+      name: append
+      defaultValue: False
+      predefined:
+      - 'true'
+      - 'false'
+    description: Updates the tags for the specified Blob. The command can replace the entire tags of the Blob and can be used to remove tags.
+    name: azure-storage-container-blob-tag-set
+
+  - arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the blob.
+      name: blob_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Retrieve Blob properties.
+    name: azure-storage-container-blob-property-get
+    outputs:
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.last_modified
+      description: Last modified time of the blob.
+      type: Date
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.etag
+      description: The entity tag for the blob.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.lease_status
+      description: The lease status of the blob.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.lease_state
+      description: The lease state of the blob.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.blob_type
+      description: The blob type.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.content_length
+      description: The size of the blob in bytes.
+      type: Number
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.content_type
+      description: The content type specified for the blob. If no content type was specified, the default content type is application/octet-stream.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.content-md5
+      description: The MD5 hash of the blob content.
+      type: String
+    - contextPath: Azure.StorageContainer.Container.Blob.Property.creation_time
+      description: The date at which the blob was created.
+      type: Date
+    - contextPath: Azure.StorageContainer.Container.Blob.name
+      description: Blob name.
+      type: String
+
+  - arguments:
+    - description: The name of the Blob Container.
+      name: container_name
+      required: true
+    - description: The name of the blob.
+      name: blob_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    - description: Blob content type. Indicates the media type of the blob.
+      name: content_type
+    - description: Blob MD5 hash value. Can be used by the client to check for content integrity.
+      name: content_md5
+    - auto: PREDEFINED
+      description: Blob content encoding. Used to specify the compression algorithm of the blob content.
+      name: content_encoding
+      predefined:
+      - identity
+      - gzip
+      - deflate
+      - br
+      - compress
+      - zstd
+      - aes128gcm
+      - dcb
+      - dcz
+      - exi
+      - pack200-gzip
+      - x-compress
+      - x-gzip
+    - description: Blob content language. Describes the human languages of the blob content.
+      name: content_language
+    - description: Blob content disposition. Conveys additional information about how to process the response payload, and also can be used to attach additional metadata.
+      name: content_disposition
+    - description: Modifies the cache control string for the blob. Indicates directives for caching in both requests and responses.
+      name: cache_control
+    - description: Request ID generated by the client and recorded in the analytics logs when storage analytics logging is enabled.
+      name: request_id
+    - description: Required if the blob has an active lease.
+      name: lease_id
+    description: Set Blob properties.
+    name: azure-storage-container-blob-property-set
+
+  - arguments:
+    - description: Name of a container.
+      name: container_name
+      required: true
+    - description: "The subscription ID."
+      name: subscription_id
+      required: true
+    - description: "The resource group name."
+      name: resource_group_name
+      required: true
+    - description: The storage account name.
+      name: account_name
+      required: true
+    description: Block public access to a container.
+    name: azure-storage-container-public-access-block
+
   - arguments:
     - name: name
       required: true
@@ -2508,90 +2830,6 @@ script:
       name: subscription_id
       type: String
       required: true
-      prettyname: Subscription ID
-      prettypredefined:
-        Subscription ID: ${asset.xdm.asset.realm}
-    - description: The name of the resource group.
-      name: resource_group_name
-      type: String
-      required: true
-      prettyname: Resource Group
-      prettypredefined:
-        Resource Group: ${asset.xdm.asset.raw_fields.Platform Discovery.resourceGroup}
-    - description: The name of the security group.
-      name: security_group_name
-      required: true
-      prettyname: Logic App Name
-      prettypredefined:
-        Logic App Name: ${asset.xdm.asset.raw_fields.Platform Discovery.name}
-    - description: Name of the NSG rule to update.
-      name: security_rule_name
-      required: true
-      prettyname: NSG Rule
-      prettypredefined:
-        NSG Rule: ${asset.xdm.asset.raw_fields.Platform Discovery.properties.securityRules.name}
-    - auto: PREDEFINED
-      description: Whether to allow or deny network traffic.
-      name: access
-      predefined:
-      - Deny
-      defaultValue: Deny
-    description: "Revokes an NSG rule's access setting it to Deny, effectively blocking traffic defined by that rule's properties."
-    name: azure-nsg-security-rule-update-quick-action
-    prettyname: Revoke NSG Rule to Stop Traffic
-    quickaction: true
-    hidden: true
-    outputs:
-    - contextPath: Azure.NSGRule.name
-      description: The rule's name.
-      type: String
-    - contextPath: Azure.NSGRule.id
-      description: The rule's ID.
-      type: String
-    - contextPath: Azure.NSGRule.etag
-      description: The rule's ETag.
-      type: String
-    - contextPath: Azure.NSGRule.type
-      description: The rule's type.
-      type: String
-    - contextPath: Azure.NSGRule.provisioningState
-      description: The rule's provisioning state.
-      type: String
-    - contextPath: Azure.NSGRule.protocol
-      description: The protocol. Can be "TCP", "UDP", "ICMP", "*".
-      type: String
-    - contextPath: Azure.NSGRule.sourcePortRange
-      description: For a single port, the source port or a range of ports. Note that for multiple ports, `sourcePortRanges` will appear instead.
-      type: String
-    - contextPath: Azure.NSGRule.sourcePortRanges
-      description: For multiple ports, a list of these ports. Note that for single ports, `sourcePortRange` will appear instead.
-      type: String
-    - contextPath: Azure.NSGRule.destinationPortRange
-      description: For a single port, the destination port or range of ports. Note that for multiple ports, `destinationPortRanges` will appear instead.
-      type: String
-    - contextPath: Azure.NSGRule.destinationPortRanges
-      description: For multiple ports, a list of destination ports. Note that for single ports, `destinationPortRange` will appear instead.
-      type: String
-    - contextPath: Azure.NSGRule.sourceAddressPrefix
-      description: The source address.
-      type: String
-    - contextPath: Azure.NSGRule.destinationAddressPrefix
-      description: The destination address.
-      type: String
-    - contextPath: Azure.NSGRule.access
-      description: The rule's access. Can be "Allow" or "Deny".
-      type: String
-    - contextPath: Azure.NSGRule.priority
-      description: The rule's priority, ranging from 100 to 4096.  
-      type: Number
-    - contextPath: Azure.NSGRule.direction
-      description: The rule's direction. Can be "Inbound" or "Outbound".
-      type: String
-  - arguments:
-    - description: The subscription ID.
-      name: subscription_id
-      type: String
-      required: true
       prettypredefined:
         Subscription ID: ${asset.xdm.asset.realm}
       prettyname: Subscription ID
@@ -3496,7 +3734,7 @@ script:
       description: If set to 'true', allows public access to all blobs or containers in the storage account.
       name: allow_blob_public_access
       defaultValue: 'false'
-    name: azure-storage-disable-public-access-quick-action
+    name: azure-storage-disable-storage-account-public-access-quick-action
     description: "Disables public access to blobs for the storage account, blocking anonymous/public read access to containers and blobs."
     prettyname: Disable Storage Account Public Access
     hidden: true
@@ -5081,7 +5319,7 @@ script:
       defaultValue: AzureActiveDirectory
       hidden: true
     description: Sets the data access authentication mode for the managed disk to Azure Active Directory.
-    name: azure-disk-set-data-access-aad-quick-action
+    name: azure-disk-set-data-access-ad-quick-action
     prettyname: Set Disk Data Access to AD
     hidden: true
     quickaction: true
@@ -5497,6 +5735,370 @@ script:
     - contextPath: Azure.ACR.type
       description: The type of the resource.
       type: String
+  - arguments:
+    - description: The subscription ID.
+      name: subscription_id
+      type: String
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: name
+      description: Policy assignment name.
+      defaultValue: SecurityCenterBuiltIn
+      hidden: true
+    - name: scope
+      type: string
+      description: Scope for the policy assignment.
+      required: true
+      prettyname: Scope
+      prettypredefined:
+        Scope: ${asset.xdm.asset.raw_fields.Platform Discovery.properties.scope}
+    - name: policy_definition_id
+      type: string
+      description: The ID of the policy definition or policy set definition being assigned.
+      hidden: true
+      defaultValue: 1f3afdf9-d0c9-4c3d-847f-89da613e70a8
+    - name: parameters
+      description: JSON object of policy parameter values.
+      defaultValue: |
+        {
+          "jitNetworkAccessMonitoringEffect": { "value": "AuditIfNotExists" },
+          "gcLinuxDiskEncryptionMonitoringEffect": { "value": "AuditIfNotExists" },
+          "gcWindowsDiskEncryptionMonitoringEffect": { "value": "AuditIfNotExists" },
+          "systemUpdatesV2MonitoringEffect": { "value": "AuditIfNotExists" }
+        }
+      hidden: true
+    name: azure-policy-assignment-create-quick-action
+    description: |
+      Applies Microsoft Defender for Cloud built-in recommendations by creating a policy assignment
+      for the SecurityCenterBuiltIn initiative. This sets the following policies to 'AuditIfNotExists':
+      disk encryption monitoring (Windows and Linux), system updates monitoring, and JIT network access monitoring.
+      Rules for adaptive application controls, endpoint protection, and security configuration are excluded.   
+    prettyname: Apply MS Defender Policy
+    quickaction: true
+    hidden: true
+    outputs:
+    - contextPath: Azure.PolicyAssignment.ID
+      description: The resource ID of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Name
+      description: The name of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Type
+      description: The type of the resource (e.g., 'Microsoft.Authorization/policyAssignments').
+      type: string
+    - contextPath: Azure.PolicyAssignment.Location
+      description: The location of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Identity
+      description: The managed identity associated with the policy assignment.
+    - contextPath: Azure.PolicyAssignment.Properties.DisplayName
+      description: The display name of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.Description
+      description: The description of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.PolicyDefinitionId
+      description: The ID of the policy definition or policy set definition being assigned.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.Scope
+      description: The scope of the policy assignment.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.NotScopes
+      description: The list of scopes that are excluded from the policy assignment.
+    - contextPath: Azure.PolicyAssignment.Properties.Parameters
+      description: The parameter values for the assigned policy rule.
+    - contextPath: Azure.PolicyAssignment.Properties.Metadata
+      description: The metadata associated with the policy assignment.
+    - contextPath: Azure.PolicyAssignment.Properties.EnforcementMode
+      description: The policy assignment enforcement mode (e.g., 'Default' or 'DoNotEnforce').
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.latestDefinitionVersion
+      description: The latest version of the policy definition available. This is only present if requested via the $expand query parameter.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.NonComplianceMessages
+      description: The messages that describe why a resource is non-compliant with the policy.
+    - contextPath: Azure.PolicyAssignment.Properties.DefinitionVersion
+      description: The version of the policy definition to use.
+      type: string
+    - contextPath: Azure.PolicyAssignment.Properties.Overrides
+      description: The policy property value overrides.
+    - contextPath: Azure.PolicyAssignment.Properties.ResourceSelectors
+      description: The resource selectors to filter policies by resource properties.
+    - contextPath: Azure.PolicyAssignment.SystemData
+      description: The system metadata relating to this resource.
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: log_disconnections
+    - name: value
+      type: string
+      description: 'Value of the configuration.'
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-config-set-disconnection-logging-quick-action
+    prettyname: Enable Disconnection Logging on PostgreSQL
+    hidden: true
+    quickaction: true
+    description: Enables logging of client disconnections on the PostgreSQL server.
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'log_checkpoints'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-config-set-checkpoint-logging-quick-action
+    prettyname: Enable PostgreSQL Checkpoint Logging
+    hidden: true
+    quickaction: true
+    description: Enables checkpoint logging on the PostgreSQL server.
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'connection_throttling'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-config-set-connection-throttling-quick-action
+    prettyname: Enable Connection Throttling on PostgreSQL
+    hidden: true
+    quickaction: true
+    description: Enables connection throttling on the PostgreSQL server. This enables the PostgreSQL database to set the verbosity of logged messages allowing generation of query and error logs with respect to concurrent connections.
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'log_connections'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-config-set-session-connection-logging-quick-action
+    prettyname: Enable Session Connection Logging on PostgreSQL
+    hidden: true
+    quickaction: true
+    description: Enables logging of client connections on the PostgreSQL.
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'log_retention_days'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: '4'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-config-set-log-retention-period-quick-action
+    prettyname: Set Postgres Log Retention
+    hidden: true
+    quickaction: true
+    description: 'Sets the log retention period for the PostgreSQL server to 4 days. NOTE: The recommended log retention period can be any value from 4 to 7 days.'
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: string
+      description: The resource group name.
+      required: true
+      prettyname: Resource Group
+    - name: server_name
+      type: string
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: configuration_name
+      type: string
+      description: The configuration setting name.
+      hidden: true
+      defaultValue: 'log_duration'
+    - name: value
+      type: string
+      description: Value of the configuration.
+      hidden: true
+      defaultValue: 'on'
+    - name: source
+      defaultValue: user-override
+      description: Source of the configuration.
+      hidden: true
+    name: azure-postgres-config-set-statement-logging-quick-action
+    prettyname: Enable Postgres Statement Logging
+    hidden: true
+    quickaction: true
+    description: Enables logging of statement execution duration on the PostgreSQL server to help with performance analysis.
+    outputs: [] # have no outputs for these command by response
+  - arguments:
+    - name: subscription_id
+      type: string
+      description: The subscription ID.
+      required: true
+      prettyname: Subscription ID
+      prettypredefined:
+        Subscription ID: ${asset.xdm.asset.realm}
+    - name: resource_group_name
+      type: String
+      required: true
+      description: The resource group name.
+      prettyname: Resource Group
+    - name: server_name
+      type: String
+      required: true
+      description: Name of the PostgreSQL server.
+      prettyname: Postgres Server Name
+      prettypredefined:
+        Postgres Server Name: ${asset.xdm.asset.name}
+    - name: ssl_enforcement
+      type: String
+      description: Whether to enable SSL authentication when connecting to the server.
+      defaultValue: Enabled
+      hidden: true
+    name: azure-postgres-server-update-ssl-enforcement-quick-action
+    description: Enforces SSL/TLS connections for the PostgreSQL server to reject unencrypted traffic.
+    outputs: [] # No outputs are returned in the response.
+    hidden: true
+    quickaction: true
+    prettyname: Enable SSL on Postgres Server
   isfetch: false
   runonce: false
   script: '-'

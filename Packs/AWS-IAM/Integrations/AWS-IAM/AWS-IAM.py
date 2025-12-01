@@ -1314,7 +1314,7 @@ def main():  # pragma: no cover
             get_account_password_policy(args, client)
         elif (
             command == "aws-iam-update-account-password-policy"
-            or command == "aws-iam-update-account-password-policy-quick-action"
+            or command == "aws-iam-account-password-policy-update-quick-action"
         ):
             update_account_password_policy(args, client)
         elif command == "aws-iam-list-role-policies":

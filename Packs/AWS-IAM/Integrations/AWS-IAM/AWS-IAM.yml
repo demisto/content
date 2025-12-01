@@ -38,7 +38,7 @@ configuration:
   - us-gov-east-1
   - us-gov-west-1
   type: 15
-  section: Collect
+  section: Connect
   advanced: true
   required: true
 - display: Role Session Duration
@@ -1280,8 +1280,7 @@ script:
     description: Create/update password policy.
     execution: true
     name: aws-iam-update-account-password-policy
-
-  - name: aws-iam-update-account-password-policy-quick-action
+  - name: aws-iam-account-password-policy-update-quick-action
     description: Updates the password policy to require a minimum length of 14 characters, at least one lowercase letter, one uppercase letter, one symbol. Allows users to reset password, disallow reuse of the last 24 passwords and set password expiration to 90 days. It runs the aws-iam-update-account-password-policy CLI command in your AWS environment and requires the 'iam:UpdateAccountPasswordPolicy' permission.
     prettyname: Apply IAM Password Policy
     hidden: true
@@ -1325,7 +1324,6 @@ script:
         description: Specifies the number of previous passwords that IAM users are prevented from reusing.
         defaultValue: '24'
         hidden: true
-
   - arguments:
     - description: The name of the role to list policies for.
       name: roleName
@@ -1657,7 +1655,7 @@ script:
       required: false
     description: Deletes a virtual MFA device.
     name: aws-iam-delete-mfa-devices
-  dockerimage: demisto/boto3py3:1.0.0.5533693
+  dockerimage: demisto/boto3py3:1.0.0.5983318
   runonce: false
   script: '-'
   subtype: python3
