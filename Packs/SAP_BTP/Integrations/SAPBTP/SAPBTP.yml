@@ -1,0 +1,139 @@
+category: Cloud Services
+commonfields:
+  id: SAPBTP
+  version: -1
+sectionorder:
+- Connect
+- Collect
+configuration:
+- name: url
+  display: Server URL (Service Key URL)
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: SAP Service Key field 'url' (e.g., https://auditlog-management.cfapps.us10.hana.ondemand.com).
+- name: client_id
+  display: Client ID (Username)
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: SAP Service Key field 'uaa.clientid'. Required for both mTLS and Non-mTLS authentication.
+- name: auth_type
+  display: Authentication Type
+  required: true
+  type: 15
+  section: Connect
+  defaultvalue: Non-mTLS
+  options:
+  - mTLS
+  - Non-mTLS
+  additionalinfo: Select authentication method. mTLS (recommended) requires Certificate + Private Key. Non-mTLS requires Client Secret.
+- name: certificate
+  display: Certificate
+  required: false
+  type: 12
+  section: Connect
+  additionalinfo: For mTLS authentication (recommended). Body of certificate.pem file in PEM format.
+- name: key
+  display: Private Key
+  required: false
+  type: 14
+  section: Connect
+  additionalinfo: For mTLS authentication (recommended). Body of key.pem file in PEM format.
+- name: client_secret
+  display: Client Secret (Password)
+  required: false
+  type: 9
+  displaypassword: Client Secret
+  section: Connect
+  additionalinfo: For Non-mTLS authentication. SAP Service Key field 'uaa.clientsecret'.
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  defaultvalue: "false"
+  section: Connect
+  advanced: true
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  defaultvalue: "false"
+  type: 8
+  section: Connect
+  advanced: true
+- name: isFetch
+  display: Fetch incidents
+  type: 8
+  defaultvalue: 'false'
+  required: false
+  section: Collect
+- name: isFetchEvents
+  display: Fetch events
+  type: 8
+  defaultvalue: 'false'
+  required: false
+  section: Collect
+- name: first_fetch
+  display: First fetch time
+  required: false
+  defaultvalue: '3 days'
+  type: 0
+  section: Collect
+  additionalinfo: Time to start fetching events from (e.g., "3 days", "1 week", "2024-01-01").
+- name: incidentType
+  display: Incident type
+  required: false
+  type: 13
+  section: Collect
+- name: max_fetch
+  display: The maximum number of audit logs per fetch
+  required: false
+  defaultvalue: '5000'
+  type: 0
+  section: Collect
+  advanced: true
+  additionalinfo: Maximum number of events to fetch per cycle (default 5000).
+
+description: Collect audit log events from SAP Business Technology Platform (BTP).
+display: SAP BTP (Business Technology Platform)
+name: SAPBTP
+script:
+  commands:
+  - name: sap-btp-get-events
+    description: Retrieve audit log events from SAP BTP.
+    arguments:
+    - name: from
+      description: Time to fetch events from (e.g., "now", "3 days", "2 hours", "1 month", "2024-01-01").
+      defaultValue: now
+    - name: limit
+      description: Maximum number of events to retrieve.
+      defaultValue: '50'
+    outputs:
+    - contextPath: SAPBTP.Event.uuid
+      description: Unique identifier of the event.
+      type: String
+    - contextPath: SAPBTP.Event.user
+      description: User associated with the event.
+      type: String
+    - contextPath: SAPBTP.Event.time
+      description: Timestamp of the event.
+      type: Date
+    - contextPath: SAPBTP.Event.ip
+      description: IP address associated with the event.
+      type: String
+    - contextPath: SAPBTP.Event.data
+      description: Event data payload.
+      type: Unknown
+  isfetch: true
+  isfetchevents: true
+  runonce: false
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.12.5490952
+fromversion: 6.10.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)
