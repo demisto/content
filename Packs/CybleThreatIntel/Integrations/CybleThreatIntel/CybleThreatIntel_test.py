@@ -158,7 +158,6 @@ def test_fetch_indicators_retry_fail(mock_demisto):
     assert count == 0
 
 
-
 from unittest.mock import Mock
 
 

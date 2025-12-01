@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from enum import Enum
-from typing import Optional
 
 import requests
 import urllib3
@@ -116,7 +115,7 @@ class ConfidenceLevel(str, Enum):
     HIGH = "High"
 
 
-def calculate_verdict(risk_score: Optional[float], confidence_rating: Optional[str]):
+def calculate_verdict(risk_score: float | None, confidence_rating: str | None):
     if risk_score is None:
         risk_score = 0
     if confidence_rating is None:
