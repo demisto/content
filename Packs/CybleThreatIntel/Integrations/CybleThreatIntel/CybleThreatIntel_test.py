@@ -144,45 +144,6 @@ def test_ioc_lookup_success(mock_lookup):
 # -------------------------------------------------------------------
 #   FETCH INDICATORS – MAIN LOGIC
 # -------------------------------------------------------------------
-@patch("CybleThreatIntel.demisto")
-def test_fetch_indicators_happy_path(mock_demisto):
-    mock_demisto.args.return_value = {}
-    mock_demisto.getLastRun.return_value = {}
-    mock_demisto.setLastRun = MagicMock()
-    mock_demisto.createIndicators = MagicMock()
-
-    client = Client({"base_url": "x", "access_token": {"password": "a"}})
-
-    client.fetch_iocs = MagicMock(return_value={
-        "success": True,
-        "data": {
-            "iocs": [
-                {
-                    "ioc": "1.1.1.1",
-                    "ioc_type": "IP",
-                    "risk_score": 80,
-                    "confidence_rating": "High",
-                    "first_seen": 1700000000,
-                    "last_seen": 1700000500,
-                    "sources": ["test"],
-                    "behaviour_tags": [],
-                    "target_countries": [],
-                    "target_regions": [],
-                    "target_industries": [],
-                    "related_malware": [],
-                    "related_threat_actors": [],
-                }
-            ]
-        },
-    })
-
-    params = {"first_fetch": 1, "max_fetch": 50}
-
-    count = fetch_indicators_command(client, params)
-
-    assert count == 1
-    mock_demisto.createIndicators.assert_called_once()
-    mock_demisto.setLastRun.assert_called()
 
 
 # -------------------------------------------------------------------

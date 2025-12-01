@@ -337,9 +337,9 @@ def cyble_ioc_lookup_command(client: Client, args: dict):
     ioc = args.get("ioc")
     if not ioc:
         return_error("Missing required argument: ioc")
-
+    ioc_value: str = str(ioc)
     demisto.debug(f"Running IOC lookup command for IOC: {ioc}")
-    response = client.ioc_lookup(ioc)
+    response = client.ioc_lookup(ioc_value)
     demisto.debug(f"IOC lookup API response: {response}")
     data = response.get("data", {})
     iocs = data.get("iocs", [])
@@ -412,6 +412,11 @@ def main():  # pragma: no cover
         elif command == "fetch-indicators":
             inserted = fetch_indicators_command(client, params)
             return_results(f"Inserted {inserted} indicators.")
+
+        elif command in ["cyble-vision-fetch-taxii", "cyble-vision-get-collection-names"]:
+            return_results(
+                f"The command '{command}' is deprecated and no longer supported."
+            )
 
     except Exception as e:
         return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")

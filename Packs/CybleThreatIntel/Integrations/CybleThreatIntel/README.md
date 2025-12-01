@@ -113,22 +113,6 @@ It is used by the XSOAR engine when *Fetches Indicators* is enabled.
 * Automatically maps each IOC into XSOAR Indicator fields.
 * Updates `last_run` after each successful chunk.
 
----
-
-# Test Module
-
-The `test-module` command verifies:
-
-* Authentication using API token
-* Connectivity to the `/y/iocs` endpoint
-
-A successful test returns:
-
-```
-ok
-```
-
----
 
 # Known Limitations
 
