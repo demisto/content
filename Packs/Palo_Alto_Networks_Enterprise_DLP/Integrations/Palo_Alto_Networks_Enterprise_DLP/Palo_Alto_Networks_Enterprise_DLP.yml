@@ -32,15 +32,17 @@ configuration:
   name: dlp_regions
   type: 16
   options:
-  - US
-  - EU
-  - AP
-  - UK
-  - CA 
-  - FR
-  - AU
-  - IN 
-  - JP
+  - US  # United States
+  - EU  # European Union
+  - AP  # Asia-Pacific
+  - UK  # United Kingdom
+  - CA  # Canada
+  - FR  # France
+  - AU  # Australia
+  - IN  # India
+  - JP  # Japan
+  - SG  # Singapore
+  - BR  # Brazil
   required: false
   section: Collect
 - display: Data profiles to allow exemption
@@ -164,7 +166,7 @@ script:
   - name: pan-dlp-reset-last-run
     arguments: []
     description: Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
-  dockerimage: demisto/python3:3.12.8.3720084
+  dockerimage: demisto/python3:3.12.12.5490952
   isFetchSamples: true
   longRunning: true
   script: '-'
