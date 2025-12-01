@@ -1174,6 +1174,7 @@ def convert_large_integers_to_strings(data: dict[str, Any]) -> None:
     """
     for key, value in list(data.items()):
         if isinstance(value, int) and value > JS_NUMBER_LIMIT:
+            demisto.debug(f"Converting large integer to string: {key}={value}")
             data[key] = str(value)
 
 
