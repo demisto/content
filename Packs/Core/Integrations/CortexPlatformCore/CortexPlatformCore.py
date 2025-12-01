@@ -428,9 +428,9 @@ def determine_assignee_filter_field(assignee_list: list) -> str:
     """
     if not assignee_list:
         return CASE_FIELDS["assignee"]
-    
+
     assignee = assignee_list[0]
-    
+
     if "@" in assignee:
         # If the assignee contains '@', use the email field
         return CASE_FIELDS["assignee_email"]
@@ -1028,7 +1028,7 @@ def add_cases_extra_data(client, cases_list):
         extra_data = get_case_extra_data(client, {"case_id": case_id, "limit": 1000})
         case.update({"CaseExtraData": extra_data})
 
-    return cases_list 
+    return cases_list
 
 
 def map_case_format(case_list):

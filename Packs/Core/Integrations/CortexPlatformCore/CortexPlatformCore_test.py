@@ -5002,17 +5002,17 @@ def test_add_cases_extra_data_empty_list(mocker):
     def test_determine_assignee_filter_field_none(self):
         from CortexPlatformCore import determine_assignee_filter_field, CASE_FIELDS
 
-        result = determine_assignee_filter_field(None)
+        result = determine_assignee_filter_field([])
         assert result == CASE_FIELDS["assignee"]
 
     def test_determine_assignee_filter_field_with_email(self):
         from CortexPlatformCore import determine_assignee_filter_field, CASE_FIELDS
 
-        result = determine_assignee_filter_field("user@example.com")
+        result = determine_assignee_filter_field(["user@example.com"])
         assert result == CASE_FIELDS["assignee_email"]
 
     def test_determine_assignee_filter_field_with_pretty_name(self):
         from CortexPlatformCore import determine_assignee_filter_field, CASE_FIELDS
 
-        result = determine_assignee_filter_field("John Doe")
+        result = determine_assignee_filter_field(["John Doe"])
         assert result == CASE_FIELDS["assignee"]
