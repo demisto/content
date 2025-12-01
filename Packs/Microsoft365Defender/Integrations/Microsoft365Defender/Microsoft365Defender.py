@@ -1152,9 +1152,6 @@ def main() -> None:
     demisto.debug(f"{args=}, \n{mirroring_fields}")
 
     try:
-        if not managed_identities_client_id and not app_id:
-            raise Exception("Application ID must be provided.")
-
         client = Client(
             app_id=app_id,
             verify=verify_certificate,

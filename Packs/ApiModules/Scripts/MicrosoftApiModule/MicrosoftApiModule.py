@@ -34,6 +34,7 @@ SELF_DEPLOYED_AUTH_TYPE = "self_deployed"
 # grant types in self-deployed authorization
 CLIENT_CREDENTIALS = "client_credentials"
 AUTHORIZATION_CODE = "authorization_code"
+MANAGED_IDENTITIES = "managed_identities"
 REFRESH_TOKEN = "refresh_token"  # guardrails-disable-line
 DEVICE_CODE = "urn:ietf:params:oauth:grant-type:device_code"
 REGEX_SEARCH_URL = r"(?P<url>https?://[^\s]+)"
@@ -671,8 +672,8 @@ def get_azure_cloud(params, integration_name):
 def get_auth_type_flow(auth_flow: str) -> None | str:
     auth_flow_dict = {
         "Not Selected": None,
-        "Cortex App": None,
-        "Azure Managed Identities": None,
+        "Cortex App": OPROXY_AUTH_TYPE,
+        "Azure Managed Identities": MANAGED_IDENTITIES,
         "Client Credentials": CLIENT_CREDENTIALS,
         "Authorization Code": AUTHORIZATION_CODE,
         "Device Code": DEVICE_CODE,
@@ -683,7 +684,7 @@ def get_auth_type_flow(auth_flow: str) -> None | str:
 def is_self_deployed_flow(auth_flow: str) -> bool:
     if auth_flow in ("Device Code", "Authorization Code", "Client Credentials", "Azure Managed Identities"):
         return True
-    if auth_flow in (DEVICE_CODE, AUTHORIZATION_CODE, CLIENT_CREDENTIALS):
+    if auth_flow in (DEVICE_CODE, AUTHORIZATION_CODE, CLIENT_CREDENTIALS, MANAGED_IDENTITIES):
         return True
     return False
 
@@ -925,16 +926,24 @@ class MicrosoftClient(BaseClient):
         """
         Checks all necessary fields for the specific authentication flow.
         """
-
         def require_fields(fields: list[str], message_prefix: str):
             """Helper to validate required fields."""
             for field in fields:
                 if not getattr(self, field):
                     raise DemistoException(f"{message_prefix} enter {field.replace('_', ' ').title()}.")
+
         if self.auth_type == OPROXY_AUTH_TYPE:
             self.get_access_token()
             return "ok"
-        if self.grant_type == CLIENT_CREDENTIALS:
+        if self.grant_type == MANAGED_IDENTITIES:
+            require_fields(
+                fields=["managed_identities_client_id"],
+                message_prefix="When using Azure Managed Identities flow you must "
+            )
+            self.get_access_token()
+            return "ok"
+
+        elif self.grant_type == CLIENT_CREDENTIALS:
             require_fields(
                 fields=["tenant_id", "client_secret", "client_id"],
                 message_prefix="When using Client Credentials flow you must "
@@ -1139,7 +1148,7 @@ class MicrosoftClient(BaseClient):
     def _get_self_deployed_token(
         self, refresh_token: str = "", scope: str | None = None, integration_context: dict | None = None
     ) -> tuple[str, int, str]:
-        if self.managed_identities_client_id:
+        if self.grant_type == MANAGED_IDENTITIES or self.managed_identities_client_id:
             if not self.multi_resource:
                 return self._get_managed_identities_token()
 
@@ -1607,7 +1616,7 @@ def get_azure_managed_identities_client_id(params: dict) -> str | None:
         will return, otherwise - None
 
     """
-    auth_type = params.get("auth_type") or params.get("authentication_type")
+    auth_type = params.get("auth_type") or params.get("authentication_type") or params.get("auth_flow")
     if params and (argToBoolean(params.get("use_managed_identities") or auth_type == "Azure Managed Identities")):
         client_id = params.get("managed_identities_client_id", {}).get("password")
         return client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
