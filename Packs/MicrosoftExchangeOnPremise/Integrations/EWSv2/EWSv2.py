@@ -1633,13 +1633,12 @@ def test_module(client: EWSClient):  # pragma: no cover
     except Exception as e:
         if "403" in str(e):
             error_message_simple = (
-                f"Got invalid response with status code: 403."
-                f" Please make sure you have the right permissions to your application.\n"
+                "Got invalid response with status code: 403."
+                " Please make sure you have the right permissions to your application.\n"
             )
             raise DemistoException(error_message_simple)
         raise DemistoException(str(e))
     return "ok"
-    demisto.results("ok")
 
 
 def get_client_from_params(params: dict):
