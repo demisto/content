@@ -22,30 +22,31 @@ For more information - click [here](https://training.threatconnect.com/learn/art
 2. Search for ThreatConnect Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
+
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Base URL | The API URL. | True |
     | Access ID | The API ID key | True |
     | Secret key | The secret key for the API. | True |
-    | Access ID | API - Access ID | True |
-    | Secret key | API - Secret key | True |
+    | Indicators to get per fetch | The number of indicators to get per fetch. | False |
     | Tags to filter results by | A comma-separated list of tags to filter by. | False |
     | Owners | A comma-separated list of owners to fetch indicators from. | False |
     | Fetch indicators |  | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
     | Feed Fetch Interval | The time interval we send request to fetch indicators. | False |
     | Trust any certificate (not secure) | Whether to trust any certificate. | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Tags | Supports CSV values. | False |
     | Indicator types | Fetch specific ThreatConnect indicator types. Default value is "All". | False |
-    | Group type | Fetch specific ThreatConnect group types. Default value is "All". | False |
+    | Group types | Fetch specific ThreatConnect group types. Default value is "All". | False |
     | Active Indicators Only | Fetch active only indicators when true. Default is "True". | False |
     | Create Relationships | Fetch related indicators. Default is "False". | False |
     | Indicator Query | Filter results using ThreatConnect Query Language \(TQL\). For more information, see the ThreatConnect documentation https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article | False |
-    | Confidence Threshold | Minimal confidence value to fetch indicators by \(an integer between 0 to 100\). Note: this parameter is not relevant for groups. | False |
-    | Threat Assess Score Threshold | Minimal threat assess score value to fetch indicators by \(an integer between 0 to 1000\).  Note: this parameter is not relevant for groups. | False |
+    | Use Indicator Query For Group | Use the ThreatConnect Indicator Query for group filtering. Default is "True". | False |
+    | Group Query | Filter results using ThreatConnect Query Language \(TQL\). For more information, see the ThreatConnect documentation https://training.threatconnect.com/learn/article/using-threatconnect-query-language-tql-kb-article | False |
+    | Confidence Threshold | Minimal confidence value to fetch indicators by \(an integer between 0 to 100\). Note: this parameter is not relevant for groups.| False |
+    | Threat Assess Score Threshold | Minimal threat assess score value to fetch indicators by \(an integer between 0 to 1000\). Note: this parameter is not relevant for groups. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
