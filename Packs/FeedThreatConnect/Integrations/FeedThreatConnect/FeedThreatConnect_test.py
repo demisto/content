@@ -189,7 +189,7 @@ def test_should_send_request(params, expected_result, endpoint):
                 "use_indicator_query_for_group": True,
                 "createRelationships": False,
             },
-            "/api/v3/groups?tql=indicatorActive%20EQ%20True&fields=tags" "&resultStart=0&resultLimit=100&sorting=dateAdded%20ASC",
+            "/api/v3/groups?tql=indicatorActive%20EQ%20True&fields=tags&resultStart=0&resultLimit=100&sorting=dateAdded%20ASC",
             "groups",
             id="groups with default query",
         ),
