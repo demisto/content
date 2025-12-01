@@ -4896,13 +4896,11 @@ def test_run_playbook_command_multiple_errors_response():
     )
     assert (
         "Issue ID issue_2: Skipping execution of playbook multi_fail_playbook for alert issue_2, "
-        "failed creating investigation playbook"
-        in error_message
+        "failed creating investigation playbook" in error_message
     )
     assert (
         "Issue ID issue_3: Skipping execution of playbook multi_fail_playbook for alert issue_3, "
-        "failed creating investigation playbook"
-        in error_message
+        "failed creating investigation playbook" in error_message
     )
 
 
