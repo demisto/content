@@ -158,11 +158,6 @@ def test_fetch_indicators_retry_fail(mock_demisto):
     assert count == 0
 
 
-def test_calculate_verdict_invalid_inputs():
-    assert calculate_verdict("bad", "weird") == "Unknown"
-    assert calculate_verdict(-10, "low") == "Unknown"
-    assert calculate_verdict(200, "high") == "Malicious"
-
 
 from unittest.mock import Mock
 

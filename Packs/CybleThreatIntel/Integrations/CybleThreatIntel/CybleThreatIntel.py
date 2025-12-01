@@ -197,8 +197,7 @@ def fetch_indicators_command(client: Client, params: dict) -> int:
         demisto.debug("Re-fetch triggered → resetting last_run")
         last_run: Dict[str, Any] = {}
     else:
-        lr = demisto.getLastRun() or {}
-        last_run: Dict[str, Any] = lr
+        last_run = demisto.getLastRun() or {}
 
     # --- compute initial range ---
     gte_str, final_lte_str = get_time_range(first_fetch_hours, last_run)
