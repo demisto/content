@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 import dateparser
 from enum import Enum
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import copy
 
 # Disable insecure warnings
@@ -35,14 +34,6 @@ APPSEC_SOURCES = [
     "CAS_OPERATIONAL_RISK_SCANNER",
     "CAS_CI_CD_RISK_SCANNER",
     "CAS_DRIFT_SCANNER",
-]
-CLOUDSEC_SOURCES = [
-    "ATTACK_PATH",
-    "CSPM_SCANNER"
-]
-REMEDIATION_TECHNIQUES_SOURCES = [
-    "CIEM_SCANNER",
-    "DATA_POLICY"
 ]
 WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
@@ -549,7 +540,7 @@ class Client(CoreClient):
             },
         )
 
-    def get_playbook_suggestions_by_issue(self, issue_id):
+    def get_playbook_suggestion_by_issue(self, issue_id):
         """
         Get playbook suggestions for a specific issue.
         Args:
@@ -570,14 +561,13 @@ class Client(CoreClient):
             headers=self._headers,
             full_url="/xsoar/playbooks/metadata",
         )
-    
+
     def get_quick_actions_metadata(self):
         return self._http_request(
             method="GET",
             headers=self._headers,
             full_url="/xsoar/quickactions",
         )
-    
 
     def appsec_remediate_issue(self, request_body):
         return self._http_request(
@@ -592,14 +582,6 @@ class Client(CoreClient):
             method="GET",
             headers=self._headers,
             full_url=f"/api/webapp/public_api/appsec/v1/issues/fix/{issue_id}/fix_suggestion",
-        )
-        return reply
-    
-    def get_cloudsec_remediation(self, issue_id, asset_id):
-        self._http_request(
-            method="GET",
-            headers=self._headers,
-            full_url=f"/api/cloudsec/v1/issue/{issue_id}/remediation?asset_id={asset_id}",
         )
         return reply
 
@@ -636,7 +618,9 @@ def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     """
     recommendation = {}
     manual_fix = issue.get("extended_fields", {}).get("action")
-    recommendation["remediation"] = manual_fix if manual_fix else recommendation.get("remediation")
+    if manual_fix:
+        recommendation["remediation"] = manual_fix
+
     fix_suggestion = client.get_appsec_suggested_fix(issue_id)
     demisto.debug(f"AppSec fix suggestion: {fix_suggestion}")
 
@@ -651,21 +635,8 @@ def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
 
     return recommendation
 
-def get_cloudsec_suggestion(client, issue, issue_id):
-    recommendation = {}
-    asset_ids = issue.get("asset_ids") 
-    if not asset_ids or (isinstance(asset_ids, list) and len(asset_ids) > 0 ):
-        return recommendation
-    
-    cloudsec_remediation = client.get_cloudsec_remediation(issue_id, asset_ids[0])
-    if isinstance(cloudsec_remediation, list) and len(cloudsec_remediation) > 0:
-        remediation = cloudsec_remediation[0].get("recommendation")
-        recommendation["remediation"] = remediation
-    
-    return recommendation
 
-
-def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadata, pb_id_to_index, qas_metadata, qa_id_to_index):
+def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadata, pb_id_to_index, qa_name_to_data):
     """
     Fetches playbook and quick-action suggestions for a given issue
     and updates the recommendation dictionary accordingly.
@@ -677,8 +648,8 @@ def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadat
     append_playbook = False
     append_quick_action = False
 
-    response = client.get_playbook_suggestions_by_issue(issue_id)
-    suggestions = response.get("reply",{})
+    response = client.get_playbook_suggestion_by_issue(issue_id)
+    suggestions = response.get("reply", {})
     demisto.debug(f"Playbooks and quick action {suggestions=} for {issue_id=}")
 
     if not suggestions:
@@ -693,12 +664,11 @@ def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadat
             "playbook_id": playbook_id,
             "suggestion_rule_id": suggestion_rule_id,
         }
-        if playbook_id in pb_id_to_index.keys():
+        if playbook_id in pb_id_to_index:
             current_pb_metadata = pbs_metadata[pb_id_to_index[playbook_id]]
-            recommendation["playbook_suggestions"].update({
-                "name": current_pb_metadata.get("name"),
-                "comment": current_pb_metadata.get("comment")
-            })
+            recommendation["playbook_suggestions"].update(
+                {"name": current_pb_metadata.get("name"), "comment": current_pb_metadata.get("comment")}
+            )
 
     # Quick action suggestion
     quick_action_id = suggestions.get("quick_action_id", None)
@@ -706,13 +676,32 @@ def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadat
 
     if quick_action_id:
         recommendation["quick_action_suggestions"] = {
-            "quick_action_id": quick_action_id,
-            "quick_action_suggestion_rule_id": quick_action_suggestion_rule_id,
+            "name": quick_action_id,
+            "suggestion_rule_id": quick_action_suggestion_rule_id,
         }
-        if quick_action_id in qa_id_to_index.keys():
-            recommendation["quick_action_suggestions"].update(qas_metadata[qa_id_to_index[quick_action_id]])
+        if quick_action_id in qa_name_to_data:
+            recommendation["quick_action_suggestions"].update(qa_name_to_data[quick_action_id])
 
     return recommendation, playbook_id, quick_action_id
+
+
+def map_qa_name_to_data(qas_metadata):
+    qa_name_to_data = {}
+
+    for item in qas_metadata:
+        brand = item.get("brand")
+        category = item.get("category")
+
+        for cmd in item.get("commands", []):
+            cmd_name = cmd.get("name")
+            qa_name_to_data[cmd_name] = {
+                "brand": brand,
+                "category": category,
+                "description": cmd.get("description"),
+                "pretty_name": cmd.get("prettyName"),
+            }
+
+    return qa_name_to_data
 
 
 def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
@@ -721,8 +710,8 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     Retrieves issue data with remediation field using the generic /api/webapp/get_data endpoint.
     """
     issue_ids = argToList(args.get("issue_ids"))
-    if not issue_ids:
-        raise DemistoException("issue_id is required.")
+    if len(issue_ids) > 10:
+        raise DemistoException("Please provide a maximum of 10 issue IDs per request.")
 
     filter_builder = FilterBuilder()
     filter_builder.add_field("internal_id", FilterType.EQ, issue_ids)
@@ -730,7 +719,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     request_data = build_webapp_request_data(
         table_name="ALERTS_VIEW_TABLE",
         filter_dict=filter_builder.to_dict(),
-        limit=50, ###################
+        limit=10,
         sort_field="source_insert_ts",
         sort_order="DESC",
         on_demand_fields=[],
@@ -755,11 +744,10 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     append_appsec_headers = False
     append_playbook_suggestions_header = False
     append_quick_action_suggestions_header = False
-    pbs_metadata = client.get_playbooks_metadata()
+    pbs_metadata = client.get_playbooks_metadata() or {}
     pb_id_to_index = {item.get("id"): index for index, item in enumerate(pbs_metadata)}
-    qas_metadata = client.get_quick_actions_metadata()
-    demisto.debug(f"Quick actions metadata: {qas_metadata}")
-    qa_id_to_index = {item.get("id"): index for index, item in enumerate(qas_metadata)}
+    qas_metadata = client.get_quick_actions_metadata() or []
+    qa_name_to_data = map_qa_name_to_data(qas_metadata)
     all_recommendations = []
 
     for issue in issue_data:
@@ -776,14 +764,14 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
 
         # --- Playbook and Quick Action Suggestions ---
         recommendation_pb_qa, pb, qa = populate_playbook_and_quick_action_suggestions(
-            client, current_issue_id, pbs_metadata, pb_id_to_index, qas_metadata, qa_id_to_index
+            client, current_issue_id, pbs_metadata, pb_id_to_index, qa_name_to_data
         )
         recommendation.update(recommendation_pb_qa)
         if pb:
             append_playbook_suggestions_header = True
         if qa:
             append_quick_action_suggestions_header = True
-            
+
         alert_source = issue.get("alert_source")
 
         # --- AppSec ---
@@ -794,19 +782,6 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
                 recommendation.update(appsec_recommendation)
                 append_appsec_headers = True
 
-        # --- CloudSec ---
-        # elif alert_source in CLOUDSEC_SOURCES:
-        #     cloudsec_recommendation = get_cloudsec_suggestion(client, issue, recommendation)
-        #     demisto.debug(f"{cloudsec_recommendation=} for {current_issue_id=}")
-        #     if cloudsec_recommendation:
-        #         recommendation.update(cloudsec_recommendation)
-
-        # # --- Remediation Techniques ---
-        # elif alert_source in REMEDIATION_TECHNIQUES_SOURCES:
-        #     remediation_techniques_response = issue.get("extended_fields", {}).get("remediationTechniques")
-        #     demisto.debug(f"Remediation recommendation of {current_issue_id=}: {remediation_techniques_response}")
-        #     recommendation["remediation"] = remediation_techniques_response or recommendation.get("remediation")
-
         all_recommendations.append(recommendation)
 
     # Final header adjustments
@@ -815,10 +790,10 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
 
     if append_playbook_suggestions_header:
         headers.append("playbook_suggestions")
-        
+
     if append_quick_action_suggestions_header:
         headers.append("quick_action_suggestions")
-        
+
     # Combine all readable outputs
     issue_readable_output = tableToMarkdown(
         f"Issue Recommendations for {issue_ids}",
@@ -826,7 +801,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         headerTransform=string_to_table_header,
         headers=headers,
     )
-  
+
     return CommandResults(
         readable_output=issue_readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.IssueRecommendations",

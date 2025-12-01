@@ -1801,7 +1801,7 @@ script:
           description: The unique identifier for the asset.
           type: String
     - arguments:
-        - description: Comma-separated list of IDs of the issues to get recommendations for.
+        - description: Comma-separated list of IDs of the issues to get recommendations for (maximum 10 per request).
           name: issue_ids
           required: true
           isArray: true
@@ -1835,11 +1835,23 @@ script:
         - contextPath: Core.IssueRecommendations.playbook_suggestions.comment
           description: An explanation of the suggested playbook.
           type: String
-        - contextPath: Core.IssueRecommendations.quick_action_suggestions.quick_action_id
-          description: The ID of the suggested quick action.
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.name
+          description: The name of the suggested quick action.
           type: String
-        - contextPath: Core.IssueRecommendations.quick_action_suggestions.quick_action_suggestion_rule_id
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.suggestion_rule_id
           description: The ID of the suggestion quick action rule that generated this recommendation.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.brand
+          description: The brand of the quick action.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.category
+          description: The category of the quick action.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.description
+          description: An explanation of the quick action.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.pretty_name
+          description: The display name of the quick action.
           type: String
         - contextPath: Core.IssueRecommendations.existing_code_block
           description: Original vulnerable code.
