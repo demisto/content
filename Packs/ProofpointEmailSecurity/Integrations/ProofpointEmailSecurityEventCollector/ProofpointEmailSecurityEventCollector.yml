@@ -69,7 +69,7 @@ script:
   - name: "proofpoint-es-get-last-run-results"
     description: Retrieves the results of a connection attempt to Proofpoint, indicating whether it was successful or failed and why. If event fetching has been initiated, this command provides the results of the most recent fetch attempt.
   - name: "proofpoint-es-get-events"
-    description: "Retrieves events from the Proofpoint Email Security PoD archive for a specified time range to backfill gaps in fetched events. This command is intended for debugging purposes and may result in duplicate events in the Cortex XSIAM dataset. Consult with engineering before using. HTTP 409 (Conflict) errors may be raised if the integration instance has \"Fetch Events\" enabled. HTTP 400 (Bad Request) errors may be raised if the time range is older than 30 days."
+    description: "Retrieves events from the Proofpoint Email Security PoD archive for a specified time range to backfill gaps in fetched events. This command is intended for development and debugging purposes and is to be used with caution after consulting with engineering, as it may create duplicate events, exceed API request rate limits, and disrupt the fetch events mechanism."
     arguments:
     - name: "since_time"
       description: "The start of the time range to fetch events from. E.g., '3 days ago', '2025-01-01T10:00:00'. Rounds down to the nearest hour."
