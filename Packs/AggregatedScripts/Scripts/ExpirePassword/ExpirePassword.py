@@ -1,6 +1,6 @@
 import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
+from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 from typing import Literal, TypedDict
 from collections.abc import Callable
@@ -61,7 +61,7 @@ def run_command(cmd: str, args: dict, label_hr: bool = True) -> tuple[list[dict]
 
 # --- Module-Specific Command Functions ---
 def get_module_command_func(
-    module: str,
+        module: str,
 ) -> Callable[[UserData, str], tuple[list[ExpiredPasswordResult], str]]:
     """
     Returns the corresponding password expiration function for a given module brand.
@@ -81,7 +81,7 @@ def get_module_command_func(
             "Microsoft Graph User": run_microsoft_graph_user,
             "Okta v2": run_okta_v2,
             "GSuiteAdmin": run_gsuiteadmin,
-            "AWS-IAM": run_aws_iam,
+            "AWS - IAM": run_aws_iam,
         }[module]
     except KeyError:
         raise DemistoException(f"Unable to find module: {module!r}")
@@ -103,8 +103,8 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
 
     # 1. Clear the "Password Never Expires" attribute (userAccountControl 0x10000)
     # This must run before ad-expire-password to ensure the policy can be enforced.
-    args_never_expire_flag = {"username": username, "using": using, "value": "false"}
-    res_never_expire, hr_never_expire = run_command("ad-modify-password-never-expire", args_never_expire_flag)
+    args_never_expire_flag_command = {"username": username, "using": using, "value": "false"}
+    res_never_expire, hr_never_expire = run_command("ad-modify-password-never-expire", args_never_expire_flag_command)
 
     # Check if clearing the "never expire" flag failed first
     if any(is_error(res) for res in res_never_expire):
@@ -113,7 +113,7 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
         return [
             ExpiredPasswordResult(
                 Result="Failed",
-                Message=f"Pre-check failed (AD flag clearance): {error_msg}"
+                Message=f"Clearing the never expire flag failed: {error_msg}"
             )
         ], hr_never_expire
 
@@ -126,29 +126,20 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
 
     func_res = []
     for res in res_expire:
-        if not is_error(res):
-            # Success is inferred if both commands run without error
-            func_res.append(
-                ExpiredPasswordResult(
-                    Result="Success",
-                    Message="Password expiration successfully enforced (AD flag cleared and expiration set)"
-                )
+        res_msg = res.get("Contents", "AD expiration password command failed")
+        func_res.append(
+            ExpiredPasswordResult(
+                Result="Success",
+                Message="Password expiration successfully enforced"
             )
-        else:
-            # Failure result
-            res_msg = res.get("Contents", "AD expiration command failed with no specific message.")
-            func_res.append(
-                ExpiredPasswordResult(
+            if not is_error(res)
+            else ExpiredPasswordResult(
                     Result="Failed",
-                    Message=f"AD expiration command failed: {res_msg}"
+                    Message=res_msg
                 )
-            )
-
-    # Ensure at least one result is returned; if func_res is empty, something unexpected happened
-    if not func_res:
-        return [ExpiredPasswordResult(Result="Failed", Message="Unexpected empty response from AD commands.")], hr
-
+        )
     return func_res, hr
+
 
 def run_microsoft_graph_user(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult], str]:
     """
@@ -164,11 +155,12 @@ def run_microsoft_graph_user(user: UserData, using: str) -> tuple[list[ExpiredPa
     res_cmd, hr = run_command("msgraph-user-force-reset-password", {"user": user["Username"], "using": using})
     func_res = []
     for res in res_cmd:
+        res_msg = res.get("Contents", "Microsoft Graph User expiration password command failed")
         # Assuming successful response for MS Graph command means password reset is forced
         func_res.append(
             ExpiredPasswordResult(Result="Success", Message="Password reset successfully enforced")
             if not is_error(res)
-            else ExpiredPasswordResult(Result="Failed", Message=res["Contents"])
+            else ExpiredPasswordResult(Result="Failed", Message=res_msg)
         )
     return func_res, hr
 
@@ -209,7 +201,7 @@ def run_gsuiteadmin(user: UserData, using: str) -> tuple[list[ExpiredPasswordRes
     """
     res_cmd, hr = run_command(
         "gsuite-user-reset-password",
-        {"user_key": user["Email"], "suspended": "true", "using": using},
+        {"user_key": user["Email"], "using": using},
     )
     func_res = []
     for res in res_cmd:
@@ -248,24 +240,18 @@ def run_aws_iam(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
 
     func_res = []
     for res in res_cmd:
-        if not is_error(res):
-            func_res.append(
-                ExpiredPasswordResult(
-                    Result="Success",
-                    Message="IAM user login profile updated successfully, requiring password change on next sign-in."
-                )
+        res_msg = res.get("Contents", "AWS-IAM command failed")
+        func_res.append(
+            ExpiredPasswordResult(
+                Result="Success",
+                Message="IAM user login profile updated successfully, requiring password change on next sign-in."
             )
-        else:
-            func_res.append(
-                ExpiredPasswordResult(
+            if not is_error(res)
+            else ExpiredPasswordResult(
                     Result="Failed",
-                    Message=res.get("Contents", "AWS-IAM command failed with no specific error message.")
-                )
+                    Message=res_msg
             )
-
-    if not func_res:
-        return [ExpiredPasswordResult(Result="Failed", Message="Unexpected empty response from AWS-IAM command.")], hr
-
+        )
     return func_res, hr
 
 
@@ -308,7 +294,7 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
 
     # Check for no available integrations
     if any(
-        r["HumanReadable"] == "### User(s) data\n**No entries.**\n" for r in res
+            r["HumanReadable"] == "### User(s) data\n**No entries.**\n" for r in res
     ):
         raise DemistoException(
             f"No integrations were found for the brands {args.get('brands')}. Please verify the brand instances' setup."
