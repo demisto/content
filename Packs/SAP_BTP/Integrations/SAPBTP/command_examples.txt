@@ -1,0 +1,4 @@
+!sap-btp-get-events from="3 days" limit=50
+!sap-btp-get-events from="2024-01-01" limit=100
+!sap-btp-get-events from="now" limit=10
+!sap-btp-get-events from="1 week" limit=200
