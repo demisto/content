@@ -1853,6 +1853,21 @@ script:
         - contextPath: Core.IssueRecommendations.quick_action_suggestions.pretty_name
           description: The display name of the quick action.
           type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.arguments.name
+          description: The argument name.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.arguments.prettyName
+          description: The argument display name.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.arguments.prettyPredefined
+          description: The argument predefined display value.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.arguments.description
+          description: The argument description.
+          type: String
+        - contextPath: Core.IssueRecommendations.quick_action_suggestions.arguments.required
+          description: Whether the argument is required.
+          type: String
         - contextPath: Core.IssueRecommendations.existing_code_block
           description: Original vulnerable code.
           type: String

@@ -645,6 +645,7 @@ def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadat
         (recommendation, append_playbook_suggestions_header, append_quick_action_suggestions_header)
     """
     recommendation = {}
+    readable_recommendation = {}
     append_playbook = False
     append_quick_action = False
 
@@ -653,7 +654,7 @@ def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadat
     demisto.debug(f"Playbooks and quick action {suggestions=} for {issue_id=}")
 
     if not suggestions:
-        return {}, append_playbook, append_quick_action
+        return {}, {}, append_playbook, append_quick_action
 
     # Playbook suggestion
     playbook_id = suggestions.get("playbook_id", None)
@@ -664,11 +665,14 @@ def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadat
             "playbook_id": playbook_id,
             "suggestion_rule_id": suggestion_rule_id,
         }
+        readable_recommendation["playbook_suggestions"] = {"playbook_id": playbook_id}
         if playbook_id in pb_id_to_index:
             current_pb_metadata = pbs_metadata[pb_id_to_index[playbook_id]]
+            name = current_pb_metadata.get("name")
             recommendation["playbook_suggestions"].update(
-                {"name": current_pb_metadata.get("name"), "comment": current_pb_metadata.get("comment")}
+                {"name": name, "comment": current_pb_metadata.get("comment")}
             )
+            readable_recommendation["playbook_suggestions"].update({"name": name})
 
     # Quick action suggestion
     quick_action_id = suggestions.get("quick_action_id", None)
@@ -679,10 +683,12 @@ def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadat
             "name": quick_action_id,
             "suggestion_rule_id": quick_action_suggestion_rule_id,
         }
+        readable_recommendation["quick_action_suggestions"] = {"name": quick_action_id}
         if quick_action_id in qa_name_to_data:
             recommendation["quick_action_suggestions"].update(qa_name_to_data[quick_action_id])
+            readable_recommendation["quick_action_suggestions"].update({"pretty_name": qa_name_to_data.get(quick_action_id, {}).get("pretty_name")})
 
-    return recommendation, playbook_id, quick_action_id
+    return recommendation, readable_recommendation, playbook_id, quick_action_id
 
 
 def map_qa_name_to_data(qas_metadata):
@@ -694,12 +700,15 @@ def map_qa_name_to_data(qas_metadata):
 
         for cmd in item.get("commands", []):
             cmd_name = cmd.get("name")
-            qa_name_to_data[cmd_name] = {
+            arguments = cmd.get("arguments", [])
+            filtered_args = [arg for arg in arguments if not arg.get("hidden", False)]
+            qa_name_to_data[cmd_name] = remove_empty_elements({
                 "brand": brand,
                 "category": category,
                 "description": cmd.get("description"),
                 "pretty_name": cmd.get("prettyName"),
-            }
+                "arguments": filtered_args
+            })
 
     return qa_name_to_data
 
@@ -749,6 +758,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     qas_metadata = client.get_quick_actions_metadata() or []
     qa_name_to_data = map_qa_name_to_data(qas_metadata)
     all_recommendations = []
+    readable_recommendations = []
 
     for issue in issue_data:
         current_issue_id = issue.get("internal_id")
@@ -763,7 +773,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         }
 
         # --- Playbook and Quick Action Suggestions ---
-        recommendation_pb_qa, pb, qa = populate_playbook_and_quick_action_suggestions(
+        recommendation_pb_qa, readable_recommendation, pb, qa = populate_playbook_and_quick_action_suggestions(
             client, current_issue_id, pbs_metadata, pb_id_to_index, qa_name_to_data
         )
         recommendation.update(recommendation_pb_qa)
@@ -783,6 +793,8 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
                 append_appsec_headers = True
 
         all_recommendations.append(recommendation)
+        recommendation.update(readable_recommendation)
+        readable_recommendations.append(recommendation)
 
     # Final header adjustments
     if append_appsec_headers:
@@ -797,7 +809,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     # Combine all readable outputs
     issue_readable_output = tableToMarkdown(
         f"Issue Recommendations for {issue_ids}",
-        all_recommendations,
+        readable_recommendations,
         headerTransform=string_to_table_header,
         headers=headers,
     )
