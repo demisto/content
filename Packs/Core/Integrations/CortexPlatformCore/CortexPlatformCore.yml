@@ -1995,16 +1995,16 @@ script:
           name: lte_creation_time
         - description: A datetime with the format 2019-12-31T23:59:00. Only cases that were created on or after the specified datetime will be retrieved.
           name: gte_creation_time
+        - description: Filters for returned cases that were created on or after the specified date range, for example, 1 month, 2 days, 1 hour, and so on.
+          name: since_creation_time
         - description: Filters for returned cases that were created on or before the specified datetime with the format 2019-12-31T23:59:00.
           name: lte_modification_time
         - description: Filters for returned cases that were modified on or after the specified datetime with the format 2019-12-31T23:59:00.
           name: gte_modification_time
-        - description: Filters for returned cases that were created on or after the specified date range, for example, 1 month, 2 days, 1 hour, and so on.
-          name: since_creation_time
         - description: Filters for returned cases that were modified on or after the specified date range, for example, 1 month, 2 days, 1 hour, and so on.
           name: since_modification_time
         - auto: PREDEFINED
-          description: Whether to include enriched case data in the response. Recommended for up to 10 cases.
+          description: Whether to include enriched case data in the response (detection_time, notes, xdr_url, manual_description, starred_manually). Recommended for up to 10 cases.
           name: get_enriched_case_data
           defaultValue: 'false'
           predefined:

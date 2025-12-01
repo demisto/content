@@ -13,6 +13,7 @@ INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
+MAX_GET_CASES_LIMIT = 100
 
 CASE_FIELDS = {
     "case_id_list": "CASE_ID",
@@ -1076,12 +1077,12 @@ def map_case_format(case_list):
             "custom_fields": case_data.get("EXTENDED_FIELDS"),
             "hosts": case_data.get("HOSTS") or [],
             "users": case_data.get("USERS") or [],
+            "host_count": len(case_data.get("HOSTS", []) or []),
+            "user_count": len(case_data.get("USERS", []) or []),
             "issue_categories": case_data.get("ALERT_CATEGORIES"),
             "mitre_techniques_ids_and_names": case_data.get("MITRE_TECHNIQUES"),
             "mitre_tactics_ids_and_names": case_data.get("MITRE_TACTICS"),
             "manual_severity": case_data.get("USER_SEVERITY"),
-            "host_count": len(case_data.get("HOSTS", []) or []),
-            "user_count": len(case_data.get("USERS", []) or []),
             "asset_accounts": case_data.get("UAI_ASSET_ACCOUNTS", []),
             "asset_categories": case_data.get("UAI_ASSET_CATEGORIES", []),
             "asset_classes": case_data.get("UAI_ASSET_CLASSES", []),
@@ -1111,10 +1112,10 @@ def get_cases_command(client, args):
         List of mapped case objects containing case details and metadata.
     """
     page = arg_to_number(args.get("page")) or 0
-    limit = arg_to_number(args.get("limit")) or MAX_GET_INCIDENTS_LIMIT
+    limit = arg_to_number(args.get("limit")) or MAX_GET_CASES_LIMIT
 
-    limit = page * MAX_GET_INCIDENTS_LIMIT + limit
-    page = page * MAX_GET_INCIDENTS_LIMIT
+    limit = page * MAX_GET_CASES_LIMIT + limit
+    page = page * MAX_GET_CASES_LIMIT
 
     sort_by_modification_time = args.get("sort_by_modification_time")
     sort_by_creation_time = args.get("sort_by_creation_time")
