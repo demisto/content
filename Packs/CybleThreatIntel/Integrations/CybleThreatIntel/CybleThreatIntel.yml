@@ -45,7 +45,6 @@ script:
   subtype: python3
   script: '-'
   dockerimage: demisto/python3:3.10.14.89792
-
   feed: true         # ← REQUIRED for feed integrations
   runonce: false
   ismappable: true
