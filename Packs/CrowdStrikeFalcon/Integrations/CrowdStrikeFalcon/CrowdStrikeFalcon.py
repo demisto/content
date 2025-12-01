@@ -91,7 +91,6 @@ INCIDENTS_PER_FETCH = int(PARAMS.get("incidents_per_fetch", 15))
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_TIMEOUT = 30
-LEGACY_VERSION = False
 
 DEFAULT_TIMEOUT_ON_GENERIC_HTTP_REQUEST = 60
 TOTAL_RETRIES_ON_ENRICHMENT = 0
@@ -266,11 +265,6 @@ ENDPOINT_KEY_MAP = {
         'Index': Split Array Index
     }
 """
-LEGACY_DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
-    {"Path": "parent_details.parent_process_graph_id", "NewKey": "SensorID", "Delim": ":", "Index": 1},
-    {"Path": "parent_details.parent_process_graph_id", "NewKey": "ParentProcessID", "Delim": ":", "Index": 2},
-    {"Path": "triggering_process_graph_id", "NewKey": "ProcessID", "Delim": ":", "Index": 2},
-]
 
 DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
     {"Path": "parent_details.process_graph_id", "NewKey": "SensorID", "Delim": ":", "Index": 1},
@@ -296,9 +290,7 @@ STATUS_NUM_TO_TEXT = {20: "New", 25: "Reopened", 30: "In Progress", 40: "Closed"
 
 """ MIRRORING DICTIONARIES & PARAMS """
 
-LEGACY_DETECTION_STATUS = {"new", "in_progress", "true_positive", "false_positive", "ignored", "closed", "reopened"}
 STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES = {"new", "in_progress", "closed", "reopened"}
-LEGACY_CS_FALCON_DETECTION_OUTGOING_ARGS = {"status": f'Updated detection status, one of {"/".join(LEGACY_DETECTION_STATUS)}'}
 
 CS_FALCON_DETECTION_OUTGOING_ARGS = {
     "status": f'Updated detection status, one of {"/".join(STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES)}'
@@ -1663,17 +1655,12 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     elif last_behavior_time:
         params["filter"] = f"first_behavior:>'{last_behavior_time}'"
 
-    if not LEGACY_VERSION:
-        endpoint_url = "alerts/queries/alerts/v2?filter="
-        if filter_arg:
-            # in the new version we send only the filter_arg argument as encoded string without the params
-            endpoint_url += urllib.parse.quote_plus(filter_arg)
-        demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=}")
-        return http_request("GET", endpoint_url, {"sort": "created_timestamp.asc"})
-    else:
-        endpoint_url = "/detects/queries/detects/v1"
-        demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=} and {params=}")
-        return http_request("GET", endpoint_url, params)
+    endpoint_url = "alerts/queries/alerts/v2?filter="
+    if filter_arg:
+        # in the new version we send only the filter_arg argument as encoded string without the params
+        endpoint_url += urllib.parse.quote_plus(filter_arg)
+    demisto.debug(f"In get_detections: {endpoint_url=}")
+    return http_request("GET", endpoint_url, {"sort": "created_timestamp.asc"})
 
 
 def get_fetch_detections(
@@ -1691,7 +1678,7 @@ def get_fetch_detections(
     Returns:
         Response json of the get detection endpoint (IDs of the detections)
     """
-    sort_key = "first_behavior.asc" if LEGACY_VERSION else "created_timestamp.asc"
+    sort_key = "created_timestamp.asc"
     params = {
         "sort": sort_key,
         "offset": offset,
@@ -1704,17 +1691,16 @@ def get_fetch_detections(
     elif last_created_timestamp:
         params["filter"] = f"created_timestamp:>'{last_created_timestamp}'"
     elif last_updated_timestamp:
-        timestamp_key = "date_updated" if LEGACY_VERSION else "updated_timestamp"
+        timestamp_key = "updated_timestamp"
         params["filter"] = f"{timestamp_key}:>'{last_updated_timestamp}'"
 
-    endpoint_url = "/detects/queries/detects/v1" if LEGACY_VERSION else "/alerts/queries/alerts/v2?filter=product"
+    endpoint_url = "/alerts/queries/alerts/v2?filter=product"
 
-    if not LEGACY_VERSION:
-        if params.get("filter"):
-            endpoint_url += urllib.parse.quote_plus(f":'epp'+type:'ldt'+{params.pop('filter')}")
-        else:
-            endpoint_url += urllib.parse.quote_plus(":'epp'+type:'ldt'")
-    demisto.debug(f"In get_fetch_detections: {LEGACY_VERSION =}, {endpoint_url=}, {params=}")
+    if params.get("filter"):
+        endpoint_url += urllib.parse.quote_plus(f":'epp'+type:'ldt'+{params.pop('filter')}")
+    else:
+        endpoint_url += urllib.parse.quote_plus(":'epp'+type:'ldt'")
+    demisto.debug(f"In get_fetch_detections: {endpoint_url=}, {params=}")
     response = http_request("GET", endpoint_url, params)
 
     return response
@@ -1731,16 +1717,14 @@ def get_detections_entities(detections_ids: list):
 
     combined_resources = []
 
-    url = "/detects/entities/summaries/GET/v1" if LEGACY_VERSION else "/alerts/entities/alerts/v2"
+    url = "/alerts/entities/alerts/v2"
 
     # Iterate through the detections_ids list in chunks of 1000 (According to API documentation).
     for i in range(0, len(detections_ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
         batch_ids = detections_ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
 
-        ids_json = {"ids": batch_ids} if LEGACY_VERSION else {"composite_ids": batch_ids}
-        demisto.debug(
-            f"Getting detections entities from {url} with {ids_json=} " f"with batch_ids len {len(batch_ids)}. {LEGACY_VERSION=}"
-        )
+        ids_json = {"composite_ids": batch_ids}
+        demisto.debug(f"Getting detections entities from {url} with {ids_json=} " f"with batch_ids len {len(batch_ids)}.")
 
         # Make the API call with the current batch.
         response = http_request("POST", url, data=json.dumps(ids_json))
@@ -1798,15 +1782,14 @@ def get_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER_FET
     params = {"sort": "created_timestamp.asc", "offset": offset, "filter": filter_arg}
     if limit:
         params["limit"] = limit
-    endpoint_url = "/alerts/queries/alerts/v1" if LEGACY_VERSION else "/alerts/queries/alerts/v2?filter="
+    endpoint_url = "/alerts/queries/alerts/v2?filter="
     # in the new version we need to add the product type to the filter to the url as encoded string
-    if not LEGACY_VERSION and params.get("filter"):
+    if params.get("filter"):
         endpoint_url += urllib.parse.quote_plus(params.pop("filter"))
 
     response = http_request("GET", endpoint_url, params)
 
-    demisto.debug(f"CrowdStrikeFalconMsg: Getting {product_type} detections from {endpoint_url} with {params=}. {response=}.\
-        {LEGACY_VERSION=}")
+    demisto.debug(f"CrowdStrikeFalconMsg: Getting {product_type} detections from {endpoint_url} with {params=}. {response=}.")
 
     return response
 
@@ -1829,15 +1812,14 @@ def get_detection_entities(incidents_ids: list):
     """
     combined_resources = []
 
-    url_endpoint_version = "v1" if LEGACY_VERSION else "v2"
-    url = f"/alerts/entities/alerts/{url_endpoint_version}"
+    url = "/alerts/entities/alerts/v2"
 
     for i in range(0, len(incidents_ids), MAX_FETCH_DETECTION_PER_API_CALL_ENTITY):
         batch_ids = incidents_ids[i : i + MAX_FETCH_DETECTION_PER_API_CALL_ENTITY]
 
-        ids_json = {"ids": batch_ids} if LEGACY_VERSION else {"composite_ids": batch_ids}
+        ids_json = {"composite_ids": batch_ids}
         demisto.debug(f"In get_detection_entities: Getting detection entities from\
-            {url_endpoint_version} with {ids_json=} and with batch_ids len {len(batch_ids)} . {LEGACY_VERSION=}")
+            {url} with {ids_json=} and with batch_ids len {len(batch_ids)}.")
 
         # Make the API call with the current batch.
         raw_res = http_request("POST", url, data=json.dumps(ids_json))
@@ -2197,22 +2179,9 @@ def behavior_to_entry_context(behavior):
     :return: Behavior in entry context representation
     """
     raw_entry = get_trasnformed_dict(behavior, DETECTIONS_BEHAVIORS_KEY_MAP)
-    split_key_map = LEGACY_DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP if LEGACY_VERSION else DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP
+    split_key_map = DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP
     raw_entry.update(extract_transformed_dict_with_split(behavior, split_key_map))
     return raw_entry
-
-
-def get_username_uuid(username: str):
-    """
-    Obtain CrowdStrike user’s UUId by email.
-    :param username: Username to get UUID of.
-    :return: The user UUID
-    """
-    response = http_request("GET", "/user-management/queries/users/v1", params={"uid": username})
-    resources: list = response.get("resources", [])
-    if not resources:
-        raise ValueError(f"User {username} was not found")
-    return resources[0]
 
 
 def resolve_detection(ids, status, assigned_to_uuid, username, show_in_ui, comment, tag):
@@ -2236,26 +2205,18 @@ def resolve_detection(ids, status, assigned_to_uuid, username, show_in_ui, comme
         payload["show_in_ui"] = show_in_ui
     if comment:
         payload["comment"] = comment
-    if not LEGACY_VERSION:
-        demisto.debug(f"in resolve_detection: {LEGACY_VERSION =} and {payload=}")
-        # modify the payload to match the Raptor API
-        ids = payload.pop("ids")
-        payload["assign_to_uuid"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
-        payload["assign_to_user_id"] = username if username else None
-        payload["update_status"] = payload.pop("status") if "status" in payload else None
-        payload["append_comment"] = payload.pop("comment") if "comment" in payload else None
-        if tag:
-            payload["add_tag"] = tag
+    demisto.debug(f"in resolve_detection: {payload=}")
+    # modify the payload to match the Raptor API
+    ids = payload.pop("ids")
+    payload["assign_to_uuid"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
+    payload["assign_to_user_id"] = username if username else None
+    payload["update_status"] = payload.pop("status") if "status" in payload else None
+    payload["append_comment"] = payload.pop("comment") if "comment" in payload else None
+    if tag:
+        payload["add_tag"] = tag
 
-        data = json.dumps(resolve_detections_prepare_body_request(ids, payload))
-    else:
-        # We do this so show_in_ui value won't contain ""
-        data = (
-            json.dumps(payload)
-            .replace('"show_in_ui": "false"', '"show_in_ui": false')
-            .replace('"show_in_ui": "true"', '"show_in_ui": true')
-        )
-    url = "/alerts/entities/alerts/v3" if not LEGACY_VERSION else "/detects/entities/detects/v2"
+    data = json.dumps(resolve_detections_prepare_body_request(ids, payload))
+    url = "/alerts/entities/alerts/v3"
     return http_request("PATCH", url, data=data)
 
 
@@ -2364,7 +2325,7 @@ def update_incident_request(ids: list[str], action_parameters: dict[str, Any]):
 
 
 def update_detection_request(ids: list[str], status: str) -> dict:
-    list_of_stats = LEGACY_DETECTION_STATUS if LEGACY_VERSION else STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES
+    list_of_stats = STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES
     if status not in list_of_stats:
         raise DemistoException(f"CrowdStrike Falcon Error: Status given is {status} and it is not in {list_of_stats}")
     return resolve_detection(
@@ -2671,11 +2632,11 @@ def get_remote_detection_data(remote_incident_id: str):
     mirrored_data_list = get_detections_entities([remote_incident_id]).get("resources", [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
     # severity key name is different in the raptor version
-    severity = mirrored_data.get("max_severity_displayname") if LEGACY_VERSION else mirrored_data.get("severity_name")
+    severity = mirrored_data.get("severity_name")
     mirrored_data["severity"] = severity_string_to_int(severity)
     demisto.debug(f"In get_remote_detection_data {remote_incident_id=} {mirrored_data=}")
 
-    incoming_args = LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS if LEGACY_VERSION else CS_FALCON_DETECTION_INCOMING_ARGS
+    incoming_args = CS_FALCON_DETECTION_INCOMING_ARGS
     updated_object: dict[str, Any] = {"incident_type": "detection"}
     set_updated_object(updated_object, mirrored_data, incoming_args)
     demisto.debug(f"After set_updated_object {updated_object=}")
@@ -3001,8 +2962,7 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
                 result = update_remote_incident(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f"Incident updated successfully. Result: {result}")
-
-            elif incident_type in (IncidentType.LEGACY_ENDPOINT_DETECTION, IncidentType.ON_DEMAND):
+            elif incident_type in (IncidentType.ON_DEMAND, IncidentType.LEGACY_ENDPOINT_DETECTION):
                 result = update_remote_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f"Detection updated successfully. Result: {result}")
@@ -3148,14 +3108,6 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
         incident_type_scheme.add_field(name=argument, description=description)
     mapping_response.add_scheme_type(incident_type_scheme)
 
-    if LEGACY_VERSION:
-        legacy_detection_type_scheme = SchemeTypeMapping(type_name="CrowdStrike Falcon Detection - LAGACY")
-        for argument, description in LEGACY_CS_FALCON_DETECTION_OUTGOING_ARGS.items():
-            legacy_detection_type_scheme.add_field(name=argument, description=description)
-        mapping_response.add_scheme_type(legacy_detection_type_scheme)
-
-        return mapping_response
-
     # Supported only in the new version (Raptor) and not in the legacy version
     detection_types = [
         "CrowdStrike Falcon Detection",
@@ -3251,7 +3203,7 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
         full_detections = demisto.get(raw_res, "resources")
         # detection_id is for the old version of the API, composite_id is for the new version (Raptor)
         for detection in full_detections:
-            detection_id = detection.get("detection_id") if LEGACY_VERSION else detection.get("composite_id")
+            detection_id = detection.get("composite_id")
             if is_detection_occurred_before_fetch_time(detection.get("created_timestamp"), start_fetch_time):
                 demisto.debug(
                     f"CrowdStrikeFalconMsg: Detection {detection_id} created at {detection.get('created_timestamp')} "
@@ -3280,7 +3232,7 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
     current_fetch_info_detections = update_last_run_object(
         last_run=current_fetch_info_detections,
         incidents=detections,
-        fetch_limit=fetch_limit,
+        fetch_limit=INCIDENTS_PER_FETCH,
         start_fetch_time=start_fetch_time,
         end_fetch_time=end_fetch_time,
         look_back=look_back,
@@ -3357,7 +3309,7 @@ def fetch_endpoint_incidents(current_fetch_info_incidents, look_back, is_fetch_e
     current_fetch_info_incidents = update_last_run_object(
         last_run=current_fetch_info_incidents,
         incidents=incidents,
-        fetch_limit=fetch_limit,
+        fetch_limit=INCIDENTS_PER_FETCH,
         start_fetch_time=start_fetch_time,
         end_fetch_time=end_fetch_time,
         look_back=look_back,
@@ -3626,9 +3578,6 @@ def fetch_items(command="fetch-incidents"):
         demisto.debug("CrowdStrikeFalconMsg: Start fetch ODS Detection")
         demisto.debug(f"CrowdStrikeFalconMsg: Current ODS Detection last_run object: {on_demand_detections_last_run}")
 
-        if LEGACY_VERSION:
-            raise DemistoException("On-Demand Scans Detection is not supported in legacy version.")
-
         fetched_on_demand_detections, on_demand_detections_last_run = fetch_detections_by_product_type(
             on_demand_detections_last_run,
             look_back=look_back,
@@ -3645,9 +3594,6 @@ def fetch_items(command="fetch-incidents"):
     if OFP_DETECTION_TYPE in fetch_incidents_or_detections:
         demisto.debug("CrowdStrikeFalconMsg: Start fetch OFP Detection")
         demisto.debug(f"CrowdStrikeFalconMsg: Current OFP Detection last_run object: {ofp_detection_last_run}")
-
-        if LEGACY_VERSION:
-            raise DemistoException(f"{OFP_DETECTION_TYPE} is not supported in legacy version.")
 
         fetched_ofp_detections, ofp_detection_last_run = fetch_detections_by_product_type(
             ofp_detection_last_run,
@@ -3681,9 +3627,6 @@ def fetch_items(command="fetch-incidents"):
         demisto.debug("CrowdStrikeFalconMsg: Start fetch NGSIEM Detection")
         demisto.debug(f"CrowdStrikeFalconMsg: Current NGSIEM Detection last_run object: {ngsiem_detection_last_run}")
 
-        if LEGACY_VERSION:
-            raise DemistoException(f"{NGSIEM_DETECTION_FETCH_TYPE} is not supported in legacy version.")
-
         fetched_ngsiem_detections, ngsiem_detection_last_run = fetch_detections_by_product_type(
             ngsiem_detection_last_run,
             look_back=look_back,
@@ -3699,9 +3642,6 @@ def fetch_items(command="fetch-incidents"):
     if not is_fetch_events and THIRD_PARTY_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
         demisto.debug("CrowdStrikeFalconMsg: Start fetch THIRD PARTY Detection")
         demisto.debug(f"CrowdStrikeFalconMsg: Current THIRD PARTY Detection last_run object: {third_party_detection_last_run}")
-
-        if LEGACY_VERSION:
-            raise DemistoException(f"{THIRD_PARTY_DETECTION_FETCH_TYPE} is not supported in legacy version.")
 
         fetched_third_party_detections, third_party_detection_last_run = fetch_detections_by_product_type(
             third_party_detection_last_run,
@@ -3838,7 +3778,7 @@ def fetch_detections_by_product_type(
     current_fetch_info = update_last_run_object(
         last_run=current_fetch_info,
         incidents=detections,
-        fetch_limit=fetch_limit,
+        fetch_limit=INCIDENTS_PER_FETCH,
         start_fetch_time=start_fetch_time,
         end_fetch_time=end_fetch_time,
         look_back=look_back,
@@ -5184,10 +5124,9 @@ def search_detections_command():
         for detection in demisto.get(raw_res, "resources"):
             detection_entry = {}
 
-            if not LEGACY_VERSION:
-                detection = modify_detection_outputs(detection)
+            detection = modify_detection_outputs(detection)
 
-            for path, new_key in LEGACY_DETECTIONS_BASE_KEY_MAP.items() if LEGACY_VERSION else DETECTIONS_BASE_KEY_MAP.items():
+            for path, new_key in DETECTIONS_BASE_KEY_MAP.items():
                 detection_entry[new_key] = demisto.get(detection, path)
             behaviors = []
 
@@ -5197,8 +5136,6 @@ def search_detections_command():
 
             if extended_data:
                 detection_entry["Device"] = demisto.get(detection, "device")
-                if LEGACY_VERSION:  # The new version (raptor) does not have the 'behaviors_processed' key
-                    detection_entry["BehaviorsProcessed"] = demisto.get(detection, "behaviors_processed")
 
             entries.append(detection_entry)
 
@@ -5222,9 +5159,6 @@ def resolve_detection_command():
     if username and assigned_to_uuid:
         raise ValueError("Only one of the arguments assigned_to_uuid or username should be provided, not both.")
 
-    if username and LEGACY_VERSION:
-        assigned_to_uuid = get_username_uuid(username)
-
     status = args.get("status")
     if status in ["true_positive", "false_positive", "ignored"]:
         raise ValueError(
@@ -5234,8 +5168,6 @@ def resolve_detection_command():
     show_in_ui = args.get("show_in_ui")
     if not (username or assigned_to_uuid or comment or status or show_in_ui or tag):
         raise DemistoException("Please provide at least one argument to resolve the detection with.")
-    if LEGACY_VERSION and tag:
-        raise DemistoException("tag argument is only relevant when running with API V3.")
     raw_res = resolve_detection(ids, status, assigned_to_uuid, username, show_in_ui, comment, tag)
     args.pop("ids")
     hr = f"Detection {str(ids)[1:-1]} updated\n"
@@ -5949,7 +5881,7 @@ def detections_to_human_readable(detections):
     for detection in detections:
         readable_output = assign_params(
             status=detection.get("status"),
-            max_severity=detection.get("max_severity_displayname") if LEGACY_VERSION else detection.get("severity_name"),
+            max_severity=detection.get("severity_name"),
             detection_id=detection.get("detection_id"),
             created_time=detection.get("created_timestamp"),
         )
@@ -5973,9 +5905,8 @@ def list_detection_summaries_command():
         detections_ids = demisto.get(get_fetch_detections(), "resources")
     detections_response_data = get_detections_entities(detections_ids)
     detections = list(detections_response_data.get("resources")) if detections_response_data else []
-    if not LEGACY_VERSION:
-        # modify the new version (raptor) outputs to match the old format for backward compatibility
-        detections = [modify_detection_summaries_outputs(detection) for detection in detections]
+    # modify the new version (raptor) outputs to match the old format for backward compatibility
+    detections = [modify_detection_summaries_outputs(detection) for detection in detections]
     detections_human_readable = detections_to_human_readable(detections)
 
     return CommandResults(
@@ -6127,9 +6058,6 @@ def resolve_incident_command(
     if user_name and user_uuid:
         raise DemistoException("Only one of the following arguments can be provided: assigned_to_uuid, username")
 
-    if user_name and LEGACY_VERSION:
-        user_uuid = get_username_uuid(username=user_name)
-
     action_parameters = {}
     readable_output = f"Incident IDs '{', '.join(ids)}' have been updated successfully:\n"
 
@@ -6141,7 +6069,7 @@ def resolve_incident_command(
         action_parameters["update_assigned_to_v2"] = user_uuid
         readable_output += f"Assigned user has been updated to '{user_uuid}'.\n"
 
-    if user_name and not LEGACY_VERSION:
+    if user_name:
         action_parameters["update_assigned_to_v2"] = user_name
         readable_output += f"Assigned user has been updated to '{user_name}'.\n"
 
@@ -6545,7 +6473,7 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
     outputs = []
 
     # detection_ids are under the alert_ids key in the new (raptor) API, see XSUP-41622
-    detection_ids_key = "detection_ids" if LEGACY_VERSION else "alert_ids"
+    detection_ids_key = "alert_ids"
     for detection in detection_res:
         outputs.append(
             {
@@ -7728,7 +7656,7 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
     transport = RequestsHTTPTransport(**kwargs)  # type: ignore[arg-type]
     client = Client(
         transport=transport,
-        fetch_schema_from_transport=True,
+        fetch_schema_from_transport=False,
     )
     return client
 
@@ -7961,7 +7889,7 @@ def resolve_detections_prepare_body_request(ids: list[str], action_params_values
         if value:
             param = {"name": key, "value": value}
             action_params.append(param)
-    ids_request_key = "composite_ids" if not LEGACY_VERSION else "ids"
+    ids_request_key = "composite_ids"
     return {"action_parameters": action_params, ids_request_key: ids}
 
 
@@ -7974,9 +7902,9 @@ def resolve_detections_request(ids: list[str], **kwargs) -> dict[str, Any]:
     Returns:
         dict[str, Any]: The raw response of the API.
     """
-    url_suffix = "/alerts/entities/alerts/v3" if not LEGACY_VERSION else "/alerts/entities/alerts/v2"
+    url_suffix = "/alerts/entities/alerts/v3"
     body_payload = resolve_detections_prepare_body_request(ids=ids, action_params_values=kwargs)
-    demisto.debug(f"In resolve_detections: {LEGACY_VERSION=}, {url_suffix=}, {body_payload=} ")
+    demisto.debug(f"In resolve_detections: {url_suffix=}, {body_payload=} ")
     return http_request(method="PATCH", url_suffix=url_suffix, json=body_payload)
 
 
