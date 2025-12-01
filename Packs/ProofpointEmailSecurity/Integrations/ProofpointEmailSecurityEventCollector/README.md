@@ -54,8 +54,8 @@ There is no context output for this command.
 ## Known Limitations
 
 1. The API does not allow use of the same API Key for more than one session at the same time. To open more multiple simultaneous websocket connections to receive the same event type, additional API Key(s) must be generated via the Proofpoint PoD dashboard.
-2. When running `proofpoint-es-get-events` command,  HTTP 409 (Conflict) errors may be raised if the integration instance has "Fetch Events" enabled. Ensure the "Fetch Events" checkbox is unchecked before triggering this command.
-3. When running `proofpoint-es-get-events` command,  the HTTP 400 (Bad Request) errors may be raised if the time range is older than 30 days. Ensure both the `since_time` and `to_time` arguments fall within the last 30 days.
+2. When running `proofpoint-es-get-events` command, HTTP 409 (Conflict) errors may be raised if the integration instance has "Fetch Events" enabled. Ensure the "Fetch Events" checkbox is unchecked before triggering this command.
+3. When running `proofpoint-es-get-events` command, HTTP 400 (Bad Request) errors may be raised if the time range is older than 30 days. Ensure both the `since_time` and `to_time` arguments fall within the last 30 days.
 
 ## Troubleshooting
 
