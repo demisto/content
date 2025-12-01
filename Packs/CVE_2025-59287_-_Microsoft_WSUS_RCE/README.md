@@ -1,4 +1,4 @@
-## CVE-2025-59287 - Microsoft WSUS Remote Code Execution
+## Cortex XDR - CVE-2025-59287 - Microsoft WSUS Remote Code Execution
 
 
 ###   Vulnerability Overview
