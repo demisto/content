@@ -931,7 +931,9 @@ class MicrosoftClient(BaseClient):
             for field in fields:
                 if not getattr(self, field):
                     raise DemistoException(f"{message_prefix} enter {field.replace('_', ' ').title()}.")
-
+        if self.auth_type == OPROXY_AUTH_TYPE:
+            self.get_access_token()
+            return "ok"
         if self.grant_type == CLIENT_CREDENTIALS:
             require_fields(
                 fields=["tenant_id", "client_secret", "client_id"],

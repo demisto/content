@@ -6330,7 +6330,8 @@ def main():  # pragma: no cover
     proxy: bool = params.get("proxy", False)
     auth_type = params.get("auth_flow", "Client Credentials")
     grant_type = get_auth_type_flow(auth_type)
-    self_deployed: bool = is_self_deployed_flow(auth_type) or params.get("self_deployed", False)
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
+    self_deployed: bool = is_self_deployed_flow(auth_type) or params.get("self_deployed", False) or managed_identities_client_id is not None
     demisto.debug(f"{self_deployed=}")
     certificate_thumbprint = params.get("creds_certificate", {}).get("identifier") or params.get("certificate_thumbprint")
     private_key = replace_spaces_in_credential(params.get("creds_certificate", {}).get("password")) or params.get("private_key")
@@ -6343,8 +6344,6 @@ def main():  # pragma: no cover
     last_run = demisto.getLastRun()
     auth_code = params.get("auth_code", {}).get("password", "")
     redirect_uri = params.get("redirect_uri", "")
-    managed_identities_client_id = get_azure_managed_identities_client_id(params)
-    self_deployed = self_deployed or managed_identities_client_id is not None
 
     endpoint_type, params_url = microsoft_defender_for_endpoint_get_base_url(params_endpoint_type, params_url, is_gcc)
 
