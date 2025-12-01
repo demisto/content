@@ -19,7 +19,7 @@ This integration allows XSOAR to:
 
 ---
 
-# Configuration
+## Configuration
 
 ### Required Parameters
 
@@ -114,14 +114,14 @@ It is used by the XSOAR engine when *Fetches Indicators* is enabled.
 * Updates `last_run` after each successful chunk.
 
 
-# Known Limitations
+## Known Limitations
 
 * Fetching supports **hours only (days not supported)**.
 * Maximum initial backfill: **3 hours**.
 
 ---
 
-# Support
+## Support
 
 For issues, contact **[support@cyble.com](mailto:support@cyble.com)**
 or your assigned Cyble Technical Advisor.
