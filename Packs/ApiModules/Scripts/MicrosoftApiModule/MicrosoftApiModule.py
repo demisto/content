@@ -750,7 +750,6 @@ class MicrosoftClient(BaseClient):
         """
         self.command_prefix = command_prefix
         demisto.debug(f"Initializing MicrosoftClient with: {endpoint=} | {azure_cloud.abbreviation}")
-        demisto.debug(f"{grant_type=}")
         if endpoint != "__NA__":
             # Backward compatible.
             self.azure_cloud = AZURE_CLOUDS.get(endpoint, AZURE_WORLDWIDE_CLOUD)
@@ -926,8 +925,6 @@ class MicrosoftClient(BaseClient):
         """
         Checks all necessary fields for the specific authentication flow.
         """
-        flow = self.grant_type
-        demisto.debug(f"{self.redirect_uri=}")
 
         def require_fields(fields: list[str], message_prefix: str):
             """Helper to validate required fields."""
@@ -935,7 +932,7 @@ class MicrosoftClient(BaseClient):
                 if not getattr(self, field):
                     raise DemistoException(f"{message_prefix} enter {field.replace('_', ' ').title()}.")
 
-        if flow == CLIENT_CREDENTIALS:
+        if self.grant_type == CLIENT_CREDENTIALS:
             require_fields(
                 fields=["tenant_id", "client_secret", "client_id"],
                 message_prefix="When using Client Credentials flow you must "
@@ -943,7 +940,7 @@ class MicrosoftClient(BaseClient):
             self.get_access_token()
             return "ok"
 
-        elif flow == DEVICE_CODE:
+        elif self.grant_type == DEVICE_CODE:
             require_fields(
                 fields=["client_id"],
                 message_prefix="When using Device Code flow you must "
@@ -955,7 +952,7 @@ class MicrosoftClient(BaseClient):
                 f"!{self.command_prefix}-auth-test command."
             )
 
-        elif flow == AUTHORIZATION_CODE:
+        elif self.grant_type == AUTHORIZATION_CODE:
             if not demisto.params().get("redirect_uri"):  # this is taken from demisto.params because we have a default
             # value for this parameter in MicrosoftClient class
                 raise DemistoException(f"A redirect URI is required. Please enter the redirect URI that you configured"
@@ -990,7 +987,6 @@ class MicrosoftClient(BaseClient):
         """
         integration_context = get_integration_context()
         refresh_token = integration_context.get("current_refresh_token", "")
-
         # Set keywords. Default without the scope prefix.
         access_token_keyword = f"{scope}_access_token" if scope else "access_token"
         valid_until_keyword = f"{scope}_valid_until" if scope else "valid_until"
