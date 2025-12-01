@@ -481,7 +481,7 @@ class Client(CoreClient):
             headers=self.headers,
             timeout=self.timeout,
         )
-        demisto.debug(res)
+
         reply = res.get("reply", {})
         set_sorted_paths_and_names(reply)
         if ALERTS_LIMIT_PER_INCIDENTS < 0:
