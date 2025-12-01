@@ -6488,11 +6488,10 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
   - Notes:
     - Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: "Endpoint Detection" and "OFP Detection".
     - For CNAPP Alerts, you will need one of the following subscriptions:
-        - Falcon Cloud Security with Containers CNAPP
-        - Falcon Cloud Security CNAPP
-        - Falcon Cloud Security with Containers Runtime Protection
-        - Falcon for Managed Containers Runtime Protection
-        - Falcon Cloud Security Proactive
-        - Falcon Cloud Security with Containers
-        - Falcon for Managed Containers
-
+      - Falcon Cloud Security with Containers CNAPP
+      - Falcon Cloud Security CNAPP
+      - Falcon Cloud Security with Containers Runtime Protection
+      - Falcon for Managed Containers Runtime Protection
+      - Falcon Cloud Security Proactive
+      - Falcon Cloud Security with Containers
+      - Falcon for Managed Containers

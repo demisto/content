@@ -7813,6 +7813,7 @@ def main():  # pragma: no cover
             demisto.info(f"[test] preparing to call demisto.incidents with {incidents=}")
             demisto.incidents(incidents)
             demisto.info(f"[test] finished sending incidents with {incidents=}")
+            return_results(GetRemoteDataResponse(mirrored_object=updated_object, entries=entries))
         elif command == "fetch-events":
             last_run, events = fetch_items(command=command)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
