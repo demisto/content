@@ -907,10 +907,25 @@ script:
         - contextPath: Datadog.SecurityRiskInsights.raw
           description: The raw risk insight object returned by the API.
           type: Unknown
+    - arguments:
+        - description: The signal ID to retrieve remote data for.
+          name: id
+          required: true
+      name: get-remote-data
+      description: Get remote data from Datadog Cloud SIEM for mirroring. This command is used for debugging the mirroring integration.
+    - arguments:
+        - description: Last update timestamp (ISO format).
+          name: lastUpdate
+          required: true
+      name: get-modified-remote-data
+      description: Get the list of signal IDs that were modified since lastUpdate. This command is used for debugging the mirroring integration.
+    - name: get-mapping-fields
+      description: Get the mapping fields for Datadog Cloud SIEM security signals. This command is used for debugging the mirroring integration and returns the schema of available fields.
   dockerimage: demisto/datadog-api-client:1.0.0.4893383
   isfetch: true
-  ismappable: false
+  ismappable: true
   isremotesyncin: true
+  isremotesyncout: false
   runonce: false
   script: "-"
   subtype: python3

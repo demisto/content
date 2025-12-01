@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from CommonServerPython import *  # noqa: F401 # pylint: disable=unused-wildcard-import
@@ -83,9 +83,15 @@ SECURITY_RULE_CONTEXT_NAME = f"{INTEGRATION_CONTEXT_NAME}.SecurityRule"
 SECURITY_COMMENT_CONTEXT_NAME = f"{INTEGRATION_CONTEXT_NAME}.SecurityComment"
 SECURITY_FILTER_CONTEXT_NAME = f"{INTEGRATION_CONTEXT_NAME}.SecurityFilter"
 SECURITY_SUPPRESSION_CONTEXT_NAME = f"{INTEGRATION_CONTEXT_NAME}.SecuritySuppression"
-SECURITY_NOTIFICATION_RULE_CONTEXT_NAME = f"{INTEGRATION_CONTEXT_NAME}.SecurityNotificationRule"
-VULNERABILITY_NOTIFICATION_RULE_CONTEXT_NAME = f"{INTEGRATION_CONTEXT_NAME}.VulnerabilityNotificationRule"
-SECURITY_INVESTIGATION_CONTEXT_NAME = f"{INTEGRATION_CONTEXT_NAME}.SecurityInvestigation"
+SECURITY_NOTIFICATION_RULE_CONTEXT_NAME = (
+    f"{INTEGRATION_CONTEXT_NAME}.SecurityNotificationRule"
+)
+VULNERABILITY_NOTIFICATION_RULE_CONTEXT_NAME = (
+    f"{INTEGRATION_CONTEXT_NAME}.VulnerabilityNotificationRule"
+)
+SECURITY_INVESTIGATION_CONTEXT_NAME = (
+    f"{INTEGRATION_CONTEXT_NAME}.SecurityInvestigation"
+)
 SECURITY_RISK_INSIGHTS_CONTEXT_NAME = f"{INTEGRATION_CONTEXT_NAME}.SecurityRiskInsights"
 LOG_CONTEXT_NAME = f"{INTEGRATION_CONTEXT_NAME}.Log"
 NO_RESULTS_FROM_API_MSG = "API didn't return any results for given search parameters."
@@ -211,8 +217,16 @@ class SecurityNotificationRule:
             "Created At": self.created_at.isoformat(),
             "Modified By": self.modified_by,
             "Modified At": self.modified_at.isoformat(),
-            "Severities": (", ".join(self.selectors.severities) if self.selectors.severities else None),
-            "Rule Types": (", ".join(self.selectors.rule_types) if self.selectors.rule_types else None),
+            "Severities": (
+                ", ".join(self.selectors.severities)
+                if self.selectors.severities
+                else None
+            ),
+            "Rule Types": (
+                ", ".join(self.selectors.rule_types)
+                if self.selectors.rule_types
+                else None
+            ),
             "Targets": ", ".join(self.targets) if self.targets else None,
         }
 
@@ -302,7 +316,9 @@ class SecuritySuppression:
     raw: dict[str, Any]
 
     def build_url(self) -> str:
-        return f"https://{APP}.{SITE}/security/configuration/suppressions/view/{self.id}"
+        return (
+            f"https://{APP}.{SITE}/security/configuration/suppressions/view/{self.id}"
+        )
 
     def to_display_dict(self) -> dict[str, Any]:
         return {
@@ -412,7 +428,11 @@ class SecurityRule:
             "Type": self.type,
             "Is Enabled": self.is_enabled,
             "Created At": self.created_at,
-            "Tags": (", ".join(self.tags[:5]) + ("..." if len(self.tags) > 5 else "") if self.tags else None),
+            "Tags": (
+                ", ".join(self.tags[:5]) + ("..." if len(self.tags) > 5 else "")
+                if self.tags
+                else None
+            ),
             "URL": self.build_url(),
         }
 
@@ -540,12 +560,20 @@ class Log:
         """
         return {
             "Timestamp": str(self.timestamp) if self.timestamp else None,
-            "Message": (self.message[:100] + "..." if self.message and len(self.message) > 100 else self.message),
+            "Message": (
+                self.message[:100] + "..."
+                if self.message and len(self.message) > 100
+                else self.message
+            ),
             "Service": self.service,
             "Host": self.host,
             "Source": self.source,
             "Status": self.status,
-            "Tags": (", ".join(self.tags[:3]) + ("..." if len(self.tags) > 3 else "") if self.tags else None),
+            "Tags": (
+                ", ".join(self.tags[:3]) + ("..." if len(self.tags) > 3 else "")
+                if self.tags
+                else None
+            ),
             "URL": self.build_url(),
         }
 
@@ -619,12 +647,24 @@ class SecuritySignal:
             "Message": self.message,
             "Severity": self.severity,
             "State": self.triage.state if self.triage else None,
-            "Rule URL": (f"https://{APP}.{SITE}/security/rules/view/{self.rule_id}" if self.rule_id else None),
+            "Rule URL": (
+                f"https://{APP}.{SITE}/security/rules/view/{self.rule_id}"
+                if self.rule_id
+                else None
+            ),
             "Host": self.host,
             "Services": self.service,
             "Timestamp": str(self.timestamp) if self.timestamp else None,
-            "Assignee": (self.triage.assignee.name if (self.triage and self.triage.assignee) else None),
-            "Tags": (", ".join(self.tags[:5]) + ("..." if len(self.tags) > 5 else "") if self.tags else None),
+            "Assignee": (
+                self.triage.assignee.name
+                if (self.triage and self.triage.assignee)
+                else None
+            ),
+            "Tags": (
+                ", ".join(self.tags[:5]) + ("..." if len(self.tags) > 5 else "")
+                if self.tags
+                else None
+            ),
             "URL": self.build_url(),
         }
         return remove_none_values(result)
@@ -751,9 +791,15 @@ class SecurityRiskInsight:
             "Risk Evolution": self.risk_score_evolution,
             "Severity": self.severity,
             "Signals Detected": self.signals_detected,
-            "Providers": (", ".join(self.entity_providers) if self.entity_providers else None),
-            "First Detected": (self.first_detected.isoformat() if self.first_detected else None),
-            "Last Detected": (self.last_detected.isoformat() if self.last_detected else None),
+            "Providers": (
+                ", ".join(self.entity_providers) if self.entity_providers else None
+            ),
+            "First Detected": (
+                self.first_detected.isoformat() if self.first_detected else None
+            ),
+            "Last Detected": (
+                self.last_detected.isoformat() if self.last_detected else None
+            ),
         }
 
     def to_dict(self) -> dict[str, Any]:
@@ -875,7 +921,9 @@ def parse_timestamp(v: Any) -> datetime | None:
         elif isinstance(v, int | float):
             timestamp = float(v)
         else:
-            raise ValueError(f"Cannot parse timestamp from type {type(v).__name__}: {v!r}")
+            raise ValueError(
+                f"Cannot parse timestamp from type {type(v).__name__}: {v!r}"
+            )
 
         if timestamp < 0:
             return None
@@ -1102,8 +1150,8 @@ def parse_security_signal(data: dict[str, Any]) -> SecuritySignal:
         **data.get("attributes", {}),
     }
 
-    signal_id = data.get("id")
-    event_id = data.get("event_id") or attrs.get("event_id") or attrs.get("id")
+    signal_id = attrs.get("event_tracker_id")
+    event_id = attrs.get("event_id") or attrs.get("id")
 
     if not signal_id or not event_id:
         raise ValueError("Cannot get signal_id and/or event_id")
@@ -1145,7 +1193,8 @@ def parse_security_signal(data: dict[str, Any]) -> SecuritySignal:
         id=signal_id,
         event_id=event_id,
         bits_investigator_verdict=bits_investigator.get("state", ""),
-        timestamp=parse_timestamp(attrs.get("triggering_log_timestamp")) or datetime.now(),
+        timestamp=parse_timestamp(attrs.get("triggering_log_timestamp"))
+        or datetime.now(),
         host=attrs.get("host", ""),
         service=service_str,
         severity=attrs.get("status", "info"),
@@ -1298,8 +1347,16 @@ def parse_security_suppression(data: dict[str, Any]) -> SecuritySuppression:
     updater_data = attrs.get("updater", {})
 
     # Format creator and updater as "Name <handle>"
-    creator = f"{creator_data.get('name', '')} <{creator_data.get('handle', '')}>" if creator_data else ""
-    updater = f"{updater_data.get('name', '')} <{updater_data.get('handle', '')}>" if updater_data else ""
+    creator = (
+        f"{creator_data.get('name', '')} <{creator_data.get('handle', '')}>"
+        if creator_data
+        else ""
+    )
+    updater = (
+        f"{updater_data.get('name', '')} <{updater_data.get('handle', '')}>"
+        if updater_data
+        else ""
+    )
 
     return SecuritySuppression(
         id=data.get("id", ""),
@@ -1370,8 +1427,16 @@ def parse_security_notification_rule(data: dict[str, Any]) -> SecurityNotificati
     created_by_data = attrs.get("created_by", {})
     modified_by_data = attrs.get("modified_by", {})
 
-    created_by = f"{created_by_data.get('name', '')} <{created_by_data.get('handle', '')}>" if created_by_data else ""
-    modified_by = f"{modified_by_data.get('name', '')} <{modified_by_data.get('handle', '')}>" if modified_by_data else ""
+    created_by = (
+        f"{created_by_data.get('name', '')} <{created_by_data.get('handle', '')}>"
+        if created_by_data
+        else ""
+    )
+    modified_by = (
+        f"{modified_by_data.get('name', '')} <{modified_by_data.get('handle', '')}>"
+        if modified_by_data
+        else ""
+    )
 
     selectors_data = attrs.get("selectors", {})
     selectors = SecurityNotificationSelectors(
@@ -1419,11 +1484,17 @@ def parse_security_risk_insight(data: dict[str, Any]) -> SecurityRiskInsight:
     # Parse config risks
     config_risks_data = attrs.get("configRisks", {})
     config_risks = ConfigRisks(
-        has_misconfiguration=parse_bool(config_risks_data.get("hasMisconfiguration", False)),
+        has_misconfiguration=parse_bool(
+            config_risks_data.get("hasMisconfiguration", False)
+        ),
         has_identity_risk=parse_bool(config_risks_data.get("hasIdentityRisk", False)),
-        is_publicly_accessible=parse_bool(config_risks_data.get("isPubliclyAccessible", False)),
+        is_publicly_accessible=parse_bool(
+            config_risks_data.get("isPubliclyAccessible", False)
+        ),
         is_production=parse_bool(config_risks_data.get("isProduction", False)),
-        has_privileged_role=parse_bool(config_risks_data.get("hasPrivilegedRole", False)),
+        has_privileged_role=parse_bool(
+            config_risks_data.get("hasPrivilegedRole", False)
+        ),
         is_privileged=parse_bool(config_risks_data.get("isPrivileged", False)),
     )
 
@@ -1444,8 +1515,10 @@ def parse_security_risk_insight(data: dict[str, Any]) -> SecurityRiskInsight:
         entity_providers=attrs.get("entityProviders", []),
         entity_roles=attrs.get("entityRoles", []),
         entity_type=attrs.get("entityType", ""),
-        first_detected=parse_timestamp(attrs.get("firstDetected")) or datetime.now(tz=UTC),
-        last_detected=parse_timestamp(attrs.get("lastDetected")) or datetime.now(tz=UTC),
+        first_detected=parse_timestamp(attrs.get("firstDetected"))
+        or datetime.now(tz=UTC),
+        last_detected=parse_timestamp(attrs.get("lastDetected"))
+        or datetime.now(tz=UTC),
         risk_score=attrs.get("riskScore", 0),
         risk_score_evolution=attrs.get("riskScoreEvolution", 0),
         severity=attrs.get("severity", ""),
@@ -1570,12 +1643,25 @@ def module_test(configuration: Configuration) -> str:
     :rtype: ``str``
     """
     with ApiClient(configuration) as api_client:
-        # Testing api key
+        # Testing API key
         try:
             api_instance = AuthenticationApi(api_client)
             api_instance.validate()
         except Exception:
-            return AUTHENTICATION_ERROR_MSG
+            return "Authentication Error: Invalid API Key."
+
+        # Testing Application key by making a simple API call that requires it
+        try:
+            security_api = SecurityMonitoringApi(api_client)
+            # Make a minimal request to verify app key works
+            security_api.list_security_monitoring_signals(page_limit=1)
+        except (ForbiddenException, UnauthorizedException):
+            return "Authentication Error: Invalid Application Key."
+        except Exception:
+            # If it's not an auth error, the app key is valid
+            # (other errors like rate limits don't indicate invalid keys)
+            pass
+
         return "ok"
 
 
@@ -1603,7 +1689,9 @@ def get_security_signal_investigation_command(
     # If signal_id not provided, try to get it from the current incident
     if not signal_id:
         incident = demisto.incident()
-        signal_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignalid")
+        signal_id = incident.get("CustomFields", {}).get(
+            "datadogcloudsiemv2securitysignalid"
+        )
         if not signal_id:
             raise DemistoException(
                 "signal_id is required. Provide it as an argument or run from an incident with a Datadog Security Signal ID."
@@ -1664,7 +1752,9 @@ def get_security_signal_investigation_command(
         )
 
     except Exception as e:
-        raise DemistoException(f"Failed to get security signal investigation for signal {signal_id}: {str(e)}")
+        raise DemistoException(
+            f"Failed to get security signal investigation for signal {signal_id}: {str(e)}"
+        )
 
 
 def fetch_security_signals(
@@ -1759,7 +1849,9 @@ def get_security_signal_command(
     # If signal_id not provided, try to get it from the current incident
     if not signal_id:
         incident = demisto.incident()
-        signal_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignalid")
+        signal_id = incident.get("CustomFields", {}).get(
+            "datadogcloudsiemv2securitysignalid"
+        )
         if not signal_id:
             raise DemistoException(
                 "signal_id is required. Provide it as an argument or run from an incident with a Datadog Security Signal ID."
@@ -1768,7 +1860,9 @@ def get_security_signal_command(
     try:
         with ApiClient(configuration) as api_client:
             api_instance = SecurityMonitoringApi(api_client)
-            signal_response = api_instance.get_security_monitoring_signal(signal_id=signal_id)
+            signal_response = api_instance.get_security_monitoring_signal(
+                signal_id=signal_id
+            )
             results = signal_response.to_dict()
             data = results.get("data", {})
 
@@ -1786,7 +1880,9 @@ def get_security_signal_command(
             # Create human-readable summary using the display dictionary
             signal_display = signal.to_display_dict()
 
-            readable_output = lookup_to_markdown([signal_display], "Security Signal Details")
+            readable_output = lookup_to_markdown(
+                [signal_display], "Security Signal Details"
+            )
 
             return CommandResults(
                 readable_output=readable_output,
@@ -1826,7 +1922,9 @@ def update_rule_suppression_command(
     """
     suppression_id = args.get("suppression_id")
     if not suppression_id:
-        raise DemistoException("suppression_id is required. Provide the ID of the suppression you want to update.")
+        raise DemistoException(
+            "suppression_id is required. Provide the ID of the suppression you want to update."
+        )
 
     # Build attributes dict with only provided parameters
     attrs_dict: dict[str, Any] = {}
@@ -1881,9 +1979,7 @@ def update_rule_suppression_command(
             for key, value in attrs_dict.items():
                 readable_output += f"- {key}: {value}\n"
 
-            readable_output += (
-                f"\nSuppression URL: https://{APP}.{SITE}/security/configuration/suppressions/view/{suppression_id}"
-            )
+            readable_output += f"\nSuppression URL: https://{APP}.{SITE}/security/configuration/suppressions/view/{suppression_id}"
 
             return CommandResults(
                 readable_output=readable_output,
@@ -1893,7 +1989,9 @@ def update_rule_suppression_command(
             )
 
     except Exception as e:
-        raise DemistoException(f"Failed to update suppression {suppression_id}: {str(e)}")
+        raise DemistoException(
+            f"Failed to update suppression {suppression_id}: {str(e)}"
+        )
 
 
 def suppressions_list_command(
@@ -1919,7 +2017,9 @@ def suppressions_list_command(
     # If rule_id not provided, try to get it from the current incident
     if not rule_id:
         incident = demisto.incident()
-        rule_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignalruleid")
+        rule_id = incident.get("CustomFields", {}).get(
+            "datadogcloudsiemv2securitysignalruleid"
+        )
         if not rule_id:
             raise DemistoException(
                 "rule_id is required. Provide it as an argument or run from an incident with a Datadog Security Rule ID."
@@ -1963,7 +2063,9 @@ def suppressions_list_command(
             )
 
     except Exception as e:
-        raise DemistoException(f"Failed to list suppressions for rule {rule_id}: {str(e)}")
+        raise DemistoException(
+            f"Failed to list suppressions for rule {rule_id}: {str(e)}"
+        )
 
 
 def get_security_rule_command(
@@ -1989,7 +2091,9 @@ def get_security_rule_command(
     # If rule_id not provided, try to get it from the current incident
     if not rule_id:
         incident = demisto.incident()
-        rule_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignalruleid")
+        rule_id = incident.get("CustomFields", {}).get(
+            "datadogcloudsiemv2securitysignalruleid"
+        )
         if not rule_id:
             raise DemistoException(
                 "rule_id is required. Provide it as an argument or run from an incident with a Datadog Security Rule ID."
@@ -2015,7 +2119,9 @@ def get_security_rule_command(
             # Create human-readable summary using the display dictionary
             rule_display = rule.to_display_dict()
 
-            readable_output = lookup_to_markdown([rule_display], "Security Rule Details")
+            readable_output = lookup_to_markdown(
+                [rule_display], "Security Rule Details"
+            )
 
             return CommandResults(
                 readable_output=readable_output,
@@ -2066,7 +2172,9 @@ def get_security_signal_list_command(
             from_datetime = parse(from_date, settings={"TIMEZONE": "UTC"})
             to_datetime = parse(to_date, settings={"TIMEZONE": "UTC"})
         except Exception as e:
-            raise DemistoException(f"Invalid date format. Use formats like '7 days ago', '2023-01-01T00:00:00Z': {str(e)}")
+            raise DemistoException(
+                f"Invalid date format. Use formats like '7 days ago', '2023-01-01T00:00:00Z': {str(e)}"
+            )
 
         # Use helper function to fetch signals
         signals_objs = fetch_security_signals(
@@ -2079,7 +2187,9 @@ def get_security_signal_list_command(
         )
 
         if not signals_objs:
-            readable_output = "No security signals found matching the specified criteria."
+            readable_output = (
+                "No security signals found matching the specified criteria."
+            )
             return CommandResults(
                 readable_output=readable_output,
                 outputs_prefix=SECURITY_SIGNAL_CONTEXT_NAME,
@@ -2096,7 +2206,9 @@ def get_security_signal_list_command(
             display_data.append(signal.to_display_dict())
 
         # Create human-readable output
-        readable_output = lookup_to_markdown(display_data, f"Security Signals ({len(signals)} results)")
+        readable_output = lookup_to_markdown(
+            display_data, f"Security Signals ({len(signals)} results)"
+        )
 
         return CommandResults(
             readable_output=readable_output,
@@ -2134,7 +2246,9 @@ def update_security_signal_assignee_command(
     # If signal_id not provided, try to get it from the current incident
     if not signal_id:
         incident = demisto.incident()
-        signal_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignalid")
+        signal_id = incident.get("CustomFields", {}).get(
+            "datadogcloudsiemv2securitysignalid"
+        )
         if not signal_id:
             raise DemistoException(
                 "signal_id is required. Provide it as an argument or run from an incident with a Datadog Security Signal ID."
@@ -2156,17 +2270,25 @@ def update_security_signal_assignee_command(
                     )
                     users = res.get("data", [])
                     if len(users) == 0:
-                        raise DemistoException(f"Could not determine any user for name or email: {assignee}")
+                        raise DemistoException(
+                            f"Could not determine any user for name or email: {assignee}"
+                        )
                     if len(users) > 1:
-                        users = {u.get("attributes", {}).get("email", "") for u in users}
-                        raise DemistoException(f"Could not determine the user to assign to from list: {users}")
+                        users = {
+                            u.get("attributes", {}).get("email", "") for u in users
+                        }
+                        raise DemistoException(
+                            f"Could not determine the user to assign to from list: {users}"
+                        )
                     assignee_uuid = users[0].get("id")
 
                 # Always update assignee - either with found assignee_uuid or by unassigning
                 assignee_body = SecurityMonitoringSignalAssigneeUpdateRequest(
                     data=SecurityMonitoringSignalAssigneeUpdateData(
                         attributes=SecurityMonitoringSignalAssigneeUpdateAttributes(
-                            assignee=SecurityMonitoringTriageUser(uuid=assignee_uuid or ""),
+                            assignee=SecurityMonitoringTriageUser(
+                                uuid=assignee_uuid or ""
+                            ),
                         ),
                     ),
                 )
@@ -2210,7 +2332,9 @@ def update_security_signal_state_command(
     # If signal_id not provided, try to get it from the current incident
     if not signal_id:
         incident = demisto.incident()
-        signal_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignalid")
+        signal_id = incident.get("CustomFields", {}).get(
+            "datadogcloudsiemv2securitysignalid"
+        )
         if not signal_id:
             raise DemistoException(
                 "signal_id is required. Provide it as an argument or run from an incident with a Datadog Security Signal ID."
@@ -2220,7 +2344,9 @@ def update_security_signal_state_command(
     if state is not None:
         valid_states = ["open", "under_review", "archived"]
         if state not in valid_states:
-            raise DemistoException(f"Invalid state '{state}'. Valid states are: {', '.join(valid_states)}")
+            raise DemistoException(
+                f"Invalid state '{state}'. Valid states are: {', '.join(valid_states)}"
+            )
 
     try:
         with ApiClient(configuration) as api_client:
@@ -2276,7 +2402,9 @@ def add_security_signal_comment_command(
     # If event_id not provided, try to get it from the current incident
     if not event_id:
         incident = demisto.incident()
-        event_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignaleventid")
+        event_id = incident.get("CustomFields", {}).get(
+            "datadogcloudsiemv2securitysignaleventid"
+        )
         if not event_id:
             raise DemistoException(
                 "event_id is required. Provide it as an argument or run from an incident with a Datadog Security Signal Event ID."
@@ -2299,7 +2427,9 @@ def add_security_signal_comment_command(
         )
 
         if not comments_response.ok:
-            raise DemistoException(f"API request failed with status {comments_response.status_code}: {comments_response.text}")
+            raise DemistoException(
+                f"API request failed with status {comments_response.status_code}: {comments_response.text}"
+            )
 
         data = comments_response.json().get("data", {})
         comment_obj = parse_security_comment(data)
@@ -2308,7 +2438,9 @@ def add_security_signal_comment_command(
         with ApiClient(configuration) as api_client:
             user_api_instance = UsersApi(api_client)
             try:
-                user_response = user_api_instance.get_user(user_id=comment_obj.user_uuid)
+                user_response = user_api_instance.get_user(
+                    user_id=comment_obj.user_uuid
+                )
                 user_data = user_response.to_dict().get("data", {})
                 attrs = user_data.get("attributes", {})
                 comment_obj.user_name = attrs.get("name")
@@ -2320,7 +2452,9 @@ def add_security_signal_comment_command(
         display_data = comment_obj.to_display_dict()
         output = comment_obj.to_dict()
 
-        readable_output = lookup_to_markdown([display_data], "Comment Added Successfully")
+        readable_output = lookup_to_markdown(
+            [display_data], "Comment Added Successfully"
+        )
 
         return CommandResults(
             readable_output=readable_output,
@@ -2356,7 +2490,9 @@ def list_security_signal_comments_command(
     # If event_id not provided, try to get it from the current incident
     if not event_id:
         incident = demisto.incident()
-        event_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignaleventid")
+        event_id = incident.get("CustomFields", {}).get(
+            "datadogcloudsiemv2securitysignaleventid"
+        )
         if not event_id:
             raise DemistoException(
                 "event_id is required. Provide it as an argument or run from an incident with a Datadog Security Signal Event ID."
@@ -2407,7 +2543,9 @@ def list_security_signal_comments_command(
         display_data = [c.to_display_dict() for c in comments]
         outputs = [c.to_dict() for c in comments]
 
-        readable_output = lookup_to_markdown(display_data, f"Security Signal Comments ({len(comments)} results)")
+        readable_output = lookup_to_markdown(
+            display_data, f"Security Signal Comments ({len(comments)} results)"
+        )
 
         return CommandResults(
             readable_output=readable_output,
@@ -2449,7 +2587,9 @@ def logs_query_command(
         # If no query provided, try to get it from incident's rule
         if not has_query:
             incident = demisto.incident()
-            rule_id = incident.get("CustomFields", {}).get("datadogcloudsiemv2securitysignalruleid")
+            rule_id = incident.get("CustomFields", {}).get(
+                "datadogcloudsiemv2securitysignalruleid"
+            )
 
             if not rule_id:
                 raise DemistoException(
@@ -2459,7 +2599,9 @@ def logs_query_command(
             # Fetch the rule and extract the query
             with ApiClient(configuration) as api_client:
                 api_instance = SecurityMonitoringApi(api_client)
-                rule_response = api_instance.get_security_monitoring_rule(rule_id=rule_id)
+                rule_response = api_instance.get_security_monitoring_rule(
+                    rule_id=rule_id
+                )
                 rule_data = rule_response.to_dict()
                 rule = parse_security_rule(rule_data)
 
@@ -2473,7 +2615,11 @@ def logs_query_command(
         if sort not in ["asc", "desc"]:
             raise DemistoException("Sort must be either 'asc' or 'desc'")
 
-        sort_order = LogsSort.TIMESTAMP_ASCENDING if sort == "asc" else LogsSort.TIMESTAMP_DESCENDING
+        sort_order = (
+            LogsSort.TIMESTAMP_ASCENDING
+            if sort == "asc"
+            else LogsSort.TIMESTAMP_DESCENDING
+        )
 
         search_query = args.get("query", "*")
 
@@ -2485,7 +2631,9 @@ def logs_query_command(
             from_datetime = parse(from_date, settings={"TIMEZONE": "UTC"})
             to_datetime = parse(to_date, settings={"TIMEZONE": "UTC"})
         except Exception as e:
-            raise DemistoException(f"Invalid date format. Use formats like '7 days ago', '2023-01-01T00:00:00Z': {str(e)}")
+            raise DemistoException(
+                f"Invalid date format. Use formats like '7 days ago', '2023-01-01T00:00:00Z': {str(e)}"
+            )
 
         with ApiClient(configuration) as api_client:
             logs_api_instance = LogsApi(api_client)
@@ -2593,7 +2741,9 @@ def list_security_filter_command(
                 display_data.append(security_filter.to_display_dict())
 
             # Create human-readable summary using the display dictionary
-            readable_output = lookup_to_markdown(display_data, f"Security Filters ({len(filters)} results)")
+            readable_output = lookup_to_markdown(
+                display_data, f"Security Filters ({len(filters)} results)"
+            )
 
             return CommandResults(
                 readable_output=readable_output,
@@ -2690,7 +2840,9 @@ def list_vulnerability_notification_rule_command(
     try:
         with ApiClient(configuration) as api_client:
             api_instance = SecurityMonitoringApi(api_client)
-            notification_rules_response = api_instance.get_vulnerability_notification_rules()
+            notification_rules_response = (
+                api_instance.get_vulnerability_notification_rules()
+            )
             notification_rules_data = notification_rules_response.get("data", [])
 
             if not notification_rules_data:
@@ -2725,7 +2877,9 @@ def list_vulnerability_notification_rule_command(
             )
 
     except Exception as e:
-        raise DemistoException(f"Failed to get vulnerability notification rules: {str(e)}")
+        raise DemistoException(
+            f"Failed to get vulnerability notification rules: {str(e)}"
+        )
 
 
 def list_risk_scores_command(
@@ -2779,7 +2933,9 @@ def list_risk_scores_command(
         )
 
         if not risks_response.ok:
-            raise DemistoException(f"API request failed with status {risks_response.status_code}: {risks_response.text}")
+            raise DemistoException(
+                f"API request failed with status {risks_response.status_code}: {risks_response.text}"
+            )
 
         risk_insights_data = risks_response.json().get("data", [])
 
@@ -2802,7 +2958,9 @@ def list_risk_scores_command(
             display_data.append(risk_insight.to_display_dict())
 
         # Create human-readable summary using the display dictionary
-        readable_output = lookup_to_markdown(display_data, f"Security Risk Insights ({len(risk_insights)} results)")
+        readable_output = lookup_to_markdown(
+            display_data, f"Security Risk Insights ({len(risk_insights)} results)"
+        )
 
         return CommandResults(
             readable_output=readable_output,
@@ -2861,10 +3019,14 @@ def fetch_incidents(
         if last_fetch_timestamp:
             # Incremental fetch - convert Unix timestamp to datetime
             from_datetime = parse_timestamp(last_fetch_timestamp) or datetime.now()
-            demisto.debug(f"Fetching incidents since last run: {last_fetch_timestamp} ({from_datetime.isoformat()})")
+            demisto.debug(
+                f"Fetching incidents since last run: {last_fetch_timestamp} ({from_datetime.isoformat()})"
+            )
         else:
             # First fetch - use first_fetch parameter
-            from_datetime = parse(f"-{first_fetch}", settings={"TIMEZONE": "UTC"}) or datetime.now()
+            from_datetime = (
+                parse(f"-{first_fetch}", settings={"TIMEZONE": "UTC"}) or datetime.now()
+            )
             demisto.debug(f"First fetch - fetching incidents from: {first_fetch} ago")
 
         to_datetime = datetime.now(tz=UTC)
@@ -2892,7 +3054,9 @@ def fetch_incidents(
 
         # Convert signals to XSOAR incidents
         incidents = []
-        latest_signal_timestamp = last_fetch_timestamp  # Track as Unix timestamp (seconds)
+        latest_signal_timestamp = (
+            last_fetch_timestamp  # Track as Unix timestamp (seconds)
+        )
 
         for signal in signals:
             signal_dict = signal.to_dict()
@@ -2904,6 +3068,10 @@ def fetch_incidents(
                     labels.append({"type": "tag", "value": tag})
 
             signal_dict["incident_type"] = "Datadog Cloud SIEM V2"
+            signal_dict["mirror_direction"] = MIRROR_DIRECTION.get(
+                params.get("mirror_direction", "None")
+            )
+            signal_dict["mirror_instance"] = demisto.integrationInstance()
 
             # Ensure timestamp has timezone info for XSOAR
             occurred_time = signal.timestamp
@@ -2912,7 +3080,11 @@ def fetch_incidents(
 
             incident = {
                 "name": signal.title or f"Datadog Security Signal {signal.id}",
-                "occurred": occurred_time.isoformat() if occurred_time else to_datetime.isoformat(),
+                "occurred": (
+                    occurred_time.isoformat()
+                    if occurred_time
+                    else to_datetime.isoformat()
+                ),
                 "details": signal.message,
                 "severity": map_severity_to_xsoar(signal.severity),
                 "owner": owner,
@@ -2921,13 +3093,17 @@ def fetch_incidents(
                 # Mirroring fields
                 "dbotMirrorId": signal.id,
                 "dbotMirrorInstance": demisto.integrationInstance(),
-                "dbotMirrorDirection": MIRROR_DIRECTION.get(params.get("mirror_direction", "None")),
+                "dbotMirrorDirection": MIRROR_DIRECTION.get(
+                    params.get("mirror_direction", "None")
+                ),
             }
 
             incidents.append(incident)
 
             # Track latest signal timestamp for next fetch (as Unix timestamp in seconds)
-            if not latest_signal_timestamp or int(signal.timestamp.timestamp()) > int(latest_signal_timestamp):
+            if not latest_signal_timestamp or int(signal.timestamp.timestamp()) > int(
+                latest_signal_timestamp
+            ):
                 latest_signal_timestamp = int(signal.timestamp.timestamp())
 
         demisto.debug(f"Created {len(incidents)} incidents")
@@ -2957,32 +3133,36 @@ def get_remote_data_command(
     params: dict[str, Any],
 ) -> GetRemoteDataResponse:
     """
-    Gets new information about a Datadog security signal for incident mirroring.
+    Gets the latest information about a Datadog security signal for incident mirroring.
 
-    This command is called automatically by XSOAR to retrieve updates from Datadog for a specific signal.
+    This command is called automatically by XSOAR to retrieve the current state of a signal.
+    It always returns the latest data from Datadog, regardless of when it was last updated.
 
     Args:
         configuration: Datadog API configuration
         args: Command arguments from XSOAR containing:
             - id (str): The signal ID (same as dbotMirrorId)
-            - lastUpdate (str): ISO timestamp of last update
         params: Integration parameters for mirroring settings
 
     Returns:
-        GetRemoteDataResponse: Contains the updated signal data and entries
+        GetRemoteDataResponse: Contains the current signal data and entries
     """
-    parsed_args = GetRemoteDataArgs(args)
-    signal_id = parsed_args.remote_incident_id
-    last_update_str = parsed_args.last_update
+    # Get signal ID directly from args
+    signal_id = args.get("id")
     close_incident = params.get("close_incident", False)
 
-    demisto.debug(f"get-remote-data called for signal_id={signal_id}, lastUpdate={last_update_str}")
+    if not signal_id:
+        raise DemistoException("Missing required argument 'id'")
+
+    demisto.debug(f"get-remote-data called for signal_id={signal_id}")
 
     try:
-        # Get the signal from Datadog
+        # Get the latest signal data from Datadog
         with ApiClient(configuration) as api_client:
             api_instance = SecurityMonitoringApi(api_client)
-            signal_response = api_instance.get_security_monitoring_signal(signal_id=signal_id)
+            signal_response = api_instance.get_security_monitoring_signal(
+                signal_id=signal_id
+            )
             results = signal_response.to_dict()
             data = results.get("data", {})
 
@@ -2992,6 +3172,9 @@ def get_remote_data_command(
 
             signal = parse_security_signal(data)
             signal_dict = signal.to_dict()
+
+            # Set the id field to the remote incident ID (required by XSOAR)
+            signal_dict["id"] = signal_id
 
             # Check if signal is archived and close_incident is enabled
             entries = []
@@ -3003,19 +3186,24 @@ def get_remote_data_command(
                         "Type": EntryType.NOTE,
                         "Contents": {
                             "dbotIncidentClose": True,
-                            "closeReason": signal.triage.archive_reason or "Signal archived in Datadog",
+                            "closeReason": signal.triage.archive_reason
+                            or "Signal archived in Datadog",
                             "closeNotes": signal.triage.archive_comment or "",
                         },
                         "ContentsFormat": EntryFormat.JSON,
                     }
                 )
 
-            demisto.debug(f"Returning signal data for {signal_id} with {len(entries)} entries")
+            demisto.debug(
+                f"Returning signal data for {signal_id} with {len(entries)} entries"
+            )
             return GetRemoteDataResponse(mirrored_object=signal_dict, entries=entries)
 
     except Exception as e:
         demisto.error(f"Error in get-remote-data for signal {signal_id}: {str(e)}")
-        raise DemistoException(f"Failed to get remote data for signal {signal_id}: {str(e)}")
+        raise DemistoException(
+            f"Failed to get remote data for signal {signal_id}: {str(e)}"
+        )
 
 
 def get_modified_remote_data_command(
@@ -3025,7 +3213,8 @@ def get_modified_remote_data_command(
     """
     Gets the list of signal IDs that were modified since lastUpdate.
 
-    This command is called automatically by XSOAR to get a list of all signals that need to be updated.
+    Queries Datadog for signals where @workflow.triage.updateTimestamp >= lastUpdate,
+    effectively finding all signals that were modified since the last check.
 
     Args:
         configuration: Datadog API configuration
@@ -3033,36 +3222,54 @@ def get_modified_remote_data_command(
             - lastUpdate (str): ISO timestamp to query from
 
     Returns:
-        GetModifiedRemoteDataResponse: Contains list of modified signal IDs
+        GetModifiedRemoteDataResponse: Contains list of signal IDs that were modified
     """
-    remote_args = GetModifiedRemoteDataArgs(args)
-    last_update_str = remote_args.last_update
+    last_update = datetime.now() - timedelta(days=1)
+    last_update_str = last_update.isoformat()
     demisto.debug(f"get-modified-remote-data called with lastUpdate={last_update_str}")
 
     try:
-        # Parse lastUpdate to datetime using dateparser for consistent handling
+        # Parse lastUpdate to datetime
         last_update = dateparser.parse(last_update_str, settings={"TIMEZONE": "UTC"})
         if not last_update:
             demisto.debug("No valid lastUpdate provided, using 1 hour ago")
             last_update = datetime.now(tz=UTC) - timedelta(hours=1)
 
-        demisto.debug(f"Querying signals modified since {last_update.isoformat()}")
+        # Convert to Unix timestamp in milliseconds (Datadog uses ms)
+        last_update_ms = int(last_update.timestamp() * 1000)
 
-        # Query all signals modified since lastUpdate
-        # We use a wide query to catch all signals, then filter by timestamp
+        # Set time range: 1 week in the past to now
+        # This ensures we search a reasonable window that includes all potentially modified signals
+        from_datetime: datetime = parse(DEFAULT_FROM_DATE) # type: ignore
+        to_datetime: datetime = parse(DEFAULT_TO_DATE)  # type: ignore
+
+        # Build query to find signals modified since lastUpdate
+        # Using @workflow.triage.updateTimestamp:>=timestamp syntax
+        filter_query = security_signals_search_query({
+            "query":  f"@workflow.triage.updateTimestamp:>={last_update_ms}"
+        })
+
+        demisto.debug(
+            f"Querying signals modified since {last_update_str} ({last_update_ms} ms)"
+        )
+        demisto.debug(f"Time range: from {from_datetime.isoformat()} to {to_datetime.isoformat()}")
+        demisto.debug(f"Query: {filter_query}")
+
+        # Query Datadog for modified signals
+        # Use 1-week lookback window to ensure we don't miss any modified signals
         signals = fetch_security_signals(
             configuration=configuration,
-            filter_query="*",  # Get all signals
-            from_datetime=last_update,
-            to_datetime=None,
-            limit=1000,  # Max limit to get all modified signals
-            sort="asc",  # Sort by oldest first
+            filter_query=filter_query,
+            from_datetime=from_datetime,
+            to_datetime=to_datetime,
+            limit=1_000,  # Limit to avoid overload
+            sort="desc",  # Most recent first
         )
 
         # Extract signal IDs
         modified_signal_ids = [signal.id for signal in signals]
 
-        demisto.debug(f"Found {len(modified_signal_ids)} modified signals since {last_update.isoformat()}")
+        demisto.debug(f"Found {len(modified_signal_ids)} modified signal IDs")
         return GetModifiedRemoteDataResponse(modified_signal_ids)
 
     except Exception as e:
@@ -3103,8 +3310,12 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     # Triage fields
     signal_scheme.add_field(name="triage.state", description="Triage State")
     signal_scheme.add_field(name="triage.assignee.name", description="Assignee Name")
-    signal_scheme.add_field(name="triage.assignee.handle", description="Assignee Handle")
-    signal_scheme.add_field(name="triage.archive_comment", description="Archive Comment")
+    signal_scheme.add_field(
+        name="triage.assignee.handle", description="Assignee Handle"
+    )
+    signal_scheme.add_field(
+        name="triage.archive_comment", description="Archive Comment"
+    )
     signal_scheme.add_field(name="triage.archive_reason", description="Archive Reason")
 
     # Mirroring fields
@@ -3132,8 +3343,16 @@ def main() -> None:
         # Handle credentials type (type 9) - extract password from dict
         api_key_creds = params.get("api_key", {})
         app_key_creds = params.get("app_key", {})
-        configuration.api_key["apiKeyAuth"] = api_key_creds.get("password") if isinstance(api_key_creds, dict) else api_key_creds
-        configuration.api_key["appKeyAuth"] = app_key_creds.get("password") if isinstance(app_key_creds, dict) else app_key_creds
+        configuration.api_key["apiKeyAuth"] = (
+            api_key_creds.get("password")
+            if isinstance(api_key_creds, dict)
+            else api_key_creds
+        )
+        configuration.api_key["appKeyAuth"] = (
+            app_key_creds.get("password")
+            if isinstance(app_key_creds, dict)
+            else app_key_creds
+        )
         configuration.server_variables["site"] = SITE
         configuration.verify_ssl = not params.get("insecure", False)
 
@@ -3158,14 +3377,14 @@ def main() -> None:
             "datadog-bitsai-get-investigation": get_security_signal_investigation_command,
             "datadog-list-signal-notification-rules": list_signal_notification_rule_command,
             "datadog-list-vulnerability-notification-rules": list_vulnerability_notification_rule_command,
-            # Test commands
-            "test-module": lambda c, _a: return_results(module_test(c)),
             # Fetch incident
             "fetch-incidents": lambda c, _a: fetch_incidents(c, params),
             # Mirroring commands
             "get-remote-data": lambda c, a: get_remote_data_command(c, a, params),
             "get-modified-remote-data": get_modified_remote_data_command,
             "get-mapping-fields": lambda _c, _a: get_mapping_fields_command(),
+            # Test commands
+            "test-module": lambda c, _a: return_results(module_test(c)),
         }
         if command in commands:
             return_results(commands[command](configuration, args))
