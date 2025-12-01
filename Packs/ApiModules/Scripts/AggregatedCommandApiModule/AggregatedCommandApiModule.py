@@ -155,6 +155,7 @@ class IndicatorInstance:
         tim_context (list[ContextResult] | None): List of TIM results (standardized enrichment results) returned from TIM search.
             None if no TIM results were found.
         hr_message (str | None): Message for human readable.
+        error_message (str | None): Accumulated error message from enrichment pipeline.
         context_message (str | None): Small message for Context, relevant for failures.
         final_status (Status): The computed status of the indicator after all enrichment stages.
             Typically SUCCESS unless any stage failed or an invalid input was detected.
@@ -167,6 +168,7 @@ class IndicatorInstance:
     tim_context: list[ContextResult] | None = None
     hr_message: str | None = None
     context_message: str | None = None
+    error_message: str | None = None
     final_status: Status = Status.SUCCESS
 
     def compute_status(self) -> None:
@@ -176,7 +178,7 @@ class IndicatorInstance:
         """
         valid = bool(self.extracted_value)
         found = bool(self.tim_context)
-        
+
         # Case 1 – Invalid indicator (highest priority)
         if not valid:
             self.final_status = Status.FAILURE
@@ -190,22 +192,17 @@ class IndicatorInstance:
 
         # --- Failure Scenarios ---
         self.final_status = Status.FAILURE
-        # Case 3 – valid, not created, not enriched, not found -> Probably creation Failed
-        if not self.created and not self.enriched and not found:
-            self.context_message = "Failed To Create Indicator using CreateNewIndicatorsOnly."
+        messages: list[str] = []
+        if not self.created:
+            messages.append("Failed To Create Indicator using CreateNewIndicatorsOnly.")
 
-        # Case 4 – valid, not created, not enriched, found
-        # if found -> exists so enrich failed (this it the interesting failure)
-        elif not self.created and not self.enriched and found:
-            self.context_message = "Failed to Enrich using enrichIndicator."
+        if not self.enriched:
+            messages.append("Failed to Enrich using enrichIndicator.")
 
-        # Case 5 – valid, created, not enriched, does not matter if found or not, enrichment failed
-        elif self.created and not self.enriched:
-            self.context_message = "Failed to Enrich using enrichIndicator."
+        if not found:
+            messages.append("Failed to extract from TIM using findIndicator.")
 
-        # Case 6 – valid, enriched (created or already exists), not found -> Extraction Failed
-        elif self.enriched and not found:
-            self.context_message = "Enrichment succeeded but extracting from TIM failed."
+        self.context_message = " | ".join(messages) if messages else None
 
 
 class CommandType(Enum):
@@ -325,7 +322,8 @@ class BatchExecutor:
                 brand = result.get("Metadata", {}).get("brand") or command.brand or "Unknown"
                 if is_error(result):
                     demisto.debug(f"Result #{i+1} is error")
-                    error_message = get_error(result)
+                    error_message = f"Error in {command.name}. " + get_error(result)
+                    demisto.debug(f"Command {command.name} with args: {command.args} failed with error {error_message}")
                     if verbose:
                         hr_output = (
                             f"#### Error for name={command.name} args={command.args} current brand={brand}\n{error_message}"
@@ -851,7 +849,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
                 inst.enriched = is_enriched
 
                 if errors:
-                    inst.hr_message = " | ".join(errors) if errors else None
+                    inst.error_message = " | ".join(errors) if errors else None
 
             # trigger the logic internally
             inst.compute_status()
@@ -1280,13 +1278,21 @@ class ReputationAggregatedCommand(AggregatedCommand):
         """
         entry_results: list[EntryResult] = []
         for indicator_instance in self.indicator_instances:
+            # If enrichment pipeline failed (status == failure) we will add the error message if exists.
+            # If status == failure and no error message will add the context message generated under compute_status function
+            # If status == success hr message will be the one generated under process _tim_result (Found indicator from brands:..)
+            message = (
+                indicator_instance.error_message or indicator_instance.context_message
+                if indicator_instance.final_status == Status.FAILURE
+                else indicator_instance.hr_message
+            )
             entry_results.append(
                 EntryResult(
                     command_name="",
                     brand="TIM",
                     status=indicator_instance.final_status,
                     args=indicator_instance.extracted_value or indicator_instance.raw_input,
-                    message=indicator_instance.hr_message or indicator_instance.context_message or "",
+                    message=message or "",
                 )
             )
         self.entry_results[:0] = entry_results

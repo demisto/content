@@ -709,8 +709,8 @@ def test_create_indicator_success_happy_path():
         # --- Case 5: Extraction Failed ---
         # Logic: enriched and not found
         # (Means enrichment command said 'Success', but TIM search returned nothing)
-        (True, True, True, False, "extracting from TIM failed"),
-        (True, False, True, False, "extracting from TIM failed"),
+        (True, True, True, False, "Failed to extract"),
+        (True, False, True, False, "Failed to extract"),
     ],
 )
 def test_create_indicator_failure_scenarios(valid, created, enriched, found, expected_msg_part):
@@ -1691,8 +1691,8 @@ def test_update_indicator_instances_status_logic(module_factory):
     # 3. Assertions
     assert instance.created is True
     assert instance.enriched is False
-    assert instance.hr_message
-    assert "Quota exceeded" in instance.hr_message
+    assert instance.error_message
+    assert "Quota exceeded" in instance.error_message
     assert instance.final_status == Status.FAILURE
 
 
@@ -1707,9 +1707,7 @@ def test_create_indicators_entry_results(module_factory):
         - New EntryResult objects (Brand='TIM') are PREPENDED to the list.
     """
     # 1. Setup
-    instance = IndicatorInstance(
-        raw_input="1.1.1.1", extracted_value="1.1.1.1", final_status=Status.SUCCESS, context_message="Found"
-    )
+    instance = IndicatorInstance(raw_input="1.1.1.1", extracted_value="1.1.1.1", final_status=Status.SUCCESS, hr_message="Found")
     mod = module_factory(indicator_instances=[instance])
 
     # Existing entry (e.g., from an enrichment command)
