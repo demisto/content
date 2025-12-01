@@ -1,5 +1,5 @@
 {
-    "name": "Armis",
+    "name": "Armis (BETA)",
     "description": "Agentless and passive security platform that sees, identifies, and classifies every device, tracks behavior, identifies threats, and takes action automatically to protect critical information and systems",
     "support": "partner",
     "currentVersion": "1.2.4",
@@ -19,7 +19,7 @@
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "ArmisEventCollector",
+    "defaultDataSource": "ArmisEventCollector_beta",
     "supportedModules": [
         "X1",
         "X3",
