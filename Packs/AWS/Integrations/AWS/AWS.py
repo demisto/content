@@ -202,7 +202,13 @@ def parse_triple_filter(filter_string: str | None):
             f' if larger than {MAX_FILTER_VALUES},'
             f' parsing only first {MAX_FILTER_VALUES} values.'
         )
-        filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")[0:MAX_FILTER_VALUES], "Type": match_filter.group(3)})
+        filters.append(
+            {
+                "Name": match_filter.group(1),
+                "Values": match_filter.group(2).split(",")[0:MAX_FILTER_VALUES],
+                "Type": match_filter.group(3),
+            }
+        )
 
     return filters
 
@@ -412,6 +418,7 @@ class AWSServices(str, Enum):
     ELB = "elb"
     CostExplorer = "ce"
     BUDGETS = "budgets"
+    SSM = "ssm"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -964,10 +971,8 @@ class S3:
         """
         bucket_name = args.get("bucket_name")
         kwargs = {
-            'Bucket': bucket_name,
-            'CreateBucketConfiguration': {
-                "LocationConstraint": args.get("location_constraint")
-            },
+            "Bucket": bucket_name,
+            "CreateBucketConfiguration": {"LocationConstraint": args.get("location_constraint")},
             "GrantFullControl": args.get("grant_full_control"),
             "GrantRead": args.get("grant_read"),
             "GrantReadACP": args.get("grant_read_acp"),
@@ -4010,16 +4015,20 @@ class SSM:
         data = {
             "TypeName": response.get("TypeName"),
             "InstanceId": response.get("InstanceId"),
-            "Entries": response.get("Entries")
+            "Entries": response.get("Entries"),
         }
         headers = ["InstanceId", "TypeName", "Entries"]
-        readable_output = tableToMarkdown(f"The inventory item {instance_id} and it's entries", data, headers, headerTransform=pascalToSpace, removeNull=True)
+        readable_output = tableToMarkdown(
+            f"The inventory item {instance_id} and it's entries", data, headers, headerTransform=pascalToSpace, removeNull=True
+        )
         response["EntriesNextPageToken"] = response.pop("NextToken")
-        return CommandResults(outputs_prefix="AWS.SSM.Inventory",
-                              outputs_key_field="InstanceId",
-                              outputs=response,
-                              readable_output=readable_output,
-                              raw_response=response)
+        return CommandResults(
+            outputs_prefix="AWS.SSM.Inventory",
+            outputs_key_field="InstanceId",
+            outputs=response,
+            readable_output=readable_output,
+            raw_response=response,
+        )
 
 
 def get_file_path(file_id):

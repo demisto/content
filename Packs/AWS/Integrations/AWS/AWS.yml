@@ -7013,7 +7013,7 @@ script:
           - sa-east-1
       - name: limit
         description: Maximum number of buckets to be returned in response.
-        defaultvalue: 50
+        defaultValue: 50
         required: false
       - name: next_page_token
         description: The token for the next set of items to return. Use value from AWS.S3.BucketsNextPageToken.
@@ -7097,7 +7097,7 @@ script:
         required: true
       - name: limit
         description: Maximum number of buckets to be returned in response.
-        defaultvalue: 50
+        defaultValue: 50
         required: false
       - description: "One or more filters separated by ';' (for example, name=<name>,values=<values>,type=<type>;name=<name>,values=<values>,type=<type>). Use a filter to return a more specific list of results. The value of type can be from the following closed list: Equal, NotEqual, BeginWith, LessThan, GreaterThan, Exists."
         name: filters
