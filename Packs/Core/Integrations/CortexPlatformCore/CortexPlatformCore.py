@@ -416,7 +416,7 @@ def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     return data
 
 
-def determine_assignee_filter_field(assignee: str) -> str:
+def determine_assignee_filter_field(assignee_list: list) -> str:
     """
     Determine whether the assignee should be filtered by email or pretty name.
 
@@ -426,9 +426,12 @@ def determine_assignee_filter_field(assignee: str) -> str:
     Returns:
         str: The appropriate field to filter on based on the input.
     """
-    if not assignee:
+    if not assignee_list:
         return CASE_FIELDS["assignee"]
-    elif "@" in assignee:
+    
+    assignee = assignee_list[0]
+    
+    if "@" in assignee:
         # If the assignee contains '@', use the email field
         return CASE_FIELDS["assignee_email"]
     else:
@@ -1018,14 +1021,14 @@ def get_case_extra_data(client, args):
     return extra_data
 
 
-def add_cases_extra_data(client, case_data):
+def add_cases_extra_data(client, cases_list):
     # for each case id in the entry context, get the case extra data
-    for case in case_data:
+    for case in cases_list:
         case_id = case.get("case_id")
         extra_data = get_case_extra_data(client, {"case_id": case_id, "limit": 1000})
         case.update({"CaseExtraData": extra_data})
 
-    return case_data
+    return cases_list 
 
 
 def map_case_format(case_list):
@@ -1150,7 +1153,7 @@ def get_cases_command(client, args):
     filter_builder.add_field(CASE_FIELDS["hosts"], FilterType.CASE_HOST_EQ, argToList(args.get("hosts")))
     filter_builder.add_field(CASE_FIELDS["tags"], FilterType.ARRAY_CONTAINS, tag_values)
     filter_builder.add_field_with_mappings(
-        determine_assignee_filter_field(args.get("assignee")),
+        determine_assignee_filter_field(argToList(args.get("assignee"))),
         FilterType.CONTAINS,
         argToList(args.get("assignee")),
         {

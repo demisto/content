@@ -1946,9 +1946,16 @@ script:
         - defaultValue: '100'
           description: Maximum number of cases to return per page. The default and maximum value is 100.
           name: limit
-        - description: A comma-separated list of domains to filter cases by.
+        - auto: PREDEFINED
+          description: A comma-separated list of domains to filter cases by.
           isArray: true
           name: case_domain
+          predefined:
+            - 'DOMAIN_SECURITY'
+            - 'DOMAIN_POSTURE'
+            - 'DOMAIN_IT'
+            - 'DOMAIN_HEALTH'
+            - 'DOMAIN_HUNTING'
         - auto: PREDEFINED
           description: |
             A comma-separated list of case statuses to filter cases by.
@@ -1978,8 +1985,9 @@ script:
           isArray: true
           name: hosts
         - description: |-
-            A comma-separated list of assignee names or emails to filter cases by. Use the special values: "assigned" - to get all cases with assignees, "unassigned" - to get cases with no assignees.
+            A comma-separated list of assignee names or emails to filter cases by. Note: all values must be either names or emails - mixing both in the same request is not supported. Use the special values: "assigned" - to get all cases with assignees, "unassigned" - to get cases with no assignees.
           name: assignee
+          isArray: true
         - auto: PREDEFINED
           description: Filter cases by whether they are starred or not.
           name: starred
