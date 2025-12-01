@@ -40,7 +40,7 @@ This integration allows XSOAR to:
 
 ---
 
-# Commands
+## Commands
 
 ## 📌 1. cyble-vision-ioc-lookup
 
