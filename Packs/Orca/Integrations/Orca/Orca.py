@@ -14,6 +14,7 @@ ORCA_API_TIMEOUT = 30  # Increase timeout for ORCA API
 ORCA_API_LIMIT = 500  # limit number of returned records from ORCA API
 STEP_INIT = "init"
 STEP_FETCH = "fetch"
+API_QUERY_ALERTS_URL = "/automations/query/alerts"
 
 
 class OrcaClient:
@@ -27,7 +28,9 @@ class OrcaClient:
         try:
             response = self.client._http_request(
                 method="POST",
-                url_suffix="/rules/query/alerts", data={},
+                url_suffix=API_QUERY_ALERTS_URL, data={
+                    "limit": 1
+                },
                 timeout=ORCA_API_TIMEOUT
             )
 
@@ -55,22 +58,50 @@ class OrcaClient:
         List[Dict[str, Any]], str]:  # pylint: disable=E1136 # noqa: E125
         demisto.info("get_alerts_by_filter, enter")
 
-        url_suffix = "/alerts"
-
         if alert_type and asset_unique_id or (not alert_type and not asset_unique_id):
             demisto.info("must supply exactly one filter")
             return "must supply exactly one filter"
 
-        params = {}
-        if alert_type:
-            params = {"type": alert_type}
-        elif asset_unique_id:
-            params = {"asset_unique_id": asset_unique_id}
+        params: Dict[str, Any] = {}
+        filter_values = []
 
+        if alert_type:
+            filter_values.append({
+                "key": "AlertType",
+                "values": [
+                    alert_type
+                ],
+                "type": "str",
+                "operator": "in"
+            })
+
+        if asset_unique_id:
+            filter_values.append({
+                "key": "GroupUniqueId",
+                "values": [
+                    asset_unique_id
+                ],
+                "type": "str",
+                "operator": "in"
+            })
+
+        sonar_query = {
+            "models": [
+                "Alert"
+            ],
+            "type": "object_set",
+            "with": {
+                "operator": "and",
+                "type": "operation",
+                "values": filter_values
+            }
+        }
+
+        params["sonar_query"] = sonar_query
         params["limit"] = str(limit)
 
         try:
-            response = self.client._http_request(method="GET", url_suffix=url_suffix, params=params,
+            response = self.client._http_request(method="POST", url_suffix=API_QUERY_ALERTS_URL, data=params,
                                                  timeout=ORCA_API_TIMEOUT)
             if response.get("status") != 'success':
                 demisto.info("bad response from Orca API")
@@ -85,8 +116,8 @@ class OrcaClient:
             self,
             time_from: Optional[str],
             page: Optional[int] = 1,
-            limit: int = 1000
-    ) -> Tuple[List[Dict[str, Any]], Optional[str]]:
+            limit: int = ORCA_API_LIMIT
+    ) -> Tuple[List[Dict[str, Any]], bool]:
         """
         Fetch alerts
         :param time_from: datetime
@@ -96,50 +127,58 @@ class OrcaClient:
         """
         demisto.info(f"Get alerts start, {time_from=} {page=} {limit=}")
         alerts: List[Dict[str, Any]] = []
+        
+        if page is None or page < 1:
+            demisto.info(f"Invalid page number: {page}, defaulting to 1")
+            page = 1
+        
+        if limit < 1:
+            # Use default limit if limit is less than 1
+            limit = ORCA_API_LIMIT
+            
         params: Dict[str, Any] = {
             "limit": limit,
             "page": page,
             "from_date": time_from,
         }
 
-        if time_from:
-            params["from_date"] = time_from
-
         is_last_page = False
         try:
-            response = self.client._http_request(method="POST", url_suffix="/automations/query/alerts", data=params,
-                                                 timeout=ORCA_API_TIMEOUT)
+            response = self.client._http_request(
+                method="POST",
+                url_suffix=API_QUERY_ALERTS_URL,
+                data=params,
+                timeout=ORCA_API_TIMEOUT,
+            )
             if response.get("status") != 'success':
                 demisto.info(f"got bad response, {response.get('error')}")
+                return [], True
             else:
                 alerts = response.get("data")
+                if not isinstance(alerts, list):
+                    demisto.info(f"Unexpected data type for alerts: {type(alerts)}")
+                    return [], True
 
             total_items = response.get("total_items", 0)
             demisto.info(f"Total items to fetch: {total_items}")
-            total_pages = total_items // limit
-            is_last_page = page >= total_pages
+            
+            if total_items == 0:
+                is_last_page = True
+                return alerts, is_last_page
+            
+            if limit > 0:
+                total_pages = (total_items + limit - 1) // limit
+                is_last_page = page >= total_pages
 
         except requests.exceptions.ReadTimeout as e:
             demisto.info(f"Alerts Request ReadTimeout error: {str(e)}")
+            return [], True
         except DemistoException as e:
             demisto.info(f"Alerts Request Error: {str(e)}")
+            return [], True
 
         demisto.info(f"done fetching orca alerts, fetched {len(alerts)} alerts.")
         return alerts, is_last_page
-
-    def get_asset(self, asset_unique_id: str) -> Union[Dict[str, Any], str]:  # pylint: disable=E1136
-        demisto.debug("get_asset, enter")
-        try:
-            response = self.client._http_request(method="GET", url_suffix=f"/assets/{asset_unique_id}",
-                                                 timeout=ORCA_API_TIMEOUT)
-        except DemistoException:
-            demisto.debug(f"could not find {asset_unique_id}")
-            return {}
-        except requests.exceptions.ReadTimeout as e:
-            demisto.info(f"Assets Request ReadTimeout error: {str(e)}")
-            return {}
-
-        return "Asset Not Found" if 'error' in response or not response else response
 
     def set_alert_score(self, alert_id: str, orca_score: float) -> Dict[str, Any]:
         demisto.debug("Set alert score.")
@@ -229,13 +268,21 @@ def map_orca_score_to_demisto_score(orca_score: str) -> Union[int, float]:  # py
 def get_incident_from_alert(alert: Dict[str, Any]) -> Dict[str, Any]:
     if alert is None:
         return {}
+    if last_seen := alert.get('LastSeen'):
+        last_seen_time = dateutil.parser.parse(last_seen).isoformat()
+    else:
+        last_seen_time = datetime.now().isoformat()
+    
+    risk_level = alert.get('RiskLevel')
+    if not risk_level or not isinstance(risk_level, str):
+        demisto.info(f"Alert {alert.get('AlertId', 'unknown')} has invalid RiskLevel: {risk_level}")
+        risk_level = None  # Will map to 0 (unknown)
 
-    last_seen_time = dateutil.parser.parse(alert.get('LastSeen')).isoformat()
     return {
-        'name': alert.get('AlertId'),
+        'name': alert.get('AlertId', ""),
         'occurred': last_seen_time,
         'rawJSON': json.dumps(alert),
-        'severity': map_orca_score_to_demisto_score(orca_score=alert.get('RiskLevel'))
+        'severity': map_orca_score_to_demisto_score(orca_score=risk_level) if risk_level else 0
     }
 
 
@@ -251,58 +298,6 @@ def get_incidents_from_alerts(alerts: List[Dict[str, Any]]) -> List[Dict[str, An
     return incidents
 
 
-def fetch_incidents_es(
-        orca_client: OrcaClient,
-        last_run: Dict[str, Any],
-        max_fetch: int,
-        first_fetch_time: Optional[str],  # pylint: disable=E1136
-        fetch_informational: bool = False,
-        pull_existing_alerts: bool = False
-) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
-    demisto.info(f"fetch-incidents called {max_fetch=}")
-
-    last_run_time = last_run.get("lastRun")
-    next_page_token = last_run.get("next_page_token")
-    step = last_run.get("step", STEP_INIT)
-    time_from = first_fetch_time
-    next_run = {
-        "step": step
-    }
-
-    if step == STEP_INIT:
-        if not pull_existing_alerts:
-            demisto.info("pull_existing_alerts flag is not set, not pulling alerts")
-            next_run["step"] = STEP_FETCH
-
-        # Initial export flow
-        # Fetch and import alerts per page.
-        demisto.info("first run. export of existing alerts")
-        time_from = first_fetch_time
-    elif step == STEP_FETCH:
-        demisto.info("not first run, exporting reminder of alerts")
-        time_from = last_run_time
-
-    alerts, next_page_token = orca_client.get_alerts(
-        fetch_informational=fetch_informational,
-        time_from=time_from,
-        next_page_token=next_page_token,
-        limit=max_fetch
-    )
-
-    if step == STEP_INIT and not next_page_token:
-        # Go to the next step. All alerts are imported then just get a new alerts
-        next_run["step"] = STEP_FETCH
-
-    incidents = get_incidents_from_alerts(alerts)
-    incidents = [incident for incident in incidents
-                 if incident.get("severity") > DEMISTO_INFORMATIONAL]  # type: ignore
-
-    next_run["lastRun"] = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
-    if next_page_token:
-        next_run['next_page_token'] = next_page_token
-    return next_run, incidents
-
-
 def fetch_incidents(
         orca_client: OrcaClient,
         last_run: Dict[str, Any],
@@ -314,6 +309,9 @@ def fetch_incidents(
 
     # Init parameters
     fetch_page = int(last_run.get("fetch_page", 1))
+    if not fetch_page:
+        fetch_page = 1
+    
     last_run_time = last_run.get("lastRun")
     step = last_run.get("step", STEP_INIT)
     next_run = {
@@ -531,11 +529,6 @@ def main() -> None:
                 command_result = CommandResults(outputs_prefix="Orca.Manager.Alerts", outputs=alerts,
                                                 raw_response=alerts)
 
-            return_results(command_result)
-
-        elif command == "orca-get-asset":
-            asset = orca_client.get_asset(asset_unique_id=demisto.args()['asset_unique_id'])
-            command_result = CommandResults(outputs_prefix="Orca.Manager.Asset", outputs=[asset], raw_response=asset)
             return_results(command_result)
 
         elif command == "fetch-incidents":

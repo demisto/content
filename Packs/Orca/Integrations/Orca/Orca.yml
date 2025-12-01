@@ -88,21 +88,6 @@ script:
     - contextPath: Orca.Manager.Alerts
       description: All alerts
       type: String
-  - arguments:
-    - default: false
-      description: Asset unique id
-      isArray: false
-      name: asset_unique_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Get Description of An asset
-    execution: false
-    name: orca-get-asset
-    outputs:
-    - contextPath: Orca.Manager.Asset
-      description: Asset description
-      type: String
   - name: orca-set-alert-severity
     description: Change severity for the alert
     arguments:
@@ -204,7 +189,7 @@ script:
       description: Basic information of the file
       type: string
     description: Downloads a capture file from CS Enterprise.
-  dockerimage: demisto/python3:3.10.11.57293
+  dockerimage: demisto/python3:3.12.8.3296088
   feed: false
   isfetch: true
   longRunning: false
