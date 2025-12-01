@@ -3,7 +3,7 @@
     "definitionId": "",
     "description": "Maps incoming ServiceNow incidents fields.",
     "feed": false,
-    "fromversion": "6.0.0",
+    "fromVersion": "6.0.0",
     "id": "ServiceNow-incoming-mapper",
     "mapping": {
         "ServiceNow SIR Incident": {
