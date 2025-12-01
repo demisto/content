@@ -1215,8 +1215,7 @@ def test_get_item_as_eml(mocker):
     ]
     expected_data = (
         "MIME-Version: 1.0\r\n"
-        "Message-ID: \r\n"
-        " <message-test-idRANDOMVALUES@testing.com>\r\n"
+        "Message-ID: <message-test-idRANDOMVALUES@testing.com>\r\n"
         'Content-Type: text/plain; charset="iso-8859-2"\r\n'
         "Content-Transfer-Encoding: quoted-printable\r\n"
         "X-FAKE-Header: HVALue\r\n"
