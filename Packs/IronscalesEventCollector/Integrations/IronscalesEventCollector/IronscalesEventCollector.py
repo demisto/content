@@ -123,7 +123,18 @@ class Client(BaseClient):  # pragma: no cover
         incidents_ids_sorted_by_time = [incident.get("incidentID") for incident in incidents_sorted_by_time]
         return incidents_ids_sorted_by_time
 
-    def get_mailbox_mitigation_details(self, incident_ids: list, page_number: int):
+    def get_mailbox_mitigation_details(self, incident_ids: list, page_number: int) -> dict:
+        """
+        Gets a single page of mailbox mitigations (including the affected mailboxes) for specific incidents.
+
+        Args:
+            incident_ids (list): List of incident IDs.
+            page_number (int): Page number starting from 1.
+
+        Returns:
+            dict: The raw API response containing the "mitigations" array and pagination details.
+        """
+        # https://appapi.ironscales.com/appapi/docs/#tag/Mitigation/operation/Get%20details%20of%20mitigations%20per%20mailbox
         return self._http_request(
             method="POST",
             url_suffix=f"/mitigation/{self.company_id}/details/",
