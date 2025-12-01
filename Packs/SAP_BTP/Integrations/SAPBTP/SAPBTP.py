@@ -432,7 +432,7 @@ class Client(BaseClient):
 # =================================
 
 
-def test_module_command(client: Client) -> str:
+def test_module(client: Client) -> str:
     """Test API connectivity and authentication."""
     demisto.debug("Starting execution of command: Test Module")
     try:
@@ -576,7 +576,7 @@ def fetch_events_command(client: Client, args: dict[str, Any]) -> None:
 # =================================
 
 COMMAND_MAP: dict[str, Any] = {
-    "test-module": test_module_command,
+    "test-module": test_module,
     "sap-btp-get-events": get_events_command,
     "fetch-events": fetch_events_command,
 }

@@ -19,7 +19,7 @@ from SAPBTP import (  # noqa: E402
     get_events_command,
     parse_date_or_use_current,
     parse_integration_params,
-    test_module_command,
+    test_module,
 )
 
 # ========================================
@@ -532,7 +532,7 @@ def test_test_module_success(mocker, client_non_mtls):
     """Tests test_module returns 'ok' on success."""
     mocker.patch.object(client_non_mtls, "get_audit_log_events", return_value=([{"uuid": "test"}], None))
 
-    result = test_module_command(client_non_mtls)
+    result = test_module(client_non_mtls)
 
     assert result == "ok"
 
@@ -545,7 +545,7 @@ def test_test_module_auth_error_401(mocker, client_non_mtls):
         side_effect=DemistoException("Error [401] - Unauthorized"),
     )
 
-    result = test_module_command(client_non_mtls)
+    result = test_module(client_non_mtls)
 
     assert result == "Authorization Error: Verify Client ID, Secret, or Certificates."
 
@@ -558,7 +558,7 @@ def test_test_module_auth_error_403(mocker, client_non_mtls):
         side_effect=DemistoException("Error [403] - Forbidden"),
     )
 
-    result = test_module_command(client_non_mtls)
+    result = test_module(client_non_mtls)
 
     assert result == "Authorization Error: Verify Client ID, Secret, or Certificates."
 
@@ -572,7 +572,7 @@ def test_test_module_other_error_raises(mocker, client_non_mtls):
     )
 
     with pytest.raises(DemistoException, match="Internal Server Error"):
-        test_module_command(client_non_mtls)
+        test_module(client_non_mtls)
 
 
 # ========================================
