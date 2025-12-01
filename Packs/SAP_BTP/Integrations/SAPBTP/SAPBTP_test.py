@@ -6,7 +6,6 @@ from datetime import datetime
 import pytest
 from CommonServerPython import *
 
-# Import SAPBTP after CommonServerPython
 import SAPBTP  # noqa: E402
 from SAPBTP import (  # noqa: E402
     AuthType,

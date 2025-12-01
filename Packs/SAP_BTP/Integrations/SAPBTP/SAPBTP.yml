@@ -34,7 +34,7 @@ configuration:
   type: 12
   section: Connect
   additionalinfo: For mTLS authentication (recommended). Body of certificate.pem file in PEM format.
-- name: key
+- name: private_key
   display: Private Key
   required: false
   type: 14

@@ -1,7 +1,7 @@
 import tempfile
 import time
 import traceback
-from enum import StrEnum
+from enum import Enum
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
@@ -41,14 +41,14 @@ class IntegrationConfig:
     DEFAULT_TOKEN_TTL_SECONDS = DEFAULT_TOKEN_TTL_HOURS * 60 * 60
 
 
-class AuthType(StrEnum):
+class AuthType(str, Enum):
     """Authentication methods."""
 
     MTLS = "mTLS"
     NON_MTLS = "Non-mTLS"
 
 
-class ContextKeys(StrEnum):
+class ContextKeys(str, Enum):
     """Keys used for Integration Context (Caching) and API Response."""
 
     ACCESS_TOKEN = "access_token"
@@ -56,7 +56,7 @@ class ContextKeys(StrEnum):
     VALID_UNTIL = "valid_until"
 
 
-class APIKeys(StrEnum):
+class APIKeys(str, Enum):
     """API Parameter Keys and Header Names."""
 
     HEADER_PAGING = "Paging"
@@ -68,14 +68,14 @@ class APIKeys(StrEnum):
     CLIENT_ID = "client_id"
 
 
-class ApiValues(StrEnum):
+class ApiValues(str, Enum):
     """API Endpoint paths and fixed Parameter Values."""
 
     AUDIT_ENDPOINT = "/auditlog/v2/auditlogrecords"
     GRANT_TYPE_CLIENT_CREDENTIALS = "client_credentials"
 
 
-class DefaultValues(StrEnum):
+class DefaultValues(str, Enum):
     """Default values for command arguments."""
 
     FROM_TIME = "now"  # Default time range for get-events command
@@ -149,11 +149,11 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     client_id = params.get("client_id", "").strip()
     client_secret = params.get("client_secret", "").strip()
     certificate = params.get("certificate", "").strip()
-    key = params.get("key", "").strip()
+    private_key = params.get("private_key", "").strip()
 
     demisto.debug(
         f"Parsed config: {base_url=}, {auth_type=}, has_client_id={bool(client_id)}, "
-        f"has_client_secret={bool(client_secret)}, has_certificate={bool(certificate)}, has_key={bool(key)}"
+        f"has_client_secret={bool(client_secret)}, has_certificate={bool(certificate)}, has_private_key={bool(private_key)}"
     )
 
     if not base_url:
@@ -169,7 +169,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         missing_fields = []
         if not certificate:
             missing_fields.append("Certificate")
-        if not key:
+        if not private_key:
             missing_fields.append("Private Key")
 
         if missing_fields:
@@ -199,7 +199,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "client_id": client_id,
         "client_secret": client_secret,
         "certificate": certificate,
-        "key": key,
+        "private_key": private_key,
     }
 
 
@@ -600,7 +600,7 @@ def main() -> None:
 
         cert_data = None
         if config["auth_type"] == AuthType.MTLS:
-            cert_data = create_mtls_cert_files(config["certificate"], config["key"])
+            cert_data = create_mtls_cert_files(config["certificate"], config["private_key"])
 
         demisto.debug(f"Initializing {INTEGRATION_NAME} Client")
         client = Client(
