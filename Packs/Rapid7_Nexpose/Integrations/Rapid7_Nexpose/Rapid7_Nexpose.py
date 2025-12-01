@@ -501,57 +501,6 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def create_report_config_from_template(self, report_name: str) -> dict:
-        """
-        | Create a new report configuration.
-        |
-        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createReport
-
-        Args:
-            scope (dict[str, Any]): Scope of the report, see Nexpose's documentation for more details.
-            template_id (str): ID of report template to use.
-            report_name (str): Name for the report that will be generated.
-            report_format (str): Format of the report that will be generated.
-
-        Returns:
-            dict: API response with information about the newly created report configuration.
-        """
-
-        # bring all assets:
-
-        payload = {
-            "format": "sql-query",
-            "name": report_name,
-            "query": BASE_QUERY_FOR_ASSETS,
-            "version": "2.3.0",
-        }
-
-        return self._http_request(
-            url_suffix="/reports",
-            method="POST",
-            json_data=payload,
-            resp_type="json",
-        )
-
-    def generate_report(self, report_id: str) -> dict:
-        return self._http_request(
-            url_suffix=f"/reports/{report_id}/generate",
-            method="POST",
-            resp_type="json",
-        )
-
-    def delete_report(self, report_id: str, instance_id: str):
-        return self._http_request(
-            url_suffix=f"/reports/{report_id}/history/{instance_id}",
-            method="DELETE",
-        )
-
-    def delete_report_config(self, report_id: str):
-        return self._http_request(
-            url_suffix=f"/reports/{report_id}",
-            method="DELETE",
-        )
-
     def create_report_config(self, scope: dict[str, Any], template_id: str, report_name: str, report_format: str) -> dict:
         """
         | Create a new report configuration.
@@ -2499,7 +2448,7 @@ class InsightVMClient:
         await self._session.close()
 
     async def http_request(
-        self, method: str, endpoint: str, payload: Optional[Dict[str, Any]] = None, stream: bool = False
+        self, method: str, endpoint: str, payload: Optional[Dict[str, Any]] = None
     ) -> aiohttp.ClientResponse:
         """
         Executes an asynchronous HTTP request with centralized authentication and error handling.
@@ -6764,7 +6713,7 @@ async def create_report_config_from_template(client: InsightVMClient, event_type
         "version": "2.3.0",
     }
 
-    demisto.debug(f"Got the payload for {event_type}")
+    demisto.debug(f"Prepared the payload for {event_type}")
     # Use the client's http_request method for POST
     response = await client.http_request("POST", endpoint, payload=payload)
 
@@ -6775,7 +6724,7 @@ async def create_report_config_from_template(client: InsightVMClient, event_type
         raise Exception("Failed to retrieve report URL from Location header.")
 
     report_id = report_url.split("/")[-1]
-    demisto.debug(f"Report configuration created successfully. Report ID: {report_id}")
+    demisto.debug(f"Report configuration for {event_type} created successfully. Report ID: {report_id}")
     return report_id
 
 
@@ -7550,9 +7499,7 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
             demisto.debug("\n--- Starting Data Streaming Phase ---")
 
             await download_and_parse_report(client, report_id, instance_id, event_integration_context, event_type, batch_size)
-            update_state_checkpoint(
-                event_type, {"last_sent_line": 0, "finish": True, "snapshot_id": "", "total_records_ingested": 0}
-            )
+            update_state_checkpoint(event_type, {"last_sent_line": 0, "finish": True, "snapshot_id": "", "total_records_ingested": 0})
             demisto.debug("--- Data Streaming Phase Complete ---")
 
         except Exception as e:
