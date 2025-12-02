@@ -9,12 +9,18 @@ Imperva WAF Gateway is a key component of Imperva’s market-leading, full stack
  
 Data normalization capabilities:
     * Rules for modeling Imperva SecureSphere CEF logs that are ingested via the Broker VM into Cortex XSIAM.
-    * The ingested Imperva SecureSphere logs can be queried in XQL Search using the *`imperva_inc__securesphere_raw`* dataset.
-     
-**Supported log categories:** Security Logs
-
+    * The ingested Imperva SecureSphere logs can be queried in XQL Search using the *`tal_imperva_inc_securesphere_raw`* dataset.
+  
+ 
+## Supported log categories
+| Category                    | Category Display Name                 |
+|-----------------------------|---------------------------------------|
+| Security Logs               | Security Logs                         |
+ 
+***
+ 
 ## Data Collection
-
+ 
 ### Imperva SecureSphere side
 
 #### Create the Action Interface
@@ -64,7 +70,7 @@ Follow the below steps to configure the Broker VM to receive Imperva SecureSpher
     | `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in Imperva SecureSphere).          |
     | `Port`       | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from Imperva SecureSphere.            |
     | `Format`     | Enter CEF.                                                                                                                                      |
-    | `Vendor`     | Enter imperva_inc_.                                                                                                                             |
-    | `Product`    | Enter securesphere.                                                                                                                             |
+    | `Vendor`     | Enter Imperva.                                                                                                                                  |
+    | `Product`    | Enter SecureSphere.                                                                                                                             |
     
 </~XSIAM>

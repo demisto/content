@@ -1,14 +1,15 @@
-[INGEST:vendor="imperva_inc", product="securesphere", target_dataset="imperva_inc__securesphere_raw", no_hit=keep]
+[INGEST:vendor="imperva_inc_", product="securesphere", target_dataset="imperva_inc__securesphere_raw", no_hit=keep]
 //Filter out placeholders (https://docs-cybersec.thalesgroup.com/bundle/v15.2-waf-user-guide/page/3673.htm)
 alter
-    cefDeviceEventClassId = if(cefDeviceEventClassId = "${Alert.alertType}",null,cefDeviceEventClassId),
-    cs5 = if(cs5 = "${Alert.description}",null,cs5),
-    proto = if(proto="${Event.sourceInfo.ipProtocol}",null,proto),
-    cs2 = if(cs2 = "${Alert.serverGroupName}",null,cs2),
-    cs3 = if(cs3 = "${Alert.serviceName}" or cs3 = "${Alert.description}",null,cs3),
-    duser = if(duser = "${Alert.username}",null,duser),
-    cs4 = if(cs4 = "${Alert.applicationName}",null,cs4),
-    cs1 = if(cs1 = "${Rule.parent.displayName}",null,cs1),
-    cefDeviceVersion = if(cefDeviceVersion = "${SecureSphereVersion}",null,cefDeviceVersion),
-    cefname = if(cefname = "${Alert.alertMetadata.alertName}",null,cefname),
-    cefSeverity = if(cefSeverity = "${Alert.severity}",null,cefSeverity);
+    cefDeviceEventClassId = if(cefDeviceEventClassId ~= "\$\{[^\}]+\}",null,cefDeviceEventClassId),
+    cs5 = if(cs5 ~= "\$\{[^\}]+\}",null,cs5),
+    proto = if(proto ~= "\$\{[^\}]+\}",null,proto),
+    cs2 = if(cs2 ~= "\$\{[^\}]+\}",null,cs2),
+    cs3 = if(cs3 ~= "\$\{[^\}]+\}",null,cs3),
+    duser = if(duser ~= "\$\{[^\}]+\}",null,duser),
+    cs4 = if(cs4 ~= "\$\{[^\}]+\}",null,cs4),
+    cs1 = if(cs1 ~= "\$\{[^\}]+\}",null,cs1),
+    cefDeviceVersion = if(cefDeviceVersion ~= "\$\{[^\}]+\}",null,cefDeviceVersion),
+    cefname = if(cefname ~= "\$\{[^\}]+\}",null,cefname),
+    cefSeverity = if(cefSeverity ~= "\$\{[^\}]+\}",null,cefSeverity),
+    act = if(act ~= "\$\{[^\}]+\}",null,act);
