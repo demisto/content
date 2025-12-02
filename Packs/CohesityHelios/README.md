@@ -17,3 +17,24 @@ Cohesity’s comprehensive, end-to-end solution [Cohesity Ransomware](https://ww
 - Command to restore a specified backed up object from its latest clean snapshot.
 
 - Command to ignore a specified ransomware alert.
+
+<~XSIAM>
+- Rest API integration for your Cohesity Helios
+
+- Audit and Alert logs mapping
+
+## Configure CohesityHelios in Cortex
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Your server URL |  | True |
+| API Key | The API Key to use for connection | True |
+| Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
+| Use system proxy settings | Use system proxy settings. | False |
+| Incident type |  | False |
+| Maximum number of incidents to fetch every time |  | True |
+| First fetch timestamp |  | False |
+| Fetch incidents |  | False |
+| Incidents Fetch Interval |  | False |
+
+</~XSIAM>

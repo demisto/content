@@ -1,0 +1,43 @@
+[MODEL: dataset=cohesity_helios_raw]
+/*Validate and strip the leading 'k' character from the string in selected fields.
+Extract values for the relevant XDM fields.*/
+alter
+    check_user_log_in = if(action = "Login" and entityType = "User", entityName ,null),
+    check_not_user_log_in = if(action != "Login" and entityType != "User", entityName ,null),
+    check_alert_type_bucket = if(alertTypeBucket ~= "^k",replex(alertTypeBucket,"^k",""),alertTypeBucket),
+    check_alert_category = if(alertCategory ~= "^k",replex(alertCategory,"^k",""),alertCategory),
+    check_alert_state = if(alertState ~= "^k",replex(alertState,"^k",""),alertState),
+    check_severity = if(severity ~= "^k",replex(severity,"^k",""),severity),
+    extract_alert_name = alertDocument -> alertName,
+    extract_alert_description = alertDocument -> alertDescription,
+    extract_alert_cause = alertDocument -> alertCause,
+    extract_alert_help_text =  alertDocument -> alertHelpText,
+    extract_array_alert_name = to_string(arraymap(newRecord -> resolvedAlerts[],"@element" -> alertName)),
+    extract_array_alert_id = to_string(arraymap(newRecord -> resolvedAlerts[],"@element" -> alertId)),
+    extract_user_role = arraycreate(arrayindex(regextract(details , "with\srole\s\"([^\"]+)\""),0))
+// Creating a JSON object for the xdm.alert.description field and normalizing the ][ and " characters in the string-array fields to produce a clean output.
+| alter
+    alert_desc = if(alertCode != null and extract_alert_name != null,object_create("Alert Code", alertCode , "Alert Name", extract_alert_name , "Alert Cause", extract_alert_cause, "Cluster Name", clusterName , "Alert Description", extract_alert_description, "Alert Help Text", extract_alert_help_text, "Alert State", check_alert_state),null),
+    extract_array_alert_name = replex(extract_array_alert_name , "[\"\[\]]+", ""),
+    extract_array_alert_id = replex(extract_array_alert_id , "[\"\[\]]+", "")
+/* XDM fields mapping for Audit and Alert logs:
+https://developers.cohesity.com/reference/getheliosalerts
+https://developers.cohesity.com/reference/getheliosauditlogs
+*/
+| alter
+    xdm.event.description = details,
+    xdm.alert.description = alert_desc,
+    xdm.alert.name = coalesce(extract_alert_name,extract_array_alert_name),
+    xdm.source.user.roles = extract_user_role,
+    xdm.source.user.domain = domain,
+    xdm.source.ipv4 = if(is_ipv4(ip) = TRUE ,ip),
+    xdm.source.ipv6 = if(is_ipv6(ip) = TRUE, ip),
+    xdm.source.user.username = coalesce(username,check_user_log_in),
+    xdm.observer.name = sourceType,
+    xdm.target.resource.name = check_not_user_log_in,
+    xdm.target.resource.type = entityType,
+    xdm.alert.original_alert_id = coalesce(id,extract_array_alert_id),
+    xdm.alert.category = check_alert_category,
+    xdm.alert.subcategory = check_alert_type_bucket,
+    xdm.alert.severity = check_severity,
+    xdm.event.operation = if(action = "Create", XDM_CONST.OPERATION_TYPE_CREATE, action = "Login", XDM_CONST.OPERATION_TYPE_AUTH_LOGIN, action = "Modify", XDM_CONST.OPERATION_TYPE_UPDATE, action);
