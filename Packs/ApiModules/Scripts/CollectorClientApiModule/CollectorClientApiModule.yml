@@ -1,0 +1,19 @@
+commonfields:
+  id: CollectorClient
+  version: -1
+name: CollectorClient
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: Async-first collector helper that standardizes auth, retries, pagination, rate limiting, logging, and metrics for collector-style integrations.
+system: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/python3:3.10.14.92207
+fromversion: 6.8.0
+tests:
+- No tests
