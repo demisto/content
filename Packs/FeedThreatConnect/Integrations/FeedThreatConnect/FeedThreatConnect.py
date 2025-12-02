@@ -499,14 +499,14 @@ def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> tu
                         Method.GET, url_suffix="", get_next=True, full_url=indicators_next_link
                     )
                     indicators.extend(response)
-                    demisto.debug(f"Got {len(indicators_response)} indicators from the next link response, with next link: {indicators_next_link}")
+                    demisto.debug(f"Got {len(response)} indicators from the next link response, with next link: {indicators_next_link}")
                 if groups_next_link:
                     demisto.debug("Groups Next Link: " + groups_next_link)
                     response, _, groups_next_link = client.make_request(
                         Method.GET, url_suffix="", get_next=True, full_url=groups_next_link
                     )
                     groups.extend(response)
-                    demisto.debug(f"Got {len(groups_response)} groups from the next link response, with next link: {groups_next_link}")
+                    demisto.debug(f"Got {len(response)} groups from the next link response, with next link: {groups_next_link}")
             elif indicators_url or groups_url:
                 demisto.debug("Indicators URL: " + indicators_url)
                 indicators_response, _, indicators_next_link = client.make_request(Method.GET, indicators_url, get_next=True)
