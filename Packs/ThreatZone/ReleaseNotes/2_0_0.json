@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Context outputs now return under ThreatZone.Submission.* instead of ThreatZone.Analysis.*; update playbooks and automations that depend on the legacy paths."
+}
