@@ -99,7 +99,7 @@ name: GenericMCP
 script:
   commands:
   - arguments: []
-    description: Retrieves a list of available tools in the GitHub MCP server.
+    description: Retrieves a list of available tools in the MCP server.
     name: list-tools
     outputs:
     - contextPath: ListTools.Tools.annotations
