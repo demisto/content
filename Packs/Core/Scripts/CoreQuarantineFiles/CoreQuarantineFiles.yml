@@ -22,6 +22,18 @@ args:
   name: file_hash
   required: true
 outputs:
+- contextPath: Core.GetActionStatus.action_id
+  description: The quarantine action ID.
+  type: String
+- contextPath: Core.GetActionStatus.endpoint_id
+  description: The endpoint ID on which the quarantine action was taken.
+  type: String
+- contextPath: Core.GetActionStatus.status
+  description: The status of the action.
+  type: String
+- contextPath: Core.GetActionStatus.ErrorReasons
+  type: unknown
+  description: The error reasons (if occurred).
 - contextPath: Core.GetActionStatus.ErrorReasons.bucket
   description: The bucket in which the error occurred.
   type: String
@@ -51,7 +63,7 @@ outputs:
   type: Unknown
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.11.4508456
+dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.1.0
 isInternal: true
 tests:
