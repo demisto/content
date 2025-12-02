@@ -112,9 +112,22 @@ class Client(BaseClient):
             requests.Response object
         """
         if indicator_type.lower() == "url":
-            # URL-encode the indicator value to handle special characters safely in the API request
-            # Example: "http://example.com/path?param=value" becomes "http%3A%2F%2Fexample.com%2Fpath%3Fparam%3Dvalue"
-            indicator_value = urllib.parse.quote(indicator_value, safe="")
+            # Double-encode URLs to handle special characters like < and >
+            # Step 1: Parse the URL to separate components
+            parsed = urllib.parse.urlparse(indicator_value)
+            
+            # Step 2: Encode special characters in the query string (keeping '=' safe)
+            # This converts query=<test> to query=%3Ctest%3E
+            encoded_query = urllib.parse.quote(parsed.query, safe='=') if parsed.query else ''
+            
+            # Step 3: Reconstruct the URL with the encoded query
+            temp_url = urllib.parse.urlunparse(parsed._replace(query=encoded_query))
+            
+            # Step 4: Final full URL encoding for the API request
+            # This converts the entire URL including the already-encoded query
+            # Example: https://example.com/search?query=%3Ctest%3E becomes
+            # https%3A%2F%2Fexample.com%2Fsearch%3Fquery%3D%253Ctest%253E
+            indicator_value = urllib.parse.quote(temp_url, safe="")
 
         endpoint = LOOKUP_ENDPOINT.format(indicator_type=indicator_type, indicator_value=indicator_value)
 

@@ -1484,3 +1484,103 @@ def test_unit42_error_handler_with_request_id(mocker):
     demisto.debug.assert_called_once_with(
         f"{INTEGRATION_NAME} API Error - X-Request-ID: test-request-id-123, Status: 500, URL: https://example.com/api"
     )
+
+
+def test_url_command_with_special_characters(client, mocker):
+    """
+    Given:
+        - A Unit42Intelligence client
+        - A URL containing special characters like < and >
+    When:
+        - Running url_command
+    Then:
+        - The URL is properly double-encoded before being sent to the API
+        - The lookup_indicator method is called with the correctly encoded URL
+        - Returns CommandResults with proper verdict
+    """
+    import urllib.parse
+    
+    # URL with < and > characters
+    test_url = "https://sanjose-photography.com/?token=<REDACTED>"
+    
+    mock_response = {
+        "indicator_value": test_url,
+        "indicator_type": "url",
+        "verdict": "malicious",
+        "verdict_categories": [{"value": "phishing"}],
+        "first_seen": "2023-01-01T00:00:00Z",
+        "last_seen": "2023-12-31T23:59:59Z",
+        "sources": ["source1"],
+        "counts": [],
+        "threat_object_associations": [],
+    }
+
+    mock_response_obj = mocker.Mock()
+    mock_response_obj.status_code = 200
+    mock_response_obj.json.return_value = mock_response
+    
+    # Spy on the lookup_indicator method to verify the encoding
+    mock_lookup = mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
+
+    args = {"url": test_url, "create_relationships": True}
+    result = url_command(client, args)
+
+    # Verify the command executed successfully
+    assert result.outputs["Value"] == test_url
+    assert result.outputs["Verdict"] == "Malicious"
+    
+    # Verify lookup_indicator was called with the original URL
+    # The encoding happens inside lookup_indicator
+    mock_lookup.assert_called_once_with("url", test_url)
+    
+    # Verify the result indicator
+    assert result.indicator.url == test_url
+    assert result.indicator.dbot_score.score == Common.DBotScore.BAD
+
+
+def test_client_lookup_indicator_url_encoding(client, mocker):
+    """
+    Given:
+        - A Unit42Intelligence client
+        - A URL containing special characters < and >
+    When:
+        - Calling client.lookup_indicator with indicator_type='url'
+    Then:
+        - The URL is double-encoded correctly:
+          1. Query parameters with < and > are encoded first (< becomes %3C, > becomes %3E)
+          2. The entire URL is then encoded again for the API path
+        - The final encoded URL should have %253C and %253E (double-encoded < and >)
+    """
+    import urllib.parse
+    
+    # URL with < and > in query parameter
+    test_url = "https://example.com/search?query=<test>"
+    
+    # Mock the _http_request to capture what URL is actually sent
+    mock_http_request = mocker.patch.object(client, "_http_request")
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_http_request.return_value = mock_response
+    
+    # Call lookup_indicator
+    client.lookup_indicator("url", test_url)
+    
+    # Verify _http_request was called
+    assert mock_http_request.called
+    
+    # Get the url_suffix that was passed to _http_request
+    call_args = mock_http_request.call_args
+    url_suffix = call_args[1]["url_suffix"]
+    
+    # The URL should be double-encoded:
+    # Step 1: query=<test> becomes query=%3Ctest%3E
+    # Step 2: https://example.com/search?query=%3Ctest%3E becomes
+    #         https%3A%2F%2Fexample.com%2Fsearch%3Fquery%3D%253Ctest%253E
+    
+    # Verify the URL contains double-encoded special characters
+    assert "%253C" in url_suffix  # Double-encoded <
+    assert "%253E" in url_suffix  # Double-encoded >
+    
+    # Verify the full expected encoding
+    expected_encoded_url = urllib.parse.quote("https://example.com/search?query=%3Ctest%3E", safe="")
+    assert expected_encoded_url in url_suffix
