@@ -27,13 +27,11 @@ class ValidationError(Exception):
     """
 
 
-
 class GracefulExit(Exception):
     """
     Raised when the script should stop execution and return a status message.
     This exception should result in a return_results action (success status), not an error.
     """
-
 
 
 class IndicatorType(Enum):
