@@ -54,41 +54,43 @@ ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 
-CASE_STATUS_RESOLVED_REASON = {
-    "known_issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
-    "duplicate": "STATUS_050_RESOLVED_DUPLICATE",
-    "false_positive": "STATUS_060_RESOLVED_FALSE_POSITIVE",
-    "true_positive": "STATUS_090_RESOLVED_TRUE_POSITIVE",
-    "security_testing": "STATUS_100_RESOLVED_SECURITY_TESTING",
-    "other": "STATUS_070_RESOLVED_OTHER",
-}
 
-CASE_FIELDS = {
-    "case_id_list": "CASE_ID",
-    "case_domain": "INCIDENT_DOMAIN",
-    "case_name": "NAME",
-    "case_description": "DESCRIPTION",
-    "status": "STATUS_PROGRESS",
-    "severity": "SEVERITY",
-    "creation_time": "CREATION_TIME",
-    "asset_ids": "UAI_ASSET_IDS",
-    "asset_groups": "UAI_ASSET_GROUP_IDS",
-    "assignee": "ASSIGNED_USER_PRETTY",
-    "assignee_email": "ASSIGNED_USER",
-    "name": "CONTAINS",
-    "description": "DESCRIPTION",
-    "last_updated": "LAST_UPDATE_TIME",
-    "hosts": "HOSTS",
-    "starred": "CASE_STARRED",
-}
+class CaseManagement:
+    STATUS_RESOLVED_REASON = {
+        "known_issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
+        "duplicate": "STATUS_050_RESOLVED_DUPLICATE",
+        "false_positive": "STATUS_060_RESOLVED_FALSE_POSITIVE",
+        "true_positive": "STATUS_090_RESOLVED_TRUE_POSITIVE",
+        "security_testing": "STATUS_100_RESOLVED_SECURITY_TESTING",
+        "other": "STATUS_070_RESOLVED_OTHER",
+    }
 
-CASE_STATUS = {
-    "new": "STATUS_010_NEW",
-    "under_investigation": "STATUS_020_UNDER_INVESTIGATION",
-    "resolved": "STATUS_025_RESOLVED",
-}
+    FIELDS = {
+        "case_id_list": "CASE_ID",
+        "case_domain": "INCIDENT_DOMAIN",
+        "case_name": "NAME",
+        "case_description": "DESCRIPTION",
+        "status": "STATUS_PROGRESS",
+        "severity": "SEVERITY",
+        "creation_time": "CREATION_TIME",
+        "asset_ids": "UAI_ASSET_IDS",
+        "asset_groups": "UAI_ASSET_GROUP_IDS",
+        "assignee": "ASSIGNED_USER_PRETTY",
+        "assignee_email": "ASSIGNED_USER",
+        "name": "CONTAINS",
+        "description": "DESCRIPTION",
+        "last_updated": "LAST_UPDATE_TIME",
+        "hosts": "HOSTS",
+        "starred": "CASE_STARRED",
+    }
 
-CASE_SEVERITY = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
+    STATUS = {
+        "new": "STATUS_010_NEW",
+        "under_investigation": "STATUS_020_UNDER_INVESTIGATION",
+        "resolved": "STATUS_025_RESOLVED",
+    }
+
+    SEVERITY = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
 
 
 class AppsecIssues:
@@ -416,6 +418,34 @@ def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     return data
 
 
+def process_case_response(resp):
+    """
+    Process case response by removing unnecessary fields.
+
+    Args:
+        resp (dict): Response dictionary to be processed
+
+    Returns:
+        dict: Cleaned response dictionary
+    """
+    fields_to_remove = ["layoutId", "layoutRuleName", "sourcesList"]
+
+    reply = resp.get("reply", {})
+
+    for field in fields_to_remove:
+        reply.pop(field, None)
+
+    # Remove nested score values
+    if "score" in reply and isinstance(reply["score"], dict):
+        reply["score"].pop("previous_score_source", None)
+        reply["score"].pop("previous_score", None)
+
+    if "incidentDomain" in reply:
+        reply["caseDomain"] = reply.pop("incidentDomain")
+
+    return reply
+
+
 def issue_to_alert(args: dict | str) -> dict | str:
     return replace_substring(args, "issue", "alert")
 
@@ -626,54 +656,49 @@ class Client(CoreClient):
             url_suffix="/public_api/appsec/v1/policies",
         )
 
-    def update_case(self, request_data, case_ids):
+    def update_case(self, case_update_payload, case_id):
         """
-        Update multiple cases with the provided data.
+        Update a case with the provided data.
 
         Args:
-            request_data (dict): The data to update in the cases.
-            case_ids (list): List of case IDs to update.
+            case_update_payload (dict): The data to update in the case.
+            case_id (str): Case ID to update.
 
         Returns:
-            list: List of responses from the API for each case update.
+            dict: Response from the API for the case update.
         """
-        results = []
+        request_data = {"request_data": {"newIncidentInterface": True, "case_id": case_id, **case_update_payload}}
+        return self._http_request(
+            method="POST",
+            url_suffix="/case/set_data",
+            headers={
+                **self._headers,
+                "Content-Type": "application/json",
+            },
+            json_data=request_data,
+        )
 
-        for case_id in case_ids:
-            request_data["request_data"]["case_id"] = case_id
-            results.append(
-                self._http_request(
-                    method="POST",
-                    url_suffix="/case/set_data",
-                    headers={
-                        **self._headers,
-                        "Content-Type": "application/json",
-                    },
-                    json_data=request_data,
-                )
-            )
-
-        return results
-
-    def unassigned_case(self, case_ids):
+    def unassign_case(self, case_id: str) -> dict:
         """
-        Unassign multiple cases by updating them with default unassignment data.
+        Unassign a case by updating it with default unassignment data.
 
         Args:
-            case_ids (list): List of case IDs to unassign.
+            case_id (str): Case ID to unassign.
+
+        Returns:
+            dict: Response from the API for the case update.
         """
-        request_data = {"request_data": {"newIncidentInterface": True}}
-        for case_id in case_ids:
-            request_data["request_data"]["case_id"] = case_id
-            self._http_request(
-                method="POST",
-                url_suffix="/case/set_data",
-                headers={
-                    **self._headers,
-                    "Content-Type": "application/json",
-                },
-                json_data=request_data,
-            )
+        request_data = {"request_data": {"newIncidentInterface": True, "case_id": case_id}}
+
+        return self._http_request(
+            method="POST",
+            url_suffix="/case/un_assign_user",
+            headers={
+                **self._headers,
+                "Content-Type": "application/json",
+            },
+            json_data=request_data,
+        )
 
 
 def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommendation: dict, issue_id: str) -> tuple[list, dict]:
@@ -1596,24 +1621,28 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
     return builder.to_dict()
 
 
-def parse_custom_fields(custom_fields: list[str]) -> dict:
+def parse_custom_fields(custom_fields: str) -> dict:
     """
-    Parse custom fields from the input format 'fieldname:value'
+    Parse and sanitize custom fields from JSON string input.
 
     Args:
-        custom_fields (list[str]): List of custom fields in 'fieldname:value' format
+        custom_fields: JSON string containing array of custom field objects
 
     Returns:
-        dict: Dictionary of sanitized custom field names and values
+        dict: Dictionary with sanitized alphanumeric keys and string values,
+              duplicate keys are ignored (first occurrence wins)
     """
+    custom_fields = safe_load_json(custom_fields)
+
     parsed_fields = {}
-    for field in custom_fields:
-        parts = field.split(":", 1)
-        if len(parts) == 2:
-            field_name, value = parts
-            sanitized_name = f"{''.join(char for char in field_name if char.isalnum())}"
-            if sanitized_name and sanitized_name not in parsed_fields:
-                parsed_fields[sanitized_name] = value
+
+    for custom_field in custom_fields:
+        for key, value in custom_field.items():
+            # Sanitize key: remove non-alphanumeric characters
+            sanitized_key = "".join(char for char in key if char.isalnum())
+            if sanitized_key and sanitized_key not in parsed_fields:
+                parsed_fields[sanitized_key] = str(value)
+
     return parsed_fields
 
 
@@ -1919,7 +1948,7 @@ def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def update_case_command(client: Client, args: dict) -> list[CommandResults]:
+def update_case_command(client: Client, args: dict) -> CommandResults:
     """
     Updates one or more cases with the specified parameters such as name, description, assignee, status, and custom fields.
 
@@ -1937,38 +1966,29 @@ def update_case_command(client: Client, args: dict) -> list[CommandResults]:
     resolve_reason = args.get("resolve_reason", "")
     resolved_comment = args.get("resolved_comment", "")
     resolve_all_alerts = args.get("resolve_all_alerts", "")
-    custom_fields = parse_custom_fields(argToList(args.get("custom_fields", "")))
-
+    custom_fields = parse_custom_fields(args.get("custom_fields", []))
     if assignee == "unassigned":
-        client.unassigned_case(case_ids)
+        for case_id in case_ids:
+            client.unassign_case(case_id)
         assignee = ""
 
-    if status == "resolved" and (not resolve_reason or not CASE_STATUS_RESOLVED_REASON.get(resolve_reason, False)):
+    if status == "resolved" and (not resolve_reason or not CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason, False)):
         raise ValueError("In order to set the case to resolved, you must provide a resolve reason.")
 
     if (resolve_reason or resolve_all_alerts or resolved_comment) and not status == "resolved":
         raise ValueError(
-            "In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to 'resolved.'"
+            "In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to "
+            "'resolved.'"
         )
 
-    error_messages = []
+    if status and not CaseManagement.STATUS.get(status):
+        raise ValueError(f"Invalid status '{status}'. Valid statuses are: {list(CaseManagement.STATUS.keys())}")
 
-    if status and not CASE_STATUS.get(status):
-        supported_statuses = list(CASE_STATUS.keys())
-        error_messages.append(
-            f"Warning: Status didn't change. The only supported status values are {supported_statuses}."
-            f" Provided value: {status}."
+    if user_defined_severity and not CaseManagement.SEVERITY.get(user_defined_severity, False):
+        raise ValueError(
+            f"Invalid user_defined_severity '{user_defined_severity}'. Valid severities are: "
+            f"{list(CaseManagement.SEVERITY.keys())}"
         )
-
-    if user_defined_severity and not CASE_SEVERITY.get(user_defined_severity, False):
-        supported_severities = list(CASE_SEVERITY.keys())
-        error_messages.append(
-            f"Warning: Severity didn't change. The only supported severity values are {supported_severities}."
-            f" Provided value: {user_defined_severity}."
-        )
-
-    error_messages = "\n".join(error_messages) if error_messages else ""
-    demisto.debug(error_messages if error_messages else "No validation errors.")
 
     # Build request_data with mapped and filtered values
     case_update_payload = {
@@ -1977,9 +1997,9 @@ def update_case_command(client: Client, args: dict) -> list[CommandResults]:
         "assignedUser": assignee if assignee else None,
         "notes": notes if notes else None,
         "starred": starred if starred else None,
-        "status": CASE_STATUS.get(status) if status else None,
-        "userSeverity": CASE_SEVERITY.get(user_defined_severity) if user_defined_severity else None,
-        "resolve_reason": CASE_STATUS_RESOLVED_REASON.get(resolve_reason) if resolve_reason else None,
+        "status": CaseManagement.STATUS.get(status) if status else None,
+        "userSeverity": CaseManagement.SEVERITY.get(user_defined_severity) if user_defined_severity else None,
+        "resolve_reason": CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason) if resolve_reason else None,
         "caseResolvedComment": resolved_comment if resolved_comment else None,
         "resolve_all_alerts": resolve_all_alerts if resolve_all_alerts else None,
         "CustomFields": custom_fields if custom_fields else None,
@@ -1987,41 +2007,21 @@ def update_case_command(client: Client, args: dict) -> list[CommandResults]:
     remove_nulls_from_dictionary(case_update_payload)
 
     if not case_update_payload and args.get("assignee", "").lower() != "unassigned":
-        raise ValueError(f"{(error_messages)}\nNo valid update parameters provided for case update.")
+        raise ValueError("No valid update parameters provided for case update.")
 
-    request_data = {"request_data": case_update_payload}
-
-    request_data["request_data"]["newIncidentInterface"] = True
-
-    demisto.info(f"Executing case update for cases {case_ids} with request data: {request_data}")
-    responses = client.update_case(request_data, case_ids)
+    demisto.info(f"Executing case update for cases {case_ids} with request data: {case_update_payload}")
+    responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
     replies = []
     for resp in responses:
-        reply = resp.get("reply", {})
-        reply.pop("layoutId", None)
-        reply.pop("layoutRuleName", None)
-        reply.pop("sourcesList", None)
-        reply.pop("score", {}).pop("previous_score_source", None)
-        reply.pop("score", {}).pop("previous_score", None)
-        if "incidentDomain" in reply:
-            reply["caseDomain"] = reply.pop("incidentDomain")
-        replies.append(reply)
+        replies.append(process_case_response(resp))
 
-    command_results = []
-    command_results.append(
-        CommandResults(
-            readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
-            outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
-            outputs_key_field="case_id",
-            outputs=replies,
-            raw_response=responses,
-        )
+    return CommandResults(
+        readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+        outputs_key_field="case_id",
+        outputs=replies,
+        raw_response=replies,
     )
-
-    if error_messages:
-        command_results.append(CommandResults(readable_output=error_messages, entry_type=4))
-
-    return command_results
 
 
 def main():  # pragma: no cover

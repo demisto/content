@@ -2283,7 +2283,7 @@ script:
           description: The new description for the case.
           type: String
         - name: assignee
-          description: The email address of the new assignee. Use the special value "unassigned" to remove an existing assignee.
+          description: The email address of the new assignee. Use "unassigned" to remove an existing assignee.
           type: String
         - auto: PREDEFINED
           name: status
@@ -2334,7 +2334,8 @@ script:
             - "true"
             - "false"
         - name: custom_fields
-          description: Custom fields for the case.
+          description: |
+            A JSON encoded string representing a list of custom_field:value pairs to update. (e.g., `[{"field1": "value1"}, {"field2": "value2"}]`). 
           type: String
       outputs:
         - contextPath: Core.Case.modifiedBy
