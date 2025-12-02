@@ -2558,15 +2558,16 @@ def task_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         department=department,
         site_group=site_group,
         site=site,
-        assigned_support_company=support_company,
-        assignee=assignee,
-        company=company,
-        location_company=location_company,
-        status_reason=status_reason,
-        assigned_support_organization=assigned_support_organization,
-        assigned_support_group_name=assigned_support_group_name,
-        scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,
-        schedulded_end_date=schedulded_end_date.isoformat if schedulded_end_date else None,
+        assigned_support_company=support_company,  # type: ignore[arg-type]
+        assignee=assignee,  # type: ignore[arg-type]
+        company=company,  # type: ignore[arg-type]
+        location_company=location_company,  # type: ignore[arg-type]
+        status_reason=status_reason,  # type: ignore[arg-type]
+        assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
+        assigned_support_group_name=assigned_support_group_name,  # type: ignore[arg-type]
+        scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,  # type: ignore[arg-type]
+        schedulded_end_date=schedulded_end_date.isoformat if schedulded_end_date else None,  # type: ignore[arg-type]
+        customer_company=customer_company,  # type: ignore[arg-type]
         **additional_fields,
     )
 
@@ -2605,7 +2606,7 @@ def problem_investigation_create_command(client: Client, args: Dict[str, Any]) -
     support_organization_pbm_mgr = args.get("support_organization_pbm_mgr")
     assignee_pbm_mgr = args.get("assignee_pbm_mgr")
     temporary_workaround = args.get("temporary_workaround")
-    target_resolution_date: datetime = arg_to_datetime(args.get("target_resolution_date"))
+    target_resolution_date: datetime = arg_to_datetime(args.get("target_resolution_date"))  # type: ignore[assignment]
     resolution = args.get("resolution")
     investigation_justification = args.get("investigation_justification")
     investigation_driver = args.get("investigation_driver")
