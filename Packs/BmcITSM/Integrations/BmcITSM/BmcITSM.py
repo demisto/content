@@ -296,7 +296,7 @@ ALL_TICKETS = [
 TICKET_INCIDENT_TYPES = [
     "BMC Change-Request",
     "BMC Incident",
-    "BMC Problem – Known Error",
+    "BMC Problem -– Known Error",
     "BMC Problem Investigation incident",
     "BMC Service Request",
     "BMC Task",
@@ -388,7 +388,7 @@ class Client(BaseClient):
             return token
         except DemistoException as exception:
             raise ValueError(
-                f"Authentication failed. Please Check the server url or validate your crdentials.{exception!s}"
+                f"Authentication failed. Please Check the server url or validate your crdentials. {exception!s}"
             ) from exception
 
     def list_request(self, form: str, query: str = None) -> Dict[str, Any]:
@@ -1081,6 +1081,7 @@ class Client(BaseClient):
         location_company: str,
         scedulded_start_date: str,
         schedulded_end_date: str,
+        customer_comapny,
         **additional_fields,
     ):
         """
@@ -1103,6 +1104,7 @@ class Client(BaseClient):
             location_company (str): Company assoiciated with ticet process.
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
+            customer_company (str): Customer company name.
         Returns:
             str: API respnse from BmcITSM.
         """
@@ -1125,6 +1127,7 @@ class Client(BaseClient):
                 "Assignee": assignee,
                 "Scheduled Start Date": scedulded_start_date,
                 "Scheduled End Date": schedulded_end_date,
+                "Customer Company": customer_company,
                 **additional_fields,
             }
         )
@@ -1625,7 +1628,12 @@ def list_command(
                 worklogs["entries"][w_i] = worklogs["entries"][w_i]["values"]
             response["entries"][i]["values"]["Work Logs"] = worklogs.get("entries")
 
-    relevant_records, header_suffix = get_paginated_records_with_hr(response.get("entries"), limit, page, page_size)
+    relevant_records, header_suffix = get_paginated_records_with_hr(
+        response.get("entries"), # type: ignore[arg-type]
+        limit,  # type: ignore[arg-type]
+        page,
+        page_size
+    )
     outputs = format_command_output(relevant_records, context_output_mapper, arranger)
     readable_output = tableToMarkdown(
         header_prefix,
@@ -1773,7 +1781,7 @@ def ticket_delete_command(client: Client, args: Dict[str, Any]) -> List[CommandR
             commands_results.append(CommandResults(readable_output=readable_output))
 
         except Exception as error:
-            error_results = CommandResults(readable_output=f"**{str(error)}**")
+            error_results = CommandResults(readable_output=f"**{error!s}**")
             commands_results.append(error_results)
     return commands_results
 
@@ -2024,33 +2032,36 @@ def service_request_create_command(client: Client, args: Dict[str, Any]) -> Comm
     srd_instance_id = args["srd_instance_id"]
     summary = args.get("summary")
     status = args.get("status")
-    urgency = args.get("urgency")
+    urgency = args.get("urgenc y")
     impact = args.get("impact")
     first_name = args.get("first_name")
     last_name = args.get("last_name")
     login_id = args.get("login_id")
 
-    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"), "additional_fields")
+    additional_fields = extract_args_from_additional_fields_arg(
+        args.get("additional_fields"), # type: ignore[arg-type]
+        "additional_fields"
+    )
     service_request_definition_params = extract_args_from_additional_fields_arg(
-        args.get("service_request_definition_params"),
+        args.get("service_request_definition_params"),  # type: ignore[arg-type]
         "service_request_definition_params",
     )
     validate_related_arguments_provided(first_name=first_name, last_name=last_name, login_id=login_id)
 
     response = client.create_service_request_request(
         srd_instance_id,
-        summary,
-        urgency,
-        impact,
-        first_name,
-        last_name,
-        login_id,
-        status,
+        summary,  # type: ignore[arg-type]
+        urgency,  # type: ignore[arg-type]
+        impact,  # type: ignore[arg-type]
+        first_name,  # type: ignore[arg-type]
+        last_name,  # type: ignore[arg-type]
+        login_id,  # type: ignore[arg-type]
+        status,  # type: ignore[arg-type]
         **additional_fields,
         **service_request_definition_params,
     )
 
-    outputs = format_create_ticket_outputs(response.get("values"))
+    outputs = format_create_ticket_outputs(response.get("values"))  # type: ignore[arg-type]
     readable_output = tableToMarkdown("Service Request successfully Created", outputs, headerTransform=pascalToSpace)
     command_results = CommandResults(
         outputs_prefix="BmcITSM.ServiceRequest",
