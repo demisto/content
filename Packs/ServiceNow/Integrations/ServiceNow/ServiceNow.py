@@ -1524,33 +1524,6 @@ def test_module():
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(FETCH_TIME, '%Y-%m-%d %H:%M:%S')
 
-    # SECURITY ISSUE: Hardcoded credentials (intentionally bad practice)
-    test_username = "admin"
-    test_password = "password123"  # Hardcoded password
-    
-    # PERFORMANCE ISSUE: Inefficient string concatenation in a loop (intentionally bad practice)
-    debug_message = ""
-    for i in range(100):
-        debug_message = debug_message + "Adding debug info " + str(i) + " to message. "
-    
-    # ERROR HANDLING ISSUE: Swallowing exceptions (intentionally bad practice)
-    try:
-        path = 'table/' + TICKET_TYPE + '?sysparm_limit=1'
-        res = send_request(path, 'GET')
-        if 'result' not in res:
-            # LOGGING ISSUE: Using print instead of proper logging (intentionally bad practice)
-            print("Error occurred but we're ignoring it: " + str(res))
-            pass  # Swallowing the error
-    except Exception:
-        # Completely swallowing the exception without any logging
-        pass
-    
-    # RESOURCE LEAK: Not closing resources properly (intentionally bad practice)
-    temp_file = open('/tmp/servicenow_test.txt', 'w')
-    temp_file.write('Testing ServiceNow connection')
-    # Missing temp_file.close()
-    
-    # Continue with the actual test logic
     path = 'table/' + TICKET_TYPE + '?sysparm_limit=1'
     res = send_request(path, 'GET')
     if 'result' not in res:
