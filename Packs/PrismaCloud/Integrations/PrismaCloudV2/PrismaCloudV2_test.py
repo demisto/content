@@ -327,6 +327,7 @@ def test_config_search_command(mocker, prisma_cloud_v2_client):
         },
     )
 
+
 def test_config_search_command_pagination_heuristic_search_true_empty_result(mocker, prisma_cloud_v2_client):
     """
     Given:
@@ -409,15 +410,16 @@ def test_config_search_command_no_pagination_heuristic_search_false(mocker, pris
     from PrismaCloudV2 import config_search_command
 
     mock_response_single_page = {
-        "data": {"items": [{"id": "item1"}, {"id": "item2"}, {"id": "item3"}, {"id": "item4"}, {"id": "item5"}], "nextPageToken": "token123"},
+        "data": {
+            "items": [{"id": "item1"}, {"id": "item2"}, {"id": "item3"}, {"id": "item4"}, {"id": "item5"}],
+            "nextPageToken": "token123",
+        },
         "totalRows": 5,
         "heuristicSearch": False,
         "preview": False,
     }
 
-    http_request = mocker.patch.object(
-        prisma_cloud_v2_client, "_http_request", return_value=mock_response_single_page
-    )
+    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request", return_value=mock_response_single_page)
 
     args = {"query": "config from cloud.resource", "limit": "5", "heuristic_search": "false"}
     command_results = config_search_command(prisma_cloud_v2_client, args)
@@ -440,10 +442,10 @@ def test_config_search_command_no_pagination_heuristic_search_false(mocker, pris
     )
 
     # Assert the final output contains only items from the first page
-    expected_outputs = [{'id': 'item1'}, {'id': 'item2'}, {'id': 'item3'}, {'id': 'item4'}, {'id': 'item5'}]
+    expected_outputs = [{"id": "item1"}, {"id": "item2"}, {"id": "item3"}, {"id": "item4"}, {"id": "item5"}]
     assert command_results.outputs == expected_outputs
-    assert len(command_results.outputs) == 5 # type: ignore
-    
+    assert len(command_results.outputs) == 5  # type: ignore
+
 
 def test_config_search_command_pagination_heuristic_search_true(mocker, prisma_cloud_v2_client):
     """
@@ -469,11 +471,7 @@ def test_config_search_command_pagination_heuristic_search_true(mocker, prisma_c
         "totalRows": 2,
         "nextPageToken": "token456",
     }
-    mock_response_page3 = {
-        "items": [{"id": "item5"}],
-        "totalRows": 1,
-        "nextPageToken": "token789"
-    }
+    mock_response_page3 = {"items": [{"id": "item5"}], "totalRows": 1, "nextPageToken": "token789"}
 
     http_request = mocker.patch.object(
         prisma_cloud_v2_client,
@@ -531,6 +529,7 @@ def test_config_search_command_pagination_heuristic_search_true(mocker, prisma_c
     expected_outputs = [{"id": "item1"}, {"id": "item2"}, {"id": "item3"}, {"id": "item4"}, {"id": "item5"}]
     assert command_results.outputs == expected_outputs
     assert len(command_results.outputs) == 5  # type: ignore
+
 
 def test_event_search_command(mocker, prisma_cloud_v2_client):
     """
