@@ -1,0 +1,58 @@
+{
+  "trigger_id": "48fe389e557125e4a7666870eb4994e7",
+  "trigger_name": "Trigger - AWS Public Access Misconfiguration",
+  "playbook_id": "AWS Public Access Misconfiguration - Auto-remediate",
+  "suggestion_reason": "Automatically secure the publicly exposed AWS resource by setting the necessary configurations to block public access immediately.",
+  "description": "Suggests a playbook that automatically remediates 9 High severity misconfiguration issues for publicly accessible AWS RDS databases, EBS snapshots and S3 buckets.",
+  "alerts_filter": {
+    "filter": {
+        "OR": [
+            {
+            "SEARCH_FIELD": "matching_service_rule_id",
+            "SEARCH_TYPE": "WILDCARD",
+            "SEARCH_VALUE": "b3897fb4-5241-403b-8770-69f90cea0f11"
+            },
+            {
+            "SEARCH_FIELD": "matching_service_rule_id",
+            "SEARCH_TYPE": "WILDCARD",
+            "SEARCH_VALUE": "b22df320-13e7-4108-8142-d1bd858b8d46"
+            },
+            {
+            "SEARCH_FIELD": "matching_service_rule_id",
+            "SEARCH_TYPE": "WILDCARD",
+            "SEARCH_VALUE": "67dc23e7-e6db-4efb-b7e8-b4bd7778c891"
+            },
+            {
+            "SEARCH_FIELD": "matching_service_rule_id",
+            "SEARCH_TYPE": "WILDCARD",
+            "SEARCH_VALUE": "7c714cb4-3d47-4c32-98d4-c13f92ce4ec5"
+            },
+            {
+            "SEARCH_FIELD": "matching_service_rule_id",
+            "SEARCH_TYPE": "WILDCARD",
+            "SEARCH_VALUE": "4ca3ff4c-4f45-48ee-8f4f-a56e43f5cb5c"
+            },
+            {
+            "SEARCH_FIELD": "matching_service_rule_id",
+            "SEARCH_TYPE": "WILDCARD",
+            "SEARCH_VALUE": "eecb0c21-2dbe-40f4-8727-fbbaacef69dc"
+            },
+            {
+            "SEARCH_FIELD": "matching_service_rule_id",
+            "SEARCH_TYPE": "WILDCARD",
+            "SEARCH_VALUE": "70b5bb02-aafd-4c23-ac4b-4872b3aced30"
+            },
+            {
+            "SEARCH_FIELD": "matching_service_rule_id",
+            "SEARCH_TYPE": "WILDCARD",
+            "SEARCH_VALUE": "1c513ad3-7db5-4fbf-abdd-39969f222f13"
+            },
+            {
+            "SEARCH_FIELD": "matching_service_rule_id",
+            "SEARCH_TYPE": "WILDCARD",
+            "SEARCH_VALUE": "f940021d-42bc-4f29-b9f9-0ae819318ba9"
+            }
+        ]
+        }
+    }
+}

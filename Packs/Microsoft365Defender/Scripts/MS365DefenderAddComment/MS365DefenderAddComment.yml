@@ -16,7 +16,7 @@ contentitemexportablefields:
 dependson:
   must:
   - '|||microsoft-365-defender-incident-update'
-dockerimage: demisto/crypto:1.0.0.3539024
+dockerimage: demisto/crypto:1.0.0.5490413
 enabled: true
 name: MS365DefenderAddComment
 runas: DBotWeakRole
