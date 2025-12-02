@@ -4669,7 +4669,7 @@ class TestPopulatePlaybookAndQuickActionSuggestions(unittest.TestCase):
         }
         self.mock_client.get_playbook_suggestion_by_issue.return_value = response
 
-        recommendation, pb_id, qa_id = populate_playbook_and_quick_action_suggestions(
+        recommendation, readable_recommendation, pb_id, qa_id = populate_playbook_and_quick_action_suggestions(
             self.mock_client, self.issue_id, self.pbs_metadata, self.pb_id_to_index, self.qa_name_to_data
         )
 
@@ -4690,7 +4690,19 @@ class TestPopulatePlaybookAndQuickActionSuggestions(unittest.TestCase):
             },
         }
 
+        expected_readable_recommendation = {
+            "playbook_suggestions": {
+                "playbook_id": "pb-1",
+                "name": "Security Playbook",
+            },
+            "quick_action_suggestions": {
+                "name": "isolate_endpoint",
+                "pretty_name": "Isolate Endpoint",
+            },
+        }
+
         assert recommendation == expected_recommendation
+        assert readable_recommendation == expected_readable_recommendation
         assert pb_id == "pb-1"
         assert qa_id == "isolate_endpoint"
 
@@ -4700,11 +4712,12 @@ class TestPopulatePlaybookAndQuickActionSuggestions(unittest.TestCase):
         response = {"reply": {}}
         self.mock_client.get_playbook_suggestion_by_issue.return_value = response
 
-        recommendation, pb_id, qa_id = populate_playbook_and_quick_action_suggestions(
+        recommendation, readable_recommendation, pb_id, qa_id = populate_playbook_and_quick_action_suggestions(
             self.mock_client, self.issue_id, self.pbs_metadata, self.pb_id_to_index, self.qa_name_to_data
         )
 
         assert recommendation == {}
+        assert readable_recommendation == {}
         assert not pb_id
         assert not qa_id
 
@@ -4714,7 +4727,7 @@ class TestPopulatePlaybookAndQuickActionSuggestions(unittest.TestCase):
         response = {"reply": {"playbook_id": "pb-2", "suggestion_rule_id": "rule-789"}}
         self.mock_client.get_playbook_suggestion_by_issue.return_value = response
 
-        recommendation, pb_id, qa_id = populate_playbook_and_quick_action_suggestions(
+        recommendation, readable_recommendation, pb_id, qa_id = populate_playbook_and_quick_action_suggestions(
             self.mock_client, self.issue_id, self.pbs_metadata, self.pb_id_to_index, self.qa_name_to_data
         )
 
@@ -4727,24 +4740,37 @@ class TestPopulatePlaybookAndQuickActionSuggestions(unittest.TestCase):
             }
         }
 
+        expected_readable_recommendation = {
+            "playbook_suggestions": {
+                "playbook_id": "pb-2",
+                "name": "Incident Response",
+            }
+        }
+
         assert recommendation == expected_recommendation
+        assert readable_recommendation == expected_readable_recommendation
         assert pb_id == "pb-2"
         assert not qa_id
 
-    @patch("CortexPlatformCore.demisto")
-    def test_populate_suggestions_playbook_not_in_metadata(self, mock_demisto):
-        """Test with playbook ID not found in metadata"""
-        response = {"reply": {"playbook_id": "pb-unknown", "suggestion_rule_id": "rule-999"}}
-        self.mock_client.get_playbook_suggestion_by_issue.return_value = response
 
-        recommendation, pb_id, qa_id = populate_playbook_and_quick_action_suggestions(
-            self.mock_client, self.issue_id, self.pbs_metadata, self.pb_id_to_index, self.qa_name_to_data
-        )
+@patch("CortexPlatformCore.demisto")
+def test_populate_suggestions_playbook_not_in_metadata(self):
+    """Test with playbook ID not found in metadata"""
+    response = {"reply": {"playbook_id": "pb-unknown", "suggestion_rule_id": "rule-999"}}
+    self.mock_client.get_playbook_suggestion_by_issue.return_value = response
 
-        expected_recommendation = {"playbook_suggestions": {"playbook_id": "pb-unknown", "suggestion_rule_id": "rule-999"}}
+    recommendation, readable_recommendation, pb_id, qa_id = populate_playbook_and_quick_action_suggestions(
+        self.mock_client, self.issue_id, self.pbs_metadata, self.pb_id_to_index, self.qa_name_to_data
+    )
 
-        assert recommendation == expected_recommendation
-        assert pb_id == "pb-unknown"
+    expected_recommendation = {"playbook_suggestions": {"playbook_id": "pb-unknown", "suggestion_rule_id": "rule-999"}}
+
+    expected_readable_recommendation = {"playbook_suggestions": {"playbook_id": "pb-unknown"}}
+
+    assert recommendation == expected_recommendation
+    assert readable_recommendation == expected_readable_recommendation
+    assert pb_id == "pb-unknown"
+    assert not qa_id
 
 
 class TestMapQaNameToData(unittest.TestCase):
@@ -4862,7 +4888,13 @@ class TestGetIssueRecommendationsCommand:
         self.mock_client.get_quick_actions_metadata.return_value = []
 
         mock_map_qa_name_to_data.return_value = {}
-        mock_populate_pb_qa.return_value = ({}, "pb-1", "qa-1")
+        # Updated to return 4 values including readable_recommendation
+        mock_populate_pb_qa.return_value = (
+            {},  # recommendation
+            {},  # readable_recommendation
+            "pb-1",  # playbook_id
+            "qa-1",  # quick_action_id
+        )
         mock_get_appsec_suggestion.return_value = {"existing_code_block": "old code", "suggested_code_block": "new code"}
         mock_table_to_markdown.return_value = "Mock table output"
 
@@ -4954,9 +4986,13 @@ class TestGetIssueRecommendationsCommand:
         self.mock_client.get_quick_actions_metadata.return_value = []
 
         mock_map_qa_name_to_data.return_value = {}
-        # Return both playbook and quick action suggestions
+        # Return both playbook and quick action suggestions - Updated to return 4 values
         mock_populate_pb_qa.return_value = (
             {"playbook_suggestions": {"playbook_id": "pb-1"}, "quick_action_suggestions": {"name": "qa-1"}},
+            {
+                "playbook_suggestions": {"playbook_id": "pb-1"},
+                "quick_action_suggestions": {"name": "qa-1"},
+            },  # readable_recommendation
             "pb-1",  # playbook ID
             "qa-1",  # quick action ID
         )
@@ -5026,17 +5062,19 @@ class TestGetIssueRecommendationsCommand:
         self.mock_client.get_quick_actions_metadata.return_value = []
 
         mock_map_qa_name_to_data.return_value = {}
-        mock_populate_pb_qa.return_value = ({}, False, False)
+        # Updated to return 4 values including readable_recommendation
+        mock_populate_pb_qa.return_value = ({}, {}, False, False)
         mock_table_to_markdown.return_value = "Mock table output"
 
         args = {"issue_ids": "issue-1"}
 
         # Execute
         with patch("CortexPlatformCore.get_appsec_suggestion") as mock_get_appsec_suggestion:
-            get_issue_recommendations_command(self.mock_client, args)
+            result = get_issue_recommendations_command(self.mock_client, args)
 
             # Verify AppSec suggestion was not called for non-AppSec source
             mock_get_appsec_suggestion.assert_not_called()
+            assert isinstance(result, CommandResults)
 
     @patch("CortexPlatformCore.demisto")
     @patch("CortexPlatformCore.populate_playbook_and_quick_action_suggestions")
@@ -5082,7 +5120,8 @@ class TestGetIssueRecommendationsCommand:
         self.mock_client.get_quick_actions_metadata.return_value = None
 
         mock_map_qa_name_to_data.return_value = {}
-        mock_populate_pb_qa.return_value = ({}, False, False)
+        # Updated to return 4 values including readable_recommendation
+        mock_populate_pb_qa.return_value = ({}, {}, False, False)
         mock_table_to_markdown.return_value = "Mock table output"
 
         args = {"issue_ids": "issue-1"}

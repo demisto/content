@@ -669,9 +669,7 @@ def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadat
         if playbook_id in pb_id_to_index:
             current_pb_metadata = pbs_metadata[pb_id_to_index[playbook_id]]
             name = current_pb_metadata.get("name")
-            recommendation["playbook_suggestions"].update(
-                {"name": name, "comment": current_pb_metadata.get("comment")}
-            )
+            recommendation["playbook_suggestions"].update({"name": name, "comment": current_pb_metadata.get("comment")})
             readable_recommendation["playbook_suggestions"].update({"name": name})
 
     # Quick action suggestion
@@ -686,7 +684,9 @@ def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadat
         readable_recommendation["quick_action_suggestions"] = {"name": quick_action_id}
         if quick_action_id in qa_name_to_data:
             recommendation["quick_action_suggestions"].update(qa_name_to_data[quick_action_id])
-            readable_recommendation["quick_action_suggestions"].update({"pretty_name": qa_name_to_data.get(quick_action_id, {}).get("pretty_name")})
+            readable_recommendation["quick_action_suggestions"].update(
+                {"pretty_name": qa_name_to_data.get(quick_action_id, {}).get("pretty_name")}
+            )
 
     return recommendation, readable_recommendation, playbook_id, quick_action_id
 
@@ -702,13 +702,15 @@ def map_qa_name_to_data(qas_metadata):
             cmd_name = cmd.get("name")
             arguments = cmd.get("arguments", [])
             filtered_args = [arg for arg in arguments if not arg.get("hidden", False)]
-            qa_name_to_data[cmd_name] = remove_empty_elements({
-                "brand": brand,
-                "category": category,
-                "description": cmd.get("description"),
-                "pretty_name": cmd.get("prettyName"),
-                "arguments": filtered_args
-            })
+            qa_name_to_data[cmd_name] = remove_empty_elements(
+                {
+                    "brand": brand,
+                    "category": category,
+                    "description": cmd.get("description"),
+                    "pretty_name": cmd.get("prettyName"),
+                    "arguments": filtered_args,
+                }
+            )
 
     return qa_name_to_data
 
