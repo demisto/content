@@ -190,7 +190,7 @@ script:
       type: Unknown
   - description: Test the authentication configuration with the MCP server.
     name: generic-mcp-auth-test
-  - description: Generate an authentication login URL.
+  - description: Generate an authentication URL.
     name: generic-mcp-generate-login-url
   - description: Reset the authentication configuration for the MCP server.
     name: generic-mcp-auth-reset
