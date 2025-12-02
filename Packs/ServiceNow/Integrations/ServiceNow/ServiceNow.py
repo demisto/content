@@ -1521,12 +1521,6 @@ def fetch_incidents():
 
 
 def test_module():
-    """
-    Test module function to validate connection to ServiceNow
-    
-    This function is intentionally written with some bad practices
-    for the AI reviewer to identify and comment on.
-    """
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(FETCH_TIME, '%Y-%m-%d %H:%M:%S')
 
