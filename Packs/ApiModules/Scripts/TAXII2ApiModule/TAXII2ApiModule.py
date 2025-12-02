@@ -791,7 +791,7 @@ class XSOAR2STIXParser:
             pattern_type="stix",
             labels=labels,
         )
-        return dict({k: v for k, v in stix_object.items() if k in ("spec_version", "created", "modified")}, **stix_domain_object)
+        return dict({k: v for k, v in stix_object.items() if k in ("spec_version", "created", "modified", "extensions")}, **stix_domain_object)
 
     @staticmethod
     def create_sdo_stix_uuid(
@@ -892,7 +892,6 @@ class XSOAR2STIXParser:
                     stix_ioc = self.convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator)
                 demisto.debug(f"T2API: create_entity_b_stix_objects {stix_ioc=}")
                 if self.has_extension and stix_ioc:
-                    entity_b_objects.append(stix_ioc)
                     if extension_definition:
                         extensions.append(extension_definition)
                 elif stix_ioc:
