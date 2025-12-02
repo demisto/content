@@ -11,6 +11,7 @@ class ExpiredPasswordResult(TypedDict):
 
     Result: Literal["Success", "Failed"]
     Message: str
+    Instance: str
 
 
 class UserData(TypedDict):
@@ -115,7 +116,8 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
         return [
             ExpiredPasswordResult(
                 Result="Failed",
-                Message=f"In Active Directory, clearing the never expire flag failed"
+                Message=f"In Active Directory, clearing the never expire flag failed",
+                Instance=""
             )
         ], hr_modify_never_expire
 
@@ -132,12 +134,14 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
         func_res.append(
             ExpiredPasswordResult(
                 Result="Success",
-                Message=f"Active Directory: {res_msg}"
+                Message=f"Active Directory: {res_msg}",
+                Instance=dict_safe_get(res, ["Metadata", "instance"]) or ""
             )
             if res_msg == "Expired password successfully"
             else ExpiredPasswordResult(
                     Result="Failed",
-                    Message=res_msg
+                    Message=res_msg,
+                    Instance=dict_safe_get(res, ["Metadata", "instance"]) or ""
                 )
         )
     return func_res, hr
@@ -161,9 +165,11 @@ def run_microsoft_graph_user(user: UserData, using: str) -> tuple[list[ExpiredPa
         res_hr = res.get("HumanReadable", "Microsoft Graph User expiration password command failed")
         # Assuming successful response for MS Graph command means password reset is forced
         func_res.append(
-            ExpiredPasswordResult(Result="Success", Message="Password reset successfully enforced")
+            ExpiredPasswordResult(Result="Success", Message="Password reset successfully enforced",
+                                  Instance=dict_safe_get(res, ["Metadata", "instance"]) or "")
             if res_hr == f"User {user['Username']} will be required to change his password."
-            else ExpiredPasswordResult(Result="Failed", Message=res["Content"])
+            else ExpiredPasswordResult(Result="Failed", Message=res["Content"],
+                                       Instance=dict_safe_get(res, ["Metadata", "instance"]) or "")
         )
     return func_res, hr
 
@@ -186,9 +192,9 @@ def run_okta_v2(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
         res_msg = res["HumanReadable"] or res["Contents"]
         is_expired = "Status: PASSWORD_EXPIRED" in res_msg
         func_res.append(
-            ExpiredPasswordResult(Result="Success", Message="Password expired successfully")
+            ExpiredPasswordResult(Result="Success", Message="Password expired successfully", Instance=dict_safe_get(res, ["Metadata", "instance"]) or "")
             if not is_expired
-            else ExpiredPasswordResult(Result="Failed", Message=res_msg)
+            else ExpiredPasswordResult(Result="Failed", Message=res_msg, Instance=dict_safe_get(res, ["Metadata", "instance"]) or "")
         )
     return func_res, hr
 
@@ -212,11 +218,12 @@ def run_gsuiteadmin(user: UserData, using: str) -> tuple[list[ExpiredPasswordRes
     func_res = []
     for res in res_cmd:
         func_res.append(
-            ExpiredPasswordResult(Result="Success", Message="Password reset successfully enforced")
+            ExpiredPasswordResult(Result="Success", Message="Password reset successfully enforced", Instance=dict_safe_get(res, ["Metadata", "instance"]) or "")
             # make sure the field changePasswordAtNextLogin is true
             if dict_safe_get(res, ["Contents", "changePasswordAtNextLogin"])
             else ExpiredPasswordResult(Result="Failed",
-                                       Message=str(res.get("Contents") or "Unable to expire password"))
+                                       Message=str(res.get("Contents") or "Unable to expire password"),
+                                       Instance=dict_safe_get(res, ["Metadata", "instance"]) or "")
         )
     return func_res, hr
 
@@ -251,13 +258,15 @@ def run_aws_iam(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
         func_res.append(
             ExpiredPasswordResult(
                 Result="Success",
-                Message="IAM user login profile updated successfully, requiring password change on next sign-in."
+                Message="IAM user login profile updated successfully, requiring password change on next sign-in.",
+                Instance=dict_safe_get(res, ["Metadata", "instance"]) or ""
             )
             # The AWS-IAM integration returns "The user {user} password was changed" on success
             if res_msg == f"The user {user['Username']} password was changed"
             else ExpiredPasswordResult(
                     Result="Failed",
-                    Message=f"AWS-IAM command did not confirm success. Response: {res_msg or 'No response message'}"
+                    Message=f"AWS-IAM command did not confirm success. Response: {res_msg or 'No response message'}",
+                    Instance=dict_safe_get(res, ["Metadata", "instance"]) or ""
                 )
         )
     return func_res, hr
@@ -355,7 +364,6 @@ def expire_passwords(users: list[UserData]) -> tuple[list[ExpiredPasswordResult]
                         "Username": user["Username"],
                     },
                     "Brand": user["Brand"],
-                    "Instance": user["Instance"],
                 }
                 | res
                 for res in res_cmd
