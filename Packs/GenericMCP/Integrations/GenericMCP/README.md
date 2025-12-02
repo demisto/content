@@ -62,7 +62,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### list-tools
 
 ***
-Retrieves a list of available tools in the GitHub MCP server.
+Retrieves a list of available tools in the MCP server.
 
 #### Base Command
 
