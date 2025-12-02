@@ -18,7 +18,7 @@ from splunklib import client, results
 from splunklib.binding import AuthenticationError, HTTPError, namespace
 from splunklib.data import Record
 
-INTEGRATION_LOG = "SplunkV3- "
+INTEGRATION_LOG = "SplunkPyV3- "
 OUTPUT_MODE_JSON = "json"  # type of response from splunk-sdk query (json/csv/xml)
 # Define utf8 as default encoding
 params = demisto.params()
@@ -424,8 +424,8 @@ def build_fetch_kwargs(
     return {
         occurred_start_time_fieldname: occured_start_time,
         occurred_end_time_fieldname: latest_time,
-        # "count": FETCH_LIMIT,
-        # "offset": search_offset,
+        "count": FETCH_LIMIT,
+        "offset": search_offset,
         "output_mode": OUTPUT_MODE_JSON,
     }
 
@@ -1833,12 +1833,14 @@ def enrich_findings_with_splunk_notes(
     # to avoid performance issues with large audit logs
     search_query = (
         f'search index=_audit source=mc_notes earliest=-7d ({or_clause_str}) '
-        '| rex "(?<timestamp>[\\d.]+),(?<note_id>[\\w-]+),(?<user>[\\w_]+),(?<model>[\\w]+),(?<command>[\\w]+),(?<diff>.+)" '
+        # '| rex "(?<timestamp>[\\d.]+),(?<note_id>[\\w-]+),(?<user>[\\w_]+),(?<model>[\\w]+),(?<command>[\\w]+),(?<diff>.+)" '
+        '| rex "(?<timestamp>[\\d.]+),(?<note_id>[\\w-]+),"'
         '| dedup note_id '
-        '| table note_id, command, diff'
+        # '| table note_id, command, diff'
+        '| table note_id'
     )
     
-    demisto.debug(f"enrich_findings_with_splunk_notes: Running {search_query=} to find the changed note IDs")
+    demisto.debug(f"enrich_findings_with_splunk_notes: Running fetch query to find the changed note IDs in {len(finding_ids)} findings, {search_query=}")
     
     try:
         # Execute the search query to get note IDs
