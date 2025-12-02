@@ -50,7 +50,8 @@ configuration:
   required: false
   section: Collect
   defaultvalue: '1'
-  hidden: true
+  hidden:
+  - xsoar
 - display: Maximum Incidents Per Fetch
   name: max_fetch
   type: 0
