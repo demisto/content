@@ -1081,7 +1081,7 @@ class Client(BaseClient):
         location_company: str,
         scedulded_start_date: str,
         schedulded_end_date: str,
-        customer_comapny,
+        customer_company: str,
         **additional_fields,
     ):
         """
@@ -2603,32 +2603,32 @@ def problem_investigation_create_command(client: Client, args: Dict[str, Any]) -
         support_organization_pbm_mgr=support_organization_pbm_mgr,
     )
 
-    response = client.create_problem_investigation_request(
+    response = client.create_problem_investigation_request(  # type: ignore[arg-type]
         PROBLEM_INVESTIGATION,
-        summary,
+        summary,  # type: ignore[arg-type]
         first_name=first_name,
         last_name=last_name,
-        urgency=urgency,
-        impact=impact,
-        status=status,
-        details=details,
-        company=company,
-        assigned_support_organization=assigned_support_organization,
-        assigned_support_company=assigned_support_company,
-        assigned_support_group_name=assigned_support_group_name,
-        assignee=assignee,
-        site_group=site_group,
-        site=site,
-        region=region,
-        assigned_group_pbm_mgr=assigned_group_pbm_mgr,
-        support_company_pbm_mgr=support_company_pbm_mgr,
-        support_organization_pbm_mgr=support_organization_pbm_mgr,
-        temporary_workaround=temporary_workaround,
-        target_resolution_date=target_resolution_date.isoformat() if target_resolution_date else None,
+        urgency=urgency,  # type: ignore[arg-type]
+        impact=impact,  # type: ignore[arg-type]
+        status=status,  # type: ignore[arg-type]
+        details=details,  # type: ignore[arg-type]
+        company=company,  # type: ignore[arg-type]
+        assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
+        assigned_support_company=assigned_support_company,  # type: ignore[arg-type]
+        assigned_support_group_name=assigned_support_group_name,  # type: ignore[arg-type]
+        assignee=assignee,  # type: ignore[arg-type]
+        site_group=site_group,  # type: ignore[arg-type]
+        site=site,  # type: ignore[arg-type]
+        region=region,  # type: ignore[arg-type]
+        assigned_group_pbm_mgr=assigned_group_pbm_mgr,  # type: ignore[arg-type]
+        support_company_pbm_mgr=support_company_pbm_mgr,  # type: ignore[arg-type]
+        support_organization_pbm_mgr=support_organization_pbm_mgr,  # type: ignore[arg-type]
+        temporary_workaround=temporary_workaround,  # type: ignore[arg-type]
+        target_resolution_date=target_resolution_date.isoformat() if target_resolution_date else None,  # type: ignore[arg-type]
         investigation_justification=investigation_justification,
         investigation_driver=investigation_driver,
         resolution=resolution,
-        assignee_pbm_mgr=assignee_pbm_mgr,
+        assignee_pbm_mgr=assignee_pbm_mgr,  # type: ignore[arg-type]
         **additional_fields,
     )
 
@@ -2688,10 +2688,13 @@ def problem_investigation_update_command(client: Client, args: Dict[str, Any]) -
     assignee_pbm_mgr = args.get("assignee_pbm_mgr")
     temporary_workaround = args.get("temporary_workaround")
     resolution = args.get("resolution")
-    target_resolution_date: datetime = arg_to_datetime(args.get("target_resolution_date"))
+    target_resolution_date: datetime = arg_to_datetime(args.get("target_resolution_date"))  # type: ignore[assignment]
     investigation_justification = args.get("investigation_justification")
     investigation_driver = args.get("investigation_driver")
-    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"), "additional_fields")
+    additional_fields = extract_args_from_additional_fields_arg(
+        args.get("additional_fields"),  # type: ignore[arg-type]
+        "additional_fields"
+    )
 
     validate_related_arguments_provided(company=company, site=site, site_group=site_group, region=region)
     validate_related_arguments_provided(
@@ -2730,7 +2733,9 @@ def problem_investigation_update_command(client: Client, args: Dict[str, Any]) -
         support_organization_pbm_mgr=support_organization_pbm_mgr,  # type: ignore[arg-type]
         temporary_workaround=temporary_workaround,  # type: ignore[arg-type]
         resolution=resolution,  # type: ignore[arg-type]
-        target_resolution_date=target_resolution_date.isoformat() if target_resolution_date else None,  # type: ignore[arg-type]
+        target_resolution_date=target_resolution_date.isoformat()  # type: ignore[arg-type]
+        if target_resolution_date
+        else None,
         investigation_justification=investigation_justification,  # type: ignore[arg-type]
         investigation_driver=investigation_driver,  # type: ignore[arg-type]
         assignee_pbm_mgr=assignee_pbm_mgr,  # type: ignore[arg-type]
@@ -2770,10 +2775,10 @@ def known_error_create_command(client: Client, args: Dict[str, Any]) -> CommandR
     assignee_pbm_mgr = args.get("assignee_pbm_mgr")
     temporary_workaround = args.get("temporary_workaround")
     resolution = args.get("resolution")
-    target_resolution_date = arg_to_datetime(args.get("target_resolution_date")).isoformat()
+    target_resolution_date = arg_to_datetime(args.get("target_resolution_date")).isoformat()  # type: ignore[union-attr]
     view_access = args.get("view_access")
     additional_fields = extract_args_from_additional_fields_arg(
-        args.get("additional_fields"),  # type: ignore[union-attr]
+        args.get("additional_fields"),  # type: ignore[arg-type]
         "additional_fields",
     )
 
@@ -2788,7 +2793,7 @@ def known_error_create_command(client: Client, args: Dict[str, Any]) -> CommandR
         support_company_pbm_mgr=support_company_pbm_mgr,
         support_organization_pbm_mgr=support_organization_pbm_mgr,
     )
-    response = client.create_problem_investigation_request(
+    response = client.create_problem_investigation_request(  # type: ignore[arg-type]
         KNOWN_ERROR,
         summary,  # type: ignore[arg-type]
         urgency=urgency,  # type: ignore[arg-type]
@@ -2807,9 +2812,9 @@ def known_error_create_command(client: Client, args: Dict[str, Any]) -> CommandR
         support_company_pbm_mgr=support_company_pbm_mgr,  # type: ignore[arg-type]
         support_organization_pbm_mgr=support_organization_pbm_mgr,  # type: ignore[arg-type]
         temporary_workaround=temporary_workaround,  # type: ignore[arg-type]
-        resolution=resolution,  # type: ignore[arg-type]
-        target_resolution_date=target_resolution_date,  # type: ignore[arg-type]
-        view_access=view_access,  # type: ignore[arg-type]
+        resolution=resolution,
+        target_resolution_date=target_resolution_date,
+        view_access=view_access,
         assignee_pbm_mgr=assignee_pbm_mgr,  # type: ignore[arg-type]
         **additional_fields,
     )
@@ -2869,7 +2874,7 @@ def known_error_update_command(client: Client, args: Dict[str, Any]) -> CommandR
     target_resolution_date: datetime = arg_to_datetime(args.get("target_resolution_date"))  # type: ignore[no-redef]
     additional_fields = extract_args_from_additional_fields_arg(
         args.get("additional_fields"),  # type: ignore[arg-type]
-        "additional_fields"
+        "additional_fields",
     )
 
     validate_related_arguments_provided(
@@ -2900,13 +2905,15 @@ def known_error_update_command(client: Client, args: Dict[str, Any]) -> CommandR
         assigned_group_pbm_mgr=assigned_group_pbm_mgr,  # type: ignore[arg-type]
         support_company_pbm_mgr=support_company_pbm_mgr,  # type: ignore[arg-type]
         support_organization_pbm_mgr=support_organization_pbm_mgr,  # type: ignore[arg-type]
-        target_resolution_date=target_resolution_date.isoformat() if target_resolution_date else None,  # type: ignore[arg-type]
+        target_resolution_date=target_resolution_date.isoformat()  # type: ignore[arg-type]
+        if target_resolution_date
+        else None,
         status_reason=status_reason,  # type: ignore[arg-type]
         assignee_pbm_mgr=assignee_pbm_mgr,  # type: ignore[arg-type]
         temporary_workaround=temporary_workaround,  # type: ignore[arg-type]
         resolution=resolution,  # type: ignore[arg-type]
         view_access=view_access,  # type: ignore[arg-type]
-        **additional_fields,  # type: ignore[arg-type]
+        **additional_fields,
     )
 
     command_results = CommandResults(readable_output=f"Known Error: {known_error_id} was successfully updated.")
@@ -3002,8 +3009,8 @@ def work_order_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     scedulded_end_date: datetime = arg_to_datetime(args.get("scedulded_end_date"))  # type: ignore[assignment]
 
     additional_fields = extract_args_from_additional_fields_arg(
-        args.get("additional_fields"), # type: ignore[arg-type]
-        "additional_fields"
+        args.get("additional_fields"),  # type: ignore[arg-type]
+        "additional_fields",
     )
     response = client.create_work_order_request(  # type: ignore[arg-type,call-arg]
         template_guid,  # type: ignore[arg-type]
