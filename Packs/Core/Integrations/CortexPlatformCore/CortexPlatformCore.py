@@ -421,7 +421,7 @@ def determine_assignee_filter_field(assignee_list: list) -> str:
     Determine whether the assignee should be filtered by email or pretty name.
 
     Args:
-        assignee (str): The assignee value to filter on.
+        assignee (list): The assignee values to filter on.
 
     Returns:
         str: The appropriate field to filter on based on the input.
@@ -1049,6 +1049,7 @@ def map_case_format(case_list):
 
     mapped_cases = []
     for case_data in case_list:
+        demisto.debug(f"Processing case data: {case_data}")
         mapped_case = {
             "case_id": str(case_data.get("CASE_ID")),
             "case_name": case_data.get("NAME"),
@@ -1056,8 +1057,8 @@ def map_case_format(case_list):
             "creation_time": case_data.get("CREATION_TIME"),
             "modification_time": case_data.get("LAST_UPDATE_TIME"),
             "resolved_timestamp": case_data.get("RESOLVED_TIMESTAMP"),
-            "status": case_data.get("STATUS", "").split("_")[-1].lower(),
-            "severity": case_data.get("SEVERITY", "").split("_")[-1].lower(),
+            "status": str(case_data.get("STATUS", case_data.get("STATUS_PROGRESS"))).split("_")[-1].lower(),
+            "severity": str(case_data.get("SEVERITY")).split("_")[-1].lower(),
             "case_domain": case_data.get("INCIDENT_DOMAIN"),
             "original_tags": [tag.get("tag_name") for tag in case_data.get("ORIGINAL_TAGS", [])],
             "tags": [tag.get("tag_name") for tag in case_data.get("CURRENT_TAGS", [])],
@@ -1074,7 +1075,7 @@ def map_case_format(case_list):
             "assigned_user_pretty_name": case_data.get("ASSIGNED_USER_PRETTY"),
             "assigned_user_mail": case_data.get("ASSIGNED_USER"),
             "resolve_comment": case_data.get("RESOLVED_COMMENT"),
-            "issues_grouping_status": case_data.get("CASE_GROUPING_STATUS", "").split("_")[-1],
+            "issues_grouping_status": str(case_data.get("CASE_GROUPING_STATUS")).split("_")[-1],
             "starred": case_data.get("CASE_STARRED"),
             "case_sources": case_data.get("INCIDENT_SOURCES"),
             "custom_fields": case_data.get("EXTENDED_FIELDS"),
