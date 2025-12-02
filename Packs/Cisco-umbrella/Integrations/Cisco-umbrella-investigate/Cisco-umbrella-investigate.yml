@@ -15,7 +15,7 @@ configuration:
   section: Connect
 - name: integrationReliability
   type: 15
-  required: true
+  required: false
   defaultvalue: B - Usually reliable
   display: Source Reliability
   options:
@@ -47,7 +47,7 @@ configuration:
 - defaultvalue: "0"
   display: DBot Score Suspicious Threshold (-100 to 100)
   name: suspicious_threshold
-  required: true
+  required: false
   type: 0
   additionalinfo: Make sure the suspicious threshold is greater than the malicious threshold.
   section: Collect
@@ -56,7 +56,7 @@ configuration:
   name: dboscore_threshold
   additionalinfo: Make sure the malicious threshold is less than the suspicious threshold.
   type: 0
-  required: true
+  required: false
   section: Collect
 description: Cisco Umbrella Investigate enables you to research domains, IPs, and URLs observed by the Umbrella resolvers.
 display: Cisco Umbrella Investigate
@@ -1907,7 +1907,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.11.4508456
+  dockerimage: demisto/python3:3.12.12.5490952
   feed: false
   isfetch: false
   longRunning: false
