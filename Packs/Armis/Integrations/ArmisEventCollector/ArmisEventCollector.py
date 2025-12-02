@@ -154,6 +154,7 @@ class Client(BaseClient):
     ):
         self._api_key = api_key
         self._context_manager = context_manager
+        self._access_token = None  # Initialize to prevent AttributeError in refresh_access_token
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         if not access_token or not self.is_valid_access_token(access_token):
             demisto.debug("Invalid access token was used, attempting to get new access token.")
