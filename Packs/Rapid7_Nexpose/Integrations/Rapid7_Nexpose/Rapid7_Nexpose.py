@@ -7053,7 +7053,7 @@ async def process_and_send_events_to_xsiam(
 
     size_in_bytes = sum(len(line.encode("utf-8")) for line in events)
 
-    tasks = send_events_to_xsiam_akamai(
+    tasks = send_events_to_xsiam_rapid7(
         processed_events,
         VENDOR.get(event_type),
         PRODUCT.get(event_type),
@@ -7078,11 +7078,11 @@ async def process_and_send_events_to_xsiam(
         event_type,
         {"last_sent_line": total_lines_after_batch_raw, "total_records_ingested": new_total_records, "snapshot_id": snapshot_id},
     )
-    demisto.debug({"assetsPulled": len(processed_events)})
+    demisto.updateModuleHealth({"assetsPulled": len(processed_events)})
     demisto.debug(f"Running in interval = {batch_counter}. Finished updating module health.")
 
 
-def akamai_send_data_to_xsiam(
+def rapid7_send_data_to_xsiam(
     data,
     vendor,
     product,
@@ -7144,7 +7144,7 @@ def akamai_send_data_to_xsiam(
 
     :type send_events_asynchronously: ``bool``
     :param send_events_asynchronously: whether to use asyncio to send the events to xsiam asynchronously or not.
-    Note that when set to True, the debug should be done from the integration itself.
+    Note that when set to True, the updateModuleHealth should be done from the integration itself.
 
     :type data_size_expected_to_split_evenly: ``bool``
     :param data_size_expected_to_split_evenly: whether the events should be about the same size or not.
@@ -7374,7 +7374,7 @@ async def xsiam_api_call_async_with_retries(
     return response
 
 
-def send_events_to_xsiam_akamai(
+def send_events_to_xsiam_rapid7(
     events,
     vendor,
     product,
@@ -7425,7 +7425,7 @@ def send_events_to_xsiam_akamai(
 
     :type send_events_asynchronously: ``bool``
     :param send_events_asynchronously: whether to use asyncio to send the events to xsiam asynchronously or not.
-    Note that when set to True, the debug should be done from the integration itself.
+    Note that when set to True, the updateModuleHealth should be done from the integration itself.
 
     :type data_size_expected_to_split_evenly: ``bool``
     :param data_size_expected_to_split_evenly: whether the events should be about the same size or not.
@@ -7436,7 +7436,7 @@ def send_events_to_xsiam_akamai(
     await asyncio.gather(*tasks)
     :rtype: ``List[Task]`` or ``None``
     """
-    return akamai_send_data_to_xsiam(
+    return rapid7_send_data_to_xsiam(
         events,
         vendor,
         product,
@@ -7499,7 +7499,7 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
             demisto.debug("\n--- Starting Data Streaming Phase ---")
 
             await download_and_parse_report(client, report_id, instance_id, event_integration_context, event_type, batch_size)
-            update_state_checkpoint(event_type, {"last_sent_line": 0, "finish": True, "snapshot_id": "", "total_records_ingested": 0})
+            update_state_checkpoint(event_type, {"last_sent_line": 0, "finish": True, "snapshot_id": "", "total_records_ingested": 0})  # noqa: E501
             demisto.debug("--- Data Streaming Phase Complete ---")
 
         except Exception as e:
@@ -7587,7 +7587,7 @@ async def fetch_assets_long_running_command(params: dict, token: str):
             demisto.debug("finished running all collectors")
 
         except Exception as e:
-            demisto.debug(f"Got the following error while trying to stream events: {str(e)}")
+            demisto.updateModuleHealth(f"Got the following error while trying to stream events: {str(e)}")
 
         end_time = time.time()
         duration_seconds = end_time - start_time

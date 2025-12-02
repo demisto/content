@@ -41,7 +41,7 @@ configuration:
   section: Connect
 - display: Long running instance
   name: longRunning
-  additionalinfo: This is a feature for high performance fetch assets. Use this param only if advised by CS. Make sure this feature is not used with fetch events configured in the integration params and that there's no config ID used for 2 different instances / features.
+  additionalinfo: This is a feature for high performance fetch assets.
   type: 8
   required: false
   section: Connect

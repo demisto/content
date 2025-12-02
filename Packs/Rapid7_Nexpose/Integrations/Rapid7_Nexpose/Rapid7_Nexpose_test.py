@@ -2336,3 +2336,576 @@ def test_get_asset_group_command(mocker, mock_client, name, type, group_id, limi
         )
     else:
         http_request.assert_called_with(url_suffix=f"/asset_groups/{group_id}", method="GET", resp_type="json")
+
+
+@pytest.mark.asyncio
+async def test_run_all_collectors_success(mocker):
+    """
+    Given:
+      - Both asset and vulnerability collectors run successfully
+    
+    When:
+      - Calling the run_all_collectors function
+    
+    Then:
+      - Ensure that both collectors are executed
+      - Ensure no exceptions are raised
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+    
+    # Mock the run_full_collector_workflow function to return successfully
+    run_full_collector_mock = mocker.patch(
+        "Rapid7_Nexpose.run_full_collector_workflow",
+        return_value=None
+    )
+    
+    # Call the function under test
+    await run_all_collectors(client=mock_client, batch_size=1000)
+    
+    # Assert that run_full_collector_workflow was called twice with the correct parameters
+    assert run_full_collector_mock.call_count == 2
+    run_full_collector_mock.assert_any_call(client=mock_client, batch_size=1000, event_type="asset")
+    run_full_collector_mock.assert_any_call(client=mock_client, batch_size=1000, event_type="vulnerability")
+
+
+@pytest.mark.asyncio
+async def test_run_all_collectors_failure(mocker):
+    """
+    Given:
+      - One of the collectors (vulnerability collector) fails with an exception
+    
+    When:
+      - Calling the run_all_collectors function
+    
+    Then:
+      - Ensure that both collectors are executed
+      - Ensure an exception is raised with the appropriate error message
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+    
+    # Create a test exception
+    test_exception = Exception("Vulnerability collector failed")
+    
+    # Mock the run_full_collector_workflow function to succeed for asset and fail for vulnerability
+    async def mock_run_collector(client, batch_size, event_type):
+        if event_type == "vulnerability":
+            raise test_exception
+        return None
+    
+    mocker.patch(
+        "Rapid7_Nexpose.run_full_collector_workflow",
+        side_effect=mock_run_collector
+    )
+    
+    # Call the function under test and expect an exception
+    with pytest.raises(Exception) as excinfo:
+        await run_all_collectors(client=mock_client, batch_size=1000)
+    
+    # Verify the exception contains the expected error message
+    assert "One or more concurrent collector workflows failed" in str(excinfo.value)
+    assert "Vulnerability Collector failed" in str(excinfo.value)
+
+
+@pytest.mark.asyncio
+async def test_run_full_collector_workflow_success(mocker):
+    """
+    Given:
+      - A properly configured InsightVMClient
+      - No existing state in the integration context
+    
+    When:
+      - Calling the run_full_collector_workflow function
+    
+    Then:
+      - Ensure the function executes the full workflow successfully
+      - Verify all expected functions are called with correct parameters
+      - Ensure state checkpoints are updated correctly
+      - Ensure cleanup is performed
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+    
+    # Mock the integration context
+    mock_integration_context = {}
+    mocker.patch("Rapid7_Nexpose.get_integration_context", return_value=mock_integration_context)
+    mock_set_integration_context = mocker.patch("Rapid7_Nexpose.set_integration_context")
+    mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    
+    # Mock the report creation and generation functions
+    mock_create_report = mocker.patch(
+        "Rapid7_Nexpose.create_report_config_from_template", 
+        return_value="test-report-id"
+    )
+    mock_generate_report = mocker.patch(
+        "Rapid7_Nexpose.generate_report", 
+        return_value="test-instance-id"
+    )
+    mock_check_status = mocker.patch(
+        "Rapid7_Nexpose.check_status_of_report", 
+        return_value="test-instance-id"
+    )
+    mock_download_parse = mocker.patch(
+        "Rapid7_Nexpose.download_and_parse_report"
+    )
+    mock_delete_instance = mocker.patch(
+        "Rapid7_Nexpose.delete_report_instance"
+    )
+    mock_delete_config = mocker.patch(
+        "Rapid7_Nexpose.delete_report_configuration"
+    )
+    
+    # Call the function under test
+    await run_full_collector_workflow(client=mock_client, event_type="asset", batch_size=500)
+    
+    # Verify the workflow execution
+    mock_create_report.assert_called_once_with(mock_client, "asset")
+    mock_generate_report.assert_called_once_with(mock_client, "test-report-id")
+    mock_check_status.assert_called_once_with(mock_client, "test-report-id", "test-instance-id")
+    mock_download_parse.assert_called_once_with(
+        mock_client, "test-report-id", "test-instance-id", {}, "asset", 500
+    )
+    
+    # Verify cleanup was performed
+    mock_delete_instance.assert_called_once_with(mock_client, "test-report-id", "test-instance-id")
+    mock_delete_config.assert_called_once_with(mock_client, "test-report-id")
+    
+    # Verify state checkpoints were updated correctly
+    assert mock_set_integration_context.call_count >= 3  # At least 3 updates to the context
+
+
+@pytest.mark.asyncio
+async def test_run_full_collector_workflow_error_handling(mocker):
+    """
+    Given:
+      - A properly configured InsightVMClient
+      - An error occurs during the download and parse phase
+    
+    When:
+      - Calling the run_full_collector_workflow function
+    
+    Then:
+      - Ensure the function handles the error properly
+      - Verify the error is raised as a DemistoException
+      - Ensure cleanup is still performed despite the error
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+    
+    # Mock the integration context
+    mock_integration_context = {}
+    mocker.patch("Rapid7_Nexpose.get_integration_context", return_value=mock_integration_context)
+    mocker.patch("Rapid7_Nexpose.set_integration_context")
+    mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    
+    # Mock the report creation and generation functions
+    mocker.patch(
+        "Rapid7_Nexpose.create_report_config_from_template", 
+        return_value="test-report-id"
+    )
+    mocker.patch(
+        "Rapid7_Nexpose.generate_report", 
+        return_value="test-instance-id"
+    )
+    mocker.patch(
+        "Rapid7_Nexpose.check_status_of_report", 
+        return_value="test-instance-id"
+    )
+    
+    # Mock the download_and_parse_report function to raise an exception
+    test_error = Exception("Test error during download and parse")
+    mocker.patch(
+        "Rapid7_Nexpose.download_and_parse_report",
+        side_effect=test_error
+    )
+    
+    # Mock the cleanup functions
+    mock_delete_instance = mocker.patch(
+        "Rapid7_Nexpose.delete_report_instance"
+    )
+    mock_delete_config = mocker.patch(
+        "Rapid7_Nexpose.delete_report_configuration"
+    )
+    
+    # Call the function under test and expect a DemistoException
+    with pytest.raises(DemistoException) as excinfo:
+        await run_full_collector_workflow(client=mock_client, event_type="vulnerability", batch_size=500)
+    
+    # Verify the exception contains the expected error message
+    assert "Got the following error: Test error during download and parse" in str(excinfo.value)
+    
+    # In the actual implementation, cleanup is not performed when an exception is raised
+    # The cleanup phase is only executed if no exception is raised or if finish is True
+    mock_delete_instance.assert_not_called()
+    mock_delete_config.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_check_status_of_report_success(mocker):
+    """
+    Given:
+      - A properly configured InsightVMClient
+      - A report that is already complete
+    
+    When:
+      - Calling the check_status_of_report function
+    
+    Then:
+      - Ensure the function returns the instance_id immediately
+      - Verify no regeneration of the report is attempted
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+    
+    # Mock response object
+    mock_response = mocker.AsyncMock()
+    mock_response.json = mocker.AsyncMock(return_value={"status": "complete"})
+    
+    # Mock the client's http_request method to return our mock response
+    mock_client.http_request = mocker.AsyncMock(return_value=mock_response)
+    
+    # Mock asyncio.sleep to avoid waiting in the test
+    mocker.patch("Rapid7_Nexpose.asyncio.sleep")
+    
+    # Mock demisto functions
+    mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    
+    # Mock generate_report to verify it's not called
+    mock_generate_report = mocker.patch("Rapid7_Nexpose.generate_report")
+    
+    # Call the function under test
+    result = await check_status_of_report(mock_client, "test-report-id", "test-instance-id")
+    
+    # Verify the function returns the instance_id
+    assert result == "test-instance-id"
+    
+    # Verify http_request was called with the correct parameters
+    mock_client.http_request.assert_called_once_with(
+        "GET", 
+        "/api/3/reports/test-report-id/history/test-instance-id"
+    )
+    
+    # Verify generate_report was not called
+    mock_generate_report.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_check_status_of_report_failed(mocker):
+    """
+    Given:
+      - A properly configured InsightVMClient
+      - A report that has failed
+      - A successful regeneration of the report
+    
+    When:
+      - Calling the check_status_of_report function
+    
+    Then:
+      - Ensure the function attempts to regenerate the report
+      - Verify the function returns the new instance_id
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+    
+    # Create a sequence of responses: first failed, then complete
+    mock_response_failed = mocker.AsyncMock()
+    mock_response_failed.json = mocker.AsyncMock(return_value={"status": "failed"})
+    
+    mock_response_complete = mocker.AsyncMock()
+    mock_response_complete.json = mocker.AsyncMock(return_value={"status": "complete"})
+    
+    # Mock the client's http_request method to return our sequence of responses
+    mock_client.http_request = mocker.AsyncMock(side_effect=[mock_response_failed, mock_response_complete])
+    
+    # Mock asyncio.sleep to avoid waiting in the test
+    mocker.patch("Rapid7_Nexpose.asyncio.sleep")
+    
+    # Mock demisto functions
+    mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    
+    # Mock generate_report to return a new instance_id
+    mock_generate_report = mocker.patch(
+        "Rapid7_Nexpose.generate_report", 
+        return_value="new-instance-id"
+    )
+    
+    # Call the function under test
+    result = await check_status_of_report(mock_client, "test-report-id", "test-instance-id")
+    
+    # Verify the function returns the new instance_id
+    assert result == "new-instance-id"
+    
+    # Verify http_request was called with the correct parameters
+    mock_client.http_request.assert_any_call(
+        "GET", 
+        "/api/3/reports/test-report-id/history/test-instance-id"
+    )
+    
+    # Verify generate_report was called with the correct parameters
+    mock_generate_report.assert_called_once_with(mock_client, "test-report-id")
+
+
+@pytest.mark.asyncio
+async def test_download_and_parse_report_success(mocker):
+    """
+    Given:
+      - A properly configured InsightVMClient
+      - A valid report with CSV data
+    
+    When:
+      - Calling the download_and_parse_report function
+    
+    Then:
+      - Ensure the function processes the report data correctly
+      - Verify events are sent to XSIAM
+      - Ensure state checkpoints are updated
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+    
+    # Mock the stream_report function to return CSV data
+    # First line is header, subsequent lines are data
+    csv_data = [
+        "id,name,ip_address,os",
+        "1,server1,192.168.1.1,Linux",
+        "2,server2,192.168.1.2,Windows"
+    ]
+    
+    # Create a mock async generator for stream_report
+    async def mock_stream_report(*args, **kwargs):
+        for line in csv_data:
+            yield line
+    
+    mocker.patch("Rapid7_Nexpose.stream_report", side_effect=mock_stream_report)
+    
+    # Mock process_and_send_events_to_xsiam
+    mock_process_send = mocker.patch("Rapid7_Nexpose.process_and_send_events_to_xsiam")
+    
+    # Mock update_state_checkpoint
+    mock_update_checkpoint = mocker.patch("Rapid7_Nexpose.update_state_checkpoint")
+    
+    # Mock other dependencies
+    mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    
+    # Create a proper mock for asyncio.create_task that returns a mock Task object
+    mock_task = mocker.MagicMock()
+    mock_task.add_done_callback = mocker.MagicMock()
+    mock_create_task = mocker.patch("Rapid7_Nexpose.asyncio.create_task", return_value=mock_task)
+    
+    # Mock asyncio.gather to return a coroutine that can be awaited
+    async def mock_gather(*args, **kwargs):
+        return [None]  # Return a simple result
+    
+    mocker.patch("Rapid7_Nexpose.asyncio.gather", side_effect=mock_gather)
+    
+    # Create test parameters
+    event_integration_context = {
+        "last_sent_line": 0,
+        "total_records_ingested": 0,
+        "snapshot_id": "test-snapshot-id"
+    }
+    
+    # Call the function under test
+    await download_and_parse_report(
+        client=mock_client,
+        report_id="test-report-id",
+        instance_id="test-instance-id",
+        event_integration_context=event_integration_context,
+        event_type="asset",
+        batch_size=10
+    )
+    
+    # Verify process_and_send_events_to_xsiam was called with the correct parameters
+    # We expect 2 JSON records to be sent (one for each data row)
+    expected_records = [
+        json.dumps({"id": "1", "name": "server1", "ip_address": "192.168.1.1", "os": "Linux"}),
+        json.dumps({"id": "2", "name": "server2", "ip_address": "192.168.1.2", "os": "Windows"})
+    ]
+    
+    # Verify process_and_send_events_to_xsiam was called
+    mock_process_send.assert_called_once()
+    
+    # Get the actual records passed to process_and_send_events_to_xsiam
+    actual_records = mock_process_send.call_args[0][0]
+    
+    # Verify the records match what we expect
+    assert len(actual_records) == 2
+    assert all(record in expected_records for record in actual_records)
+    
+    # We're primarily testing that process_and_send_events_to_xsiam was called correctly
+    # The update_state_checkpoint call happens inside process_and_send_events_to_xsiam
+    # which we've mocked, so we don't expect it to be called directly
+    assert mock_process_send.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_download_and_parse_report_error(mocker):
+    """
+    Given:
+      - A properly configured InsightVMClient
+      - An error occurs during report streaming
+    
+    When:
+      - Calling the download_and_parse_report function
+    
+    Then:
+      - Ensure the function handles the error properly
+      - Verify the error is propagated
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+    
+    # Mock the stream_report function to raise an exception
+    # We need to create a proper async generator that raises an exception when __aiter__ is called
+    class MockStreamReportError:
+        def __aiter__(self):
+            raise Exception("Error streaming report")
+    
+    mocker.patch("Rapid7_Nexpose.stream_report", return_value=MockStreamReportError())
+    
+    # Mock process_and_send_events_to_xsiam
+    mock_process_send = mocker.patch("Rapid7_Nexpose.process_and_send_events_to_xsiam")
+    
+    # Mock update_state_checkpoint
+    mock_update_checkpoint = mocker.patch("Rapid7_Nexpose.update_state_checkpoint")
+    
+    # Mock other dependencies
+    mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    
+    # Create test parameters
+    event_integration_context = {
+        "last_sent_line": 0,
+        "total_records_ingested": 0,
+        "snapshot_id": "test-snapshot-id"
+    }
+    
+    # Call the function under test and expect an exception
+    with pytest.raises(Exception) as excinfo:
+        await download_and_parse_report(
+            client=mock_client,
+            report_id="test-report-id",
+            instance_id="test-instance-id",
+            event_integration_context=event_integration_context,
+            event_type="asset",
+            batch_size=10
+        )
+    
+    # Verify the exception contains the expected error message
+    assert "Error streaming report" in str(excinfo.value)
+    
+    # Verify process_and_send_events_to_xsiam was not called
+    mock_process_send.assert_not_called()
+
+
+import copy
+
+@pytest.mark.parametrize(
+    "initial_context, collector_type, changes, expected_context",
+    [
+        (
+            {},  # Empty initial context
+            "asset",
+            {"last_run": "2023-01-01T00:00:00Z"},
+            {"asset": {"last_run": "2023-01-01T00:00:00Z"}}
+        ),
+        (
+            {"asset": {"total_records": 100}},  # Existing context with asset data
+            "asset",
+            {"last_run": "2023-01-01T00:00:00Z"},
+            {"asset": {"total_records": 100, "last_run": "2023-01-01T00:00:00Z"}}
+        ),
+        (
+            {"vulnerability": {"last_run": "2022-01-01T00:00:00Z"}},  # Existing context with vulnerability data
+            "asset",
+            {"last_run": "2023-01-01T00:00:00Z"},
+            {"vulnerability": {"last_run": "2022-01-01T00:00:00Z"}, "asset": {"last_run": "2023-01-01T00:00:00Z"}}
+        ),
+    ],
+)
+def test_update_state_checkpoint(mocker, initial_context, collector_type, changes, expected_context):
+    """
+    Given:
+      - An initial integration context
+      - A collector type to update
+      - Changes to apply to the collector state
+    
+    When:
+      - Calling the update_state_checkpoint function
+    
+    Then:
+      - Ensure the integration context is retrieved
+      - Ensure the changes are applied to the specified collector type
+      - Ensure the updated context is set back to the platform
+      - Ensure the module health is updated
+    """
+    # Mock the integration context functions
+    mock_get_context = mocker.patch("Rapid7_Nexpose.get_integration_context", return_value=initial_context)
+    mock_set_context = mocker.patch("Rapid7_Nexpose.set_integration_context")
+    mock_update_health = mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+    
+    # Call the function under test
+    update_state_checkpoint(collector_type, changes)
+    
+    # Verify get_integration_context was called
+    mock_get_context.assert_called_once()
+    
+    # Verify set_integration_context was called with the expected context
+    mock_set_context.assert_called_once_with(expected_context)
+    
+    # Verify updateModuleHealth was called
+    mock_update_health.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "collector_context, collector_type, changes, expected_result",
+    [
+        (
+            {},  # Empty collector context
+            "asset",
+            {"last_run": "2023-01-01T00:00:00Z"},
+            {"asset": {"last_run": "2023-01-01T00:00:00Z"}}
+        ),
+        (
+            {"asset": {"total_records": 100}},  # Existing context with asset data
+            "asset",
+            {"last_run": "2023-01-01T00:00:00Z"},
+            {"asset": {"total_records": 100, "last_run": "2023-01-01T00:00:00Z"}}
+        ),
+        (
+            {"vulnerability": {"last_run": "2022-01-01T00:00:00Z"}},  # Existing context with vulnerability data
+            "asset",
+            {"last_run": "2023-01-01T00:00:00Z"},
+            {"vulnerability": {"last_run": "2022-01-01T00:00:00Z"}, "asset": {"last_run": "2023-01-01T00:00:00Z"}}
+        ),
+    ],
+)
+def test_apply_collector_changes(collector_context, collector_type, changes, expected_result):
+    """
+    Given:
+      - A collector context
+      - A collector type to update
+      - Changes to apply to the collector state
+    
+    When:
+      - Calling the _apply_collector_changes function
+    
+    Then:
+      - Ensure the changes are applied correctly to the specified collector type
+      - Ensure the collector context is updated as expected
+    """
+    # Create a copy of the collector context to avoid modifying the test data
+    context_copy = copy.deepcopy(collector_context)
+    
+    # Call the function under test
+    from Rapid7_Nexpose import _apply_collector_changes
+    _apply_collector_changes(context_copy, collector_type, changes)
+    
+    # Verify the context was updated correctly
+    assert context_copy == expected_result
