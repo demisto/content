@@ -697,7 +697,9 @@ script:
         - description: The assets IDs related to the issue. Accepts a comma-separated list.
           isArray: true
           name: asset_ids
-        - description: The assignee of the issue. Accepts a comma-separated list.
+        - description: |
+            The assignee of the issue. Accepts a comma-separated list.
+            Use "unassigned" for unassigned issues or "assigned" for all assigned issues.
           isArray: true
           name: assignee
         - description: A comma separated list of outputs to include in the context.
