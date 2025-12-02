@@ -1601,6 +1601,8 @@ script:
         description: |
           A JSON encoded string representing a list of asset groups to search for. (e.g., `["group1", "group2"]`).
         isArray: true
+      - name: asset_categories
+        description: A Comma-separated list of asset categories to search for. (e.g., "category1,category2").
       name: core-search-assets
       description: Retrieves asset from the Cortex platform using optional filter criteria.
       outputs:
