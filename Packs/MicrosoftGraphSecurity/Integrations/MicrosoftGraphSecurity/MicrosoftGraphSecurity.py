@@ -2198,9 +2198,12 @@ def main():
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")
+    demisto.debug("Another dummy log")
     try:
         auth_code = params.get("auth_code", {}).get("password")
         redirect_uri = params.get("redirect_uri")
+        redirect_uri2 = params.get("redirect_uri")
+
         grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
 
         client: MsGraphClient = MsGraphClient(
