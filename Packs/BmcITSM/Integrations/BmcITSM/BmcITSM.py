@@ -45,14 +45,22 @@ INCIDENT_CONTEXT_MAPPER = {
     "Incident Number": "DisplayID",
     "Submit Date": "CreateDate",
     "Status": "Status",
+    "Work Logs": "WorkLogs",
     "Description": "Summary",
     "Contact Sensitivity": "ContactSensitivity",
     "Last Modified Date": "LastModifiedDate",
+    "Vendor Ticket Number": "VendorTicketNumber",
     "Detailed Decription": "Details",  # The product has typo in the response
     "VIP": "VIP",
     "Service Type": "SubType",
     "Reported Source": "ReportedSource",
     "Status_Reason": "StatusReason",
+    "Categorization Tier 1": "OperationalCategory1",
+    "Categorization Tier 2": "OperationalCategory2",
+    "Categorization Tier 3": "OperationalCategory3",
+    "Product Categorization Tier 1": "ProductCategory1",
+    "Product Categorization Tier 2": "ProductCategory2",
+    "Product Categorization Tier 3": "ProductCategory3",
 }
 
 TASK_CONTEXT_MAPPER = {
@@ -157,6 +165,15 @@ TICKET_TYPE_TO_LIST_FORM = {
 }
 
 TICKET_TYPE_TO_DELETE_FORM = {
+    CHANGE_REQUEST: "CHG:Infrastructure Change",
+    INCIDENT: "HPD:Help Desk",
+    TASK: "TMS:Task",
+    PROBLEM_INVESTIGATION: "PBM:Problem Investigation",
+    KNOWN_ERROR: "PBM:Known Error",
+    WORK_ORDER: "WOI:WorkOrderInterface",
+}
+
+TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM = {
     CHANGE_REQUEST: "CHG:Infrastructure Change",
     INCIDENT: "HPD:Help Desk",
     TASK: "TMS:Task",
@@ -279,7 +296,7 @@ ALL_TICKETS = [
 TICKET_INCIDENT_TYPES = [
     "BMC Change-Request",
     "BMC Incident",
-    "BMC Problem - Known Error",
+    "BMC Problem – Known Error",
     "BMC Problem Investigation incident",
     "BMC Service Request",
     "BMC Task",
@@ -291,7 +308,7 @@ TICKET_TYPE_TO_INCIDENT_TYPE = {
     CHANGE_REQUEST: "BMC Change-Request",
     INCIDENT: "BMC Incident",
     PROBLEM_INVESTIGATION: "BMC Problem Investigation incident",
-    KNOWN_ERROR: "BMC Problem - Known Error",
+    KNOWN_ERROR: "BMC Problem – Known Error",
     TASK: "BMC Task",
     WORK_ORDER: "BMC Work Order",
 }
@@ -304,6 +321,7 @@ MIRRORING_COMMON_FIELDS = [
     "Impact",
     "Details",
     "CloseReason",
+    "Resolution",
 ]
 
 TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS = {
@@ -335,7 +353,6 @@ class Client(BaseClient):
         jwt_token = self.retrieve_access_token(username, password)
         self._headers = {}
         self._headers["Authorization"] = f"AR-JWT {jwt_token}"
-        add_sensitive_log_strs(jwt_token)
 
     def retrieve_access_token(self, username: str, password: str) -> str:
         """
@@ -357,7 +374,10 @@ class Client(BaseClient):
             token = self._http_request(
                 "POST",
                 "jwt/login",
-                data={"username": username, "password": password},
+                data={
+                    "username": username,
+                    "password": password
+                },
                 resp_type="text",
             )
 
@@ -370,7 +390,7 @@ class Client(BaseClient):
             return token
         except DemistoException as exception:
             raise ValueError(
-                f"Authentication failed. Please Check the server url or validate your crdentials. {exception!s}"
+                f"Authentication failed. Please Check the server url or validate your crdentials. {str(exception)}"
             ) from exception
 
     def list_request(self, form: str, query: str = None) -> Dict[str, Any]:
@@ -382,11 +402,62 @@ class Client(BaseClient):
             query (str): Query qualification.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
         params = remove_empty_elements({"q": query})
         response = self._http_request("GET", f"arsys/v1/entry/{form}", params=params)
         return response
+
+    def worklog_attachment_get_request(self, worklog_id: str) -> List[fileResult]:
+        """
+        Get BmcITSM Work Log Attachments.
+
+        Args:
+            worklog_id (str): The Work Log ID to pull the attachments from.
+
+        Returns:
+            Dict[str, Any]: API response from BmcITSM.
+        """
+        attachments = []
+        for i in range(1,4):
+            res = self._http_request("GET",
+                                     f"arsys/v1/entry/HPD:WorkLog/{worklog_id}/attach/z2AF Work Log0{i}",
+                                     resp_type="response")
+            try:
+                content_disposition = res.headers['content-disposition']
+            except KeyError:
+                continue
+            fname = re.findall("filename\*?=([^;]+)", content_disposition, flags=re.IGNORECASE)
+            fname = fname[0].strip().strip('"')
+            attachments.append(fileResult(fname, res.content))
+
+        return attachments
+
+    def worklog_add_request(self, incident_number, worklog_type, view_access,  detailed_description, files=None):
+        data = {
+          "values":{
+            "Detailed Description": detailed_description,
+            "Incident Number" : incident_number,
+            "Work Log Type" : worklog_type,
+            "View Access" : view_access,
+          }
+        }
+        if files:
+            data['values']['z1D Action']= "NEW"
+            for i, file in enumerate(files.values()):
+                data['values'][f"z2AF Work Log0{i+1}"] = file[0]
+            files['entry'] =  (None, json.dumps(data), 'application/json')
+            res = self._http_request("POST", f"arsys/v1/entry/HPD:WorkLog/",
+                                              files=files,
+                                              resp_type='response'
+                                              )
+        else:
+            res = self._http_request("POST", f"arsys/v1/entry/HPD:WorkLog/",
+                                              json_data=data,
+                                              resp_type='response'
+                                              )
+
+        return "Worklog is successfully added"
 
     def ticket_delete_request(self, ticket_form: str, ticket_id: str) -> str:
         """
@@ -397,11 +468,56 @@ class Client(BaseClient):
             ticket_id (str): The ID of the ticket to delete.
 
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
         """
 
-        response = self._http_request("DELETE", f"arsys/v1/entry/{ticket_form}/{ticket_id}", resp_type="text")
+        response = self._http_request("DELETE",
+                                      f"arsys/v1/entry/{ticket_form}/{ticket_id}",
+                                      resp_type="text")
         return response
+
+    def ticket_create_relationship_request(self,
+                                           request_type: str,
+                                           request_description: str,
+                                           association_type: str,
+                                           first_form_name: str,
+                                           first_request_id: str,
+                                           second_form_name: str,
+                                           second_request_id: str,
+                                           ) -> str:
+        """
+        BmcITSM ticket relationship request.
+
+        Args:
+            request_type (str): The ticket type to create relationship.
+            request_description (str): The description of the relationship.
+            association_type: The association type of the relationship.
+            first_form_name: The form name of the incident.
+            first_request_id: The ID of the incident to create relationship.
+            second_form_name: The form name of the incident.
+            second_request_id: The ID of the incident to create relationship.
+
+        Returns:
+            str: API response from BmcITSM.
+        """
+
+        data = {
+            "values": {
+                "Request Type01": request_type,
+                "Request Description01": request_description,
+                "Association Type01": association_type,
+                "Form Name01": first_form_name,
+                "Request ID01": first_request_id,
+                "Form Name02": second_form_name,
+                "Request ID02": second_request_id
+            }
+        }
+        self._http_request("POST",
+                           "arsys/v1/entry/HPD:Associations",
+                           json_data=data,
+                           resp_type="text")
+
+        return f"Created relationship between {first_request_id} and {second_request_id}."
 
     def create_service_request_request(
         self,
@@ -429,24 +545,22 @@ class Client(BaseClient):
             status (str): Request status.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
 
-        properties = remove_empty_elements(
-            {
-                "z1D Action": "CREATE",
-                "Source Keyword": "blank",
-                "First Name": first_name,
-                "Last Name": last_name,
-                "Login ID": login_id,
-                "TitleInstanceID": srd_instance_id,
-                "AppRequestSummary": summary,
-                "Urgency": urgency,
-                "Impact": impact,
-                "Status": status,
-                **additional_fields,
-            }
-        )
+        properties = remove_empty_elements({
+            "z1D Action": "CREATE",
+            "Source Keyword": "blank",
+            "First Name": first_name,
+            "Last Name": last_name,
+            "Login ID": login_id,
+            "TitleInstanceID": srd_instance_id,
+            "AppRequestSummary": summary,
+            "Urgency": urgency,
+            "Impact": impact,
+            "Status": status,
+            **additional_fields,
+        })
         data = {"values": properties}
 
         params = {"fields": TICKET_TYPE_TO_CREATE_QUERY[SERVICE_REQUEST]}
@@ -497,27 +611,25 @@ class Client(BaseClient):
             status_reason (str): Reasin for status change.
 
             Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
 
         """
 
-        properties = remove_empty_elements(
-            {
-                "Customer First Name": customer_first_name,
-                "Customer Last Name": customer_last_name,
-                "Impact": impact,
-                "Location Company": location_company,
-                "Region": region,
-                "Site": site,
-                "Site Group": site_group,
-                "Status": status,
-                "Urgency": urgency,
-                "Summary": summary,
-                "Assignee": assignee,
-                "Status_Reason": status_reason,
-                **additional_fields,
-            }
-        )
+        properties = remove_empty_elements({
+            "Customer First Name": customer_first_name,
+            "Customer Last Name": customer_last_name,
+            "Impact": impact,
+            "Location Company": location_company,
+            "Region": region,
+            "Site": site,
+            "Site Group": site_group,
+            "Status": status,
+            "Urgency": urgency,
+            "Summary": summary,
+            "Assignee": assignee,
+            "Status_Reason": status_reason,
+            **additional_fields,
+        })
         data = {"values": properties}
 
         self._http_request(
@@ -542,12 +654,13 @@ class Client(BaseClient):
         company: str,
         assigned_support_organization: str,
         assigned_support_company: str,
-        assigned_group: str,
+        assigned_support_group_name: str,
         assignee: str,
         assignee_login_id: str,
         site_group: str,
         site: str,
         region: str,
+        vendor_ticket_number: str,
         **additional_fields,
     ) -> Dict[str, Any]:
         """
@@ -569,32 +682,31 @@ class Client(BaseClient):
             customer_last_name (str): Customer last name.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
-        properties = remove_empty_elements(
-            {
-                "First_Name": first_name,
-                "Last_Name": last_name,
-                "TemplateID": template_instance_id,
-                "Description": summary,
-                "Detailed_Decription": details,
-                "Company": company,
-                "Urgency": urgency,
-                "Impact": impact,
-                "Status": status,
-                "Reported Source": reported_source,
-                "Service_Type": service_type,
-                "Assigned Support Organization": assigned_support_organization,
-                "Assigned Group": assigned_group,
-                "Assignee": assignee,
-                "Assignee Login ID": assignee_login_id,
-                "Assigned Support Company": assigned_support_company,
-                "Site Group": site_group,
-                "Region": region,
-                "Site": site,
-                **additional_fields,
-            }
-        )
+        properties = remove_empty_elements({
+            "First_Name": first_name,
+            "Last_Name": last_name,
+            "TemplateID": template_instance_id,
+            "Description": summary,
+            "Detailed_Decription": details,
+            "Company": company,
+            "Urgency": urgency,
+            "Impact": impact,
+            "Status": status,
+            "Reported Source": reported_source,
+            "Service_Type": service_type,
+            "Assigned Support Organization": assigned_support_organization,
+            "Assigned Group": assigned_support_group_name,
+            "Assignee": assignee,
+            "Assignee Login ID": assignee_login_id,
+            "Assigned Support Company": assigned_support_company,
+            "Vendor Ticket Number": vendor_ticket_number,
+            "Site Group": site_group,
+            "Region": region,
+            "Site": site,
+            **additional_fields,
+        })
         data = {"values": properties}
         params = {"fields": TICKET_TYPE_TO_CREATE_QUERY[INCIDENT]}
 
@@ -622,7 +734,7 @@ class Client(BaseClient):
         company: str,
         assigned_support_organization: str,
         assigned_support_company: str,
-        assigned_group: str,
+        assigned_support_group_name: str,
         assignee: str,
         assignee_login_id: str,
         site_group: str,
@@ -649,7 +761,7 @@ class Client(BaseClient):
             company (str): Ticket company.
             assigned_support_organization (str): Assignee organization.
             assigned_support_company (str):  Assignee company.
-            assigned_group (str):  Assignee group name.
+            assigned_support_group_name (str):  Assignee group name.
             assignee (str): Ticket assignee.
             assignee_login_id (str): Tixcket assignee login ID.
             site_group (str): Site group.
@@ -658,36 +770,32 @@ class Client(BaseClient):
             status_reason (str): Reason for changing the status.
             resolution (str): Ticket resolution.
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
         """
 
-        properties = remove_empty_elements(
-            {
-                "First_Name": first_name,
-                "Last_Name": last_name,
-                "Description": summary,
-                # Note that when creating a new incident using the bmc-itsm-incident-create command,
-                # the details field is called "Detailed_Decription" with an underscore.
-                "Detailed Decription": details,
-                "Company": company,
-                "Urgency": urgency,
-                "Impact": impact,
-                "Status": status,
-                "Reported Source": reported_source,
-                "Service_Type": service_type,
-                "Assigned Support Organization": assigned_support_organization,
-                "Assigned Group": assigned_group,
-                "Assignee": assignee,
-                "Assignee Login ID": assignee_login_id,
-                "Assigned Support Company": assigned_support_company,
-                "Site": site,
-                "Site Group": site_group,
-                "Region": region,
-                "Status_Reason": status_reason,
-                "Resolution": resolution,
-                **additional_fields,
-            }
-        )
+        properties = remove_empty_elements({
+            "First_Name": first_name,
+            "Last_Name": last_name,
+            "Description": summary,
+            "Detailed_Decription": details,
+            "Company": company,
+            "Urgency": urgency,
+            "Impact": impact,
+            "Status": status,
+            "Reported Source": reported_source,
+            "Service_Type": service_type,
+            "Assigned Support Organization": assigned_support_organization,
+            "Assigned Group": assigned_support_group_name,
+            "Assignee": assignee,
+            "Assignee Login ID": assignee_login_id,
+            "Assigned Support Company": assigned_support_company,
+            "Site": site,
+            "Site Group": site_group,
+            "Region": region,
+            "Status_Reason": status_reason,
+            "Resolution": resolution,
+            **additional_fields,
+        })
         data = {"values": properties}
 
         response = self._http_request(
@@ -735,26 +843,24 @@ class Client(BaseClient):
             customer_last_name (str): Customer last name.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
-        properties = remove_empty_elements(
-            {
-                "First Name": first_name,
-                "Last Name": last_name,
-                "Customer First Name": customer_first_name,
-                "Customer Last Name": customer_last_name,
-                "TemplateID": template_instance_id,
-                "Description": summary,
-                "Location Company": location_company,
-                "Urgency": urgency,
-                "Impact": impact,
-                "Status": status,
-                "Change Type": change_type,
-                "Risk Level": risk_level,
-                "Priority": priority,
-                **additional_fields,
-            }
-        )
+        properties = remove_empty_elements({
+            "First Name": first_name,
+            "Last Name": last_name,
+            "Customer First Name": customer_first_name,
+            "Customer Last Name": customer_last_name,
+            "TemplateID": template_instance_id,
+            "Description": summary,
+            "Location Company": location_company,
+            "Urgency": urgency,
+            "Impact": impact,
+            "Status": status,
+            "Change Type": change_type,
+            "Risk Level": risk_level,
+            "Priority": priority,
+            **additional_fields,
+        })
         data = {"values": properties}
         params = {"fields": TICKET_TYPE_TO_CREATE_QUERY[CHANGE_REQUEST]}
 
@@ -821,37 +927,35 @@ class Client(BaseClient):
             region (str): Region.
             company (str): Company.
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
 
 
         """
-        properties = remove_empty_elements(
-            {
-                "First Name": first_name,
-                "Last Name": last_name,
-                "Customer First Name": customer_first_name,
-                "Customer Last Name": customer_last_name,
-                "Description": summary,
-                "Location Company": location_company,
-                "Urgency": urgency,
-                "Impact": impact,
-                "Change Request Status": status,
-                "Change Type": change_type,
-                "Risk Level": risk_level,
-                "Priority": priority,
-                "Detailed Description": details,
-                "Status Reason": status_reason,
-                "Department": department,
-                "Site Group": site_group,
-                "Region": region,
-                "Site": site,
-                "Organization": organization,
-                "Support Organization": support_organization,
-                "Support Group Name": support_group_name,
-                "Company": company,
-                **additional_fields,
-            }
-        )
+        properties = remove_empty_elements({
+            "First Name": first_name,
+            "Last Name": last_name,
+            "Customer First Name": customer_first_name,
+            "Customer Last Name": customer_last_name,
+            "Description": summary,
+            "Location Company": location_company,
+            "Urgency": urgency,
+            "Impact": impact,
+            "Change Request Status": status,
+            "Change Type": change_type,
+            "Risk Level": risk_level,
+            "Priority": priority,
+            "Detailed Description": details,
+            "Status Reason": status_reason,
+            "Department": department,
+            "Site Group": site_group,
+            "Region": region,
+            "Site": site,
+            "Organization": organization,
+            "Support Organization": support_organization,
+            "Support Group Name": support_group_name,
+            "Company": company,
+            **additional_fields,
+        })
         data = {"values": properties}
 
         response = self._http_request(
@@ -886,7 +990,6 @@ class Client(BaseClient):
         urgency: str,
         scedulded_start_date: str,
         scedulded_end_date: str,
-        customer_company: str,
         **additional_fields,
     ) -> Dict[str, Any]:
         """
@@ -915,46 +1018,46 @@ class Client(BaseClient):
             urgency (str): Ticket urgency.
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
-            customer_company (str): Customer company name.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
 
-        properties = remove_empty_elements(
-            {
-                "TemplateID": template_instance_id,
-                "RootRequestInstanceID": root_request_instance_id,
-                "RootRequestID": root_request_id,
-                "First Name": first_name,
-                "Last Name": last_name,
-                "Summary": summary,
-                "TaskName": summary,
-                "Notes": details,
-                "Location Company": location_company,
-                "Status": status,
-                "TaskType": task_type,
-                "RootRequestName": root_request_name,
-                "RootRequestMode": root_request_mode,
-                "Support Company": support_company,
-                "RootRequestFormName": root_ticket_type,
-                "Assignee Group": assigned_support_group_name,
-                "Assignee Organization": assigned_support_organization,
-                "Impact": impact,
-                "Urgency": urgency,
-                "State": "Active",
-                "Parent Linked": "Active",
-                "Customer Company": customer_company,
-                "Assigned To": assignee,
-                "Scheduled Start Date": scedulded_start_date,
-                "Scheduled End Date": scedulded_end_date,
-                "Priority": priority,
-                **additional_fields,
-            }
-        )
+        properties = remove_empty_elements({
+            "TemplateID": template_instance_id,
+            "RootRequestInstanceID": root_request_instance_id,
+            "RootRequestID": root_request_id,
+            "First Name": first_name,
+            "Last Name": last_name,
+            "Summary": summary,
+            "TaskName": summary,
+            "Notes": details,
+            "Location Company": location_company,
+            "Status": status,
+            "TaskType": task_type,
+            "RootRequestName": root_request_name,
+            "RootRequestMode": root_request_mode,
+            "Support Company": support_company,
+            "RootRequestFormName": root_ticket_type,
+            "Assignee Group": assigned_support_group_name,
+            "Assignee Organization": assigned_support_organization,
+            "Impact": impact,
+            "Urgency": urgency,
+            "State": "Active",
+            "Parent Linked": "Active",
+            "Customer Company": "Calbro Services",
+            "Assigned To": assignee,
+            "Scheduled Start Date": scedulded_start_date,
+            "Scheduled End Date": scedulded_end_date,
+            "Priority": priority,
+            **additional_fields,
+        })
         data = {"values": properties}
         params = {"fields": TICKET_TYPE_TO_CREATE_QUERY[TASK]}
-        response = self._http_request("POST", "arsys/v1/entry/TMS:Task", json_data=data, params=params)
+        response = self._http_request("POST",
+                                      "arsys/v1/entry/TMS:Task",
+                                      json_data=data,
+                                      params=params)
         return response
 
     def update_task_request(
@@ -975,7 +1078,6 @@ class Client(BaseClient):
         location_company: str,
         scedulded_start_date: str,
         schedulded_end_date: str,
-        customer_company: str,
         **additional_fields,
     ):
         """
@@ -998,33 +1100,29 @@ class Client(BaseClient):
             location_company (str): Company assoiciated with ticet process.
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
-            customer_company (str):  Customer company name.
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
         """
 
-        properties = remove_empty_elements(
-            {
-                "Summary": summary,
-                "Notes": details,
-                "Location Company": location_company,
-                "Status": status,
-                "StatusReasonSelection": status_reason,
-                "TaskType": task_type,
-                "Priority": priority,
-                "RootRequestName": root_request_name,
-                "Assignee Company": assigned_support_company,
-                "Assignee Organization": assigned_support_organization,
-                "Assignee Group": assigned_support_group_name,
-                "Company": company,
-                "Assigned To": assignee,
-                "Assignee": assignee,
-                "Scheduled Start Date": scedulded_start_date,
-                "Scheduled End Date": schedulded_end_date,
-                "Customer Company": customer_company,
-                **additional_fields,
-            }
-        )
+        properties = remove_empty_elements({
+            "Summary": summary,
+            "Notes": details,
+            "Location Company": location_company,
+            "Status": status,
+            "StatusReasonSelection": status_reason,
+            "TaskType": task_type,
+            "Priority": priority,
+            "RootRequestName": root_request_name,
+            "Assignee Company": assigned_support_company,
+            "Assignee Organization": assigned_support_organization,
+            "Assignee Group": assigned_support_group_name,
+            "Company": company,
+            "Assigned To": assignee,
+            "Assignee": assignee,
+            "Scheduled Start Date": scedulded_start_date,
+            "Scheduled End Date": schedulded_end_date,
+            **additional_fields,
+        })
         data = {"values": properties}
         response = self._http_request(
             "PUT",
@@ -1096,43 +1194,41 @@ class Client(BaseClient):
             first_name (str, optional): Requester first name. Defaults to None.
             last_name (str, optional): Request last name. Defaults to None.
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
 
         action = "PROBLEM" if problem_type == PROBLEM_INVESTIGATION else "KNOWNERROR"
-        status_key = "Status" if problem_type == PROBLEM_INVESTIGATION else "Known Error Status"
+        status_key = ("Status" if problem_type == PROBLEM_INVESTIGATION else "Known Error Status")
 
-        properties = remove_empty_elements(
-            {
-                "z1D_Action": action,
-                status_key: status,
-                "First Name": first_name,
-                "Last Name": last_name,
-                "Description": summary,
-                "Detailed Decription": details,
-                "Company": company,
-                "Urgency": urgency,
-                "Impact": impact,
-                "Assigned Support Organization": assigned_support_organization,
-                "Assigned Group": assigned_support_group_name,
-                "Assignee": assignee,
-                "Assigned Support Company": assigned_support_company,
-                "Site": site,
-                "Site Group": site_group,
-                "Region": region,
-                "Target Resolution Date": target_resolution_date,
-                "Investigation Driver": investigation_driver,
-                "Temporary Workaround": temporary_workaround,
-                "Assigned Group Pblm Mgr": assigned_group_pbm_mgr,
-                "Support Company Pblm Mgr": support_company_pbm_mgr,
-                "Support Organization Pblm Mgr": support_organization_pbm_mgr,
-                "Assignee Pblm Mgr": assignee_pbm_mgr,
-                "Investigation Justification": investigation_justification,
-                "View Access": view_access,
-                "Resolution": resolution,
-                **additional_fields,
-            }
-        )
+        properties = remove_empty_elements({
+            "z1D_Action": action,
+            status_key: status,
+            "First Name": first_name,
+            "Last Name": last_name,
+            "Description": summary,
+            "Detailed Decription": details,
+            "Company": company,
+            "Urgency": urgency,
+            "Impact": impact,
+            "Assigned Support Organization": assigned_support_organization,
+            "Assigned Group": assigned_support_group_name,
+            "Assignee": assignee,
+            "Assigned Support Company": assigned_support_company,
+            "Site": site,
+            "Site Group": site_group,
+            "Region": region,
+            "Target Resolution Date": target_resolution_date,
+            "Investigation Driver": investigation_driver,
+            "Temporary Workaround": temporary_workaround,
+            "Assigned Group Pblm Mgr": assigned_group_pbm_mgr,
+            "Support Company Pblm Mgr": support_company_pbm_mgr,
+            "Support Organization Pblm Mgr": support_organization_pbm_mgr,
+            "Assignee Pblm Mgr": assignee_pbm_mgr,
+            "Investigation Justification": investigation_justification,
+            "View Access": view_access,
+            "Resolution": resolution,
+            **additional_fields,
+        })
         data = {"values": properties}
         params = {"fields": TICKET_TYPE_TO_CREATE_QUERY[problem_type]}
 
@@ -1206,38 +1302,36 @@ class Client(BaseClient):
             investigation_driver (str): Problem Investigation driver.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
-        properties = remove_empty_elements(
-            {
-                "First Name": first_name,
-                "Last Name": last_name,
-                "Description": summary,
-                "Detailed Decription": details,
-                "Company": company,
-                "Urgency": urgency,
-                "Impact": impact,
-                "Investigation Status": status,
-                "Invesitgation Status Reason": status_reason,
-                "Assigned Support Organization": assigned_support_organization,
-                "Assigned Group": assigned_support_group_name,
-                "Assignee": assignee,
-                "Assignee Login ID": assignee_login_id,
-                "Assigned Support Company": assigned_support_company,
-                "Site": site,
-                "Site Group": site_group,
-                "Region": region,
-                "Target Resolution Date": target_resolution_date,
-                "Investigation Driver": investigation_driver,
-                "Resolution": resolution,
-                "Temporary Workaround": temporary_workaround,
-                "Assigned Group Pblm Mgr": assigned_group_pbm_mgr,
-                "Support Company Pblm Mgr": support_company_pbm_mgr,
-                "Support Organization Pblm Mgr": support_organization_pbm_mgr,
-                "Investigation Justification": investigation_justification,
-                **additional_fields,
-            }
-        )
+        properties = remove_empty_elements({
+            "First Name": first_name,
+            "Last Name": last_name,
+            "Description": summary,
+            "Detailed Decription": details,
+            "Company": company,
+            "Urgency": urgency,
+            "Impact": impact,
+            "Investigation Status": status,
+            "Invesitgation Status Reason": status_reason,
+            "Assigned Support Organization": assigned_support_organization,
+            "Assigned Group": assigned_support_group_name,
+            "Assignee": assignee,
+            "Assignee Login ID": assignee_login_id,
+            "Assigned Support Company": assigned_support_company,
+            "Site": site,
+            "Site Group": site_group,
+            "Region": region,
+            "Target Resolution Date": target_resolution_date,
+            "Investigation Driver": investigation_driver,
+            "Resolution": resolution,
+            "Temporary Workaround": temporary_workaround,
+            "Assigned Group Pblm Mgr": assigned_group_pbm_mgr,
+            "Support Company Pblm Mgr": support_company_pbm_mgr,
+            "Support Organization Pblm Mgr": support_organization_pbm_mgr,
+            "Investigation Justification": investigation_justification,
+            **additional_fields,
+        })
         data = {"values": properties}
         response = self._http_request(
             "PUT",
@@ -1297,31 +1391,29 @@ class Client(BaseClient):
             resolution (str): Resolution.
 
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
         """
-        properties = remove_empty_elements(
-            {
-                "Detailed Decription": details,
-                "Description": summary,
-                "Urgency": urgency,
-                "Impact": impact,
-                "Known Error Status": status,
-                "Stastus_Reason": status_reason,
-                "Assigned Support Organization": assigned_support_organization,
-                "Assigned Group": assigned_support_group_name,
-                "Assignee": assignee,
-                "Assigned Support Company": assigned_support_company,
-                "Target Resolution Date": target_resolution_date,
-                "Assigned Group Pblm Mgr": assigned_group_pbm_mgr,
-                "Support Company Pblm Mgr": support_company_pbm_mgr,
-                "Support Organization Pblm Mgr": support_organization_pbm_mgr,
-                "Assignee Pblm Mgr": assignee_pbm_mgr,
-                "Temporary Workaround": temporary_workaround,
-                "View Access": view_access,
-                "Resolution": resolution,
-                **additional_fields,
-            }
-        )
+        properties = remove_empty_elements({
+            "Detailed Decription": details,
+            "Description": summary,
+            "Urgency": urgency,
+            "Impact": impact,
+            "Known Error Status": status,
+            "Stastus_Reason": status_reason,
+            "Assigned Support Organization": assigned_support_organization,
+            "Assigned Group": assigned_support_group_name,
+            "Assignee": assignee,
+            "Assigned Support Company": assigned_support_company,
+            "Target Resolution Date": target_resolution_date,
+            "Assigned Group Pblm Mgr": assigned_group_pbm_mgr,
+            "Support Company Pblm Mgr": support_company_pbm_mgr,
+            "Support Organization Pblm Mgr": support_organization_pbm_mgr,
+            "Assignee Pblm Mgr": assignee_pbm_mgr,
+            "Temporary Workaround": temporary_workaround,
+            "View Access": view_access,
+            "Resolution": resolution,
+            **additional_fields,
+        })
         data = {"values": properties}
 
         response = self._http_request(
@@ -1368,38 +1460,39 @@ class Client(BaseClient):
             status (str): Ticket status.
             priority (str): Ticket priority.
             work_order_type (str): Work order type.
-            location_company (str): Company assoiciated with work order process.
+            location_company (str): Company associated with work order process.
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
 
-        properties = remove_empty_elements(
-            {
-                "TemplateID": template_guid,
-                "First Name": first_name,
-                "Last Name": last_name,
-                "Customer Person ID": customer_person_id,
-                "Customer First Name": customer_first_name,
-                "Customer Last Name": customer_last_name,
-                "Customer Company": customer_company,
-                "Summary": summary,
-                "Detailed Description": detailed_description,
-                "Status": status,
-                "Priority": priority,
-                "Work Order Type": work_order_type,
-                "Location Company": location_company,
-                "Scheduled Start Date": scedulded_start_date,
-                "Scheduled End Date": scedulded_end_date,
-                "z1D_Action": "CREATE",
-                **additional_fields,
-            }
-        )
+        properties = remove_empty_elements({
+            "TemplateID": template_guid,
+            "First Name": first_name,
+            "Last Name": last_name,
+            "Customer Person ID": customer_person_id,
+            "Customer First Name": customer_first_name,
+            "Customer Last Name": customer_last_name,
+            "Customer Company": customer_company,
+            "Summary": summary,
+            "Detailed Description": detailed_description,
+            "Status": status,
+            "Priority": priority,
+            "Work Order Type": work_order_type,
+            "Location Company": location_company,
+            "Scheduled Start Date": scedulded_start_date,
+            "Scheduled End Date": scedulded_end_date,
+            "z1D_Action": "CREATE",
+            **additional_fields,
+        })
         data = {"values": properties}
         params = {"fields": TICKET_TYPE_TO_CREATE_QUERY[WORK_ORDER]}
-        response = self._http_request("POST", "arsys/v1/entry/WOI:WorkOrderInterface_Create", json_data=data, params=params)
+        response = self._http_request("POST",
+                                      "arsys/v1/entry/WOI:WorkOrderInterface_Create",
+                                      json_data=data,
+                                      params=params)
         return response
 
     def update_work_order_request(
@@ -1439,28 +1532,26 @@ class Client(BaseClient):
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
         """
 
-        properties = remove_empty_elements(
-            {
-                "Summary": summary,
-                "Detailed Description": detailed_description,
-                "Location Company": location_company,
-                "Status": status,
-                "Status Reason": status_reason,
-                "Work Order Type": work_order_type,
-                "Priority": priority,
-                "Support Organization": support_organization,
-                "Support Group Name": support_group_name,
-                "Company": company,
-                "Request Assignee": assignee,
-                "Assigned To": assignee,
-                "Scheduled Start Date": scedulded_start_date,
-                "Scheduled End Date": schedulded_end_date,
-                **additional_fields,
-            }
-        )
+        properties = remove_empty_elements({
+            "Summary": summary,
+            "Detailed Description": detailed_description,
+            "Location Company": location_company,
+            "Status": status,
+            "Status Reason": status_reason,
+            "Work Order Type": work_order_type,
+            "Priority": priority,
+            "Support Organization": support_organization,
+            "Support Group Name": support_group_name,
+            "Company": company,
+            "Request Assignee": assignee,
+            "Assigned To": assignee,
+            "Scheduled Start Date": scedulded_start_date,
+            "Scheduled End Date": schedulded_end_date,
+            **additional_fields,
+        })
         data = {"values": properties}
         response = self._http_request(
             "PUT",
@@ -1499,21 +1590,36 @@ def list_command(
     Returns:
         CommandResults: Command reuslts.
     """
-    query: str = args.get("query")  # type: ignore[assignment]
+    query: str = args.get("query")
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
     limit = arg_to_number(args.get("limit"))
     validate_pagination_args(page, page_size, limit)
-    filtering_mapper = generate_query_filter_mapper_by_args(args, record_id_key, ticket_type=ticket_type)
+    filtering_mapper = generate_query_filter_mapper_by_args(args,
+                                                            record_id_key,
+                                                            ticket_type=ticket_type)
     query_with_filtering = generate_query_with_filtering(query, filtering_mapper)
 
-    response = client.list_request(form_name, query_with_filtering if query_with_filtering else None)
-    relevant_records, header_suffix = get_paginated_records_with_hr(
-        response.get("entries"),  # type: ignore[arg-type]
-        limit,  # type: ignore[arg-type]
-        page,
-        page_size,
-    )
+    response = client.list_request(form_name,
+                                   query_with_filtering if query_with_filtering else None)
+    # Attach worklogs
+    if form_name  != 'HPD:WorkLog':
+        for i, ticket in enumerate(response['entries']):
+            incident_number =  ticket.get('values').get('Incident Number')
+            query = f"'Incident Number' = \"{incident_number}\""
+            worklogs = client.list_request("HPD:WorkLog", query)
+            for w_i, worklog in enumerate(worklogs['entries']):
+                # Change date format to ISO8601
+                for key, value in worklog.get('values').items():
+                    if key.endswith("Date"):
+                        worklog['values'][key] = FormatIso8601(
+                            arg_to_datetime(value)
+                        )
+                worklogs['entries'][w_i] = worklogs['entries'][w_i]['values']
+            response['entries'][i]['values']['Work Logs'] = worklogs.get('entries')
+
+    relevant_records, header_suffix = get_paginated_records_with_hr(response.get("entries"), limit,
+                                                                    page, page_size)
     outputs = format_command_output(relevant_records, context_output_mapper, arranger)
     readable_output = tableToMarkdown(
         header_prefix,
@@ -1523,7 +1629,8 @@ def list_command(
         headerTransform=pascalToSpace,
     )
     if not outputs:
-        command_results = CommandResults(readable_output="No results were found for the given arguments.")
+        command_results = CommandResults(
+            readable_output="No results were found for the given arguments.")
     else:
         command_results = CommandResults(
             outputs_prefix=outputs_prefix,
@@ -1661,9 +1768,61 @@ def ticket_delete_command(client: Client, args: Dict[str, Any]) -> List[CommandR
             commands_results.append(CommandResults(readable_output=readable_output))
 
         except Exception as error:
-            error_results = CommandResults(readable_output=f"**{error!s}**")
+            error_results = CommandResults(readable_output=f"**{str(error)}**")
             commands_results.append(error_results)
     return commands_results
+
+
+def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    """BmcITSM ticket create relationship command.
+
+    Args:
+        client (Client): BmcITSM API client.
+        args (Dict[str, Any]): command arguments.
+
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+    """
+
+    request_type = args.get("request_type")
+    request_description = args.get("request_description")
+    association_type = args.get("association_type")
+    first_form_name = args.get("first_form_name")
+    first_request_id = args.get("first_request_id")
+    second_form_name = args.get("second_form_name")
+    second_request_id = args.get("second_request_id")
+    bidirectional = argToBoolean(args.get("bidirectional"))
+    res = client.ticket_create_relationship_request(
+        request_type=request_type,
+        request_description=request_description,
+        association_type=association_type,
+        first_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[first_form_name],
+        first_request_id=first_request_id,
+        second_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[second_form_name],
+        second_request_id=second_request_id,
+    )
+
+    if bidirectional:
+        association_types = {
+            "Caused": "Caused by",
+            "Caused by": "Caused",
+            "Duplicate of": "Original of",
+            "Original of": "Duplicate of",
+            "Resolved": "Resolved by",
+            "Resolved by": "Resolved",
+        }
+
+        res = client.ticket_create_relationship_request(
+            request_type=request_type,
+            request_description=request_description,
+            association_type=association_types[association_type],
+            first_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[second_form_name],
+            first_request_id=second_request_id,
+            second_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[first_form_name],
+            second_request_id=first_request_id,
+        )
+
+    return res
 
 
 def service_request_definition_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1693,6 +1852,75 @@ def service_request_definition_list_command(client: Client, args: Dict[str, Any]
         record_id_key="Request ID",
     )
     return command_results
+
+
+def worklog_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """List BmcITSM Work Log command.
+
+    Args:
+        client (Client): BmcITSM API client.
+        args (Dict[str, Any]): command arguments.
+
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+    """
+    context_output_mapper = {
+        "Work Log Type": "Type",
+        "Description": "Description",
+        "Detailed Description": "DetailedDescription",
+        "Work Log Submitter": "Submitter",
+        "Communication Type": "CommunicationType",
+        "Communication Source": "CommunicationSource",
+        "Number of Attachments": "NumberOfAttachments",
+        "Work Log ID": "WorklogID",
+    }
+    args["ids"] = argToList(args.get("ticket_ids"))
+    command_results = list_command(
+        client,
+        args,
+        "HPD:WorkLog",
+        context_output_mapper,
+        header_prefix="List Work Logs.",
+        outputs_prefix="BmcITSM.WorkLog",
+        outputs_key_field="ID",
+        record_id_key="Incident Number",
+    )
+    return command_results
+
+
+def worklog_attachment_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    worklog_id = args.get("worklog_id")
+    res = client.worklog_attachment_get_request(worklog_id)
+    return res
+
+
+def worklog_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    entry_ids = argToList(args.get('entry_ids'))
+    incident_number = args.get("incident_number")
+    worklog_type = args.get("worklog_type")
+    view_access = args.get("view_access")
+    detailed_description = args.get("detailed_description")
+    fps = []
+    files = {}
+    for i, entry_id in enumerate(entry_ids):
+        file_path = demisto.getFilePath(entry_id).get('path')
+        file_name = demisto.getFilePath(entry_id).get('name')
+        # open files
+        fp = open(file_path, 'rb')
+        fps.append(fp)
+        files[f'attach-z2AF Work Log0{i+1}'] = (file_name, fp, 'application/octet-stream')
+
+
+
+    res = client.worklog_add_request(
+        incident_number, worklog_type,
+        view_access, detailed_description, files=files
+    )
+
+    # close files
+    for f in fps:
+        f.close()
+    return res
 
 
 def incident_template_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1802,31 +2030,33 @@ def service_request_create_command(client: Client, args: Dict[str, Any]) -> Comm
     last_name = args.get("last_name")
     login_id = args.get("login_id")
 
-    additional_fields = extract_args_from_additional_fields_arg(
-        args.get("additional_fields"),  # type: ignore[arg-type]
-        "additional_fields",
-    )
+    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),
+                                                                "additional_fields")
     service_request_definition_params = extract_args_from_additional_fields_arg(
-        args.get("service_request_definition_params"),  # type: ignore[arg-type]
+        args.get("service_request_definition_params"),
         "service_request_definition_params",
     )
-    validate_related_arguments_provided(first_name=first_name, last_name=last_name, login_id=login_id)
+    validate_related_arguments_provided(first_name=first_name,
+                                        last_name=last_name,
+                                        login_id=login_id)
 
-    response = client.create_service_request_request(  # type: ignore[arg-type,call-arg]
+    response = client.create_service_request_request(
         srd_instance_id,
-        summary,  # type: ignore[arg-type]
-        urgency,  # type: ignore[arg-type]
-        impact,  # type: ignore[arg-type]
-        first_name,  # type: ignore[arg-type]
-        last_name,  # type: ignore[arg-type]
-        login_id,  # type: ignore[arg-type]
-        status,  # type: ignore[arg-type]
+        summary,
+        urgency,
+        impact,
+        first_name,
+        last_name,
+        login_id,
+        status,
         **additional_fields,
         **service_request_definition_params,
     )
 
-    outputs = format_create_ticket_outputs(response.get("values"))  # type: ignore[arg-type]
-    readable_output = tableToMarkdown("Service Request successfully Created", outputs, headerTransform=pascalToSpace)
+    outputs = format_create_ticket_outputs(response.get("values"))
+    readable_output = tableToMarkdown("Service Request successfully Created",
+                                      outputs,
+                                      headerTransform=pascalToSpace)
     command_results = CommandResults(
         outputs_prefix="BmcITSM.ServiceRequest",
         outputs_key_field="RequestID",
@@ -1862,32 +2092,32 @@ def service_request_update_command(client: Client, args: Dict[str, Any]) -> Comm
     site_group = args.get("site_group")
     region = args.get("region")
     site = args.get("site")
-    additional_fields = extract_args_from_additional_fields_arg(
-        args.get("additional_fields"),  # type: ignore[arg-type]
-        "additional_fields",
-    )
+    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),
+                                                                "additional_fields")
 
-    formatted_service_request_id = format_ticket_request_id(service_request_id)  # type: ignore[arg-type]
+    formatted_service_request_id = format_ticket_request_id(service_request_id)
     validate_related_arguments_provided(status=status, status_reason=status_reason)
-    validate_related_arguments_provided(customer_first_name=customer_first_name, customer_last_name=customer_last_name)
+    validate_related_arguments_provided(customer_first_name=customer_first_name,
+                                        customer_last_name=customer_last_name)
 
-    client.service_request_update_request(  # type: ignore[arg-type,call-arg]
+    client.service_request_update_request(
         formatted_service_request_id,
         summary,
-        status,  # type: ignore[arg-type]
-        urgency,  # type: ignore[arg-type]
-        impact,  # type: ignore[arg-type]
-        customer_first_name,  # type: ignore[arg-type]
-        customer_last_name,  # type: ignore[arg-type]
+        status,
+        urgency,
+        impact,
+        customer_first_name,
+        customer_last_name,
         location_company,
-        site_group,  # type: ignore[arg-type]
-        region,  # type: ignore[arg-type]
-        site,  # type: ignore[arg-type]
-        assignee,  # type: ignore[arg-type]
-        status_reason,  # type: ignore[arg-type]
+        site_group,
+        region,
+        site,
+        assignee,
+        status_reason,
         **additional_fields,
     )
-    command_results = CommandResults(readable_output=f"Service Request: {service_request_id} was successfully updated.")
+    command_results = CommandResults(
+        readable_output=f"Service Request: {service_request_id} was successfully updated.")
 
     return command_results
 
@@ -1915,61 +2145,55 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
     company = args.get("location_company")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_company = args.get("assigned_support_company")
-    assigned_group = args.get("assigned_group")
+    assigned_support_group_name = args.get("assigned_group")
     assignee_login_id = args.get("assignee_login_id")
+    vendor_ticket_number = args.get("vendor_ticket_number")
     assignee = args.get("assignee")
     site_group = args.get("site_group")
     site = args.get("site")
     region = args.get("region")
 
-    additional_fields = extract_args_from_additional_fields_arg(
-        args.get("additional_fields"),  # type: ignore[arg-type]
-        "additional_fields",
-    )
+    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),
+                                                                "additional_fields")
 
     validate_related_arguments_provided(assignee_login_id=assignee_login_id, assignee=assignee)
     if not template_id:
-        validate_required_arguments_provided(
-            summary=summary,
-            service_type=service_type,
-            reported_source=reported_source,
-            first_name=first_name,
-            last_name=last_name,
-            status=status,
-            urgency=urgency,
-            impact=impact,
-        )
+        validate_related_arguments_provided(summary=summary,
+                                            service_type=service_type,
+                                            reported_source=reported_source)
 
-    response = client.create_incident_request(  # type: ignore[arg-type,call-arg]
-        template_id,  # type: ignore[arg-type]
-        first_name,  # type: ignore[arg-type]
-        last_name,  # type: ignore[arg-type]
-        summary,  # type: ignore[arg-type]
-        urgency=urgency,  # type: ignore[arg-type]
-        impact=impact,  # type: ignore[arg-type]
-        status=status,  # type: ignore[arg-type]
-        service_type=service_type,  # type: ignore[arg-type]
-        reported_source=reported_source,  # type: ignore[arg-type]
-        details=details,  # type: ignore[arg-type]
-        company=company,  # type: ignore[arg-type]
-        assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
-        assigned_support_company=assigned_support_company,  # type: ignore[arg-type]
-        assigned_group=assigned_group,  # type: ignore[arg-type]
-        assignee=assignee,  # type: ignore[arg-type]
-        assignee_login_id=assignee_login_id,  # type: ignore[arg-type]
-        site_group=site_group,  # type: ignore[arg-type]
-        site=site,  # type: ignore[arg-type]
-        region=region,  # type: ignore[arg-type]
+    response = client.create_incident_request(
+        template_id,
+        first_name,
+        last_name,
+        summary,
+        urgency=urgency,
+        impact=impact,
+        status=status,
+        service_type=service_type,
+        reported_source=reported_source,
+        details=details,
+        company=company,
+        assigned_support_organization=assigned_support_organization,
+        assigned_support_company=assigned_support_company,
+        assigned_support_group_name=assigned_support_group_name,
+        assignee=assignee,
+        assignee_login_id=assignee_login_id,
+        site_group=site_group,
+        site=site,
+        region=region,
+        vendor_ticket_number=vendor_ticket_number,
         **additional_fields,
     )
 
     incident_request_id = extract_ticket_request_id_following_create(
-        client, INCIDENT, response
-    )  # The right request ID is not retrieved by the create endpoint.
-    outputs = format_create_ticket_outputs(response.get("values"))  # type: ignore[arg-type]
+        client, INCIDENT, response)  # The right request ID is not retrieved by the create endpoint.
+    outputs = format_create_ticket_outputs(response.get("values"))
     outputs["RequestID"] = incident_request_id
 
-    readable_output = tableToMarkdown("Incident ticket successfully Created", outputs, headerTransform=pascalToSpace)
+    readable_output = tableToMarkdown("Incident ticket successfully Created",
+                                      outputs,
+                                      headerTransform=pascalToSpace)
     command_results = CommandResults(
         outputs_prefix="BmcITSM.Incident",
         outputs_key_field="RequestID",
@@ -2002,11 +2226,11 @@ def incident_update_command(client: Client, args: Dict[str, Any]) -> CommandResu
     last_name = args.get("last_name")
     service_type = args.get("service_type")
     reported_source = args.get("reported_source")
-    details = args.get("detailed_description")
+    details = args.get("details")
     company = args.get("location_company")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_company = args.get("assigned_support_company")
-    assigned_group = args.get("assigned_group")
+    assigned_support_group_name = args.get("assigned_group")
     assignee_login_id = args.get("assignee_login_id")
     assignee = args.get("assignee")
     site_group = args.get("site_group")
@@ -2015,41 +2239,42 @@ def incident_update_command(client: Client, args: Dict[str, Any]) -> CommandResu
     resolution = args.get("resolution")
     status_reason = args.get("status_reason")
 
-    additional_fields = extract_args_from_additional_fields_arg(
-        args.get("additional_fields"),  # type: ignore[arg-type]
-        "additional_fields",
-    )
+    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),
+                                                                "additional_fields")
 
     validate_related_arguments_provided(first_name=first_name, last_name=last_name)
     validate_related_arguments_provided(assignee_login_id=assignee_login_id, assignee=assignee)
-    validate_related_arguments_provided(status=status, status_reason=status_reason, resolution=resolution)
+    validate_related_arguments_provided(status=status,
+                                        status_reason=status_reason,
+                                        resolution=resolution)
 
-    client.update_incident_request(  # type: ignore[arg-type,call-arg]
-        format_ticket_request_id(incident_request_id),  # type: ignore[arg-type]
-        first_name,  # type: ignore[arg-type]
-        last_name,  # type: ignore[arg-type]
-        summary,  # type: ignore[arg-type]
-        urgency=urgency,  # type: ignore[arg-type]
-        impact=impact,  # type: ignore[arg-type]
-        status=status,  # type: ignore[arg-type]
-        service_type=service_type,  # type: ignore[arg-type]
-        reported_source=reported_source,  # type: ignore[arg-type]
-        details=details,  # type: ignore[arg-type]
-        company=company,  # type: ignore[arg-type]
-        assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
-        assigned_support_company=assigned_support_company,  # type: ignore[arg-type]
-        assigned_group=assigned_group,  # type: ignore[arg-type]
-        assignee=assignee,  # type: ignore[arg-type]
-        assignee_login_id=assignee_login_id,  # type: ignore[arg-type]
-        site_group=site_group,  # type: ignore[arg-type]
-        site=site,  # type: ignore[arg-type]
-        region=region,  # type: ignore[arg-type]
-        status_reason=status_reason,  # type: ignore[arg-type]
-        resolution=resolution,  # type: ignore[arg-type]
+    client.update_incident_request(
+        format_ticket_request_id(incident_request_id),
+        first_name,
+        last_name,
+        summary,
+        urgency=urgency,
+        impact=impact,
+        status=status,
+        service_type=service_type,
+        reported_source=reported_source,
+        details=details,
+        company=company,
+        assigned_support_organization=assigned_support_organization,
+        assigned_support_company=assigned_support_company,
+        assigned_support_group_name=assigned_support_group_name,
+        assignee=assignee,
+        assignee_login_id=assignee_login_id,
+        site_group=site_group,
+        site=site,
+        region=region,
+        status_reason=status_reason,
+        resolution=resolution,
         **additional_fields,
     )
 
-    command_results = CommandResults(readable_output=f"Incident: {incident_request_id} was successfully updated.")
+    command_results = CommandResults(
+        readable_output=f"Incident: {incident_request_id} was successfully updated.")
 
     return command_results
 
@@ -2077,10 +2302,8 @@ def change_request_create_command(client: Client, args: Dict[str, Any]) -> Comma
     risk_level = args.get("risk_level")
     change_type = args.get("change_type")
     location_company = args.get("location_company")
-    additional_fields = extract_args_from_additional_fields_arg(
-        args.get("additional_fields"),  # type: ignore[arg-type]
-        "additional_fields",
-    )
+    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),
+                                                                "additional_fields")
     if not template_id:
         validate_related_arguments_provided(
             first_name=first_name,
@@ -2089,24 +2312,24 @@ def change_request_create_command(client: Client, args: Dict[str, Any]) -> Comma
             location_company=location_company,
         )
 
-    response = client.change_request_create_request(  # type: ignore[arg-type,call-arg]
-        template_id,  # type: ignore[arg-type]
-        first_name,  # type: ignore[arg-type]
-        last_name,  # type: ignore[arg-type]
-        summary,  # type: ignore[arg-type]
-        location_company,  # type: ignore[arg-type]
-        urgency=urgency,  # type: ignore[arg-type]
-        impact=impact,  # type: ignore[arg-type]
-        status=status,  # type: ignore[arg-type]
-        risk_level=risk_level,  # type: ignore[arg-type]
-        change_type=change_type,  # type: ignore[arg-type]
-        customer_first_name=customer_first_name,  # type: ignore[arg-type]
-        customer_last_name=customer_last_name,  # type: ignore[arg-type]
-        priority=priority,  # type: ignore[arg-type]
+    response = client.change_request_create_request(
+        template_id,
+        first_name,
+        last_name,
+        summary,
+        location_company,
+        urgency=urgency,
+        impact=impact,
+        status=status,
+        risk_level=risk_level,
+        change_type=change_type,
+        customer_first_name=customer_first_name,
+        customer_last_name=customer_last_name,
+        priority=priority,
         **additional_fields,
     )
 
-    outputs = format_create_ticket_outputs(response.get("values"))  # type: ignore[arg-type]
+    outputs = format_create_ticket_outputs(response.get("values"))
 
     readable_output = tableToMarkdown(
         "Change Request ticket successfully Created",
@@ -2158,43 +2381,42 @@ def change_request_update_command(client: Client, args: Dict[str, Any]) -> Comma
     company = args.get("company")
     region = args.get("region")
 
-    additional_fields = extract_args_from_additional_fields_arg(
-        args.get("additional_fields"),  # type: ignore[arg-type]
-        "additional_fields",
-    )
+    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),
+                                                                "additional_fields")
 
     validate_related_arguments_provided(first_name=first_name, last_name=last_name)
 
     validate_related_arguments_provided(status=status, status_reason=status_reason)
 
-    client.change_request_update_request(  # type: ignore[arg-type,call-arg]
-        format_ticket_request_id(change_request_id),  # type: ignore[arg-type]
-        first_name,  # type: ignore[arg-type]
-        last_name,  # type: ignore[arg-type]
-        summary,  # type: ignore[arg-type]
-        location_company,  # type: ignore[arg-type]
-        urgency=urgency,  # type: ignore[arg-type]
-        impact=impact,  # type: ignore[arg-type]
-        status=status,  # type: ignore[arg-type]
-        risk_level=risk_level,  # type: ignore[arg-type]
-        change_type=change_type,  # type: ignore[arg-type]
-        customer_first_name=customer_first_name,  # type: ignore[arg-type]
-        customer_last_name=customer_last_name,  # type: ignore[arg-type]
-        priority=priority,  # type: ignore[arg-type]
-        details=details,  # type: ignore[arg-type]
-        status_reason=status_reason,  # type: ignore[arg-type]
-        organization=organization,  # type: ignore[arg-type]
-        department=department,  # type: ignore[arg-type]
-        site_group=site_group,  # type: ignore[arg-type]
-        site=site,  # type: ignore[arg-type]
-        support_organization=support_organization,  # type: ignore[arg-type]
-        support_group_name=support_group_name,  # type: ignore[arg-type]
-        company=company,  # type: ignore[arg-type]
-        region=region,  # type: ignore[arg-type]
+    client.change_request_update_request(
+        format_ticket_request_id(change_request_id),
+        first_name,
+        last_name,
+        summary,
+        location_company,
+        urgency=urgency,
+        impact=impact,
+        status=status,
+        risk_level=risk_level,
+        change_type=change_type,
+        customer_first_name=customer_first_name,
+        customer_last_name=customer_last_name,
+        priority=priority,
+        details=details,
+        status_reason=status_reason,
+        organization=organization,
+        department=department,
+        site_group=site_group,
+        site=site,
+        support_organization=support_organization,
+        support_group_name=support_group_name,
+        company=company,
+        region=region,
         **additional_fields,
     )
 
-    command_results = CommandResults(readable_output=f"Change Request: {change_request_id} was successfully updated.")
+    command_results = CommandResults(
+        readable_output=f"Change Request: {change_request_id} was successfully updated.")
 
     return command_results
 
@@ -2224,51 +2446,49 @@ def task_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     impact = args.get("impact")
     urgency = args.get("urgency")
     support_company = args.get("support_company")
-    customer_company = args.get("customer_company")
 
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_group_name = args.get("assigned_support_group")
     assignee = args.get("assignee")
     company = args.get("location_company")
-    root_ticket_type = TICKET_TYPE_TO_DELETE_FORM[args.get("root_ticket_type")]  # type: ignore[index]
-    scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))  # type: ignore[assignment]
-    scedulded_end_date: datetime = arg_to_datetime(args.get("scedulded_end_date"))  # type: ignore[assignment]
+    root_ticket_type = TICKET_TYPE_TO_DELETE_FORM[args.get("root_ticket_type")]
+    scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))
+    scedulded_end_date: datetime = arg_to_datetime(args.get("scedulded_end_date"))
 
-    additional_fields = extract_args_from_additional_fields_arg(
-        args.get("additional_fields"),  # type: ignore[arg-type]
-        "additional_fields",
-    )
-    parent_ticket = get_ticket(client, args.get("root_ticket_type"), root_request_id)  # type: ignore[arg-type]
-    response = client.create_task_request(  # type: ignore[arg-type,call-arg]
-        template_id,  # type: ignore[arg-type]
-        parent_ticket.get("InstanceId"),  # type: ignore[arg-type]
-        root_request_name or parent_ticket.get("DisplayID"),  # type: ignore[arg-type]
-        parent_ticket.get("DisplayID"),  # type: ignore[arg-type]
-        first_name,  # type: ignore[arg-type]
-        last_name,  # type: ignore[arg-type]
-        summary,  # type: ignore[arg-type]
-        status=status,  # type: ignore[arg-type]
-        impact=impact,  # type: ignore[arg-type]
-        urgency=urgency,  # type: ignore[arg-type]
-        priority=priority,  # type: ignore[arg-type]
-        details=details,  # type: ignore[arg-type]
-        task_type=task_type,  # type: ignore[arg-type]
-        support_company=support_company,  # type: ignore[arg-type]
-        assignee=assignee,  # type: ignore[arg-type]
-        location_company=company,  # type: ignore[arg-type]
-        root_request_mode=root_request_mode,  # type: ignore[arg-type]
+    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),
+                                                                "additional_fields")
+    parent_ticket = get_ticket(client, args.get("root_ticket_type"), root_request_id)
+    response = client.create_task_request(
+        template_id,
+        parent_ticket.get("InstanceId"),
+        root_request_name or parent_ticket.get("DisplayID"),
+        parent_ticket.get("DisplayID"),
+        first_name,
+        last_name,
+        summary,
+        status=status,
+        impact=impact,
+        urgency=urgency,
+        priority=priority,
+        details=details,
+        task_type=task_type,
+        support_company=support_company,
+        assignee=assignee,
+        location_company=company,
+        root_request_mode=root_request_mode,
         root_ticket_type=root_ticket_type,
-        assigned_support_group_name=assigned_support_group_name,  # type: ignore[arg-type]
-        assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
-        scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,  # type: ignore[arg-type]
-        scedulded_end_date=scedulded_end_date.isoformat() if scedulded_end_date else None,  # type: ignore[arg-type]
-        customer_company=customer_company,  # type: ignore[arg-type]
+        assigned_support_group_name=assigned_support_group_name,
+        assigned_support_organization=assigned_support_organization,
+        scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,
+        scedulded_end_date=scedulded_end_date.isoformat() if scedulded_end_date else None,
         **additional_fields,
     )
 
-    outputs = format_create_ticket_outputs(response.get("values"))  # type: ignore[arg-type]
+    outputs = format_create_ticket_outputs(response.get("values"))
     outputs["RequestID"] = outputs["DisplayID"]
-    readable_output = tableToMarkdown("Task ticket successfully Created.", outputs, headerTransform=pascalToSpace)
+    readable_output = tableToMarkdown("Task ticket successfully Created.",
+                                      outputs,
+                                      headerTransform=pascalToSpace)
     command_results = CommandResults(
         outputs_prefix="BmcITSM.Task",
         outputs_key_field="RequestID",
@@ -2312,36 +2532,32 @@ def task_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_group_name = args.get("assigned_group")
     assignee = args.get("assignee")
-    scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))  # type: ignore[assignment]
-    schedulded_end_date: datetime = arg_to_datetime(args.get("schedulded_end_date"))  # type: ignore[assignment]
-    customer_company = args.get("customer_company")  # type: ignore[assignment]
+    scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))
+    schedulded_end_date: datetime = arg_to_datetime(args.get("schedulded_end_date"))
 
-    additional_fields = extract_args_from_additional_fields_arg(
-        args.get("additional_fields"),  # type: ignore[arg-type]
-        "additional_fields",
-    )
-    client.update_task_request(  # type: ignore[arg-type,call-arg]
-        format_ticket_request_id(task_id),  # type: ignore[arg-type]
-        root_request_name,  # type: ignore[arg-type]
-        summary=summary,  # type: ignore[arg-type]
-        status=status,  # type: ignore[arg-type]
-        priority=priority,  # type: ignore[arg-type]
-        details=details,  # type: ignore[arg-type]
-        task_type=task_type,  # type: ignore[arg-type]
+    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),
+                                                                "additional_fields")
+    client.update_task_request(
+        format_ticket_request_id(task_id),
+        root_request_name,
+        summary=summary,
+        status=status,
+        priority=priority,
+        details=details,
+        task_type=task_type,
         organization=organization,
         department=department,
         site_group=site_group,
         site=site,
-        assigned_support_company=support_company,  # type: ignore[arg-type]
-        assignee=assignee,  # type: ignore[arg-type]
-        company=company,  # type: ignore[arg-type]
-        location_company=location_company,  # type: ignore[arg-type]
-        status_reason=status_reason,  # type: ignore[arg-type]
-        assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
-        assigned_support_group_name=assigned_support_group_name,  # type: ignore[arg-type]
-        scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,  # type: ignore[arg-type]
-        schedulded_end_date=schedulded_end_date.isoformat if schedulded_end_date else None,  # type: ignore[arg-type]
-        customer_company=customer_company,  # type: ignore[arg-type]
+        assigned_support_company=support_company,
+        assignee=assignee,
+        company=company,
+        location_company=location_company,
+        status_reason=status_reason,
+        assigned_support_organization=assigned_support_organization,
+        assigned_support_group_name=assigned_support_group_name,
+        scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,
+        schedulded_end_date=schedulded_end_date.isoformat if schedulded_end_date else None,
         **additional_fields,
     )
 
@@ -2380,16 +2596,17 @@ def problem_investigation_create_command(client: Client, args: Dict[str, Any]) -
     support_organization_pbm_mgr = args.get("support_organization_pbm_mgr")
     assignee_pbm_mgr = args.get("assignee_pbm_mgr")
     temporary_workaround = args.get("temporary_workaround")
-    target_resolution_date: datetime = arg_to_datetime(args.get("target_resolution_date"))  # type: ignore[assignment]
+    target_resolution_date: datetime = arg_to_datetime(args.get("target_resolution_date"))
     resolution = args.get("resolution")
     investigation_justification = args.get("investigation_justification")
     investigation_driver = args.get("investigation_driver")
-    additional_fields = extract_args_from_additional_fields_arg(
-        args.get("additional_fields"),  # type: ignore[arg-type]
-        "additional_fields",
-    )
+    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),
+                                                                "additional_fields")
 
-    validate_related_arguments_provided(company=company, site=site, site_group=site_group, region=region)
+    validate_related_arguments_provided(company=company,
+                                        site=site,
+                                        site_group=site_group,
+                                        region=region)
     validate_related_arguments_provided(
         assigned_support_organization=assigned_support_organization,
         assigned_support_company=assigned_support_company,
@@ -2402,40 +2619,39 @@ def problem_investigation_create_command(client: Client, args: Dict[str, Any]) -
         support_organization_pbm_mgr=support_organization_pbm_mgr,
     )
 
-    response = client.create_problem_investigation_request(  # type: ignore[arg-type]
+    response = client.create_problem_investigation_request(
         PROBLEM_INVESTIGATION,
-        summary,  # type: ignore[arg-type]
+        summary,
         first_name=first_name,
         last_name=last_name,
-        urgency=urgency,  # type: ignore[arg-type]
-        impact=impact,  # type: ignore[arg-type]
-        status=status,  # type: ignore[arg-type]
-        details=details,  # type: ignore[arg-type]
-        company=company,  # type: ignore[arg-type]
-        assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
-        assigned_support_company=assigned_support_company,  # type: ignore[arg-type]
-        assigned_support_group_name=assigned_support_group_name,  # type: ignore[arg-type]
-        assignee=assignee,  # type: ignore[arg-type]
-        site_group=site_group,  # type: ignore[arg-type]
-        site=site,  # type: ignore[arg-type]
-        region=region,  # type: ignore[arg-type]
-        assigned_group_pbm_mgr=assigned_group_pbm_mgr,  # type: ignore[arg-type]
-        support_company_pbm_mgr=support_company_pbm_mgr,  # type: ignore[arg-type]
-        support_organization_pbm_mgr=support_organization_pbm_mgr,  # type: ignore[arg-type]
-        temporary_workaround=temporary_workaround,  # type: ignore[arg-type]
-        target_resolution_date=target_resolution_date.isoformat()  # type: ignore[arg-type]
-        if target_resolution_date
-        else None,
+        urgency=urgency,
+        impact=impact,
+        status=status,
+        details=details,
+        company=company,
+        assigned_support_organization=assigned_support_organization,
+        assigned_support_company=assigned_support_company,
+        assigned_support_group_name=assigned_support_group_name,
+        assignee=assignee,
+        site_group=site_group,
+        site=site,
+        region=region,
+        assigned_group_pbm_mgr=assigned_group_pbm_mgr,
+        support_company_pbm_mgr=support_company_pbm_mgr,
+        support_organization_pbm_mgr=support_organization_pbm_mgr,
+        temporary_workaround=temporary_workaround,
+        target_resolution_date=target_resolution_date.isoformat()
+        if target_resolution_date else None,
         investigation_justification=investigation_justification,
         investigation_driver=investigation_driver,
         resolution=resolution,
-        assignee_pbm_mgr=assignee_pbm_mgr,  # type: ignore[arg-type]
+        assignee_pbm_mgr=assignee_pbm_mgr,
         **additional_fields,
     )
 
     incident_request_id = extract_ticket_request_id_following_create(
-        client, PROBLEM_INVESTIGATION, response
-    )  # The right request ID is not retrieved by the create endpoint.
+        client, PROBLEM_INVESTIGATION,
+        response)  # The right request ID is not retrieved by the create endpoint.
     outputs = format_create_ticket_outputs(response.get("values"))
     outputs["RequestID"] = incident_request_id
 
@@ -2489,15 +2705,16 @@ def problem_investigation_update_command(client: Client, args: Dict[str, Any]) -
     assignee_pbm_mgr = args.get("assignee_pbm_mgr")
     temporary_workaround = args.get("temporary_workaround")
     resolution = args.get("resolution")
-    target_resolution_date: datetime = arg_to_datetime(args.get("target_resolution_date"))  # type: ignore[assignment]
+    target_resolution_date: datetime = arg_to_datetime(args.get("target_resolution_date"))
     investigation_justification = args.get("investigation_justification")
     investigation_driver = args.get("investigation_driver")
-    additional_fields = extract_args_from_additional_fields_arg(
-        args.get("additional_fields"),  # type: ignore[arg-type]
-        "additional_fields",
-    )
+    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),
+                                                                "additional_fields")
 
-    validate_related_arguments_provided(company=company, site=site, site_group=site_group, region=region)
+    validate_related_arguments_provided(company=company,
+                                        site=site,
+                                        site_group=site_group,
+                                        region=region)
     validate_related_arguments_provided(
         assigned_support_organization=assigned_support_organization,
         assigned_support_company=assigned_support_company,
@@ -2510,35 +2727,34 @@ def problem_investigation_update_command(client: Client, args: Dict[str, Any]) -
         support_organization_pbm_mgr=support_organization_pbm_mgr,
     )
 
-    client.update_problem_investigation_request(  # type: ignore[arg-type,call-arg]
-        format_ticket_request_id(problem_investigation_id),  # type: ignore[arg-type]
-        first_name,  # type: ignore[arg-type]
-        last_name,  # type: ignore[arg-type]
-        summary,  # type: ignore[arg-type]
-        urgency=urgency,  # type: ignore[arg-type]
-        impact=impact,  # type: ignore[arg-type]
-        status=status,  # type: ignore[arg-type]
-        status_reason=status_reason,  # type: ignore[arg-type]
-        details=details,  # type: ignore[arg-type]
-        company=company,  # type: ignore[arg-type]
-        assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
-        assigned_support_company=assigned_support_company,  # type: ignore[arg-type]
-        assigned_support_group_name=assigned_support_group_name,  # type: ignore[arg-type]
-        assignee=assignee,  # type: ignore[arg-type]
-        assignee_login_id=assignee_login_id,  # type: ignore[arg-type]
-        site_group=site_group,  # type: ignore[arg-type]
-        site=site,  # type: ignore[arg-type]
-        region=region,  # type: ignore[arg-type]
-        assigned_group_pbm_mgr=assigned_group_pbm_mgr,  # type: ignore[arg-type]
-        support_company_pbm_mgr=support_company_pbm_mgr,  # type: ignore[arg-type]
-        support_organization_pbm_mgr=support_organization_pbm_mgr,  # type: ignore[arg-type]
-        temporary_workaround=temporary_workaround,  # type: ignore[arg-type]
-        resolution=resolution,  # type: ignore[arg-type]
-        target_resolution_date=target_resolution_date.isoformat()  # type: ignore[arg-type]
-        if target_resolution_date
-        else None,
-        investigation_justification=investigation_justification,  # type: ignore[arg-type]
-        investigation_driver=investigation_driver,  # type: ignore[arg-type]
+    client.update_problem_investigation_request(
+        format_ticket_request_id(problem_investigation_id),
+        first_name,
+        last_name,
+        summary,
+        urgency=urgency,
+        impact=impact,
+        status=status,
+        status_reason=status_reason,
+        details=details,
+        company=company,
+        assigned_support_organization=assigned_support_organization,
+        assigned_support_company=assigned_support_company,
+        assigned_support_group_name=assigned_support_group_name,
+        assignee=assignee,
+        assignee_login_id=assignee_login_id,
+        site_group=site_group,
+        site=site,
+        region=region,
+        assigned_group_pbm_mgr=assigned_group_pbm_mgr,
+        support_company_pbm_mgr=support_company_pbm_mgr,
+        support_organization_pbm_mgr=support_organization_pbm_mgr,
+        temporary_workaround=temporary_workaround,
+        resolution=resolution,
+        target_resolution_date=target_resolution_date.isoformat()
+        if target_resolution_date else None,
+        investigation_justification=investigation_justification,
+        investigation_driver=investigation_driver,
         assignee_pbm_mgr=assignee_pbm_mgr,
         **additional_fields,
     )
@@ -2576,12 +2792,10 @@ def known_error_create_command(client: Client, args: Dict[str, Any]) -> CommandR
     assignee_pbm_mgr = args.get("assignee_pbm_mgr")
     temporary_workaround = args.get("temporary_workaround")
     resolution = args.get("resolution")
-    target_resolution_date = arg_to_datetime(args.get("target_resolution_date")).isoformat()  # type: ignore[union-attr]
+    target_resolution_date = arg_to_datetime(args.get("target_resolution_date")).isoformat()
     view_access = args.get("view_access")
-    additional_fields = extract_args_from_additional_fields_arg(
-        args.get("additional_fields"),  # type: ignore[arg-type]
-        "additional_fields",
-    )
+    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),
+                                                                "additional_fields")
 
     validate_related_arguments_provided(
         assigned_support_organization=assigned_support_organization,
@@ -2594,35 +2808,35 @@ def known_error_create_command(client: Client, args: Dict[str, Any]) -> CommandR
         support_company_pbm_mgr=support_company_pbm_mgr,
         support_organization_pbm_mgr=support_organization_pbm_mgr,
     )
-    response = client.create_problem_investigation_request(  # type: ignore[arg-type]
+    response = client.create_problem_investigation_request(
         KNOWN_ERROR,
-        summary,  # type: ignore[arg-type]
-        urgency=urgency,  # type: ignore[arg-type]
-        impact=impact,  # type: ignore[arg-type]
-        status=status,  # type: ignore[arg-type]
-        details=details,  # type: ignore[arg-type]
-        company=company,  # type: ignore[arg-type]
-        assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
-        assigned_support_company=assigned_support_company,  # type: ignore[arg-type]
-        assigned_support_group_name=assigned_support_group_name,  # type: ignore[arg-type]
-        assignee=assignee,  # type: ignore[arg-type]
-        site_group=site_group,  # type: ignore[arg-type]
-        site=site,  # type: ignore[arg-type]
-        region=region,  # type: ignore[arg-type]
-        assigned_group_pbm_mgr=assigned_group_pbm_mgr,  # type: ignore[arg-type]
-        support_company_pbm_mgr=support_company_pbm_mgr,  # type: ignore[arg-type]
-        support_organization_pbm_mgr=support_organization_pbm_mgr,  # type: ignore[arg-type]
-        temporary_workaround=temporary_workaround,  # type: ignore[arg-type]
+        summary,
+        urgency=urgency,
+        impact=impact,
+        status=status,
+        details=details,
+        company=company,
+        assigned_support_organization=assigned_support_organization,
+        assigned_support_company=assigned_support_company,
+        assigned_support_group_name=assigned_support_group_name,
+        assignee=assignee,
+        site_group=site_group,
+        site=site,
+        region=region,
+        assigned_group_pbm_mgr=assigned_group_pbm_mgr,
+        support_company_pbm_mgr=support_company_pbm_mgr,
+        support_organization_pbm_mgr=support_organization_pbm_mgr,
+        temporary_workaround=temporary_workaround,
         resolution=resolution,
         target_resolution_date=target_resolution_date,
         view_access=view_access,
-        assignee_pbm_mgr=assignee_pbm_mgr,  # type: ignore[arg-type]
+        assignee_pbm_mgr=assignee_pbm_mgr,
         **additional_fields,
     )
 
     known_error_id = extract_ticket_request_id_following_create(
-        client, KNOWN_ERROR, response
-    )  # The right request ID is not retrieved by the create endpoint.
+        client, KNOWN_ERROR,
+        response)  # The right request ID is not retrieved by the create endpoint.
     outputs = format_create_ticket_outputs(response.get("values"))
     outputs["RequestID"] = known_error_id
 
@@ -2672,11 +2886,9 @@ def known_error_update_command(client: Client, args: Dict[str, Any]) -> CommandR
     target_resolution_date = arg_to_datetime(args.get("target_resolution_date"))
     view_access = args.get("view_access")
 
-    target_resolution_date: datetime = arg_to_datetime(args.get("target_resolution_date"))  # type: ignore[no-redef]
-    additional_fields = extract_args_from_additional_fields_arg(
-        args.get("additional_fields"),  # type: ignore[arg-type]
-        "additional_fields",
-    )
+    target_resolution_date: datetime = arg_to_datetime(args.get("target_resolution_date"))
+    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),
+                                                                "additional_fields")
 
     validate_related_arguments_provided(
         assigned_support_organization=assigned_support_organization,
@@ -2692,32 +2904,32 @@ def known_error_update_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     validate_related_arguments_provided(status=status, status_reason=status_reason)
 
-    client.update_known_error_request(  # type: ignore[arg-type,call-arg]
-        format_ticket_request_id(known_error_id),  # type: ignore[arg-type]
-        summary,  # type: ignore[arg-type]
-        urgency=urgency,  # type: ignore[arg-type]
-        impact=impact,  # type: ignore[arg-type]
-        status=status,  # type: ignore[arg-type]
-        details=details,  # type: ignore[arg-type]
-        assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
-        assigned_support_company=assigned_support_company,  # type: ignore[arg-type]
-        assigned_support_group_name=assigned_support_group_name,  # type: ignore[arg-type]
-        assignee=assignee,  # type: ignore[arg-type]
-        assigned_group_pbm_mgr=assigned_group_pbm_mgr,  # type: ignore[arg-type]
-        support_company_pbm_mgr=support_company_pbm_mgr,  # type: ignore[arg-type]
-        support_organization_pbm_mgr=support_organization_pbm_mgr,  # type: ignore[arg-type]
-        target_resolution_date=target_resolution_date.isoformat()  # type: ignore[arg-type]
-        if target_resolution_date
-        else None,
-        status_reason=status_reason,  # type: ignore[arg-type]
-        assignee_pbm_mgr=assignee_pbm_mgr,  # type: ignore[arg-type]
-        temporary_workaround=temporary_workaround,  # type: ignore[arg-type]
-        resolution=resolution,  # type: ignore[arg-type]
-        view_access=view_access,  # type: ignore[arg-type]
+    client.update_known_error_request(
+        format_ticket_request_id(known_error_id),
+        summary,
+        urgency=urgency,
+        impact=impact,
+        status=status,
+        details=details,
+        assigned_support_organization=assigned_support_organization,
+        assigned_support_company=assigned_support_company,
+        assigned_support_group_name=assigned_support_group_name,
+        assignee=assignee,
+        assigned_group_pbm_mgr=assigned_group_pbm_mgr,
+        support_company_pbm_mgr=support_company_pbm_mgr,
+        support_organization_pbm_mgr=support_organization_pbm_mgr,
+        target_resolution_date=target_resolution_date.isoformat()
+        if target_resolution_date else None,
+        status_reason=status_reason,
+        assignee_pbm_mgr=assignee_pbm_mgr,
+        temporary_workaround=temporary_workaround,
+        resolution=resolution,
+        view_access=view_access,
         **additional_fields,
     )
 
-    command_results = CommandResults(readable_output=f"Known Error: {known_error_id} was successfully updated.")
+    command_results = CommandResults(
+        readable_output=f"Known Error: {known_error_id} was successfully updated.")
 
     return command_results
 
@@ -2736,7 +2948,7 @@ def support_group_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         "Support Group ID": "SupportGroupID",
         "Company": "Company",
         "Support Organization": "SupportOrganization",
-        "Support Group Name": "SupportGroupName",
+        "Support Group Name": "SupportGroupName"
     }
 
     command_results = list_command(
@@ -2806,36 +3018,36 @@ def work_order_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     priority = args.get("priority")
     work_order_type = args.get("work_order_type")
     location_company = args.get("location_company")
-    scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))  # type: ignore[assignment]
-    scedulded_end_date: datetime = arg_to_datetime(args.get("scedulded_end_date"))  # type: ignore[assignment]
+    scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))
+    scedulded_end_date: datetime = arg_to_datetime(args.get("scedulded_end_date"))
 
-    additional_fields = extract_args_from_additional_fields_arg(
-        args.get("additional_fields"),  # type: ignore[arg-type]
-        "additional_fields",
-    )
-    response = client.create_work_order_request(  # type: ignore[arg-type,call-arg]
-        template_guid,  # type: ignore[arg-type]
-        first_name,  # type: ignore[arg-type]
-        last_name,  # type: ignore[arg-type]
-        customer_person_id,  # type: ignore[arg-type]
-        customer_first_name,  # type: ignore[arg-type]
-        customer_last_name,  # type: ignore[arg-type]
-        customer_company,  # type: ignore[arg-type]
-        summary,  # type: ignore[arg-type]
-        detailed_description,  # type: ignore[arg-type]
-        status,  # type: ignore[arg-type]
-        priority,  # type: ignore[arg-type]
-        work_order_type,  # type: ignore[arg-type]
-        location_company,  # type: ignore[arg-type]
-        scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,  # type: ignore[arg-type]
-        scedulded_end_date=scedulded_end_date.isoformat() if scedulded_end_date else None,  # type: ignore[arg-type]
+    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),
+                                                                "additional_fields")
+    response = client.create_work_order_request(
+        template_guid,
+        first_name,
+        last_name,
+        customer_person_id,
+        customer_first_name,
+        customer_last_name,
+        customer_company,
+        summary,
+        detailed_description,
+        status,
+        priority,
+        work_order_type,
+        location_company,
+        scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,
+        scedulded_end_date=scedulded_end_date.isoformat() if scedulded_end_date else None,
         **additional_fields,
     )
 
-    outputs = format_create_ticket_outputs(response.get("values"))  # type: ignore[arg-type]
+    outputs = format_create_ticket_outputs(response.get("values"))
     # Fixing API returning RequestID in form 000...NNN instead of WO0...NNN
     outputs["RequestID"] = "WO0" + outputs["RequestID"][3:]
-    readable_output = tableToMarkdown("Work order ticket successfully created.", outputs, headerTransform=pascalToSpace)
+    readable_output = tableToMarkdown("Work order ticket successfully created.",
+                                      outputs,
+                                      headerTransform=pascalToSpace)
     command_results = CommandResults(
         outputs_prefix="BmcITSM.WorkOrder",
         outputs_key_field="RequestID",
@@ -2871,31 +3083,29 @@ def work_order_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     support_organization = args.get("support_organization")
     support_group = args.get("support_group")
     location_company = args.get("location_company")
-    scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))  # type: ignore[assignment]
-    schedulded_end_date: datetime = arg_to_datetime(args.get("schedulded_end_date"))  # type: ignore[assignment]
+    scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))
+    schedulded_end_date: datetime = arg_to_datetime(args.get("schedulded_end_date"))
 
-    additional_fields = extract_args_from_additional_fields_arg(
-        args.get("additional_fields"),  # type: ignore[arg-type]
-        "additional_fields",
-    )
+    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),
+                                                                "additional_fields")
 
     validate_related_arguments_provided(support_organization=support_organization, support_group=support_group)
 
-    client.update_work_order_request(  # type: ignore[arg-type,call-arg]
-        request_id,  # type: ignore[arg-type]
-        summary=summary,  # type: ignore[arg-type]
-        detailed_description=detailed_description,  # type: ignore[arg-type]
-        status=status,  # type: ignore[arg-type]
-        status_reason=status_reason,  # type: ignore[arg-type]
-        priority=priority,  # type: ignore[arg-type]
-        work_order_type=work_order_type,  # type: ignore[arg-type]
-        company=company,  # type: ignore[arg-type]
-        assignee=assignee,  # type: ignore[arg-type]
-        support_organization=support_organization,  # type: ignore[arg-type]
-        support_group_name=support_group,  # type: ignore[arg-type]
-        location_company=location_company,  # type: ignore[arg-type]
-        scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,  # type: ignore[arg-type]
-        schedulded_end_date=schedulded_end_date.isoformat if schedulded_end_date else None,  # type: ignore[arg-type]
+    client.update_work_order_request(
+        request_id,
+        summary=summary,
+        detailed_description=detailed_description,
+        status=status,
+        status_reason=status_reason,
+        priority=priority,
+        work_order_type=work_order_type,
+        company=company,
+        assignee=assignee,
+        support_organization=support_organization,
+        support_group_name=support_group,
+        location_company=location_company,
+        scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,
+        schedulded_end_date=schedulded_end_date.isoformat if schedulded_end_date else None,
         **additional_fields,
     )
 
@@ -2904,7 +3114,9 @@ def work_order_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return command_results
 
 
-def format_command_output(records: List[dict], mapper: Dict[str, Any], context_data_arranger: Callable = None) -> Dict[str, Any]:
+def format_command_output(records: List[dict],
+                          mapper: Dict[str, Any],
+                          context_data_arranger: Callable = None) -> Dict[str, Any]:
     """
     Format the returned records from the API according to the provided mapper.
     The main objective is to extract relevant attributes from the response to
@@ -2925,25 +3137,26 @@ def format_command_output(records: List[dict], mapper: Dict[str, Any], context_d
         record_attributes = record.get("values")
 
         for origin_attrib_name, formatted_attrib_name in mapper.items():
-            if origin_attrib_name in record_attributes:  # type: ignore[operator]
+            if origin_attrib_name in record_attributes:
                 if formatted_attrib_name in (
-                    "RequestID",
-                    "ID",
+                        "RequestID",
+                        "ID",
                 ):  # extract request ID out of pattern: <id|id> -> id
-                    formatted_record[formatted_attrib_name] = extract_ticket_request_id(record_attributes[origin_attrib_name])  # type: ignore[index]
 
-                elif "Date" in formatted_attrib_name and record_attributes[origin_attrib_name]:  # type: ignore[index]
+                    formatted_record[formatted_attrib_name] = extract_ticket_request_id(
+                        record_attributes[origin_attrib_name])
+
+                elif ("Date" in formatted_attrib_name and record_attributes[origin_attrib_name]):
                     formatted_record[formatted_attrib_name] = FormatIso8601(
-                        arg_to_datetime(record_attributes[origin_attrib_name])  # type: ignore[index]
-                    )
+                        arg_to_datetime(record_attributes[origin_attrib_name]))
 
                 else:
-                    formatted_record[formatted_attrib_name] = record_attributes[origin_attrib_name]  # type: ignore[index]
+                    formatted_record[formatted_attrib_name] = record_attributes[origin_attrib_name]
         if context_data_arranger:
             context_data_arranger(formatted_record)
         outputs.append(formatted_record)
 
-    return outputs  # type: ignore[return-value]
+    return outputs
 
 
 def get_paginated_records_with_hr(
@@ -2972,9 +3185,10 @@ def get_paginated_records_with_hr(
         from_index = min((page - 1) * page_size, rows_count)
         to_index = min(from_index + page_size, rows_count)
         relevant_raw_data = raw_data[from_index:to_index]
-        header = f"Showing page {page} out of {total_pages} total pages. Current page size: {page_size}."
+        header = (f"Showing page {page} out of {total_pages} total pages."
+                  f" Current page size: {page_size}.")
     else:
-        relevant_raw_data = raw_data[: min(rows_count, limit)]  # type: ignore[type-var]
+        relevant_raw_data = raw_data[:min(rows_count, limit)]
         header = f"Showing {len(relevant_raw_data)} records out of {rows_count}."
 
     return relevant_raw_data, header if relevant_raw_data else ""
@@ -3012,21 +3226,6 @@ def format_ticket_request_id(request_id: str) -> str:
     return request_id
 
 
-def validate_required_arguments_provided(**required_args):
-    """
-    Validates that all passed keyword arguments have non-None values.
-
-    Args:
-        **required_args: Keyword arguments to validate.
-
-    Raises:
-        ValueError: If any of the arguments has a None value.
-    """
-    missing_args = [key for key, value in required_args.items() if not value]
-    if missing_args:
-        raise ValueError(f"The following required arguments are missing: {missing_args}")
-
-
 def validate_related_arguments_provided(**related_args):
     """
     Validates that the passed keyword arguments provided together:
@@ -3042,11 +3241,11 @@ def validate_related_arguments_provided(**related_args):
     if at_least_one_is_not_provided and at_least_one_is_provided:
         raise ValueError(
             f"The arguments: {list(related_args.keys())} either all should all have value,\
-                         or none should have value."
-        )
+                         or none should have value.")
 
 
-def extract_args_from_additional_fields_arg(additional_fields: str, field_name: str) -> tuple[Any, List[str]]:
+def extract_args_from_additional_fields_arg(additional_fields: str,
+                                            field_name: str) -> tuple[Any, List[str]]:
     """
     Extract dictionary structure from additional field argument.
 
@@ -3063,7 +3262,7 @@ def extract_args_from_additional_fields_arg(additional_fields: str, field_name: 
 
     formatted_additional_fields = {}
     if not additional_fields:
-        return {}  # type: ignore[return-value]
+        return {}
     try:
         fields = additional_fields.split(FIELD_DELIMITER)
         for each_field in fields:
@@ -3074,7 +3273,7 @@ def extract_args_from_additional_fields_arg(additional_fields: str, field_name: 
         raise ValueError(
             f'Please validate the format of the argument: {field_name}. For example: "fieldname1=value;fieldname2=value".  '
         ) from error
-    return formatted_additional_fields  # type: ignore[return-value]
+    return formatted_additional_fields
 
 
 def arrange_ticket_context_data(ticket: Dict[str, Any]) -> Dict[str, Any]:
@@ -3132,7 +3331,8 @@ def arrange_ticket_context_data(ticket: Dict[str, Any]) -> Dict[str, Any]:
     return ticket
 
 
-def generate_complex_entity_for_context_data(raw_data: Dict[str, Any], mapper: Dict[str, Any]) -> Dict[str, Any]:
+def generate_complex_entity_for_context_data(raw_data: Dict[str, Any],
+                                             mapper: Dict[str, Any]) -> Dict[str, Any]:
     """
     Generates non-Flatten context key for the context Data.
 
@@ -3196,9 +3396,8 @@ def get_ticket_type_by_request_id(request_num: str) -> str:
     return REQUEST_NUM_PREFIX_TO_TICKET_TYPE.get(prefix) or SERVICE_REQUEST
 
 
-def generate_query_filter_mapper_by_args(
-    args: Dict[str, Any], record_id_key: Optional[str], ticket_type: Optional[str]
-) -> Dict[str, Any]:
+def generate_query_filter_mapper_by_args(args: Dict[str, Any], record_id_key: Optional[str],
+                                         ticket_type: Optional[str]) -> Dict[str, Any]:
     """
     Generates mapper of filter argument name in BMC search qualification query
     to it's provided value.
@@ -3214,8 +3413,8 @@ def generate_query_filter_mapper_by_args(
     """
 
     ids_filter_mapper = {record_id_key: args.get("ids")}
-    status_key = TICKET_TYPE_TO_STATUS_FIELD.get(ticket_type, "Status")  # type: ignore[arg-type]
-    summary = TICKET_TYPE_TO_SUMMARY_KEY.get(ticket_type, "Summary")  # type: ignore[arg-type]
+    status_key = TICKET_TYPE_TO_STATUS_FIELD.get(ticket_type, "Status")
+    summary = TICKET_TYPE_TO_SUMMARY_KEY.get(ticket_type, "Summary")
     equal_filter_mapper = {
         status_key: args.get("status"),
         "Impact": args.get("impact"),
@@ -3262,7 +3461,7 @@ def generate_query_with_filtering(custom_query: str, filter_mapper: Dict[str, An
     records_id_name = next(iter(ids_filter), None)
     records_ids = ids_filter.get(records_id_name) or []
 
-    ids_query = gen_single_filters_statement(records_id_name, records_ids, "=", " OR ")  # type: ignore[arg-type]
+    ids_query = gen_single_filters_statement(records_id_name, records_ids, "=", " OR ")
 
     equal_oper_filter_query = gen_multi_filters_statement(equal_oper_filters, "=", " AND ")
 
@@ -3307,7 +3506,8 @@ def fetch_incidents(
         tuple: Incidents and last run info.
     """
 
-    first_fetch_epoch = date_to_epoch_for_fetch(arg_to_datetime(first_fetch)) if not last_run else None
+    first_fetch_epoch = (date_to_epoch_for_fetch(arg_to_datetime(first_fetch))
+                         if not last_run else None)
 
     last_run = init_last_run(first_fetch_epoch) if first_fetch_epoch else last_run
     current_time = date_to_epoch_for_fetch(arg_to_datetime("now"))
@@ -3328,13 +3528,11 @@ def fetch_incidents(
     for incident in relevant_tickets:
         incident["mirror_direction"] = mirror_direction
         incident["mirror_instance"] = demisto.integrationInstance()
-        incidents.append(
-            {
-                "name": incident.get("Summary"),
-                "occured": incident.get("CreateDate"),
-                "rawJSON": json.dumps(incident),
-            }
-        )
+        incidents.append({
+            "name": incident.get("Summary"),
+            "occured": incident.get("CreateDate"),
+            "rawJSON": json.dumps(incident),
+        })
     if incidents:
         last_run = update_last_run(last_run, ticket_type_to_last_epoch)
     return incidents, last_run
@@ -3392,9 +3590,7 @@ def fetch_relevant_tickets(
         tickets_capacity -= tickets_amount
 
         if fetched_tickets:
-            ticket_type_to_last_epoch[ticket_type] = max(
-                [date_to_epoch_for_fetch(arg_to_datetime(ticket.get("CreateDate"))) for ticket in total_tickets]
-            )
+            ticket_type_to_last_epoch[ticket_type] = max([date_to_epoch_for_fetch(arg_to_datetime(ticket.get("CreateDate"))) for ticket in total_tickets])
         if tickets_capacity <= 0:  # no more tickets to retrieve in the current fetch
             break
 
@@ -3442,8 +3638,25 @@ def fetch_relevant_tickets_by_ticket_type(
     )
 
     response = client.list_request(ticket_form, fetch_query)
-    relevant_records, _ = get_paginated_records_with_hr(response.get("entries"), max_fetch)  # type: ignore[arg-type]
-    outputs: List[dict] = format_command_output(  # type: ignore[assignment]
+
+    # Attach worklogs to the ticket
+    if ticket_form  != 'HPD:WorkLog':
+        for i, ticket in enumerate(response['entries']):
+            incident_number =  ticket.get('values').get('Incident Number')
+            query = f"'Incident Number' = \"{incident_number}\""
+            worklogs = client.list_request("HPD:WorkLog", query)
+            for w_i, worklog in enumerate(worklogs['entries']):
+                # Change date format to ISO8601
+                for key, value in worklog.get('values').items():
+                    if key.endswith("Date"):
+                        worklog['values'][key] = FormatIso8601(
+                            arg_to_datetime(value)
+                        )
+                worklogs['entries'][w_i] = worklogs['entries'][w_i]['values']
+            response['entries'][i]['values']['Work Logs'] = worklogs.get('entries')
+
+    relevant_records, _ = get_paginated_records_with_hr(response.get("entries"), max_fetch)
+    outputs: List[dict] = format_command_output(
         deepcopy(relevant_records),
         generate_ticket_context_data_mapper(ticket_type),
         arrange_ticket_context_data,
@@ -3480,7 +3693,8 @@ def all_keys_empty(dict_obj: Dict[str, Any]) -> bool:
     return all(not value for value in dict_obj.values())
 
 
-def gen_multi_filters_statement(filter_mapper: Dict[str, Any], oper_in_filter: str, oper_between_filters: str) -> str:
+def gen_multi_filters_statement(filter_mapper: Dict[str, Any], oper_in_filter: str,
+                                oper_between_filters: str) -> str:
     """
     Generates statement for BMC search qualifcation query by multiple filters.
     Against each filter key and value the oper_in_filter will be made and between each of them
@@ -3497,12 +3711,12 @@ def gen_multi_filters_statement(filter_mapper: Dict[str, Any], oper_in_filter: s
 
     stmt = oper_between_filters.join(
         f"'{filter_key}' {oper_in_filter} \"{wrap_filter_value(filter_val,oper_in_filter)}\""
-        for filter_key, filter_val in (filter_mapper).items()
-    )
+        for filter_key, filter_val in (filter_mapper).items())
     return stmt
 
 
-def gen_single_filters_statement(filter_key: str, values: list, oper_in_filter: str, oper_between_filters: str) -> str:
+def gen_single_filters_statement(filter_key: str, values: list, oper_in_filter: str,
+                                 oper_between_filters: str) -> str:
     """
     Generates statement for BMC search qualifcation query by single filter.
     Against one filter key and each value in values argument,  the oper_in_filter will be made and between each of them
@@ -3518,8 +3732,9 @@ def gen_single_filters_statement(filter_key: str, values: list, oper_in_filter: 
         str: statment for BMC search qualifcation.
     """
 
-    stmt = oper_between_filters.join(f"'{filter_key}' {oper_in_filter} \"{resource_id}\"" for resource_id in (values))
-    return f"({stmt})" if stmt else ""
+    stmt = oper_between_filters.join(f"'{filter_key}' {oper_in_filter} \"{resource_id}\""
+                                     for resource_id in (values))
+    return stmt
 
 
 def wrap_filter_value(filter_value: str, operation: str) -> str:
@@ -3573,12 +3788,14 @@ def gen_fetch_incidents_query(
         str: query to fetch a certain ticket type.
     """
     create_time_prop = "Create Date" if ticket_type == "task" else "Submit Date"
-    time_filter = f"('{create_time_prop}' <= \"{t_epoch_to}\" AND '{create_time_prop}' >\"{t_epoch_from}\")"
+    time_filter = f"'{create_time_prop}' <= \"{t_epoch_to}\" AND '{create_time_prop}' >\"{t_epoch_from}\""
 
-    status_statement = gen_single_filters_statement(TICKET_TYPE_TO_STATUS_KEY[ticket_type], status_filter, "=", " OR ")
+    status_statement = gen_single_filters_statement(TICKET_TYPE_TO_STATUS_KEY[ticket_type],
+                                                    status_filter, "=", " OR ")
     urgency_statement = gen_single_filters_statement("Urgency", urgency_filter, "=", " OR ")
     impact_statement = gen_single_filters_statement("Impact", impact_filter, "=", " OR ")
-    return gen_processed_query(time_filter, custom_query, status_statement, urgency_statement, impact_statement)
+    return gen_processed_query(time_filter, custom_query, status_statement, urgency_statement,
+                               impact_statement)
 
 
 def validate_pagination_args(page: Optional[int], page_size: Optional[int], limit: Optional[int]):
@@ -3635,7 +3852,8 @@ def date_to_epoch_for_fetch(date: Optional[datetime]) -> int:
     return date_to_timestamp(date) // 1000
 
 
-def extract_ticket_request_id_following_create(client: Client, ticket_type: str, ticket_create_response: Dict[str, Any]) -> str:
+def extract_ticket_request_id_following_create(client: Client, ticket_type: str,
+                                               ticket_create_response: Dict[str, Any]) -> str:
     """
     Extract the ticket request ID for tickets in cases where the create request do not return
     The request ID which is important for accessing the ticket in other commands.
@@ -3671,11 +3889,15 @@ def format_create_ticket_outputs(outputs: Dict[str, Any]) -> Dict[str, Any]:
     for k, v in outputs.items():
         if k in CREATE_CONTEXT_MAPPER:
             formatted_outputs[CREATE_CONTEXT_MAPPER[k]] = v
-    formatted_outputs["CreateDate"] = FormatIso8601(arg_to_datetime(formatted_outputs["CreateDate"]))
+    formatted_outputs["CreateDate"] = FormatIso8601(arg_to_datetime(
+        formatted_outputs["CreateDate"]))
     return formatted_outputs
 
 
-def get_ticket(client: Client, ticket_type: str, root_request_id: str, query: str = None) -> Dict[str, Any]:
+def get_ticket(client: Client,
+               ticket_type: str,
+               root_request_id: str,
+               query: str = None) -> Dict[str, Any]:
     """
     Get ticket by request ID. Useful whem we want to use get ticket command for other commands.
 
@@ -3690,16 +3912,20 @@ def get_ticket(client: Client, ticket_type: str, root_request_id: str, query: st
     Returns:
         Dict[str, Any]: Get ticket command output ( ticket data).
     """
-    command_results: CommandResults = ticket_list_command(
-        client, {"ticket_type": ticket_type, "ticket_ids": root_request_id, "limit": 1}
-    )
+    command_results: CommandResults = ticket_list_command(client, {
+        "ticket_type": ticket_type,
+        "ticket_ids": root_request_id,
+        "limit": 1
+    })
     outputs = command_results.outputs
     if not outputs:
-        raise ValueError(f"The ticket type: {ticket_type} with request ID: {root_request_id} does not exist.")
-    return next(iter(outputs))  # type: ignore[call-overload]
+        raise ValueError(
+            f"The ticket type: {ticket_type} with request ID: {root_request_id} does not exist.")
+    return next(iter(outputs))
 
 
-def get_remote_data_command(client: Client, args: Dict[str, Any], close_incident: str) -> GetRemoteDataResponse:
+def get_remote_data_command(client: Client, args: Dict[str, Any],
+                            close_incident: str) -> GetRemoteDataResponse:
     """
     Gets new information about the incidents in the remote system
     and updates existing incidents in Cortex XSOAR.
@@ -3712,23 +3938,26 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], close_incident
     parsed_args = GetRemoteDataArgs(args)
     entries = []
     ticket_id = parsed_args.remote_incident_id
+    demisto.debug(f"Mirroring incident: {ticket_id}")
     last_update = date_to_epoch_for_fetch(arg_to_datetime(parsed_args.last_update))
     ticket_type = get_ticket_type_by_request_id(ticket_id)
     mirrored_ticket = get_ticket(client, ticket_type, ticket_id)
-    ticket_last_update = date_to_epoch_for_fetch(arg_to_datetime(mirrored_ticket.get("LastModifiedDate")))
+    ticket_last_update = date_to_epoch_for_fetch(
+        arg_to_datetime(mirrored_ticket.get("LastModifiedDate")))
     if last_update > ticket_last_update:
+        demisto.debug('last_update > ticket_last_update passing')
+        demisto.debug(f'last_update: {last_update}')
+        demisto.debug(f'ticket_last_update: {ticket_last_update}')
         mirrored_ticket = {}
-    if mirrored_ticket.get("Status") == "Closed" and close_incident:
-        entries.append(
-            {
-                "Type": EntryType.NOTE,
-                "Contents": {
-                    "dbotIncidentClose": True,
-                    "closeReason": "Closed from BMC Helix ITSM.",
-                },
-                "ContentsFormat": EntryFormat.JSON,
-            }
-        )
+    if mirrored_ticket.get("Status") in ["Closed", "Resolved"] and close_incident:
+        entries.append({
+            "Type": EntryType.NOTE,
+            "Contents": {
+                "dbotIncidentClose": True,
+                "closeReason": "Closed from BMC Helix ITSM.",
+            },
+            "ContentsFormat": EntryFormat.JSON,
+        })
 
     return GetRemoteDataResponse(mirrored_ticket, entries)
 
@@ -3746,13 +3975,14 @@ def get_modified_remote_data(client: Client, args: Dict[str, Any]) -> GetModifie
     """
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = remote_args.last_update
-    last_update_utc = date_to_epoch_for_fetch(arg_to_datetime(last_update))  # converts to a UTC timestamp
+    last_update_utc = date_to_epoch_for_fetch(
+        arg_to_datetime(last_update))  # converts to a UTC timestamp
 
-    modified_tickets = []  # type: ignore[var-annotated]
+    modified_tickets = []
     modified_ticket_ids = []
 
     for ticket_type in ALL_TICKETS:
-        time_filter_name = "Modified Date" if ticket_type == TASK else "Last Modified Date"
+        time_filter_name = ("Modified Date" if ticket_type == TASK else "Last Modified Date")
         modified_tickets_by_type = ticket_list_command(
             client,
             {
@@ -3762,7 +3992,7 @@ def get_modified_remote_data(client: Client, args: Dict[str, Any]) -> GetModifie
             },
         ).outputs
         if modified_tickets_by_type:
-            modified_tickets += modified_tickets_by_type  # type: ignore[arg-type]
+            modified_tickets += modified_tickets_by_type
 
     for raw_ticket in modified_tickets:
         ticket_id = raw_ticket.get("RequestID")
@@ -3788,27 +4018,32 @@ def update_remote_system(client: Client, args: Dict[str, Any], close_ticket: str
     ticket_type = get_ticket_type_by_request_id(ticket_id)
 
     if parsed_args.delta:
-        demisto.debug(f"Got the following delta keys {list(parsed_args.delta.keys())!s}")
+        demisto.debug(f"Got the following delta keys {str(list(parsed_args.delta.keys()))}")
 
     else:
         demisto.debug("There is no delta fields in BMC Helix ITSM")
 
     try:
-        demisto.debug(f"Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system\n")
+        demisto.debug(
+            f"Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system\n"
+        )
 
         if parsed_args.incident_changed:
             demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
 
             update_args = fit_update_args(parsed_args.delta, parsed_args.data, ticket_id)
             if parsed_args.inc_status == IncidentStatus.DONE and close_ticket:
-                handle_close_remote_ticket(ticket_type, update_args, parsed_args.delta.get("CloseReason"))
+
+                handle_close_remote_ticket(ticket_type, update_args,
+                                           parsed_args.delta.get("CloseReason"))
 
             demisto.debug(f"Sending incident with remote ID [{ticket_id}] to BMC Helix ITSM\n")
             update_remote_ticket(client, ticket_type, update_args)
 
         demisto.info(f"remote data of {ticket_id}: {parsed_args.data}")
     except Exception as error:
-        demisto.info(f"Error in BMC Helix ITSM outgoing mirror for incident {ticket_id} \nError message: {error!s}")
+        demisto.info(f"Error in BMC Helix ITSM outgoing mirror for incident {ticket_id} \n"
+                     f"Error message: {str(error)}")
 
     finally:
         return ticket_id
@@ -3826,6 +4061,7 @@ def fit_update_args(delta: dict, data: dict, ticket_id: str) -> dict:
     """
     arguments = {
         "summary": delta.get("Summary"),
+        "resolution": delta.get("Resolution"),
         "details": delta.get("Details"),
         "impact": delta.get("Impact"),
         "urgency": delta.get("Urgency"),
@@ -3864,7 +4100,8 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     mapping_response = GetMappingFieldsResponse()
     for ticket_type, incident_type in TICKET_TYPE_TO_INCIDENT_TYPE.items():
         incident_type_scheme = SchemeTypeMapping(type_name=incident_type)
-        outgoing_fields = MIRRORING_COMMON_FIELDS + TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS[ticket_type]  # type: ignore[union-attr,operator]
+        outgoing_fields = MIRRORING_COMMON_FIELDS + TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS[
+            ticket_type]
         for field in outgoing_fields:
             incident_type_scheme.add_field(field)
 
@@ -3903,7 +4140,7 @@ def test_module(client: Client) -> None:
     Args:
         client (Client): BMC ITSM API client.
     """
-    client.list_request("COM:Company")
+    client.list_request('COM:Company')
     return_results("ok")
 
 
@@ -3917,8 +4154,8 @@ def main() -> None:
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     credentials = params.get("credentials")
-    username = credentials.get("identifier")  # type: ignore[union-attr]
-    password = credentials.get("password")  # type: ignore[union-attr]
+    username = credentials.get("identifier")
+    password = credentials.get("password")
 
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH))
     first_fetch = params.get("first_fetch")
@@ -3927,7 +4164,7 @@ def main() -> None:
     ticket_impacts = argToList(params.get("ticket_impact"))
     ticket_urgencies = argToList(params.get("ticket_urgency"))
     ticket_custom_query = params.get("query")
-    mirror_direction = MIRROR_DIRECTION_MAPPING[params.get("mirror_direction")]  # type: ignore[index]
+    mirror_direction = MIRROR_DIRECTION_MAPPING[params.get("mirror_direction")]
     close_incident = params.get("close_incident")
     close_ticket = params.get("close_ticket")
 
@@ -3939,12 +4176,16 @@ def main() -> None:
     demisto.debug(f"Command being called is {command}")
 
     try:
-        requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]
-        client: Client = Client(url, username, password, verify=verify_certificate, proxy=proxy)  # type: ignore[arg-type]
+        requests.packages.urllib3.disable_warnings()
+        client: Client = Client(url, username, password, verify=verify_certificate, proxy=proxy)
 
         commands = {
             "bmc-itsm-ticket-list": ticket_list_command,
             "bmc-itsm-ticket-delete": ticket_delete_command,
+            "bmc-itsm-ticket-create-relationship": ticket_create_relationship_command,
+            "bmc-itsm-worklog-list": worklog_list_command,
+            "bmc-itsm-worklog-add": worklog_add_command,
+            "bmc-itsm-worklog-attachment-get": worklog_attachment_get_command,
             "bmc-itsm-user-list": user_list_command,
             "bmc-itsm-company-list": company_list_command,
             "bmc-itsm-service-request-create": service_request_create_command,
@@ -3972,27 +4213,28 @@ def main() -> None:
         if command == "test-module":
             test_module(client)
         elif command == "fetch-incidents":
+            demisto.debug(demisto.getLastRun())
             incidents, last_run = fetch_incidents(
                 client,
-                max_fetch,  # type: ignore[arg-type]
-                first_fetch,  # type: ignore[arg-type]
+                max_fetch,
+                first_fetch,
                 demisto.getLastRun(),
                 ticket_type_filter,
                 ticket_status_filter,
                 ticket_impact_filter,
                 ticket_urgency_filter,
-                ticket_custom_query,  # type: ignore[arg-type]
-                mirror_direction,  # type: ignore[arg-type]
+                ticket_custom_query,
+                mirror_direction,
             )
-
+            demisto.debug(last_run)
             demisto.setLastRun(last_run)
             demisto.incidents(incidents)
         elif command == "get-remote-data":
-            return_results(get_remote_data_command(client, args, close_incident))  # type: ignore[arg-type]
+            return_results(get_remote_data_command(client, args, close_incident))
         elif command == "get-modified-remote-data":
             return_results(get_modified_remote_data(client, args))
         elif command == "update-remote-system":
-            return_results(update_remote_system(client, args, close_ticket))  # type: ignore[arg-type]
+            return_results(update_remote_system(client, args, close_ticket))
         elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command())
         elif command in commands:
@@ -4003,7 +4245,8 @@ def main() -> None:
     except Exception as error:
         error_msg = str(error)
         if "Internal Server Error" in error_msg:
-            return_error(f"Please validate the provided values in the command arguments.\n{error_msg}")
+            return_error(
+                f"Please validate the provided values in the command arguments.\n{error_msg}")
         if "Not Found" in error_msg:
             return_error(f"The requested resource does not exist.\n{error_msg}")
         else:
@@ -4012,3 +4255,10 @@ def main() -> None:
 
 if __name__ in ["__main__", "builtin", "builtins"]:
     main()
+
+
+
+
+
+
+
