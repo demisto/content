@@ -12,8 +12,26 @@ configuration:
   type: 0
   additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments.
   section: Connect
-- additionalinfo: Provide Username + Password instead of API key + API ID
-  display: Username for server login
+- display: Authorization type
+  defaultvalue: Basic auth
+  additionalinfo: Choose your auth type
+  name: auth_type
+  options:
+  - Basic auth
+  - Bearer auth
+  - Api key auth
+  type: 15
+  section: Connect
+  required: true
+- additionalinfo: Use for Api key auth
+  display: API key ID
+  displaypassword: API Key
+  name: api_key_auth_credentials
+  type: 9
+  section: Connect
+  required: false
+- additionalinfo: Use for Basic auth. Optionally you can use Username as an API key ID and Password as an API key for API Key auth.
+  display: Username
   name: credentials
   type: 9
   section: Connect
@@ -43,15 +61,17 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: Index from which to fetch incidents (CSV)
+- display: Index to fetch incidents from
   name: fetch_index
   type: 0
   section: Collect
   required: false
+  additionalinfo: CSV
 - display: Query String
   name: fetch_query
   type: 0
   additionalinfo: |-
+    Query string is queried using the Lucene syntax. For more information about the Lucene syntax see the link appear in the help section.
     The query will be used when fetching incidents. Index time field will be used as a filter in the query.
 
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
