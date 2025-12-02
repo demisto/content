@@ -213,7 +213,8 @@ def run_gsuiteadmin(user: UserData, using: str) -> tuple[list[ExpiredPasswordRes
     for res in res_cmd:
         func_res.append(
             ExpiredPasswordResult(Result="Success", Message="Password reset successfully enforced")
-            if dict_safe_get(res, ("Contents", "changePasswordAtNextLogin"))
+            # make sure the field changePasswordAtNextLogin is true
+            if dict_safe_get(res, ["Contents", "changePasswordAtNextLogin"])
             else ExpiredPasswordResult(Result="Failed",
                                        Message=str(res.get("Contents") or "Unable to expire password"))
         )
@@ -292,7 +293,12 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
     Returns:
         tuple[list[UserData], str]: A list of user data dictionaries and the human-readable output.
     """
-    res, hr = run_command("get-user-data", args | {"verbose": "true"}, label_hr=False)
+    try:
+        res, hr = run_command("get-user-data", args | {"verbose": "true"}, label_hr=False)
+    except Exception as error:
+        # Sometimes commands fails - don't want to fail the script run
+        demisto.debug(f"ExpirePassword: an unexpected error occurred in get-user-data {error}")
+
     demisto.debug(f"DELETE-ExpirePassword: get_users {res=} {hr=}")
     if errors_users := [r for r in res if r["Type"] == EntryType.ERROR]:
         if err := next((r for r in errors_users if not r["HumanReadable"]), None):
@@ -361,7 +367,7 @@ def expire_passwords(users: list[UserData]) -> tuple[list[ExpiredPasswordResult]
             ]
             human_readables.append(hr)
         else:
-            demisto.debug(f"ExpirePassword: User: {user['Username']} not found for brand: {user['Brand']}")
+            demisto.debug(f"ExpirePassword: {user['Status']}, for brand: {user['Brand']}")
 
     return context, "\n\n".join(human_readables)
 
