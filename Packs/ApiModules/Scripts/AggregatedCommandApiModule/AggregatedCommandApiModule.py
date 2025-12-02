@@ -182,7 +182,7 @@ class IndicatorInstance:
         # Case 1 – Invalid indicator (highest priority)
         if not valid:
             self.final_status = Status.FAILURE
-            self.context_message = "Invalid"
+            self.context_message = self.error_message or "Invalid"
             return
 
         # Case 2 – Valid + Successful enrichment pipeline
@@ -1264,7 +1264,6 @@ class ReputationAggregatedCommand(AggregatedCommand):
             demisto.debug("All commands failed or no indicators found. Returning an error entry.")
             return CommandResults(
                 readable_output="Error: All commands failed or no indicators found.\n" + human_readable,
-                outputs=final_context,
                 entry_type=EntryType.ERROR,
             )
 
@@ -1389,7 +1388,7 @@ def create_and_extract_indicators(
             demisto.debug(f"extractIndicators failed for '{raw}': {msg}")
             hr += f"Error Message: {msg}"
             if raw not in invalid_set:
-                indicators_instances.append(IndicatorInstance(raw_input=raw, hr_message=msg, final_status=Status.FAILURE))
+                indicators_instances.append(IndicatorInstance(raw_input=raw, error_message=msg, final_status=Status.FAILURE))
                 invalid_set.add(raw)
             continue
 
