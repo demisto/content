@@ -791,7 +791,10 @@ class XSOAR2STIXParser:
             pattern_type="stix",
             labels=labels,
         )
-        return dict({k: v for k, v in stix_object.items() if k in ("spec_version", "created", "modified", "extensions")}, **stix_domain_object)
+        return dict(
+            {k: v for k, v in stix_object.items() if k in ("spec_version", "created", "modified", "extensions")},
+            **stix_domain_object,
+        )
 
     @staticmethod
     def create_sdo_stix_uuid(
