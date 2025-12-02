@@ -39,11 +39,13 @@ class IndicatorStatus(Enum):
     - FRESH: If the indicator modifiedTime is within the freshness window (default is one week).
     - STALE: If the indicator modifiedTime is outside the freshness window.
     - MANUAL: If the indicator was manually added.
+    - ERROR: If the indicator enrichment pipeline failed.
     """
 
     FRESH = "Fresh"
     STALE = "Stale"
     MANUAL = "Manual"
+    ERROR = "Error"
 
 
 class EntryResult:
@@ -515,7 +517,9 @@ class ContextBuilder:
 
             # 2. Handle Failure Case (Logic extracted from original Case 1, 3, 4, 5, 6)
             if indicator_instance.final_status == Status.FAILURE:
-                results.append({"Value": value or raw, "Status": "Error", "Message": indicator_instance.context_message})
+                results.append(
+                    {"Value": value or raw, "Status": IndicatorStatus.ERROR, "Message": indicator_instance.context_message}
+                )
                 continue
 
             # 3. Handle Success Case (Logic extracted from original Case 2)
@@ -554,7 +558,7 @@ class ContextBuilder:
             indicator_list (list[dict]): The list of indicators to enrich.
         """
         for indicator in indicator_list:
-            if "Score" in self.indicator_schema.context_output_mapping and indicator.get("Status") != "Error":
+            if "Score" in self.indicator_schema.context_output_mapping and indicator.get("Status") != IndicatorStatus.ERROR:
                 all_scores = [res.get("Score", 0) for res in indicator.get("Results", [])] + [indicator.get("TIMScore", 0)]
                 max_score = max(all_scores or [0])
                 indicator["MaxScore"] = max_score
