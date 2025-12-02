@@ -1973,6 +1973,19 @@ script:
     - type: String
       contextPath: BmcITSM.SupportGroup.SupportGroupName
       description: The support group.
+  - name: bmc-itsm-worklog-add
+    arguments:
+    - description: Incident Number
+      name: incident_number
+      required: true
+    - description: Work Log Type
+      name: worklog_type
+    - description: View Acces
+      name: view_access
+    - description: Detailed Description
+      name: detailed_description
+    - description: A comma-separated list of entry_ids to add as attachments
+      name: entry_ids
   - name: bmc-itsm-work-order-template-list
     description: Lists all work order templates. Useful for creating work orders. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON, you can use the raw_response=true at the end of the command.
     arguments:
