@@ -22,7 +22,6 @@ For more information - click [here](https://training.threatconnect.com/learn/art
 2. Search for ThreatConnect Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
-
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Base URL | The API URL. | True |

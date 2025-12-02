@@ -499,7 +499,9 @@ def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> tu
                         Method.GET, url_suffix="", get_next=True, full_url=indicators_next_link
                     )
                     indicators.extend(response)
-                    demisto.debug(f"Got {len(response)} indicators from the next link response, with next link: {indicators_next_link}")
+                    demisto.debug(
+                        f"Got {len(response)} indicators from the next link response, with next link: {indicators_next_link}"
+                    )
                 if groups_next_link:
                     demisto.debug("Groups Next Link: " + groups_next_link)
                     response, _, groups_next_link = client.make_request(
@@ -706,9 +708,9 @@ def main():  # pragma: no cover # noqa
     credentials = params.get("api_credentials", {})
     access_id = credentials.get("identifier") or params.get("api_access_id")
     secret_key = credentials.get("password") or params.get("api_secret_key")
-    
+
     client = Client(access_id, secret_key, params.get("tc_api_path"), verify=insecure, proxy=proxy)
-    
+
     demisto.debug(f"Command being called is {command}")
     commands = {
         "test-module": module_test_command,
