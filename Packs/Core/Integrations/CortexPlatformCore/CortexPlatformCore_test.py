@@ -4861,6 +4861,14 @@ def test_create_appsec_issues_filter_and_tables_no_matching_table():
     ],
 )
 def test_parse_custom_fields(custom_fields_json, expected):
+    """
+    Given:
+        A JSON string containing custom fields and expected parsed result.
+    When:
+        The parse_custom_fields function is called with the JSON string.
+    Then:
+        The function should return a dictionary with normalized field names matching the expected result.
+    """
     from CortexPlatformCore import parse_custom_fields
 
     result = parse_custom_fields(custom_fields_json)
@@ -4868,6 +4876,15 @@ def test_parse_custom_fields(custom_fields_json, expected):
 
 
 def test_process_case_response_removes_specified_fields():
+    """
+    Given:
+        A case response containing fields that should be removed (layoutId, layoutRuleName, sourcesList,
+        previous_score, previous_score_source).
+    When:
+        The process_case_response function is called.
+    Then:
+        The specified fields should be removed from the response while preserving other fields.
+    """
     from CortexPlatformCore import process_case_response
 
     resp = {
@@ -4893,6 +4910,14 @@ def test_process_case_response_removes_specified_fields():
 
 
 def test_process_case_response_renames_incident_domain_to_case_domain():
+    """
+    Given:
+        A case response containing an incidentDomain field.
+    When:
+        The process_case_response function is called.
+    Then:
+        The incidentDomain field should be renamed to caseDomain and the original field should be removed.
+    """
     from CortexPlatformCore import process_case_response
 
     resp = {"reply": {"incidentDomain": "security", "caseId": "case101"}}
