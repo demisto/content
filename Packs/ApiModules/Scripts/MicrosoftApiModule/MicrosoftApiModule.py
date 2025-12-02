@@ -669,6 +669,7 @@ def get_azure_cloud(params, integration_name):
     return AZURE_CLOUDS.get(AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg), AZURE_WORLDWIDE_CLOUD)  # type: ignore[arg-type]
 
 
+# use before creating the Microsoft client
 def get_auth_type_flow(auth_flow: str) -> None | str:
     auth_flow_dict = {
         "Not Selected": None,
@@ -681,6 +682,7 @@ def get_auth_type_flow(auth_flow: str) -> None | str:
     return auth_flow_dict.get(auth_flow, None)
 
 
+# use before creating the Microsoft client
 def is_self_deployed_flow(auth_flow: str) -> bool:
     if auth_flow in ("Device Code", "Authorization Code", "Client Credentials", "Azure Managed Identities"):
         return True
@@ -933,14 +935,19 @@ class MicrosoftClient(BaseClient):
                     raise DemistoException(f"{message_prefix} enter {field.replace('_', ' ').title()}.")
 
         if self.auth_type == OPROXY_AUTH_TYPE:
+            demisto.debug(f"Got into the OPROXY_AUTH_TYPE check")
             self.get_access_token()
             return "ok"
-        if self.grant_type == MANAGED_IDENTITIES:
-            require_fields(
-                fields=["managed_identities_client_id"],
-                message_prefix="When using Azure Managed Identities flow you must "
-            )
-            self.get_access_token()
+        elif self.grant_type == MANAGED_IDENTITIES:
+            try:
+                self.get_access_token()
+            except Exception as e:
+                raise DemistoException(f"Failed to connect to Azure Managed Identities. "
+                                       f"Please ensure the following: "
+                                       f"1. You have entered the Azure Managed Identities Client ID. "
+                                       f"2. This integration is running on an Azure resource "
+                                       f"that has been assigned a Managed Identity within your Azure tenant. "
+                                       f"Original Error: {e}")
             return "ok"
 
         elif self.grant_type == CLIENT_CREDENTIALS:
@@ -1042,8 +1049,13 @@ class MicrosoftClient(BaseClient):
         demisto.debug("Set integration context successfully.")
 
         if self.multi_resource:
+            demisto.debug(f"Got into the if of self.multi_resource")
+            r = self.resource_to_access_token[resource]
+            demisto.debug(f"Got those {r=}")
             return self.resource_to_access_token[resource]
 
+
+        demisto.debug(f"Returning the access token {access_token}")
         return access_token
 
     def _raise_authentication_error(self, oproxy_response: requests.Response):
@@ -1309,8 +1321,7 @@ class MicrosoftClient(BaseClient):
         except Exception as e:
             err = f"{e!s}"
 
-        return_error(f"Error in Microsoft authorization with Azure Managed Identities: {err}")
-        return None
+        raise DemistoException(f"Error in Microsoft authorization with Azure Managed Identities: {err}")
 
     def _get_token_device_code(
         self, refresh_token: str = "", scope: str | None = None, integration_context: dict | None = None

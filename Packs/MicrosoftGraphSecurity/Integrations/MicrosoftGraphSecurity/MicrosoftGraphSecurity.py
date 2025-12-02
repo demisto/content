@@ -2028,9 +2028,9 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
     return command_results
 
 
-def test_module(client: MsGraphClient, args):
-    client.ms_client.main_test_module()
-    return "ok"
+def test_module(client: MsGraphClient):
+    raise DemistoException(f"This is for testing")
+    # return client.ms_client.main_test_module()
 
 
 def main():
@@ -2061,7 +2061,6 @@ def main():
             raise DemistoException("Key or Certificate Thumbprint and Private Key must be provided.")
 
     commands = {
-        "test-module": test_module,
         "msg-auth-test": test_auth_code_command,
         "msg-search-alerts": search_alerts_command,
         "msg-get-alert-details": get_alert_details_command,
@@ -2135,6 +2134,8 @@ def main():
                 service_sources=fetch_service_sources,
             )
             demisto.incidents(incidents)
+        elif command == "test-module":
+            return_results(test_module(client))
         elif command == "msg-create-mail-assessment-request":
             return_results(create_mail_assessment_request_command(args, client))
         elif command == "msg-create-email-file-assessment-request":

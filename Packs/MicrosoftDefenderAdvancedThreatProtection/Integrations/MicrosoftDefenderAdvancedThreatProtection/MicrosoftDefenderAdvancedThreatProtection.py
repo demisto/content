@@ -6349,26 +6349,26 @@ def main():  # pragma: no cover
 
     base_url: str = urljoin(params_url, "/api")
 
-    if not managed_identities_client_id:
-        if not self_deployed and not enc_key:
-            raise DemistoException(
-                "Key must be provided. For further information see "
-                "https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication"
-            )
-        elif not enc_key and (not certificate_thumbprint or not private_key):
-            raise DemistoException("Key or Certificate Thumbprint and Private Key must be provided.")
-        if not auth_id:
-            raise Exception("ID must be provided.")
-        if not tenant_id:
-            raise Exception("Tenant ID must be provided.")
-        if auth_code:
-            if redirect_uri and not self_deployed:
-                raise Exception("In order to use Authorization Code, set Self Deployed: True.")
-            if not redirect_uri:
-                raise Exception(
-                    "In order to use Authorization Code auth flow, you should set: "
-                    '"Application redirect URI", "Authorization code" and "Self Deployed=True".'
-                )
+    # if not managed_identities_client_id:
+    #     if not self_deployed and not enc_key:
+    #         raise DemistoException(
+    #             "Key must be provided. For further information see "
+    #             "https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication"
+    #         )
+    #     elif not enc_key and (not certificate_thumbprint or not private_key):
+    #         raise DemistoException("Key or Certificate Thumbprint and Private Key must be provided.")
+    #     if not auth_id:
+    #         raise Exception("ID must be provided.")
+    #     if not tenant_id:
+    #         raise Exception("Tenant ID must be provided.")
+    #     if auth_code:
+    #         if redirect_uri and not self_deployed:
+    #             raise Exception("In order to use Authorization Code, set Self Deployed: True.")
+    #         if not redirect_uri:
+    #             raise Exception(
+    #                 "In order to use Authorization Code auth flow, you should set: "
+    #                 '"Application redirect URI", "Authorization code" and "Self Deployed=True".'
+    #             )
 
     command = demisto.command()
     args = demisto.args()
