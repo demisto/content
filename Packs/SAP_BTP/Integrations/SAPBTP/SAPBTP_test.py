@@ -226,7 +226,7 @@ def test_parse_integration_params_auth_validation_fail(params, expected_error):
                 "url": f"{SERVER_URL}/",
                 "client_id": MOCK_CLIENT_ID,
                 "certificate": MOCK_CERTIFICATE,
-                "key": MOCK_PRIVATE_KEY,
+                "private_key": MOCK_PRIVATE_KEY,
                 "auth_type": AuthType.MTLS,
                 "insecure": False,
                 "proxy": False,
