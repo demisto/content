@@ -1,4 +1,4 @@
-category: Case Management
+category: Case Management 
 commonfields:
   id: ServiceNow
   version: -1
