@@ -190,10 +190,11 @@ def run_okta_v2(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
     func_res = []
     for res in res_cmd:
         res_msg = res["HumanReadable"] or res["Contents"]
-        is_expired = "Status: PASSWORD_EXPIRED" in res_msg
+        demisto.debug(f"DELETE-ExpirePassword: Okta v2 Check Content {res_msg=}")
+        is_expired = 'PASSWORD_EXPIRED' in res_msg
         func_res.append(
             ExpiredPasswordResult(Result="Success", Message="Password expired successfully", Instance=dict_safe_get(res, ["Metadata", "instance"]) or "")
-            if not is_expired
+            if is_expired
             else ExpiredPasswordResult(Result="Failed", Message=res_msg, Instance=dict_safe_get(res, ["Metadata", "instance"]) or "")
         )
     return func_res, hr
