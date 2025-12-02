@@ -293,17 +293,12 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
     Returns:
         tuple[list[UserData], str]: A list of user data dictionaries and the human-readable output.
     """
-    try:
-        res, hr = run_command("get-user-data", args | {"verbose": "true"}, label_hr=False)
-    except Exception as error:
-        # Sometimes commands fails - don't want to fail the script run
-        demisto.debug(f"ExpirePassword: an unexpected error occurred in get-user-data {error}")
+    res, hr = run_command("get-user-data", args | {"verbose": "true"}, label_hr=False)
 
     demisto.debug(f"DELETE-ExpirePassword: get_users {res=} {hr=}")
     if errors_users := [r for r in res if r["Type"] == EntryType.ERROR]:
         if err := next((r for r in errors_users if not r["HumanReadable"]), None):
-            raise DemistoException(f"Error when calling get-user-data:\n{err['Contents']}")
-        return_results(errors_users)
+            demisto.debug(f"Error when calling get-user-data:\n{err['Contents']}")
 
     # Check for no available integrations
     if any(
