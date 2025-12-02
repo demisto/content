@@ -296,7 +296,7 @@ ALL_TICKETS = [
 TICKET_INCIDENT_TYPES = [
     "BMC Change-Request",
     "BMC Incident",
-    "BMC Problem -– Known Error",
+    "BMC Problem - Known Error",
     "BMC Problem Investigation incident",
     "BMC Service Request",
     "BMC Task",
@@ -308,7 +308,7 @@ TICKET_TYPE_TO_INCIDENT_TYPE = {
     CHANGE_REQUEST: "BMC Change-Request",
     INCIDENT: "BMC Incident",
     PROBLEM_INVESTIGATION: "BMC Problem Investigation incident",
-    KNOWN_ERROR: "BMC Problem – Known Error",
+    KNOWN_ERROR: "BMC Problem - Known Error",
     TASK: "BMC Task",
     WORK_ORDER: "BMC Work Order",
 }
@@ -3057,25 +3057,28 @@ def work_order_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))
     schedulded_end_date: datetime = arg_to_datetime(args.get("schedulded_end_date"))
 
-    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"), "additional_fields")
+    additional_fields = extract_args_from_additional_fields_arg(
+        args.get("additional_fields"),
+        "additional_fields"
+    )
 
     validate_related_arguments_provided(support_organization=support_organization, support_group=support_group)
 
-    client.update_work_order_request(
-        request_id,
-        summary=summary,
-        detailed_description=detailed_description,
-        status=status,
-        status_reason=status_reason,
-        priority=priority,
-        work_order_type=work_order_type,
-        company=company,
-        assignee=assignee,
-        support_organization=support_organization,
-        support_group_name=support_group,
-        location_company=location_company,
-        scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,
-        schedulded_end_date=schedulded_end_date.isoformat if schedulded_end_date else None,
+    client.update_work_order_request(  # type: ignore[arg-type,call-arg]
+        request_id,  # type: ignore[arg-type]
+        summary=summary,  # type: ignore[arg-type]
+        detailed_description=detailed_description,  # type: ignore[arg-type]
+        status=status,  # type: ignore[arg-type]
+        status_reason=status_reason,  # type: ignore[arg-type]
+        priority=priority,  # type: ignore[arg-type]
+        work_order_type=work_order_type,  # type: ignore[arg-type]
+        company=company,  # type: ignore[arg-type]
+        assignee=assignee,  # type: ignore[arg-type]
+        support_organization=support_organization,  # type: ignore[arg-type]
+        support_group_name=support_group,  # type: ignore[arg-type]
+        location_company=location_company,  # type: ignore[arg-type]
+        scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,  # type: ignore[arg-type]
+        schedulded_end_date=schedulded_end_date.isoformat if schedulded_end_date else None,  # type: ignore[arg-type]
         **additional_fields,
     )
 
@@ -3105,20 +3108,20 @@ def format_command_output(records: List[dict], mapper: Dict[str, Any], context_d
         record_attributes = record.get("values")
 
         for origin_attrib_name, formatted_attrib_name in mapper.items():
-            if origin_attrib_name in record_attributes:
+            if origin_attrib_name in record_attributes:  # type: ignore[operator]
                 if formatted_attrib_name in (
                     "RequestID",
                     "ID",
                 ):  # extract request ID out of pattern: <id|id> -> id
-                    formatted_record[formatted_attrib_name] = extract_ticket_request_id(record_attributes[origin_attrib_name])
+                    formatted_record[formatted_attrib_name] = extract_ticket_request_id(record_attributes[origin_attrib_name])  # type: ignore[index]
 
-                elif "Date" in formatted_attrib_name and record_attributes[origin_attrib_name]:
+                elif "Date" in formatted_attrib_name and record_attributes[origin_attrib_name]:  # type: ignore[index]
                     formatted_record[formatted_attrib_name] = FormatIso8601(
-                        arg_to_datetime(record_attributes[origin_attrib_name])
+                        arg_to_datetime(record_attributes[origin_attrib_name])  # type: ignore[index]
                     )
 
                 else:
-                    formatted_record[formatted_attrib_name] = record_attributes[origin_attrib_name]
+                    formatted_record[formatted_attrib_name] = record_attributes[origin_attrib_name]  # type: ignore[index]
         if context_data_arranger:
             context_data_arranger(formatted_record)
         outputs.append(formatted_record)
@@ -3191,17 +3194,21 @@ def format_ticket_request_id(request_id: str) -> str:
         return f"{request_id}|{request_id}"
     return request_id
 
+
 def validate_required_arguments_provided(**required_args):
     """
     Validates that all passed keyword arguments have non-None values.
+
     Args:
         **required_args: Keyword arguments to validate.
+
     Raises:
         ValueError: If any of the arguments has a None value.
     """
     missing_args = [key for key, value in required_args.items() if not value]
     if missing_args:
         raise ValueError(f"The following required arguments are missing: {missing_args}")
+
 
 def validate_related_arguments_provided(**related_args):
     """
