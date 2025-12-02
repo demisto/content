@@ -262,7 +262,7 @@ def run_aws_iam(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
                 Instance=dict_safe_get(res, ["Metadata", "instance"]) or ""
             )
             # The AWS-IAM integration returns "The user {user} password was changed" on success
-            if res_msg == f"The user {user['Username']} password was changed"
+            if res_msg == f"The user {user['Username']} Password was changed"
             else ExpiredPasswordResult(
                     Result="Failed",
                     Message=f"AWS-IAM command did not confirm success. Response: {res_msg or 'No response message'}",
