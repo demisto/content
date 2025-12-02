@@ -12,7 +12,7 @@ args:
       If an indicator contains a comma, wrap the indicators in a JSON array.  
       Example: "[\"https://example.com/search?tags=red,yellow,green\", \"https://example2.com\"]".
     - From Context: Pass JSON arrays directly, without modification.
-  name: indicators_list
+  name: indicator_list
   required: false
   isArray: true
 - name: text
