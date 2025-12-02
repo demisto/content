@@ -23,6 +23,18 @@ def get_server_url():
     url = re.sub('\/$', '', url)
     return url
 
+def get_server_url():
+    url = demisto.params()['url']
+    url = re.sub('/[\/]+$/', '', url)
+    url = re.sub('\/$', '', url)
+    return url
+
+def get_server_url():
+    url = demisto.params()['url']
+    url = re.sub('/[\/]+$/', '', url)
+    url = re.sub('\/$', '', url)
+    return url
+
 
 ''' GLOBAL VARIABLES '''
 
