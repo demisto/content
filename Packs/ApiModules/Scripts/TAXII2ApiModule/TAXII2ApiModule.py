@@ -663,7 +663,7 @@ class XSOAR2STIXParser:
             xsoar_indicator_to_return = xsoar_indicator
         extension_definition = {}
 
-        if self.has_extension and object_type not in self.types_for_indicator_sdo:
+        if self.has_extension:
             stix_object, extension_definition, extensions_dict = self.create_extension_definition(
                 object_type, extensions_dict, xsoar_type, created_parsed, modified_parsed, stix_object, xsoar_indicator_to_return
             )
@@ -892,6 +892,7 @@ class XSOAR2STIXParser:
                     stix_ioc = self.convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator)
                 demisto.debug(f"T2API: create_entity_b_stix_objects {stix_ioc=}")
                 if self.has_extension and stix_ioc:
+                    entity_b_objects.append(stix_ioc)
                     if extension_definition:
                         extensions.append(extension_definition)
                 elif stix_ioc:
@@ -2813,9 +2814,6 @@ class Taxii2FeedClient(STIX2XSOARParser):
         """
         get_objects = self.collection_to_fetch.get_objects
         if self.objects_to_fetch:
-            # Always include extension-definition to ensure custom fields are fetched
-            if "extension-definition" not in self.objects_to_fetch:
-                self.objects_to_fetch.append("extension-definition")
             if (
                 "relationship" not in self.objects_to_fetch and len(self.objects_to_fetch) > 1
             ):  # when fetching one type no need to fetch relationship
