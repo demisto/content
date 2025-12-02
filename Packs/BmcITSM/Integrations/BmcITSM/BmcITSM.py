@@ -2032,15 +2032,15 @@ def service_request_create_command(client: Client, args: Dict[str, Any]) -> Comm
     srd_instance_id = args["srd_instance_id"]
     summary = args.get("summary")
     status = args.get("status")
-    urgency = args.get("urgenc y")
+    urgency = args.get("urgency")
     impact = args.get("impact")
     first_name = args.get("first_name")
     last_name = args.get("last_name")
     login_id = args.get("login_id")
 
     additional_fields = extract_args_from_additional_fields_arg(
-        args.get("additional_fields"), # type: ignore[arg-type]
-        "additional_fields"
+        args.get("additional_fields"),  # type: ignore[arg-type]
+        "additional_fields",
     )
     service_request_definition_params = extract_args_from_additional_fields_arg(
         args.get("service_request_definition_params"),  # type: ignore[arg-type]
@@ -2048,7 +2048,7 @@ def service_request_create_command(client: Client, args: Dict[str, Any]) -> Comm
     )
     validate_related_arguments_provided(first_name=first_name, last_name=last_name, login_id=login_id)
 
-    response = client.create_service_request_request(
+    response = client.create_service_request_request(  # type: ignore[arg-type,call-arg]
         srd_instance_id,
         summary,  # type: ignore[arg-type]
         urgency,  # type: ignore[arg-type]
@@ -2098,7 +2098,10 @@ def service_request_update_command(client: Client, args: Dict[str, Any]) -> Comm
     site_group = args.get("site_group")
     region = args.get("region")
     site = args.get("site")
-    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"), "additional_fields")
+    additional_fields = extract_args_from_additional_fields_arg(
+        args.get("additional_fields"),  # type: ignore[arg-type]
+        "additional_fields",
+    )
 
     formatted_service_request_id = format_ticket_request_id(service_request_id)
     validate_related_arguments_provided(status=status, status_reason=status_reason)
@@ -2156,7 +2159,10 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
     site = args.get("site")
     region = args.get("region")
 
-    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"), "additional_fields")
+    additional_fields = extract_args_from_additional_fields_arg(
+        args.get("additional_fields"),  # type: ignore[arg-type]
+        "additional_fields",
+    )
 
     validate_related_arguments_provided(assignee_login_id=assignee_login_id, assignee=assignee)
     if not template_id:
@@ -2238,7 +2244,10 @@ def incident_update_command(client: Client, args: Dict[str, Any]) -> CommandResu
     resolution = args.get("resolution")
     status_reason = args.get("status_reason")
 
-    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"), "additional_fields")
+    additional_fields = extract_args_from_additional_fields_arg(
+        args.get("additional_fields"),  # type: ignore[arg-type]
+        "additional_fields",
+    )
 
     validate_related_arguments_provided(first_name=first_name, last_name=last_name)
     validate_related_arguments_provided(assignee_login_id=assignee_login_id, assignee=assignee)
@@ -2297,7 +2306,10 @@ def change_request_create_command(client: Client, args: Dict[str, Any]) -> Comma
     risk_level = args.get("risk_level")
     change_type = args.get("change_type")
     location_company = args.get("location_company")
-    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"), "additional_fields")
+    additional_fields = extract_args_from_additional_fields_arg(
+        args.get("additional_fields"),  # type: ignore[arg-type]
+        "additional_fields",
+    )
     if not template_id:
         validate_related_arguments_provided(
             first_name=first_name,
@@ -2375,7 +2387,10 @@ def change_request_update_command(client: Client, args: Dict[str, Any]) -> Comma
     company = args.get("company")
     region = args.get("region")
 
-    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"), "additional_fields")
+    additional_fields = extract_args_from_additional_fields_arg(
+        args.get("additional_fields"),  # type: ignore[arg-type]
+        "additional_fields",
+    )
 
     validate_related_arguments_provided(first_name=first_name, last_name=last_name)
 
@@ -2447,7 +2462,10 @@ def task_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))
     scedulded_end_date: datetime = arg_to_datetime(args.get("scedulded_end_date"))
 
-    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"), "additional_fields")
+    additional_fields = extract_args_from_additional_fields_arg(
+        args.get("additional_fields"),  # type: ignore[arg-type]
+        "additional_fields",
+    )
     parent_ticket = get_ticket(client, args.get("root_ticket_type"), root_request_id)
     response = client.create_task_request(
         template_id,
@@ -2524,7 +2542,10 @@ def task_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))
     schedulded_end_date: datetime = arg_to_datetime(args.get("schedulded_end_date"))
 
-    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"), "additional_fields")
+    additional_fields = extract_args_from_additional_fields_arg(
+        args.get("additional_fields"),  # type: ignore[arg-type]
+        "additional_fields",
+    )
     client.update_task_request(
         format_ticket_request_id(task_id),
         root_request_name,
@@ -2588,7 +2609,10 @@ def problem_investigation_create_command(client: Client, args: Dict[str, Any]) -
     resolution = args.get("resolution")
     investigation_justification = args.get("investigation_justification")
     investigation_driver = args.get("investigation_driver")
-    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"), "additional_fields")
+    additional_fields = extract_args_from_additional_fields_arg(
+        args.get("additional_fields"),  # type: ignore[arg-type]
+        "additional_fields",
+    )
 
     validate_related_arguments_provided(company=company, site=site, site_group=site_group, region=region)
     validate_related_arguments_provided(
@@ -2624,7 +2648,9 @@ def problem_investigation_create_command(client: Client, args: Dict[str, Any]) -
         support_company_pbm_mgr=support_company_pbm_mgr,  # type: ignore[arg-type]
         support_organization_pbm_mgr=support_organization_pbm_mgr,  # type: ignore[arg-type]
         temporary_workaround=temporary_workaround,  # type: ignore[arg-type]
-        target_resolution_date=target_resolution_date.isoformat() if target_resolution_date else None,  # type: ignore[arg-type]
+        target_resolution_date=target_resolution_date.isoformat()  # type: ignore[arg-type]
+        if target_resolution_date
+        else None,
         investigation_justification=investigation_justification,
         investigation_driver=investigation_driver,
         resolution=resolution,
@@ -2693,7 +2719,7 @@ def problem_investigation_update_command(client: Client, args: Dict[str, Any]) -
     investigation_driver = args.get("investigation_driver")
     additional_fields = extract_args_from_additional_fields_arg(
         args.get("additional_fields"),  # type: ignore[arg-type]
-        "additional_fields"
+        "additional_fields",
     )
 
     validate_related_arguments_provided(company=company, site=site, site_group=site_group, region=region)
@@ -2738,7 +2764,7 @@ def problem_investigation_update_command(client: Client, args: Dict[str, Any]) -
         else None,
         investigation_justification=investigation_justification,  # type: ignore[arg-type]
         investigation_driver=investigation_driver,  # type: ignore[arg-type]
-        assignee_pbm_mgr=assignee_pbm_mgr,  # type: ignore[arg-type]
+        assignee_pbm_mgr=assignee_pbm_mgr,
         **additional_fields,
     )
     readable_msg = f"Problem Investigation: {problem_investigation_id} was successfully updated."
