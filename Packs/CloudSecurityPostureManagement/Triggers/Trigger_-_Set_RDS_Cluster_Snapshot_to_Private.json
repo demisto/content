@@ -1,0 +1,25 @@
+{
+  "trigger_id": "4f6812b5a7e0a3e43002a935b6acfaed",
+  "playbook_id": "",
+  "suggestion_reason": "Recommended for remediating AWS RDS Cluster snapshot accessible to public",
+  "description": "This CLI command requires 'rds:ModifyDBClusterSnapshotAttribute' permission. Successful execution will reset this RDS Cluster snapshot ACL (Access Control List) to private. This will ensure that only Owner has full privileges.",
+  "trigger_name": "Set RDS Cluster Snapshot to Private",
+  "automation_type": "command",
+  "automation_id": "aws-rds-db-cluster-snapshot-set-to-private-quick-action",
+  "supportedModules": [
+    "C1",
+    "C3",
+    "X5"
+  ],
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+          "SEARCH_FIELD": "matching_service_rule_id",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "4db5ec62-c7cd-4725-adba-fdd30eb911a3"
+        }
+      ]
+    }
+  }
+}

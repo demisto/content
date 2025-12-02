@@ -1,0 +1,25 @@
+{
+  "trigger_id": "6266b8ab51b690ec4faa45ed09ed32b7",
+  "playbook_id": "",
+  "suggestion_reason": "Recommended for remediating a publicly accessible AWS Amazon Machine Image (AMI)",
+  "description": "This CLI command requires 'ec2:ModifyImageAttribute' permission. Successful execution will make this AMI's access to private. This will ensure that only Owner has full privileges.",
+  "trigger_name": "Set AMI to Private",
+  "automation_type": "command",
+  "automation_id": "aws-ec2-image-attribute-set-ami-to-private-quick-action",
+  "supportedModules": [
+    "C1",
+    "C3",
+    "X5"
+  ],
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+          "SEARCH_FIELD": "matching_service_rule_id",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "81a2200a-c63e-4860-85a0-b54eaa581135"
+        }
+      ]
+    }
+  }
+}

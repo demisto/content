@@ -1,0 +1,25 @@
+{
+  "trigger_id": "482f4864d2b0ee27822fd51e1d910122",
+  "playbook_id": "",
+  "suggestion_reason": "Recommended for remediating AWS RDS instance configured without Automatic Backup setting",
+  "description": "This CLI command requires 'rds:ModifyDBInstance' permission. Successful execution will enable the automatic back up settings for RDS instances",
+  "trigger_name": "Enable Automatic Backup for RDS dB",
+  "automation_type": "command",
+  "automation_id": "aws-rds-db-instance-modify-enable-automatic-backup-quick-action",
+  "supportedModules": [
+    "C1",
+    "C3",
+    "X5"
+  ],
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+          "SEARCH_FIELD": "matching_service_rule_id",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "9f3a429b-53f7-4d54-b6a1-dd434d0599dd"
+        }
+      ]
+    }
+  }
+}

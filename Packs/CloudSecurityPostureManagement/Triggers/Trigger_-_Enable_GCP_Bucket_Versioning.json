@@ -1,0 +1,25 @@
+{
+  "trigger_id": "18db3585e3cf2474f437fe6588be4e43",
+  "playbook_id": "",
+  "suggestion_reason": "Recommended for remediating GCP Storage log buckets with object versioning disabled",
+  "description": "This CLI command requires 'storage.buckets.update' permission. Successful execution will enable GCP Storage log buckets 'versioning'.",
+  "trigger_name": "Enable GCP Bucket Versioning",
+  "automation_type": "command",
+  "automation_id": "gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action",
+  "supportedModules": [
+    "C1",
+    "C3",
+    "X5"
+  ],
+  "alerts_filter": {
+    "filter": {
+      "OR": [
+        {
+          "SEARCH_FIELD": "matching_service_rule_id",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "5c78818c-0fbd-4def-9e67-44c08cad77a8"
+        }
+      ]
+    }
+  }
+}
