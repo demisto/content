@@ -19,7 +19,7 @@ which utilizes the [EXO v3 module](https://learn.microsoft.com/en-us/powershell/
 To use this integration, you need to connect an application with a certificate.
 
 1. Create the application:
-   1. Access **portal.azure.com**.
+   1. Access [Azure AD portal](https://portal.azure.com/).
    2. Navigate to **Home** > **App registrations**.
    3. Click **New Registration**, give the application a name (for example: **EWS**) and click **Register**.
    4. In the left menu of the newly created application, click **API permissions**.
@@ -29,9 +29,9 @@ To use this integration, you need to connect an application with a certificate.
    8. Click **Application permissions**.
    9. Under Exchange, click the **ExchangeManageAsApp** checkbox.
    10. Click **Add permissions**.
-   11. Click **Grant admin consent for XSOAR**.
+   11. Click **Grant admin consent**.
 
-2. Create the certificate in Cortex XSOAR.
+2. Create the certificate in Cortex XSOAR/XSIAM.
    1. Run the **CreateCertificate** command in the Playground to acquire the certificate.
 
       ***!CreateCertificate days=<# of days> password=`password`***
@@ -43,7 +43,7 @@ To use this integration, you need to connect an application with a certificate.
    4. In the integration instance configuration, paste the text in the **Certificate** field.
 
 3. Attach the .cer file to your Azure app.
-    1. In the Cortex XSOAR Playground, download the publickey.cer file
+    1. In the Cortex XSOAR/XSIAM Playground, download the publickey.cer file
     2. In the Azure application, in the left menu, click **Certificates & secrets**.
     3. In the Certificates tab, upload the publickey.cer file.
 
@@ -51,8 +51,7 @@ To use this integration, you need to connect an application with a certificate.
    1. You have two options:
       - Assign Azure AD roles to the application.
       - Assign custom role groups to the application using service principals.
-   2. In the Azure AD portal at <https://portal.azure.com/>, start typing "roles and administrators" in the Search box at the
-      top of the page, and then select **Microsoft Entra roles and administrators** from the results in the Services section.
+   2. In the [Azure AD portal](https://portal.azure.com/), search for **Microsoft Entra roles and administrators** in the Search box.
    3. On the Roles and administrators page that opens, find and select one of the supported roles by clicking on the
       name of the role (not the checkbox) in the results.
       - The role **Security Administrator** is eligible for this integration.
@@ -63,11 +62,11 @@ Note: The information in the Playground is sensitive information. You should del
 
    ***!DeleteContext all=yes***
 
-5. In Cortex XSOAR, in the integration instance configuration, enter your saved password in the **Password** field.
+5. In Cortex XSOAR/XSIAM, in the integration instance configuration, enter your saved password in the **Password** field.
 6. In Azure, go to Entra ID (Overview blade) and copy the **Primary domain** field.
-7. In Cortex XSOAR, in the integration instance configuration, paste the Domain name in **The organization used in app-only authentication** field.
+7. In Cortex XSOAR/XSIAM, in the integration instance configuration, paste the Domain name in **The organization used in app-only authentication** field.
 8. In the Azure app, navigate to **Home** > **App registration** > **application name** and copy the Application (client) ID.
-9. In Cortex XSOAR, in the integration instance configuration, paste the application ID in **The application ID from the Azure portal** field.
+9. In Cortex XSOAR/XSIAM, in the integration instance configuration, paste the application ID in **The application ID from the Azure portal** field.
 
 ### Verify that the admin account has sufficient Exchange Online permissions
 
