@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: TAXII2 Server Custom
+  id: TAXII2 Server
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -117,8 +117,8 @@ configuration:
   advanced: true
   required: false
 description: This integration provides TAXII2 Services for system indicators (Outbound feed).
-display: TAXII2 Server Custom
-name: TAXII2 Server Custom
+display: TAXII2 Server
+name: TAXII2 Server
 script:
   commands:
   - description: Returns all the collections.
