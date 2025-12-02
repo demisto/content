@@ -31,6 +31,7 @@ configuration:
   required: false
   section: Connect
   displaypassword: API Key
+  hidden: true
 - additionalinfo: Map the severity of each indicator that will be synced to Cortex.
   display: Cortex Severity
   name: severity
