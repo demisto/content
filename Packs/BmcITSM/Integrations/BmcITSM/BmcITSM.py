@@ -3622,7 +3622,7 @@ def fetch_relevant_tickets_by_ticket_type(
                 worklogs["entries"][w_i] = worklogs["entries"][w_i]["values"]
             response["entries"][i]["values"]["Work Logs"] = worklogs.get("entries")
 
-    relevant_records, _ = get_paginated_records_with_hr(response.get("entries"), max_fetch)
+    relevant_records, _ = get_paginated_records_with_hr(response.get("entries"), max_fetch)  # type: ignore[arg-type]
     outputs: List[dict] = format_command_output(
         deepcopy(relevant_records),
         generate_ticket_context_data_mapper(ticket_type),
@@ -3699,7 +3699,7 @@ def gen_single_filters_statement(filter_key: str, values: list, oper_in_filter: 
     """
 
     stmt = oper_between_filters.join(f"'{filter_key}' {oper_in_filter} \"{resource_id}\"" for resource_id in (values))
-    return stmt
+    return f"({stmt})" if stmt else ""
 
 
 def wrap_filter_value(filter_value: str, operation: str) -> str:
@@ -3823,7 +3823,7 @@ def extract_ticket_request_id_following_create(client: Client, ticket_type: str,
     Args:
         client (Client): BMC iTSM client.
         ticket_type (str): The ticket type to extract the request ID from.
-        ticket_create_response (Dict[str, Any]): The BMC ITSM API respnse upon create request.
+        ticket_create_response (Dict[str, Any]): The BMC ITSM API response upon create request.
 
     Returns:
         str: Ticket request ID.
@@ -3876,7 +3876,7 @@ def get_ticket(client: Client, ticket_type: str, root_request_id: str, query: st
     outputs = command_results.outputs
     if not outputs:
         raise ValueError(f"The ticket type: {ticket_type} with request ID: {root_request_id} does not exist.")
-    return next(iter(outputs))
+    return next(iter(outputs))  # type: ignore[call-overload]
 
 
 def get_remote_data_command(client: Client, args: Dict[str, Any], close_incident: str) -> GetRemoteDataResponse:
@@ -3892,15 +3892,11 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], close_incident
     parsed_args = GetRemoteDataArgs(args)
     entries = []
     ticket_id = parsed_args.remote_incident_id
-    demisto.debug(f"Mirroring incident: {ticket_id}")
     last_update = date_to_epoch_for_fetch(arg_to_datetime(parsed_args.last_update))
     ticket_type = get_ticket_type_by_request_id(ticket_id)
     mirrored_ticket = get_ticket(client, ticket_type, ticket_id)
     ticket_last_update = date_to_epoch_for_fetch(arg_to_datetime(mirrored_ticket.get("LastModifiedDate")))
     if last_update > ticket_last_update:
-        demisto.debug("last_update > ticket_last_update passing")
-        demisto.debug(f"last_update: {last_update}")
-        demisto.debug(f"ticket_last_update: {ticket_last_update}")
         mirrored_ticket = {}
     if mirrored_ticket.get("Status") in ["Closed", "Resolved"] and close_incident:
         entries.append(
@@ -3932,7 +3928,7 @@ def get_modified_remote_data(client: Client, args: Dict[str, Any]) -> GetModifie
     last_update = remote_args.last_update
     last_update_utc = date_to_epoch_for_fetch(arg_to_datetime(last_update))  # converts to a UTC timestamp
 
-    modified_tickets = []
+    modified_tickets = []  # type: ignore[var-annotated]
     modified_ticket_ids = []
 
     for ticket_type in ALL_TICKETS:
@@ -3946,7 +3942,7 @@ def get_modified_remote_data(client: Client, args: Dict[str, Any]) -> GetModifie
             },
         ).outputs
         if modified_tickets_by_type:
-            modified_tickets += modified_tickets_by_type
+            modified_tickets += modified_tickets_by_type  # type: ignore[arg-type]
 
     for raw_ticket in modified_tickets:
         ticket_id = raw_ticket.get("RequestID")
@@ -3972,7 +3968,7 @@ def update_remote_system(client: Client, args: Dict[str, Any], close_ticket: str
     ticket_type = get_ticket_type_by_request_id(ticket_id)
 
     if parsed_args.delta:
-        demisto.debug(f"Got the following delta keys {str(list(parsed_args.delta.keys()))}")
+        demisto.debug(f"Got the following delta keys {list(parsed_args.delta.keys())!s}")
 
     else:
         demisto.debug("There is no delta fields in BMC Helix ITSM")
@@ -3992,7 +3988,7 @@ def update_remote_system(client: Client, args: Dict[str, Any], close_ticket: str
 
         demisto.info(f"remote data of {ticket_id}: {parsed_args.data}")
     except Exception as error:
-        demisto.info(f"Error in BMC Helix ITSM outgoing mirror for incident {ticket_id} \n" f"Error message: {str(error)}")
+        demisto.info(f"Error in BMC Helix ITSM outgoing mirror for incident {ticket_id} \nError message: {error!s}")
 
     finally:
         return ticket_id
@@ -4049,7 +4045,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     mapping_response = GetMappingFieldsResponse()
     for ticket_type, incident_type in TICKET_TYPE_TO_INCIDENT_TYPE.items():
         incident_type_scheme = SchemeTypeMapping(type_name=incident_type)
-        outgoing_fields = MIRRORING_COMMON_FIELDS + TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS[ticket_type]
+        outgoing_fields = MIRRORING_COMMON_FIELDS + TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS[ticket_type]  # type: ignore[union-attr,operator]
         for field in outgoing_fields:
             incident_type_scheme.add_field(field)
 
@@ -4112,7 +4108,7 @@ def main() -> None:
     ticket_impacts = argToList(params.get("ticket_impact"))
     ticket_urgencies = argToList(params.get("ticket_urgency"))
     ticket_custom_query = params.get("query")
-    mirror_direction = MIRROR_DIRECTION_MAPPING[params.get("mirror_direction")]
+    mirror_direction = MIRROR_DIRECTION_MAPPING[params.get("mirror_direction")]  # type: ignore[arg-type]
     close_incident = params.get("close_incident")
     close_ticket = params.get("close_ticket")
 
@@ -4124,8 +4120,8 @@ def main() -> None:
     demisto.debug(f"Command being called is {command}")
 
     try:
-        requests.packages.urllib3.disable_warnings()
-        client: Client = Client(url, username, password, verify=verify_certificate, proxy=proxy)
+        requests.packages.urllib3.disable_warnings()  # type: ignore[arg-type]
+        client: Client = Client(url, username, password, verify=verify_certificate, proxy=proxy)  # type: ignore[arg-type]
 
         commands = {
             "bmc-itsm-ticket-list": ticket_list_command,
@@ -4161,27 +4157,26 @@ def main() -> None:
         if command == "test-module":
             test_module(client)
         elif command == "fetch-incidents":
-            demisto.debug(demisto.getLastRun())
             incidents, last_run = fetch_incidents(
                 client,
-                max_fetch,
-                first_fetch,
+                max_fetch,  # type: ignore[arg-type]
+                first_fetch,  # type: ignore[arg-type]
                 demisto.getLastRun(),
                 ticket_type_filter,
                 ticket_status_filter,
                 ticket_impact_filter,
                 ticket_urgency_filter,
-                ticket_custom_query,
-                mirror_direction,
+                ticket_custom_query,  # type: ignore[arg-type]
+                mirror_direction,  # type: ignore[arg-type]
             )
             demisto.setLastRun(last_run)
             demisto.incidents(incidents)
         elif command == "get-remote-data":
-            return_results(get_remote_data_command(client, args, close_incident))
+            return_results(get_remote_data_command(client, args, close_incident))  # type: ignore[arg-type]
         elif command == "get-modified-remote-data":
             return_results(get_modified_remote_data(client, args))
         elif command == "update-remote-system":
-            return_results(update_remote_system(client, args, close_ticket))
+            return_results(update_remote_system(client, args, close_ticket))  # type: ignore[arg-type]
         elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command())
         elif command in commands:
