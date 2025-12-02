@@ -1049,13 +1049,9 @@ class MicrosoftClient(BaseClient):
         demisto.debug("Set integration context successfully.")
 
         if self.multi_resource:
-            demisto.debug(f"Got into the if of self.multi_resource")
-            r = self.resource_to_access_token[resource]
-            demisto.debug(f"Got those {r=}")
             return self.resource_to_access_token[resource]
 
 
-        demisto.debug(f"Returning the access token {access_token}")
         return access_token
 
     def _raise_authentication_error(self, oproxy_response: requests.Response):
