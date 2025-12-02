@@ -77,22 +77,16 @@ configuration:
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
   required: false
-- display: Index time field (for sorting sort and limiting data)
+- display: Index time field
   name: fetch_time_field
   type: 0
   section: Collect
   required: false
-  additionalinfo: |-
-    The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation.
-
-    The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
+  additionalinfo: The time field used for sorting and limiting results. If using a nested field, separate field names with dot notation.
 - display: Raw Query
   name: raw_query
   type: 12
-  additionalinfo: |-
-    Will override the 'Query String' Lucene syntax string. Results will not be filtered or sorted. Use additional parameters in the raw query for these porpuses.
-
-    The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
+  additionalinfo: Raw Query allows raw DSL queries. For more information see the link appear in the help section.
   section: Collect
   advanced: true
   required: false
@@ -107,6 +101,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  additionalinfo: For more information see the explanation appear in the help section.
 - defaultvalue: 'true'
   display: Map JSON fields into labels
   name: map_labels
@@ -115,13 +110,14 @@ configuration:
   advanced: true
   required: false
 - defaultvalue: '3 days'
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  display: First fetch timestamp
   name: fetch_time
   type: 0
   section: Collect
   required: false
+  additionalinfo: <number> <time unit>, e.g., 12 hours, 7 days
 - defaultvalue: '50'
-  display: The maximum number of results to return per fetch.
+  display: The maximum number of results per fetch
   name: fetch_size
   type: 0
   section: Collect
