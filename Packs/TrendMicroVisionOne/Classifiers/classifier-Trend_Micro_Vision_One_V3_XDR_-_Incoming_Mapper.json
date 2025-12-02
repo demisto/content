@@ -1,7 +1,7 @@
 {
     "description": "Maps incoming Trend Vision One alerts.",
     "feed": false,
-    "id": "Trend Vision One v3 XDR - Incoming Mapper",
+    "id": "Trend Micro Vision One V3 XDR - Incoming Mapper",
     "mapping": {
         "Trend Micro Vision One XDR Incident": {
             "dontMapEventToLabels": true,
@@ -538,7 +538,7 @@
             }
         }
     },
-    "name": "Trend Vision One v3 XDR - Incoming Mapper",
+    "name": "Trend Micro Vision One V3 XDR - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.5.0"

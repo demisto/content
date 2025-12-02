@@ -6,7 +6,7 @@ commonfields:
   id: Trend Vision One v3
   version: -1
 configuration:
-- additionalinfo: The base url for the Trend Micro Vision One API
+- additionalinfo: The base url for the Trend Vision One API
   defaultvalue: https://api.xdr.trendmicro.com
   display: API URL (e.g. https://api.xdr.trendmicro.com)
   name: url
@@ -101,10 +101,10 @@ configuration:
   defaultvalue: None
   additionalinfo: Choose the direction to mirror incidents. Outgoing mirrors XSOAR changes to Vision One alerts.
   required: false
-description: Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection.
+description: Trend Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Vision One prevents the majority of attacks with automated protection.
 display: Trend Vision One v3
-defaultmapperin: Trend Vision One v3 XDR - Incoming Mapper
-defaultmapperout: Trend Vision One v3 XDR - Outgoing Mapper
+defaultmapperin: Trend Micro Vision One V3 XDR - Incoming Mapper
+defaultmapperout: Trend Micro Vision One V3 XDR - Outgoing Mapper
 name: Trend Vision One v3
 script:
   commands:
@@ -193,7 +193,7 @@ script:
       description: Task ID generated after removing domain, ip, file_sha1, url, sender_mail_address from the User-Defined Suspicious Objects List.
       type: string
   - arguments:
-    - description: 'List of object(s) containing `message_id` (<mailMsgId>), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Micro Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name","description":"quarantine"}].'
+    - description: 'List of object(s) containing `message_id` (<mailMsgId>), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name","description":"quarantine"}].'
       name: email_identifiers
       required: true
       isArray: true
@@ -207,7 +207,7 @@ script:
       description: Task ID generated after moving a message from a mailbox to the quarantine folder.
       type: string
   - arguments:
-    - description: 'List of object(s) containing `message_id` (<mailMsgId>), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Micro Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name","description":"disable":"delete"}].'
+    - description: 'List of object(s) containing `message_id` (<mailMsgId>), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name","description":"disable":"delete"}].'
       name: email_identifiers
       required: true
       isArray: true
@@ -221,7 +221,7 @@ script:
       description: Task ID generated after deleting a message from a mailbox.
       type: string
   - arguments:
-    - description: 'List of object(s) containing `message_id` (<mailMsgId>), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Micro Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name"}].'
+    - description: 'List of object(s) containing `message_id` (<mailMsgId>), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name"}].'
       name: email_identifiers
       required: true
       isArray: true
@@ -984,7 +984,7 @@ script:
     - contextPath: VisionOne.Submit_File_to_Sandbox.arguments
       description: Command line arguments to run the submitted file.
       type: string
-    description: Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see [the Trend Micro Vision One Online Help](https://docs.trendmicro.com/en-us/enterprise/trend-micro-vision-one/threat-intelligence-/sandbox-analysis/sandbox-supported-fi.aspx). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
+    description: Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see [the Trend Vision One Online Help](https://docs.trendmicro.com/en-us/enterprise/trend-micro-vision-one/threat-intelligence-/sandbox-analysis/sandbox-supported-fi.aspx). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
     name: trendmicro-visionone-submit-file-to-sandbox
   - arguments:
     - description: Entry ID of the file to be submitted. e.g. entry_id="104@49493d71".
@@ -1022,7 +1022,7 @@ script:
       description: Command line arguments to run the submitted file.
       type: string
     name: trendmicro-visionone-submit-file-entry-to-sandbox
-    description: Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see [the Trend Micro Vision One Online Help](https://docs.trendmicro.com/en-us/enterprise/trend-micro-vision-one/threat-intelligence-/sandbox-analysis/sandbox-supported-fi.aspx). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
+    description: Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see [the Trend Vision One Online Help](https://docs.trendmicro.com/en-us/enterprise/trend-micro-vision-one/threat-intelligence-/sandbox-analysis/sandbox-supported-fi.aspx). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
   - arguments:
     - description: List of URLs to be sent for analysis. e.g. urls="https://test.com,https://dummydomain.com".
       name: urls

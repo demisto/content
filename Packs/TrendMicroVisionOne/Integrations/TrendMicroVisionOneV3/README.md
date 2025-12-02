@@ -1,11 +1,11 @@
-Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection. V3 version of the app includes everything that the previous app had and adds more capabilities. It leverages V3 of Trend Micro APIs and introduces further ability to manage domain accounts with addition of 4 domain account actions for enabling/disabling user account, forcing sign-out and password resets for compromised accounts. This app is in active development. We previously added 4 actions, one to fetch email activity data with count, one to fetch endpoint activity data with count and an action to restore a quarantined email message. In this release we have added 6 new custom script actions allowing the user to fetch a list of available custom scripts in XDR portal, ability to run a custom script on a specified endpoint, capacity to add, download, update and delete a custom script from XDR portal.
-This integration was integrated and tested with version 3 API of Trend Micro Vision One.
+Trend Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Vision One prevents the majority of attacks with automated protection. V3 version of the app includes everything that the previous app had and adds more capabilities. It leverages V3 of Trend Micro APIs and introduces further ability to manage domain accounts with addition of 4 domain account actions for enabling/disabling user account, forcing sign-out and password resets for compromised accounts. This app is in active development. We previously added 4 actions, one to fetch email activity data with count, one to fetch endpoint activity data with count and an action to restore a quarantined email message. In this release we have added 6 new custom script actions allowing the user to fetch a list of available custom scripts in XDR portal, ability to run a custom script on a specified endpoint, capacity to add, download, update and delete a custom script from XDR portal.
+This integration was integrated and tested with version 3 API of Trend Vision One.
 
 ## Configure Trend Vision One v3 in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| API URL (e.g. <https://api.xdr.trendmicro.com>) | The base url for the Trend Micro Vision One API | True |
+| API URL (e.g. <https://api.xdr.trendmicro.com>) | The base url for the Trend Vision One API | True |
 | API Key | The API token to access data | True |
 | Fetch incidents |  | False |
 | Incidents Fetch Interval |  | False |
@@ -168,7 +168,7 @@ Moves a message from a mailbox to the quarantine folder.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email_identifiers | List of object(s) containing `message_id` (&lt;mailMsgId&gt;), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Micro Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name","description":"quarantine"}]. | Required |
+| email_identifiers | List of object(s) containing `message_id` (&lt;mailMsgId&gt;), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name","description":"quarantine"}]. | Required |
 
 #### Context Output
 
@@ -190,7 +190,7 @@ Deletes a message from a mailbox.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email_identifiers | List of object(s) containing `message_id` (&lt;mailMsgId&gt;), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Micro Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name","description":"disable":"delete"}]. | Required |
+| email_identifiers | List of object(s) containing `message_id` (&lt;mailMsgId&gt;), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name","description":"disable":"delete"}]. | Required |
 
 #### Context Output
 
@@ -212,7 +212,7 @@ Restores a quarantined message. Deleted messages cannot be restored.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email_identifiers | List of object(s) containing `message_id` (&lt;mailMsgId&gt;), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Micro Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name"}]. | Required |
+| email_identifiers | List of object(s) containing `message_id` (&lt;mailMsgId&gt;), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name"}]. | Required |
 
 #### Context Output
 
@@ -787,7 +787,7 @@ Downloads the analysis report for an object submitted to sandbox for analysis ba
 ### trendmicro-visionone-submit-file-to-sandbox
 
 ***
-Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see [the Trend Micro Vision One Online Help](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-sandbox-supported-fi). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
+Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see [the Trend Vision One Online Help](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-sandbox-supported-fi). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
 
 #### Base Command
 
@@ -816,7 +816,7 @@ Submits a file to the sandbox for analysis (Note. For more information about the
 ### trendmicro-visionone-submit-file-entry-to-sandbox
 
 ***
-Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see [the Trend Micro Vision One Online Help](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-sandbox-supported-fi). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
+Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see [the Trend Vision One Online Help](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-sandbox-supported-fi). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
 
 #### Base Command
 

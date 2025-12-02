@@ -2519,10 +2519,10 @@ def test_get_mapping_fields(mocker):
 
     # Should return GetMappingFieldsResponse
     assert result is not None
-    assert len(result.mappings) > 0
+    assert len(result.scheme_types_mappings) > 0
 
     # Verify incident type name
-    scheme_type = result.mappings[0]
+    scheme_type = result.scheme_types_mappings[0]
     assert scheme_type.type_name == "Trend Micro Vision One XDR Incident"
 
     # Verify mirrored fields are present

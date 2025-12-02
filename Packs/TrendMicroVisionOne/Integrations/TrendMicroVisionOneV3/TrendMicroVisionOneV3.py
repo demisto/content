@@ -2437,8 +2437,9 @@ def update_remote_system_command(v1_client: pytmv1.Client, args: dict[str, Any])
         demisto.debug(
             f"update_remote_system: remote_incident_id={remote_incident_id}, "
             f"incident_changed={parsed_args.incident_changed}, "
-            f"status={parsed_args.data.get('status')}, "
-            f"delta={parsed_args.delta}"
+            f"delta={parsed_args.delta}, "
+            f"data_keys={list(parsed_args.data.keys()) if parsed_args.data else 'None'}, "
+            f"data={parsed_args.data}"
         )
 
         # Process if incident changed (regardless of delta/mapper)
@@ -2545,14 +2546,14 @@ def get_modified_remote_data_command(v1_client: pytmv1.Client, args: dict[str, A
     :param args: Arguments containing last_update timestamp
     :return: GetModifiedRemoteDataResponse with list of modified alert IDs
     """
+    # Check if lastUpdate is provided in args before parsing
+    if 'lastUpdate' not in args or not args.get('lastUpdate'):
+        demisto.debug("get_modified_remote_data: First sync, no last_update provided, returning empty list")
+        return GetModifiedRemoteDataResponse([])
+
     # Parse arguments
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = remote_args.last_update
-
-    # If no last_update provided, use the same time range as fetch to avoid missing alerts
-    if not last_update:
-        demisto.debug("get_modified_remote_data: First sync, no last_update provided, returning empty list")
-        return GetModifiedRemoteDataResponse([])
 
     try:
         last_update_dt = arg_to_datetime(last_update, is_utc=True, required=True)

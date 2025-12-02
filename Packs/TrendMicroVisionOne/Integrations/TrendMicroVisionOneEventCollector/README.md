@@ -1,18 +1,18 @@
-Palo Alto Networks Trend Micro Vision One Event Collector integration for Cortex XSIAM collects the Workbench, Observed Attack Techniques, Search Detections and Audit logs.
-Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection.
+Palo Alto Networks Trend Vision One Event Collector integration for Cortex XSIAM collects the Workbench, Observed Attack Techniques, Search Detections and Audit logs.
+Trend Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Vision One prevents the majority of attacks with automated protection.
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure Trend Micro Vision One Event Collector on Cortex XSIAM
+## Configure Trend Vision One Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
-2. Search for Trend Micro Vision One Event Collector.
+2. Search for Trend Vision One Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter**                                                                    | **Description**                                                                                                                                                                                                   | **Required** |
 |----------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| Your server URL                                                                  | The API endpoint to the Trend Micro Vision One instance, see domains list: <https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs>                                                         | True         |
-| Trend Micro Vision One API Key                                                   | The Trend Micro Vision One API Key. Refer to the help section or to the information below on how to retrieve the API key.                                                                                         | False        |
+| Your server URL                                                                  | The API endpoint to the Trend Vision One instance, see domains list: <https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs>                                                         | True         |
+| Trend Vision One API Key                                                   | The Trend Vision One API Key. Refer to the help section or to the information below on how to retrieve the API key.                                                                                         | False        |
 | The maximum number of events per fetch                                           | The maximum number of events to fetch every time fetch is executed for each specified log type \(Workbench, Observed Attack Techniques, Search Detections and Audit logs\).                                       | False        |
 | Observed attack techniques and Search detections logs date-time range (hours)    | Defines the date-range (hours) in each API call that retrieves observed attack techniques and search detections logs. Used mainly to prevent timeouts by looping over large amount of logs.  Default is 24 hours. | False        |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | The first fetch time, since when to start fetching events                                                                                                                                                         | False        |
@@ -24,7 +24,7 @@ This is the default integration for this content pack when configured by the Dat
 4. Click **Test** to validate the URLs, token, and connection.
 
 ***
-This integration fetches the following logs/alerts from Trend Micro Vision One and requires the following permissions:
+This integration fetches the following logs/alerts from Trend Vision One and requires the following permissions:
 
 | **Log Type**                    | **Action Role Permission Required** | **API Documentation**                                                                                |
 |---------------------------------|-------------------------------------|------------------------------------------------------------------------------------------------------|
@@ -34,7 +34,7 @@ This integration fetches the following logs/alerts from Trend Micro Vision One a
 | Audit Logs                      | Audit Logs                          | <https://automation.trendmicro.com/xdr/api-v3#tag/Audit-Logs>                                          |
 
 ***
-You can then create a user account and generate an API key to be used for the Cortex XSIAM integration by following these steps in Trend Micro Vision One.
+You can then create a user account and generate an API key to be used for the Cortex XSIAM integration by following these steps in Trend Vision One.
 
 1. Navigate to **Administration** > **User Accounts**.
 2. Click **Add Account**.
@@ -91,4 +91,4 @@ Returns a list of logs.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrendMicroVisionOne.Events | Unknown | Trend Micro Vision One events. |
+| TrendMicroVisionOne.Events | Unknown | Trend Vision One events. |
