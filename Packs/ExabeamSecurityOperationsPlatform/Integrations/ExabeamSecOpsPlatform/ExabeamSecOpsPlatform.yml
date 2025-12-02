@@ -36,6 +36,13 @@ configuration:
   hidden:
   - marketplacev2
   - platform
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  hidden:
+  - xsoar
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
