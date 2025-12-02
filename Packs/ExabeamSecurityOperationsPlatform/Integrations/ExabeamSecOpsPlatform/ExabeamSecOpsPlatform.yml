@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: ExabeamSecOpsPlatform
   version: -1
