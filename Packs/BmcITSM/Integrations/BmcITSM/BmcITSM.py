@@ -353,6 +353,7 @@ class Client(BaseClient):
         jwt_token = self.retrieve_access_token(username, password)
         self._headers = {}
         self._headers["Authorization"] = f"AR-JWT {jwt_token}"
+        add_sensitive_log_strs(jwt_token)
 
     def retrieve_access_token(self, username: str, password: str) -> str:
         """
@@ -387,7 +388,7 @@ class Client(BaseClient):
             return token
         except DemistoException as exception:
             raise ValueError(
-                f"Authentication failed. Please Check the server url or validate your crdentials. {str(exception)}"
+                f"Authentication failed. Please Check the server url or validate your crdentials.{exception!s}"
             ) from exception
 
     def list_request(self, form: str, query: str = None) -> Dict[str, Any]:
@@ -399,7 +400,7 @@ class Client(BaseClient):
             query (str): Query qualification.
 
         Returns:
-            Dict[str, Any]: API response from BmcITSM.
+            Dict[str, Any]: API respnse from BmcITSM.
         """
         params = remove_empty_elements({"q": query})
         response = self._http_request("GET", f"arsys/v1/entry/{form}", params=params)
@@ -413,7 +414,7 @@ class Client(BaseClient):
             worklog_id (str): The Work Log ID to pull the attachments from.
 
         Returns:
-            Dict[str, Any]: API response from BmcITSM.
+            Dict[str, Any]: API respnse from BmcITSM.
         """
         attachments = []
         for i in range(1, 4):
@@ -459,7 +460,7 @@ class Client(BaseClient):
             ticket_id (str): The ID of the ticket to delete.
 
         Returns:
-            str: API response from BmcITSM.
+            str: API respnse from BmcITSM.
         """
 
         response = self._http_request("DELETE", f"arsys/v1/entry/{ticket_form}/{ticket_id}", resp_type="text")
@@ -488,7 +489,7 @@ class Client(BaseClient):
             second_request_id: The ID of the incident to create relationship.
 
         Returns:
-            str: API response from BmcITSM.
+            str: API respnse from BmcITSM.
         """
 
         data = {
@@ -532,7 +533,7 @@ class Client(BaseClient):
             status (str): Request status.
 
         Returns:
-            Dict[str, Any]: API response from BmcITSM.
+            Dict[str, Any]: API respnse from BmcITSM.
         """
 
         properties = remove_empty_elements(
@@ -600,7 +601,7 @@ class Client(BaseClient):
             status_reason (str): Reasin for status change.
 
             Returns:
-            str: API response from BmcITSM.
+            str: API respnse from BmcITSM.
 
         """
 
@@ -673,7 +674,7 @@ class Client(BaseClient):
             customer_last_name (str): Customer last name.
 
         Returns:
-            Dict[str, Any]: API response from BmcITSM.
+            Dict[str, Any]: API respnse from BmcITSM.
         """
         properties = remove_empty_elements(
             {
@@ -763,7 +764,7 @@ class Client(BaseClient):
             status_reason (str): Reason for changing the status.
             resolution (str): Ticket resolution.
         Returns:
-            str: API response from BmcITSM.
+            str: API respnse from BmcITSM.
         """
 
         properties = remove_empty_elements(
@@ -771,7 +772,9 @@ class Client(BaseClient):
                 "First_Name": first_name,
                 "Last_Name": last_name,
                 "Description": summary,
-                "Detailed_Decription": details,
+                # Note that when creating a new incident using the bmc-itsm-incident-create command,
+                # the details field is called "Detailed_Decription" with an underscore.
+                "Detailed Decription": details,
                 "Company": company,
                 "Urgency": urgency,
                 "Impact": impact,
@@ -838,7 +841,7 @@ class Client(BaseClient):
             customer_last_name (str): Customer last name.
 
         Returns:
-            Dict[str, Any]: API response from BmcITSM.
+            Dict[str, Any]: API respnse from BmcITSM.
         """
         properties = remove_empty_elements(
             {
@@ -924,7 +927,7 @@ class Client(BaseClient):
             region (str): Region.
             company (str): Company.
         Returns:
-            str: API response from BmcITSM.
+            str: API respnse from BmcITSM.
 
 
         """
@@ -989,6 +992,7 @@ class Client(BaseClient):
         urgency: str,
         scedulded_start_date: str,
         scedulded_end_date: str,
+        customer_company: str,
         **additional_fields,
     ) -> Dict[str, Any]:
         """
@@ -1017,9 +1021,10 @@ class Client(BaseClient):
             urgency (str): Ticket urgency.
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
+            customer_company (str): Customer company name.
 
         Returns:
-            Dict[str, Any]: API response from BmcITSM.
+            Dict[str, Any]: API respnse from BmcITSM.
         """
 
         properties = remove_empty_elements(
@@ -1045,7 +1050,7 @@ class Client(BaseClient):
                 "Urgency": urgency,
                 "State": "Active",
                 "Parent Linked": "Active",
-                "Customer Company": "Calbro Services",
+                "Customer Company": customer_company,
                 "Assigned To": assignee,
                 "Scheduled Start Date": scedulded_start_date,
                 "Scheduled End Date": scedulded_end_date,
@@ -1099,7 +1104,7 @@ class Client(BaseClient):
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
         Returns:
-            str: API response from BmcITSM.
+            str: API respnse from BmcITSM.
         """
 
         properties = remove_empty_elements(
@@ -1194,7 +1199,7 @@ class Client(BaseClient):
             first_name (str, optional): Requester first name. Defaults to None.
             last_name (str, optional): Request last name. Defaults to None.
         Returns:
-            Dict[str, Any]: API response from BmcITSM.
+            Dict[str, Any]: API respnse from BmcITSM.
         """
 
         action = "PROBLEM" if problem_type == PROBLEM_INVESTIGATION else "KNOWNERROR"
@@ -1304,7 +1309,7 @@ class Client(BaseClient):
             investigation_driver (str): Problem Investigation driver.
 
         Returns:
-            Dict[str, Any]: API response from BmcITSM.
+            Dict[str, Any]: API respnse from BmcITSM.
         """
         properties = remove_empty_elements(
             {
@@ -1395,7 +1400,7 @@ class Client(BaseClient):
             resolution (str): Resolution.
 
         Returns:
-            str: API response from BmcITSM.
+            str: API respnse from BmcITSM.
         """
         properties = remove_empty_elements(
             {
@@ -1466,12 +1471,12 @@ class Client(BaseClient):
             status (str): Ticket status.
             priority (str): Ticket priority.
             work_order_type (str): Work order type.
-            location_company (str): Company associated with work order process.
+            location_company (str): Company assoiciated with work order process.
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
 
         Returns:
-            Dict[str, Any]: API response from BmcITSM.
+            Dict[str, Any]: API respnse from BmcITSM.
         """
 
         properties = remove_empty_elements(
@@ -1537,7 +1542,7 @@ class Client(BaseClient):
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
         Returns:
-            str: API response from BmcITSM.
+            str: API respnse from BmcITSM.
         """
 
         properties = remove_empty_elements(
@@ -1597,7 +1602,7 @@ def list_command(
     Returns:
         CommandResults: Command reuslts.
     """
-    query: str = args.get("query")
+    query: str = args.get("query")  # type: ignore[assignment]
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
     limit = arg_to_number(args.get("limit"))
@@ -3807,7 +3812,7 @@ def extract_ticket_request_id_following_create(client: Client, ticket_type: str,
     Args:
         client (Client): BMC iTSM client.
         ticket_type (str): The ticket type to extract the request ID from.
-        ticket_create_response (Dict[str, Any]): The BMC ITSM API response upon create request.
+        ticket_create_response (Dict[str, Any]): The BMC ITSM API respnse upon create request.
 
     Returns:
         str: Ticket request ID.
@@ -4158,7 +4163,6 @@ def main() -> None:
                 ticket_custom_query,
                 mirror_direction,
             )
-            demisto.debug(last_run)
             demisto.setLastRun(last_run)
             demisto.incidents(incidents)
         elif command == "get-remote-data":
