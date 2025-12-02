@@ -3123,7 +3123,7 @@ def format_command_output(records: List[dict], mapper: Dict[str, Any], context_d
             context_data_arranger(formatted_record)
         outputs.append(formatted_record)
 
-    return outputs
+    return outputs  # type: ignore[return-value]
 
 
 def get_paginated_records_with_hr(
@@ -3152,9 +3152,9 @@ def get_paginated_records_with_hr(
         from_index = min((page - 1) * page_size, rows_count)
         to_index = min(from_index + page_size, rows_count)
         relevant_raw_data = raw_data[from_index:to_index]
-        header = f"Showing page {page} out of {total_pages} total pages." f" Current page size: {page_size}."
+        header = f"Showing page {page} out of {total_pages} total pages. Current page size: {page_size}."
     else:
-        relevant_raw_data = raw_data[: min(rows_count, limit)]
+        relevant_raw_data = raw_data[: min(rows_count, limit)]  # type: ignore[type-var]
         header = f"Showing {len(relevant_raw_data)} records out of {rows_count}."
 
     return relevant_raw_data, header if relevant_raw_data else ""
@@ -3191,6 +3191,17 @@ def format_ticket_request_id(request_id: str) -> str:
         return f"{request_id}|{request_id}"
     return request_id
 
+def validate_required_arguments_provided(**required_args):
+    """
+    Validates that all passed keyword arguments have non-None values.
+    Args:
+        **required_args: Keyword arguments to validate.
+    Raises:
+        ValueError: If any of the arguments has a None value.
+    """
+    missing_args = [key for key, value in required_args.items() if not value]
+    if missing_args:
+        raise ValueError(f"The following required arguments are missing: {missing_args}")
 
 def validate_related_arguments_provided(**related_args):
     """
@@ -3228,7 +3239,7 @@ def extract_args_from_additional_fields_arg(additional_fields: str, field_name: 
 
     formatted_additional_fields = {}
     if not additional_fields:
-        return {}
+        return {}  # type: ignore[return-value]
     try:
         fields = additional_fields.split(FIELD_DELIMITER)
         for each_field in fields:
@@ -3239,7 +3250,7 @@ def extract_args_from_additional_fields_arg(additional_fields: str, field_name: 
         raise ValueError(
             f'Please validate the format of the argument: {field_name}. For example: "fieldname1=value;fieldname2=value".  '
         ) from error
-    return formatted_additional_fields
+    return formatted_additional_fields  # type: ignore[return-value]
 
 
 def arrange_ticket_context_data(ticket: Dict[str, Any]) -> Dict[str, Any]:
@@ -3379,8 +3390,8 @@ def generate_query_filter_mapper_by_args(
     """
 
     ids_filter_mapper = {record_id_key: args.get("ids")}
-    status_key = TICKET_TYPE_TO_STATUS_FIELD.get(ticket_type, "Status")
-    summary = TICKET_TYPE_TO_SUMMARY_KEY.get(ticket_type, "Summary")
+    status_key = TICKET_TYPE_TO_STATUS_FIELD.get(ticket_type, "Status")  # type: ignore[arg-type]
+    summary = TICKET_TYPE_TO_SUMMARY_KEY.get(ticket_type, "Summary")  # type: ignore[arg-type]
     equal_filter_mapper = {
         status_key: args.get("status"),
         "Impact": args.get("impact"),
@@ -3427,7 +3438,7 @@ def generate_query_with_filtering(custom_query: str, filter_mapper: Dict[str, An
     records_id_name = next(iter(ids_filter), None)
     records_ids = ids_filter.get(records_id_name) or []
 
-    ids_query = gen_single_filters_statement(records_id_name, records_ids, "=", " OR ")
+    ids_query = gen_single_filters_statement(records_id_name, records_ids, "=", " OR ")  # type: ignore[arg-type]
 
     equal_oper_filter_query = gen_multi_filters_statement(equal_oper_filters, "=", " AND ")
 
@@ -3623,7 +3634,7 @@ def fetch_relevant_tickets_by_ticket_type(
             response["entries"][i]["values"]["Work Logs"] = worklogs.get("entries")
 
     relevant_records, _ = get_paginated_records_with_hr(response.get("entries"), max_fetch)  # type: ignore[arg-type]
-    outputs: List[dict] = format_command_output(
+    outputs: List[dict] = format_command_output(  # type: ignore[assignment]
         deepcopy(relevant_records),
         generate_ticket_context_data_mapper(ticket_type),
         arrange_ticket_context_data,
@@ -3753,7 +3764,7 @@ def gen_fetch_incidents_query(
         str: query to fetch a certain ticket type.
     """
     create_time_prop = "Create Date" if ticket_type == "task" else "Submit Date"
-    time_filter = f"'{create_time_prop}' <= \"{t_epoch_to}\" AND '{create_time_prop}' >\"{t_epoch_from}\""
+    time_filter = f"('{create_time_prop}' <= \"{t_epoch_to}\" AND '{create_time_prop}' >\"{t_epoch_from}\")"
 
     status_statement = gen_single_filters_statement(TICKET_TYPE_TO_STATUS_KEY[ticket_type], status_filter, "=", " OR ")
     urgency_statement = gen_single_filters_statement("Urgency", urgency_filter, "=", " OR ")
@@ -4098,8 +4109,8 @@ def main() -> None:
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     credentials = params.get("credentials")
-    username = credentials.get("identifier")
-    password = credentials.get("password")
+    username = credentials.get("identifier")  # type: ignore[union-attr]
+    password = credentials.get("password")  # type: ignore[union-attr]
 
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH))
     first_fetch = params.get("first_fetch")
@@ -4108,7 +4119,7 @@ def main() -> None:
     ticket_impacts = argToList(params.get("ticket_impact"))
     ticket_urgencies = argToList(params.get("ticket_urgency"))
     ticket_custom_query = params.get("query")
-    mirror_direction = MIRROR_DIRECTION_MAPPING[params.get("mirror_direction")]  # type: ignore[arg-type]
+    mirror_direction = MIRROR_DIRECTION_MAPPING[params.get("mirror_direction")]  # type: ignore[index]
     close_incident = params.get("close_incident")
     close_ticket = params.get("close_ticket")
 
@@ -4120,7 +4131,7 @@ def main() -> None:
     demisto.debug(f"Command being called is {command}")
 
     try:
-        requests.packages.urllib3.disable_warnings()  # type: ignore[arg-type]
+        requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]
         client: Client = Client(url, username, password, verify=verify_certificate, proxy=proxy)  # type: ignore[arg-type]
 
         commands = {
