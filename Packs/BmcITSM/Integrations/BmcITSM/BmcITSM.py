@@ -2318,24 +2318,24 @@ def change_request_create_command(client: Client, args: Dict[str, Any]) -> Comma
             location_company=location_company,
         )
 
-    response = client.change_request_create_request(
-        template_id,
-        first_name,
-        last_name,
-        summary,
-        location_company,
-        urgency=urgency,
-        impact=impact,
-        status=status,
-        risk_level=risk_level,
-        change_type=change_type,
-        customer_first_name=customer_first_name,
-        customer_last_name=customer_last_name,
-        priority=priority,
+    response = client.change_request_create_request(  # type: ignore[arg-type,call-arg]
+        template_id,  # type: ignore[arg-type]
+        first_name,  # type: ignore[arg-type]
+        last_name,  # type: ignore[arg-type]
+        summary,  # type: ignore[arg-type]
+        location_company,  # type: ignore[arg-type]
+        urgency=urgency,  # type: ignore[arg-type]
+        impact=impact,  # type: ignore[arg-type]
+        status=status,  # type: ignore[arg-type]
+        risk_level=risk_level,  # type: ignore[arg-type]
+        change_type=change_type,  # type: ignore[arg-type]
+        customer_first_name=customer_first_name,  # type: ignore[arg-type]
+        customer_last_name=customer_last_name,  # type: ignore[arg-type]
+        priority=priority,  # type: ignore[arg-type]
         **additional_fields,
     )
 
-    outputs = format_create_ticket_outputs(response.get("values"))
+    outputs = format_create_ticket_outputs(response.get("values"))  # type: ignore[arg-type]
 
     readable_output = tableToMarkdown(
         "Change Request ticket successfully Created",
@@ -2396,30 +2396,30 @@ def change_request_update_command(client: Client, args: Dict[str, Any]) -> Comma
 
     validate_related_arguments_provided(status=status, status_reason=status_reason)
 
-    client.change_request_update_request(
-        format_ticket_request_id(change_request_id),
-        first_name,
-        last_name,
-        summary,
-        location_company,
-        urgency=urgency,
-        impact=impact,
-        status=status,
-        risk_level=risk_level,
-        change_type=change_type,
-        customer_first_name=customer_first_name,
-        customer_last_name=customer_last_name,
-        priority=priority,
-        details=details,
-        status_reason=status_reason,
-        organization=organization,
-        department=department,
-        site_group=site_group,
-        site=site,
-        support_organization=support_organization,
-        support_group_name=support_group_name,
-        company=company,
-        region=region,
+    client.change_request_update_request(  # type: ignore[arg-type,call-arg]
+        format_ticket_request_id(change_request_id),  # type: ignore[arg-type]
+        first_name,  # type: ignore[arg-type]
+        last_name,  # type: ignore[arg-type]
+        summary,  # type: ignore[arg-type]
+        location_company,  # type: ignore[arg-type]
+        urgency=urgency,  # type: ignore[arg-type]
+        impact=impact,  # type: ignore[arg-type]
+        status=status,  # type: ignore[arg-type]
+        risk_level=risk_level,  # type: ignore[arg-type]
+        change_type=change_type,  # type: ignore[arg-type]
+        customer_first_name=customer_first_name,  # type: ignore[arg-type]
+        customer_last_name=customer_last_name,  # type: ignore[arg-type]
+        priority=priority,  # type: ignore[arg-type]
+        details=details,  # type: ignore[arg-type]
+        status_reason=status_reason,  # type: ignore[arg-type]
+        organization=organization,  # type: ignore[arg-type]
+        department=department,  # type: ignore[arg-type]
+        site_group=site_group,  # type: ignore[arg-type]
+        site=site,  # type: ignore[arg-type]
+        support_organization=support_organization,  # type: ignore[arg-type]
+        support_group_name=support_group_name,  # type: ignore[arg-type]
+        company=company,  # type: ignore[arg-type]
+        region=region,  # type: ignore[arg-type]
         **additional_fields,
     )
 
@@ -2454,46 +2454,47 @@ def task_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     urgency = args.get("urgency")
     support_company = args.get("support_company")
 
+    customer_company = args.get("customer_company")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_group_name = args.get("assigned_support_group")
     assignee = args.get("assignee")
     company = args.get("location_company")
-    root_ticket_type = TICKET_TYPE_TO_DELETE_FORM[args.get("root_ticket_type")]
-    scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))
-    scedulded_end_date: datetime = arg_to_datetime(args.get("scedulded_end_date"))
+    root_ticket_type = TICKET_TYPE_TO_DELETE_FORM[args.get("root_ticket_type")]  # type: ignore[index]
+    scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))  # type: ignore[assignment]
+    scedulded_end_date: datetime = arg_to_datetime(args.get("scedulded_end_date"))  # type: ignore[assignment]
 
     additional_fields = extract_args_from_additional_fields_arg(
         args.get("additional_fields"),  # type: ignore[arg-type]
         "additional_fields",
     )
-    parent_ticket = get_ticket(client, args.get("root_ticket_type"), root_request_id)
+    parent_ticket = get_ticket(client, args.get("root_ticket_type"), root_request_id)  # type: ignore[arg-type]
     response = client.create_task_request(
-        template_id,
-        parent_ticket.get("InstanceId"),
-        root_request_name or parent_ticket.get("DisplayID"),
-        parent_ticket.get("DisplayID"),
-        first_name,
-        last_name,
-        summary,
-        status=status,
-        impact=impact,
-        urgency=urgency,
-        priority=priority,
-        details=details,
-        task_type=task_type,
-        support_company=support_company,
-        assignee=assignee,
-        location_company=company,
-        root_request_mode=root_request_mode,
+        template_id,  # type: ignore[arg-type]
+        parent_ticket.get("InstanceId"),  # type: ignore[arg-type]
+        root_request_name or parent_ticket.get("DisplayID"),  # type: ignore[arg-type]
+        parent_ticket.get("DisplayID"),  # type: ignore[arg-type]
+        first_name,  # type: ignore[arg-type]
+        last_name,  # type: ignore[arg-type]
+        summary,  # type: ignore[arg-type]
+        status=status,  # type: ignore[arg-type]
+        impact=impact,  # type: ignore[arg-type]
+        urgency=urgency,  # type: ignore[arg-type]
+        priority=priority,  # type: ignore[arg-type]
+        details=details,  # type: ignore[arg-type]
+        task_type=task_type,  # type: ignore[arg-type]
+        support_company=support_company,  # type: ignore[arg-type]
+        assignee=assignee,  # type: ignore[arg-type]
+        location_company=company,  # type: ignore[arg-type]
+        root_request_mode=root_request_mode,  # type: ignore[arg-type]
         root_ticket_type=root_ticket_type,
-        assigned_support_group_name=assigned_support_group_name,
-        assigned_support_organization=assigned_support_organization,
-        scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,
-        scedulded_end_date=scedulded_end_date.isoformat() if scedulded_end_date else None,
+        assigned_support_group_name=assigned_support_group_name,  # type: ignore[arg-type]
+        assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
+        scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,  # type: ignore[arg-type]
+        scedulded_end_date=scedulded_end_date.isoformat() if scedulded_end_date else None,  # type: ignore[arg-type]
         **additional_fields,
     )
 
-    outputs = format_create_ticket_outputs(response.get("values"))
+    outputs = format_create_ticket_outputs(response.get("values"))  # type: ignore[arg-type]
     outputs["RequestID"] = outputs["DisplayID"]
     readable_output = tableToMarkdown("Task ticket successfully Created.", outputs, headerTransform=pascalToSpace)
     command_results = CommandResults(
@@ -2539,21 +2540,22 @@ def task_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_group_name = args.get("assigned_group")
     assignee = args.get("assignee")
-    scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))
-    schedulded_end_date: datetime = arg_to_datetime(args.get("schedulded_end_date"))
+    scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))  # type: ignore[assignment]
+    schedulded_end_date: datetime = arg_to_datetime(args.get("schedulded_end_date"))  # type: ignore[assignment]
+    customer_company = args.get("customer_company")  # type: ignore[assignment]
 
     additional_fields = extract_args_from_additional_fields_arg(
         args.get("additional_fields"),  # type: ignore[arg-type]
         "additional_fields",
     )
-    client.update_task_request(
-        format_ticket_request_id(task_id),
-        root_request_name,
-        summary=summary,
-        status=status,
-        priority=priority,
-        details=details,
-        task_type=task_type,
+    client.update_task_request(  # type: ignore[arg-type,call-arg]
+        format_ticket_request_id(task_id),  # type: ignore[arg-type]
+        root_request_name,  # type: ignore[arg-type]
+        summary=summary,  # type: ignore[arg-type]
+        status=status,  # type: ignore[arg-type]
+        priority=priority,  # type: ignore[arg-type]
+        details=details,  # type: ignore[arg-type]
+        task_type=task_type,  # type: ignore[arg-type]
         organization=organization,
         department=department,
         site_group=site_group,
