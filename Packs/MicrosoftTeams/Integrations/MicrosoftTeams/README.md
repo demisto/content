@@ -74,7 +74,7 @@ In order to connect to Microsoft Teams use one of the following authentication m
 
 **Perform the following steps to add the needed permissions**:
 
-1. Go to your [Microsoft Azure portal](https://portal.azure.com/), and from the left navigation pane select **Azure Active Directory > App registrations**.
+1. Go to your [Microsoft Azure portal](https://portal.azure.com/), and from the left navigation pane select **Entra ID > App registrations**.
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application/Delegated permissions**.
 4. For each of the next permissions listed below, search for the permission, select the checkbox, and click **Add permissions**.

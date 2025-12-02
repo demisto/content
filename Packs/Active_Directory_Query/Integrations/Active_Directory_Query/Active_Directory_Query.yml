@@ -41,7 +41,7 @@ configuration:
   name: page_size
   defaultvalue: "500"
   type: 0
-  required: true
+  required: false
   section: Collect
 - display: Secure Connection
   name: secure_connection
@@ -827,7 +827,7 @@ script:
     outputs:
     - contextPath: ActiveDirectory.ValidCredentials
       description: List of usernames that successfully logged in.
-  dockerimage: demisto/ldap:2.9.1.4819477
+  dockerimage: demisto/ldap:2.9.1.5650452
   ismappable: true
   isremotesyncout: true
   runonce: false

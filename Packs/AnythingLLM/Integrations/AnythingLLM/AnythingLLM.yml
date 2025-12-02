@@ -1,13 +1,13 @@
 commonfields:
   id: AnythingLLM
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: AnythingLLM
 display: AnythingLLM
 category: Utilities
 description: "Retrieval Augmented Generation (RAG) with LLM and Vector DB that can be local for full data privacy or cloud-based for greater functionality. Prompts and responses can be scanned for security issues using Prisma Airs.\n\nAPIs are documented at:  <Anything LLM URL> /api/docs \n\nProduct documentation:   https://docs.useanything.com/"
-sectionorder:
-- Connect
-- Collect
 configuration:
 - section: Connect
   display: AnythingLLM URL (e.g., http://<url to local AnythingLLM>:3001) or https://<Anything LLM cloud url>
@@ -42,6 +42,7 @@ configuration:
   name: airs_apikey
   required: false
   type: 9
+  display: ''
 - additionalinfo: Have AIRS scan all LLM prompts and throw exeception if BLOCK is returned
   defaultvalue: 'false'
   display: Sync Scan LLM Prompts with AIRS
@@ -344,7 +345,7 @@ script:
       name: context
     description: Perform an AI security scan of a request with AIRS.
     name: anyllm-scan-request
-  dockerimage: demisto/python3:3.12.11.4508456
+  dockerimage: demisto/python3:3.12.11.4819260
   runonce: false
   subtype: python3
 fromversion: 6.10.0

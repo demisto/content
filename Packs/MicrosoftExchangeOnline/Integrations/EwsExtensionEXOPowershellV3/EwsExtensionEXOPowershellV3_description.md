@@ -48,7 +48,7 @@ Note: The information in the Playground is sensitive information. You should del
    ***!DeleteContext all=yes***
 
 5. In Cortex XSOAR, in the integration instance configuration, enter your saved password in the **Password** field.
-6. In Azure, go to Azure Active Directory (Overview blade) and copy the **Primary domain** field.
+6. In Azure, go to Entra ID (Overview blade) and copy the **Primary domain** field.
 7. In Cortex XSOAR, in the integration instance configuration, paste the Domain name in **The organization used in app-only authentication** field.
 8. In the Azure app, navigate to **Home** > **App registration** > **\<application name>** and copy the Application (client) ID.
 9. In Cortex XSOAR, in the integration instance configuration, paste the application ID in **The application ID from the Azure portal** field.

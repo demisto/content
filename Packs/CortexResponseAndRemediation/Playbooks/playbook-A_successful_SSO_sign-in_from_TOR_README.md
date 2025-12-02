@@ -7,7 +7,7 @@ The playbook executes the following stages:
 Early Containment:
 - The playbooks will perform early containment actions by clearing\revoking user sessions and enforcing re-authentication to terminate the connection from the Tor exit node and verify the user's identity.
 Depending on the alert source, the playbook will use either
-Azure Active Directory Users or Okta v2 integrations to clear the user sessions.
+Entra ID Users or Okta v2 integrations to clear the user sessions.
 
 Investigation:
 During the alert investigation, the playbook will perform the following:
@@ -24,7 +24,7 @@ Remediation:
 By default, account disabling requires analyst approval.
 
 Requires:
-For any response action, you will need one of the following integrations: Azure Active Directory Users / Okta v2.
+For any response action, you will need one of the following integrations: Entra ID Users / Okta v2.
 
 ## Dependencies
 
