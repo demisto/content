@@ -890,6 +890,7 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]], next_run: dic
         send_events_to_xsiam(events=[], vendor=VENDOR, product=PRODUCT)
 
     demisto.debug(f"setting {next_run=}")
+    next_run["nextTrigger"] = "0"
     demisto.setLastRun(next_run)
 
 
