@@ -73,7 +73,8 @@ configuration:
   defaultvalue: '30000'
   type: 0
   section: Collect
-  hidden: true
+  hidden:
+    - xsoar
   required: false
 - display: Fetch query
   name: fetch_query       # for fetch-events on XSIAM and PLATFORM
