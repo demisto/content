@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Trend Micro Vision One V3
+  id: Trend Vision One v3
   version: -1
 configuration:
 - additionalinfo: The base url for the Trend Micro Vision One API
@@ -102,10 +102,10 @@ configuration:
   additionalinfo: Choose the direction to mirror incidents. Outgoing mirrors XSOAR changes to Vision One alerts.
   required: false
 description: Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection.
-display: Trend Micro Vision One V3
-defaultmapperin: Trend Micro Vision One V3 XDR - Incoming Mapper
-defaultmapperout: Trend Micro Vision One V3 XDR - Outgoing Mapper
-name: Trend Micro Vision One V3
+display: Trend Vision One v3
+defaultmapperin: Trend Vision One v3 XDR - Incoming Mapper
+defaultmapperout: Trend Vision One v3 XDR - Outgoing Mapper
+name: Trend Vision One v3
 script:
   commands:
   - arguments:

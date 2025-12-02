@@ -1,7 +1,7 @@
 Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection. V3 version of the app includes everything that the previous app had and adds more capabilities. It leverages V3 of Trend Micro APIs and introduces further ability to manage domain accounts with addition of 4 domain account actions for enabling/disabling user account, forcing sign-out and password resets for compromised accounts. This app is in active development. We previously added 4 actions, one to fetch email activity data with count, one to fetch endpoint activity data with count and an action to restore a quarantined email message. In this release we have added 6 new custom script actions allowing the user to fetch a list of available custom scripts in XDR portal, ability to run a custom script on a specified endpoint, capacity to add, download, update and delete a custom script from XDR portal.
 This integration was integrated and tested with version 3 API of Trend Micro Vision One.
 
-## Configure Trend Micro Vision One V3. in Cortex
+## Configure Trend Vision One v3 in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
