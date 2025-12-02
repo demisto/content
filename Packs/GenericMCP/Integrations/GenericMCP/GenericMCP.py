@@ -181,6 +181,7 @@ class OAuthHandler:
         Returns the authorization server URL.
         """
         origin_base_url = url_origin_join(self.base_url)
+        authorization_servers = origin_base_url
         error_message = (
             f"Error discovering OAuth protected resource metadata for {origin_base_url}, falling back to default base URL"
         )
@@ -191,7 +192,7 @@ class OAuthHandler:
                 )
                 if response.is_success:
                     metadata = response.json()
-                    authorization_servers: str = (
+                    authorization_servers = (
                         metadata.get("authorization_servers")[0] if metadata.get("authorization_servers") else origin_base_url
                     )
                 else:
@@ -612,6 +613,7 @@ async def generate_login_url(oauth_handler: OAuthHandler, auth_type: str, author
             f"To generate a login URL, 'auth_type' must be a valid OAuth flow type. Invalid type received: {auth_type}"
         )
 
+    auth_url = ""
     if auth_type == AuthMethods.AUTHORIZATION_CODE:
         auth_url = oauth_handler.generate_authorization_code_login_url(authorization_endpoint)
 

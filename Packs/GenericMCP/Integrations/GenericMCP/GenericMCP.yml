@@ -1,4 +1,6 @@
 category: Utilities
+sectionorder:
+- Connect
 commonfields:
   id: GenericMCP
   version: -1
