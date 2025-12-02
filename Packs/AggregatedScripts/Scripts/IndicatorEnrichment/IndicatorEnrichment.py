@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from AggregatedCommandApiModule import *
 from enum import Enum
-from typing import NamedTuple, List, Dict, Any, Optional, Set, DefaultDict, Tuple
+from typing import NamedTuple, Any, Optional
 from collections import defaultdict
 import traceback
 
@@ -10,8 +10,7 @@ import traceback
 MAX_INDICATORS = 100
 
 MSG_NO_VALID_INDICATORS = (
-    "No valid indicators provided. You must provide at least one valid indicator "
-    "in arguments: indicator_list or text."
+    "No valid indicators provided. You must provide at least one valid indicator " "in arguments: indicator_list or text."
 )
 
 ERR_LIMIT_TEMPLATE = (
@@ -26,7 +25,7 @@ class ValidationError(Exception):
     Raised when business logic constraints are violated.
     This exception should result in a return_error action.
     """
-    pass
+
 
 
 class GracefulExit(Exception):
@@ -34,7 +33,7 @@ class GracefulExit(Exception):
     Raised when the script should stop execution and return a status message.
     This exception should result in a return_results action (success status), not an error.
     """
-    pass
+
 
 
 class IndicatorType(Enum):
@@ -42,13 +41,14 @@ class IndicatorType(Enum):
     Configuration registry for supported indicator types.
     Acts as the single source of truth for command mapping, argument keys, and context prefixes.
     """
+
     IP = ("ip_list", "IP", "ip-enrichment", "IPEnrichment", ["ip", "ipv4"])
     URL = ("url_list", "URL", "url-enrichment", "URLEnrichment", ["url"])
     DOMAIN = ("domain_list", "Domain", "domain-enrichment", "DomainEnrichment", ["domain"])
     CVE = ("cve_list", "CVE", "cve-enrichment", "CVEEnrichment", ["cve"])
     FILE = ("file_hash", "File", "file-enrichment", "FileEnrichment", ["file"])
 
-    def __init__(self, argument_key: str, display_name: str, command_name: str, context_prefix: str, aliases: List[str]):
+    def __init__(self, argument_key: str, display_name: str, command_name: str, context_prefix: str, aliases: list[str]):
         """
         Initializes the IndicatorType configuration.
 
@@ -66,7 +66,7 @@ class IndicatorType(Enum):
         self.aliases = aliases
 
     @classmethod
-    def resolve_from_string(cls, value: str) -> Optional['IndicatorType']:
+    def resolve_from_string(cls, value: str) -> Optional["IndicatorType"]:
         """
         Maps a raw string type (e.g., 'IPv4', 'sha256') to the corresponding IndicatorType Enum.
 
@@ -89,6 +89,7 @@ class UnsupportedIndicator(NamedTuple):
     """
     Represents an indicator that was detected but is not supported by the configured Enrichment commands.
     """
+
     type: str
     value: str
 
@@ -97,6 +98,7 @@ class EnrichmentTask(NamedTuple):
     """
     Represents a unit of work: a specific XSOAR command configured for a specific indicator type.
     """
+
     indicator_type: IndicatorType
     command: Command
 
@@ -107,13 +109,15 @@ class EnrichmentRequest:
     and validated input data ready for processing.
     """
 
-    def __init__(self,
-                 valid_indicators_by_type: DefaultDict[IndicatorType, List[str]],
-                 unsupported_items: List[UnsupportedIndicator],
-                 unknown_items: List[str],
-                 duplicates_removed_count: int,
-                 sub_command_arguments: Dict[str, Any],
-                 include_raw_context: bool):
+    def __init__(
+        self,
+        valid_indicators_by_type: defaultdict[IndicatorType, list[str]],
+        unsupported_items: list[UnsupportedIndicator],
+        unknown_items: list[str],
+        duplicates_removed_count: int,
+        sub_command_arguments: dict[str, Any],
+        include_raw_context: bool,
+    ):
         """
         Initializes the EnrichmentRequest.
 
@@ -144,9 +148,9 @@ class EnrichmentResult:
     """
 
     def __init__(self):
-        self.enriched_data: List[ContextResult] = []
+        self.enriched_data: list[ContextResult] = []
         self.raw_context: ContextResult = {}
-        self.markdown_sections: List[str] = []
+        self.markdown_sections: list[str] = []
 
 
 class EnrichmentRequestBuilder:
@@ -155,18 +159,18 @@ class EnrichmentRequestBuilder:
     deduplicating inputs, and enforcing business validation rules.
     """
 
-    def __init__(self, raw_arguments: Dict[str, Any]):
+    def __init__(self, raw_arguments: dict[str, Any]):
         """
         Args:
             raw_arguments: The dictionary of arguments provided to the command (demisto.args()).
         """
         self.raw_arguments = raw_arguments
         # this is for the deduplication tracking
-        self._seen_indicators: Set[str] = set()
+        self._seen_indicators: set[str] = set()
 
-        self.valid_indicators_by_type: DefaultDict[IndicatorType, List[str]] = defaultdict(list)
-        self.unsupported_items: List[UnsupportedIndicator] = []
-        self.unknown_items: List[str] = []
+        self.valid_indicators_by_type: defaultdict[IndicatorType, list[str]] = defaultdict(list)
+        self.unsupported_items: list[UnsupportedIndicator] = []
+        self.unknown_items: list[str] = []
         self.duplicates_count: int = 0
 
     def get_validated_request(self) -> EnrichmentRequest:
@@ -190,7 +194,7 @@ class EnrichmentRequestBuilder:
             unknown_items=self.unknown_items,
             duplicates_removed_count=self.duplicates_count,
             sub_command_arguments=self._filter_passthrough_arguments(),
-            include_raw_context=argToBoolean(self.raw_arguments.get("raw_context", False))
+            include_raw_context=argToBoolean(self.raw_arguments.get("raw_context", False)),
         )
 
     def _classify_and_store(self, raw_type: str, value: str) -> None:
@@ -290,7 +294,7 @@ class EnrichmentRequestBuilder:
         if not ignore_limit and total_valid > MAX_INDICATORS:
             raise ValidationError(ERR_LIMIT_TEMPLATE.format(found=total_valid, limit=MAX_INDICATORS))
 
-    def _filter_passthrough_arguments(self) -> Dict[str, Any]:
+    def _filter_passthrough_arguments(self) -> dict[str, Any]:
         """
         Filters the raw arguments to include only those intended for child commands.
 
@@ -298,11 +302,7 @@ class EnrichmentRequestBuilder:
             A dictionary of arguments to pass to the enrichment commands.
         """
         keys = ["external_enrichment", "brands", "additional_fields"]
-        return {
-            k: self.raw_arguments.get(k)
-            for k in keys
-            if self.raw_arguments.get(k) is not None
-        }
+        return {k: self.raw_arguments.get(k) for k in keys if self.raw_arguments.get(k) is not None}
 
 
 class EnrichmentService:
@@ -329,18 +329,14 @@ class EnrichmentService:
 
         tasks = self._create_execution_plan(request)
 
-        batch_output = BatchExecutor().execute_batch(
-            [t.command for t in tasks],
-            brands_to_run=None,
-            verbose=False
-        )
+        batch_output = BatchExecutor().execute_batch([t.command for t in tasks], brands_to_run=None, verbose=False)
 
         for task, output in zip(tasks, batch_output):
             self._parse_task_output(task, output)
 
         return self._result
 
-    def _create_execution_plan(self, request: EnrichmentRequest) -> List[EnrichmentTask]:
+    def _create_execution_plan(self, request: EnrichmentRequest) -> list[EnrichmentTask]:
         """Creates a list of tasks mapping indicator types to configured Commands."""
         tasks = []
         for type_enum, indicators in request.valid_indicators_by_type.items():
@@ -348,7 +344,7 @@ class EnrichmentService:
             tasks.append(EnrichmentTask(type_enum, cmd))
         return tasks
 
-    def _build_command(self, type_enum: IndicatorType, indicators: List[str], extra_args: Dict) -> Command:
+    def _build_command(self, type_enum: IndicatorType, indicators: list[str], extra_args: dict) -> Command:
         """
         Constructs a single XSOAR Command pointing to the corresponding underlying script based on the type given..
 
@@ -369,7 +365,7 @@ class EnrichmentService:
             command_type=CommandType.INTERNAL,
             ignore_using_brand=True,
             is_multi_input=True,
-            is_aggregated_output=True
+            is_aggregated_output=True,
         )
 
     def _parse_task_output(self, task: EnrichmentTask, task_output: CommandProcessResults) -> None:
@@ -386,7 +382,7 @@ class EnrichmentService:
 
             valid_hr = hr
             if not valid_hr and isinstance(entry, dict):
-                valid_hr = entry.get('HumanReadable')
+                valid_hr = entry.get("HumanReadable")
 
             if valid_hr:
                 human_readable_strings.append(valid_hr)
@@ -445,7 +441,8 @@ class ResponseFormatter:
 
         if request.duplicates_removed_count > 0:
             sections.append(
-                f"Note: Removed {request.duplicates_removed_count} duplicate indicator occurrences before enrichment.")
+                f"Note: Removed {request.duplicates_removed_count} duplicate indicator occurrences before enrichment."
+            )
 
         sections.extend(result.markdown_sections)
 
@@ -488,28 +485,21 @@ class ResponseFormatter:
             return ""
         return tableToMarkdown("Invalid or unsupported indicators", rows, headers=["Type", "Value", "Status", "Message"])
 
-    def _collect_error_rows(self, request: EnrichmentRequest) -> List[ContextResult]:
+    def _collect_error_rows(self, request: EnrichmentRequest) -> list[ContextResult]:
         rows = []
         for item in request.unsupported_items:
-            rows.append({
-                "Type": item.type,
-                "Value": item.value,
-                "Status": "Error",
-                "Message": "No script supports this indicator type."
-            })
+            rows.append(
+                {"Type": item.type, "Value": item.value, "Status": "Error", "Message": "No script supports this indicator type."}
+            )
         for value in request.unknown_items:
-            rows.append({
-                "Type": "Unknown",
-                "Value": value,
-                "Status": "Error",
-                "Message": "Not a valid indicator."
-            })
+            rows.append({"Type": "Unknown", "Value": value, "Status": "Error", "Message": "Not a valid indicator."})
 
         rows.sort(key=lambda x: (x["Type"].lower(), x["Value"].lower()))
         return rows
 
-    def _collect_error_objects(self, request: EnrichmentRequest) -> List[ContextResult]:
+    def _collect_error_objects(self, request: EnrichmentRequest) -> list[ContextResult]:
         return self._collect_error_rows(request)  # type: ignore
+
 
 def main():
     """
