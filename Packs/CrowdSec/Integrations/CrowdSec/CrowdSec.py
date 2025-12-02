@@ -39,6 +39,8 @@ TABLE_HEADERS = [
 
 CROWDSEC_CTI_API_URL = "https://cti.api.crowdsec.net/v2/"
 
+CROWDSEC_INTEGRATION_VERSION = "v1.0.9"
+
 """ CLIENT CLASS """
 
 
@@ -239,7 +241,7 @@ def main() -> None:
         else:
             raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
-        headers: dict = {"x-api-key": api_key}
+        headers: dict = {"x-api-key": api_key, "User-Agent": "crowdsec-paloalto-cortex-xsoar/" + CROWDSEC_INTEGRATION_VERSION}
 
         client = Client(
             base_url=CROWDSEC_CTI_API_URL,
