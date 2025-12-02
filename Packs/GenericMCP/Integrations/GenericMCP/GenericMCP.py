@@ -19,7 +19,7 @@ from urllib.parse import unquote, urlparse, urlunparse
 # --- Utility Functions ---
 
 
-def extract_root_error_message(exception):
+def extract_root_error_message(exception: BaseException) -> str:
     """
     Extract the root error message from an exception, handling nested exception groups.
 
@@ -96,27 +96,19 @@ def update_integration_context_oauth_flow(data: dict[str, Any]) -> None:
     set_integration_context(integration_context)
 
 
-def object_to_dict_recursive(obj: Any) -> Any:
-    """Recursively converts a Python object to a dictionary."""
-    if hasattr(obj, "__dict__"):
-        data = {
-            key: object_to_dict_recursive(value)
-            for key, value in obj.__dict__.items()
-            if not key.startswith("__") and not callable(value)
-        }
-        return data
-
-    elif isinstance(obj, list | tuple | set):
-        return [object_to_dict_recursive(item) for item in obj]
-
-    elif isinstance(obj, dict):
-        return {key: object_to_dict_recursive(value) for key, value in obj.items()}
-
-    else:
-        return str(obj)
-
-
 # --- Constants and Configuration ---
+
+REDIRECT_URI = "https://oproxy.demisto.ninja/authcode"
+CLIENT_NAME = "Cortex AgentiX"
+LOGO_URI = "https://www.paloaltonetworks.com/content/dam/pan/en_US/images/logos/brand/cortex-primary/Cortex-logo.png"
+RESPONSE_TYPE = "code"
+CODE_CHALLENGE_METHOD = "S256"
+ACCESS_TOKEN_DEFAULT_DURATION_SECONDS = 1800  # Default to 30 minutes if not provided
+APPLICATION_JSON_HEADERS = {"Content-Type": "application/json"}
+FORM_URLENCODED_HEADERS = {"Content-Type": "application/x-www-form-urlencoded"}
+MCP_PROTOCOL_HEADERS = {"MCP-Protocol-Version": "2025-03-26"}
+SOFTWARE_ID = "5bfad241-79aa-4a49-86df-c668f8e03e11"
+SOFTWARE_VERSION = "1.0.0"
 
 
 class AuthMethods(str, Enum):
@@ -138,17 +130,7 @@ class AuthMethods(str, Enum):
         return [member.value for member in cls]
 
 
-REDIRECT_URI = "https://oproxy.demisto.ninja/authcode"
-CLIENT_NAME = "Cortex AgentiX"
-LOGO_URI = "https://www.paloaltonetworks.com/content/dam/pan/en_US/images/logos/brand/cortex-primary/Cortex-logo.png"
-RESPONSE_TYPE = "code"
-CODE_CHALLENGE_METHOD = "S256"
-ACCESS_TOKEN_DEFAULT_DURATION_SECONDS = 1800  # Default to 30 minutes if not provided
-APPLICATION_JSON_HEADERS = {"Content-Type": "application/json"}
-FORM_URLENCODED_HEADERS = {"Content-Type": "application/x-www-form-urlencoded"}
-
-
-def get_client_metadata(redirect_uri) -> dict[str, Any]:
+def get_client_metadata(redirect_uri: str) -> dict[str, Any]:
     """Returns metadata used for OAuth Dynamic Client Registration."""
     return {
         "redirect_uris": [redirect_uri],
@@ -157,8 +139,8 @@ def get_client_metadata(redirect_uri) -> dict[str, Any]:
         "response_types": ["code"],
         "client_name": CLIENT_NAME,
         "client_uri": demisto.demistoUrls().get("server", ""),
-        "software_id": "5bfad241-79aa-4a49-86df-c668f8e03e11",
-        "software_version": "1.0.0",
+        "software_id": SOFTWARE_ID,
+        "software_version": SOFTWARE_VERSION,
         "scope": [],
         "logo_uri": LOGO_URI,
     }
@@ -198,21 +180,19 @@ class OAuthHandler:
         Enhanced metadata discovery for OAuth protected resources.
         Returns the authorization server URL.
         """
-        authorization_servers = url_origin_join(self.base_url)
+        origin_base_url = url_origin_join(self.base_url)
         error_message = (
-            f"Error discovering OAuth protected resource metadata for {authorization_servers}, falling back to default base URL"
+            f"Error discovering OAuth protected resource metadata for {origin_base_url}, falling back to default base URL"
         )
         try:
             async with httpx.AsyncClient(timeout=5, verify=self.verify) as client:
                 response = await client.get(
-                    f"{authorization_servers}/.well-known/oauth-protecte-resource", headers={"MCP-Protocol-Version": "2025-03-26"}
+                    f"{origin_base_url}/.well-known/oauth-protected-resource", headers=MCP_PROTOCOL_HEADERS
                 )
                 if response.is_success:
                     metadata = response.json()
                     authorization_servers: str = (
-                        metadata.get("authorization_servers")[0]
-                        if metadata.get("authorization_servers")
-                        else authorization_servers
+                        metadata.get("authorization_servers")[0] if metadata.get("authorization_servers") else origin_base_url
                     )
                 else:
                     demisto.debug(error_message)
@@ -234,9 +214,7 @@ class OAuthHandler:
         error_message = f"Error discovering OAuth metadata for {base_url}, using default metadata."
         try:
             async with httpx.AsyncClient(timeout=5, verify=self.verify) as client:
-                response = await client.get(
-                    f"{base_url}/.well-known/oauth-authorization-server", headers={"MCP-Protocol-Version": "2025-03-26"}
-                )
+                response = await client.get(f"{base_url}/.well-known/oauth-authorization-server", headers=MCP_PROTOCOL_HEADERS)
                 if response.is_success:
                     metadata.update(response.json())
                 else:
@@ -583,15 +561,17 @@ class Client:
         ):
             await session.initialize()
             tools = await session.list_tools()
-            tools = tools.tools
-            tool_names = [tool.name for tool in tools]
-            readable_output = f"Available {len(tool_names)} tools:\n{tool_names}"
-            demisto.debug(f"Available tools: {tool_names}")
-            return CommandResults(
-                readable_output=readable_output,
-                outputs_prefix="ListTools.Tools",
-                outputs=object_to_dict_recursive(tools),
-            )
+
+        tool_names = [tool.name for tool in tools.tools]
+        readable_output = f"Available {len(tool_names)} tools:\n{tool_names}"
+        demisto.debug(f"Available tools: {tool_names}")
+
+        tools_dump = tools.model_dump(mode="json")
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="ListTools.Tools",
+            outputs=tools_dump.get("tools", []),
+        )
 
     async def call_tool(self, tool_name: str, arguments: str):
         try:
@@ -610,8 +590,8 @@ class Client:
             await session.initialize()
             result = await session.call_tool(tool_name, parsed_arguments)
 
-        result_content = object_to_dict_recursive(result.content)
-
+        result_dump = result.model_dump(mode="json")
+        result_content = result_dump.get("content", [])
         readable_output = tableToMarkdown(f"Tool Execution '{tool_name}'{' failed' if result.isError else ''}", result_content)
 
         return CommandResults(
@@ -699,7 +679,7 @@ async def main() -> None:  # pragma: no cover
         scope = params.get("scope", "")
         authorization_endpoint = params.get("authorization_endpoint", "")
         redirect_uri = params.get("redirect_uri", "") or REDIRECT_URI
-        custom_headers = parse_custom_headers(params.get("custom_headers", ""))
+        custom_headers = parse_custom_headers(params.get("custom_headers") or "")
         verify: bool = not argToBoolean(params.get("insecure", False))
 
         # Validation is run before creating the client

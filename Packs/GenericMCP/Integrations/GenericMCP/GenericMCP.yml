@@ -197,7 +197,7 @@ script:
   subtype: python3
   dockerimage: demisto/mcp:1.0.0.5982836
   ismcp: true
-# fromversion: 8.13.0
+fromversion: 8.13.0
 tests:
 - No tests (auto formatted)
 triggers:
