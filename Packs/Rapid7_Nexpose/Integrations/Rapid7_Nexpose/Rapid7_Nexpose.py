@@ -2447,9 +2447,7 @@ class InsightVMClient:
         """Asynchronous context manager exit: closes the aiohttp session."""
         await self._session.close()
 
-    async def http_request(
-        self, method: str, endpoint: str, payload: Optional[Dict[str, Any]] = None
-    ) -> aiohttp.ClientResponse:
+    async def http_request(self, method: str, endpoint: str, payload: Optional[Dict[str, Any]] = None) -> aiohttp.ClientResponse:
         """
         Executes an asynchronous HTTP request with centralized authentication and error handling.
 
@@ -6919,9 +6917,7 @@ async def download_and_parse_report(
                 if is_last_batch:
                     # If this is the last batch, the indicator MUST be the final total record count.
                     lines_to_send_indicator = new_total_records
-                    demisto.debug(
-                        f"DEBUG: End of report reached. Sending Final Report Total: {lines_to_send_indicator}"
-                    )  # noqa: E501
+                    demisto.debug(f"DEBUG: End of report reached. Sending Final Report Total: {lines_to_send_indicator}")  # noqa: E501
                 else:
                     # Otherwise, send the placeholder (1) to indicate it's a middle batch.
                     lines_to_send_indicator = 1
@@ -7046,9 +7042,7 @@ async def process_and_send_events_to_xsiam(
         offset (str | None): The offset hash.
         counter (int): The current execution number.
     """
-    demisto.debug(
-        f"Running in interval = {batch_counter}. got {len(events)} events, moving to processing events data."
-    )  # noqa: E501
+    demisto.debug(f"Running in interval = {batch_counter}. got {len(events)} events, moving to processing events data.")  # noqa: E501
     processed_events = events
 
     size_in_bytes = sum(len(line.encode("utf-8")) for line in events)
@@ -7067,9 +7061,7 @@ async def process_and_send_events_to_xsiam(
         items_count=items_count,
         snapshot_id=snapshot_id,
     )
-    demisto.debug(
-        f"Running in interval = {batch_counter}. Finished executing send_events_to_xsiam, waiting for tasks to end."
-    )
+    demisto.debug(f"Running in interval = {batch_counter}. Finished executing send_events_to_xsiam, waiting for tasks to end.")
     await asyncio.gather(*tasks)
     demisto.debug(f"Running in interval = {batch_counter}. Finished gathering all tasks.")
     demisto.debug(f"Running in interval = {batch_counter}. Updating module health.")
@@ -7365,7 +7357,7 @@ async def xsiam_api_call_async_with_retries(
                         )
 
                         demisto.error(header_msg + api_call_info)
-                        demisto.debug(header_msg + e.message, is_error=True)
+                        demisto.updateModuleHealth(header_msg + e.message, is_error=True)
 
         demisto.debug(f"received status code: {status_code}")
         if status_code == 429:
@@ -7499,7 +7491,9 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
             demisto.debug("\n--- Starting Data Streaming Phase ---")
 
             await download_and_parse_report(client, report_id, instance_id, event_integration_context, event_type, batch_size)
-            update_state_checkpoint(event_type, {"last_sent_line": 0, "finish": True, "snapshot_id": "", "total_records_ingested": 0})  # noqa: E501
+            update_state_checkpoint(
+                event_type, {"last_sent_line": 0, "finish": True, "snapshot_id": "", "total_records_ingested": 0}
+            )  # noqa: E501
             demisto.debug("--- Data Streaming Phase Complete ---")
 
         except Exception as e:
