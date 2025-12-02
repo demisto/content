@@ -720,24 +720,6 @@ def map_qa_name_to_data(qas_metadata) -> dict:
 
     return qa_name_to_data
 
-def fetch_pb_qa_metadata(client) -> tuple[list, dict, dict]:
-    """
-    Fetches playbook and quick-action metadata and prepares lookup mappings.
-
-    Returns:
-        tuple:
-            - pbs_metadata (list): Full playbooks metadata as returned by the client.
-            - pb_id_to_index (dict): Mapping of playbook_id → index in pbs_metadata.
-            - qa_name_to_data (dict): Mapping of quick_action_name → quick action metadata dict.
-    """
-    pbs_metadata = client.get_playbooks_metadata() or []
-    pb_id_to_index = {item.get("id"): index for index, item in enumerate(pbs_metadata)}
-
-    qas_metadata = client.get_quick_actions_metadata() or []
-    qa_name_to_data = map_qa_name_to_data(qas_metadata)
-
-    return pbs_metadata, pb_id_to_index, qa_name_to_data
-
 
 def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
     """
@@ -779,7 +761,10 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     append_appsec_headers = False
     append_playbook_suggestions_header = False
     append_quick_action_suggestions_header = False
-    pbs_metadata, pb_id_to_index, qa_name_to_data = fetch_pb_qa_metadata(client)
+    pbs_metadata = client.get_playbooks_metadata() or {} 
+    pb_id_to_index = {item.get("id"): index for index, item in enumerate(pbs_metadata)} 
+    qas_metadata = client.get_quick_actions_metadata() or [] 
+    qa_name_to_data = map_qa_name_to_data(qas_metadata)
     all_recommendations = []
     readable_recommendations = []
 
@@ -816,8 +801,9 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
                 append_appsec_headers = True
 
         all_recommendations.append(recommendation)
-        recommendation.update(readable_recommendation)
-        readable_recommendations.append(recommendation)
+        current_readable_recommendation = recommendation.copy()
+        current_readable_recommendation.update(readable_recommendation)
+        readable_recommendations.append(current_readable_recommendation)
 
     # Final header adjustments
     if append_appsec_headers:
