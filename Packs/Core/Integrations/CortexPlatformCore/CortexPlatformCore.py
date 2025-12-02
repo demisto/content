@@ -636,29 +636,27 @@ def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     return recommendation
 
 
-def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadata, pb_id_to_index, qa_name_to_data):
+def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadata, pb_id_to_index, qa_name_to_data) -> tuple[dict, dict, str, str]:
     """
     Fetches playbook and quick-action suggestions for a given issue
     and updates the recommendation dictionary accordingly.
 
     Returns:
-        (recommendation, append_playbook_suggestions_header, append_quick_action_suggestions_header)
+        (recommendation, readable_recommendation, playbook_id, quick_action_id)
     """
     recommendation = {}
     readable_recommendation = {}
-    append_playbook = False
-    append_quick_action = False
 
     response = client.get_playbook_suggestion_by_issue(issue_id)
     suggestions = response.get("reply", {})
     demisto.debug(f"Playbooks and quick action {suggestions=} for {issue_id=}")
 
     if not suggestions:
-        return {}, {}, append_playbook, append_quick_action
+        return {}, {}, "", ""
 
     # Playbook suggestion
-    playbook_id = suggestions.get("playbook_id", None)
-    suggestion_rule_id = suggestions.get("suggestion_rule_id", None)
+    playbook_id = suggestions.get("playbook_id")
+    suggestion_rule_id = suggestions.get("suggestion_rule_id")
 
     if playbook_id:
         recommendation["playbook_suggestions"] = {
@@ -682,16 +680,24 @@ def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadat
             "suggestion_rule_id": quick_action_suggestion_rule_id,
         }
         readable_recommendation["quick_action_suggestions"] = {"name": quick_action_id}
-        if quick_action_id in qa_name_to_data:
-            recommendation["quick_action_suggestions"].update(qa_name_to_data[quick_action_id])
+        qa_data = qa_name_to_data.get(quick_action_id)
+        if qa_data:
+            recommendation["quick_action_suggestions"].update(qa_data)
             readable_recommendation["quick_action_suggestions"].update(
-                {"pretty_name": qa_name_to_data.get(quick_action_id, {}).get("pretty_name")}
+                {"pretty_name": qa_data.get("pretty_name")}
             )
 
     return recommendation, readable_recommendation, playbook_id, quick_action_id
 
 
-def map_qa_name_to_data(qas_metadata):
+def map_qa_name_to_data(qas_metadata) -> dict:
+    """
+    Maps each quick-action command name to its metadata, filtering hidden arguments
+    and removing empty fields.
+
+    Returns:
+        dict: command_name → metadata.
+    """
     qa_name_to_data = {}
 
     for item in qas_metadata:
@@ -713,6 +719,24 @@ def map_qa_name_to_data(qas_metadata):
             )
 
     return qa_name_to_data
+
+def fetch_pb_qa_metadata(client) -> tuple[list, dict, dict]:
+    """
+    Fetches playbook and quick-action metadata and prepares lookup mappings.
+
+    Returns:
+        tuple:
+            - pbs_metadata (list): Full playbooks metadata as returned by the client.
+            - pb_id_to_index (dict): Mapping of playbook_id → index in pbs_metadata.
+            - qa_name_to_data (dict): Mapping of quick_action_name → quick action metadata dict.
+    """
+    pbs_metadata = client.get_playbooks_metadata() or []
+    pb_id_to_index = {item.get("id"): index for index, item in enumerate(pbs_metadata)}
+
+    qas_metadata = client.get_quick_actions_metadata() or []
+    qa_name_to_data = map_qa_name_to_data(qas_metadata)
+
+    return pbs_metadata, pb_id_to_index, qa_name_to_data
 
 
 def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
@@ -755,10 +779,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     append_appsec_headers = False
     append_playbook_suggestions_header = False
     append_quick_action_suggestions_header = False
-    pbs_metadata = client.get_playbooks_metadata() or {}
-    pb_id_to_index = {item.get("id"): index for index, item in enumerate(pbs_metadata)}
-    qas_metadata = client.get_quick_actions_metadata() or []
-    qa_name_to_data = map_qa_name_to_data(qas_metadata)
+    pbs_metadata, pb_id_to_index, qa_name_to_data = fetch_pb_qa_metadata(client)
     all_recommendations = []
     readable_recommendations = []
 
