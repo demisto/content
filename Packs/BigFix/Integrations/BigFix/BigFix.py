@@ -1,6 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import requests
+import sys
+import traceback
+from datetime import datetime
 
 import urllib3.util
 
@@ -703,8 +706,235 @@ def query_command():
     )
 
 
+def get_webreports_details():
+    """
+    Fetch web reports details from BigFix
+    """
+    fullurl = f"{BASE_URL}/api/webreports/details"
+    
+    demisto.info(f"BigFix fetch-events: Calling API: {fullurl}")
+    
+    try:
+        res = requests.get(
+            fullurl,
+            auth=(USERNAME, PASSWORD),
+            verify=VERIFY_CERTIFICATE,
+            timeout=60
+        )
+        
+        demisto.info(f"BigFix fetch-events: API response status: {res.status_code}")
+        
+        if res.status_code < 200 or res.status_code >= 300:
+            error_content = res.content.decode('utf-8', errors='replace')[:500]
+            error_msg = f"BigFix fetch-events: API failed - Status {res.status_code}: {error_content}"
+            demisto.error(error_msg)
+            return_error(error_msg)
+        
+        # Parse response content
+        try:
+            # Log the entire raw response for analysis
+            raw_content = res.content.decode('utf-8', errors='replace')
+            demisto.info(f"BigFix fetch-events: Full API response:\n{raw_content}")
+            
+            if res.content.strip().startswith(b'<'):
+                raw_data = json.loads(xml2json(res.content))
+            else:
+                raw_data = res.json()
+                    
+            return raw_data
+            
+        except json.JSONDecodeError as json_err:
+            demisto.error(f"BigFix fetch-events: Failed to parse JSON response: {str(json_err)}")
+            demisto.debug(f"BigFix fetch-events: Raw response content: {res.content.decode('utf-8', errors='replace')}")
+            return_error(f"BigFix fetch-events: Invalid JSON response from API: {str(json_err)}")
+        except Exception as parse_err:
+            demisto.error(f"BigFix fetch-events: Failed to parse response: {str(parse_err)}")
+            demisto.debug(f"BigFix fetch-events: Raw response content: {res.content.decode('utf-8', errors='replace')}")
+            return_error(f"BigFix fetch-events: Failed to parse API response: {str(parse_err)}")
+            
+    except requests.exceptions.Timeout:
+        error_msg = "BigFix fetch-events: Request timed out after 60 seconds"
+        demisto.error(error_msg)
+        return_error(error_msg)
+    except requests.exceptions.ConnectionError as conn_err:
+        error_msg = f"BigFix fetch-events: Connection error: {str(conn_err)}"
+        demisto.error(error_msg)
+        return_error(error_msg)
+    except requests.exceptions.RequestException as req_err:
+        error_msg = f"BigFix fetch-events: Request failed: {str(req_err)}"
+        demisto.error(error_msg)
+        return_error(error_msg)
+    except Exception as e:
+        error_msg = f"BigFix fetch-events: Unexpected error: {str(e)}"
+        demisto.error(error_msg)
+        return_error(error_msg)
+
+
+def fetch_events_command():
+    """
+    Fetch events from BigFix webreports API
+    """
+    demisto.info("BigFix fetch-events: Starting fetch")
+    
+    max_fetch = arg_to_number(demisto.params().get('max_fetch', 50)) or 50
+    
+    try:
+        raw_data = get_webreports_details()
+        events = []
+        
+        # Process the raw data
+        if raw_data:
+            if isinstance(raw_data, dict):
+                # Look for common patterns in API responses
+                for key in ['results', 'data', 'items', 'reports', 'webreports', 'entries']:
+                    if key in raw_data and isinstance(raw_data[key], list):
+                        demisto.info(f"BigFix fetch-events: Found {len(raw_data[key])} items in '{key}'")
+                        for idx, item in enumerate(raw_data[key][:max_fetch]):
+                            event = {
+                                'rawJSON': item,
+                                'name': f'BigFix WebReport Event {idx + 1}',
+                                'occurred': datetime.now().isoformat() + 'Z',
+                                'type': 'BigFix WebReport'
+                            }
+                            events.append(event)
+                        break
+                else:
+                    # Treat entire response as single event
+                    demisto.info("BigFix fetch-events: Using entire response as single event")
+                    event = {
+                        'rawJSON': raw_data,
+                        'name': 'BigFix WebReport Event',
+                        'occurred': datetime.now().isoformat() + 'Z',
+                        'type': 'BigFix WebReport'
+                    }
+                    events.append(event)
+                    
+            elif isinstance(raw_data, list):
+                demisto.info(f"BigFix fetch-events: Processing {len(raw_data)} list items")
+                for idx, item in enumerate(raw_data[:max_fetch]):
+                    event = {
+                        'rawJSON': item,
+                        'name': f'BigFix WebReport Event {idx + 1}',
+                        'occurred': datetime.now().isoformat() + 'Z',
+                        'type': 'BigFix WebReport'
+                    }
+                    events.append(event)
+            else:
+                # Handle other data types
+                event = {
+                    'rawJSON': {'data': raw_data},
+                    'name': 'BigFix WebReport Event',
+                    'occurred': datetime.now().isoformat() + 'Z',
+                    'type': 'BigFix WebReport'
+                }
+                events.append(event)
+        else:
+            demisto.info("BigFix fetch-events: No data received")
+            
+        # Send events to XSIAM
+        demisto.info(f"BigFix fetch-events: Sending {len(events)} events to XSIAM")
+        send_events_to_xsiam(events, vendor="BigFix", product="BigFix")
+        
+        # Update last run
+        demisto.setLastRun({
+            'last_fetch_time': datetime.now().isoformat() + 'Z',
+            'events_fetched': len(events)
+        })
+        
+    except Exception as e:
+        error_msg = f"BigFix fetch-events: Error in fetch_events_command: {str(e)}"
+        demisto.error(error_msg)
+        demisto.error(f"BigFix fetch-events: Exception traceback: {traceback.format_exc()}")
+        return_error(error_msg)
+
+
+def get_events_command():
+    """
+    Manual get-events command for testing fetch-events functionality
+    """
+    should_push_events = argToBoolean(demisto.args().get('should_push_events', False))
+    limit = arg_to_number(demisto.args().get('limit', 10)) or 10
+    
+    demisto.info(f"BigFix get-events: should_push_events={should_push_events}, limit={limit}")
+    
+    try:
+        raw_data = get_webreports_details()
+        events = []
+        
+        # Process the raw data (same logic as fetch-events)
+        if raw_data:
+            if isinstance(raw_data, dict):
+                # Look for common patterns in API responses
+                for key in ['results', 'data', 'items', 'reports', 'webreports', 'entries']:
+                    if key in raw_data and isinstance(raw_data[key], list):
+                        demisto.info(f"BigFix get-events: Found {len(raw_data[key])} items in '{key}'")
+                        for idx, item in enumerate(raw_data[key][:limit]):
+                            event = {
+                                'rawJSON': item,
+                                'name': f'BigFix WebReport Event {idx + 1}',
+                                'occurred': datetime.now().isoformat() + 'Z',
+                                'type': 'BigFix WebReport'
+                            }
+                            events.append(event)
+                        break
+                else:
+                    event = {
+                        'rawJSON': raw_data,
+                        'name': 'BigFix WebReport Event',
+                        'occurred': datetime.now().isoformat() + 'Z',
+                        'type': 'BigFix WebReport'
+                    }
+                    events.append(event)
+                    
+            elif isinstance(raw_data, list):
+                demisto.info(f"BigFix get-events: Processing {len(raw_data)} list items")
+                for idx, item in enumerate(raw_data[:limit]):
+                    event = {
+                        'rawJSON': item,
+                        'name': f'BigFix WebReport Event {idx + 1}',
+                        'occurred': datetime.now().isoformat() + 'Z',
+                        'type': 'BigFix WebReport'
+                    }
+                    events.append(event)
+            else:
+                event = {
+                    'rawJSON': {'data': raw_data},
+                    'name': 'BigFix WebReport Event',
+                    'occurred': datetime.now().isoformat() + 'Z',
+                    'type': 'BigFix WebReport'
+                }
+                events.append(event)
+            
+        demisto.info(f"BigFix get-events: Retrieved {len(events)} events")
+        
+        if should_push_events:
+            demisto.info(f"BigFix get-events: Pushing {len(events)} events to XSIAM")
+            send_events_to_xsiam(events, vendor="BigFix", product="BigFix")
+            human_readable = f"Successfully pushed {len(events)} events to XSIAM."
+        else:
+            human_readable = tableToMarkdown(
+                f'BigFix Events (limit: {limit}) - Display Only',
+                events,
+                headers=['name', 'occurred', 'type'],
+                headerTransform=string_to_table_header
+            )
+        
+        return_results(CommandResults(
+            outputs_prefix='BigFix.Events',
+            outputs=events,
+            readable_output=human_readable,
+            raw_response=raw_data
+        ))
+        
+    except Exception as e:
+        error_msg = f"BigFix get-events: Error in get_events_command: {str(e)}"
+        demisto.error(error_msg)
+        demisto.error(f"BigFix get-events: Exception traceback: {traceback.format_exc()}")
+        return_error(error_msg)
+
+
 try:
-    # do requets to /api/help
+    # do requests to /api/help
     # should be good indicator for test connectivity
     def test():
         fullurl = BASE_URL + "/api/help"
@@ -749,6 +979,12 @@ try:
 
     elif demisto.command() == "bigfix-query":
         query_command()
+
+    elif demisto.command() == "fetch-events":
+        fetch_events_command()
+
+    elif demisto.command() == "bigfix-get-events":
+        get_events_command()
 
 except Exception as e:
     LOG(e)
