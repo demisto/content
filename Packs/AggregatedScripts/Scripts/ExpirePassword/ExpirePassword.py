@@ -103,26 +103,28 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
 
     # 1. Clear the "Password Never Expires" attribute (userAccountControl 0x10000)
     # This must run before ad-expire-password to ensure the policy can be enforced.
-    args_never_expire_flag_command = {"username": username, "using": using, "value": "false"}
-    res_never_expire, hr_never_expire = run_command("ad-modify-password-never-expire", args_never_expire_flag_command)
+    args_modify_never_expire_command = {"username": username, "using": using, "value": "false"}
+    res_modify_never_expire, hr_modify_never_expire = run_command("ad-modify-password-never-expire", args_modify_never_expire_command)
+    demisto.debug(f"DELETE-ExpirePassword: AD {res_modify_never_expire=} {hr_modify_never_expire=}")
+
+    def is_modify_never_expired_failed(res_modify_never_expire_arg):
+        return res_modify_never_expire_arg.get("Contents") == f'AD account {username} has cleared "password never expire" attribute. Value is set to False'
 
     # Check if clearing the "never expire" flag failed first
-    if any(is_error(res) for res in res_never_expire):
-        error_msg = next((res.get("Contents") for res in res_never_expire if is_error(res)),
-                         "Failed to clear 'password never expire' flag.")
+    if any(is_modify_never_expired_failed(res) for res in res_modify_never_expire):
         return [
             ExpiredPasswordResult(
                 Result="Failed",
-                Message=f"Clearing the never expire flag failed: {error_msg}"
+                Message=f"In Active Directory, clearing the never expire flag failed"
             )
-        ], hr_never_expire
+        ], hr_modify_never_expire
 
     # 2. Run the explicit password expiration command
     args_expire = {"username": username, "using": using}
     res_expire, hr_expire = run_command("ad-expire-password", args_expire)
-
+    demisto.debug(f"DELETE-ExpirePassword: AD {res_expire=} {hr_expire=}")
     # Combine human-readable outputs
-    hr = f"{hr_never_expire}\n\n{hr_expire}"
+    hr = f"{hr_modify_never_expire}\n\n{hr_expire}"
 
     func_res = []
     for res in res_expire:
@@ -153,6 +155,7 @@ def run_microsoft_graph_user(user: UserData, using: str) -> tuple[list[ExpiredPa
         tuple[list[ExpiredPasswordResult], str]: A list containing the result of the password expiration operation and the HR.
     """
     res_cmd, hr = run_command("msgraph-user-force-reset-password", {"user": user["Username"], "using": using})
+    demisto.debug(f"DELETE-ExpirePassword: MSG User {res_cmd=} {hr=}")
     func_res = []
     for res in res_cmd:
         res_hr = res.get("HumanReadable", "Microsoft Graph User expiration password command failed")
@@ -177,6 +180,7 @@ def run_okta_v2(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
         tuple[list[ExpiredPasswordResult], str]: A list containing the result of the password expiration operation and the HR.
     """
     res_cmd, hr = run_command("okta-expire-password", {"username": user["Username"], "using": using})
+    demisto.debug(f"DELETE-ExpirePassword: Okta v2 {res_cmd=} {hr=}")
     func_res = []
     for res in res_cmd:
         res_msg = res["HumanReadable"] or res["Contents"]
@@ -204,6 +208,7 @@ def run_gsuiteadmin(user: UserData, using: str) -> tuple[list[ExpiredPasswordRes
         "gsuite-user-reset-password",
         {"user_key": user["Email"], "using": using},
     )
+    demisto.debug(f"DELETE-ExpirePassword: gsuite {res_cmd=} {hr=}")
     func_res = []
     for res in res_cmd:
         func_res.append(
@@ -238,7 +243,7 @@ def run_aws_iam(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
         "aws-iam-update-login-profile",
         args,
     )
-
+    demisto.debug(f"DELETE-ExpirePassword: AWS-IAM {res_cmd=} {hr=}")
     func_res = []
     for res in res_cmd:
         res_msg = res["HumanReadable"] or res["Contents"]
@@ -288,11 +293,11 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
         tuple[list[UserData], str]: A list of user data dictionaries and the human-readable output.
     """
     res, hr = run_command("get-user-data", args | {"verbose": "true"}, label_hr=False)
-
-    if errors := [r for r in res if r["Type"] == EntryType.ERROR]:
-        if err := next((r for r in errors if not r["HumanReadable"]), None):
+    demisto.debug(f"DELETE-ExpirePassword: get_users {res=} {hr=}")
+    if errors_users := [r for r in res if r["Type"] == EntryType.ERROR]:
+        if err := next((r for r in errors_users if not r["HumanReadable"]), None):
             raise DemistoException(f"Error when calling get-user-data:\n{err['Contents']}")
-        return_results(errors)
+        return_results(errors_users)
 
     # Check for no available integrations
     if any(
@@ -335,12 +340,12 @@ def expire_passwords(users: list[UserData]) -> tuple[list[ExpiredPasswordResult]
     """
     context: list[ExpiredPasswordResult] = []
     human_readables = []
-
+    demisto.debug(f"DELETE-ExpirePassword: expire_passwords {users=}")
     for user in users:
         if user["Status"] == "found":
             command_func = get_module_command_func(user["Brand"])
             res_cmd, hr = command_func(user, user["Instance"])
-
+            demisto.debug(f"DELETE-ExpirePassword: expire_passwords main {res_cmd=} {hr=}")
             context += [
                 {
                     "UserProfile": {
@@ -367,12 +372,12 @@ def main():
     """
     args = demisto.args()
     verbose_hr = ""
-
+    demisto.debug(f"DELETE-ExpirePassword: {args=}")
     try:
         validate_input(args)
         users, hr_get = get_users(args)
         outputs, hr_expire = expire_passwords(users)
-
+        demisto.debug(f"DELETE-ExpirePassword: Main {outputs=} {hr_expire=}")
         if argToBoolean(args.get("verbose", "false")):
             verbose_hr = "\n\n".join(("", hr_get, hr_expire))
 
