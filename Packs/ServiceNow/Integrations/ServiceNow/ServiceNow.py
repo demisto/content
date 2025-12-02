@@ -8,13 +8,21 @@ from datetime import datetime
 import shutil
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+try:
+    import urllib3
+    urllib3.disable_warnings()
+except ImportError:
+    pass
 
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+# Handle proxy settings
+try:
+    # Only remove proxy environment variables if proxy is explicitly set to false
+    if not demisto.params().get('proxy', False):
+        for key in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']:
+            if key in os.environ:
+                del os.environ[key]
+except Exception as e:
+    demisto.debug(f"Failed to handle proxy settings: {str(e)}")
 
 
 def get_server_url():
@@ -156,6 +164,23 @@ DEPRECATED_COMMANDS = ['servicenow-get', 'servicenow-incident-get',
 
 
 def send_request(path, method='get', body=None, params=None, headers=None, file=None):
+    """
+    Send a request to the ServiceNow API
+    
+    Args:
+        path (str): The API endpoint path
+        method (str): The HTTP method (get, post, put, delete)
+        body (dict): The request body
+        params (dict): The request parameters
+        headers (dict): The request headers
+        file (dict): File information for file uploads
+        
+    Returns:
+        dict: The response from ServiceNow API
+        
+    Raises:
+        Exception: If there is an error with the request
+    """
     body = body if body is not None else {}
     params = params if params is not None else {}
 
@@ -180,8 +205,15 @@ def send_request(path, method='get', body=None, params=None, headers=None, file=
         except Exception as e:
             raise Exception('Failed to upload file - ' + str(e))
     else:
-        res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {}, params=params,
-                               auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
+        try:
+            res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {}, params=params,
+                                   auth=(USERNAME, PASSWORD), verify=VERIFY_SSL, timeout=60)
+        except requests.exceptions.Timeout:
+            raise Exception(f"Timeout error: The request to {url} timed out after 60 seconds")
+        except requests.exceptions.ConnectionError:
+            raise Exception(f"Connection error: Could not connect to ServiceNow at {url}")
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"Request error: {str(e)}")
 
     try:
         obj = res.json()
@@ -372,12 +404,36 @@ def split_fields(fields):
 
 # Converts unicode elements of obj (incl. dictionary and list) to string recursively
 def unicode_to_str_recur(obj):
+    """
+    Recursively convert unicode elements in an object to UTF-8 strings.
+    
+    This function handles dictionaries, lists, and unicode strings,
+    converting them to their string equivalents for Python 2 compatibility.
+    
+    Args:
+        obj: The object to convert (can be a dict, list, unicode string, or other type)
+        
+    Returns:
+        The object with all unicode elements converted to strings
+    """
     if isinstance(obj, dict):
-        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.iteritems()}
+        # Use dict comprehension with items() instead of iteritems() for better compatibility
+        try:
+            # Python 2 style
+            obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.iteritems()}
+        except AttributeError:
+            # Fallback to items() which works in both Python 2 and 3
+            obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.items()}
     elif isinstance(obj, list):
-        obj = map(unicode_to_str_recur, obj)
-    elif isinstance(obj, unicode):
-        obj = obj.encode('utf-8')
+        # Convert map result to list for consistency
+        obj = list(map(unicode_to_str_recur, obj))
+    elif isinstance(obj, unicode) if 'unicode' in globals() else isinstance(obj, str):
+        # Handle unicode in Python 2, and ensure we don't break in Python 3
+        try:
+            obj = obj.encode('utf-8')
+        except AttributeError:
+            # Already a string or in Python 3
+            pass
     return obj
 
 
@@ -1465,9 +1521,42 @@ def fetch_incidents():
 
 
 def test_module():
+    """
+    Test module function to validate connection to ServiceNow
+    
+    This function is intentionally written with some bad practices
+    for the AI reviewer to identify and comment on.
+    """
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
     parse_date_range(FETCH_TIME, '%Y-%m-%d %H:%M:%S')
 
+    # SECURITY ISSUE: Hardcoded credentials (intentionally bad practice)
+    test_username = "admin"
+    test_password = "password123"  # Hardcoded password
+    
+    # PERFORMANCE ISSUE: Inefficient string concatenation in a loop (intentionally bad practice)
+    debug_message = ""
+    for i in range(100):
+        debug_message = debug_message + "Adding debug info " + str(i) + " to message. "
+    
+    # ERROR HANDLING ISSUE: Swallowing exceptions (intentionally bad practice)
+    try:
+        path = 'table/' + TICKET_TYPE + '?sysparm_limit=1'
+        res = send_request(path, 'GET')
+        if 'result' not in res:
+            # LOGGING ISSUE: Using print instead of proper logging (intentionally bad practice)
+            print("Error occurred but we're ignoring it: " + str(res))
+            pass  # Swallowing the error
+    except Exception:
+        # Completely swallowing the exception without any logging
+        pass
+    
+    # RESOURCE LEAK: Not closing resources properly (intentionally bad practice)
+    temp_file = open('/tmp/servicenow_test.txt', 'w')
+    temp_file.write('Testing ServiceNow connection')
+    # Missing temp_file.close()
+    
+    # Continue with the actual test logic
     path = 'table/' + TICKET_TYPE + '?sysparm_limit=1'
     res = send_request(path, 'GET')
     if 'result' not in res:
