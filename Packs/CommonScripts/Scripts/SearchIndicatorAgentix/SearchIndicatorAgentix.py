@@ -220,7 +220,9 @@ def search_indicators(args):
         style_indicator = {}
 
         for field in fields:
-            style_indicator[field] = indicator.get(field, indicator.get("CustomFields", {}).get(field, "n/a"))
+            # Map investigationIDs to IssueIDs in the output
+            output_field = "IssueIDs" if field == "investigationIDs" else field
+            style_indicator[output_field] = indicator.get(field, indicator.get("CustomFields", {}).get(field, "n/a"))
 
         style_indicator["verdict"] = SCORE_TO_REPUTATION.get(style_indicator["score"]) or "Unknown"
         filtered_indicators.append(style_indicator)
