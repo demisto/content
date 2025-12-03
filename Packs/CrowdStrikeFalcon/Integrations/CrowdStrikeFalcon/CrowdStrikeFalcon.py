@@ -7944,6 +7944,10 @@ def main():  # pragma: no cover
             return_results(get_incident_behavior_command(args=args))
         elif command == "cs-falcon-get-ioarules":
             return_results(get_ioarules_command(args=args))
+        elif command == "fetch-assets":
+            demisto.info("[test] preparing to sleep for 6 minutes.")
+            time.sleep(300)
+            demisto.info("[test] woke up from 6 minutes sleep.")
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:
