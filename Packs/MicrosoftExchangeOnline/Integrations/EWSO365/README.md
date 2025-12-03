@@ -1601,7 +1601,12 @@ There is no context output for this command.
 
 ## Troubleshooting
 
-<details><summary><h3 style={{display: 'inline'}}>Instance Configuration </h3></summary> No troubleshooting found. </details>
+<details><summary><h3 style={{display: 'inline'}}>Instance Configuration </h3></summary>
+
+* If you have the error 'Error in Microsoft authorization. Status: 401, body: invalid_client. Invalid client secret provided. Ensure the secret being sent in the request is the client secret value, not the client secret ID, for a secret added to app', create a new Client Secret from Azure Portal and use this value to the "Key / Application Secret" field.
+* If you have the error 'Error in Microsoft authorization: Invalid base64-encoded string: number of data characters (37) cannot be 1 more than a multiple of 4 Please check authentication related parameters', enable/check the "Use a self-deployed Azure Application" checkbox.
+
+</details>
 
 <details><summary><h3 style={{display: 'inline'}}> Fetch command </h3></summary>
 
