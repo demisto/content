@@ -155,21 +155,60 @@ def test_should_send_request(params, expected_result, endpoint):
 @pytest.mark.parametrize(
     "params, expected_result, endpoint",
     [
-        (
-            {"indicator_type": ["All"], "indicator_query": "", "createRelationships": False},
+        pytest.param(
+            {
+                "indicator_type": ["All"],
+                "indicator_query": "",
+                "group_query": "",
+                "use_indicator_query_for_group": True,
+                "createRelationships": False,
+            },
             "/api/v3/indicators?tql=indicatorActive%20EQ%20True&fields=tags&fields=threatAssess&resultStart"
             "=0&resultLimit=100&sorting=dateAdded%20ASC",
             "indicators",
+            id="indicators with indicator query",
         ),
-        (
-            {"group_type": ["All"], "indicator_query": "indicatorActive EQ False", "createRelationships": True},
+        pytest.param(
+            {
+                "group_type": ["All"],
+                "indicator_query": "indicatorActive EQ False",
+                "group_query": "",
+                "use_indicator_query_for_group": True,
+                "createRelationships": True,
+            },
             "/api/v3/groups?tql=indicatorActive%20EQ%20False&fields=tags&fields=associatedGroups"
             "&fields=associatedIndicators&resultStart=0&resultLimit=100&sorting=dateAdded%20ASC",
             "groups",
+            id="groups with indicator query",
+        ),
+        pytest.param(
+            {
+                "group_type": ["All"],
+                "indicator_query": "",
+                "group_query": "Test",
+                "use_indicator_query_for_group": True,
+                "createRelationships": False,
+            },
+            "/api/v3/groups?tql=indicatorActive%20EQ%20True&fields=tags&resultStart=0&resultLimit=100&sorting=dateAdded%20ASC",
+            "groups",
+            id="groups with default query",
+        ),
+        pytest.param(
+            {
+                "group_type": ["All"],
+                "indicator_query": "indicatorActive EQ False",
+                "group_query": "Test",
+                "use_indicator_query_for_group": False,
+                "createRelationships": True,
+            },
+            "/api/v3/groups?tql=Test&fields=tags&fields=associatedGroups"
+            "&fields=associatedIndicators&resultStart=0&resultLimit=100&sorting=dateAdded%20ASC",
+            "groups",
+            id="groups with group query",
         ),
     ],
 )
-def test_build_url_with_query_params(mocker, params, expected_result, endpoint):
+def test_build_url_with_query_params(mocker: MockerFixture, params: dict, expected_result: str, endpoint: str):
     """
     Given:
         - demisto params and an endpoint
@@ -179,7 +218,13 @@ def test_build_url_with_query_params(mocker, params, expected_result, endpoint):
         - validate the result
     """
     mocker.patch("FeedThreatConnect.set_tql_query", return_value="indicatorActive EQ True")
-    output = build_url_with_query_params(params, endpoint, {})
+    # Determine the tql parameter based on endpoint and params
+    if endpoint == "indicators":
+        tql = params.get("indicator_query") or None
+    else:  # groups
+        tql = params.get("group_query") if not params.get("use_indicator_query_for_group") else params.get("indicator_query")
+
+    output = build_url_with_query_params(params, endpoint, {}, tql)
 
     assert output == expected_result
 
