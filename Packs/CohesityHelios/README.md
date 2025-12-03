@@ -19,9 +19,19 @@ Cohesity’s comprehensive, end-to-end solution [Cohesity Ransomware](https://ww
 - Command to ignore a specified ransomware alert.
 
 <~XSIAM>
+
 - Rest API integration for your Cohesity Helios
 
 - Audit and Alert logs mapping
+
+## Generate an api key from Helios UI
+
+1. Login to Helios UI.
+2. Click on **Settings** icon on top right corner and select **Access Management**.
+3. From the available tabs, select **API Keys**.
+4. Click on **Add API Key** button.
+5. Give the apiKey a name and click the **Save** button.
+6. Copy the **key**.
 
 ## Configure CohesityHelios in Cortex
 
