@@ -170,6 +170,8 @@ def test_calculate_verdict_invalid_inputs():
 
 def test_ioc_lookup_missing_argument(mocker):
     client = Mock()
+    mocker.patch("CybleThreatIntel.return_error", side_effect=Exception("Missing required argument: ioc"))
+
     with pytest.raises(Exception) as e:
         cyble_ioc_lookup_command(client, {})
     assert "Missing required argument: ioc" in str(e.value)
