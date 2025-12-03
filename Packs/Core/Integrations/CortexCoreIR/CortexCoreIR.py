@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 from copy import deepcopy
-from CortexPlatformCore import FilterBuilder, build_webapp_request_data, FilterType
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
@@ -26,6 +25,7 @@ PREVALENCE_COMMANDS = {
     "core-get-registry-analytics-prevalence": "registry",
     "core-get-cmd-analytics-prevalence": "cmd",
 }
+PRIVATE_API_COMMANDS = ["core-list-endpoints"]
 
 TERMINATE_BUILD_NUM = "1398786"
 TERMINATE_SERVER_VERSION = "8.8.0"
@@ -84,6 +84,19 @@ ENDPOINT_OPERATIONAL_STATUS = {
     "protected": "PROTECTED",
     "partially protected": "PARTIALLY_PROTECTED",
     "unprotected": "UNPROTECTED"
+}
+ASSIGNED_PREVENTION_POLICY = {
+    "pcastro": "0a80deae95e84a90a26e0586a7a6faef",
+    "Caas Default": "236a259c803d491484fc5f6d0c198676",
+    "kris": "31987a7fb890406ca70287c1fc582cbf",
+    "democloud": "44fa048803db4a8f989125a3887baf68",
+    "Linux Default": "705e7aae722f45c5ab2926e2639b295f",
+    "Android Default": "874e0fb9979c44459ca8f2dfdb3f03d9",
+    "Serverless Function Default": "c68bb058bbf94bbcb78d748191978d3b",
+    "macOS Default": "c9fd93fcee42486fb270ae0acbb7e0fb",
+    "iOS Default": "dc2e804c147f4549a6118c96a5b0d710",
+    "Windows Default": "e1f6b443a1e24b27955af39b4c425556",
+    "bcpolicy": "f32766a625db4cc29b5dddbfb721fe58"
 }
 ENDPOINT_FIELDS = {
     "endpoint_name": "HOST_NAME",
@@ -279,12 +292,13 @@ class Client(CoreClient):
             else:
                 raise e
             
-    def get_webapp_data(self, request_data: dict) -> dict:
-        return self._http_request(
+    def get_webapp_data(self, request_data: dict):
+        reply = self._http_request(
             method="POST",
             url_suffix="/get_data",
             json_data=request_data,
         )
+        return reply
 
 
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
@@ -786,12 +800,16 @@ def core_list_endpoints_command(client: Client, args: dict):
     endpoint_type = [ENDPOINT_TYPE[endpoint_type] for endpoint_type in argToList(args.get('endpoint_type'))]
     endpoint_status = [ENDPOINT_STATUS[status] for status in argToList(args.get('endpoint_status'))]
     platform = [ENDPOINT_PLATFORM[platform] for platform in argToList(args.get('platform'))]
+    assigned_prevention_policy = [ASSIGNED_PREVENTION_POLICY[assigned] for assigned in argToList(args.get('assigned_prevention_policy'))]
+    agent_eol = args.get('agent_eol')
+    supported_version = not arg_to_bool_or_none(agent_eol) if agent_eol else None
     
     filter_builder = FilterBuilder()
     filter_builder.add_field(ENDPOINT_FIELDS["endpoint_status"], FilterType.EQ, endpoint_status)
     filter_builder.add_field(ENDPOINT_FIELDS["operational_status"], FilterType.EQ, operational_status)
     filter_builder.add_field(ENDPOINT_FIELDS["endpoint_type"], FilterType.EQ, endpoint_type)
     filter_builder.add_field(ENDPOINT_FIELDS["platform"], FilterType.EQ, platform)
+    filter_builder.add_field(ENDPOINT_FIELDS["assigned_prevention_policy"], FilterType.EQ, assigned_prevention_policy)
     filter_builder.add_field(ENDPOINT_FIELDS["endpoint_name"], FilterType.EQ, argToList(args.get('endpoint_name')))
     filter_builder.add_field(ENDPOINT_FIELDS["operating_system"], FilterType.CONTAINS, argToList(args.get('operating_system')))
     filter_builder.add_field(ENDPOINT_FIELDS["agent_version"], FilterType.EQ, argToList(args.get('agent_version')))
@@ -803,7 +821,7 @@ def core_list_endpoints_command(client: Client, args: dict):
     filter_builder.add_field(ENDPOINT_FIELDS["endpoint_id"], FilterType.EQ, argToList(args.get('endpoint_id')))
     filter_builder.add_field(ENDPOINT_FIELDS["cloud_provider"], FilterType.EQ, argToList(args.get('cloud_provider')))
     filter_builder.add_field(ENDPOINT_FIELDS["cloud_region"], FilterType.EQ, argToList(args.get('cloud_region')))
-    filter_builder.add_field(ENDPOINT_FIELDS["agent_eol"], FilterType.EQ, not arg_to_bool_or_none(args.get('agent_eol')))
+    filter_builder.add_field(ENDPOINT_FIELDS["agent_eol"], FilterType.EQ, supported_version)
     
     request_data = build_webapp_request_data(
         table_name=AGENTS_TABLE,
@@ -952,7 +970,13 @@ def main():  # pragma: no cover
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
     headers = {}
-    url_suffix = "/xsiam" if command in PREVALENCE_COMMANDS else "/public_api/v1"
+    if command in PREVALENCE_COMMANDS:
+        url_suffix = "/xsiam"
+    elif command in PRIVATE_API_COMMANDS:
+        url_suffix = ""
+    else:
+        url_suffix = "/public_api/v1"
+        
     if not FORWARD_USER_RUN_RBAC:
         api_key = demisto.params().get("apikey")
         api_key_id = demisto.params().get("apikey_id")

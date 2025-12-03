@@ -4574,8 +4574,21 @@ script:
       name: domain
       isArray: true
     - description: A comma-separated list of assigned prevention policies.
-      name: assigned_prevention_policy ######### check the values in the filter data 
+      name: assigned_prevention_policy
       isArray: true
+      auto: PREDEFINED
+      predefined:
+      - pcastro
+      - Caas Default
+      - kris
+      - democloud
+      - Linux Default
+      - Android Default
+      - Serverless Function Default
+      - macOS Default
+      - iOS Default
+      - Windows Default
+      - bcpolicy
     - description: A comma-separated list of group names assigned to the endpoints.
       name: group_name
       isArray: true
@@ -4614,7 +4627,6 @@ script:
       description: Maximum number of results per page. Default and maximum is 100.
       name: limit
     name: core-list-endpoints
-    hidden: true
     description: Retrieves endpoints based on the provided filters.
     outputs:
     - contextPath: Core.Endpoint.Name
