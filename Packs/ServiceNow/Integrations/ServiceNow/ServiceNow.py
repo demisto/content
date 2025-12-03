@@ -9,6 +9,7 @@ import shutil
 
 # disable insecure warnings
 try:
+    
     import urllib3
     urllib3.disable_warnings()
 except ImportError:
