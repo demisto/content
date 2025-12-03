@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "Updated the **core-get-issue-recommendations** command to support *issue_ids* instead of *issue_id* argument."
+    "breakingChangesNotes": "The argument issue_id has been replaced by the required argument issue_ids in the core-get-issue-recommendations command."
 }
