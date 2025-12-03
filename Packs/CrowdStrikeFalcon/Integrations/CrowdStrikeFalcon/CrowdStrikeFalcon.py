@@ -3573,6 +3573,7 @@ def fetch_items(command="fetch-incidents"):
 
 def get_cnapp_assets():
     last_run = demisto.getAssetsLastRun()
+    demisto.debug(f"[test] starting a new cnapp fetch assets execution with {last_run=}")
     snapshot_id = last_run.get("snapshot_id", str(round(time.time() * 1000)))
     offset = int(last_run.get("offset", 0))
     total_fetched_until_now = int(last_run.get("total_fetched_until_now", 0))
@@ -3588,22 +3589,26 @@ def get_cnapp_assets():
     cnapp_alerts = response.get("resources", [])
     total_detections = demisto.get(response, "meta.pagination.total")
     total_fetched_until_now += len(cnapp_alerts)
-    demisto.debug(f"fetched {len(cnapp_alerts)} CNAPP assets, reulsting a toal of {total_fetched_until_now}.")
+    demisto.debug(f"[test] fetched {len(cnapp_alerts)} CNAPP assets, reulsting a toal of {total_fetched_until_now}.")
 
     if total_detections > total_fetched_until_now:  # type: ignore
-        offset = offset + len(cnapp_alerts)
+        demisto.debug(f"[test] fetch {total_fetched_until_now} assets out of expected {total_detections} so far, setting NextTrigger to 0.")
+        offset += len(cnapp_alerts)
         items_count = 1
-        new_last_run = {"offset": offset, "total_fetched_until_now": total_fetched_until_now, "snapshot_id": snapshot_id}
+        new_last_run = {"offset": offset, "total_fetched_until_now": total_fetched_until_now, "snapshot_id": snapshot_id, "nextTrigger": 0}
     else:
+        demisto.debug(f"[test] fetched all expected assets ({total_detections}), closing the snapshot.")
         offset = 0
         items_count = total_fetched_until_now
-        new_last_run = {"offset": offset, "total_fetched_until_now": 0, "nextTrigger": 0}
+        new_last_run = {"offset": offset, "total_fetched_until_now": 0}
 
     return new_last_run, cnapp_alerts, items_count, snapshot_id
 
 
 def fetch_assets_command():
     new_last_run, detections, items_count, snapshot_id = get_cnapp_assets()
+    
+    demisto.debug(f"[test] sending a batch of {len(detections)} assets to xsiam with {snapshot_id=}")
 
     send_data_to_xsiam(
         data=detections,
@@ -3614,8 +3619,12 @@ def fetch_assets_command():
         items_count=items_count,
         should_update_health_module=False,
     )
+    
+    demisto.debug("[test] finished sending a batch assets.")
+    demisto.debug(f"[test] preparing to save assets last run with {new_last_run=}.")
 
     demisto.setAssetsLastRun(new_last_run)
+    demisto.debug("assets last run was saved succesfuly.")
 
 
 def fetch_detections_by_product_type(
