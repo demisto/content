@@ -487,37 +487,33 @@ class Client(CoreClient):
 
     def update_issue(self, filter_data):
         return self._http_request(method="POST", json_data=filter_data, url_suffix="/alerts/update_alerts")
-    
+
     def link_issue_to_cases(self, issue_id, case_ids: list) -> dict:
         """Link an issue to one or more cases.
-        
+
         Args:
             issue_id: The issue ID to link
             case_ids: List of case IDs to link the issue to
-            
+
         Returns:
             dict: API response
         """
         return self._http_request(
-            method="POST",
-            json_data={"issue_ids": [issue_id], "case_ids": case_ids},
-            url_suffix="/cases/link_issues"
+            method="POST", json_data={"issue_ids": [issue_id], "case_ids": case_ids}, url_suffix="/cases/link_issues"
         )
-    
+
     def unlink_issue_from_cases(self, issue_id, case_ids: list) -> dict:
         """Unlink an issue from one or more cases.
-        
+
         Args:
             issue_id: The issue ID to unlink
             case_ids: List of case IDs to unlink the issue from
-            
+
         Returns:
             dict: API response
         """
         return self._http_request(
-            method="POST",
-            json_data={"issue_id": issue_id, "case_ids": case_ids},
-            url_suffix="/cases/unlink_issue"
+            method="POST", json_data={"issue_id": issue_id, "case_ids": case_ids}, url_suffix="/cases/unlink_issue"
         )
 
     def search_assets(self, filter, page_number, page_size, on_demand_fields):
@@ -1010,7 +1006,7 @@ def update_issue_command(client: Client, args: dict):
     status = args.get("status")
     link_cases = argToList(args.get("link_cases"))
     unlink_cases = argToList(args.get("unlink_cases"))
-    
+
     update_args = {
         "assigned_user": args.get("assigned_user_mail"),
         "severity": severity_map.get(severity_value) if severity_value else None,
@@ -1024,23 +1020,23 @@ def update_issue_command(client: Client, args: dict):
 
     # Remove None values before sending to API
     filtered_update_args = {k: v for k, v in update_args.items() if v is not None}
-    
+
     if not filtered_update_args and not link_cases and not unlink_cases:
         raise DemistoException("Please provide arguments to update the issue.")
-    
+
     if link_cases:
         client.link_issue_to_cases(issue_id, link_cases)
         demisto.debug(f"Linked issue {issue_id} to cases {link_cases}")
-    
+
     if unlink_cases:
         client.unlink_issue_from_cases(issue_id, unlink_cases)
         demisto.debug(f"Unlinked issue {issue_id} from cases {unlink_cases}")
-    
+
     if filtered_update_args:
         filter_data = create_filter_data(issue_id, filtered_update_args)
         demisto.debug(filter_data)
         client.update_issue(filter_data)
-    
+
     return "done"
 
 
