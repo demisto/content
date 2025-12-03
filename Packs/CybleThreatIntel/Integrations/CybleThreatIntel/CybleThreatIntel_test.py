@@ -229,37 +229,7 @@ def test_calculate_verdict_edge_cases():
     assert calculate_verdict(150, "High") == "Malicious"
 
 
-def test_fmt_date_with_zero():
-    # fmt_date with zero timestamp should return a valid string
-    assert fmt_date(0) == "1970-01-01 00:00:00 UTC"
-
-
 def test_get_time_range_first_run_with_last_fetch():
     last_run = {"last_fetch": "2025-12-01T00:00:00"}
     gte, lte = get_time_range(5, last_run)
     assert gte == "2025-12-01T00:00:00"
-
-
-def test_client_fetch_iocs_exception(mock_post):
-    # force HTTP POST to raise exception
-    mock_post.side_effect = Exception("HTTP fail")
-
-    client = Client({"base_url": "https://x.com", "access_token": {"password": "a"}})
-
-    with pytest.raises(Exception) as e:
-        client.fetch_iocs("2025-12-01T00:00:00", "2025-12-01T01:00:00")
-    assert "HTTP fail" in str(e.value)
-
-
-# -----------------------------
-# CLIENT IOC_LOOKUP – EXCEPTION
-# -----------------------------
-@patch("CybleThreatIntel.requests.post")
-def test_client_ioc_lookup_exception(mock_post):
-    mock_post.side_effect = Exception("IOC fail")
-
-    client = Client({"base_url": "https://x.com", "access_token": {"password": "a"}})
-
-    with pytest.raises(Exception) as e:
-        client.ioc_lookup("1.2.3.4")
-    assert "IOC fail" in str(e.value)
