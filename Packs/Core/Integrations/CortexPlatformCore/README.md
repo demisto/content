@@ -880,7 +880,6 @@ Retrieves application security issues based on specified filters.
 | Core.AppsecIssue.has_kev | Boolean | Whether the issue is part of the Known Exploited Vulnerabilities catalog \(KEV\). |
 | Core.AppsecIssue.backlog_status | String | The backlog status of the issue. |
 
-<!-- 
 ### core-run-playbook
 
 ***
@@ -896,4 +895,3 @@ Runs a playbook on specific issue IDs.
 | --- | --- | --- |
 | playbook_id | The ID of the playbook to run. | Required |
 | issue_ids | The IDs of the issues to process with the playbook. | Required |
--->
