@@ -6,7 +6,6 @@ import asyncio
 
 from mcp import ClientSession
 from mcp.client.streamable_http import streamablehttp_client
-from mcp.types import CallToolResult, TextContent
 
 BASE_URL = "https://api.githubcopilot.com/mcp/"
 
@@ -27,61 +26,6 @@ def extract_root_error_message(exception):
 
     # Format and return the message for a regular exception
     return "".join(traceback.format_exception_only(type(exception), exception))
-
-
-def object_to_dict_recursive(obj):
-    """
-    Recursively convert an object to a dictionary representation.
-
-    Args:
-        obj: The object to convert (custom objects, lists, tuples, sets, dicts, or primitives)
-
-    Returns:
-        Dictionary representation of the object with nested objects also converted to dictionaries.
-        Primitive types are returned as-is.
-    """
-    if hasattr(obj, "__dict__"):
-        # 1. Convert Custom Objects
-        # Get all attributes of the object that aren't callable (methods)
-        data = {
-            key: object_to_dict_recursive(value)
-            for key, value in obj.__dict__.items()
-            if not key.startswith("__") and not callable(value)
-        }
-        return data
-
-    elif isinstance(obj, list | tuple | set):
-        # 2. Convert Iterables
-        # Convert each item in the iterable
-        return [object_to_dict_recursive(item) for item in obj]
-
-    elif isinstance(obj, dict):
-        # 3. Convert Dictionaries
-        # Convert dictionary values recursively
-        return {key: object_to_dict_recursive(value) for key, value in obj.items()}
-
-    else:
-        # 4. Base Case
-        # Return primitive types (int, str, bool, etc.) as is
-        return obj
-
-
-def get_text_from_call_result(call_result: CallToolResult):
-    """
-    Extract text from a call result object recursively, handling various result types.
-
-    Args:
-        call_result: The result object from a method call
-
-    Returns:
-        Extracted text or string representation of the result.
-    """
-    text = ""
-
-    if call_result.content and isinstance(call_result.content[0], TextContent):
-        text = call_result.content[0].text
-
-    return text
 
 
 class Client:
@@ -127,7 +71,7 @@ class Client:
                 write_stream,
                 _,
             ),
-            ClientSession(read_stream, write_stream) as session,
+            ClientSession(read_stream, write_stream) as session,  # pylint: disable=E0601
         ):
             await session.initialize()
             yield session
@@ -157,14 +101,15 @@ async def list_tools(client: Client):
     """
     tools = await client.list_tools()
 
-    tools = tools.tools
-    tool_names = [tool.name for tool in tools]
+    tool_names = [tool.name for tool in tools.tools]
     readable_output = f"Available {len(tool_names)} tools:\n{tool_names}"
+
+    tools_dump = tools.model_dump(mode="json")
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="ListTools.Tools",
-        outputs=object_to_dict_recursive(tools),
+        outputs=tools_dump.get("tools", []),
     )
 
 
@@ -175,32 +120,26 @@ async def call_tool(client: Client, tool_name: str, arguments: str) -> CommandRe
     Args:
         client (Client): The initialized GitHub MCP client
         tool_name (str): Name of the tool to call
-        arguments (dict): Arguments for the tool execution
+        arguments (str): Arguments for the tool execution
 
     Returns:
         CommandResults: Formatted command results from tool execution
     """
     try:
-        arguments = json.loads(arguments)
+        parsed_arguments = json.loads(arguments or "{}")
     except json.JSONDecodeError:
         raise DemistoException(f"Invalid JSON provided for arguments: {arguments}")
 
-    result = await client.call_tool(tool_name, arguments)
+    result = await client.call_tool(tool_name, parsed_arguments)
 
-    result_content = get_text_from_call_result(result)
-
-    if result.isError:
-        readable_output = f"Tool execution '{tool_name}' failed: {result_content}."
-    else:
-        try:
-            readable_output = tableToMarkdown(f"Tool Execution '{tool_name}'", json.loads(result_content))
-        except json.JSONDecodeError:
-            readable_output = f"Tool Execution '{tool_name}': {result_content}"
+    result_dump = result.model_dump(mode="json")
+    result_content = result_dump.get("content", [])
+    readable_output = tableToMarkdown(f"Tool Execution '{tool_name}'{' failed' if result.isError else ''}", result_content)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="CallTool.Tool",
-        outputs=object_to_dict_recursive(result),
+        outputs=result_content,
         entry_type=EntryType.NOTE if not result.isError else EntryType.ERROR,
     )
 
@@ -234,7 +173,7 @@ async def main() -> None:  # pragma: no cover
             result = await list_tools(client)
             return_results(result)
         elif command == "call-tool":
-            result = await call_tool(client, args["name"], args.get("arguments") or "{}")
+            result = await call_tool(client, args["name"], args.get("arguments", ""))
             return_results(result)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")

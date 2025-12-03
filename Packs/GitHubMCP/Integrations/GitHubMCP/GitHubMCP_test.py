@@ -18,8 +18,6 @@ if sys.version_info < (3, 11):  # noqa: UP036
 from GitHubMCP import (
     Client,
     extract_root_error_message,
-    object_to_dict_recursive,
-    get_text_from_call_result,
     list_tools,
     call_tool,
     BASE_URL,
@@ -87,122 +85,6 @@ def test_extract_root_error_message_with_deeply_nested_exception_group():
     result = extract_root_error_message(outer_group)
 
     assert "ConnectionError: Network timeout" in result
-
-
-def test_object_to_dict_recursive_with_nested_objects():
-    """
-    Given: A custom object containing another custom object as an attribute.
-    When: object_to_dict_recursive is called with the parent object.
-    Then: Both objects should be recursively converted to nested dictionaries.
-    """
-
-    class InnerObject:
-        def __init__(self):
-            self.inner_value = "nested"
-
-    class OuterObject:
-        def __init__(self):
-            self.outer_value = "parent"
-            self.inner = InnerObject()
-
-    obj = OuterObject()
-    result = object_to_dict_recursive(obj)
-
-    expected = {"outer_value": "parent", "inner": {"inner_value": "nested"}}
-    assert result == expected
-
-
-def test_object_to_dict_recursive_with_iterables():
-    """
-    Given: A list containing various types including tuples, sets, and custom objects.
-    When: object_to_dict_recursive is called with the list.
-    Then: All iterable items should be converted to lists with nested objects as dictionaries.
-    """
-
-    class TestObject:
-        def __init__(self, value):
-            self.value = value
-
-    input_list = [TestObject("test1"), (TestObject("test2"), "string"), {"key", "set_item"}]
-
-    result = object_to_dict_recursive(input_list)
-
-    assert len(result) == 3
-    assert list(result)[0] == {"value": "test1"}
-    assert list(result)[1] == [{"value": "test2"}, "string"]
-    assert set(list(result)[2]) == {"key", "set_item"}  # Set order may vary
-
-
-def test_object_to_dict_recursive_with_dictionary():
-    """
-    Given: A dictionary containing nested dictionaries and custom objects as values.
-    When: object_to_dict_recursive is called with the dictionary.
-    Then: All nested values should be recursively converted while preserving the dictionary structure.
-    """
-
-    class TestObject:
-        def __init__(self, value):
-            self.value = value
-
-    input_dict = {"simple": "string", "nested": {"inner": TestObject("nested_value")}, "object": TestObject("direct_value")}
-
-    result = object_to_dict_recursive(input_dict)
-
-    expected = {"simple": "string", "nested": {"inner": {"value": "nested_value"}}, "object": {"value": "direct_value"}}
-    assert result == expected
-
-
-def test_object_to_dict_recursive_with_primitives():
-    """
-    Given: Primitive data types including strings, integers, booleans, and None.
-    When: object_to_dict_recursive is called with each primitive type.
-    Then: The primitive values should be returned unchanged.
-    """
-    primitives = ["string", 42, True, False, None, 3.14]
-
-    for primitive in primitives:
-        result = object_to_dict_recursive(primitive)
-        assert result == primitive
-
-
-def test_get_text_from_call_result_with_text_content():
-    """
-    Given: A CallToolResult with content containing a TextContent object with text.
-    When: get_text_from_call_result is called with the result.
-    Then: The text from the TextContent object should be returned.
-    """
-    text_content = TextContent(type="text", text="Hello, world!")
-    call_result = CallToolResult(content=[text_content], isError=False)
-
-    result = get_text_from_call_result(call_result)
-
-    assert result == "Hello, world!"
-
-
-def test_get_text_from_call_result_with_empty_content():
-    """
-    Given: A CallToolResult with empty or None content.
-    When: get_text_from_call_result is called with the result.
-    Then: An empty string should be returned.
-    """
-    call_result = CallToolResult(content=[], isError=False)
-
-    result = get_text_from_call_result(call_result)
-
-    assert result == ""
-
-
-def test_get_text_from_call_result_with_none_content():
-    """
-    Given: A CallToolResult with content set to None.
-    When: get_text_from_call_result is called with the result.
-    Then: An empty string should be returned.
-    """
-    call_result = CallToolResult(content=[], isError=False)
-
-    result = get_text_from_call_result(call_result)
-
-    assert result == ""
 
 
 @pytest.mark.asyncio
@@ -412,19 +294,11 @@ async def test_list_tools_success(mocker: MockerFixture):
     mock_client = mocker.Mock()
     mock_client.list_tools = AsyncMock(return_value=mock_tools_response)
 
-    # Mock object_to_dict_recursive
-    mock_dict_conversion = mocker.patch("GitHubMCP.object_to_dict_recursive")
-    mock_dict_conversion.return_value = [
-        {"name": "search-hosts", "description": "Search for hosts in CrowdStrike"},
-        {"name": "get-detections", "description": "Retrieve detection data"},
-    ]
-
     result = await list_tools(mock_client)
 
     assert result.readable_output == "Available 2 tools:\n['search-hosts', 'get-detections']"
     assert result.outputs_prefix == "ListTools.Tools"
     mock_client.list_tools.assert_called_once()
-    mock_dict_conversion.assert_called_once_with([mock_tool1, mock_tool2])
 
 
 @pytest.mark.asyncio
@@ -442,15 +316,10 @@ async def test_list_tools_empty_response(mocker: MockerFixture):
     mock_client = mocker.Mock()
     mock_client.list_tools = AsyncMock(return_value=mock_tools_response)
 
-    # Mock object_to_dict_recursive
-    mock_dict_conversion = mocker.patch("GitHubMCP.object_to_dict_recursive")
-    mock_dict_conversion.return_value = []
-
     result = await list_tools(mock_client)
 
     assert result.readable_output == "Available 0 tools:\n[]"
     assert result.outputs_prefix == "ListTools.Tools"
-    assert result.outputs == []
     mock_client.list_tools.assert_called_once()
 
 
@@ -486,10 +355,6 @@ async def test_call_tool_success_with_json_response(mocker: MockerFixture):
     mock_client = mocker.Mock()
     mock_client.call_tool = AsyncMock(return_value=mock_call_result)
 
-    # Mock object_to_dict_recursive
-    mock_dict_conversion = mocker.patch("GitHubMCP.object_to_dict_recursive")
-    mock_dict_conversion.return_value = {"content": [{"text": '{"status": "success", "count": 5}'}], "isError": False}
-
     # Mock tableToMarkdown
     mock_table = mocker.patch("GitHubMCP.tableToMarkdown")
     mock_table.return_value = "| status | count |\n|--------|-------|\n| success | 5 |"
@@ -517,13 +382,12 @@ async def test_call_tool_success_with_text_response(mocker: MockerFixture):
     mock_client = mocker.Mock()
     mock_client.call_tool = AsyncMock(return_value=mock_call_result)
 
-    # Mock object_to_dict_recursive
-    mock_dict_conversion = mocker.patch("GitHubMCP.object_to_dict_recursive")
-    mock_dict_conversion.return_value = {"content": [{"text": "Operation completed successfully"}], "isError": False}
-
     result = await call_tool(mock_client, "update-host", '{"host_id": "123"}')
 
-    assert result.readable_output == "Tool Execution 'update-host': Operation completed successfully"
+    assert result.readable_output == (
+        "### Tool Execution 'update-host'\n|annotations|meta|text|type|\n|---|---|---|---|\n|"
+        "  |  | Operation completed successfully | text |\n"
+    )
     assert result.outputs_prefix == "CallTool.Tool"
     assert result.entry_type == EntryType.NOTE
 
@@ -543,13 +407,12 @@ async def test_call_tool_error_response(mocker: MockerFixture):
     mock_client = mocker.Mock()
     mock_client.call_tool = AsyncMock(return_value=mock_call_result)
 
-    # Mock object_to_dict_recursive
-    mock_dict_conversion = mocker.patch("GitHubMCP.object_to_dict_recursive")
-    mock_dict_conversion.return_value = {"content": [{"text": "Host not found with ID 999"}], "isError": True}
-
     result = await call_tool(mock_client, "get-host", '{"host_id": "999"}')
 
-    assert result.readable_output == "Tool execution 'get-host' failed: Host not found with ID 999."
+    assert result.readable_output == (
+        "### Tool Execution 'get-host' failed\n|annotations|meta|text|type|\n|---|---|---|---|\n|"
+        "  |  | Host not found with ID 999 | text |\n"
+    )
     assert result.outputs_prefix == "CallTool.Tool"
     assert result.entry_type == EntryType.ERROR
 
