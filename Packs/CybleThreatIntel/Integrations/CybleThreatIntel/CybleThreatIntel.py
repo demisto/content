@@ -28,12 +28,11 @@ class Client:
             "Accept": "application/json",
             "Content-Type": "application/json",
         }
-        demisto.debug(f"Client initialized with base_url: {self.base_url}, access_token: {self.access_token}")
+        demisto.debug(f"Client initialized with base_url: {self.base_url}")
 
     def http_post(self, endpoint: str, json_body: dict):
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
         demisto.debug(f"POST Request URL: {url}")
-        demisto.debug(f"POST Request Headers: {self.headers}")
         demisto.debug(f"POST Request Body: {json_body}")
         resp = requests.post(url, headers=self.headers, json=json_body, verify=False)
         demisto.debug(f"Response Status Code: {resp.status_code}")
