@@ -38,7 +38,7 @@ configuration:
     type: 15
     required: true
     defaultvalue: A - Completely reliable
-    additionalinfo: Reliability of the source providing the intelligence data
+    additionalinfo: Reliability of the source providing the intelligence data.
     options:
       - A - Completely reliable
       - B - Usually reliable
