@@ -18,7 +18,10 @@ For more information - click [here](https://training.threatconnect.com/learn/art
 
 ## Configure ThreatConnect Feed on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to one of the following:
+    Cortex XSOAR 8: Settings & Info > Settings > Integrations > Instances.
+    Cortex XSOAR 6: Settings > Integrations.
+    Cortex XSIAM: Settings > Configurations > Automation & Feed Integrations.
 2. Search for ThreatConnect Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
