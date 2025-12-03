@@ -3581,6 +3581,7 @@ def get_cnapp_assets():
     limit = 100
     endpoint_url = "/container-security/combined/container-alerts/v1"
     params = {"offset": offset, "limit": limit}
+    update_module_health = False
 
     demisto.info(f"[test] calling endpoint with {params=}")
     response = http_request("GET", endpoint_url, params)
@@ -3601,15 +3602,15 @@ def get_cnapp_assets():
         offset = 0
         items_count = total_fetched_until_now
         new_last_run = {"offset": offset, "total_fetched_until_now": 0}
+        update_module_health = True
 
-    return new_last_run, cnapp_alerts, items_count, snapshot_id
+    return new_last_run, cnapp_alerts, items_count, snapshot_id, update_module_health
 
 
 def fetch_assets_command():
-    new_last_run, detections, items_count, snapshot_id = get_cnapp_assets()
+    new_last_run, detections, items_count, snapshot_id, update_module_health = get_cnapp_assets()
     
     demisto.debug(f"[test] sending a batch of {len(detections)} assets to xsiam with {snapshot_id=}")
-
     send_data_to_xsiam(
         data=detections,
         vendor=VENDOR,
@@ -3619,10 +3620,12 @@ def fetch_assets_command():
         items_count=items_count,
         should_update_health_module=False,
     )
-    
     demisto.debug("[test] finished sending a batch assets.")
+    
+    if update_module_health:
+        demisto.updateModuleHealth({"assetsPulled": items_count})
+    
     demisto.debug(f"[test] preparing to save assets last run with {new_last_run=}.")
-
     demisto.setAssetsLastRun(new_last_run)
     demisto.debug("assets last run was saved succesfuly.")
 
