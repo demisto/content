@@ -636,7 +636,9 @@ def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     return recommendation
 
 
-def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadata, pb_id_to_index, qa_name_to_data) -> tuple[dict, dict, str, str]:
+def populate_playbook_and_quick_action_suggestions(
+    client, issue_id, pbs_metadata, pb_id_to_index, qa_name_to_data
+) -> tuple[dict, dict, str, str]:
     """
     Fetches playbook and quick-action suggestions for a given issue
     and updates the recommendation dictionary accordingly.
@@ -683,9 +685,7 @@ def populate_playbook_and_quick_action_suggestions(client, issue_id, pbs_metadat
         qa_data = qa_name_to_data.get(quick_action_id)
         if qa_data:
             recommendation["quick_action_suggestions"].update(qa_data)
-            readable_recommendation["quick_action_suggestions"].update(
-                {"pretty_name": qa_data.get("pretty_name")}
-            )
+            readable_recommendation["quick_action_suggestions"].update({"pretty_name": qa_data.get("pretty_name")})
 
     return recommendation, readable_recommendation, playbook_id, quick_action_id
 
@@ -761,9 +761,9 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     append_appsec_headers = False
     append_playbook_suggestions_header = False
     append_quick_action_suggestions_header = False
-    pbs_metadata = client.get_playbooks_metadata() or {} 
-    pb_id_to_index = {item.get("id"): index for index, item in enumerate(pbs_metadata)} 
-    qas_metadata = client.get_quick_actions_metadata() or [] 
+    pbs_metadata = client.get_playbooks_metadata() or {}
+    pb_id_to_index = {item.get("id"): index for index, item in enumerate(pbs_metadata)}
+    qas_metadata = client.get_quick_actions_metadata() or []
     qa_name_to_data = map_qa_name_to_data(qas_metadata)
     all_recommendations = []
     readable_recommendations = []
