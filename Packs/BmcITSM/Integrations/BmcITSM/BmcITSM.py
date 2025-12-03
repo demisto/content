@@ -1104,7 +1104,7 @@ class Client(BaseClient):
             location_company (str): Company assoiciated with ticet process.
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
-            customer_company (str): Customer company name.
+            customer_company (str):  Customer company name.
         Returns:
             str: API respnse from BmcITSM.
         """
@@ -1629,10 +1629,10 @@ def list_command(
             response["entries"][i]["values"]["Work Logs"] = worklogs.get("entries")
 
     relevant_records, header_suffix = get_paginated_records_with_hr(
-        response.get("entries"), # type: ignore[arg-type]
+        response.get("entries"),  # type: ignore[arg-type]
         limit,  # type: ignore[arg-type]
         page,
-        page_size
+        page_size,
     )
     outputs = format_command_output(relevant_records, context_output_mapper, arranger)
     readable_output = tableToMarkdown(
@@ -2103,11 +2103,11 @@ def service_request_update_command(client: Client, args: Dict[str, Any]) -> Comm
         "additional_fields",
     )
 
-    formatted_service_request_id = format_ticket_request_id(service_request_id)
+    formatted_service_request_id = format_ticket_request_id(service_request_id)  # type: ignore[arg-type]
     validate_related_arguments_provided(status=status, status_reason=status_reason)
     validate_related_arguments_provided(customer_first_name=customer_first_name, customer_last_name=customer_last_name)
 
-    client.service_request_update_request(
+    client.service_request_update_request(  # type: ignore[arg-type,call-arg]
         formatted_service_request_id,
         summary,
         status,
@@ -2116,11 +2116,11 @@ def service_request_update_command(client: Client, args: Dict[str, Any]) -> Comm
         customer_first_name,
         customer_last_name,
         location_company,
-        site_group,
-        region,
-        site,
-        assignee,
-        status_reason,
+        site_group,  # type: ignore[arg-type]
+        region,  # type: ignore[arg-type]
+        site,  # type: ignore[arg-type]
+        assignee,  # type: ignore[arg-type]
+        status_reason,  # type: ignore[arg-type]
         **additional_fields,
     )
     command_results = CommandResults(readable_output=f"Service Request: {service_request_id} was successfully updated.")
@@ -2205,7 +2205,7 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
     incident_request_id = extract_ticket_request_id_following_create(
         client, INCIDENT, response
     )  # The right request ID is not retrieved by the create endpoint.
-    outputs = format_create_ticket_outputs(response.get("values"))
+    outputs = format_create_ticket_outputs(response.get("values"))  # type: ignore[arg-type]
     outputs["RequestID"] = incident_request_id
 
     readable_output = tableToMarkdown("Incident ticket successfully Created", outputs, headerTransform=pascalToSpace)
