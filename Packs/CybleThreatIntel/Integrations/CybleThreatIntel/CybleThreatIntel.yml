@@ -36,7 +36,6 @@ configuration:
   - display: Source Reliability
     name: feedReliability
     type: 15
-    display: Source Reliability
     required: true
     defaultvalue: A - Completely reliable
     additionalinfo: Reliability of the source providing the intelligence data
