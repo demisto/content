@@ -3363,6 +3363,7 @@ def fetch_items(command="fetch-incidents"):
     Returns:
         tuple: (last_run, items) where last_run is the updated state and items are the fetched incidents/events
     """
+
     is_fetch_events = command == "fetch-events"
     items = []
     params = demisto.params()
@@ -3551,7 +3552,6 @@ def fetch_items(command="fetch-incidents"):
     set_last_run_per_type(
         last_run, index=LastRunIndex.OFP_DETECTION, data=ofp_detection_last_run, is_fetch_events=is_fetch_events
     )
-    set_last_run_per_type(last_run, index=LastRunIndex.CNAPP_ALERT, data=cnapp_alerts_last_run, is_fetch_events=is_fetch_events)
 
     if not is_fetch_events:
         set_last_run_per_type(last_run, index=LastRunIndex.IOM, data=iom_last_run, is_fetch_events=is_fetch_events)
@@ -7787,11 +7787,7 @@ def main():  # pragma: no cover
         elif command == "fetch-incidents":
             disable_for_xsiam()
             last_run, incidents = fetch_items(command=command)
-            demisto.info(f"[test] finished fetch-incidents wtih {last_run=}\n{incidents=}")
-            demisto.info(f"[test] preparing to call demisto.incidents with {incidents=}")
             demisto.incidents(incidents)
-            demisto.info(f"[test] finished sending incidents with {incidents=}")
-            return_results(GetRemoteDataResponse(mirrored_object=updated_object, entries=entries))
         elif command == "fetch-events":
             last_run, events = fetch_items(command=command)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
