@@ -589,7 +589,7 @@ class Client(CoreClient):
             headers={**self._headers, "content-type": "application/json"},
             url_suffix="/public_api/appsec/v1/policies",
         )
-        
+
     def run_playbook(self, issue_ids: list, playbook_id: str) -> dict:
         """
         Runs a specific playbook for a given investigation.
@@ -1207,7 +1207,8 @@ def enable_scanners_command(client: Client, args: dict):
         readable_output=readable_output,
         raw_response=responses,
     )
-    
+
+
 def run_playbook_command(client: Client, args: dict) -> CommandResults:
     """
     Executes a playbook command with specified arguments.
@@ -1233,7 +1234,7 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
 
     for issue_id, error_message in response.items():
         error_messages.append(f"Issue ID {issue_id}: {error_message}")
-        
+
     demisto.debug(f"Playbook run errors: {error_messages}")
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 

@@ -4840,7 +4840,8 @@ def test_create_appsec_issues_filter_and_tables_no_matching_table():
 
     with pytest.raises(DemistoException, match="No matching issue type found for the given filter combination"):
         create_appsec_issues_filter_and_tables(args)
-        
+
+
 def test_run_playbook_command_empty_response_success():
     """
     Given:
@@ -4877,7 +4878,7 @@ def test_run_playbook_command_multiple_errors_response():
 
     mock_client = Mock()
     mock_client.run_playbook.return_value = {
-    "issue_1": "Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert",
+        "issue_1": "Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert",
         "issue_2": "Skipping execution of playbook multi_fail_playbook for alert issue_2, failed creating investigation playbook",
         "issue_3": "Skipping execution of playbook multi_fail_playbook for alert issue_3, failed creating investigation playbook",
     }
