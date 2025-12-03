@@ -386,14 +386,15 @@ class PychromeEventHandler:
 
 # endregion
 
-def get_chrome_processes(port)-> list:
+
+def get_chrome_processes(port) -> list:
     try:
         processes = []
         # get all the processes running on the machine
         for pid in os.listdir("/proc"):
             if pid.isdigit():
                 try:
-                    with open(f"/proc/{pid}/cmdline", "r") as f:
+                    with open(f"/proc/{pid}/cmdline") as f:
                         cmd = f.read().replace("\x00", " ").strip()
                         if cmd:
                             processes.append(f"{pid} {cmd}")
@@ -605,7 +606,6 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
     demisto.info("Could not connect to Chrome.")
 
     return None, None
-
 
 
 def terminate_chrome(chrome_port: str = "", killall: bool = False) -> None:  # pragma: no cover
