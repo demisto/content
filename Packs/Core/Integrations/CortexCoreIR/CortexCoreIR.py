@@ -769,7 +769,7 @@ def core_get_contributing_event_command(client: Client, args: Dict) -> CommandRe
         raw_response=alerts,
     )
 
-def map_endpoint_format(endpoint_list):
+def map_endpoint_format(endpoint_list: list) -> list:
     """
     Maps and prepares endpoints data for consistent output formatting.
 
@@ -839,13 +839,17 @@ def map_endpoint_format(endpoint_list):
 
     return mapped_list
         
+        
+def build_endpoint_filters(args: dict):
+    """
+    Build a FilterBuilder for endpoint queries from provided arguments.
 
-def core_list_endpoints_command(client: Client, args: dict):
-    page = arg_to_number(args.get("page")) or 0
-    limit = arg_to_number(args.get("limit")) or MAX_GET_ENDPOINTS_LIMIT
-    page_from = page * limit
-    page_to = page * limit + limit
-    
+    Args:
+        args (dict): Command arguments.
+
+    Returns:
+        FilterBuilder: Object with filters applied.
+    """
     operational_status = [ENDPOINT_OPERATIONAL_STATUS[operational_status] for operational_status in argToList(args.get('operational_status'))]
     endpoint_type = [ENDPOINT_TYPE[endpoint_type] for endpoint_type in argToList(args.get('endpoint_type'))]
     endpoint_status = [ENDPOINT_STATUS[status] for status in argToList(args.get('endpoint_status'))]
@@ -872,10 +876,32 @@ def core_list_endpoints_command(client: Client, args: dict):
     filter_builder.add_field(ENDPOINT_FIELDS["cloud_provider"], FilterType.EQ, argToList(args.get('cloud_provider')))
     filter_builder.add_field(ENDPOINT_FIELDS["cloud_region"], FilterType.EQ, argToList(args.get('cloud_region')))
     filter_builder.add_field(ENDPOINT_FIELDS["agent_eol"], FilterType.EQ, supported_version)
+    filter_dict=filter_builder.to_dict()
+    
+    return filter_dict
+
+
+def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves a list of endpoints from the server, applies filters, maps the data, and returns
+    it as CommandResults for Cortex XSOAR.
+
+    Args:
+        client (Client): The integration client used to fetch data.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: Contains the formatted table, raw response, and outputs.
+    """
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) or MAX_GET_ENDPOINTS_LIMIT
+    page_from = page * limit
+    page_to = page * limit + limit
+    filter_dict = build_endpoint_filters(args)
     
     request_data = build_webapp_request_data(
         table_name=AGENTS_TABLE,
-        filter_dict=filter_builder.to_dict(),
+        filter_dict=filter_dict,
         limit=page_to,
         sort_field="AGENT_NAME",
         sort_order="ASC",
@@ -885,7 +911,6 @@ def core_list_endpoints_command(client: Client, args: dict):
     response = client.get_webapp_data(request_data)
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
-    demisto.debug(f"Raw endpoint data retrieved from API: {data}")
     data = map_endpoint_format(data)
     demisto.debug(f"Endpoint data after mapping and formatting: {data}")
     
