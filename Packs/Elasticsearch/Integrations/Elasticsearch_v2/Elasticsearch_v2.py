@@ -145,7 +145,7 @@ def timestamp_to_date(timestamp_string):
     return datetime.utcfromtimestamp(timestamp_number)
 
 
-def get_api_key_header_val(api_key):
+def get_api_key_header_val(api_key): # NOTE: Api key auth - generates the Authorization: header 
     """
     Check the type of the passed api_key and return the correct header value
     for the `API Key authentication
@@ -182,19 +182,25 @@ def elasticsearch_builder(proxies):
 
         connection_args["node_class"] = CustomHttpNode  # type: ignore[assignment]
 
-    if API_KEY_ID:
+    # TODO: change the condition to check the dropdown new list instead of checking the username and api key parameters.
+
+    if API_KEY_ID: # NOTE: Api key auth
         connection_args["api_key"] = API_KEY
 
-    elif USERNAME:
+    elif USERNAME:  # NOTE: Basic auth
         if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
             connection_args["basic_auth"] = (USERNAME, PASSWORD)
         else:  # Elasticsearch version v7 and below or OpenSearch (BC)
             connection_args["http_auth"] = (USERNAME, PASSWORD)
 
+    # TODO: add here condition for Bearer auth and use 'bearer_auth' key
+
     es = Elasticsearch(**connection_args)  # type: ignore[arg-type]
+
+    # NOTE: Api key auth - ensures api_key will be set correctly
     # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
     # In some versions of the ES library, the transport object does not have a get_session func
-    if API_KEY_ID and hasattr(es, "transport") and hasattr(es.transport, "get_connection"):
+    if API_KEY_ID and hasattr(es, "transport") and hasattr(es.transport, "get_connection"):     
         es.transport.get_connection().session.headers["authorization"] = get_api_key_header_val(  # type: ignore[attr-defined]
             API_KEY
         )
@@ -533,15 +539,19 @@ def test_timestamp_format(timestamp):
 
 def test_connectivity_auth(proxies):
     headers = {"Content-Type": "application/json"}
-    if API_KEY_ID:
-        headers["authorization"] = get_api_key_header_val(API_KEY)
+    if API_KEY_ID: # NOTE: Api key auth
+        headers["authorization"] = get_api_key_header_val(API_KEY) # NOTE: Api key auth
 
     try:
-        if USERNAME:
-            res = requests.get(SERVER, auth=(USERNAME, PASSWORD), verify=INSECURE, headers=headers)
+        # TODO: change the condition to check the dropdown new list instead of checking the username and api key parameters.
 
-        else:
+        if USERNAME: # NOTE: Basic auth
+            res = requests.get(SERVER, auth=(USERNAME, PASSWORD), verify=INSECURE, headers=headers) # NOTE: Basic auth (auth parameters implement the Authorization: Basic aGVsbG86aGVsbG8=)
+
+        else: # NOTE: Api key auth
             res = requests.get(SERVER, verify=INSECURE, headers=headers)
+
+        # TODO: add here condition for Bearer auth and use the same flow as Api key auth
 
         if res.status_code >= 400:
             try:
