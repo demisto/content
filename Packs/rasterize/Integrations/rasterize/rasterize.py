@@ -389,7 +389,17 @@ class PychromeEventHandler:
 
 def count_running_chromes(port) -> int:
     try:
-        processes = subprocess.check_output(["ps", "auxww"], stderr=subprocess.STDOUT, text=True).splitlines()
+        # read the processes list
+        processes = []
+        for pid in os.listdir("/proc"):
+            if pid.isdigit():
+                try:
+                    with open(f"/proc/{pid}/cmdline", "r") as f:
+                        cmd = f.read().replace("\x00", " ").strip()
+                        if cmd:
+                            processes.append(cmd)
+                except Exception:
+                    pass
 
         chrome_identifiers = ["chrom", "headless", f"--remote-debugging-port={port}"]
         chrome_renderer_identifiers = ["--type=renderer"]
@@ -402,10 +412,6 @@ def count_running_chromes(port) -> int:
 
         demisto.debug(f"Detected {len(chrome_processes)} Chrome processes running on port {port}")
         return len(chrome_processes)
-
-    except subprocess.CalledProcessError as e:
-        demisto.info(f"Error fetching process list: {e.output}")
-        return 0
     except Exception as e:
         demisto.info(f"Unexpected exception when fetching process list, error: {e}")
         return 0
