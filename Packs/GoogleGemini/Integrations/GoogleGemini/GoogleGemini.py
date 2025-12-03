@@ -5,7 +5,8 @@ This integration provides AI-powered analysis and chat capabilities for XSOAR us
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerUserPython import *  # noqa 
+
 
 """ IMPORTS """
 import json
