@@ -7,6 +7,7 @@ from CybleThreatIntel import (
     calculate_verdict,
     get_time_range,
     epoch_to_iso,
+    fmt_date,
     cyble_ioc_lookup_command,
     fetch_indicators_command,
     VerdictEnum,
@@ -175,3 +176,34 @@ def test_ioc_lookup_missing_argument(mocker):
     with pytest.raises(Exception) as e:
         cyble_ioc_lookup_command(client, {})
     assert "Missing required argument: ioc" in str(e.value)
+
+
+def test_client_init_empty(mocker):
+    params = {}
+    client = Client(params)
+    assert client.base_url == ""
+    assert client.access_token == ""
+    assert client.headers["Authorization"] == "Bearer "
+
+
+def test_client_http_post_failure(mocker):
+    client = Client({"base_url": "http://test.com", "access_token": {"password": "token"}})
+    mock_resp = mocker.Mock()
+    mock_resp.status_code = 400
+    mock_resp.text = "Bad request"
+    mock_resp.raise_for_status.side_effect = Exception("HTTP error")
+    mocker.patch("requests.post", return_value=mock_resp)
+
+    try:
+        client.http_post("/endpoint", {"key": "value"})
+    except Exception as e:
+        assert "HTTP error" in str(e)
+
+
+def test_epoch_to_iso_invalid():
+    assert epoch_to_iso("invalid") is None
+
+
+def test_fmt_date_none_and_invalid():
+    assert fmt_date(None) == "None"
+    assert "invalid" in fmt_date("invalid")
