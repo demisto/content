@@ -42,8 +42,10 @@ OFP_DETECTION_TYPE = "OFP Detection"
 IOM_FETCH_TYPE = "Indicator of Misconfiguration"
 IOA_FETCH_TYPE = "Indicator of Attack"
 NGSIEM_DETECTION_FETCH_TYPE = "NGSIEM Detection"
+NGSIEM_INCIDENT_FETCH_TYPE = "NGSIEM Incident (XDR Alert)"
+NGSIEM_AUTOMATED_LEADS_FETCH_TYPE = "NGSIEM Automated Lead"
+NGSIEM_CASES_FETCH_TYPE ="NGSIEM Case"
 THIRD_PARTY_DETECTION_FETCH_TYPE = "Third Party Detection"
-
 ENDPOINT_DETECTION = "detection"
 
 SUPPORTED_DETECTIONS_TYPES = [
@@ -65,7 +67,7 @@ SERVER = PARAMS["url"].removesuffix("/")
 # Should we use SSL
 USE_SSL = not PARAMS.get("insecure", False)
 
-# How many time before the first fetch to retrieve incidents
+# How much time before the first fetch to retrieve incidents
 FETCH_TIME = "now" if demisto.command() == "fetch-events" else PARAMS.get("fetch_time", "3 days")
 
 MAX_FETCH_SIZE = 10000
@@ -407,6 +409,7 @@ class LastRunIndex(IntEnum):
     IOA = 7
     THIRD_PARTY_DETECTIONS = 8
     NGSIEM_DETECTIONS = 9
+    NGSIEM_INCIDENTS = 10
 
 
 class IncidentType(Enum):
@@ -3387,6 +3390,9 @@ def fetch_items(command="fetch-incidents"):
     ioa_last_run: dict[str, Any] = {}
     third_party_detection_last_run: dict[str, Any] = {}
     ngsiem_detection_last_run: dict[str, Any] = {}
+    ngsiem_incident_last_run: dict[str, Any] = {}
+    ngsiem_automated_lead_last_run: dict[str, Any] = {}
+    ngsiem_case_last_run: dict[str, Any] = {}
 
     if is_fetch_events:
         fetch_incidents_or_detections = params.get("fetch_events_or_detections", "")
@@ -3488,6 +3494,22 @@ def fetch_items(command="fetch-incidents"):
         )
         items.extend(fetched_ofp_detections)
 
+    if NGSIEM_INCIDENT_FETCH_TYPE in fetch_incidents_or_detections:
+        demisto.debug("CrowdstrikeFalconMsg: Start fetch NGSIEM Incident Detection")
+        demisto.debug(f"CrowdStrikeFalconMsg: Current NGSIEM Incident last_run_object: {ngsiem_incident_last_run}")
+
+        fetched_ngsiem_incidents, ngsiem_incident_last_run = fetch_detections_by_product_type(
+            ngsiem_incident_last_run,
+            look_back=look_back,
+            fetch_query=params.get("ngsiem_incident_fetch_query", ""),
+            detections_type=NGSIEM_INCIDENT_FETCH_TYPE,
+            product_type="ngsiem",
+            detection_name_prefix=NGSIEM_INCIDENT_FETCH_TYPE,
+            start_time_key="created_timestamp",
+            is_fetch_events=False
+        )
+        items.extend(fetched_ngsiem_incidents)
+
     # Fetch Indicators of Misconfiguration (IOM) - supported for fetch-incidents command only.
     if not is_fetch_events and IOM_FETCH_TYPE in fetch_incidents_or_detections:
         demisto.debug("CrowdStrikeFalconMsg: Start fetch IOM")
@@ -3550,6 +3572,9 @@ def fetch_items(command="fetch-incidents"):
     )
     set_last_run_per_type(
         last_run, index=LastRunIndex.OFP_DETECTION, data=ofp_detection_last_run, is_fetch_events=is_fetch_events
+    )
+    set_last_run_per_type(
+        last_run, index=LastRunIndex.NGSIEM_INCIDENTS, data=ngsiem_incident_last_run, is_fetch_events=False
     )
 
     if not is_fetch_events:
