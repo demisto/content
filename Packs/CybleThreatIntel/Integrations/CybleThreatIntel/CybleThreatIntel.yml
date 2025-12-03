@@ -1,214 +1,182 @@
 commonfields:
   id: CybleThreatIntel
   version: -1
+
 name: CybleThreatIntel
 display: Cyble Threat Intel
 category: Data Enrichment & Threat Intelligence
 description: >
   Cyble Threat Intelligence integration for Vision Users.
   Provides IOC lookup and an IOC feed from the Cyble Vision API.
+
 configuration:
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
-  display: Traffic Light Protocol Color
-  name: tlp_color
-  options:
-  - RED
-  - AMBER
-  - GREEN
-  - WHITE
-  type: 15
-  required: false
-  deprecated: true
-  hidden: true
 
-- display: Base URL
-  name: base_url
-  type: 0
-  required: true
-  section: Connect
+  # --------------------------
+  # Feed Parameters (Cannot be hidden, cannot be deprecated)
+  # --------------------------
 
-- displaypassword: Access Token
-  name: access_token
-  required: true
-  hiddenusername: true
-  type: 9
-  section: Connect
+  - display: Traffic Light Protocol Color
+    name: tlp_color
+    type: 15
+    options:
+      - RED
+      - AMBER
+      - GREEN
+      - WHITE
+    required: false
+    section: Collect
 
-- display: First Fetch Time (hours)
-  name: first_fetch
-  type: 0
-  required: true
-  defaultvalue: 1
-  additionalinfo: "How many hours back to fetch IOCs on first run. Max 3 hours."
-  section: Collect
+  - display: Feed Fetch Interval
+    name: feedFetchInterval
+    type: 19
+    defaultvalue: '1440'
+    required: false
+    section: Collect
 
-- display: Maximum Indicators Per Fetch
-  name: max_fetch
-  type: 0
-  required: true
-  defaultvalue: '100'
-  additionalinfo: Maximum number of indicators to fetch per execution.
-  section: Collect
+  - display: Source Reliability
+    name: feedReliability
+    type: 15
+    display: Source Reliability
+    required: true
+    defaultvalue: A - Completely reliable
+    additionalinfo: Reliability of the source providing the intelligence data
+    options:
+      - A - Completely reliable
+      - B - Usually reliable
+      - C - Fairly reliable
+      - D - Not usually reliable
+      - E - Unreliable
+      - F - Reliability cannot be judged
+    section: Collect
 
+  - display: Indicator Reputation
+    name: feedReputation
+    type: 18
+    defaultvalue: None
+    options:
+      - None
+      - Good
+      - Suspicious
+      - Bad
+    required: false
+    additionalinfo: Indicators from this integration instance will be marked with this reputation
+    section: Collect
 
-- display: Feed Fetch Interval
-  name: feedFetchInterval
-  type: 19
-  defaultvalue: '1440'
-  required: false
-- display: Discovery Service
-  name: discovery_service
-  type: 0
-  required: false
-  deprecated: true
-  hidden: true
+  - display: Tags
+    name: feedTags
+    type: 0
+    required: false
+    additionalinfo: Supports CSV values.
+    section: Collect
 
-  additionalinfo: Collection name to fetch indicators from.
-- display: Username
-  name: credentials
-  type: 9
-  required: false
-  deprecated: true
-  hidden: true
+  - display: Feed Expiration Policy
+    name: feedExpirationPolicy
+    type: 17
+    options:
+      - never
+      - interval
+      - indicatorType
+      - suddenDeath
+    required: false
+    section: Collect
 
-- display: Trust any certificate (not secure)
-  name: insecure
-  defaultvalue: 'false'
-  type: 8
-  additionalinfo:
-  required: false
-  deprecated: true
-  hidden: true
+  - display: Feed Expiration Interval (days)
+    name: feedExpirationInterval
+    type: 1
+    required: false
+    section: Collect
 
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: 'false'
-  type: 8
-  required: false
-  deprecated: true
-  hidden: true
+  - display: Bypass exclusion list
+    name: feedBypassExclusionList
+    type: 8
+    required: false
+    section: Collect
 
-- display: First fetch time (by days)
-  name: initial_interval
-  defaultvalue: '1'
-  type: 0
-  required: false
-  additionalinfo: Time interval for first fetch (retroactive), by days only. Maximum of 7 days for retroactive value is allowed.
-  deprecated: true
-  hidden: true
+  # --------------------------
+  # Main Connect Params
+  # --------------------------
 
-- display: Indicator Reputation
-  name: feedReputation
-  type: 18
-  defaultvalue: None
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this reputation
-  required: false
-  deprecated: true
-  hidden: true
+  - display: Base URL
+    name: base_url
+    type: 0
+    required: false      # ← Not required for BC compliance
+    section: Connect
 
-- display: Source Reliability
-  name: feedReliability
-  defaultvalue: A - Completely reliable
-  type: 15
-  required: false
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  additionalinfo: Reliability of the source providing the intelligence data
-  deprecated: true
-  hidden: true
+  - displaypassword: Access Token
+    name: access_token
+    type: 9
+    hiddenusername: true
+    required: false      # ← Not required for BC compliance
+    section: Connect
 
-- display: Indicator Fetch Limit
-  name: limit
-  type: 0
-  additionalinfo: Provide value to limit the indicator to be fetched per iteration (Limit higher than 30 is not recommended)
-  required: false
-- display: Collection Name
-  name: collection
-  type: 0
-  required: false
-  deprecated: true
-  hidden: true
+  # --------------------------
+  # Fetch params
+  # --------------------------
+  - display: First Fetch Time (hours)
+    name: first_fetch
+    type: 0
+    defaultvalue: 1
+    required: true
+    additionalinfo: "How many hours back to fetch IOCs on first run. Max 3 hours."
+    section: Collect
 
-- name: feedExpirationPolicy
-  display: ''
-  type: 17
-  options:
-  - never
-  - interval
-  - indicatorType
-  - suddenDeath
-  required: false
-  deprecated: true
-  hidden: true
-
-- name: feedExpirationInterval
-  display: ''
-  type: 1
-  deprecated: true
-  hidden: true
-  required: false
-- name: feedBypassExclusionList
-  display: Bypass exclusion list
-  type: 8
-  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
-  required: false
-  deprecated: true
-  hidden: true
-
-- additionalinfo: Supports CSV values.
-  display: Tags
-  name: feedTags
-  type: 0
-  required: false
-  deprecated: true
-  hidden: true
+  - display: Maximum Indicators Per Fetch
+    name: max_fetch
+    type: 0
+    required: true
+    defaultvalue: '100'
+    additionalinfo: Maximum number of indicators to fetch per execution.
+    section: Collect
 
 script:
   type: python
   subtype: python3
-  script: '-'
+  script: "-"
   dockerimage: demisto/python3:3.12.12.5490952
-  feed: true         # ← REQUIRED for feed integrations
+  feed: true
   runonce: false
   ismappable: true
 
   commands:
-  - name: cyble-vision-ioc-lookup
-    description: Lookup a single IOC using the Cyble Vision API
-    arguments:
-      - name: ioc
-        required: true
-        description: IOC value
-    outputs:
-      - contextPath: CybleIntel.IOCLookup
-        description: IOC lookup response
-        type: String
 
-  - name: cyble-vision-fetch-taxii
-    deprecated: true
-    deprecated_reason: "This TAXII-based fetch command is no longer supported and replaced by API-based fetching."
-    description: Deprecated command. Do not use.
-    arguments: [ ]
-    outputs: [ ]
-  - name: cyble-vision-get-collection-names
-    deprecated: true
-    deprecated_reason: "This TAXII collection command is no longer supported."
-    description: Deprecated command. Do not use.
-    arguments: [ ]
-    outputs: [ ]
+    - name: cyble-vision-ioc-lookup
+      description: Lookup a single IOC using the Cyble Vision API.
+      arguments:
+        - name: ioc
+          required: true
+          description: IOC value
+      outputs:
+        - contextPath: CybleIntel.IOCLookup
+          description: IOC lookup response
+          type: String
+
+    # --------------------------
+    # Deprecated commands — must retain outputs for BC
+    # --------------------------
+    - name: cyble-vision-fetch-taxii
+      deprecated: true
+      deprecated_reason: "This TAXII-based fetch command is no longer supported and replaced by API-based fetching."
+      description: Deprecated command. Do not use.
+      arguments: []
+      outputs:
+        - contextPath: CybleIntel.Threat.details
+          description: Backward compatibility placeholder
+          type: String
+
+    - name: cyble-vision-get-collection-names
+      deprecated: true
+      deprecated_reason: "This TAXII collection command is no longer supported."
+      description: Deprecated command. Do not use.
+      arguments: []
+      outputs:
+        - contextPath: CybleIntel.collection.names
+          description: Backward compatibility placeholder
+          type: String
+
 fromversion: 6.2.0
+
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 
 sectionorder:
   - Connect
