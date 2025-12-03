@@ -135,8 +135,10 @@ Retrieve audit log events from SAP BTP manually. This command allows you to fetc
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from | Time to fetch events from. Supports natural language (e.g., "now", "3 days", "2 hours", "1 month") or ISO 8601 format (e.g., "2024-01-01T00:00:00Z"). Default is "now". | Optional |
-| max_fetch | Maximum number of events to retrieve. Default is 5000. | Optional |
+| from_time | Time to fetch events from. Supports natural language (e.g., "1 minute ago", "3 days", "2 hours", "1 month") or ISO 8601 format (e.g., "2024-01-01T00:00:00Z"). Default is "1 minute ago". | Optional |
+| end_time | Time to fetch events until. Supports natural language (e.g., "now", "1 hour ago") or ISO 8601 format (e.g., "2024-01-01T00:00:00Z"). If not specified, fetches until now. | Optional |
+| limit | Maximum number of events to retrieve. Default is 5000. | Optional |
+| should_push_events | Whether to push the collected events into XSIAM. Set to true to send events to XSIAM, false to only return them in the War Room. Default is true. | Optional |
 
 #### Context Output
 

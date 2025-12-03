@@ -1,7 +1,7 @@
 import json
 import os
 import time
-from datetime import datetime
+from datetime import datetime, UTC
 
 import pytest
 from CommonServerPython import *
@@ -131,9 +131,10 @@ def test_parse_date_or_use_current_success(date_string, expected_type):
 
 def test_parse_date_or_use_current_invalid_returns_current():
     """Tests parse_date_or_use_current returns current time for invalid date."""
-    before = datetime.now()
+
+    before = datetime.now(UTC)
     result = parse_date_or_use_current("invalid_date_string")
-    after = datetime.now()
+    after = datetime.now(UTC)
     assert before <= result <= after
 
 
@@ -186,7 +187,7 @@ def test_parse_integration_params_missing_required_fail(params, expected_error):
     [
         (
             {"url": SERVER_URL, "token_url": AUTH_SERVER_URL, "client_id": MOCK_CLIENT_ID, "auth_type": AuthType.MTLS.value},
-            "mTLS authentication selected but missing required fields: Certificate, Private Key",
+            "mTLS requires Certificate and Private Key",
         ),
         (
             {
@@ -196,11 +197,11 @@ def test_parse_integration_params_missing_required_fail(params, expected_error):
                 "auth_type": AuthType.MTLS.value,
                 "certificate": MOCK_CERTIFICATE,
             },
-            "mTLS authentication selected but missing required fields: Private Key",
+            "mTLS requires Certificate and Private Key",
         ),
         (
             {"url": SERVER_URL, "token_url": AUTH_SERVER_URL, "client_id": MOCK_CLIENT_ID, "auth_type": AuthType.NON_MTLS.value},
-            "Non-mTLS authentication selected but Client Secret is missing",
+            "Non-mTLS requires Client Secret",
         ),
         (
             {"url": SERVER_URL, "token_url": AUTH_SERVER_URL, "client_id": MOCK_CLIENT_ID, "auth_type": "InvalidAuth"},
@@ -376,14 +377,15 @@ def test_http_request_success(mocker, client_non_mtls):
     """Tests http_request executes successfully."""
     mocker.patch.object(client_non_mtls, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
 
-    # When return_full_response=False, _http_request returns response object with status_code
+    # http_request now returns JSON by default
     mock_response = mocker.Mock()
     mock_response.status_code = 200
+    mock_response.json.return_value = {"data": "success"}
     mocker.patch.object(client_non_mtls, "_http_request", return_value=mock_response)
 
     result = client_non_mtls.http_request("GET", "/test")
 
-    assert result == mock_response
+    assert result == {"data": "success"}
 
 
 def test_http_request_with_full_response(mocker, client_non_mtls):
@@ -400,6 +402,66 @@ def test_http_request_with_full_response(mocker, client_non_mtls):
 
     assert body == {"data": "success"}
     assert headers == {"Content-Type": "application/json"}
+
+
+def test_http_request_204_no_content_without_full_response(mocker, client_non_mtls):
+    """Tests http_request returns empty dict for 204 No Content without full response."""
+    mocker.patch.object(client_non_mtls, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+
+    mock_response = mocker.Mock()
+    mock_response.status_code = 204
+    mock_response.headers = {"Content-Type": "application/json"}
+
+    mocker.patch.object(client_non_mtls, "_http_request", return_value=mock_response)
+
+    result = client_non_mtls.http_request("DELETE", "/test")
+
+    assert result == {}
+
+
+def test_http_request_json_parse_failure(mocker, client_non_mtls):
+    """Tests http_request raises DemistoException when JSON parsing fails."""
+    mocker.patch.object(client_non_mtls, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_response.json.side_effect = ValueError("Invalid JSON")
+    mock_response.text = "Not a JSON response"
+
+    mocker.patch.object(client_non_mtls, "_http_request", return_value=mock_response)
+
+    with pytest.raises(DemistoException, match="API returned non-JSON response with status 200"):
+        client_non_mtls.http_request("GET", "/test")
+
+
+# ========================================
+# Tests: get_formatted_utc_time
+# ========================================
+
+
+@pytest.mark.parametrize(
+    "date_input,expected_format",
+    [
+        ("2024-01-01T00:00:00Z", True),
+        ("3 days ago", True),
+        (None, True),
+        ("", True),
+    ],
+)
+def test_get_formatted_utc_time(date_input, expected_format):
+    """Tests get_formatted_utc_time returns properly formatted UTC string."""
+    from SAPBTP import get_formatted_utc_time, Config
+
+    result = get_formatted_utc_time(date_input)
+
+    # Verify it's a string
+    assert isinstance(result, str)
+
+    # Verify it matches the expected format
+    if expected_format:
+        # Should be able to parse it back
+        parsed = datetime.strptime(result, Config.DATE_FORMAT)
+        assert isinstance(parsed, datetime)
 
 
 # ========================================
@@ -436,9 +498,9 @@ def test_get_audit_log_events_with_pagination_handle(mocker, client_non_mtls):
     assert next_handle is None
 
 
-def test_get_audit_log_events_response_with_value_key(mocker, client_non_mtls):
-    """Tests get_audit_log_events handles response with 'value' key."""
-    mock_response_body = {"value": [{"uuid": "event1"}]}
+def test_get_audit_log_events_response_with_results_key(mocker, client_non_mtls):
+    """Tests get_audit_log_events handles response with 'results' key."""
+    mock_response_body = {"results": [{"uuid": "event1"}]}
     mock_response_headers: dict[str, str] = {}
 
     mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
@@ -447,6 +509,46 @@ def test_get_audit_log_events_response_with_value_key(mocker, client_non_mtls):
 
     assert len(events) == 1
     assert events[0]["uuid"] == "event1"
+
+
+def test_get_audit_log_events_response_with_nested_results(mocker, client_non_mtls):
+    """Tests get_audit_log_events handles response with nested 'd.results' key."""
+    mock_response_body = {"d": {"results": [{"uuid": "event1"}, {"uuid": "event2"}]}}
+    mock_response_headers: dict[str, str] = {}
+
+    mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
+
+    events, _ = client_non_mtls.get_audit_log_events(created_after="2024-01-01T00:00:00Z", limit=100)
+
+    assert len(events) == 2
+    assert events[0]["uuid"] == "event1"
+    assert events[1]["uuid"] == "event2"
+
+
+def test_get_audit_log_events_single_event_with_message_uuid(mocker, client_non_mtls):
+    """Tests get_audit_log_events handles single event response with message_uuid."""
+    mock_response_body = {"message_uuid": "msg123", "uuid": "event1", "data": "test"}
+    mock_response_headers: dict[str, str] = {}
+
+    mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
+
+    events, _ = client_non_mtls.get_audit_log_events(created_after="2024-01-01T00:00:00Z", limit=100)
+
+    assert len(events) == 1
+    assert events[0]["message_uuid"] == "msg123"
+    assert events[0]["uuid"] == "event1"
+
+
+def test_get_audit_log_events_empty_response(mocker, client_non_mtls):
+    """Tests get_audit_log_events handles empty response gracefully."""
+    mock_response_body = {"results": []}
+    mock_response_headers: dict[str, str] = {}
+
+    mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
+
+    events, _ = client_non_mtls.get_audit_log_events(created_after="2024-01-01T00:00:00Z", limit=100)
+
+    assert len(events) == 0
 
 
 @pytest.mark.parametrize(
@@ -471,6 +573,22 @@ def test_extract_pagination_handle_case_insensitive(client_non_mtls):
     headers = {"paging": "handle=test123"}
     result = client_non_mtls._extract_pagination_handle(headers)
     assert result == "test123"
+
+
+def test_extract_pagination_handle_malformed_header(client_non_mtls):
+    """Tests _extract_pagination_handle handles malformed header gracefully."""
+    headers = {"Paging": "handle="}
+    result = client_non_mtls._extract_pagination_handle(headers)
+    # Should return empty string after split, which is stripped
+    assert result == ""
+
+
+def test_extract_pagination_handle_multiple_equals(client_non_mtls):
+    """Tests _extract_pagination_handle handles multiple equals signs."""
+    headers = {"Paging": "handle=abc=def=123"}
+    result = client_non_mtls._extract_pagination_handle(headers)
+    # Should return everything after first 'handle='
+    assert result == "abc=def=123"
 
 
 # ========================================
@@ -591,38 +709,61 @@ def test_test_module_other_error_raises(mocker, client_non_mtls):
 
 
 def test_get_events_command_success(mocker, client_non_mtls):
-    """Tests get_events_command returns correct CommandResults."""
+    """Tests get_events_command returns correct CommandResults when should_push_events=False."""
     mock_events = [{"uuid": "123", "user": "test@example.com", "time": "2024-01-01T00:00:00Z"}]
 
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
 
-    args = {"from": "3 days", "limit": "10"}
+    args = {"from_time": "3 days ago", "limit": "10", "should_push_events": "false"}
     result = get_events_command(client_non_mtls, args)
 
+    assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "SAPBTP.Event"
     assert result.outputs_key_field == "uuid"
     assert result.outputs == mock_events
     assert len(result.outputs) == 1
 
 
+def test_get_events_command_with_push_events(mocker, client_non_mtls):
+    """Tests get_events_command pushes events to XSIAM when should_push_events=True."""
+    mock_events = [{"uuid": "123", "user": "test@example.com", "time": "2024-01-01T00:00:00Z"}]
+
+    mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(SAPBTP, "send_events_to_xsiam")
+
+    args = {"from_time": "3 days ago", "limit": "10", "should_push_events": "true"}
+    result = get_events_command(client_non_mtls, args)
+
+    assert isinstance(result, str)
+    assert "1 events" in result
+    SAPBTP.send_events_to_xsiam.assert_called_once_with(mock_events, vendor=Config.VENDOR, product=Config.PRODUCT)
+
+
 def test_get_events_command_default_values(mocker, client_non_mtls):
     """Tests get_events_command uses default values."""
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[])
+    mocker.patch.object(SAPBTP, "send_events_to_xsiam")
 
+    # Default should_push_events is true, but with empty events it returns CommandResults
     result = get_events_command(client_non_mtls, {})
 
+    assert isinstance(result, CommandResults)
     assert result.outputs == []
-    SAPBTP.fetch_events_with_pagination.assert_called_once()
 
 
-def test_get_events_command_with_from_now(mocker, client_non_mtls):
-    """Tests get_events_command handles 'now' as from value."""
-    mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[])
+def test_get_events_command_with_end_time(mocker, client_non_mtls):
+    """Tests get_events_command handles end_time parameter."""
+    mock_fetch = mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[])
 
-    args = {"from": "now"}
+    args = {"from_time": "1 hour ago", "end_time": "now", "should_push_events": "false"}
     result = get_events_command(client_non_mtls, args)
 
+    assert isinstance(result, CommandResults)
     assert result.outputs == []
+    # Verify fetch_events_with_pagination was called with created_before parameter
+    call_args = mock_fetch.call_args
+    assert call_args[0][2] is not None  # max_events
+    assert call_args[0][3] is not None  # created_before
 
 
 # ========================================
@@ -643,7 +784,7 @@ def test_fetch_events_command_first_run(mocker, client_non_mtls):
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
     mocker.patch.object(SAPBTP, "send_events_to_xsiam")
 
-    fetch_events_command(client_non_mtls, {})
+    fetch_events_command(client_non_mtls)
 
     demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T01:00:00Z"})
     SAPBTP.send_events_to_xsiam.assert_called_once_with(mock_events, vendor=Config.VENDOR, product=Config.PRODUCT)
@@ -659,7 +800,7 @@ def test_fetch_events_command_with_last_run(mocker, client_non_mtls):
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
     mocker.patch.object(SAPBTP, "send_events_to_xsiam")
 
-    fetch_events_command(client_non_mtls, {})
+    fetch_events_command(client_non_mtls)
 
     demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-02T00:00:00Z"})
 
@@ -672,7 +813,7 @@ def test_fetch_events_command_no_events(mocker, client_non_mtls):
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[])
     mocker.patch.object(SAPBTP, "send_events_to_xsiam")
 
-    fetch_events_command(client_non_mtls, {})
+    fetch_events_command(client_non_mtls)
 
     demisto.setLastRun.assert_not_called()
     SAPBTP.send_events_to_xsiam.assert_not_called()
@@ -688,7 +829,7 @@ def test_fetch_events_command_events_without_time(mocker, client_non_mtls):
     mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
     mocker.patch.object(SAPBTP, "send_events_to_xsiam")
 
-    fetch_events_command(client_non_mtls, {})
+    fetch_events_command(client_non_mtls)
 
     # Should not update last_run if events have no time field
     demisto.setLastRun.assert_not_called()

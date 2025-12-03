@@ -67,12 +67,6 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- name: isFetch
-  display: Fetch incidents
-  type: 8
-  defaultvalue: 'false'
-  required: false
-  section: Collect
 - name: isFetchEvents
   display: Fetch events
   type: 8
@@ -82,10 +76,11 @@ configuration:
 - name: first_fetch
   display: First fetch time
   required: false
-  defaultvalue: '3 days'
   type: 0
   section: Collect
-  additionalinfo: Time to start fetching events from (e.g., "3 days", "1 week", "2024-01-01").
+  additionalinfo: >-
+      The time range to fetch events from on the first run (e.g., "3 days", "1 hour").
+      If not specified, defaults to 1 minute ago.
 - name: incidentType
   display: Incident type
   required: false
@@ -94,12 +89,11 @@ configuration:
 - name: max_fetch
   display: The maximum number of audit logs per fetch
   required: false
-  defaultvalue: '5000'
   type: 0
   section: Collect
   advanced: true
+  defaultvalue: "5000"
   additionalinfo: Maximum number of events to fetch per cycle (default 5000).
-
 description: Collect audit log events from SAP Business Technology Platform (BTP).
 display: SAP BTP (Business Technology Platform)
 name: SAPBTP
@@ -108,12 +102,22 @@ script:
   - name: sap-btp-get-events
     description: Retrieve audit log events from SAP BTP.
     arguments:
-    - name: from
-      description: Time to fetch events from (e.g., "now", "3 days", "2 hours", "1 month", "2024-01-01").
-      defaultValue: now
+    - name: from_time
+      description: >-
+        The start time to fetch events from.
+        Supports relative time (e.g., "3 days ago", "2 hours", "now")
+        or specific absolute dates (ISO 8601 format, e.g., "2024-12-01" or "2024-12-01T10:00:00Z").
+    - name: end_time
+      description: >-
+        The end time to fetch events until.
+        Supports relative time (e.g., "1 hour ago", "now")
+        or specific absolute dates (ISO 8601 format, e.g., "2024-12-01" or "2024-12-01T10:00:00Z").
     - name: limit
       description: Maximum number of events to retrieve.
-      defaultValue: '50'
+    - name: should_push_events
+      description: Indicates whether or not to push the collected events into XSIAM.
+      required: false
+      defaultValue: 'true'
     outputs:
     - contextPath: SAPBTP.Event.uuid
       description: Unique identifier of the event.
