@@ -125,13 +125,19 @@ def test_ioc_lookup_no_results(mock_lookup, mock_return):
 # -------------------------------------------------------------------
 @patch("CybleThreatIntel.Client.ioc_lookup")
 def test_ioc_lookup_success(mock_lookup):
-    mock_lookup.return_value = {"data": {"iocs": [{"ioc": "bad.com", "ioc_type": "domain", "first_seen": 1700000000}]}}
+    mock_lookup.return_value = {"data": {"iocs": [{"ioc": "example.com", "ioc_type": "domain", "first_seen": 1700000000}]}}
 
     c = Client({"base_url": "x", "access_token": {"password": "a"}})
-    result = cyble_ioc_lookup_command(c, {"ioc": "bad.com"})
+    result = cyble_ioc_lookup_command(c, {"ioc": "example.com"})
 
-    assert "bad.com" in result.readable_output
-    assert result.outputs["IOC"] == "bad.com"
+    # Check readable output contains the IOC
+    assert "example.com" in result.readable_output
+
+    # Check outputs dictionary
+    outputs = result.outputs.get("CybleIntel.IOCLookup")
+    assert outputs is not None
+    assert outputs["IOC"] == "example.com"
+    assert outputs["IOC Type"] == "domain"
 
 
 # -------------------------------------------------------------------
