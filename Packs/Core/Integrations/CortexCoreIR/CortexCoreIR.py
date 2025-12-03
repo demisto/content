@@ -769,32 +769,82 @@ def core_get_contributing_event_command(client: Client, args: Dict) -> CommandRe
         raw_response=alerts,
     )
 
-# def map_endpoint_format(endpoint_list):
-#     """
-#     Maps and prepares endpoints data for consistent output formatting.
+def map_endpoint_format(endpoint_list):
+    """
+    Maps and prepares endpoints data for consistent output formatting.
 
-#     Args:
-#         endpoint_list (list): Raw endpoint list from client response.
+    Args:
+        endpoint_list (list): Raw endpoint list from client response.
 
-#     Returns:
-#         dict: Formatted endpoint results with markdown table and outputs.
-#     """
-#     if not endpoint_list or not isinstance(endpoint_list, list):
-#         return {}
+    Returns:
+        dict: Formatted endpoint results with markdown table and outputs.
+    """
+    map_output_endpoint_fields = {
+        v: k for k, v in ENDPOINT_FIELDS.items()
+    }
 
-#     # Transform endpoint data for better readability
-#     formatted_endpoints = []
-#     for endpoint in data:
-#         formatted_endpoint = {
-            
-#         }
+    map_output_endpoint_type = {
+        v: k for k, v in ENDPOINT_TYPE.items()
+    }
+
+    map_output_endpoint_status = {
+        v: k for k, v in ENDPOINT_STATUS.items()
+    }
+
+    map_output_endpoint_platform = {
+        v: k for k, v in ENDPOINT_PLATFORM.items()
+    }
+
+    map_output_endpoint_operational_status = {
+        v: k for k, v in ENDPOINT_OPERATIONAL_STATUS.items()
+    }
+
+    map_output_assigned_prevention_policy = {
+        v: k for k, v in ASSIGNED_PREVENTION_POLICY.items()
+    }
+
+    # A dispatcher for easy lookup:
+    nested_mappers = {
+        "endpoint_type": map_output_endpoint_type,
+        "endpoint_status": map_output_endpoint_status,
+        "platform": map_output_endpoint_platform,
+        "operational_status": map_output_endpoint_operational_status,
+        "assigned_prevention_policy": map_output_assigned_prevention_policy,
+    }
+    mapped_list = []
+
+    for outputs in endpoint_list:
+        mapped_item = {}
+
+        for raw_key, raw_value in outputs.items():
+
+            # Step 1: map backend key → friendly key
+            if raw_key not in map_output_endpoint_fields:
+                continue
+
+            friendly_key = map_output_endpoint_fields[raw_key]
+
+            # Step 2: map nested values (policy ID, status, etc.)
+            if friendly_key in nested_mappers:
+                mapper = nested_mappers[friendly_key]
+                friendly_value = mapper.get(raw_value, raw_value)
+            elif friendly_key == "agent_eol": # agent_eol = not supported_version
+                friendly_value = not raw_value
+            else:
+                friendly_value = raw_value
+
+            mapped_item[friendly_key] = friendly_value
+
+        mapped_list.append(mapped_item)
+
+    return mapped_list
         
 
 def core_list_endpoints_command(client: Client, args: dict):
     page = arg_to_number(args.get("page")) or 0
     limit = arg_to_number(args.get("limit")) or MAX_GET_ENDPOINTS_LIMIT
-    page_from = page * MAX_GET_ENDPOINTS_LIMIT
-    page_to = page * MAX_GET_ENDPOINTS_LIMIT + limit
+    page_from = page * limit
+    page_to = page * limit + limit
     
     operational_status = [ENDPOINT_OPERATIONAL_STATUS[operational_status] for operational_status in argToList(args.get('operational_status'))]
     endpoint_type = [ENDPOINT_TYPE[endpoint_type] for endpoint_type in argToList(args.get('endpoint_type'))]
@@ -814,7 +864,7 @@ def core_list_endpoints_command(client: Client, args: dict):
     filter_builder.add_field(ENDPOINT_FIELDS["operating_system"], FilterType.CONTAINS, argToList(args.get('operating_system')))
     filter_builder.add_field(ENDPOINT_FIELDS["agent_version"], FilterType.EQ, argToList(args.get('agent_version')))
     filter_builder.add_field(ENDPOINT_FIELDS["os_version"], FilterType.EQ, argToList(args.get('os_version')))
-    filter_builder.add_field(ENDPOINT_FIELDS["ip_address"], FilterType.EQ, argToList(args.get('ip_address')))
+    filter_builder.add_field(ENDPOINT_FIELDS["ip_address"], FilterType.ADVANCED_IP_MATCH_EXACT, argToList(args.get('ip_address')))
     filter_builder.add_field(ENDPOINT_FIELDS["domain"], FilterType.EQ, argToList(args.get('domain')))
     filter_builder.add_field(ENDPOINT_FIELDS["group_name"], FilterType.EQ, argToList(args.get('group_name')))
     filter_builder.add_field(ENDPOINT_FIELDS["tags"], FilterType.EQ, argToList(args.get('tags')))
@@ -836,13 +886,13 @@ def core_list_endpoints_command(client: Client, args: dict):
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
     demisto.debug(f"Raw endpoint data retrieved from API: {data}")
-    # data = map_endpoint_format(data)
-    # demisto.debug(f"Endpoint data after mapping and formatting: {data}")
+    data = map_endpoint_format(data)
+    demisto.debug(f"Endpoint data after mapping and formatting: {data}")
     
     return CommandResults(
         readable_output=tableToMarkdown("Endpoints", data, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Endpoint",
-        outputs_key_field="AGENT_ID",
+        outputs_key_field="endpoint_id",
         outputs=data,
         raw_response=data,
     )

@@ -198,6 +198,7 @@ class FilterBuilder:
         JSON_WILDCARD = ("JSON_WILDCARD", "OR")
         IS_EMPTY = ("IS_EMPTY", "OR")
         NIS_EMPTY = ("NIS_EMPTY", "AND")
+        ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
 
     AND = "AND"
     OR = "OR"

@@ -296,7 +296,7 @@ script:
       name: public_ip_list
     - description: |-
         The group name to which the agent belongs.
-        Example: group_name1,group_name2.
+        Example: group1,group_name2.
       isArray: true
       name: group_name
     - description: 'The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". '
@@ -4629,55 +4629,55 @@ script:
     name: core-list-endpoints
     description: Retrieves endpoints based on the provided filters.
     outputs:
-    - contextPath: Core.Endpoint.Name
+    - contextPath: Core.Endpoint.endpoint_name
       description: The endpoint name.
       type: String
-    - contextPath: Core.Endpoint.Type
+    - contextPath: Core.Endpoint.endpoint_type
       description: The endpoint type.
       type: String
-    - contextPath: Core.Endpoint.Status
+    - contextPath: Core.Endpoint.endpoint_status
       description: The endpoint status.
       type: String
-    - contextPath: Core.Endpoint.Platform
+    - contextPath: Core.Endpoint.platform
       description: The endpoint platform.
       type: String
-    - contextPath: Core.Endpoint.OperatingSystem
+    - contextPath: Core.Endpoint.operating_system
       description: The operating system of the endpoint.
       type: String
-    - contextPath: Core.Endpoint.AgentVersion
+    - contextPath: Core.Endpoint.agent_version
       description: The agent version installed on the endpoint.
       type: String
-    - contextPath: Core.Endpoint.AgentEOL
+    - contextPath: Core.Endpoint.agent_eol
       description: Is agent EOL.
       type: String
-    - contextPath: Core.Endpoint.OSVersion
+    - contextPath: Core.Endpoint.os_version
       description: The operating system version.
       type: String
-    - contextPath: Core.Endpoint.IPAddress
+    - contextPath: Core.Endpoint.ip_address
       description: The endpoint IP address.
       type: String
-    - contextPath: Core.Endpoint.Domain
+    - contextPath: Core.Endpoint.domain
       description: The domain of the endpoint.
       type: String
-    - contextPath: Core.Endpoint.AssignedPreventionPolicy
+    - contextPath: Core.Endpoint.assigned_prevention_policy
       description: The assigned prevention policy.
       type: String
-    - contextPath: Core.Endpoint.GroupNames
+    - contextPath: Core.Endpoint.group_name
       description: A list of group names the endpoint belongs to.
       type: List
-    - contextPath: Core.Endpoint.Tags
+    - contextPath: Core.Endpoint.tags
       description: A list of tags assigned to the endpoint.
       type: List
-    - contextPath: Core.Endpoint.ID
+    - contextPath: Core.Endpoint.endpoint_id
       description: The unique endpoint ID.
       type: String
-    - contextPath: Core.Endpoint.OperationalStatus
+    - contextPath: Core.Endpoint.operational_status
       description: The operational status of the endpoint.
       type: String
-    - contextPath: Core.Endpoint.CloudProvider
+    - contextPath: Core.Endpoint.cloud_provider
       description: The cloud provider associated with the endpoint.
       type: String
-    - contextPath: Core.Endpoint.CloudRegion
+    - contextPath: Core.Endpoint.cloud_region
       description: The cloud region of the endpoint.
       type: String
   runonce: false
