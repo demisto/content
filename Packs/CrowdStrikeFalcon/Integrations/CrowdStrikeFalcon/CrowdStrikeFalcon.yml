@@ -326,6 +326,17 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+- additionalinfo: The fetch interval for assets and vulnerabilities. It is recommended to set it to 1 hour.
+  defaultvalue: 60
+  display: Assets Fetch Interval
+  name: assetsFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - xsoar
+  - xpanse
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
@@ -5151,6 +5162,7 @@ script:
   isfetch:marketplacev2: false
   isfetch:platform: false
   isfetchevents: true
+  isfetchassets: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true

@@ -31,6 +31,7 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Close Mirrored CrowdStrike Falcon Incident or Detection | Supported in Cortex XSOAR only. When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
 | Reopen Statuses | Supported in Cortex XSOAR only. CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
 | Incidents Fetch Interval | Supported in Cortex XSOAR only. | False |
+| Assets Fetch Interval | The fetch interval for assets and vulnerabilities. It is recommended to set it to 1 hour. | False |
 
 ### Required API client scope
 
@@ -54,6 +55,7 @@ In order to use the CrowdStrike Falcon integration, the API client must have the
 - Identity Protection Detections - Read and Write
 - Identity Protection Timeline - Read
 - Identity Protection Assessment - Read
+- Falcon Container Image - Read
 
 ## Incident Mirroring (Cortex XSOAR Only)
 
@@ -6484,3 +6486,11 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 
   - Notes:
     - Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: "Endpoint Detection" and "OFP Detection".
+    - For CNAPP Alerts, you will need one of the following subscriptions:
+      - Falcon Cloud Security with Containers CNAPP
+      - Falcon Cloud Security CNAPP
+      - Falcon Cloud Security with Containers Runtime Protection
+      - Falcon for Managed Containers Runtime Protection
+      - Falcon Cloud Security Proactive
+      - Falcon Cloud Security with Containers
+      - Falcon for Managed Containers
