@@ -555,13 +555,12 @@ class Client:
             ),
             ClientSession(read_stream, write_stream) as session,  # pylint: disable=E0601
         ):
+            # Initialize the connection
             await session.initialize()
             yield session
 
     async def test_connection(self, auth_test: bool = False):
-        async with self._get_session() as session:
-            # Initialize the connection
-            await session.initialize()
+        async with self._get_session():
             if auth_test:
                 return CommandResults(readable_output="✅ Authentication successful.")
             else:
@@ -569,7 +568,6 @@ class Client:
 
     async def list_tools(self):
         async with self._get_session() as session:
-            await session.initialize()
             tools = await session.list_tools()
 
         tool_names = [tool.name for tool in tools.tools]
@@ -590,7 +588,6 @@ class Client:
             raise DemistoException(f"Invalid JSON provided for arguments: {arguments}")
 
         async with self._get_session() as session:
-            await session.initialize()
             result = await session.call_tool(tool_name, parsed_arguments)
 
         result_dump = result.model_dump(mode="json")
