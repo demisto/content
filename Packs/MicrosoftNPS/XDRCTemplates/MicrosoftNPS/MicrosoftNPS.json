@@ -3,6 +3,7 @@
     "profile_type": "STANDARD",
     "name": "MicrosoftNPS",
     "content_global_id": "MicrosoftNPS",
+    "id": "MicrosoftNPS",
     "from_xdr_version": "3.5.0",
     "yaml_template": ""
 }
