@@ -1009,6 +1009,8 @@ script:
       - DELIVERED
       - RECEIVED
       required: true
+    - description: The email address of the mailbox to search. Required when context is DELIVERED.
+      name: mailbox
     - auto: PREDEFINED
       defaultValue: PLAIN
       description: The message type to return. (Only relevant for part argument = message or all).
@@ -1981,7 +1983,8 @@ script:
       - subject
       - sender
       - recipient
-      - reason_code
+      - reasonCode
+      - senderIP
     - name: page_size
       description: Number of results per page to display.
       defaultValue: ""
@@ -3414,7 +3417,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.5490952
 tests:
 - Mimecast test
 - Mimecast Test api 2.0

@@ -883,3 +883,121 @@ def test_calculate_domain_dbot_score(status, securerank, risk_score, expected_re
     """
     result = module.calculate_domain_dbot_score(status=status, secure_rank=securerank, risk_score=risk_score)
     assert result == expected_result
+
+
+def test_get_request_error_message_no_response():
+    """
+    Scenario: Error has no response object.
+    Given:
+     - Exception without response object.
+    When:
+     - get_request_error_message is called.
+    Then:
+     - Should return string representation of the error.
+    """
+
+    class MockError:
+        def __init__(self):
+            self.res = None
+
+        def __str__(self):
+            return "Test error"
+
+    err = MockError()
+    result = module.get_request_error_message(err)
+
+    assert result == "Test error"
+
+
+def test_get_request_error_message_valid_json():
+    """
+    Scenario: Error response contains valid JSON with error message.
+    Given:
+     - Exception with valid JSON response containing error fields.
+    When:
+     - get_request_error_message is called.
+    Then:
+     - Should return the error message from JSON.
+    """
+
+    class MockResponse:
+        def __init__(self):
+            self.status_code = 401
+
+        def json(self):
+            return {"errorMessage": "Invalid API key"}
+
+    class MockError:
+        def __init__(self):
+            self.res = MockResponse()
+
+        def __str__(self):
+            return "Test error"
+
+    err = MockError()
+    result = module.get_request_error_message(err)
+
+    assert result == "Invalid API key"
+
+
+def test_get_request_error_message_json_decode_error():
+    """
+    Scenario: Response has json method but fails to parse (JSONDecodeError).
+    Given:
+     - Exception with response that has json method but raises JSONDecodeError.
+    When:
+     - get_request_error_message is called.
+    Then:
+     - Should fall back to text response.
+    """
+
+    class MockResponse:
+        def __init__(self):
+            self.status_code = 500
+            self.text = "Internal Server Error"
+            self.reason = "Internal Server Error"
+
+        def json(self):
+            raise json.JSONDecodeError("Expecting value", "", 0)
+
+    class MockError:
+        def __init__(self):
+            self.res = MockResponse()
+
+        def __str__(self):
+            return "Test error"
+
+    err = MockError()
+    result = module.get_request_error_message(err)
+
+    assert result == "HTTP 500: Internal Server Error"
+
+
+def test_get_request_error_message_text_response():
+    """
+    Scenario: Error response has text but no json method.
+    Given:
+     - Exception with text response but no json method.
+    When:
+     - get_request_error_message is called.
+    Then:
+     - Should return the text response.
+    """
+
+    class MockResponse:
+        def __init__(self):
+            self.status_code = 503
+            self.text = "Service Unavailable"
+            self.reason = "Service Unavailable"
+
+    class MockError:
+        def __init__(self):
+            self.res = MockResponse()
+
+        def __str__(self):
+            return "Test error"
+
+    err = MockError()
+    result = module.get_request_error_message(err)
+
+    assert result == "HTTP 503: Service Unavailable"
