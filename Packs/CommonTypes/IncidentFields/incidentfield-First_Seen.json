@@ -13,8 +13,7 @@
         "Symantec DLP Network Incident",
 		"Prisma Cloud - VM Alert Prioritization",
         "Exabeam Notable User",
-        "CrowdStrike Falcon OFP Detection",
-        "CrowdStrike Falcon CNAPP Alert"
+        "CrowdStrike Falcon OFP Detection"
     ],
     "caseInsensitive": true,
     "cliName": "firstseen",

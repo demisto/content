@@ -1575,33 +1575,7 @@
                     "simple": "in_mirror_error"
                 }
             }
-        },
-		"CrowdStrike Falcon CNAPP Alert": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Alert Name": {
-					"simple": "detection_event_simple_name"
-				},
-				"Containers impacted count": {
-					"simple": "containers_impacted_count"
-				},
-				"Containers impacted ids": {
-					"simple": "containers_impacted_count"
-				},
-				"Description": {
-					"simple": "detection_description"
-				},
-				"First Seen": {
-					"simple": "first_seen_timestamp"
-				},
-				"Last Seen": {
-					"simple": "last_seen_timestamp"
-				},
-				"Threat Name": {
-					"simple": "detection_name"
-				}
-			}
-		}
+        }
     },
     "name": "CrowdStrike Falcon Mapper",
     "type": "mapping-incoming",
