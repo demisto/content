@@ -2263,28 +2263,28 @@ def incident_update_command(client: Client, args: Dict[str, Any]) -> CommandResu
     validate_related_arguments_provided(assignee_login_id=assignee_login_id, assignee=assignee)
     validate_related_arguments_provided(status=status, status_reason=status_reason, resolution=resolution)
 
-    client.update_incident_request(
-        format_ticket_request_id(incident_request_id),
-        first_name,
-        last_name,
-        summary,
-        urgency=urgency,
-        impact=impact,
-        status=status,
-        service_type=service_type,
-        reported_source=reported_source,
-        details=details,
-        company=company,
-        assigned_support_organization=assigned_support_organization,
-        assigned_support_company=assigned_support_company,
-        assigned_support_group_name=assigned_support_group_name,
-        assignee=assignee,
-        assignee_login_id=assignee_login_id,
-        site_group=site_group,
-        site=site,
-        region=region,
-        status_reason=status_reason,
-        resolution=resolution,
+    client.update_incident_request(  # type: ignore[arg-type,call-arg]
+        format_ticket_request_id(incident_request_id),  # type: ignore[arg-type]
+        first_name,  # type: ignore[arg-type]
+        last_name,  # type: ignore[arg-type]
+        summary,  # type: ignore[arg-type]
+        urgency=urgency,  # type: ignore[arg-type]
+        impact=impact,  # type: ignore[arg-type]
+        status=status,  # type: ignore[arg-type]
+        service_type=service_type,  # type: ignore[arg-type]
+        reported_source=reported_source,  # type: ignore[arg-type]
+        details=details,  # type: ignore[arg-type]
+        company=company,  # type: ignore[arg-type]
+        assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
+        assigned_support_company=assigned_support_company,  # type: ignore[arg-type]
+        assigned_support_group_name=assigned_support_group_name,  # type: ignore[arg-type]
+        assignee=assignee,  # type: ignore[arg-type]
+        assignee_login_id=assignee_login_id,  # type: ignore[arg-type]
+        site_group=site_group,  # type: ignore[arg-type]
+        site=site,  # type: ignore[arg-type]
+        region=region,  # type: ignore[arg-type]
+        status_reason=status_reason,  # type: ignore[arg-type]
+        resolution=resolution,  # type: ignore[arg-type]
         **additional_fields,
     )
 
@@ -4243,6 +4243,7 @@ def main() -> None:
                 ticket_custom_query,  # type: ignore[arg-type]
                 mirror_direction,  # type: ignore[arg-type]
             )
+
             demisto.setLastRun(last_run)
             demisto.incidents(incidents)
         elif command == "get-remote-data":
