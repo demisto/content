@@ -108,11 +108,11 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
     res_modify_never_expire, hr_modify_never_expire = run_command("ad-modify-password-never-expire", args_modify_never_expire_command)
     demisto.debug(f"DELETE-ExpirePassword: AD {res_modify_never_expire=} {hr_modify_never_expire=}")
 
-    def is_modify_never_expired_failed(res_modify_never_expire_arg):
+    def is_modify_never_expired_succeed(res_modify_never_expire_arg):
         return res_modify_never_expire_arg.get("Contents") == f'AD account {username} has cleared "password never expire" attribute. Value is set to False'
 
     # Check if clearing the "never expire" flag failed first
-    if any(is_modify_never_expired_failed(res) for res in res_modify_never_expire):
+    if not any(is_modify_never_expired_succeed(res) for res in res_modify_never_expire):
         return [
             ExpiredPasswordResult(
                 Result="Failed",
