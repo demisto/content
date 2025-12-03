@@ -93,4 +93,5 @@ def test_prevent_duplication_uses_mirror_id_as_fallback(mocker):
     mocker.patch.object(demisto, "executeCommand", side_effect=_exec)
     result = prevent_duplication(incident)
     assert result is True
-    assert captured_queries and captured_queries[0] == 'gibdrpid:"mirror-789"'
+    assert captured_queries
+    assert captured_queries[0] == 'gibdrpid:"mirror-789"'

@@ -293,9 +293,7 @@ class Client(BaseClient):
                     image_data_and_mime_type = self.get_file(file_sha=image)
                     if image_data_and_mime_type is not None:
                         image_data, mime_type = image_data_and_mime_type
-                        demisto.debug(
-                            f"Client.get_formatted_violation_by_id: image mime_type={mime_type}"
-                        )
+                        demisto.debug(f"Client.get_formatted_violation_by_id: image mime_type={mime_type}")
                         updated_images.append(
                             {
                                 "file_sha": image,
