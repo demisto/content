@@ -130,14 +130,12 @@ def test_ioc_lookup_success(mock_lookup):
     c = Client({"base_url": "x", "access_token": {"password": "a"}})
     result = cyble_ioc_lookup_command(c, {"ioc": "example.com"})
 
-    # Check readable output contains the IOC
+    # Readable output must contain the IOC
     assert "example.com" in result.readable_output
 
-    # Check outputs dictionary
-    outputs = result.outputs.get("CybleIntel.IOCLookup")
-    assert outputs is not None
-    assert outputs["IOC"] == "example.com"
-    assert outputs["IOC Type"] == "domain"
+    # CommandResults.outputs is the table itself
+    assert result.outputs["IOC"] == "example.com"
+    assert result.outputs["IOC Type"] == "domain"
 
 
 # -------------------------------------------------------------------
