@@ -45,7 +45,9 @@ configuration:
   type: 8
   required: false
   section: Connect
-  defaultvalue: 'true'
+  defaultvalue: 'false'
+  hidden:
+  - xsoar
 description: Vulnerability management solution to help reduce threat exposure.
 display: Rapid7 InsightVM
 name: Rapid7 Nexpose

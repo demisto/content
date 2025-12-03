@@ -6788,7 +6788,7 @@ async def generate_report(client: InsightVMClient, report_id: str) -> str:
     return instance_id
 
 
-async def check_status_of_report(client: InsightVMClient, report_id: str, instance_id: str) -> str:
+async def check_status_of_report(client: InsightVMClient, report_id: str, instance_id: str, event_type: str) -> str:
     """Checks the status of a report instance with non-blocking waits."""
     while True:
         endpoint = f"/api/3/reports/{report_id}/history/{instance_id}"
@@ -6800,17 +6800,17 @@ async def check_status_of_report(client: InsightVMClient, report_id: str, instan
         await response.release()
         status = status_data.get("status", "unknown")
 
-        demisto.debug(f"Current report status: {status} for {report_id=} and {instance_id=}")
+        demisto.debug(f"Current {event_type} report status: {status} for {report_id=} and {instance_id=}")
 
         if status == "complete":
             return instance_id
 
         if status in ["failed", "aborted"]:
-            demisto.debug(f"Report status is '{status}'. Re-triggering report generation")
+            demisto.debug(f"Report {instance_id} status for {event_type} is '{status}'. Re-triggering report generation")
             instance_id = await generate_report(client, report_id)
 
         if status in ["generated", "running", "unknown"]:
-            demisto.debug("Report still processing/unknown. Waiting 120 seconds")
+            demisto.debug(f"Report {instance_id} for {event_type} still processing/unknown. Waiting 120 seconds")
 
         await asyncio.sleep(120)
 
@@ -6869,12 +6869,12 @@ async def stream_and_parse_report(
     instance_id: str,
     event_integration_context: dict,
     event_type: str,
-    batch_size: int = 10,
+    batch_size: int = 1000,
 ):
     # --- Checkpoint Setup ---
     current_line_count = 0
     # Retrieve checkpoints:
-    snapshot_id = event_integration_context.get("snapshot_id", str(round(time.time() * 1000)))
+    snapshot_id = event_integration_context.get("snapshot_id") or str(round(time.time() * 1000))
     last_sent_line_raw = event_integration_context.get("last_sent_line", 0)
     total_records_ingested = event_integration_context.get("total_records_ingested", 0)
 
@@ -6894,14 +6894,14 @@ async def stream_and_parse_report(
     # Track data records processed in the current run (resets to 0 on crash/restart)
     current_run_data_records = 0
 
-    demisto.debug("--- Starting Data Stream (Final Count Calculated On-The-Fly) ---")
+    demisto.debug(f"--- Starting Data Stream for {event_type} report instance {instance_id} ---")
 
     try:
         # 1. INITIAL LINE READ: Get the very first line of the stream
         try:
             line_to_process = await anext(stream_iterator)
         except StopAsyncIteration:
-            demisto.debug("Report stream was empty.")
+            demisto.debug(F"Report {instance_id} stream was empty.")
             return  # Exit if the report is empty
 
         while line_to_process is not None:
@@ -6964,7 +6964,7 @@ async def stream_and_parse_report(
                 if is_last_batch:
                     # If this is the last batch, the indicator MUST be the final total record count.
                     lines_to_send_indicator = new_total_records
-                    demisto.debug(f"DEBUG: End of report reached. Sending Final Report Total: {lines_to_send_indicator}")  # noqa: E501
+                    demisto.debug(f"DEBUG: End of {event_type} report number {instance_id} reached. Sending Final Report Total: {lines_to_send_indicator}")  # noqa: E501
                 else:
                     # Otherwise, send the placeholder (1) to indicate it's a middle batch.
                     lines_to_send_indicator = 1
@@ -6995,14 +6995,14 @@ async def stream_and_parse_report(
                 current_run_data_records = 0  # Reset count for the new batch
                 current_batch = []
 
-                demisto.debug(f"Batch task created. Continuing stream... (Current line: {current_line_count})")
+                demisto.debug(f"Batch task created. Continuing stream. (Current line: {current_line_count})")
 
             # Move processing to the next line:
             line_to_process = next_line
 
         # 5. WAIT FOR PENDING TASKS
         if pending_tasks:
-            demisto.debug(f"\nWaiting for {len(pending_tasks)} final submission task(s) to finish...")
+            demisto.debug(f"\nWaiting for {len(pending_tasks)} final submission task(s) to finish.")
             results = await asyncio.gather(*pending_tasks, return_exceptions=True)
 
             for res in results:
@@ -7017,22 +7017,22 @@ async def stream_and_parse_report(
 async def delete_report_instance(client: InsightVMClient, report_id: str, instance_id: str):
     """Deletes a specific report instance (a single run)."""
     endpoint = f"/api/3/reports/{report_id}/history/{instance_id}"
-    demisto.debug(f"Deleting report instance ID: {instance_id}...")
+    demisto.debug(f"Deleting report instance ID: {instance_id}.")
     try:
         await client.http_request("DELETE", endpoint)
-        demisto.debug("Report instance deleted successfully.")
+        demisto.debug(f"Report instance {instance_id} deleted successfully.")
     except Exception as e:
         # Expected if resource is already gone (e.g., Status 404)
-        demisto.debug(f"Warning: Could not guarantee deletion of report instance. {e}")
+        demisto.debug(f"Warning: Could not guarantee deletion of report {instance_id} instance. {e}")
 
 
 async def delete_report_configuration(client: InsightVMClient, report_id: str):
     """Deletes the entire report configuration."""
     endpoint = f"/api/3/reports/{report_id}"
-    demisto.debug(f"Deleting report configuration ID: {report_id}...")
+    demisto.debug(f"Deleting report configuration ID: {report_id}.")
     try:
         await client.http_request("DELETE", endpoint)
-        demisto.debug("Report configuration deleted successfully.")
+        demisto.debug(f"Report {report_id} configuration deleted successfully.")
     except Exception as e:
         # Expected if resource is already gone (e.g., Status 404)
         demisto.debug(f"Warning: Could not guarantee deletion of report configuration. {e}")
@@ -7501,7 +7501,7 @@ def send_events_to_xsiam_rapid7(
     )
 
 
-async def run_full_collector_workflow(client: InsightVMClient, event_type: str, batch_size: int = 10):
+async def run_full_collector_workflow(client: InsightVMClient, event_type: str, batch_size: int = 1000):
     """
     Orchestrates the full report lifecycle: State Check, Create/Generate, Stream, Cleanup.
 
@@ -7524,7 +7524,7 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
             if report_id and instance_id:
                 demisto.debug(f"State found in context. Resuming check for Report ID: {report_id}, Instance ID: {instance_id}")
                 # If IDs exist, go straight to checking the status of the ongoing report
-                instance_id = await check_status_of_report(client, report_id, instance_id)
+                instance_id = await check_status_of_report(client, report_id, instance_id, event_type)
 
             else:
                 demisto.debug(f"No state found for {event_type}. Starting new report configuration and generation.")
@@ -7539,7 +7539,7 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
                 update_state_checkpoint(event_type, {"instance_id": instance_id})
 
                 # 3. CHECK STATUS (Will wait asynchronously until finished or retry if failed)
-                instance_id = await check_status_of_report(client, report_id, instance_id)
+                instance_id = await check_status_of_report(client, report_id, instance_id, event_type)
 
             # 4. STREAM DATA AND SEND EVENTS
             demisto.debug("\n--- Starting Data Streaming Phase ---")
@@ -7581,7 +7581,7 @@ async def run_all_collectors(
     Runs the Asset and Vulnerability report collector workflows concurrently,
     using the provided, initialized InsightVMClient.
     """
-    demisto.debug("Starting concurrent execution of Asset and Vulnerability collectors...")
+    demisto.debug("Starting concurrent execution of Asset and Vulnerability collectors")
 
     # Define the two tasks (coroutines) using the passed client
 
@@ -7631,7 +7631,7 @@ async def fetch_assets_long_running_command(params: dict, token: str):
                 token=token,
                 verify=not params.get("unsecure"),
             ) as client:
-                await run_all_collectors(client, batch_size=20)
+                await run_all_collectors(client, batch_size=1000)
             demisto.debug("finished running all collectors")
 
         except Exception as e:
