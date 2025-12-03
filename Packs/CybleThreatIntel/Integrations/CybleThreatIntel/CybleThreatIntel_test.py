@@ -207,3 +207,13 @@ def test_epoch_to_iso_invalid():
 def test_fmt_date_none_and_invalid():
     assert fmt_date(None) == "None"
     assert "invalid" in fmt_date("invalid")
+
+def test_client_init_edge_case(mocker):
+    # edge case: empty access_token dict and trailing slash in URL
+    client = Client({"base_url": "https://api.test.com/", "access_token": {"password": ""}})
+    assert client.base_url == "https://api.test.com"
+    assert client.access_token == ""
+
+def test_epoch_to_iso_invalid_timestamp():
+    # invalid timestamp should return None
+    assert epoch_to_iso("not_a_timestamp") is None
