@@ -653,8 +653,6 @@ script:
       - LOW
     - description: Email address of the user to assign to the incident.
       name: assigned_user_mail
-    - description: Full name of the user assigned to the incident. To supply a new value in this field, you must also provide a value for the 'assigned_user_mail' argument.
-      name: assigned_user_pretty_name
     - auto: PREDEFINED
       description: 'Status of the incident.'
       name: status

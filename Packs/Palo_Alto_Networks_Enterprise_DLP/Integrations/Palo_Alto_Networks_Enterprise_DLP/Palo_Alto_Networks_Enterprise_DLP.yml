@@ -37,12 +37,12 @@ configuration:
   - AP  # Asia-Pacific
   - UK  # United Kingdom
   - CA  # Canada
-  - FR  # France
   - AU  # Australia
   - IN  # India
   - JP  # Japan
-  - SG  # Singapore
   - BR  # Brazil
+  - PAR # Paris
+  - SUI # Switzerland
   required: false
   section: Collect
 - display: Data profiles to allow exemption
