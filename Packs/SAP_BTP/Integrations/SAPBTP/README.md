@@ -135,8 +135,8 @@ Retrieve audit log events from SAP BTP manually. This command allows you to fetc
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from | Time to fetch events from. Supports natural language (e.g., "now", "3 days", "2 hours", "1 month") or ISO 8601 format (e.g., "2024-01-01"). Default is "now". | Optional |
-| limit | Maximum number of events to retrieve. Default is 50. | Optional |
+| from | Time to fetch events from. Supports natural language (e.g., "now", "3 days", "2 hours", "1 month") or ISO 8601 format (e.g., "2024-01-01T00:00:00Z"). Default is "now". | Optional |
+| max_fetch | Maximum number of events to retrieve. Default is 5000. | Optional |
 
 #### Context Output
 
@@ -147,12 +147,6 @@ Retrieve audit log events from SAP BTP manually. This command allows you to fetc
 | SAPBTP.Event.time | Date | Timestamp of the event. |
 | SAPBTP.Event.ip | String | IP address associated with the event. |
 | SAPBTP.Event.data | Unknown | Event data payload. |
-
-#### Command Example
-
-```
-!sap-btp-get-events from="3 days" limit=10
-```
 
 #### Human Readable Output
 
