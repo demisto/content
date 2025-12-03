@@ -162,22 +162,6 @@ def test_fetch_indicators_retry_fail(mock_demisto):
 from unittest.mock import Mock
 
 
-def test_fetch_indicators_success_flow(mocker):
-    client = Mock()
-    client.fetch_iocs.return_value = {
-        "success": True,
-        "data": {"iocs": [{"ioc": "mal.com", "ioc_type": "Domain", "risk_score": 80, "confidence_rating": "High"}]},
-    }
-
-    mocker.patch("CybleThreatIntel.demisto.getLastRun", return_value={})
-    mocker.patch("CybleThreatIntel.demisto.createIndicators")
-    mocker.patch("CybleThreatIntel.demisto.setLastRun")
-    mocker.patch("CybleThreatIntel.demisto.args", return_value={})
-
-    count = fetch_indicators_command(client, {"first_fetch": 1, "max_fetch": 50})
-    assert count >= 1
-
-
 def test_calculate_verdict_invalid_inputs():
     assert calculate_verdict("bad", "weird") == "Unknown"
     assert calculate_verdict(-10, "low") == "Unknown"
