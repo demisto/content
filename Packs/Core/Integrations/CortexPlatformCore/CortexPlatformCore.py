@@ -56,6 +56,7 @@ ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
 
+
 class CaseManagement:
     STATUS_RESOLVED_REASON = {
         "known_issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
@@ -83,6 +84,7 @@ class CaseManagement:
         "last_updated": "LAST_UPDATE_TIME",
         "hosts": "HOSTS",
         "starred": "CASE_STARRED",
+        "tags": "CURRENT_TAGS",
     }
 
     STATUS = {
@@ -91,13 +93,19 @@ class CaseManagement:
         "resolved": "STATUS_025_RESOLVED",
     }
 
-    SEVERITY = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
-    
-    TAGS = {
-    "DOM:Security": "DOM:1",
-    "DOM:Posture": "DOM:5",
+    SEVERITY = {
+        "low": "SEV_020_LOW",
+        "medium": "SEV_030_MEDIUM",
+        "high": "SEV_040_HIGH",
+        "critical": "SEV_050_CRITICAL",
     }
-    
+
+    TAGS = {
+        "DOM:Security": "DOM:1",
+        "DOM:Posture": "DOM:5",
+    }
+
+
 class AppsecIssues:
     class AppsecIssueType:
         def __init__(self, table_name: str, filters: set[str]):
@@ -105,7 +113,10 @@ class AppsecIssues:
             self.filters: set = filters or set()
 
     ISSUE_TYPES = [
-        AppsecIssueType("ISSUES_IAC", {"urgency", "repository", "file_path", "automated_fix_available", "sla"}),
+        AppsecIssueType(
+            "ISSUES_IAC",
+            {"urgency", "repository", "file_path", "automated_fix_available", "sla"},
+        ),
         AppsecIssueType(
             "ISSUES_CVES",
             {
@@ -119,7 +130,10 @@ class AppsecIssues:
                 "has_kev",
             },
         ),
-        AppsecIssueType("ISSUES_SECRETS", {"urgency", "repository", "file_path", "sla", "validation"}),
+        AppsecIssueType(
+            "ISSUES_SECRETS",
+            {"urgency", "repository", "file_path", "sla", "validation"},
+        ),
         AppsecIssueType("ISSUES_WEAKNESSES", {"urgency", "repository", "file_path", "sla"}),
         AppsecIssueType("ISSUES_OPERATIONAL_RISK", {"repository", "file_path", "sla"}),
         AppsecIssueType("ISSUES_LICENSES", {"repository", "file_path", "sla"}),
@@ -210,7 +224,10 @@ ALLOWED_SCANNERS = [
     "SECRETS",
 ]
 
-COVERAGE_API_FIELDS_MAPPING = {"vendor_name": "asset_provider", "asset_provider": "unified_provider"}
+COVERAGE_API_FIELDS_MAPPING = {
+    "vendor_name": "asset_provider",
+    "asset_provider": "unified_provider",
+}
 # Policy finding type mapping
 POLICY_FINDING_TYPE_MAPPING = {
     "CI/CD Risk": "CAS_CI_CD_RISK_SCANNER",
@@ -277,7 +294,13 @@ class FilterBuilder:
             self.values = values
 
     class MappedValuesField(Field):
-        def __init__(self, field_name: str, filter_type: "FilterType", values: Any, mappings: dict[str, "FilterType"]):
+        def __init__(
+            self,
+            field_name: str,
+            filter_type: "FilterType",
+            values: Any,
+            mappings: dict[str, "FilterType"],
+        ):
             super().__init__(field_name, filter_type, values)
             self.mappings = mappings
 
@@ -301,7 +324,13 @@ class FilterBuilder:
 
         self.filter_fields.append(FilterBuilder.Field(name, type, processed_values))
 
-    def add_field_with_mappings(self, name: str, type: "FilterType", values: Any, mappings: dict[str, "FilterType"]):
+    def add_field_with_mappings(
+        self,
+        name: str,
+        type: "FilterType",
+        values: Any,
+        mappings: dict[str, "FilterType"],
+    ):
         """
         Adds a new field to the filter with special value mappings.
         Args:
@@ -352,7 +381,10 @@ class FilterBuilder:
 
                 if isinstance(field, FilterBuilder.MappedValuesField) and value in field.mappings:
                     current_filter_type = field.mappings[value]
-                    if current_filter_type in [FilterType.IS_EMPTY, FilterType.NIS_EMPTY]:
+                    if current_filter_type in [
+                        FilterType.IS_EMPTY,
+                        FilterType.NIS_EMPTY,
+                    ]:
                         current_value = "<No Value>"
 
                 search_values.append(
@@ -784,10 +816,16 @@ def search_asset_groups_command(client: Client, args: dict) -> CommandResults:
     """
     limit = arg_to_number(args.get("limit")) or 50
     filter_builder = FilterBuilder()
-    filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_name"], FilterType.CONTAINS, argToList(args.get("name")))
+    filter_builder.add_field(
+        ASSET_GROUP_FIELDS["asset_group_name"],
+        FilterType.CONTAINS,
+        argToList(args.get("name")),
+    )
     filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_type"], FilterType.EQ, args.get("type"))
     filter_builder.add_field(
-        ASSET_GROUP_FIELDS["asset_group_description"], FilterType.CONTAINS, argToList(args.get("description"))
+        ASSET_GROUP_FIELDS["asset_group_description"],
+        FilterType.CONTAINS,
+        argToList(args.get("description")),
     )
     filter_builder.add_field(ASSET_GROUP_FIELDS["asset_group_id"], FilterType.EQ, argToList(args.get("id")))
 
@@ -828,7 +866,16 @@ def build_webapp_request_data(
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
     """
-    sort = [{"FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field), "ORDER": sort_order}] if sort_field else []
+    sort = (
+        [
+            {
+                "FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field),
+                "ORDER": sort_order,
+            }
+        ]
+        if sort_field
+        else []
+    )
     filter_data = {
         "sort": sort,
         "paging": {"from": start_page, "to": limit},
@@ -877,12 +924,23 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     filter_builder.add_field("CVE_ID", FilterType.CONTAINS, argToList(args.get("cve_id")))
     filter_builder.add_field("CVSS_SCORE", FilterType.GTE, arg_to_number(args.get("cvss_score_gte")))
     filter_builder.add_field("EPSS_SCORE", FilterType.GTE, arg_to_number(args.get("epss_score_gte")))
-    filter_builder.add_field("INTERNET_EXPOSED", FilterType.EQ, arg_to_bool_or_none(args.get("internet_exposed")))
+    filter_builder.add_field(
+        "INTERNET_EXPOSED",
+        FilterType.EQ,
+        arg_to_bool_or_none(args.get("internet_exposed")),
+    )
     filter_builder.add_field("EXPLOITABLE", FilterType.EQ, arg_to_bool_or_none(args.get("exploitable")))
     filter_builder.add_field("HAS_KEV", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev")))
-    filter_builder.add_field("AFFECTED_SOFTWARE", FilterType.CONTAINS, argToList(args.get("affected_software")))
     filter_builder.add_field(
-        "PLATFORM_SEVERITY", FilterType.EQ, argToList(args.get("severity")), VULNERABILITIES_SEVERITY_MAPPING
+        "AFFECTED_SOFTWARE",
+        FilterType.CONTAINS,
+        argToList(args.get("affected_software")),
+    )
+    filter_builder.add_field(
+        "PLATFORM_SEVERITY",
+        FilterType.EQ,
+        argToList(args.get("severity")),
+        VULNERABILITIES_SEVERITY_MAPPING,
     )
     filter_builder.add_field("ISSUE_ID", FilterType.CONTAINS, argToList(args.get("issue_id")))
     filter_builder.add_time_range_field("LAST_OBSERVED", args.get("start_time"), args.get("end_time"))
@@ -928,7 +986,10 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     filtered_data = [{k: v for k, v in item.items() if k in output_keys} for item in data]
 
     readable_output = tableToMarkdown(
-        "Vulnerabilities", filtered_data, headerTransform=string_to_table_header, sort_headers=False
+        "Vulnerabilities",
+        filtered_data,
+        headerTransform=string_to_table_header,
+        sort_headers=False,
     )
     return CommandResults(
         readable_output=readable_output,
@@ -984,7 +1045,7 @@ def extract_ids(case_extra_data: dict) -> list:
     field_name = "issue_id"
     issues = case_extra_data.get("issues", {})
     issues_data = issues.get("data", {}) if issues else {}
-    issue_ids = [c.get(field_name) for c in issues_data if isinstance(c, dict) and field_name in c]
+    issue_ids = [issue.get(field_name) for issue in issues_data if isinstance(issue, dict) and field_name in issue]
     demisto.debug(f"Extracted issue ids: {issue_ids}")
     return issue_ids
 
@@ -1148,19 +1209,63 @@ def get_cases_command(client, args):
     tag_values = [CaseManagement.TAGS.get(tag, tag) for tag in argToList(args.get("tag"))]
     filter_builder = FilterBuilder()
     filter_builder.add_time_range_field(CaseManagement.FIELDS["creation_time"], gte_creation_time, lte_creation_time)
-    filter_builder.add_time_range_field(CaseManagement.FIELDS["last_updated"], gte_modification_time, lte_modification_time)
-    filter_builder.add_time_range_field(CaseManagement.FIELDS["creation_time"], since_creation_start_time, since_creation_end_time)
-    filter_builder.add_time_range_field(CaseManagement.FIELDS["last_updated"], since_modification_start_time, since_modification_end_time)
+    filter_builder.add_time_range_field(
+        CaseManagement.FIELDS["last_updated"],
+        gte_modification_time,
+        lte_modification_time,
+    )
+    filter_builder.add_time_range_field(
+        CaseManagement.FIELDS["creation_time"],
+        since_creation_start_time,
+        since_creation_end_time,
+    )
+    filter_builder.add_time_range_field(
+        CaseManagement.FIELDS["last_updated"],
+        since_modification_start_time,
+        since_modification_end_time,
+    )
     filter_builder.add_field(CaseManagement.FIELDS["status"], FilterType.EQ, status_values)
     filter_builder.add_field(CaseManagement.FIELDS["severity"], FilterType.EQ, severity_values)
-    filter_builder.add_field(CaseManagement.FIELDS["case_id_list"], FilterType.EQ, argToList(args.get("case_id_list")))
-    filter_builder.add_field(CaseManagement.FIELDS["case_domain"], FilterType.EQ, argToList(args.get("case_domain")))
-    filter_builder.add_field(CaseManagement.FIELDS["case_name"], FilterType.CONTAINS, argToList(args.get("case_name")))
-    filter_builder.add_field(CaseManagement.FIELDS["case_description"], FilterType.CONTAINS, argToList(args.get("case_description")))
-    filter_builder.add_field(CaseManagement.FIELDS["starred"], FilterType.EQ, [argToBoolean(x) for x in argToList(args.get("starred"))])
-    filter_builder.add_field(CaseManagement.FIELDS["asset_ids"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_ids")))
-    filter_builder.add_field(CaseManagement.FIELDS["asset_groups"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_groups")))
-    filter_builder.add_field(CaseManagement.FIELDS["hosts"], FilterType.CASE_HOST_EQ, argToList(args.get("hosts")))
+    filter_builder.add_field(
+        CaseManagement.FIELDS["case_id_list"],
+        FilterType.EQ,
+        argToList(args.get("case_id_list")),
+    )
+    filter_builder.add_field(
+        CaseManagement.FIELDS["case_domain"],
+        FilterType.EQ,
+        argToList(args.get("case_domain")),
+    )
+    filter_builder.add_field(
+        CaseManagement.FIELDS["case_name"],
+        FilterType.CONTAINS,
+        argToList(args.get("case_name")),
+    )
+    filter_builder.add_field(
+        CaseManagement.FIELDS["case_description"],
+        FilterType.CONTAINS,
+        argToList(args.get("case_description")),
+    )
+    filter_builder.add_field(
+        CaseManagement.FIELDS["starred"],
+        FilterType.EQ,
+        [argToBoolean(x) for x in argToList(args.get("starred"))],
+    )
+    filter_builder.add_field(
+        CaseManagement.FIELDS["asset_ids"],
+        FilterType.CONTAINS_IN_LIST,
+        argToList(args.get("asset_ids")),
+    )
+    filter_builder.add_field(
+        CaseManagement.FIELDS["asset_groups"],
+        FilterType.CONTAINS_IN_LIST,
+        argToList(args.get("asset_groups")),
+    )
+    filter_builder.add_field(
+        CaseManagement.FIELDS["hosts"],
+        FilterType.CASE_HOST_EQ,
+        argToList(args.get("hosts")),
+    )
     filter_builder.add_field(CaseManagement.FIELDS["tags"], FilterType.ARRAY_CONTAINS, tag_values)
     filter_builder.add_field_with_mappings(
         determine_assignee_filter_field(argToList(args.get("assignee"))),
@@ -1291,7 +1396,11 @@ def create_filter_data(issue_id: str, update_args: dict) -> dict:
     filter_builder = FilterBuilder()
     filter_builder.add_field("internal_id", FilterType.EQ, issue_id)
 
-    filter_data = {"filter_data": {"filter": filter_builder.to_dict()}, "filter_type": "static", "update_data": update_args}
+    filter_data = {
+        "filter_data": {"filter": filter_builder.to_dict()},
+        "filter_type": "static",
+        "update_data": update_args,
+    }
     return filter_data
 
 
@@ -1319,7 +1428,12 @@ def update_issue_command(client: Client, args: dict):
         "Resolved - Fixed": "STATUS_250_RESOLVED_FIXED",
         "Resolved - Risk Accepted": "STATUS_130_RESOLVED_RISK_ACCEPTED",
     }
-    severity_map = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
+    severity_map = {
+        "low": "SEV_020_LOW",
+        "medium": "SEV_030_MEDIUM",
+        "high": "SEV_040_HIGH",
+        "critical": "SEV_050_CRITICAL",
+    }
     severity_value = args.get("severity")
     status = args.get("status")
     update_args = {
@@ -1390,14 +1504,38 @@ def search_assets_command(client: Client, args):
     """
     asset_group_ids = get_asset_group_ids_from_names(client, argToList(args.get("asset_groups", "")))
     filter = FilterBuilder()
-    filter.add_field(ASSET_FIELDS["asset_names"], FilterType.CONTAINS, argToList(args.get("asset_names", "")))
-    filter.add_field(ASSET_FIELDS["asset_types"], FilterType.EQ, argToList(args.get("asset_types", "")))
-    filter.add_field(ASSET_FIELDS["asset_tags"], FilterType.JSON_WILDCARD, safe_load_json(args.get("asset_tags", [])))
+    filter.add_field(
+        ASSET_FIELDS["asset_names"],
+        FilterType.CONTAINS,
+        argToList(args.get("asset_names", "")),
+    )
+    filter.add_field(
+        ASSET_FIELDS["asset_types"],
+        FilterType.EQ,
+        argToList(args.get("asset_types", "")),
+    )
+    filter.add_field(
+        ASSET_FIELDS["asset_tags"],
+        FilterType.JSON_WILDCARD,
+        safe_load_json(args.get("asset_tags", [])),
+    )
     filter.add_field(ASSET_FIELDS["asset_ids"], FilterType.EQ, argToList(args.get("asset_ids", "")))
-    filter.add_field(ASSET_FIELDS["asset_providers"], FilterType.EQ, argToList(args.get("asset_providers", "")))
-    filter.add_field(ASSET_FIELDS["asset_realms"], FilterType.EQ, argToList(args.get("asset_realms", "")))
+    filter.add_field(
+        ASSET_FIELDS["asset_providers"],
+        FilterType.EQ,
+        argToList(args.get("asset_providers", "")),
+    )
+    filter.add_field(
+        ASSET_FIELDS["asset_realms"],
+        FilterType.EQ,
+        argToList(args.get("asset_realms", "")),
+    )
     filter.add_field(ASSET_FIELDS["asset_group_ids"], FilterType.ARRAY_CONTAINS, asset_group_ids)
-    filter.add_field(ASSET_FIELDS["asset_categories"], FilterType.EQ, argToList(args.get("asset_categories", "")))
+    filter.add_field(
+        ASSET_FIELDS["asset_categories"],
+        FilterType.EQ,
+        argToList(args.get("asset_categories", "")),
+    )
     filter_str = filter.to_dict()
 
     demisto.debug(f"Search Assets Filter: {filter_str}")
@@ -1473,7 +1611,10 @@ def build_scanner_config_payload(args: dict) -> dict:
     for scanner in enabled_scanners:
         validate_scanner_name(scanner)
         if scanner.upper() == "SECRETS":
-            scanners["SECRETS"] = {"isEnabled": True, "scanOptions": {"secretValidation": secret_validation}}
+            scanners["SECRETS"] = {
+                "isEnabled": True,
+                "scanOptions": {"secretValidation": secret_validation},
+            }
         else:
             scanners[scanner.upper()] = {"isEnabled": True}
 
@@ -1609,14 +1750,32 @@ def build_asset_coverage_filter(args: dict) -> FilterBuilder:
     filter_builder.add_field("asset_id", FilterType.CONTAINS, argToList(args.get("asset_id")))
     filter_builder.add_field("asset_name", FilterType.CONTAINS, argToList(args.get("asset_name")))
     filter_builder.add_field(
-        "business_application_names", FilterType.ARRAY_CONTAINS, argToList(args.get("business_application_names"))
+        "business_application_names",
+        FilterType.ARRAY_CONTAINS,
+        argToList(args.get("business_application_names")),
     )
     filter_builder.add_field("status_coverage", FilterType.EQ, argToList(args.get("status_coverage")))
-    filter_builder.add_field("is_scanned_by_vulnerabilities", FilterType.EQ, argToList(args.get("is_scanned_by_vulnerabilities")))
-    filter_builder.add_field("is_scanned_by_code_weakness", FilterType.EQ, argToList(args.get("is_scanned_by_code_weakness")))
-    filter_builder.add_field("is_scanned_by_secrets", FilterType.EQ, argToList(args.get("is_scanned_by_secrets")))
+    filter_builder.add_field(
+        "is_scanned_by_vulnerabilities",
+        FilterType.EQ,
+        argToList(args.get("is_scanned_by_vulnerabilities")),
+    )
+    filter_builder.add_field(
+        "is_scanned_by_code_weakness",
+        FilterType.EQ,
+        argToList(args.get("is_scanned_by_code_weakness")),
+    )
+    filter_builder.add_field(
+        "is_scanned_by_secrets",
+        FilterType.EQ,
+        argToList(args.get("is_scanned_by_secrets")),
+    )
     filter_builder.add_field("is_scanned_by_iac", FilterType.EQ, argToList(args.get("is_scanned_by_iac")))
-    filter_builder.add_field("is_scanned_by_malware", FilterType.EQ, argToList(args.get("is_scanned_by_malware")))
+    filter_builder.add_field(
+        "is_scanned_by_malware",
+        FilterType.EQ,
+        argToList(args.get("is_scanned_by_malware")),
+    )
     filter_builder.add_field("is_scanned_by_cicd", FilterType.EQ, argToList(args.get("is_scanned_by_cicd")))
     filter_builder.add_field("last_scan_status", FilterType.EQ, argToList(args.get("last_scan_status")))
     filter_builder.add_field("asset_type", FilterType.EQ, argToList(args.get("asset_type")))
@@ -1642,7 +1801,12 @@ def get_asset_coverage_command(client: Client, args: dict):
     reply = response.get("reply", {})
     data = reply.get("DATA", [])
 
-    readable_output = tableToMarkdown("ASPM Coverage", data, headerTransform=string_to_table_header, sort_headers=False)
+    readable_output = tableToMarkdown(
+        "ASPM Coverage",
+        data,
+        headerTransform=string_to_table_header,
+        sort_headers=False,
+    )
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Coverage.Asset",
@@ -1978,14 +2142,25 @@ def create_policy_build_triggers(args: dict) -> dict:
     cicd_enabled = cicd_report_issue or cicd_block_cicd or cicd_report_cicd or bool(cicd_override)
 
     triggers = {
-        "periodic": {"isEnabled": periodic_enabled, "actions": {"reportIssue": periodic_report_issue}},
+        "periodic": {
+            "isEnabled": periodic_enabled,
+            "actions": {"reportIssue": periodic_report_issue},
+        },
         "pr": {
             "isEnabled": pr_enabled,
-            "actions": {"reportIssue": pr_report_issue, "blockPr": pr_block_pr, "reportPrComment": pr_report_comment},
+            "actions": {
+                "reportIssue": pr_report_issue,
+                "blockPr": pr_block_pr,
+                "reportPrComment": pr_report_comment,
+            },
         },
         "cicd": {
             "isEnabled": cicd_enabled,
-            "actions": {"reportIssue": cicd_report_issue, "blockCicd": cicd_block_cicd, "reportCicd": cicd_report_cicd},
+            "actions": {
+                "reportIssue": cicd_report_issue,
+                "blockCicd": cicd_block_cicd,
+                "reportCicd": cicd_report_cicd,
+            },
         },
     }
 
@@ -2024,14 +2199,36 @@ def create_appsec_issues_filter_and_tables(args: dict) -> dict[str, FilterBuilde
     if not tables_filters:
         raise DemistoException(f"No matching issue type found for the given filter combination: {special_filter_args}")
 
-    filter_builder.add_field("cas_issues_cvss_score", FilterType.GTE, arg_to_float(args.get("cvss_score_gte")))
-    filter_builder.add_field("cas_issues_epss_score", FilterType.GTE, arg_to_float(args.get("epss_score_gte")))
+    filter_builder.add_field(
+        "cas_issues_cvss_score",
+        FilterType.GTE,
+        arg_to_float(args.get("cvss_score_gte")),
+    )
+    filter_builder.add_field(
+        "cas_issues_epss_score",
+        FilterType.GTE,
+        arg_to_float(args.get("epss_score_gte")),
+    )
     filter_builder.add_field("cas_issues_is_kev", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev")))
-    filter_builder.add_field("cas_sla_status", FilterType.EQ, argToList(args.get("sla")), AppsecIssues.SLA_MAPPING)
-    filter_builder.add_field("cas_issues_is_fixable", FilterType.EQ, arg_to_bool_or_none(args.get("automated_fix_available")))
+    filter_builder.add_field(
+        "cas_sla_status",
+        FilterType.EQ,
+        argToList(args.get("sla")),
+        AppsecIssues.SLA_MAPPING,
+    )
+    filter_builder.add_field(
+        "cas_issues_is_fixable",
+        FilterType.EQ,
+        arg_to_bool_or_none(args.get("automated_fix_available")),
+    )
     filter_builder.add_field("cas_issues_validation", FilterType.EQ, argToList(args.get("validation")))
     filter_builder.add_field("urgency", FilterType.EQ, argToList(args.get("urgency")))
-    filter_builder.add_field("severity", FilterType.EQ, argToList(args.get("severity")), AppsecIssues.SEVERITY_MAPPINGS)
+    filter_builder.add_field(
+        "severity",
+        FilterType.EQ,
+        argToList(args.get("severity")),
+        AppsecIssues.SEVERITY_MAPPINGS,
+    )
     filter_builder.add_field("internal_id", FilterType.CONTAINS, argToList(args.get("issue_id")))
     filter_builder.add_field("alert_name", FilterType.CONTAINS, argToList(args.get("issue_name")))
     filter_builder.add_field("cas_issues_asset_name", FilterType.CONTAINS, argToList(args.get("asset_name")))
@@ -2075,13 +2272,19 @@ def normalize_and_filter_appsec_issue(issue: dict) -> dict:
 
     filtered_output_keys: dict[str, dict] = {
         "internal_id": {"path": ["internal_id"]},
-        "severity": {"path": ["severity"], "mapper": AppsecIssues.SEVERITY_OUTPUT_MAPPINGS},
+        "severity": {
+            "path": ["severity"],
+            "mapper": AppsecIssues.SEVERITY_OUTPUT_MAPPINGS,
+        },
         "issue_name": {"path": ["issue_name"]},
         "issue_source": {"path": ["issue_source"]},
         "issue_category": {"path": ["issue_category"]},
         "issue_domain": {"path": ["issue_domain"]},
         "issue_description": {"path": ["issue_description"]},
-        "status": {"path": ["status_progress"], "mapper": AppsecIssues.STATUS_OUTPUT_MAPPINGS},
+        "status": {
+            "path": ["status_progress"],
+            "mapper": AppsecIssues.STATUS_OUTPUT_MAPPINGS,
+        },
         "asset_name": {"path": ["cas_issues_asset_name"]},
         "assignee": {"path": ["assigned_to_pretty"]},
         "time_added": {"path": ["source_insert_ts"]},
@@ -2089,7 +2292,10 @@ def normalize_and_filter_appsec_issue(issue: dict) -> dict:
         "cvss_score": {"path": ["cas_issues_normalized_fields", "xdm.vulnerability.cvss_score"]},
         "has_kev": {"path": ["cas_issues_is_kev"]},
         "urgency": {"path": ["urgency"], "mapper": AppsecIssues.URGENCY_OUTPUT_MAPPING},
-        "sla_status": {"path": ["cas_sla_status"], "mapper": AppsecIssues.SLA_OUTPUT_MAPPING},
+        "sla_status": {
+            "path": ["cas_sla_status"],
+            "mapper": AppsecIssues.SLA_OUTPUT_MAPPING,
+        },
         "secret_validation": {"path": ["secret_validation"]},
         "is_fixable": {"path": ["cas_issues_is_fixable"]},
         "repository_name": {"path": ["cas_issues_normalized_fields", "xdm.repository.name"]},
@@ -2141,12 +2347,19 @@ def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
         except Exception as e:
             raise DemistoException(f"Failed to retrieve issues from the {table_name} table: {e}")
 
-    sorted_issues = sorted(all_appsec_issues, key=lambda issue: issue.get(sort_field, ""), reverse=(sort_order == "DESC"))
+    sorted_issues = sorted(
+        all_appsec_issues,
+        key=lambda issue: issue.get(sort_field, ""),
+        reverse=(sort_order == "DESC"),
+    )
     sorted_issues = sorted_issues[:limit]
     filtered_appsec_issues = [normalize_and_filter_appsec_issue(issue) for issue in sorted_issues]
 
     readable_output = tableToMarkdown(
-        "Application Security Issues", filtered_appsec_issues, headerTransform=string_to_table_header, sort_headers=False
+        "Application Security Issues",
+        filtered_appsec_issues,
+        headerTransform=string_to_table_header,
+        sort_headers=False,
     )
 
     return CommandResults(
