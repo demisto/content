@@ -1315,7 +1315,7 @@ def fetch_incidents(
 
 
 def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResults:
-    status = args.get("status")
+    status = args.get("status", None)
 
     status = argToList(status)
     last_seen_gte = arg_to_timestamp(arg=args.get("last_seen_gte"), arg_name="last_seen_gte")
@@ -1486,6 +1486,7 @@ def main():  # pragma: no cover
             )
             demisto.debug(f"Finished a fetch incidents cycle, {next_run=}.Fetched {len(incidents)} incidents.")
             # demisto.debug(f"{incidents=}") # uncomment to debug, otherwise spams the log
+            demisto.debug("Dummy change to run tests")
 
             last_run_obj = demisto.getLastRun()
             last_run_obj["next_run"] = next_run
