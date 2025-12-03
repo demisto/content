@@ -541,7 +541,7 @@ class Client:
                 write_stream,
                 _,
             ),
-            ClientSession(read_stream, write_stream) as session,
+            ClientSession(read_stream, write_stream) as session,  # pylint: disable=E0601
         ):
             # Initialize the connection
             await session.initialize()
@@ -558,7 +558,7 @@ class Client:
                 write_stream,
                 _,
             ),
-            ClientSession(read_stream, write_stream) as session,
+            ClientSession(read_stream, write_stream) as session,  # pylint: disable=E0601
         ):
             await session.initialize()
             tools = await session.list_tools()
@@ -586,7 +586,7 @@ class Client:
                 write_stream,
                 _,
             ),
-            ClientSession(read_stream, write_stream) as session,
+            ClientSession(read_stream, write_stream) as session,  # pylint: disable=E0601
         ):
             await session.initialize()
             result = await session.call_tool(tool_name, parsed_arguments)
