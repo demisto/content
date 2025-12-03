@@ -22,6 +22,7 @@ urllib3.disable_warnings()
 """ GLOBALS/PARAMS """
 VENDOR = "CrowdStrike"
 PRODUCT = "Falcon_Event"
+CNAPP_PRODUCT = "Falcon_CNAPP"
 INTEGRATION_NAME = "CrowdStrike Falcon"
 
 # Incidents Type names - use for debugging and context save.
@@ -3571,84 +3572,51 @@ def fetch_items(command="fetch-incidents"):
     return last_run, items
 
 
+def get_cnapp_assets(last_run, snapshot_id):
+    new_last_run = {}
+    offset = int(last_run.get("offset", 0))
+    limit = 100
+    total_fetched_until_now = int(last_run.get("total_fetched_until_now", 0))
+    endpoint_url = "/container-security/combined/container-alerts/v1"
+    params = {"offset": offset, "limit": limit}
+
+    demisto.info(f"[test] calling endpoint with {params=}")
+    response = http_request("GET", endpoint_url, params)
+    demisto.info(f"[test] {response=}")
+
+    cnapp_alerts = response.get("resources", [])
+    total_detections = demisto.get(response, "meta.pagination.total")
+    total_fetched_until_now += len(cnapp_alerts)
+    demisto.debug(f"fetched {len(cnapp_alerts)} CNAPP assets, reulsting a toal of {total_fetched_until_now}.")
+
+    if total_detections > total_fetched_until_now:
+        offset = total_fetched_until_now
+        items_count = 1
+        new_last_run = {"offset": offset, "total_fetched_until_now": total_fetched_until_now, "snapshot_id": snapshot_id}
+    else:
+        offset = 0
+        items_count = total_fetched_until_now
+        new_last_run = {"offset": offset, "total_fetched_until_now": 0, "nextTrigger": "0"}
+
+    return new_last_run, cnapp_alerts, items_count
+
+
 def fetch_assets_command():
-    # def fetch_cnapp_incidents(cnapp_last_run, is_fetch_events, look_back, limit, fetch_query):
-    # demisto.debug(f"[test] Fetching CNAPP Alerts with {cnapp_last_run=}")
+    last_run = demisto.getAssetsLastRun()
+    snapshot_id = last_run.get("snapshot_id", str(round(time.time() * 1000)))
+    new_last_run, detections, items_count = get_cnapp_assets(last_run, snapshot_id)
 
-    # detections: List = []
-    # offset = int(cnapp_last_run.get("offset", 0))
+    send_data_to_xsiam(
+        data=detections,
+        vendor=VENDOR,
+        product=CNAPP_PRODUCT,
+        data_type="assets",
+        snapshot_id=snapshot_id,
+        items_count=items_count,
+        should_update_health_module=False,
+    )
 
-    # demisto.info(f"[test] Calling get_fetch_run_time_range with {cnapp_last_run=}, {FETCH_TIME=}, {look_back=}")
-    # start_fetch_time, end_fetch_time = get_fetch_run_time_range(
-    #     last_run=cnapp_last_run, first_fetch=FETCH_TIME, look_back=look_back, date_format=DATE_FORMAT
-    # )
-    # demisto.info(f"[test] done get_fetch_run_time_range {start_fetch_time=}, {end_fetch_time=}")
-
-    # if "last_seen" in fetch_query:
-    #     raise DemistoException("last_seen is not allowed as part of the CNAPP fetch query.")
-    # demisto.info(f"[test] {fetch_query=} is valid.")
-
-    # filter_arg = ""
-    # if not cnapp_last_run:
-    #     last_seen = reformat_timestamp(
-    #         time=FETCH_TIME, date_format=DATE_FORMAT, dateparser_settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True}
-    #     )
-    # else:
-    #     last_seen = cnapp_last_run.get("time", "")
-    # filter = f"last_seen:>'{last_seen}'"
-    # if filter_arg:
-    #     filter = f"{filter}&{filter_arg}"
-
-    # params = {"sort": "last_seen.asc", "offset": offset, "limit": limit, "filter": filter}
-
-    # demisto.info(f"[test] calling endpoint with {params=}")
-
-    # endpoint_url = "/container-security/combined/container-alerts/v1"
-
-    # response = http_request("GET", endpoint_url, params)
-    # demisto.info(f"[test] {response=}")
-    # cnapp_alerts = response.get("resources", [])
-    # total_detections = demisto.get(response, "meta.pagination.total")
-
-    # offset = calculate_new_offset(offset, len(cnapp_alerts), total_detections)
-    # demisto.debug(f"CrowdStrikeFalconMsg: Total fetched CNAPP alerts: {len(cnapp_alerts)}")
-    # if offset:
-    #     if offset + limit > MAX_FETCH_SIZE:
-    #         demisto.debug(
-    #             f"CrowdStrikeFalconMsg: The new {offset=} + {limit=} reached " f"{MAX_FETCH_SIZE}, resetting the offset to 0"
-    #         )
-    #         offset = 0
-    #     demisto.debug(f"CrowdStrikeFalconMsg: The new CNAPP offset is {offset}")
-
-    # if cnapp_alerts:
-    #     for detection in cnapp_alerts:
-    #         detection["incident_type"] = CNAPP_ALERT_TYPE
-    #         detection_to_context = detection_to_incident_context(
-    #             detection, CNAPP_ALERT_TYPE, "last_seen_timestamp", is_fetch_events=is_fetch_events
-    #         )
-    #         detections.append(detection_to_context)
-    #     demisto.info(
-    #         f"[test] prepare to filter_incidents_by_duplicates_and_limit {detections=}\n{cnapp_last_run=}\n{INCIDENTS_PER_FETCH=}"
-    #     )
-    #     detections = filter_incidents_by_duplicates_and_limit(
-    #         incidents_res=detections, last_run=cnapp_last_run, fetch_limit=INCIDENTS_PER_FETCH, id_field="name"
-    #     )
-    # demisto.info(f"[test] preparing to update_last_run_object {detections=}\n{offset=}")
-    # new_last_run = update_last_run_object(
-    #     last_run=cnapp_last_run,
-    #     incidents=detections,
-    #     fetch_limit=limit,
-    #     start_fetch_time=start_fetch_time,
-    #     end_fetch_time=end_fetch_time,
-    #     look_back=look_back,
-    #     created_time_field="occurred",
-    #     id_field="name",
-    #     date_format=DETECTION_DATE_FORMAT,
-    #     new_offset=offset,
-    # )
-    # demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch {CNAPP_ALERT_TYPE}. Fetched {len(detections)}")
-    # demisto.info(f"[test] preparing to return from fetch_cnapp_incidents with {detections=}\n{new_last_run=}")
-    # return detections, new_last_run
+    demisto.setAssetsLastRun(new_last_run)
 
 
 def fetch_detections_by_product_type(
