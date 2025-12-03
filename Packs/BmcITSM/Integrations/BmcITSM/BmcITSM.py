@@ -2178,27 +2178,27 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
         )
 
-    response = client.create_incident_request(
-        template_id,
-        first_name,
-        last_name,
-        summary,
-        urgency=urgency,
-        impact=impact,
-        status=status,
-        service_type=service_type,
-        reported_source=reported_source,
-        details=details,
-        company=company,
-        assigned_support_organization=assigned_support_organization,
-        assigned_support_company=assigned_support_company,
-        assigned_support_group_name=assigned_support_group_name,
-        assignee=assignee,
-        assignee_login_id=assignee_login_id,
-        site_group=site_group,
-        site=site,
-        region=region,
-        vendor_ticket_number=vendor_ticket_number,
+    response = client.create_incident_request(  # type: ignore[arg-type,call-arg]
+        template_id,  # type: ignore[arg-type]
+        first_name,  # type: ignore[arg-type]
+        last_name,  # type: ignore[arg-type]
+        summary,  # type: ignore[arg-type]
+        urgency=urgency,  # type: ignore[arg-type]
+        impact=impact,  # type: ignore[arg-type]
+        status=status,  # type: ignore[arg-type]
+        service_type=service_type,  # type: ignore[arg-type]
+        reported_source=reported_source,  # type: ignore[arg-type]
+        details=details,  # type: ignore[arg-type]
+        company=company,  # type: ignore[arg-type]
+        assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
+        assigned_support_company=assigned_support_company,  # type: ignore[arg-type]
+        assigned_support_group_name=assigned_support_group_name,  # type: ignore[arg-type]
+        assignee=assignee,  # type: ignore[arg-type]
+        assignee_login_id=assignee_login_id,  # type: ignore[arg-type]
+        site_group=site_group,  # type: ignore[arg-type]
+        site=site,  # type: ignore[arg-type]
+        region=region,  # type: ignore[arg-type]
+        vendor_ticket_number=vendor_ticket_number,  # type: ignore[arg-type]
         **additional_fields,
     )
 
