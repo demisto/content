@@ -1,12 +1,12 @@
 from collections.abc import Callable
 from itertools import zip_longest
 
-import demistomock as demisto  # noqa: F401
 import urllib3
-from CommonServerPython import *  # noqa: F401
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *
 
 # Disable insecure warnings
@@ -37,10 +37,11 @@ def execute_query(client: Client, args: dict) -> CommandResults:
             variable_value = bool(variable_value)
         variables[variable_name] = variable_value
     result = client.execute(query, variable_values=variables)
+    demisto.debug(f"execute_query | {result=}")
     if (result_size := sys.getsizeof(result)) > (max_result_size := float(args.get("max_result_size", 10))) * 10000:
         raise ValueError(f"Result size {result_size / 10000} KBs is larger then max result size {max_result_size} KBs")
     command_results_args = {
-        "readable_output": tableToMarkdown("GraphQL Query Results", result),
+        "readable_output": tableToMarkdown("GraphQL Query Results", result, is_auto_json_transform=True),
         "raw_response": result,
         "outputs": result if argToBoolean(args.get("populate_context_data")) else None,
         "outputs_prefix": "GraphQL",
