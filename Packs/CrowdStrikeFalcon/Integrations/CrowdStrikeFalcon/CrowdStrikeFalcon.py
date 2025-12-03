@@ -23,14 +23,12 @@ urllib3.disable_warnings()
 VENDOR = "CrowdStrike"
 PRODUCT = "Falcon_Event"
 INTEGRATION_NAME = "CrowdStrike Falcon"
-IS_FETCH_EVENTS = False
 
 # Incidents Type names - use for debugging and context save.
 IDP_DETECTION = "IDP detection"
 MOBILE_DETECTION = "MOBILE detection"
 ON_DEMAND_SCANS_DETECTION = "On-Demand Scans detection"
 OFP_DETECTION = "OFP detection"
-CNAPP_ALERT = "CNAPP alert"
 NGSIEM_DETECTION = "ngsiem_detection"
 THIRD_PARTY_DETECTION = "thirdparty_detection"
 
@@ -41,7 +39,6 @@ IDP_DETECTION_FETCH_TYPE = "IDP Detection"
 MOBILE_DETECTION_FETCH_TYPE = "Mobile Detection"
 ON_DEMAND_SCANS_DETECTION_TYPE = "On-Demand Scans Detection"
 OFP_DETECTION_TYPE = "OFP Detection"
-CNAPP_ALERT_TYPE = "CNAPP Alert"
 IOM_FETCH_TYPE = "Indicator of Misconfiguration"
 IOA_FETCH_TYPE = "Indicator of Attack"
 NGSIEM_DETECTION_FETCH_TYPE = "NGSIEM Detection"
@@ -385,8 +382,8 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
     "monthly": 30,
 }
 
-TOTAL_FETCH_TYPE_XSOAR = 11  # Matches the total number of fetch types for XSOAR in the LastRunIndex class
-TOTAL_FETCH_TYPE_XSIAM = 7  # Matches the total number of fetch types for XSIAM in the LastRunIndex class
+TOTAL_FETCH_TYPE_XSOAR = 10  # Matches the total number of fetch types for XSOAR in the LastRunIndex class
+TOTAL_FETCH_TYPE_XSIAM = 6  # Matches the total number of fetch types for XSIAM in the LastRunIndex class
 
 
 class LastRunIndex(IntEnum):
@@ -405,7 +402,6 @@ class LastRunIndex(IntEnum):
     MOBILE_DETECTIONS = 3
     ON_DEMAND_DETECTIONS = 4
     OFP_DETECTION = 5
-    CNAPP_ALERT = 10
 
     # Fetch types only for fetch-incidents
     IOM = 6
@@ -424,7 +420,6 @@ class IncidentType(Enum):
     OFP = "ofp"
     NGSIEM = ":ngsiem:"
     THIRD_PARTY = ":thirdparty:"
-    CNAPP = "cnapp"
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get("mirror_direction"))
@@ -3671,6 +3666,9 @@ def fetch_items(command="fetch-incidents"):
 
     demisto.debug(f"CrowdStrikeFalconMsg: Updated last_run object after fetch: {last_run}")
     return last_run, items
+
+
+def featch_assets_command()
 
 
 def fetch_detections_by_product_type(
@@ -8051,6 +8049,8 @@ def main():  # pragma: no cover
             return_results(get_incident_behavior_command(args=args))
         elif command == "cs-falcon-get-ioarules":
             return_results(get_ioarules_command(args=args))
+        elif command == "fetch-assets":
+            featch_assets_command()
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:
