@@ -2029,7 +2029,7 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
 
 
 def test_module(client: MsGraphClient):
-    raise DemistoException(f"This is for testing")
+    raise DemistoException("This is for testing")
     # return client.ms_client.main_test_module()
 
 

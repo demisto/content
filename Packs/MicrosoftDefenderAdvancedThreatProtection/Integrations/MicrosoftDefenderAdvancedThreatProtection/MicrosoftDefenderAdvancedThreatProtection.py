@@ -6331,7 +6331,9 @@ def main():  # pragma: no cover
     auth_type = params.get("auth_flow", "Client Credentials")
     grant_type = get_auth_type_flow(auth_type)
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
-    self_deployed: bool = is_self_deployed_flow(auth_type) or params.get("self_deployed", False) or managed_identities_client_id is not None
+    self_deployed: bool = (
+        is_self_deployed_flow(auth_type) or params.get("self_deployed", False) or managed_identities_client_id is not None
+    )
     demisto.debug(f"{self_deployed=}")
     certificate_thumbprint = params.get("creds_certificate", {}).get("identifier") or params.get("certificate_thumbprint")
     private_key = replace_spaces_in_credential(params.get("creds_certificate", {}).get("password")) or params.get("private_key")

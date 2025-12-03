@@ -928,6 +928,7 @@ class MicrosoftClient(BaseClient):
         """
         Checks all necessary fields for the specific authentication flow.
         """
+
         def require_fields(fields: list[str], message_prefix: str):
             """Helper to validate required fields."""
             for field in fields:
@@ -935,34 +936,32 @@ class MicrosoftClient(BaseClient):
                     raise DemistoException(f"{message_prefix} enter {field.replace('_', ' ').title()}.")
 
         if self.auth_type == OPROXY_AUTH_TYPE:
-            demisto.debug(f"Got into the OPROXY_AUTH_TYPE check")
+            demisto.debug("Got into the OPROXY_AUTH_TYPE check")
             self.get_access_token()
             return "ok"
         elif self.grant_type == MANAGED_IDENTITIES:
             try:
                 self.get_access_token()
             except Exception as e:
-                raise DemistoException(f"Failed to connect to Azure Managed Identities. "
-                                       f"Please ensure the following: "
-                                       f"1. You have entered the Azure Managed Identities Client ID. "
-                                       f"2. This integration is running on an Azure resource "
-                                       f"that has been assigned a Managed Identity within your Azure tenant. "
-                                       f"Original Error: {e}")
+                raise DemistoException(
+                    f"Failed to connect to Azure Managed Identities. "
+                    f"Please ensure the following: "
+                    f"1. You have entered the Azure Managed Identities Client ID. "
+                    f"2. This integration is running on an Azure resource "
+                    f"that has been assigned a Managed Identity within your Azure tenant. "
+                    f"Original Error: {e}"
+                )
             return "ok"
 
         elif self.grant_type == CLIENT_CREDENTIALS:
             require_fields(
-                fields=["tenant_id", "client_secret", "client_id"],
-                message_prefix="When using Client Credentials flow you must "
+                fields=["tenant_id", "client_secret", "client_id"], message_prefix="When using Client Credentials flow you must "
             )
             self.get_access_token()
             return "ok"
 
         elif self.grant_type == DEVICE_CODE:
-            require_fields(
-                fields=["client_id"],
-                message_prefix="When using Device Code flow you must "
-            )
+            require_fields(fields=["client_id"], message_prefix="When using Device Code flow you must ")
             raise DemistoException(
                 f"The *Test* button is not available for the Device Code Flow. "
                 f"Please run !{self.command_prefix}-auth-start and then "
@@ -972,12 +971,14 @@ class MicrosoftClient(BaseClient):
 
         elif self.grant_type == AUTHORIZATION_CODE:
             if not demisto.params().get("redirect_uri"):  # this is taken from demisto.params because we have a default
-            # value for this parameter in MicrosoftClient class
-                raise DemistoException(f"A redirect URI is required. Please enter the redirect URI that you configured"
-                                       f" in your self-deployed application.")
+                # value for this parameter in MicrosoftClient class
+                raise DemistoException(
+                    "A redirect URI is required. Please enter the redirect URI that you configured"
+                    " in your self-deployed application."
+                )
             require_fields(
                 fields=["tenant_id", "client_secret", "client_id", "redirect_uri"],
-                message_prefix="When using Authorization Code flow you must "
+                message_prefix="When using Authorization Code flow you must ",
             )
             raise DemistoException(
                 f"The *Test* button is not available for the Authorization Code Flow. "
@@ -987,7 +988,7 @@ class MicrosoftClient(BaseClient):
             )
 
         else:
-            raise DemistoException(f"Unsupported grant type: {flow}")
+            raise DemistoException(f"Unsupported grant type")
 
     def get_access_token(self, resource: str = "", scope: str | None = None) -> str:
         """
@@ -1050,7 +1051,6 @@ class MicrosoftClient(BaseClient):
 
         if self.multi_resource:
             return self.resource_to_access_token[resource]
-
 
         return access_token
 
