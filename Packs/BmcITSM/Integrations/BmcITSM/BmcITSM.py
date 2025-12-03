@@ -2166,7 +2166,17 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     validate_related_arguments_provided(assignee_login_id=assignee_login_id, assignee=assignee)
     if not template_id:
-        validate_related_arguments_provided(summary=summary, service_type=service_type, reported_source=reported_source)
+        validate_related_arguments_provided(
+            summary=summary,
+            service_type=service_type,
+            reported_source=reported_source,
+            first_name=first_name,
+            last_name=last_name,
+            status=status,
+            urgency=urgency,
+            impact=impact,
+
+        )
 
     response = client.create_incident_request(
         template_id,
@@ -2231,7 +2241,7 @@ def incident_update_command(client: Client, args: Dict[str, Any]) -> CommandResu
     last_name = args.get("last_name")
     service_type = args.get("service_type")
     reported_source = args.get("reported_source")
-    details = args.get("details")
+    details = args.get("detailed_description")
     company = args.get("location_company")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_company = args.get("assigned_support_company")
@@ -2453,8 +2463,8 @@ def task_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     impact = args.get("impact")
     urgency = args.get("urgency")
     support_company = args.get("support_company")
-
     customer_company = args.get("customer_company")
+
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_group_name = args.get("assigned_support_group")
     assignee = args.get("assignee")
@@ -2468,7 +2478,7 @@ def task_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         "additional_fields",
     )
     parent_ticket = get_ticket(client, args.get("root_ticket_type"), root_request_id)  # type: ignore[arg-type]
-    response = client.create_task_request(
+    response = client.create_task_request(  # type: ignore[arg-type,call-arg]
         template_id,  # type: ignore[arg-type]
         parent_ticket.get("InstanceId"),  # type: ignore[arg-type]
         root_request_name or parent_ticket.get("DisplayID"),  # type: ignore[arg-type]
@@ -2491,6 +2501,7 @@ def task_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         assigned_support_organization=assigned_support_organization,  # type: ignore[arg-type]
         scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,  # type: ignore[arg-type]
         scedulded_end_date=scedulded_end_date.isoformat() if scedulded_end_date else None,  # type: ignore[arg-type]
+        customer_company=customer_company,  # type: ignore[arg-type]
         **additional_fields,
     )
 
