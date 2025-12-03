@@ -26,12 +26,6 @@ configuration:
     required: false
     section: Collect
 
-  - display: Feed Fetch Interval
-    name: feedFetchInterval
-    type: 19
-    defaultvalue: '1440'
-    required: false
-    section: Collect
 
   - display: Source Reliability
     name: feedReliability
