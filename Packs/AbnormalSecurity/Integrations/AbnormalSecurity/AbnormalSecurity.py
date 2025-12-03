@@ -1074,6 +1074,7 @@ def main():  # pragma: nocover
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+            #  test
         elif command in commands:
             return_results(commands[command](client, args))  # type: ignore
         else:
