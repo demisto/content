@@ -11,6 +11,7 @@ OUTPUT_KEYS = [
     "Identity_type",
     "issue_name",
     "issue_source",
+    "agent_id",
     "actor_process_image_sha256",
     "causality_actor_process_image_sha256",
     "action_process_image_sha256",
