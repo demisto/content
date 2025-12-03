@@ -394,7 +394,7 @@ def count_running_chromes(port) -> int:
         for pid in os.listdir("/proc"):
             if pid.isdigit():
                 try:
-                    with open(f"/proc/{pid}/cmdline", "r") as f:
+                    with open(f"/proc/{pid}/cmdline") as f:
                         cmd = f.read().replace("\x00", " ").strip()
                         if cmd:
                             processes.append(cmd)
@@ -606,6 +606,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
     return None, None
 
 
+
 def terminate_chrome(chrome_port: str = "", killall: bool = False) -> None:  # pragma: no cover
     """
     Terminates Chrome processes based on the specified criteria.
@@ -637,6 +638,16 @@ def terminate_chrome(chrome_port: str = "", killall: bool = False) -> None:  # p
         if all(identifier in process for identifier in chrome_identifiers)
         and not any(identifier in process for identifier in chrome_renderer_identifiers)
     ]
+
+    chrome_identifiers = ["chrom", "headless", f"--remote-debugging-port={port}"]
+    chrome_renderer_identifiers = ["--type=renderer"]
+    chrome_processes = [
+        process
+        for process in processes
+        if all(identifier in process for identifier in chrome_identifiers)
+           and not any(identifier in process for identifier in chrome_renderer_identifiers)
+    ]
+
 
     if killall:
         # fetch the pids of the processes
