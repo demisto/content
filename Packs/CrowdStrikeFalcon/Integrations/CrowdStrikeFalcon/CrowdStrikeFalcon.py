@@ -73,7 +73,6 @@ MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000  # fetch limit for get ids call - detections
 MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities call - detections
 MAX_FETCH_INCIDENT_PER_API_CALL = 500  # fetch limit for get ids call - incidents
-CNAPP_SEVERITY_MAPPING = {"informational": 1, "low": 2, "Medium": 3, "High": 4, "Critical": 5}
 
 BYTE_CREDS = f"{CLIENT_ID}:{SECRET}".encode()
 
@@ -3572,11 +3571,13 @@ def fetch_items(command="fetch-incidents"):
     return last_run, items
 
 
-def get_cnapp_assets(last_run, snapshot_id):
-    new_last_run = {}
+def get_cnapp_assets():
+    last_run = demisto.getAssetsLastRun()
+    snapshot_id = last_run.get("snapshot_id", str(round(time.time() * 1000)))
     offset = int(last_run.get("offset", 0))
-    limit = 100
     total_fetched_until_now = int(last_run.get("total_fetched_until_now", 0))
+    new_last_run = {}
+    limit = 100
     endpoint_url = "/container-security/combined/container-alerts/v1"
     params = {"offset": offset, "limit": limit}
 
@@ -3589,22 +3590,20 @@ def get_cnapp_assets(last_run, snapshot_id):
     total_fetched_until_now += len(cnapp_alerts)
     demisto.debug(f"fetched {len(cnapp_alerts)} CNAPP assets, reulsting a toal of {total_fetched_until_now}.")
 
-    if total_detections > total_fetched_until_now:
-        offset = total_fetched_until_now
+    if total_detections > total_fetched_until_now:  # type: ignore
+        offset = offset + len(cnapp_alerts)
         items_count = 1
         new_last_run = {"offset": offset, "total_fetched_until_now": total_fetched_until_now, "snapshot_id": snapshot_id}
     else:
         offset = 0
         items_count = total_fetched_until_now
-        new_last_run = {"offset": offset, "total_fetched_until_now": 0, "nextTrigger": "0"}
+        new_last_run = {"offset": offset, "total_fetched_until_now": 0, "nextTrigger": 0}
 
-    return new_last_run, cnapp_alerts, items_count
+    return new_last_run, cnapp_alerts, items_count, snapshot_id
 
 
 def fetch_assets_command():
-    last_run = demisto.getAssetsLastRun()
-    snapshot_id = last_run.get("snapshot_id", str(round(time.time() * 1000)))
-    new_last_run, detections, items_count = get_cnapp_assets(last_run, snapshot_id)
+    new_last_run, detections, items_count, snapshot_id = get_cnapp_assets()
 
     send_data_to_xsiam(
         data=detections,
