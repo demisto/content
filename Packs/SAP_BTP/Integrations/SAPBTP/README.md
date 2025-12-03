@@ -32,6 +32,44 @@ This method uses OAuth 2.0 client credentials flow with a client ID and client s
 
 **When to use**: Suitable for development, testing, or when certificate-based authentication is not feasible.
 
+## SAP BTP Architecture
+
+SAP BTP uses **two separate domains** for different purposes:
+
+1. **API URL** (Audit Log Service): Used for fetching audit log events
+   - Example: `https://auditlog-management.cfapps.<region>.hana.ondemand.com`
+   - Found in Service Key field: `url`
+
+2. **Token URL** (Authentication Service): Used for OAuth2 token generation
+   - Example: `https://<subdomain>.authentication.<region>.hana.ondemand.com`
+   - Found in Service Key field: `uaa.url`
+
+**Important**: These URLs are on different subdomains and must be configured separately for the integration to work correctly.
+
+### Service Key Example
+
+Your SAP BTP Service Key will look similar to this (with sensitive values replaced):
+
+```json
+{
+  "uaa": {
+    "url": "https://<subdomain>.authentication.<region>.hana.ondemand.com",
+    "clientid": "<your-client-id>",
+    "clientsecret": "<your-client-secret>",
+    ...
+    ...
+  },
+  "url": "https://auditlog-management.cfapps.<region>.hana.ondemand.com"
+}
+```
+
+**Key Mappings for Integration Configuration:**
+
+- `url` → **API URL** (Audit Log Service)
+- `uaa.url` → **Token URL** (Authentication Service)
+- `uaa.clientid` → **Client ID**
+- `uaa.clientsecret` → **Client Secret** (for Non-mTLS)
+
 ## Before You Start
 
 Before configuring the integration, you must complete the following prerequisites in your SAP BTP environment:
@@ -40,9 +78,12 @@ Before configuring the integration, you must complete the following prerequisite
 
 2. **Create an instance of the auditlog-management service** as described in the [SAP BTP documentation](https://help.sap.com/docs/btp/sap-business-technology-platform/audit-log-retrieval-api-for-global-accounts-in-cloud-foundry-environment#create-instance-of-the-auditlog-management-service).
 
-3. **Generate authentication credentials**:
-   - For **mTLS** (recommended): Obtain the certificate and private key files
-   - For **Non-mTLS**: Obtain the Client ID and Client Secret
+3. **Obtain your Service Key** which contains:
+   - `url`: The API URL for audit log retrieval
+   - `uaa.url`: The Token URL for authentication
+   - `uaa.clientid`: The Client ID
+   - For **mTLS**: Certificate and private key files
+   - For **Non-mTLS**: `uaa.clientsecret`
 
 ## Configure SAP BTP (Business Technology Platform) in Cortex XSIAM
 
@@ -52,12 +93,13 @@ Before configuring the integration, you must complete the following prerequisite
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | The Service Key URL for your SAP BTP instance.<br/>Example: `https://auditlog-management.cfapps.us10.hana.ondemand.com` | True |
-| Client ID | The OAuth2 Client ID (Username).<br/>Required for both mTLS and Non-mTLS authentication. | True |
+| API URL (Audit Log Service) | The Service Key `url` field for audit log API calls.<br/>Example: `https://auditlog-management.cfapps.<region>.hana.ondemand.com`<br/>**Note**: This is different from the Token URL. | True |
+| Token URL (Authentication Service) | The Service Key `uaa.url` field for OAuth2 authentication.<br/>Example: `https://<subdomain>.authentication.<region>.hana.ondemand.com`<br/>**Important**: This is on a different subdomain than the API URL and is required. | True |
+| Client ID | The Service Key `uaa.clientid` field.<br/>Required for both mTLS and Non-mTLS authentication. | True |
 | Authentication Type | Select the authentication method:<br/>- **mTLS** (recommended): Uses client certificates<br/>- **Non-mTLS**: Uses client credentials | True |
 | Certificate | The body of the certificate.pem file.<br/>Required only when using mTLS authentication. | False |
 | Private Key | The body of the key.pem file.<br/>Required only when using mTLS authentication. | False |
-| Client Secret | The OAuth2 Client Secret (Password).<br/>Required only when using Non-mTLS authentication. | False |
+| Client Secret | The Service Key `uaa.clientsecret` field.<br/>Required only when using Non-mTLS authentication. | False |
 | Trust any certificate (not secure) | When selected, the integration will not verify SSL certificates. | False |
 | Use system proxy settings | When selected, the integration will use the system proxy settings. | False |
 | Fetch events | Enable automatic collection of audit log events. | False |
@@ -131,6 +173,38 @@ For more information about SAP BTP Audit Logging, refer to the official SAP docu
 
 ## Best Practices
 
-1. **Use mTLS Authentication**: For production environments, always use mTLS authentication with client certificates for enhanced security.
-2. **Configure Appropriate Limits**: Set the maximum number of events per fetch based on your organization's event volume.
-3. **Secure Credential Storage**: Ensure that authentication credentials (certificates or secrets) are stored securely and rotated regularly according to your organization's security policies.
+1. **Use Service Key Fields Directly**: Copy the exact values from your SAP Service Key JSON:
+   - `url` → API URL
+   - `uaa.url` → Token URL
+   - `uaa.clientid` → Client ID
+   - `uaa.clientsecret` → Client Secret (for Non-mTLS)
+2. **Verify Both URLs**: Ensure both API URL and Token URL are on their correct subdomains (different from each other).
+3. **Use mTLS Authentication**: For production environments, always use mTLS authentication with client certificates for enhanced security.
+4. **Configure Appropriate Limits**: Set the maximum number of events per fetch based on your organization's event volume.
+5. **Secure Credential Storage**: Ensure that authentication credentials (certificates or secrets) are stored securely and rotated regularly according to your organization's security policies.
+
+## Troubleshooting
+
+### 401 Unauthorized Error
+
+If you receive a 401 Unauthorized error, verify:
+
+1. **Token URL is correct**: The Token URL (`uaa.url` from Service Key) must be on the authentication subdomain (e.g., `<subdomain>.authentication.<region>...`), not the API subdomain.
+2. **Credentials are valid**: Ensure your Client ID, Client Secret (for Non-mTLS), or Certificate/Private Key (for mTLS) are correct and not expired.
+3. **Authentication type matches**: Verify you selected the correct authentication type (mTLS vs Non-mTLS) matching your Service Key configuration.
+
+### 404 Not Found Error
+
+If you receive a 404 error when fetching the token:
+
+1. **Check Token URL**: Ensure the Token URL is the `uaa.url` from your Service Key, not the `url` field.
+2. **Verify URL format**: The Token URL should be on the authentication subdomain (e.g., `https://<subdomain>.authentication.<region>.hana.ondemand.com`).
+3. **Do not include /oauth/token**: Provide only the base URL from `uaa.url` - the integration automatically appends `/oauth/token`.
+
+### Missing Token URL Error
+
+If you receive an error about missing Token URL:
+
+1. **Provide both URLs**: Both API URL and Token URL are required fields.
+2. **Check Service Key**: Ensure you're copying from the correct Service Key fields (`url` and `uaa.url`).
+3. **Different subdomains**: Remember that these URLs are on different subdomains and cannot be derived from each other.

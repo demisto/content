@@ -7,11 +7,17 @@ sectionorder:
 - Collect
 configuration:
 - name: url
-  display: Server URL (Service Key URL)
+  display: API URL (Audit Log Service)
   required: true
   type: 0
   section: Connect
-  additionalinfo: SAP Service Key field 'url' (e.g., https://auditlog-management.cfapps.us10.hana.ondemand.com).
+  additionalinfo: SAP Service Key field 'url' for Audit Log API (e.g., https://auditlog-management.cfapps.<region>.hana.ondemand.com).
+- name: token_url
+  display: Token URL (Authentication Service)
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: SAP Service Key field 'uaa.url' for OAuth2 authentication (e.g., https://<subdomain>.authentication.<region>.hana.ondemand.com). This is on a different subdomain than the API URL.
 - name: client_id
   display: Client ID (Username)
   required: true
@@ -130,7 +136,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.11.4508456
 fromversion: 6.10.0
 marketplaces:
 - xsoar

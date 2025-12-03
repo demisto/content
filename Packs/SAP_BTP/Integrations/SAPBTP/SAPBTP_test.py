@@ -10,8 +10,8 @@ import SAPBTP  # noqa: E402
 from SAPBTP import (  # noqa: E402
     AuthType,
     Client,
+    Config,
     ContextKeys,
-    IntegrationConfig,
     create_mtls_cert_files,
     fetch_events_command,
     fetch_events_with_pagination,
@@ -25,8 +25,9 @@ from SAPBTP import (  # noqa: E402
 # Constants
 # ========================================
 
-SERVER_URL = "https://test.sap.example.com"
-TOKEN_URL = f"{SERVER_URL}/oauth/token"
+SERVER_URL = "https://auditlog-management.cfapps.test.hana.ondemand.com"
+AUTH_SERVER_URL = "https://test-subdomain.authentication.test.hana.ondemand.com"
+TOKEN_URL = f"{AUTH_SERVER_URL}/oauth/token"
 TEST_DATA_PATH_SUFFIX = "test_data"
 INTEGRATION_DIR_REL = "Packs/SAP_BTP/Integrations/SAPBTP/"
 
@@ -79,7 +80,7 @@ def client_non_mtls():
         client_secret=MOCK_CLIENT_SECRET,
         verify=True,
         proxy=False,
-        auth_type=AuthType.NON_MTLS,
+        auth_type=AuthType.NON_MTLS.value,
         cert_data=None,
     )
 
@@ -94,7 +95,7 @@ def client_mtls():
         client_secret=None,
         verify=True,
         proxy=False,
-        auth_type=AuthType.MTLS,
+        auth_type=AuthType.MTLS.value,
         cert_data=("/tmp/cert.pem", "/tmp/key.pem"),
     )
 
@@ -166,10 +167,12 @@ def test_create_mtls_cert_files_failure(mocker):
 @pytest.mark.parametrize(
     "params,expected_error",
     [
-        ({"url": ""}, "Server URL is required"),
-        ({}, "Server URL is required"),
-        ({"url": SERVER_URL}, "Client ID is required"),
-        ({"url": SERVER_URL, "client_id": ""}, "Client ID is required"),
+        ({"url": ""}, "API URL is required"),
+        ({}, "API URL is required"),
+        ({"url": SERVER_URL}, "Token URL is required"),
+        ({"url": SERVER_URL, "token_url": ""}, "Token URL is required"),
+        ({"url": SERVER_URL, "token_url": AUTH_SERVER_URL}, "Client ID is required"),
+        ({"url": SERVER_URL, "token_url": AUTH_SERVER_URL, "client_id": ""}, "Client ID is required"),
     ],
 )
 def test_parse_integration_params_missing_required_fail(params, expected_error):
@@ -182,19 +185,25 @@ def test_parse_integration_params_missing_required_fail(params, expected_error):
     "params,expected_error",
     [
         (
-            {"url": SERVER_URL, "client_id": MOCK_CLIENT_ID, "auth_type": AuthType.MTLS},
+            {"url": SERVER_URL, "token_url": AUTH_SERVER_URL, "client_id": MOCK_CLIENT_ID, "auth_type": AuthType.MTLS.value},
             "mTLS authentication selected but missing required fields: Certificate, Private Key",
         ),
         (
-            {"url": SERVER_URL, "client_id": MOCK_CLIENT_ID, "auth_type": AuthType.MTLS, "certificate": MOCK_CERTIFICATE},
+            {
+                "url": SERVER_URL,
+                "token_url": AUTH_SERVER_URL,
+                "client_id": MOCK_CLIENT_ID,
+                "auth_type": AuthType.MTLS.value,
+                "certificate": MOCK_CERTIFICATE,
+            },
             "mTLS authentication selected but missing required fields: Private Key",
         ),
         (
-            {"url": SERVER_URL, "client_id": MOCK_CLIENT_ID, "auth_type": AuthType.NON_MTLS},
+            {"url": SERVER_URL, "token_url": AUTH_SERVER_URL, "client_id": MOCK_CLIENT_ID, "auth_type": AuthType.NON_MTLS.value},
             "Non-mTLS authentication selected but Client Secret is missing",
         ),
         (
-            {"url": SERVER_URL, "client_id": MOCK_CLIENT_ID, "auth_type": "InvalidAuth"},
+            {"url": SERVER_URL, "token_url": AUTH_SERVER_URL, "client_id": MOCK_CLIENT_ID, "auth_type": "InvalidAuth"},
             "Invalid authentication type 'InvalidAuth'",
         ),
     ],
@@ -211,27 +220,29 @@ def test_parse_integration_params_auth_validation_fail(params, expected_error):
         (
             {
                 "url": SERVER_URL,
+                "token_url": AUTH_SERVER_URL,
                 "client_id": MOCK_CLIENT_ID,
                 "client_secret": MOCK_CLIENT_SECRET,
-                "auth_type": AuthType.NON_MTLS,
+                "auth_type": AuthType.NON_MTLS.value,
                 "insecure": True,
                 "proxy": True,
             },
-            AuthType.NON_MTLS,
+            AuthType.NON_MTLS.value,
             False,
             True,
         ),
         (
             {
                 "url": f"{SERVER_URL}/",
+                "token_url": f"{AUTH_SERVER_URL}/",
                 "client_id": MOCK_CLIENT_ID,
                 "certificate": MOCK_CERTIFICATE,
                 "private_key": MOCK_PRIVATE_KEY,
-                "auth_type": AuthType.MTLS,
+                "auth_type": AuthType.MTLS.value,
                 "insecure": False,
                 "proxy": False,
             },
-            AuthType.MTLS,
+            AuthType.MTLS.value,
             True,
             False,
         ),
@@ -258,7 +269,7 @@ def test_client_init_non_mtls(client_non_mtls):
     """Tests Client initialization for Non-mTLS."""
     assert client_non_mtls.client_id == MOCK_CLIENT_ID
     assert client_non_mtls.client_secret == MOCK_CLIENT_SECRET
-    assert client_non_mtls.auth_type == AuthType.NON_MTLS
+    assert client_non_mtls.auth_type == AuthType.NON_MTLS.value
     assert client_non_mtls.cert_data is None
 
 
@@ -266,7 +277,7 @@ def test_client_init_mtls(client_mtls):
     """Tests Client initialization for mTLS."""
     assert client_mtls.client_id == MOCK_CLIENT_ID
     assert client_mtls.client_secret is None
-    assert client_mtls.auth_type == AuthType.MTLS
+    assert client_mtls.auth_type == AuthType.MTLS.value
     assert client_mtls.cert_data == ("/tmp/cert.pem", "/tmp/key.pem")
 
 
@@ -278,7 +289,7 @@ def test_client_init_mtls(client_mtls):
 def test_get_access_token_uses_cached_token(mocker, mock_context, client_non_mtls):
     """Tests _get_access_token uses valid token from cache."""
     mock_time = int(time.time()) + 3600
-    set_integration_context({ContextKeys.ACCESS_TOKEN: "CACHED_TOKEN", ContextKeys.VALID_UNTIL: str(mock_time)})
+    set_integration_context({ContextKeys.ACCESS_TOKEN.value: "CACHED_TOKEN", ContextKeys.VALID_UNTIL.value: str(mock_time)})
 
     mocker.patch.object(SAPBTP.time, "time", return_value=int(time.time()) + 10)
 
@@ -289,18 +300,18 @@ def test_get_access_token_uses_cached_token(mocker, mock_context, client_non_mtl
 def test_get_access_token_expired_renewal_non_mtls(mocker, mock_context, client_non_mtls):
     """Tests token renewal for Non-mTLS when cache is expired."""
     mock_time = int(time.time()) - 3600
-    set_integration_context({ContextKeys.ACCESS_TOKEN: "EXPIRED_TOKEN", ContextKeys.VALID_UNTIL: str(mock_time)})
+    set_integration_context({ContextKeys.ACCESS_TOKEN.value: "EXPIRED_TOKEN", ContextKeys.VALID_UNTIL.value: str(mock_time)})
 
     mocker.patch.object(
         client_non_mtls,
         "_http_request",
-        return_value={ContextKeys.ACCESS_TOKEN: MOCK_ACCESS_TOKEN, ContextKeys.EXPIRES_IN: 3600},
+        return_value={ContextKeys.ACCESS_TOKEN.value: MOCK_ACCESS_TOKEN, ContextKeys.EXPIRES_IN.value: 3600},
     )
 
     token = client_non_mtls._get_access_token()
 
     assert token == MOCK_ACCESS_TOKEN
-    assert get_integration_context().get(ContextKeys.ACCESS_TOKEN) == MOCK_ACCESS_TOKEN
+    assert get_integration_context().get(ContextKeys.ACCESS_TOKEN.value) == MOCK_ACCESS_TOKEN
 
 
 def test_get_access_token_renewal_mtls(mocker, mock_context, client_mtls):
@@ -308,7 +319,7 @@ def test_get_access_token_renewal_mtls(mocker, mock_context, client_mtls):
     mocker.patch.object(
         client_mtls,
         "_http_request",
-        return_value={ContextKeys.ACCESS_TOKEN: MOCK_ACCESS_TOKEN, ContextKeys.EXPIRES_IN: 3600},
+        return_value={ContextKeys.ACCESS_TOKEN.value: MOCK_ACCESS_TOKEN, ContextKeys.EXPIRES_IN.value: 3600},
     )
 
     token = client_mtls._get_access_token()
@@ -326,7 +337,7 @@ def test_get_access_token_mtls_without_cert_data_fail(mock_context):
         client_secret=None,
         verify=True,
         proxy=False,
-        auth_type=AuthType.MTLS,
+        auth_type=AuthType.MTLS.value,
         cert_data=None,
     )
 
@@ -344,12 +355,12 @@ def test_get_access_token_no_token_in_response_fail(mocker, mock_context, client
 
 def test_get_access_token_invalid_cache_renewal(mocker, mock_context, client_non_mtls):
     """Tests token renewal when cache has invalid expiration value."""
-    set_integration_context({ContextKeys.ACCESS_TOKEN: "BAD_TOKEN", ContextKeys.VALID_UNTIL: "NOT_A_NUMBER"})
+    set_integration_context({ContextKeys.ACCESS_TOKEN.value: "BAD_TOKEN", ContextKeys.VALID_UNTIL.value: "NOT_A_NUMBER"})
 
     mocker.patch.object(
         client_non_mtls,
         "_http_request",
-        return_value={ContextKeys.ACCESS_TOKEN: MOCK_ACCESS_TOKEN, ContextKeys.EXPIRES_IN: 3600},
+        return_value={ContextKeys.ACCESS_TOKEN.value: MOCK_ACCESS_TOKEN, ContextKeys.EXPIRES_IN.value: 3600},
     )
 
     token = client_non_mtls._get_access_token()
@@ -413,7 +424,7 @@ def test_get_audit_log_events_first_page(mocker, client_non_mtls):
 def test_get_audit_log_events_with_pagination_handle(mocker, client_non_mtls):
     """Tests get_audit_log_events uses pagination handle."""
     mock_response_body = [{"uuid": "event2"}]
-    mock_response_headers = {}
+    mock_response_headers: dict[str, str] = {}
 
     mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
 
@@ -428,7 +439,7 @@ def test_get_audit_log_events_with_pagination_handle(mocker, client_non_mtls):
 def test_get_audit_log_events_response_with_value_key(mocker, client_non_mtls):
     """Tests get_audit_log_events handles response with 'value' key."""
     mock_response_body = {"value": [{"uuid": "event1"}]}
-    mock_response_headers = {}
+    mock_response_headers: dict[str, str] = {}
 
     mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
 
@@ -635,9 +646,7 @@ def test_fetch_events_command_first_run(mocker, client_non_mtls):
     fetch_events_command(client_non_mtls, {})
 
     demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T01:00:00Z"})
-    SAPBTP.send_events_to_xsiam.assert_called_once_with(
-        mock_events, vendor=IntegrationConfig.VENDOR, product=IntegrationConfig.PRODUCT
-    )
+    SAPBTP.send_events_to_xsiam.assert_called_once_with(mock_events, vendor=Config.VENDOR, product=Config.PRODUCT)
 
 
 def test_fetch_events_command_with_last_run(mocker, client_non_mtls):
@@ -697,7 +706,12 @@ def test_main_invalid_command_fail(mocker):
     mocker.patch.object(
         demisto,
         "params",
-        return_value={"url": SERVER_URL, "client_id": MOCK_CLIENT_ID, "client_secret": MOCK_CLIENT_SECRET},
+        return_value={
+            "url": SERVER_URL,
+            "token_url": AUTH_SERVER_URL,
+            "client_id": MOCK_CLIENT_ID,
+            "client_secret": MOCK_CLIENT_SECRET,
+        },
     )
     mocker.patch.object(demisto, "args", return_value={})
 
@@ -719,9 +733,10 @@ def test_main_test_module_success(mocker):
         "params",
         return_value={
             "url": SERVER_URL,
+            "token_url": AUTH_SERVER_URL,
             "client_id": MOCK_CLIENT_ID,
             "client_secret": MOCK_CLIENT_SECRET,
-            "auth_type": AuthType.NON_MTLS,
+            "auth_type": AuthType.NON_MTLS.value,
         },
     )
     mocker.patch.object(demisto, "args", return_value={})
@@ -742,9 +757,10 @@ def test_main_get_events_success(mocker):
         "params",
         return_value={
             "url": SERVER_URL,
+            "token_url": AUTH_SERVER_URL,
             "client_id": MOCK_CLIENT_ID,
             "client_secret": MOCK_CLIENT_SECRET,
-            "auth_type": AuthType.NON_MTLS,
+            "auth_type": AuthType.NON_MTLS.value,
         },
     )
     mocker.patch.object(demisto, "args", return_value={})
@@ -765,9 +781,10 @@ def test_main_fetch_events_success(mocker):
         "params",
         return_value={
             "url": SERVER_URL,
+            "token_url": AUTH_SERVER_URL,
             "client_id": MOCK_CLIENT_ID,
             "client_secret": MOCK_CLIENT_SECRET,
-            "auth_type": AuthType.NON_MTLS,
+            "auth_type": AuthType.NON_MTLS.value,
         },
     )
     mocker.patch.object(demisto, "args", return_value={})
@@ -787,9 +804,10 @@ def test_main_command_execution_error(mocker):
         "params",
         return_value={
             "url": SERVER_URL,
+            "token_url": AUTH_SERVER_URL,
             "client_id": MOCK_CLIENT_ID,
             "client_secret": MOCK_CLIENT_SECRET,
-            "auth_type": AuthType.NON_MTLS,
+            "auth_type": AuthType.NON_MTLS.value,
         },
     )
     mocker.patch.object(demisto, "args", return_value={})

@@ -28,7 +28,7 @@ Sections:
 INTEGRATION_NAME = "SAP BTP (Business Technology Platform)"
 
 
-class IntegrationConfig:
+class Config:
     """Global static configuration."""
 
     VENDOR = "SAP"
@@ -66,9 +66,10 @@ class APIKeys(str, Enum):
     HANDLE = "handle"
     GRANT_TYPE = "grant_type"
     CLIENT_ID = "client_id"
+    CLIENT_SECRET = "client_secret"
 
 
-class ApiValues(str, Enum):
+class APIValues(str, Enum):
     """API Endpoint paths and fixed Parameter Values."""
 
     AUDIT_ENDPOINT = "/auditlog/v2/auditlogrecords"
@@ -138,13 +139,44 @@ def create_mtls_cert_files(certificate: str, private_key: str) -> tuple[str, str
 
 
 def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
-    """Parse and validate integration configuration parameters."""
-    demisto.debug("Parsing integration parameters.")
+    """Parse and validate integration configuration parameters.
 
-    base_url = (params.get("url", "")).rstrip("/")
+    SAP BTP uses two separate domains:
+    1. API URL (base_url) - For audit log API calls (Service Key field: 'url')
+    2. Token URL - For OAuth2 authentication (Service Key field: 'uaa.url')
+
+    Args:
+        params: Integration configuration parameters
+
+    Returns:
+        Dictionary with parsed and validated configuration
+
+    Raises:
+        DemistoException: If required parameters are missing or invalid
+    """
+    demisto.debug("Parsing integration parameters.")
+    base_url = (params.get("url", "")).strip().rstrip("/")
+    token_url_param = params.get("token_url", "").strip().rstrip("/")
+
+    if not base_url:
+        raise DemistoException(
+            "API URL is required. Please provide the Service Key 'url' field "
+            "(e.g., https://auditlog-management.cfapps.<region>.hana.ondemand.com)."
+        )
+
+    if not token_url_param:
+        raise DemistoException(
+            "Token URL is required. Please provide the Service Key 'uaa.url' field "
+            "(e.g., https://<subdomain>.authentication.<region>.hana.ondemand.com). "
+            "This is different from the API URL and is required for OAuth2 authentication."
+        )
+
+    token_url = f"{token_url_param}/oauth/token"
+    demisto.debug(f"Configured URLs - API: {base_url}, Token: {token_url}")
+
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
-    auth_type = params.get("auth_type", AuthType.NON_MTLS)
+    auth_type = params.get("auth_type", AuthType.NON_MTLS.value)
 
     client_id = params.get("client_id", "").strip()
     client_secret = params.get("client_secret", "").strip()
@@ -152,20 +184,14 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     private_key = params.get("private_key", "").strip()
 
     demisto.debug(
-        f"Parsed config: {base_url=}, {auth_type=}, has_client_id={bool(client_id)}, "
+        f"Parsed config: {auth_type=}, has_client_id={bool(client_id)}, "
         f"has_client_secret={bool(client_secret)}, has_certificate={bool(certificate)}, has_private_key={bool(private_key)}"
     )
-
-    if not base_url:
-        raise DemistoException("Server URL is required.")
 
     if not client_id:
         raise DemistoException("Client ID is required for both mTLS and Non-mTLS authentication.")
 
-    token_url = f"{base_url}/oauth/token"
-    demisto.debug(f"Constructed token URL: {token_url}")
-
-    if auth_type == AuthType.MTLS:
+    if auth_type == AuthType.MTLS.value:
         missing_fields = []
         if not certificate:
             missing_fields.append("Certificate")
@@ -179,7 +205,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
             )
         demisto.debug("Using mTLS authentication with valid credentials")
 
-    elif auth_type == AuthType.NON_MTLS:
+    elif auth_type == AuthType.NON_MTLS.value:
         if not client_secret:
             raise DemistoException(
                 "Non-mTLS authentication selected but Client Secret is missing. "
@@ -259,8 +285,8 @@ class Client(BaseClient):
         """
         current_timestamp = int(time.time())
         cached_context = get_integration_context() or {}
-        cached_token = cached_context.get(ContextKeys.ACCESS_TOKEN)
-        cached_valid_until = cached_context.get(ContextKeys.VALID_UNTIL)
+        cached_token = cached_context.get(ContextKeys.ACCESS_TOKEN.value)
+        cached_valid_until = cached_context.get(ContextKeys.VALID_UNTIL.value)
 
         if cached_token and cached_valid_until:
             try:
@@ -275,34 +301,38 @@ class Client(BaseClient):
 
         demisto.debug(f"Requesting new OAuth2 token from {self.token_url}")
 
-        token_params: dict[str, Any] = {APIKeys.GRANT_TYPE: ApiValues.GRANT_TYPE_CLIENT_CREDENTIALS}
         request_kwargs: dict[str, Any] = {"method": "POST", "full_url": self.token_url}
 
-        if self.auth_type == AuthType.NON_MTLS:
-            demisto.debug("Using Non-mTLS authentication (client credentials)")
+        if self.auth_type == AuthType.NON_MTLS.value:
+            demisto.debug("Using Non-mTLS authentication (client credentials in form data)")
             request_kwargs["auth"] = (self.client_id, self.client_secret)
-            request_kwargs["params"] = token_params
-        elif self.auth_type == AuthType.MTLS:
+            request_kwargs["params"] = {
+                APIKeys.GRANT_TYPE.value: APIValues.GRANT_TYPE_CLIENT_CREDENTIALS.value,
+            }
+        elif self.auth_type == AuthType.MTLS.value:
             demisto.debug("Using mTLS authentication (client certificate)")
             if not self.cert_data:
                 raise DemistoException("mTLS authentication requires certificate files")
             request_kwargs["cert"] = self.cert_data
-            token_params[APIKeys.CLIENT_ID] = self.client_id
-            request_kwargs["data"] = token_params
+            token_data = {
+                APIKeys.GRANT_TYPE.value: APIValues.GRANT_TYPE_CLIENT_CREDENTIALS.value,
+                APIKeys.CLIENT_ID.value: self.client_id,
+            }
+            request_kwargs["data"] = token_data
 
         token_response = self._http_request(**request_kwargs)
-        demisto.debug(f"Token request completed, response contains {len(token_response)} fields")
+        demisto.debug("Token request completed successfully")
 
-        access_token = token_response.get(ContextKeys.ACCESS_TOKEN)
+        access_token = token_response.get(ContextKeys.ACCESS_TOKEN.value)
         if not access_token:
-            demisto.debug(f"Token response missing '{ContextKeys.ACCESS_TOKEN}': {token_response}")
+            demisto.debug(f"Token response missing '{ContextKeys.ACCESS_TOKEN.value}': {token_response}")
             raise DemistoException("Failed to obtain access token from SAP BTP")
 
-        token_expires_in = token_response.get(ContextKeys.EXPIRES_IN, IntegrationConfig.DEFAULT_TOKEN_TTL_SECONDS)
-        token_valid_until = current_timestamp + token_expires_in - IntegrationConfig.CACHE_BUFFER_SECONDS
+        token_expires_in = token_response.get(ContextKeys.EXPIRES_IN.value, Config.DEFAULT_TOKEN_TTL_SECONDS)
+        token_valid_until = current_timestamp + token_expires_in - Config.CACHE_BUFFER_SECONDS
         demisto.debug(f"Token will expire in {token_expires_in}s, caching until {token_valid_until}")
 
-        new_context = {ContextKeys.ACCESS_TOKEN: access_token, ContextKeys.VALID_UNTIL: str(token_valid_until)}
+        new_context = {ContextKeys.ACCESS_TOKEN.value: access_token, ContextKeys.VALID_UNTIL.value: str(token_valid_until)}
         set_integration_context(new_context)
 
         demisto.debug(
@@ -326,7 +356,7 @@ class Client(BaseClient):
             JSON response or (json_body, headers) tuple if return_full_response=True
         """
         access_token = self._get_access_token()
-        auth_headers = {APIKeys.HEADER_AUTH: f"Bearer {access_token}"}
+        auth_headers = {APIKeys.HEADER_AUTH.value: f"Bearer {access_token}"}
 
         demisto.debug(f"Executing {method} request to {url_suffix}")
         if params:
@@ -373,16 +403,16 @@ class Client(BaseClient):
 
         if pagination_handle:
             demisto.debug(f"Using pagination handle: {pagination_handle[:50]}...")
-            request_params[APIKeys.HANDLE] = pagination_handle
+            request_params[APIKeys.HANDLE.value] = pagination_handle
         else:
             events_filter = f"created_at gt {created_after}"
-            page_size = min(limit, IntegrationConfig.MAX_PAGE_SIZE)
+            page_size = min(limit, Config.MAX_PAGE_SIZE)
             demisto.debug(f"First page request: filter='{events_filter}', page_size={page_size}")
-            request_params[APIKeys.FILTER] = events_filter
-            request_params[APIKeys.TOP] = page_size
+            request_params[APIKeys.FILTER.value] = events_filter
+            request_params[APIKeys.TOP.value] = page_size
 
         response_body, response_headers = self.http_request(
-            method="GET", url_suffix=ApiValues.AUDIT_ENDPOINT, params=request_params, return_full_response=True
+            method="GET", url_suffix=APIValues.AUDIT_ENDPOINT.value, params=request_params, return_full_response=True
         )
 
         events_list = response_body if isinstance(response_body, list) else response_body.get("value", [])
@@ -405,7 +435,7 @@ class Client(BaseClient):
         Returns:
             Pagination handle string or None if not present
         """
-        paging_header_value = headers.get(APIKeys.HEADER_PAGING) or headers.get(APIKeys.HEADER_PAGING.lower())
+        paging_header_value = headers.get(APIKeys.HEADER_PAGING.value) or headers.get(APIKeys.HEADER_PAGING.value.lower())
 
         if not paging_header_value:
             demisto.debug("No pagination header found in response")
@@ -436,7 +466,7 @@ def test_module(client: Client) -> str:
     """Test API connectivity and authentication."""
     demisto.debug("Starting execution of command: Test Module")
     try:
-        test_time = (datetime.now() - timedelta(minutes=1)).strftime(IntegrationConfig.DATE_FORMAT)
+        test_time = (datetime.now() - timedelta(minutes=1)).strftime(Config.DATE_FORMAT)
         demisto.debug(f"Testing with time (now - 1 minute): {test_time}")
         fetch_events_with_pagination(client, created_after=test_time, max_events=1)
         demisto.debug("Command 'Test Module' execution finished successfully.")
@@ -501,12 +531,12 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     demisto.debug("Starting execution of command: Get Events")
 
-    from_time = args.get("from", DefaultValues.FROM_TIME)
-    limit = args.get("max_fetch", IntegrationConfig.DEFAULT_LIMIT)
+    from_time = args.get("from", DefaultValues.FROM_TIME.value)
+    limit = args.get("max_fetch", Config.DEFAULT_LIMIT)
     demisto.debug(f"Parsed arguments: from={from_time}, limit={limit}")
 
-    start_datetime = parse_date_or_use_current(from_time if from_time != DefaultValues.FROM_TIME else None)
-    created_after = start_datetime.strftime(IntegrationConfig.DATE_FORMAT)
+    start_datetime = parse_date_or_use_current(from_time if from_time != DefaultValues.FROM_TIME.value else None)
+    created_after = start_datetime.strftime(Config.DATE_FORMAT)
     demisto.debug(f"Fetching events from: {created_after}")
 
     events = fetch_events_with_pagination(client, created_after, int(limit))
@@ -539,9 +569,9 @@ def fetch_events_command(client: Client, args: dict[str, Any]) -> None:
     demisto.debug(f"Last run: {last_run}")
 
     last_fetch_datetime = parse_date_or_use_current(last_fetch_timestamp)
-    created_after = last_fetch_datetime.strftime(IntegrationConfig.DATE_FORMAT)
+    created_after = last_fetch_datetime.strftime(Config.DATE_FORMAT)
 
-    max_events_to_fetch = args.get("max_fetch", IntegrationConfig.DEFAULT_LIMIT)
+    max_events_to_fetch = args.get("max_fetch", Config.DEFAULT_LIMIT)
     demisto.debug(f"Fetch parameters: created_after={created_after}, max_events={max_events_to_fetch}")
 
     events = fetch_events_with_pagination(client, created_after, int(max_events_to_fetch))
@@ -560,7 +590,7 @@ def fetch_events_command(client: Client, args: dict[str, Any]) -> None:
         else:
             demisto.debug("Warning: Last event has no 'time' field, last run not updated")
 
-        send_events_to_xsiam(events, vendor=IntegrationConfig.VENDOR, product=IntegrationConfig.PRODUCT)
+        send_events_to_xsiam(events, vendor=Config.VENDOR, product=Config.PRODUCT)
         demisto.debug(f"Successfully sent {len(events)} events to XSIAM")
     else:
         demisto.debug(f"No events fetched from {created_after}, nothing to send to XSIAM")
@@ -599,7 +629,7 @@ def main() -> None:
         demisto.debug(f"Configuration parsed successfully: base_url={config['base_url']}, auth_type={config['auth_type']}")
 
         cert_data = None
-        if config["auth_type"] == AuthType.MTLS:
+        if config["auth_type"] == AuthType.MTLS.value:
             cert_data = create_mtls_cert_files(config["certificate"], config["private_key"])
 
         demisto.debug(f"Initializing {INTEGRATION_NAME} Client")
@@ -632,7 +662,7 @@ def main() -> None:
     except Exception as error:
         error_msg = f"Failed to execute {command=}. Error: {str(error)}"
         demisto.debug(f"Error: {error_msg}\nTrace: {traceback.format_exc()}")
-        return_error(error_msg, error=str(error))
+        return_error(error_msg)
 
     finally:
         demisto.debug(f"{INTEGRATION_NAME} integration finished")
