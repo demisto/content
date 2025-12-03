@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from enum import Enum
 import demistomock as demisto
 from CommonServerPython import *
@@ -533,7 +534,18 @@ class Client:
         )
         return {"Authorization": f"Bearer {new_token}"}
 
-    async def test_connection(self, auth_test: bool = False):
+    @asynccontextmanager
+    async def _get_session(self):
+        """
+        Creates and initializes an async context manager for MCP client session.
+
+        Establishes a streamable HTTP connection to the MCP server and creates a client session
+        for communication. The session is automatically initialized and cleaned up when the
+        context exits.
+
+        Yields:
+            ClientSession: An initialized MCP client session for making requests
+        """
         headers = await self._resolve_headers()
         async with (
             streamablehttp_client(self.base_url, headers=headers) as (
@@ -543,6 +555,11 @@ class Client:
             ),
             ClientSession(read_stream, write_stream) as session,  # pylint: disable=E0601
         ):
+            await session.initialize()
+            yield session
+
+    async def test_connection(self, auth_test: bool = False):
+        async with self._get_session() as session:
             # Initialize the connection
             await session.initialize()
             if auth_test:
@@ -551,15 +568,7 @@ class Client:
                 return "ok"
 
     async def list_tools(self):
-        headers = await self._resolve_headers()
-        async with (
-            streamablehttp_client(self.base_url, headers=headers) as (
-                read_stream,
-                write_stream,
-                _,
-            ),
-            ClientSession(read_stream, write_stream) as session,  # pylint: disable=E0601
-        ):
+        async with self._get_session() as session:
             await session.initialize()
             tools = await session.list_tools()
 
@@ -579,15 +588,8 @@ class Client:
             parsed_arguments = json.loads(arguments or "{}")
         except json.JSONDecodeError:
             raise DemistoException(f"Invalid JSON provided for arguments: {arguments}")
-        headers = await self._resolve_headers()
-        async with (
-            streamablehttp_client(self.base_url, headers=headers) as (
-                read_stream,
-                write_stream,
-                _,
-            ),
-            ClientSession(read_stream, write_stream) as session,  # pylint: disable=E0601
-        ):
+
+        async with self._get_session() as session:
             await session.initialize()
             result = await session.call_tool(tool_name, parsed_arguments)
 
