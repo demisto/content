@@ -150,13 +150,6 @@ configuration:
   required: false
   advanced: true
   additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
-- display: CNAPP Alert fetch query
-  name: cnapp_alert_fetch_query
-  type: 0
-  section: Collect
-  required: false
-  advanced: true
-  additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -252,7 +245,6 @@ configuration:
   - OFP Detection
   - Third Party Detection
   - NGSIEM Detection
-  - CNAPP Alert
   hidden:
   - marketplacev2
   - platform
@@ -271,7 +263,6 @@ configuration:
   - Mobile Detection
   - On-Demand Scans Detection
   - OFP Detection
-  - CNAPP Alert
   hidden:
   - xsoar
   - xpanse
@@ -329,6 +320,17 @@ configuration:
   defaultvalue: 2
   name: look_back_xsiam
   type: 0
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - xsoar
+  - xpanse
+- additionalinfo: The fetch interval for assets and vulnerabilities. It is recommended to set it to 1 hour.
+  defaultvalue: 60
+  display: Assets Fetch Interval
+  name: assetsFetchInterval
+  type: 19
   section: Collect
   advanced: true
   required: false
@@ -5160,6 +5162,7 @@ script:
   isfetch:marketplacev2: false
   isfetch:platform: false
   isfetchevents: true
+  isfetchassets: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true

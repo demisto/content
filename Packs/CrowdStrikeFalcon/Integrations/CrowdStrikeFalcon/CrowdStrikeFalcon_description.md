@@ -46,6 +46,5 @@ Optional types are:
   - OFP Detection
   - NGSIEM Detection
   - Third Party Detection
-  - CNAPP Detection
   Records from the detection endpoint of the *CrowdStrike Falcon* UI could be of types: Endpoint Detection and OFP Detection.
 </~XSOAR>
