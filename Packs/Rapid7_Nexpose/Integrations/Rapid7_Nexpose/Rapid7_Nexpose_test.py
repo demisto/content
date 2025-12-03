@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import copy
 import pytest
 from Rapid7_Nexpose import *
 
@@ -2431,7 +2432,7 @@ async def test_run_full_collector_workflow_success(mocker):
     mock_create_report = mocker.patch("Rapid7_Nexpose.create_report_config_from_template", return_value="test-report-id")
     mock_generate_report = mocker.patch("Rapid7_Nexpose.generate_report", return_value="test-instance-id")
     mock_check_status = mocker.patch("Rapid7_Nexpose.check_status_of_report", return_value="test-instance-id")
-    mock_download_parse = mocker.patch("Rapid7_Nexpose.download_and_parse_report")
+    mock_download_parse = mocker.patch("Rapid7_Nexpose.stream_and_parse_report")
     mock_delete_instance = mocker.patch("Rapid7_Nexpose.delete_report_instance")
     mock_delete_config = mocker.patch("Rapid7_Nexpose.delete_report_configuration")
 
@@ -2482,9 +2483,9 @@ async def test_run_full_collector_workflow_error_handling(mocker):
     mocker.patch("Rapid7_Nexpose.generate_report", return_value="test-instance-id")
     mocker.patch("Rapid7_Nexpose.check_status_of_report", return_value="test-instance-id")
 
-    # Mock the download_and_parse_report function to raise an exception
+    # Mock the stream_and_parse_report function to raise an exception
     test_error = Exception("Test error during download and parse")
-    mocker.patch("Rapid7_Nexpose.download_and_parse_report", side_effect=test_error)
+    mocker.patch("Rapid7_Nexpose.stream_and_parse_report", side_effect=test_error)
 
     # Mock the cleanup functions
     mock_delete_instance = mocker.patch("Rapid7_Nexpose.delete_report_instance")
@@ -2602,14 +2603,14 @@ async def test_check_status_of_report_failed(mocker):
 
 
 @pytest.mark.asyncio
-async def test_download_and_parse_report_success(mocker):
+async def test_stream_and_parse_report_success(mocker):
     """
     Given:
       - A properly configured InsightVMClient
       - A valid report with CSV data
 
     When:
-      - Calling the download_and_parse_report function
+      - Calling the stream_and_parse_report function
 
     Then:
       - Ensure the function processes the report data correctly
@@ -2655,7 +2656,7 @@ async def test_download_and_parse_report_success(mocker):
     event_integration_context = {"last_sent_line": 0, "total_records_ingested": 0, "snapshot_id": "test-snapshot-id"}
 
     # Call the function under test
-    await download_and_parse_report(
+    await stream_and_parse_report(
         client=mock_client,
         report_id="test-report-id",
         instance_id="test-instance-id",
@@ -2688,14 +2689,14 @@ async def test_download_and_parse_report_success(mocker):
 
 
 @pytest.mark.asyncio
-async def test_download_and_parse_report_error(mocker):
+async def test_stream_and_parse_report_error(mocker):
     """
     Given:
       - A properly configured InsightVMClient
       - An error occurs during report streaming
 
     When:
-      - Calling the download_and_parse_report function
+      - Calling the stream_and_parse_report function
 
     Then:
       - Ensure the function handles the error properly
@@ -2727,7 +2728,7 @@ async def test_download_and_parse_report_error(mocker):
 
     # Call the function under test and expect an exception
     with pytest.raises(Exception) as excinfo:
-        await download_and_parse_report(
+        await stream_and_parse_report(
             client=mock_client,
             report_id="test-report-id",
             instance_id="test-instance-id",
@@ -2741,9 +2742,6 @@ async def test_download_and_parse_report_error(mocker):
 
     # Verify process_and_send_events_to_xsiam was not called
     mock_process_send.assert_not_called()
-
-
-import copy
 
 
 @pytest.mark.parametrize(
@@ -2847,3 +2845,132 @@ def test_apply_collector_changes(collector_context, collector_type, changes, exp
 
     # Verify the context was updated correctly
     assert context_copy == expected_result
+
+
+@pytest.mark.asyncio
+async def test_stream_report_success(mocker):
+    """
+    Given:
+      - A properly configured InsightVMClient
+      - A valid report ID and instance ID
+      - A response with chunked content
+
+    When:
+      - Calling the stream_report function
+
+    Then:
+      - Ensure the function correctly processes chunks into lines
+      - Ensure it handles partial lines across chunks
+      - Ensure it properly decodes bytes to UTF-8 strings
+      - Ensure it releases the response object when done
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+
+    # Create test data - simulate chunks that might split lines
+    chunk1 = b"id,name,ip_address\n1,server"
+    chunk2 = b"1,192.168.1.1\n2,server2,192.168.1.2\n"
+
+    # Mock the response object
+    mock_response = mocker.AsyncMock()
+    mock_response.release = mocker.AsyncMock()
+
+    # Mock the content stream with an async iterator that yields our chunks
+    mock_content = mocker.AsyncMock()
+
+    # Create a proper async iterator for the content
+    class MockAsyncIterator:
+        def __init__(self, chunks):
+            self.chunks = chunks
+            self.index = 0
+
+        def __aiter__(self):
+            return self
+
+        async def __anext__(self):
+            if self.index < len(self.chunks):
+                chunk = self.chunks[self.index]
+                self.index += 1
+                return chunk
+            raise StopAsyncIteration
+
+    # Set up the mock content to use our async iterator
+    mock_content.iter_any = lambda: MockAsyncIterator([chunk1, chunk2])
+    mock_response.content = mock_content
+
+    # Mock the client's http_request method to return our mock response
+    mock_client.http_request = mocker.AsyncMock(return_value=mock_response)
+
+    # Mock demisto.debug to avoid debug output during tests
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    # Call the function under test and collect the results
+    results = []
+    async for line in stream_report(mock_client, "test-report-id", "test-instance-id"):
+        results.append(line)
+
+    # Verify the expected results
+    expected_results = ["id,name,ip_address\n", "1,server1,192.168.1.1\n", "2,server2,192.168.1.2\n"]
+
+    assert results == expected_results
+
+    # Verify http_request was called with the correct parameters
+    mock_client.http_request.assert_called_once_with("GET", "/api/3/reports/test-report-id/history/test-instance-id/output")
+
+    # Verify the response was released
+    mock_response.release.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_stream_report_error_handling(mocker):
+    """
+    Given:
+      - A properly configured InsightVMClient
+      - A valid report ID and instance ID
+      - An error occurs during streaming
+
+    When:
+      - Calling the stream_report function
+
+    Then:
+      - Ensure the function properly handles the error
+      - Ensure it still releases the response object
+    """
+    # Mock the InsightVMClient
+    mock_client = mocker.AsyncMock()
+
+    # Mock the response object
+    mock_response = mocker.AsyncMock()
+    mock_response.release = mocker.AsyncMock()
+
+    # Mock the content stream to raise an exception during iteration
+    mock_content = mocker.AsyncMock()
+
+    # Create an async iterator that raises an exception
+    class MockErrorAsyncIterator:
+        def __aiter__(self):
+            return self
+
+        async def __anext__(self):
+            raise Exception("Error during streaming")
+
+    # Set up the mock content to use our error-raising iterator
+    mock_content.iter_any = lambda: MockErrorAsyncIterator()
+    mock_response.content = mock_content
+
+    # Mock the client's http_request method to return our mock response
+    mock_client.http_request = mocker.AsyncMock(return_value=mock_response)
+
+    # Mock demisto.debug to avoid debug output during tests
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    # Call the function under test and expect an exception
+    with pytest.raises(Exception) as excinfo:
+        async for _ in stream_report(mock_client, "test-report-id", "test-instance-id"):
+            pass
+
+    # Verify the exception contains the expected error message
+    assert "Error during streaming" in str(excinfo.value)
+
+    # Verify the response was still released despite the error
+    mock_response.release.assert_called_once()

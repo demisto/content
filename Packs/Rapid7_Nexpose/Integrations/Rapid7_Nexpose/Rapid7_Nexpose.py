@@ -27,10 +27,6 @@ VALID_TAG_COLORS = ["blue", "green", "orange", "red", "purple", "default"]
 
 urllib3.disable_warnings()  # Disable insecure warnings
 
-############################################## Beginning of beta part ##############################################
-BETA_FETCH_EVENTS_MAX_PAGE_SIZE = 600000  # Allowed events limit per request.
-MAX_ALLOWED_CONCURRENT_TASKS = 10000
-
 BASE_QUERY_FOR_ASSETS = """WITH asset_tags AS (
     SELECT
         dta.asset_id,
@@ -2480,6 +2476,48 @@ class InsightVMClient:
             raise Exception(f"API Error ({method} {endpoint}): Status {response.status}, Body: {error_body[:500]}")
 
         return response
+
+    @staticmethod
+    def _sync_http_request(url: str, headers: Dict[str, str], payload: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Performs a blocking POST request using the 'requests' library.
+        This runs in a separate thread via asyncio.to_thread().
+        """
+        try:
+            # Note: headers and payload are already prepared by the calling method
+            response = requests.post(url, headers=headers, json=payload, verify=False)
+            response.raise_for_status()  # Raise exception for 4xx/5xx status codes
+
+            # Return the necessary information for the calling async function
+            return {
+                "status": response.status_code,
+                "location": response.headers.get("Location"),
+                "data": response.json() if response.content else response.text,
+            }
+        except requests.exceptions.RequestException as e:
+            # Catch all requests errors (network, timeout, etc.)
+            raise Exception(f"Synchronous HTTP Request Failed: {e}")
+
+    # ====================================================================
+    #           2. ASYNCHRONOUS THREADED WRAPPER
+    # ====================================================================
+
+    def http_request_sync(self, method: str, endpoint: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Runs the blocking request in a separate thread to avoid freezing the asyncio event loop.
+        """
+        url = self._base_url + endpoint
+
+        # Use functools.partial to pre-fill the synchronous function arguments
+        # We only pass the data required by the static method.
+        if method.upper() != "POST":
+            raise NotImplementedError("http_request_sync only supports POST method for report creation.")
+
+        # Offload the blocking request to a separate thread
+        result = self._sync_http_request(url, self._headers, payload)
+
+        # We assume the static method handles basic error raising (via raise_for_status)
+        return result
 
 
 class Site:
@@ -6700,10 +6738,16 @@ def get_list_asset_group_command(
 ##############################################################################
 
 
-async def create_report_config_from_template(client: InsightVMClient, event_type: str) -> str:
-    """Creates a new report configuration from a template."""
+def create_report_config_from_template(client: "InsightVMClient", event_type: str) -> str:
+    """
+    Creates a new report configuration synchronously by using the client's
+    thread-safe, blocking HTTP request method.
+
+    NOTE: This function is synchronous (no 'async' keyword).
+    """
     endpoint = "/api/3/reports"
 
+    # Define the payload
     payload = {
         "format": "sql-query",
         "name": f"XSOAR_Asset_Collector_{int(time.time())}",
@@ -6711,18 +6755,21 @@ async def create_report_config_from_template(client: InsightVMClient, event_type
         "version": "2.3.0",
     }
 
-    demisto.debug(f"Prepared the payload for {event_type}")
-    # Use the client's http_request method for POST
-    response = await client.http_request("POST", endpoint, payload=payload)
+    demisto.debug(f"Attempting to create report configuration synchronously for {event_type}")
 
-    # Handle response logic
-    report_url = response.headers.get("Location")
-    await response.release()
+    # This method has to be syncronic due to an issue with the API
+    result = client.http_request_sync(method="POST", endpoint=endpoint, payload=payload)
+
+    # The report ID is extracted from the 'location' key returned by the sync method
+    report_url = result.get("location")
+
     if not report_url:
-        raise Exception("Failed to retrieve report URL from Location header.")
+        # Check for error data returned in the body if location is missing
+        error_data = result.get("data", "No body content")
+        raise Exception(f"Failed to retrieve report URL from Location header. Response data: {error_data}")
 
     report_id = report_url.split("/")[-1]
-    demisto.debug(f"Report configuration for {event_type} created successfully. Report ID: {report_id}")
+    demisto.debug(f"Report configuration created successfully. Report ID: {report_id}")
     return report_id
 
 
@@ -6816,13 +6863,13 @@ async def stream_report(client: "InsightVMClient", report_id: str, instance_id: 
         await response.release()
 
 
-async def download_and_parse_report(
+async def stream_and_parse_report(
     client: "InsightVMClient",
     report_id: str,
     instance_id: str,
     event_integration_context: dict,
     event_type: str,
-    batch_size: int = 1000,
+    batch_size: int = 10,
 ):
     # --- Checkpoint Setup ---
     current_line_count = 0
@@ -7136,7 +7183,7 @@ def rapid7_send_data_to_xsiam(
 
     :type send_events_asynchronously: ``bool``
     :param send_events_asynchronously: whether to use asyncio to send the events to xsiam asynchronously or not.
-    Note that when set to True, the updateModuleHealth should be done from the integration itself.
+    Note that when set to True, the debug should be done from the integration itself.
 
     :type data_size_expected_to_split_evenly: ``bool``
     :param data_size_expected_to_split_evenly: whether the events should be about the same size or not.
@@ -7300,10 +7347,17 @@ def split_data_by_slices(data, target_chunk_size):  # pragma: no cover
     target_chunk_size = min(target_chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
     if isinstance(data, str):
         data = data.split("\n")
+
+    # Handle empty list case immediately
+    if not data:
+        return []
+
     entry_size = sys.getsizeof(data[0])
     num_of_entries_per_chunk = target_chunk_size // entry_size
-    for i in range(0, len(data), num_of_entries_per_chunk):
-        chunk = data[i : i + num_of_entries_per_chunk]
+    step_size = max(1, num_of_entries_per_chunk)
+
+    for i in range(0, len(data), step_size):
+        chunk = data[i : i + step_size]
         yield chunk
 
 
@@ -7312,7 +7366,7 @@ async def xsiam_api_call_async_with_retries(
     zipped_data,
     headers,
     num_of_attempts,
-    data_type=EVENTS,
+    data_type=ASSETS,
 ):  # pragma: no cover
     """
     Send the fetched events or assets into the XDR data-collector private api.
@@ -7417,7 +7471,7 @@ def send_events_to_xsiam_rapid7(
 
     :type send_events_asynchronously: ``bool``
     :param send_events_asynchronously: whether to use asyncio to send the events to xsiam asynchronously or not.
-    Note that when set to True, the updateModuleHealth should be done from the integration itself.
+    Note that when set to True, the debug should be done from the integration itself.
 
     :type data_size_expected_to_split_evenly: ``bool``
     :param data_size_expected_to_split_evenly: whether the events should be about the same size or not.
@@ -7447,7 +7501,7 @@ def send_events_to_xsiam_rapid7(
     )
 
 
-async def run_full_collector_workflow(client: InsightVMClient, event_type: str, batch_size: int = 1000):
+async def run_full_collector_workflow(client: InsightVMClient, event_type: str, batch_size: int = 10):
     """
     Orchestrates the full report lifecycle: State Check, Create/Generate, Stream, Cleanup.
 
@@ -7477,7 +7531,7 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
 
                 # 1. CREATE REPORT CONFIGURATION
                 if not report_id:
-                    report_id = await create_report_config_from_template(client, event_type)
+                    report_id = create_report_config_from_template(client, event_type)
                     update_state_checkpoint(event_type, {"report_id": report_id})
 
                 # 2. GENERATE REPORT
@@ -7490,7 +7544,7 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
             # 4. STREAM DATA AND SEND EVENTS
             demisto.debug("\n--- Starting Data Streaming Phase ---")
 
-            await download_and_parse_report(client, report_id, instance_id, event_integration_context, event_type, batch_size)
+            await stream_and_parse_report(client, report_id, instance_id, event_integration_context, event_type, batch_size)
             update_state_checkpoint(
                 event_type, {"last_sent_line": 0, "finish": True, "snapshot_id": "", "total_records_ingested": 0}
             )  # noqa: E501
@@ -7530,14 +7584,14 @@ async def run_all_collectors(
     demisto.debug("Starting concurrent execution of Asset and Vulnerability collectors...")
 
     # Define the two tasks (coroutines) using the passed client
-    asset_task = run_full_collector_workflow(client=client, batch_size=batch_size, event_type="asset")
 
+    asset_task = run_full_collector_workflow(client=client, batch_size=batch_size, event_type="asset")
     vulnerability_task = run_full_collector_workflow(client=client, batch_size=batch_size, event_type="vulnerability")
 
     # Run both tasks concurrently. return_exceptions=True ensures one failure
     # doesn't immediately stop the other task.
     results = await asyncio.gather(asset_task, vulnerability_task, return_exceptions=True)
-
+    # results = await asyncio.gather(vulnerability_task, return_exceptions=True)
     demisto.debug("\n--- Concurrent Execution Complete ---")
 
     # Check results and handle exceptions
@@ -7577,14 +7631,15 @@ async def fetch_assets_long_running_command(params: dict, token: str):
                 token=token,
                 verify=not params.get("unsecure"),
             ) as client:
-                await run_all_collectors(client, batch_size=1000)
+                await run_all_collectors(client, batch_size=20)
             demisto.debug("finished running all collectors")
 
         except Exception as e:
-            demisto.updateModuleHealth(f"Got the following error while trying to stream events: {str(e)}")
+            demisto.debug(f"Got the following error while trying to stream events: {str(e)}")
 
         end_time = time.time()
         duration_seconds = end_time - start_time
+        demisto.debug(f"The whole run took {duration_seconds} seconds")
         remaining_time_seconds = INTERVAL_SECONDS - duration_seconds
         demisto.debug(f"Will sleep for {remaining_time_seconds} seconds")
 
