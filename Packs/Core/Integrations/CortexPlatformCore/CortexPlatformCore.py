@@ -15,39 +15,6 @@ MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
 MAX_GET_CASES_LIMIT = 100
 
-CASE_FIELDS = {
-    "case_id_list": "CASE_ID",
-    "case_domain": "INCIDENT_DOMAIN",
-    "case_name": "NAME",
-    "case_description": "DESCRIPTION",
-    "status": "STATUS_PROGRESS",
-    "severity": "SEVERITY",
-    "creation_time": "CREATION_TIME",
-    "asset_ids": "UAI_ASSET_IDS",
-    "asset_groups": "UAI_ASSET_GROUP_IDS",
-    "assignee": "ASSIGNED_USER_PRETTY",
-    "assignee_email": "ASSIGNED_USER",
-    "name": "CONTAINS",
-    "description": "DESCRIPTION",
-    "last_updated": "LAST_UPDATE_TIME",
-    "hosts": "HOSTS",
-    "starred": "CASE_STARRED",
-    "tags": "CURRENT_TAGS",
-}
-
-CASE_SEVERITY = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
-
-CASE_STATUS = {
-    "new": "STATUS_010_NEW",
-    "under_investigation": "STATUS_020_UNDER_INVESTIGATION",
-    "resolved": "STATUS_025_RESOLVED",
-}
-
-CASE_TAGS = {
-    "DOM:Security": "DOM:1",
-    "DOM:Posture": "DOM:5",
-}
-
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
     "asset_types": "xdm.asset.type.name",
@@ -58,6 +25,7 @@ ASSET_FIELDS = {
     "asset_group_ids": "xdm.asset.group_ids",
     "asset_categories": "xdm.asset.type.category",
 }
+
 APPSEC_SOURCES = [
     "CAS_CVE_SCANNER",
     "CAS_IAC_SCANNER",
@@ -88,7 +56,48 @@ ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
 CASES_TABLE = "CASE_MANAGER_TABLE"
 
+class CaseManagement:
+    STATUS_RESOLVED_REASON = {
+        "known_issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
+        "duplicate": "STATUS_050_RESOLVED_DUPLICATE",
+        "false_positive": "STATUS_060_RESOLVED_FALSE_POSITIVE",
+        "true_positive": "STATUS_090_RESOLVED_TRUE_POSITIVE",
+        "security_testing": "STATUS_100_RESOLVED_SECURITY_TESTING",
+        "other": "STATUS_070_RESOLVED_OTHER",
+    }
 
+    FIELDS = {
+        "case_id_list": "CASE_ID",
+        "case_domain": "INCIDENT_DOMAIN",
+        "case_name": "NAME",
+        "case_description": "DESCRIPTION",
+        "status": "STATUS_PROGRESS",
+        "severity": "SEVERITY",
+        "creation_time": "CREATION_TIME",
+        "asset_ids": "UAI_ASSET_IDS",
+        "asset_groups": "UAI_ASSET_GROUP_IDS",
+        "assignee": "ASSIGNED_USER_PRETTY",
+        "assignee_email": "ASSIGNED_USER",
+        "name": "CONTAINS",
+        "description": "DESCRIPTION",
+        "last_updated": "LAST_UPDATE_TIME",
+        "hosts": "HOSTS",
+        "starred": "CASE_STARRED",
+    }
+
+    STATUS = {
+        "new": "STATUS_010_NEW",
+        "under_investigation": "STATUS_020_UNDER_INVESTIGATION",
+        "resolved": "STATUS_025_RESOLVED",
+    }
+
+    SEVERITY = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
+    
+    TAGS = {
+    "DOM:Security": "DOM:1",
+    "DOM:Posture": "DOM:5",
+    }
+    
 class AppsecIssues:
     class AppsecIssueType:
         def __init__(self, table_name: str, filters: set[str]):
@@ -427,16 +436,16 @@ def determine_assignee_filter_field(assignee_list: list) -> str:
         str: The appropriate field to filter on based on the input.
     """
     if not assignee_list:
-        return CASE_FIELDS["assignee"]
+        return CaseManagement.FIELDS["assignee"]
 
     assignee = assignee_list[0]
 
     if "@" in assignee:
         # If the assignee contains '@', use the email field
-        return CASE_FIELDS["assignee_email"]
+        return CaseManagement.FIELDS["assignee_email"]
     else:
         # Otherwise, use the pretty name field
-        return CASE_FIELDS["assignee"]
+        return CaseManagement.FIELDS["assignee"]
 
 
 def issue_to_alert(args: dict | str) -> dict | str:
@@ -1134,25 +1143,25 @@ def get_cases_command(client, args):
 
     sort_field, sort_order = get_cases_sort_order(sort_by_creation_time, sort_by_modification_time)
 
-    status_values = [CASE_STATUS[status] for status in argToList(args.get("status"))]
-    severity_values = [CASE_SEVERITY[severity] for severity in argToList(args.get("severity"))]
-    tag_values = [CASE_TAGS.get(tag, tag) for tag in argToList(args.get("tag"))]
+    status_values = [CaseManagement.STATUS[status] for status in argToList(args.get("status"))]
+    severity_values = [CaseManagement.SEVERITY[severity] for severity in argToList(args.get("severity"))]
+    tag_values = [CaseManagement.TAGS.get(tag, tag) for tag in argToList(args.get("tag"))]
     filter_builder = FilterBuilder()
-    filter_builder.add_time_range_field(CASE_FIELDS["creation_time"], gte_creation_time, lte_creation_time)
-    filter_builder.add_time_range_field(CASE_FIELDS["last_updated"], gte_modification_time, lte_modification_time)
-    filter_builder.add_time_range_field(CASE_FIELDS["creation_time"], since_creation_start_time, since_creation_end_time)
-    filter_builder.add_time_range_field(CASE_FIELDS["last_updated"], since_modification_start_time, since_modification_end_time)
-    filter_builder.add_field(CASE_FIELDS["status"], FilterType.EQ, status_values)
-    filter_builder.add_field(CASE_FIELDS["severity"], FilterType.EQ, severity_values)
-    filter_builder.add_field(CASE_FIELDS["case_id_list"], FilterType.EQ, argToList(args.get("case_id_list")))
-    filter_builder.add_field(CASE_FIELDS["case_domain"], FilterType.EQ, argToList(args.get("case_domain")))
-    filter_builder.add_field(CASE_FIELDS["case_name"], FilterType.CONTAINS, argToList(args.get("case_name")))
-    filter_builder.add_field(CASE_FIELDS["case_description"], FilterType.CONTAINS, argToList(args.get("case_description")))
-    filter_builder.add_field(CASE_FIELDS["starred"], FilterType.EQ, [argToBoolean(x) for x in argToList(args.get("starred"))])
-    filter_builder.add_field(CASE_FIELDS["asset_ids"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_ids")))
-    filter_builder.add_field(CASE_FIELDS["asset_groups"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_groups")))
-    filter_builder.add_field(CASE_FIELDS["hosts"], FilterType.CASE_HOST_EQ, argToList(args.get("hosts")))
-    filter_builder.add_field(CASE_FIELDS["tags"], FilterType.ARRAY_CONTAINS, tag_values)
+    filter_builder.add_time_range_field(CaseManagement.FIELDS["creation_time"], gte_creation_time, lte_creation_time)
+    filter_builder.add_time_range_field(CaseManagement.FIELDS["last_updated"], gte_modification_time, lte_modification_time)
+    filter_builder.add_time_range_field(CaseManagement.FIELDS["creation_time"], since_creation_start_time, since_creation_end_time)
+    filter_builder.add_time_range_field(CaseManagement.FIELDS["last_updated"], since_modification_start_time, since_modification_end_time)
+    filter_builder.add_field(CaseManagement.FIELDS["status"], FilterType.EQ, status_values)
+    filter_builder.add_field(CaseManagement.FIELDS["severity"], FilterType.EQ, severity_values)
+    filter_builder.add_field(CaseManagement.FIELDS["case_id_list"], FilterType.EQ, argToList(args.get("case_id_list")))
+    filter_builder.add_field(CaseManagement.FIELDS["case_domain"], FilterType.EQ, argToList(args.get("case_domain")))
+    filter_builder.add_field(CaseManagement.FIELDS["case_name"], FilterType.CONTAINS, argToList(args.get("case_name")))
+    filter_builder.add_field(CaseManagement.FIELDS["case_description"], FilterType.CONTAINS, argToList(args.get("case_description")))
+    filter_builder.add_field(CaseManagement.FIELDS["starred"], FilterType.EQ, [argToBoolean(x) for x in argToList(args.get("starred"))])
+    filter_builder.add_field(CaseManagement.FIELDS["asset_ids"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_ids")))
+    filter_builder.add_field(CaseManagement.FIELDS["asset_groups"], FilterType.CONTAINS_IN_LIST, argToList(args.get("asset_groups")))
+    filter_builder.add_field(CaseManagement.FIELDS["hosts"], FilterType.CASE_HOST_EQ, argToList(args.get("hosts")))
+    filter_builder.add_field(CaseManagement.FIELDS["tags"], FilterType.ARRAY_CONTAINS, tag_values)
     filter_builder.add_field_with_mappings(
         determine_assignee_filter_field(argToList(args.get("assignee"))),
         FilterType.CONTAINS,
