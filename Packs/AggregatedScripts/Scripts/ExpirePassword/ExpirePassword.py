@@ -25,7 +25,59 @@ class UserData(TypedDict):
     Instance: str
 
 
-# --- Utility Function ---
+# --- Utility Functions ---
+def get_instance_from_result(res: dict) -> str:
+    """
+    Extract instance name from command result.
+    
+    Args:
+        res (dict): Command result dictionary.
+    
+    Returns:
+        str: Instance name or empty string if not found.
+    """
+    return dict_safe_get(res, ["Metadata", "instance"]) or ""
+
+
+def get_response_message(res: dict, default: str = "Command failed") -> str:
+    """
+    Extract message from command result, checking both HumanReadable and Contents.
+    
+    Args:
+        res (dict): Command result dictionary.
+        default (str): Default message if neither field is found.
+    
+    Returns:
+        str: The extracted message.
+    """
+    return res.get("HumanReadable") or res.get("Contents") or default
+
+
+def build_result(
+    res: dict,
+    success_condition: bool,
+    success_msg: str,
+    failure_msg: str | None = None
+) -> ExpiredPasswordResult:
+    """
+    Build standardized ExpiredPasswordResult.
+    
+    Args:
+        res (dict): Command result dictionary.
+        success_condition (bool): Whether the operation succeeded.
+        success_msg (str): Message to use on success.
+        failure_msg (str | None): Message to use on failure. If None, extracts from res.
+    
+    Returns:
+        ExpiredPasswordResult: Standardized result dictionary.
+    """
+    return ExpiredPasswordResult(
+        Result="Success" if success_condition else "Failed",
+        Message=success_msg if success_condition else (failure_msg or get_response_message(res)),
+        Instance=get_instance_from_result(res)
+    )
+
+
 def run_command(cmd: str, args: dict, label_hr: bool = True) -> tuple[list[dict], str]:
     """
     Executes a Demisto command and captures human-readable outputs.
@@ -131,18 +183,14 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
     func_res = []
     for res in res_expire:
         res_msg = res.get("Contents", "AD password command failed")
+        success = res_msg == "Expired password successfully"
         func_res.append(
-            ExpiredPasswordResult(
-                Result="Success",
-                Message=f"Active Directory: {res_msg}",
-                Instance=dict_safe_get(res, ["Metadata", "instance"]) or ""
+            build_result(
+                res,
+                success_condition=success,
+                success_msg=f"Active Directory: {res_msg}",
+                failure_msg=res_msg
             )
-            if res_msg == "Expired password successfully"
-            else ExpiredPasswordResult(
-                    Result="Failed",
-                    Message=res_msg,
-                    Instance=dict_safe_get(res, ["Metadata", "instance"]) or ""
-                )
         )
     return func_res, hr
 
@@ -162,14 +210,15 @@ def run_microsoft_graph_user(user: UserData, using: str) -> tuple[list[ExpiredPa
     demisto.debug(f"DELETE-ExpirePassword: MSG User {res_cmd=} {hr=}")
     func_res = []
     for res in res_cmd:
-        res_hr = res.get("HumanReadable", "Microsoft Graph User expiration password command failed")
-        # Assuming successful response for MS Graph command means password reset is forced
+        res_hr = get_response_message(res, "Microsoft Graph User expiration password command failed")
+        success = res_hr == f"User {user['Username']} will be required to change his password."
         func_res.append(
-            ExpiredPasswordResult(Result="Success", Message="Password reset successfully enforced",
-                                  Instance=dict_safe_get(res, ["Metadata", "instance"]) or "")
-            if res_hr == f"User {user['Username']} will be required to change his password."
-            else ExpiredPasswordResult(Result="Failed", Message=res["Content"],
-                                       Instance=dict_safe_get(res, ["Metadata", "instance"]) or "")
+            build_result(
+                res,
+                success_condition=success,
+                success_msg="Password reset successfully enforced",
+                failure_msg=res_hr
+            )
         )
     return func_res, hr
 
@@ -189,13 +238,16 @@ def run_okta_v2(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
     demisto.debug(f"DELETE-ExpirePassword: Okta v2 {res_cmd=} {hr=}")
     func_res = []
     for res in res_cmd:
-        res_msg = res["HumanReadable"] or res["Contents"]
+        res_msg = get_response_message(res)
         demisto.debug(f"DELETE-ExpirePassword: Okta v2 Check Content {res_msg=}")
-        is_expired = 'PASSWORD_EXPIRED' in res_msg
+        success = 'PASSWORD_EXPIRED' in res_msg
         func_res.append(
-            ExpiredPasswordResult(Result="Success", Message="Password expired successfully", Instance=dict_safe_get(res, ["Metadata", "instance"]) or "")
-            if is_expired
-            else ExpiredPasswordResult(Result="Failed", Message=res_msg, Instance=dict_safe_get(res, ["Metadata", "instance"]) or "")
+            build_result(
+                res,
+                success_condition=success,
+                success_msg="Password expired successfully",
+                failure_msg=res_msg
+            )
         )
     return func_res, hr
 
@@ -218,13 +270,15 @@ def run_gsuiteadmin(user: UserData, using: str) -> tuple[list[ExpiredPasswordRes
     demisto.debug(f"DELETE-ExpirePassword: gsuite {res_cmd=} {hr=}")
     func_res = []
     for res in res_cmd:
+        # make sure the field changePasswordAtNextLogin is true
+        success = bool(dict_safe_get(res, ["Contents", "changePasswordAtNextLogin"]))
         func_res.append(
-            ExpiredPasswordResult(Result="Success", Message="Password reset successfully enforced", Instance=dict_safe_get(res, ["Metadata", "instance"]) or "")
-            # make sure the field changePasswordAtNextLogin is true
-            if dict_safe_get(res, ["Contents", "changePasswordAtNextLogin"])
-            else ExpiredPasswordResult(Result="Failed",
-                                       Message=str(res.get("Contents") or "Unable to expire password"),
-                                       Instance=dict_safe_get(res, ["Metadata", "instance"]) or "")
+            build_result(
+                res,
+                success_condition=success,
+                success_msg="Password reset successfully enforced",
+                failure_msg=str(res.get("Contents") or "Unable to expire password")
+            )
         )
     return func_res, hr
 
@@ -255,20 +309,16 @@ def run_aws_iam(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
     demisto.debug(f"DELETE-ExpirePassword: AWS-IAM {res_cmd=} {hr=}")
     func_res = []
     for res in res_cmd:
-        res_msg = res["HumanReadable"] or res["Contents"]
+        res_msg = get_response_message(res)
+        # The AWS-IAM integration returns "The user {user} password was changed" on success
+        success = res_msg == f"The user {user['Username']} Password was changed"
         func_res.append(
-            ExpiredPasswordResult(
-                Result="Success",
-                Message="IAM user login profile updated successfully, requiring password change on next sign-in.",
-                Instance=dict_safe_get(res, ["Metadata", "instance"]) or ""
+            build_result(
+                res,
+                success_condition=success,
+                success_msg="IAM user login profile updated successfully, requiring password change on next sign-in.",
+                failure_msg=f"AWS-IAM command did not confirm success. Response: {res_msg or 'No response message'}"
             )
-            # The AWS-IAM integration returns "The user {user} password was changed" on success
-            if res_msg == f"The user {user['Username']} Password was changed"
-            else ExpiredPasswordResult(
-                    Result="Failed",
-                    Message=f"AWS-IAM command did not confirm success. Response: {res_msg or 'No response message'}",
-                    Instance=dict_safe_get(res, ["Metadata", "instance"]) or ""
-                )
         )
     return func_res, hr
 
