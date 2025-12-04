@@ -238,6 +238,14 @@ script:
       description: Whether to modify the sync time locally.
       defaultValue: false
       required: true
+    - name: set_time
+      description: Whether to modify the sync time locally.
+      defaultValue: false
+      required: true
+    - name: set_time
+      description: Whether to modify the sync time locally.
+      defaultValue: false
+      required: true
   - arguments:
     - description: The indicator to enable.
       isArray: true
