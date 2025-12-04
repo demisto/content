@@ -375,7 +375,8 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
     demisto.debug(f"DELETE-ExpirePassword: get_users {res=} {hr=}")
     if error_results := [r for r in res if r["Type"] == EntryType.ERROR]:
         if err := next((r for r in error_results if not r["HumanReadable"]), None):
-            demisto.debug(f"Error when calling get-user-data:\n{err['Contents']}")
+            raise DemistoException(f"Error when calling get-user-data:\n{err['Contents']}")
+        return_results(error_results)
 
     # Check for no available integrations
     if any(
