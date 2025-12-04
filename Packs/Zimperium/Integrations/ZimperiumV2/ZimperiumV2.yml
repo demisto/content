@@ -1,5 +1,5 @@
 category: Network Security
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -1357,7 +1357,7 @@ script:
     - contextPath: Zimperium.PolicyDeviceInactivity.teamId
       description: The team ID for the policy device inactivity.
       type: String
-  dockerimage: demisto/python3:3.12.8.130769
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetch: true
   runonce: false
   script: '-'
