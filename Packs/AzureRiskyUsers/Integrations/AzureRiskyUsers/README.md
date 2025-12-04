@@ -11,7 +11,7 @@ The application must have the following permissions:
 - *IdentityRiskEvent.ReadWrite.All*
 - *IdentityRiskyUser.Read.All*
 - *IdentityRiskyUser.ReadWrite.All*
-- *User.Read*
+- *User.Read.All*
 
 In case you want to use Device code flow, you must allow public client flows (can be found under the **Authentication** section of the app).
 
