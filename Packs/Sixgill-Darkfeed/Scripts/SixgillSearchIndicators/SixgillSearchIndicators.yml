@@ -5,21 +5,23 @@ name: SixgillSearchIndicators
 script: ''
 type: python
 tags: []
-comment: Search for Indicators
+comment: Search for Indicators.
 enabled: true
 args:
 - name: query
   required: true
   default: true
-  description: Indicator Query
+  description: Indicator Query.
 - name: size
-  description: Number of indicators to return
+  description: Number of indicators to return.
   defaultValue: "50"
 outputs:
 - contextPath: FoundIndicators
-  description: Indicators Found
+  description: Indicators Found.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.12.5490952
 runas: DBotWeakRole
 fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
