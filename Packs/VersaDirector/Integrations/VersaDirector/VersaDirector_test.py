@@ -8,19 +8,22 @@ from unittest.mock import AsyncMock
 from aiohttp import ClientResponseError, RequestInfo
 from datetime import UTC
 
+SERVER_URL = "some_mock_url"
+PROXY = False
+VERIFY = False
+USERNAME = "username"
+PASSWORD = "password"
+
 
 @pytest.fixture
 def client():
     return Client(
-        server_url="some_mock_url",
-        proxy=False,
+        server_url=SERVER_URL,
+        proxy=PROXY,
         headers={},
-        auth=("username", "password"),
-        verify=False,
+        auth=(USERNAME, PASSWORD),
+        verify=VERIFY,
         organization_params="",
-        client_id_param="",
-        client_secret_param="",
-        use_basic_auth_param=True,
     )
 
 
@@ -52,7 +55,7 @@ def mock_async_session_response(
 # HEADING: """ COMMAND FUNCTIONS TESTS """
 
 
-def test_handle_auth_token_command(mocker, client):
+def test_auth_start_command(mocker):
     """
     Given:
         - token_name argument is passed as argument
@@ -65,13 +68,25 @@ def test_handle_auth_token_command(mocker, client):
         - Create Auth Token
         - Return message to user
     """
-    from VersaDirector import handle_auth_token_command
+    from VersaDirector import auth_start_command
 
-    mocker.patch.object(client, "access_token_request", return_value={"access_token": "access_token_mock"})
-    mocker.patch.object(
-        client, "auth_credentials_request", return_value={"client_id": "client_id_mock", "client_secret": "client_secret_mock"}
+    mocker.patch("VersaDirector.request_access_token", return_value={"access_token": "access_token_mock"})
+    mocker.patch(
+        "VersaDirector.request_auth_credentials",
+        return_value={"client_id": "client_id_mock", "client_secret": "client_secret_mock"},
     )
-    command_result = handle_auth_token_command(client, args={"auth_client_name": "token_name_mock"})
+
+    command_result = auth_start_command(
+        server_url=SERVER_URL,
+        verify=VERIFY,
+        proxy=PROXY,
+        username=USERNAME,
+        password=PASSWORD,
+        use_basic_auth=True,
+        client_id_param=None,
+        client_secret_param=None,
+        args={"auth_client_name": "token_name_mock"},
+    )
     assert command_result.readable_output == (
         "Auth Client Created Successfully.\nClient ID: client_id_mock, Auth Client Name: token_name_mock.\n\n"
         + "Authentication request was successful, Auth Token was created and saved in the Integration Context.\n"
@@ -80,7 +95,7 @@ def test_handle_auth_token_command(mocker, client):
     )
 
 
-def test_handle_auth_token_command_basic_credentials_fail(mocker, client):
+def test_auth_start_command_basic_credentials_fail():
     """
     Given:
         - client._auth is invalid
@@ -91,11 +106,20 @@ def test_handle_auth_token_command_basic_credentials_fail(mocker, client):
     Then:
         - Raise DemistoException with valid message
     """
-    from VersaDirector import BASIC_CREDENTIALS_COULD_NOT_START, handle_auth_token_command
+    from VersaDirector import BASIC_CREDENTIALS_COULD_NOT_START, auth_start_command
 
-    client._auth = ()
     with pytest.raises(DemistoException) as e:
-        handle_auth_token_command(client, args={})
+        auth_start_command(
+            server_url=SERVER_URL,
+            verify=VERIFY,
+            proxy=PROXY,
+            username="",
+            password="",
+            use_basic_auth=False,
+            client_id_param=None,
+            client_secret_param=None,
+            args={},
+        )
     assert str(e.value.message) == BASIC_CREDENTIALS_COULD_NOT_START
 
 
@@ -103,7 +127,7 @@ def test_handle_auth_token_command_basic_credentials_fail(mocker, client):
     "status_code, args, expected_output",
     input_data.test_handle_auth_token_fail_args,
 )
-def test_handle_auth_token_fail(mocker, client, args, status_code, expected_output):
+def test_auth_start_fail(mocker, client, args, status_code, expected_output):
     """
     Given:
         - An exception is thrown from one of the HTTP requests
@@ -114,17 +138,29 @@ def test_handle_auth_token_fail(mocker, client, args, status_code, expected_outp
     Then:
         - Raise DemistoException with valid message
     """
-    from VersaDirector import handle_auth_token_command
+    from VersaDirector import auth_start_command
 
     status_code_response = Response()
     status_code_response.status_code = status_code
 
-    mocker.patch.object(
-        client, "access_token_request", return_value={}, side_effect=DemistoException(message="", res=status_code_response)
+    mocker.patch(
+        "VersaDirector.request_access_token",
+        return_value={},
+        side_effect=DemistoException(message="", res=status_code_response),
     )
 
     with pytest.raises(DemistoException) as e:
-        handle_auth_token_command(client, args)
+        auth_start_command(
+            server_url=SERVER_URL,
+            verify=VERIFY,
+            proxy=PROXY,
+            username=USERNAME,
+            password=PASSWORD,
+            use_basic_auth=True,
+            client_id_param=None,
+            client_secret_param=None,
+            args=args,
+        )
     assert str(e.value.message) == expected_output
 
 

@@ -7,6 +7,8 @@ from collections.abc import Callable
 import urllib3
 import aiohttp
 from CommonServerPython import *  # noqa #! pylint: disable=unused-wildcard-import
+import urllib3
+from http import HTTPStatus
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -14,8 +16,8 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-PORT_CREDENTIALS = "9182"
-PORT_AUTH = "9183"
+BASIC_AUTH_PORT = "9182"
+ADVANCED_AUTH_PORT = "9183"
 DEFAULT_TIMEOUT = 600
 DEFAULT_INTERVAL = 10
 OAUTH_CLIENT = "XSOAR-OAuth-client"
@@ -70,21 +72,15 @@ class Client(BaseClient):
 
     def __init__(
         self,
-        server_url,
-        verify,
-        proxy,
-        headers,
-        auth,
-        organization_params,
-        client_id_param,
-        client_secret_param,
-        use_basic_auth_param,
+        server_url: str,
+        verify: bool,
+        proxy: bool,
+        headers: dict | None,
+        auth: tuple[str, str] | None,
+        organization_params: str | None,
     ):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
         self.organization_params = organization_params
-        self.client_id_param = client_id_param
-        self.client_secret_param = client_secret_param
-        self.use_basic_auth_param = use_basic_auth_param
 
     #  """ CLIENT HELPER FUNCTIONS """
 
@@ -287,24 +283,6 @@ class Client(BaseClient):
         except DemistoException:
             return_error("Organization Name parameter is invalid.")
 
-    def access_token_request(self, username: str, password: str, client_id: str, client_secret: str):
-        request_body = {
-            "client_id": f"{client_id}",
-            "client_secret": f"{client_secret}",
-            "username": f"{username}",
-            "password": f"{password}",
-            "grant_type": "password",
-        }
-
-        response = self._http_request(
-            "POST",
-            url_suffix="auth/token",
-            headers=self._headers,
-            json_data=request_body,
-            ok_codes=(200, 201),
-        )
-        return response
-
     def refresh_token_request(self, client_id: str, client_secret: str, refresh_token: str):
         request_body = {
             "client_id": f"{client_id}",
@@ -318,39 +296,6 @@ class Client(BaseClient):
             url_suffix="auth/refresh",
             headers=self._headers,
             json_data=request_body,
-        )
-
-        return response
-
-    def auth_credentials_request(self, access_token: str, auth_client_name: str, token_description: str):
-        request_body = {
-            "name": auth_client_name,
-            "description": token_description,
-            "expires_at": "",
-            "client_secret_expires_at": "",
-            "max_access_tokens": 10,
-            "max_access_tokens_per_user": 99,
-            "access_token_validity": 900,
-            "refresh_token_validity": 86400,
-            "allowed_grant_types": ["password", "refresh_token", "client_credentials"],
-            "allowed_source_client_address": {
-                "source_type": "ANYWHERE",
-                "ip_address_list": [],
-            },
-            "enabled": "true",
-            "software_id": "",
-            "software_version": "",
-            "contacts": [],
-            "redirect_uris": [],
-        }
-        self._headers = {"Authorization": f"Bearer {access_token}"}
-        self._auth = None
-        response = self._http_request(
-            "POST",
-            url_suffix="auth/admin/clients",
-            headers=self._headers,
-            json_data=request_body,
-            ok_codes=(200, 201),
         )
 
         return response
@@ -1586,6 +1531,65 @@ class AsyncClient:
 
 
 #  """ HELPER FUNCTIONS """
+""" REQUEST FUNCTIONS (NEEDED TO INITIALIZE CLIENT CLASS) """
+
+
+def request_access_token(
+    server_url: str, verify: bool, proxy: bool, username: str, password: str, client_id: str, client_secret: str
+):
+    request_body = {
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "username": username,
+        "password": password,
+        "grant_type": "password",
+    }
+    return generic_http_request(
+        "POST",
+        server_url=server_url,
+        url_suffix="auth/token",
+        verify=verify,
+        proxy=proxy,
+        json_data=request_body,
+    )
+
+
+def request_auth_credentials(
+    server_url: str, verify: bool, proxy: bool, access_token: str, client_name: str, client_description: str
+):
+    request_body = {
+        "name": client_name,
+        "description": client_description,
+        "expires_at": "",
+        "client_secret_expires_at": "",
+        "max_access_tokens": 10,
+        "max_access_tokens_per_user": 99,
+        "access_token_validity": 900,
+        "refresh_token_validity": 86400,
+        "allowed_grant_types": ["password", "refresh_token", "client_credentials"],
+        "allowed_source_client_address": {
+            "source_type": "ANYWHERE",
+            "ip_address_list": [],
+        },
+        "enabled": "true",
+        "software_id": "",
+        "software_version": "",
+        "contacts": [],
+        "redirect_uris": [],
+    }
+    headers = {"Authorization": f"Bearer {access_token}"}
+    return generic_http_request(
+        "POST",
+        server_url=server_url,
+        url_suffix="auth/admin/clients",
+        verify=verify,
+        proxy=proxy,
+        headers=headers,
+        json_data=request_body,
+    )
+
+
+""" HELPER FUNCTIONS """
 
 
 def set_offset(page: int | None, page_size: int | None):
@@ -1665,7 +1669,7 @@ def check_and_update_token(client: Client, client_id: str, client_secret: str, c
     except DemistoException as e:
         if e.res.status_code == 401 or "invalid_token" in str(e.message):
             if current_context:
-                # obtain refresh token and send it using client.access_token_request function
+                # obtain refresh token and send it using client.refresh_token_request function
                 refresh_token = current_context.get("refresh_token", "")
 
                 client._headers = None
@@ -1693,10 +1697,10 @@ def create_client_header(
     use_basic_auth: bool,
     username: str,
     password: str,
-    client_id: str,
-    client_secret: str,
-    access_token: str,
-):
+    client_id: str | None,
+    client_secret: str | None,
+    access_token: str | None,
+) -> tuple[tuple[str, str] | None, dict[str, str]]:
     """
     Creates Auth and Header arguments for the Client object based on the authentication
     method selected in the integration instance configuration.
@@ -1733,8 +1737,7 @@ def create_client_header(
                 "Content-Type": "application/json",
             }
         else:
-            return_error("Basic Authentication method chosen but Username or Password parameters are missing.")
-            return None
+            raise DemistoException("Basic Authentication method chosen but Username or Password parameters are missing.")
 
     elif not use_basic_auth:
         # Auth Token authentication using Auth token parameter
@@ -1885,7 +1888,17 @@ def get_sdwan_policy_rule_args_with_possible_custom_rule_json(args: dict[str, An
 #  """ COMMAND FUNCTIONS """
 
 
-def handle_auth_token_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def auth_start_command(
+    server_url: str,
+    verify: bool,
+    proxy: bool,
+    username: str,
+    password: str,
+    client_id_param: str | None,
+    client_secret_param: str | None,
+    use_basic_auth: bool,
+    args: dict[str, Any],
+) -> CommandResults:
     """Creates Auth Clients and Auth tokens.
 
     The function will first determine whether Client ID and Client Secret were passed as parameters (default) or arguments,
@@ -1907,103 +1920,128 @@ def handle_auth_token_command(client: Client, args: dict[str, Any]) -> CommandRe
     Returns:
         CommandResults: returns message in the War room if authentication process was successful
     """
-
-    if not client._auth:
+    if not (username and password):
         raise DemistoException(message=BASIC_CREDENTIALS_COULD_NOT_START)
-    username, password = client._auth
-    auth_client_name = args.get("auth_client_name", OAUTH_CLIENT)
-    token_description = args.get("description", OAUTH_CLIENT + " for Versa Director Integration")
-    client_id = None
-    client_secret = None
+
+    client_name = args.get("auth_client_name", OAUTH_CLIENT)
+    client_description = args.get("description", f"{OAUTH_CLIENT} for Versa Director Integration")
+    client_id = ""
+    client_secret = ""
     _outputs = None
     oauth_client_created_msg = ""
 
     # check if Client ID and Client Secret were passed as parameters
-    if client.client_id_param and client.client_secret_param:
-        client_id = client.client_id_param
-        client_secret = client.client_secret_param
+    if client_id_param and client_secret_param:
+        demisto.debug("Taking client credentials from configuration parameters. Skipping to stage 3.")
+        client_id = client_id_param
+        client_secret = client_secret_param
 
     # check if Client ID and Client Secret were passed as arguments
-    elif args.get("client_id") and args.get("client_secret"):
-        client_id = args.get("client_id")
-        client_secret = args.get("client_secret")
+    elif "client_id" and "client_secret" in args:
+        demisto.debug("Taking client credentials from command arguments. Skipping to stage 3.")
+        client_id = args.get("client_id", "")
+        client_secret = args.get("client_secret", "")
 
     # if Client ID and Client Secret are not passed, create new Client ID and Client Secret (New Auth Client)
     else:
-        client_id = CLIENT_ID
-        client_secret = CLIENT_CREDENTIALS
+        demisto.debug("Creating new auth client using default client credentials and basic auth credentials. Starting stage 1.")
+        if server_url.endswith(BASIC_AUTH_PORT):
+            server_url = server_url.replace(BASIC_AUTH_PORT, ADVANCED_AUTH_PORT)
 
-        if client._base_url.endswith(PORT_CREDENTIALS):
-            client._base_url = client._base_url.replace(PORT_CREDENTIALS, PORT_AUTH)
         try:
             # stage 1: Obtain Access token from voae_rest client
-            token_response = client.access_token_request(username, password, client_id, client_secret)
+            demisto.debug("Stage 1: Requesting access token using using default client credentials and basic auth credentials.")
+            token_response = request_access_token(
+                server_url=server_url,
+                verify=verify,
+                proxy=proxy,
+                username=username,
+                password=password,
+                client_id=CLIENT_ID,
+                client_secret=CLIENT_CREDENTIALS,
+            )
             access_token = token_response.get("access_token", "")
 
             # stage 2: If successful, use the “Access_token” from the response as a “Bearer token”
             # authorization to created the desired "Auth Client"
-            response = client.auth_credentials_request(access_token, auth_client_name, token_description)
-
+            demisto.debug("Stage 2: Requesting new auth client credentials using returned access token.")
+            admin_clients_response = request_auth_credentials(
+                server_url=server_url,
+                verify=verify,
+                proxy=proxy,
+                access_token=access_token,
+                client_name=client_name,
+                client_description=client_description,
+            )
         except DemistoException as e:
-            if e.res.status_code == 500:
+            status_code = e.res.status_code if isinstance(e.res, requests.Response) else None
+            if status_code == HTTPStatus.INTERNAL_SERVER_ERROR:
                 raise DemistoException(message=AUTH_EXISTING_TOKEN, exception=e)
-            elif e.res.status_code == 400:
+            elif status_code == HTTPStatus.BAD_REQUEST:
                 raise DemistoException(message=AUTH_EXCEEDED_MAXIMUM, exception=e)
             else:
                 raise DemistoException(message="Auth process failed.", exception=e)
 
         # if "Auth Client" created successfully, Client ID and Client Secret would return
         # in the response and saved in the Integration Context
-        client_id = response.get("client_id")
-        client_secret = response.get("client_secret")
+        client_id = admin_clients_response.get("client_id", "")
+        client_secret = admin_clients_response.get("client_secret", "")
 
         if not client_id or not client_secret:
             raise DemistoException(message=AUTH_INVALID_CREDENTIALS)
 
-        _outputs = {"client_id": client_id, "client_name": auth_client_name}
-        update_integration_auth_context(response)
+        _outputs = {"client_id": client_id, "client_name": client_name}
+        update_integration_auth_context(admin_clients_response)
 
         oauth_client_created_msg = (
-            f"Auth Client Created Successfully.\nClient ID: {client_id}, Auth Client Name: {auth_client_name}.\n\n"
+            f"Auth Client Created Successfully.\nClient ID: {client_id}, Auth Client Name: {client_name}.\n\n"
         )
 
     # stage 3: create an Auth Token using the Auth Client
     try:
-        response = client.access_token_request(username, password, client_id, client_secret)
+        demisto.debug("Stage 3: Requesting access token using client credentials.")
+        token_response = request_access_token(
+            server_url=server_url,
+            verify=verify,
+            proxy=proxy,
+            username=username,
+            password=password,
+            client_id=client_id,
+            client_secret=client_secret,
+        )
     except DemistoException as e:
-        if e.res.status_code == 401:
+        status_code = e.res.status_code if isinstance(e.res, requests.Response) else None
+        if status_code == HTTPStatus.UNAUTHORIZED:
             raise DemistoException(message=AUTH_INVALID_ACCESS_TOKEN)
         else:
             raise DemistoException(message=AUTH_BAD_CREDENTIALS)
 
     # save response with generated Auth Token, Refresh Token, Expiration Information and User Information
     # in Integration Context (among other information).
-    response.update({"client_id": client_id, "client_secret": client_secret})
-    update_integration_auth_context(response)
+    token_response.update({"client_id": client_id, "client_secret": client_secret})
+    update_integration_auth_context(token_response)
 
     output_message = (
         oauth_client_created_msg
         + "Authentication request was successful, Auth Token was created and saved in the Integration Context.\n"
     )
-    if client.use_basic_auth_param:
+    if use_basic_auth:
         output_message += "Please uncheck the 'Use Basic Authentication' checkbox in the configuration screen.\n"
     output_message += "To ensure the authentication is valid, run the 'vd-auth-test' command."
 
-    command_results = CommandResults(
+    return CommandResults(
         outputs_prefix=VENDOR_NAME + ".AuthClient",
         outputs=_outputs if _outputs else {"client_id": client_id},
         raw_response=_outputs if _outputs else {"client_id": client_id},
         readable_output=output_message,
     )
 
-    return command_results
-
 
 def auth_test_command(client: Client, args: dict[str, Any]):
     # test connectivity with chosen authentication method
     message = test_connectivity(client)
     if message == "ok" and (headers := client._headers):
-        if "Bearer" in headers.get("Authorization"):
+        if "Bearer" in headers.get("Authorization", ""):
             message = "Auth Token "
         else:
             message = "Basic "
@@ -3719,28 +3757,33 @@ async def fetch_events_command(
 async def main() -> None:
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
+    command: str = demisto.command()
+    context: dict[str, Any] = get_integration_context().get("context", {})
+
+    # HTTP Connection
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
+
+    # Base URL
     use_basic_auth = params.get("use_basic_auth", False)
-    port = PORT_CREDENTIALS if use_basic_auth else PORT_AUTH
-    url = params.get("url", "")
-    url = url[:-1] + f":{port}" if url.endswith("/") else url + f":{port}"
-    context = get_integration_context()
-    if context.get("context"):
-        context = context.get("context")
-    username = params.get("credentials", {}).get("identifier", "")
-    password = params.get("credentials", {}).get("password", "")
-    client_id = params.get("credentials_client", {}).get("identifier") or params.get("client_id") or context.get("client_id")
-    client_secret = (
-        params.get("credentials_client", {}).get("password") or params.get("client_secret") or context.get("client_secret")
-    )
+    port = BASIC_AUTH_PORT if use_basic_auth else ADVANCED_AUTH_PORT
+    url = params.get("url", "").rstrip("/") + f":{port}"
+
+    # Basic Auth
+    basic_auth_credentials = params.get("credentials", {})
+    username = basic_auth_credentials.get("identifier", "")
+    password = basic_auth_credentials.get("password", "")
+
+    # Client Auth
+    client_auth_credentials = params.get("credentials_client", {})
+    client_id = client_auth_credentials.get("identifier") or params.get("client_id") or context.get("client_id")
+    client_secret = client_auth_credentials.get("password") or params.get("client_secret") or context.get("client_secret")
     access_token = params.get("access_token") or context.get("access_token")
     max_fetch = params.get("max_fetch") or DEFAULT_FETCH_EVENTS_LIMIT
-    command = demisto.command()
+
     demisto.debug(f"Command being called is {command}")
 
     sync_commands: dict[str, Callable] = {
-        "vd-auth-start": handle_auth_token_command,
         "vd-auth-test": auth_test_command,
         "vd-appliance-list": appliance_list_command,
         "vd-organization-list": organization_list_command,
@@ -3796,6 +3839,22 @@ async def main() -> None:
     async_commands: tuple[str, str] = ("vd-get-events", "fetch-events")
 
     try:
+        if command == "vd-auth-start":
+            return_results(
+                auth_start_command(
+                    server_url=url,
+                    verify=verify_certificate,
+                    proxy=proxy,
+                    username=username,
+                    password=password,
+                    client_id_param=client_id,
+                    client_secret_param=client_secret,
+                    use_basic_auth=use_basic_auth,
+                    args=args,
+                )
+            )
+            return
+
         # test_module functionality is disabled for Auth Token authentication
         case_auth_token_auth = bool(
             params.get("access_token", None) and not params.get("client_id", None) and not params.get("client_secret", None)
@@ -3822,13 +3881,15 @@ async def main() -> None:
             proxy=proxy,
             auth=auth,
             organization_params=params.get("organization"),
-            client_id_param=params.get("client_id"),
-            client_secret_param=params.get("access_token"),
-            use_basic_auth_param=use_basic_auth,
         )
 
         # check auth token validity and if a refresh token is needed to obtain new auth token
-        if not use_basic_auth and (new_token := check_and_update_token(client, client_id, client_secret, context)):
+        if (
+            not use_basic_auth
+            and client_id
+            and client_secret
+            and (new_token := check_and_update_token(client, client_id, client_secret, context))
+        ):
             client._headers["Authorization"] = f"Bearer {new_token}"
 
         if command == "test-module":
