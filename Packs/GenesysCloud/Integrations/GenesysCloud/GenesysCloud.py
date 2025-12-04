@@ -334,7 +334,7 @@ async def get_audit_events_for_service(
     page_responses = await asyncio.gather(*page_tasks)
 
     # Process results from all pages
-    for page_number, page_response in enumerate(page_responses):
+    for page_number, page_response in enumerate(page_responses, start=start_page_number):
         # Process and deduplicate events from this page
         page_events = deduplicate_and_format_events(page_response, all_fetched_ids, service_name)
         for event in page_events:
