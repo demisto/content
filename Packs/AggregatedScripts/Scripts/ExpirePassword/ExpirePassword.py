@@ -167,7 +167,6 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
     res_modify_never_expire, hr_modify_never_expire = run_command(
         "ad-modify-password-never-expire", args_modify_never_expire_command
     )
-    demisto.debug(f"DELETE-ExpirePassword: AD {res_modify_never_expire=} {hr_modify_never_expire=}")
 
     # Check if clearing the "never expire" flag failed first
     expected_msg = AD_NEVER_EXPIRE_CLEARED.format(username=username)
@@ -181,7 +180,6 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
     # 2. Run the explicit password expiration command
     args_expire = {"username": username, "using": using}
     res_expire, hr_expire = run_command("ad-expire-password", args_expire)
-    demisto.debug(f"DELETE-ExpirePassword: AD {res_expire=} {hr_expire=}")
     # Combine human-readable outputs
     hr = f"{hr_modify_never_expire}\n\n{hr_expire}"
 
@@ -209,7 +207,6 @@ def run_microsoft_graph_user(user: UserData, using: str) -> tuple[list[ExpiredPa
         tuple[list[ExpiredPasswordResult], str]: A list containing the result of the password expiration operation and the HR.
     """
     res_cmd, hr = run_command("msgraph-user-force-reset-password", {"user": user["Username"], "using": using})
-    demisto.debug(f"DELETE-ExpirePassword: MSG User {res_cmd=} {hr=}")
     func_res = []
     for res in res_cmd:
         res_hr = get_response_message(res, MSGRAPH_GENERIC_FAILURE)
@@ -231,11 +228,9 @@ def run_okta_v2(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
         tuple[list[ExpiredPasswordResult], str]: A list containing the result of the password expiration operation and the HR.
     """
     res_cmd, hr = run_command("okta-expire-password", {"username": user["Username"], "using": using})
-    demisto.debug(f"DELETE-ExpirePassword: Okta v2 {res_cmd=} {hr=}")
     func_res = []
     for res in res_cmd:
         res_msg = get_response_message(res, OKTA_GENERIC_FAILURE)
-        demisto.debug(f"DELETE-ExpirePassword: Okta v2 Check Content {res_msg=}")
         success = OKTA_PASSWORD_EXPIRED_MARKER in res_msg
         func_res.append(
             build_result(res, success_condition=success, success_msg="Password expired successfully", failure_msg=res_msg)
@@ -258,7 +253,6 @@ def run_gsuiteadmin(user: UserData, using: str) -> tuple[list[ExpiredPasswordRes
         "gsuite-user-reset-password",
         {"user_key": user["Email"], "using": using},
     )
-    demisto.debug(f"DELETE-ExpirePassword: gsuite {res_cmd=} {hr=}")
     func_res = []
     for res in res_cmd:
         # make sure the field changePasswordAtNextLogin is true
@@ -289,7 +283,6 @@ def run_aws_iam(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
         "aws-iam-update-login-profile",
         args,
     )
-    demisto.debug(f"DELETE-ExpirePassword: AWS-IAM {res_cmd=} {hr=}")
     func_res = []
     for res in res_cmd:
         res_msg = get_response_message(res, AWS_GENERIC_FAILURE)
@@ -332,7 +325,6 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
     """
     res, hr = run_command("get-user-data", args | {"verbose": "true"}, label_hr=False)
 
-    demisto.debug(f"DELETE-ExpirePassword: get_users {res=} {hr=}")
     if error_results := [r for r in res if r["Type"] == EntryType.ERROR]:
         if err := next((r for r in error_results if not r["HumanReadable"]), None):
             raise DemistoException(f"Error when calling get-user-data:\n{err['Contents']}")
@@ -379,12 +371,10 @@ def expire_passwords(users: list[UserData]) -> tuple[list[dict], str]:
     """
     context: list[dict] = []
     human_readables = []
-    demisto.debug(f"DELETE-ExpirePassword: expire_passwords {users=}")
     for user in users:
         if user["Status"] == "found":
             command_func = get_module_command_func(user["Brand"])
             res_cmd, hr = command_func(user, user["Instance"])
-            demisto.debug(f"DELETE-ExpirePassword: expire_passwords main {res_cmd=} {hr=}")
             # Build context entries by merging user profile with command results
             for res in res_cmd:
                 result_entry = {
@@ -411,12 +401,10 @@ def main():
     """
     args = demisto.args()
     verbose_hr = ""
-    demisto.debug(f"DELETE-ExpirePassword: {args=}")
     try:
         validate_input(args)
         users, hr_get = get_users(args)
         outputs, hr_expire = expire_passwords(users)
-        demisto.debug(f"DELETE-ExpirePassword: Main {outputs=} {hr_expire=}")
         if argToBoolean(args.get("verbose", "false")):
             verbose_hr = "\n\n".join(("", hr_get, hr_expire))
 
