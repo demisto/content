@@ -156,6 +156,8 @@ NEQ = "NEQ"
 CONTAINS = "CONTAINS"
 IP_MATCH = "IP_MATCH"
 IPLIST_MATCH = "IPLIST_MATCH"
+IS_EMPTY = "IS_EMPTY"
+NIS_EMPTY = "NIS_EMPTY"
 
 RBAC_VALIDATIONS_VERSION = "8.6.0"
 RBAC_VALIDATIONS_BUILD_NUMBER = "992980"
@@ -1705,6 +1707,7 @@ def init_filter_args_options() -> dict[str, AlertFilterArg]:
     array = "array"
     dropdown = "dropdown"
     time_frame = "time_frame"
+    constant = "constant"
 
     return {
         "alert_id": AlertFilterArg("internal_id", EQ, array),
@@ -1754,6 +1757,8 @@ def init_filter_args_options() -> dict[str, AlertFilterArg]:
         "not_status": AlertFilterArg("status.progress", NEQ, array, STATUS_PROGRESS),
         "asset_ids": AlertFilterArg("asset_ids", EQ, array),
         "assignee": AlertFilterArg("assigned_to_pretty", CONTAINS, array),
+        "unassigned": AlertFilterArg("assigned_to_pretty", IS_EMPTY, constant),
+        "assigned": AlertFilterArg("assigned_to_pretty", NIS_EMPTY, constant),
     }
 
 
