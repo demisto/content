@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The SysAid mapper now treats timestamps with `dayfirst=False` (month-first format). This change affects how dates are parsed from SysAid incidents. If you require the previous behavior (`dayfirst=True`), you can create a custom mapper with the day-first setting enabled."
+}
