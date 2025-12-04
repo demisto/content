@@ -7,11 +7,6 @@ commonfields:
   id: Cortex Core - IR
   version: -1
 configuration:
-- display: Incident type
-  name: incidentType
-  type: 13
-  required: false
-  section: Collect
 - display: Server URL (copy URL from Core - click ? to see more info.)
   name: url
   type: 0
@@ -30,7 +25,7 @@ configuration:
   hidden: true
   required: false
   section: Connect
-- additionalinfo: The timeout of the HTTP requests sent to Cortex API (in seconds).
+- additionalinfo: The timeout of the HTTP requests sent to Cortex (in seconds).
   defaultvalue: '120'
   display: HTTP Timeout
   name: timeout
