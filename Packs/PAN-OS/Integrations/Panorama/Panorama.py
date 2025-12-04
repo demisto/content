@@ -1159,6 +1159,57 @@ def panorama_command(args: dict):
 
     result = http_request(URL, "POST", body=params, is_xml=is_xml)
 
+    if 'could not sync with peer' in str(result).lower():
+        print_prefix = "Detected HA sync issue.\n"
+        demisto.debug(f"{print_prefix}\n!pan-os output:\n{str(result)}")
+
+        try:
+            # Step 1: running!pan-os-platform-get-ha-state
+            topology = get_topology()
+            ha_state = get_ha_state(topology)
+            demisto.debug(f"{print_prefix}!pan-os-platform-get-ha-state output:\n{ha_state}")
+            
+            # Step 2: send show high-availability state request
+            ha_params = {
+                "type": "op",
+                "cmd": "<show><high-availability><state></state></high-availability></show>",
+                "key": API_KEY,
+            }
+            ha_result = http_request(URL, "POST", body=ha_params, is_xml=False)
+            ha_result = ha_result.get("response", {})
+            demisto.debug(f"{print_prefix}high-availabilit full response:\n{ha_result}")
+
+            # Local Panorama info
+            local_info = ha_result.get("result", {}).get("local-info", {}) or ha_result.get("result", {}).get("group",{}).get("local-info", {})
+            local_state = local_info.get("state")
+            local_priority = local_info.get("priority")
+            last_error_reason = local_info.get("last-error-reason")
+            last_error_state = local_info.get("last-error-state")
+            mgmt_ip = local_info.get("mgmt-ip")
+
+            # Peer info
+            peer_info = ha_result.get("result", {}).get("peer-info", {}) or ha_result.get("result", {}).get("group",{}).get("peer-info", {})
+            peer_state = peer_info.get("state")
+            peer_conn = peer_info.get("conn-status")
+            peer_mgmt_ip = peer_info.get("mgmt-ip")
+
+            ha_readable = (
+                f"**High Availability Status Summary:**\n"
+                f"Local state: {local_state}\n"
+                f"Local priority: {local_priority}\n"
+                f"Management IP: {mgmt_ip}\n"
+                f"Last error reason: {last_error_reason}\n"
+                f"Last error state: {last_error_state}\n"
+                f"Peer state: {peer_state}\n"
+                f"-----------------------------------\n"
+                f"Peer management IP: {peer_mgmt_ip}\n"
+                f"Peer connection: {peer_conn}"
+            )
+            demisto.debug(f"{print_prefix}{ha_readable}")
+
+        except Exception as e:
+            demisto.debug(f"{print_prefix}Failed to parse HA status:\n{e}")
+        
     return_results(
         CommandResults(outputs_prefix="Panorama.Command", outputs=result, readable_output="Command was executed successfully.")
     )
