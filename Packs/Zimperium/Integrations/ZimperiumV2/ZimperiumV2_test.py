@@ -452,14 +452,7 @@ def test_module_parameter_with_command_argument_override_omitted(requests_mock):
     module as both a client parameter and a command argument.
     """
     requests_mock.post(f"{SERVER_URL}/auth/v1/api_keys/login", json={"accessToken": "token"})
-    client = Client(
-        base_url=SERVER_URL,
-        client_id="test",
-        client_secret="test",
-        verify=True,
-        proxy=False,
-        module=None
-    )
+    client = Client(base_url=SERVER_URL, client_id="test", client_secret="test", verify=True, proxy=False, module=None)
 
     mock_response = util_load_json("./test_data/policy_group_list.json")
     requests_mock.get(f"{SERVER_URL}/mtd-policy/public/v1/groups/page", json=mock_response)
@@ -498,14 +491,7 @@ def test_module_parameter_with_command_argument_override_included(client_module,
         expected_module: Expected module value in the API request (lowercase)
     """
     requests_mock.post(f"{SERVER_URL}/auth/v1/api_keys/login", json={"accessToken": "token"})
-    client = Client(
-        base_url=SERVER_URL,
-        client_id="test",
-        client_secret="test",
-        verify=True,
-        proxy=False,
-        module=client_module
-    )
+    client = Client(base_url=SERVER_URL, client_id="test", client_secret="test", verify=True, proxy=False, module=client_module)
 
     mock_response = util_load_json("./test_data/policy_group_list.json")
     requests_mock.get(f"{SERVER_URL}/mtd-policy/public/v1/groups/page", json=mock_response)
@@ -528,14 +514,7 @@ def test_module_parameter_from_client_only_omitted(requests_mock):
     - Does not support module as a command argument
     """
     requests_mock.post(f"{SERVER_URL}/auth/v1/api_keys/login", json={"accessToken": "token"})
-    client = Client(
-        base_url=SERVER_URL,
-        client_id="test",
-        client_secret="test",
-        verify=True,
-        proxy=False,
-        module=None
-    )
+    client = Client(base_url=SERVER_URL, client_id="test", client_secret="test", verify=True, proxy=False, module=None)
 
     mock_response = util_load_json("./test_data/threat_search.json")
     requests_mock.get(f"{SERVER_URL}/threats/public/v1/threats", json=mock_response)
@@ -571,14 +550,7 @@ def test_module_parameter_from_client_only_included(client_module, expected_modu
         expected_module: Expected module value in the API request (lowercase)
     """
     requests_mock.post(f"{SERVER_URL}/auth/v1/api_keys/login", json={"accessToken": "token"})
-    client = Client(
-        base_url=SERVER_URL,
-        client_id="test",
-        client_secret="test",
-        verify=True,
-        proxy=False,
-        module=client_module
-    )
+    client = Client(base_url=SERVER_URL, client_id="test", client_secret="test", verify=True, proxy=False, module=client_module)
 
     mock_response = util_load_json("./test_data/threat_search.json")
     requests_mock.get(f"{SERVER_URL}/threats/public/v1/threats", json=mock_response)
