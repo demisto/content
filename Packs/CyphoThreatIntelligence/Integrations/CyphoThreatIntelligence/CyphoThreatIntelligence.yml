@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://api.cypho.io/external/v1/
-  display: Server URL (e.g. https://soar.monstersofhack.com)
+  display: Server URL (e.g. https://api.cypho.io/external/v1/)
   name: url
   required: true
   type: 0
