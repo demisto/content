@@ -44,6 +44,7 @@ def mock_return_error():
 
 # --- Utility Function Tests (Mostly Unchanged) ---
 
+
 def test_run_command_success(mock_demisto):
     """
     Given: demisto.executeCommand returns results with various types and human-readables.
@@ -83,6 +84,7 @@ def test_run_command_no_human_readable(mock_demisto):
 
 # --- Module Mapping Tests ---
 
+
 def test_get_module_command_func_valid_module():
     """
     Given: A valid module name.
@@ -108,6 +110,7 @@ def test_get_module_command_func_invalid_module():
 
 
 # --- Integration Function Tests (Updated Logic and Output) ---
+
 
 def test_run_active_directory_query_v2_success(mock_run_command):
     """
@@ -139,8 +142,9 @@ def test_run_active_directory_query_v2_success(mock_run_command):
     assert "HR_CLEAR\n\nHR_EXPIRE" in hr
 
     # Verify both commands were called with correct arguments
-    mock_run_command.assert_any_call("ad-modify-password-never-expire",
-                                     {"username": "testuser", "using": "inst1", "value": "false"})
+    mock_run_command.assert_any_call(
+        "ad-modify-password-never-expire", {"username": "testuser", "using": "inst1", "value": "false"}
+    )
     mock_run_command.assert_called_with("ad-expire-password", {"username": "testuser", "using": "inst1"})
 
 
@@ -169,8 +173,9 @@ def test_run_active_directory_query_v2_pre_check_failure(mock_run_command):
     assert result == expected
     assert "HR_CLEAR_FAIL" in hr
     # Verify ad-expire-password was NOT called
-    mock_run_command.assert_called_once_with("ad-modify-password-never-expire",
-                                             {"username": "testuser", "using": "inst1", "value": "false"})
+    mock_run_command.assert_called_once_with(
+        "ad-modify-password-never-expire", {"username": "testuser", "using": "inst1", "value": "false"}
+    )
 
 
 def test_run_microsoft_graph_user_success(mock_run_command):
@@ -281,8 +286,10 @@ def test_run_aws_iam_success(mock_run_command):
     result, _ = run_aws_iam(user, "inst1")
 
     expected: list[ExpiredPasswordResult] = [
-        {"Result": "Success",
-         "Message": "IAM user login profile updated successfully, requiring password change on next sign-in."}
+        {
+            "Result": "Success",
+            "Message": "IAM user login profile updated successfully, requiring password change on next sign-in.",
+        }
     ]
     assert result == expected
     # Verify correct command name and specific arguments (userName, passwordResetRequired: True)
@@ -293,6 +300,7 @@ def test_run_aws_iam_success(mock_run_command):
 
 
 # --- Input and User Data Tests (Mostly Unchanged, just import/error match) ---
+
 
 def test_validate_input_failure_no_args():
     """
@@ -384,6 +392,7 @@ def test_expire_passwords_no_found_users():
 
 
 # --- Main Logic Tests (Updated Logic) ---
+
 
 def test_main_failure_no_success(mock_demisto, mock_run_command, mock_return_results):
     """
