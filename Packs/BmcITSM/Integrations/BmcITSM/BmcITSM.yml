@@ -1,9 +1,6 @@
 commonfields:
   id: BmcITSM
   version: -1
-sectionorder:
-- Connect
-- Collect
 name: BmcITSM
 display: BMC Helix ITSM
 category: Utilities
@@ -21,9 +18,9 @@ configuration:
   required: true
   defaultvalue:
   type: 9
-  section: Connect
   additionalinfo: ""
   displaypassword: Password
+  section: Connect
 - name: max_fetch
   display: Maximum Number of Incidents per Fetch
   defaultvalue: "50"
@@ -1182,7 +1179,7 @@ script:
       required: true
       defaultValue: ""
     - name: root_ticket_type
-      description: The parent ticket type.
+      description: "The parent ticket type."
       required: true
       defaultValue: ""
       auto: PREDEFINED
@@ -1194,21 +1191,20 @@ script:
       - work order
     - name: root_request_id
       description: "The request ID of the parent ticket. Can be found in the context output of the bmc-itsm-ticket-list command. Use Display ID for work orders."
-      required: true
       defaultValue: ""
+      required: true
     - name: root_request_name
       description: "The display name of the parent ticket in the task ticket. If not provided, the parent ticket displayID is displayed."
       defaultValue: ""
     - name: root_request_mode
       description: "The parent ticket request mode."
-      defaultValue: Real
+      defaultValue: "Real"
       auto: PREDEFINED
       predefined:
       - Real
       - Simulation
     - name: status
       description: The task status.
-      required: true
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1219,13 +1215,14 @@ script:
       - Waiting
       - Closed
       - Bypassed
+      required: true
     - name: task_type
-      description: Whether the task is manual or automatic.
+      description: 'Whether the task is manual or automatic.'
       defaultValue: ""
-      auto: PREDEFINED
       predefined:
-      - Automatic
+      - 'Automatic'
       - Manual
+      auto: PREDEFINED
     - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assignee or any other custom field.'
       defaultValue: ""
@@ -1243,8 +1240,8 @@ script:
       - Low
     - name: location_company
       description: The company associated with the task process.
-      required: true
       defaultValue: ""
+      required: true
     - name: support_company
       description: The technical support team associated with the company.
       defaultValue: ""
@@ -1317,7 +1314,7 @@ script:
       - Medium
       - Low
     - name: status
-      description: The task ticket status.
+      description: "The task ticket status."
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1360,15 +1357,15 @@ script:
       description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together.
       defaultValue:
     - name: assigned_group
-      description: The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
+      description: "The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together."
       defaultValue: ""
     - name: task_type
       description: "The task ticket type."
       defaultValue: ""
-      auto: PREDEFINED
       predefined:
-      - Automatic
+      - 'Automatic'
       - Manual
+      auto: PREDEFINED
     - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assignee or any other custom field.'
       defaultValue: ""
@@ -1975,17 +1972,107 @@ script:
       description: The support group.
   - name: bmc-itsm-worklog-add
     arguments:
-    - description: Incident Number
-      name: incident_number
+    - name: incident_number
+      description: Incident Number.
       required: true
-    - description: Work Log Type
-      name: worklog_type
-    - description: View Acces
-      name: view_access
-    - description: Detailed Description
-      name: detailed_description
-    - description: A comma-separated list of entry_ids to add as attachments
-      name: entry_ids
+    - name: worklog_type
+      description: Work Log Type.
+    - name: view_access
+      description: View Acces.
+    - name: detailed_description
+      description: Detailed Description.
+    - name: entry_ids
+      description: A comma-separated list of entry_ids to add as attachments.
+  - arguments:
+    - description: A comma-separated list of service request definition IDs. Used as a filtering argument.
+      isArray: true
+      name: ticket_ids
+    - description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
+      name: query
+    - defaultValue: "50"
+      description: The maximum number of records to retrieve.
+      name: limit
+    - description: The maximum number of records to retrieve per page.
+      name: page_size
+    - description: The page number of the results to retrieve.
+      name: page
+    - description: The Work Log description. Used as a filtering argument.
+      name: description
+    description: Retrieves a list of service request definitions. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
+    name: bmc-itsm-worklog-list
+    outputs:
+    - contextPath: BmcITSM.WorkLog.ID
+      description: The Work Log ID.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      description: Request Type
+      name: request_type
+      predefined:
+      - Incident
+      - Asset
+      - Work order
+      required: true
+    - description: Request Description
+      name: request_description
+      required: true
+    - auto: PREDEFINED
+      description: Association Type
+      name: association_type
+      predefined:
+      - Caused
+      - Caused by
+      - Duplicate of
+      - Original of
+      - Resolved
+      - Resolved by
+      required: true
+    - auto: PREDEFINED
+      description: First Form Name
+      name: first_form_name
+      predefined:
+      - incident
+      - task
+      - change request
+      - problem investigation
+      - known error
+      - work order
+      required: true
+    - description: First Request ID
+      name: first_request_id
+      required: true
+    - auto: PREDEFINED
+      description: Second Form Name
+      name: second_form_name
+      predefined:
+      - incident
+      - task
+      - change request
+      - problem investigation
+      - known error
+      - work order
+      required: true
+    - description: Second Request ID
+      name: second_request_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "true"
+      description: Bidirectionality
+      name: bidirectional
+      predefined:
+      - "true"
+      - "false"
+    description: Creates a relationship between two tickets.
+    name: bmc-itsm-ticket-create-relationship
+  - arguments:
+    - description: Worklog ID
+      name: worklog_id
+    description: Retrieves a list of service request definitions. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
+    name: bmc-itsm-worklog-attachment-get
+    outputs:
+    - contextPath: BmcITSM.Attachment.ID
+      description: The Work Log ID.
+      type: String
   - name: bmc-itsm-work-order-template-list
     description: Lists all work order templates. Useful for creating work orders. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON, you can use the raw_response=true at the end of the command.
     arguments:
@@ -2015,15 +2102,15 @@ script:
       type: String
       defaultValue: ""
     outputs:
-    - type: String
-      contextPath: BmcITSM.WorkOrderTemplate.Id
+    - contextPath: BmcITSM.WorkOrderTemplate.Id
       description: The work order template ID.
-    - type: String
-      contextPath: BmcITSM.WorkOrderTemplate.Name
+      type: String
+    - contextPath: BmcITSM.WorkOrderTemplate.Name
       description: The work order template name.
-    - type: String
-      contextPath: BmcITSM.WorkOrderTemplate.GUID
+      type: String
+    - contextPath: BmcITSM.WorkOrderTemplate.GUID
       description: The work order template GUID.
+      type: String
   - name: bmc-itsm-work-order-create
     description: Creates a new work order ticket.
     arguments:
@@ -2039,42 +2126,42 @@ script:
     - name: last_name
       description: Requester last name.
       type: String
-      required: false
       defaultValue: ""
+      required: false
     - name: customer_first_name
       description: Customer first name.
+      defaultValue: ""
       type: String
       required: true
-      defaultValue: ""
     - name: customer_last_name
       description: Customer last name.
+      defaultValue: ""
       type: String
       required: true
-      defaultValue: ""
     - name: customer_company
       description: Customer company.
-      type: String
       defaultValue: ""
+      type: String
       required: true
     - name: customer_person_id
       description: Customer person ID. Use it when customer first and last name pair is not unique.
       type: String
-      required: false
       defaultValue: ""
+      required: false
     - name: summary
       description: The work order summary.
       type: String
-      required: true
       defaultValue: ""
+      required: true
     - name: detailed_description
       description: The work order ticket detailed description.
       type: String
-      required: true
       defaultValue: ""
+      required: true
     - name: status
       description: The work order status.
-      required: true
       defaultValue: ""
+      required: true
       predefined:
       - Assigned
       - Pending
@@ -2092,7 +2179,6 @@ script:
       defaultValue: ""
     - name: priority
       description: The work order ticket priority.
-      required: true
       defaultValue: ""
       predefined:
       - Critical
@@ -2100,8 +2186,9 @@ script:
       - Medium
       - Low
       auto: PREDEFINED
+      required: true
     - name: work_order_type
-      description: The work order ticket type.
+      description: 'The work order ticket type.'
       defaultValue: ""
       predefined:
       - General
@@ -2110,8 +2197,8 @@ script:
     - name: location_company
       description: The company associated with the task process.
       type: String
-      required: true
       defaultValue: ""
+      required: true
     - name: scedulded_start_date
       description: The work order ticket scheduled future start date. For example, in 12 hours, in 7 days.
       type: String
@@ -2239,3 +2326,6 @@ script:
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
+sectionorder:
+- Connect
+- Collect
