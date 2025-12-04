@@ -195,7 +195,7 @@ tasks:
       - "9"
     scriptarguments:
       extend-context:
-        simple: SafeUPN=userPrincipalName::SafeID=id
+        simple: SafeID=id
       id:
         complex:
           root: AzureRiskyUsers.RiskyUser
@@ -688,7 +688,7 @@ tasks:
       - "21"
     scriptarguments:
       user:
-        simple: ${SafeUPN}
+        simple: ${SafeID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -803,7 +803,7 @@ tasks:
       - "22"
     scriptarguments:
       user:
-        simple: ${SafeUPN}
+        simple: ${SafeID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
