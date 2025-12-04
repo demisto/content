@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 from copy import deepcopy
 
+
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 INTEGRATION_CONTEXT_BRAND = "Core"
@@ -23,7 +24,6 @@ PREVALENCE_COMMANDS = {
     "core-get-registry-analytics-prevalence": "registry",
     "core-get-cmd-analytics-prevalence": "cmd",
 }
-PRIVATE_API_COMMANDS = ["core-list-endpoints"]
 
 TERMINATE_BUILD_NUM = "1398786"
 TERMINATE_SERVER_VERSION = "8.8.0"
@@ -55,6 +55,7 @@ ERROR_CODE_MAP = {
     -192: "IPV6_BLOCKING_IS_DISABLED",
     -191: "IP_IS_LOCAL_ADDRESS",
 }
+
 
 class Client(CoreClient):
     def test_module(self):
@@ -230,14 +231,6 @@ class Client(CoreClient):
                 raise DemistoException(f"Got 404 when querying for alert ID {alert_id}, alert not found.")
             else:
                 raise e
-
-    def get_webapp_data(self, request_data: dict):
-        reply = self._http_request(
-            method="POST",
-            url_suffix="/get_data",
-            json_data=request_data,
-        )
-        return reply
 
 
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
@@ -708,6 +701,7 @@ def core_get_contributing_event_command(client: Client, args: Dict) -> CommandRe
         raw_response=alerts,
     )
 
+
 def polling_block_ip_status(args, client) -> PollResult:
     """
     Check action status for each endpoint id and ip address.
@@ -830,13 +824,7 @@ def main():  # pragma: no cover
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
     headers = {}
-    if command in PREVALENCE_COMMANDS:
-        url_suffix = "/xsiam"
-    elif command in PRIVATE_API_COMMANDS:
-        url_suffix = ""
-    else:
-        url_suffix = "/public_api/v1"
-
+    url_suffix = "/xsiam" if command in PREVALENCE_COMMANDS else "/public_api/v1"
     if not FORWARD_USER_RUN_RBAC:
         api_key = demisto.params().get("apikey")
         api_key_id = demisto.params().get("apikey_id")
@@ -1215,9 +1203,6 @@ def main():  # pragma: no cover
 
         elif command == "core-block-ip":
             return_results(core_block_ip_command(args, client))
-
-        elif command == "core-list-endpoints":
-            return_results(core_list_endpoints_command(client, args))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))

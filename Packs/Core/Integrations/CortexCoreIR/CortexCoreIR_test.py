@@ -10,7 +10,6 @@ from CortexCoreIR import (
     polling_block_ip_status,
     Client,
     core_get_contributing_event_command,
-    map_endpoint_format,
 )
 from freezegun import freeze_time
 
@@ -1291,4 +1290,3 @@ def test_core_get_contributing_event(mocker):
     assert isinstance(result, CommandResults)
     assert "Contributing events" in result.readable_output
     assert result.outputs[0]["alertID"] == "1"
-

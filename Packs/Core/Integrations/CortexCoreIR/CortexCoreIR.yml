@@ -296,7 +296,7 @@ script:
       name: public_ip_list
     - description: |-
         The group name to which the agent belongs.
-        Example: group1,group_name2.
+        Example: group_name1,group_name2.
       isArray: true
       name: group_name
     - description: 'The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". '
