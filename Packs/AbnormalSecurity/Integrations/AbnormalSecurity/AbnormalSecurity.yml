@@ -1010,7 +1010,7 @@ script:
       type: Unknown
 
   - arguments:
-    - description: Comma-separated list of tenant IDs (will be sent as array in request body).
+    - description: Comma-separated list of tenant IDs (will be sent as query parameters).
       name: tenant_ids
     - description: Filter by action type.
       name: action
