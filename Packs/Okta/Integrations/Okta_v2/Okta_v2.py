@@ -59,6 +59,7 @@ MAX_LOGS_LIMIT = 1000
 DEFAULT_POLLING_TIME = 5
 DEFAULT_MAX_POLLING_CALLS = 10
 
+
 class Client(OktaClient):
     # Getting Group Id with a given group name
     def get_group_id(self, group_name):
@@ -235,7 +236,7 @@ class Client(OktaClient):
             if response.get("factorResult") != "WAITING":
                 return response
             counter += 1
-            time.sleep(polling_time)
+            time.sleep(polling_time)  # pylint: disable=E9003
         response["factorResult"] = "TIMEOUT"
         return response
 
