@@ -137,7 +137,7 @@ aggregated_details AS (
         ) AS finding_details_json
     FROM
         fact_asset_scan_vulnerability_instance fasvi
-    INNER JOIN 
+    INNER JOIN
         fact_asset_vulnerability_finding favf
         ON fasvi.asset_id = favf.asset_id
         AND fasvi.vulnerability_id = favf.vulnerability_id
@@ -164,7 +164,7 @@ LEFT JOIN dim_vulnerability AS dv
     ON ad.vulnerability_id = dv.vulnerability_id
 LEFT JOIN aggregated_categories AS ac
     ON ad.vulnerability_id = ac.vulnerability_id
-LEFT JOIN cve_references cef 
+LEFT JOIN cve_references cef
     ON ad.vulnerability_id = cef.vulnerability_id
 ORDER BY
     ad.asset_id, ad.vulnerability_id, ad.scan_date DESC
@@ -6895,27 +6895,26 @@ async def stream_and_parse_report(
     try:
         # 1. INITIAL LINE READ: Get the header of the report
         try:
-                # Fetch the very first line (Line 1)
-                header_line = await anext(stream_iterator)
-                current_line_count = 1
-                
-                # Parse the header immediately
-                header = next(csv.reader(io.StringIO(header_line)))
-                demisto.debug(f"CSV Header parsed: {header}")
+            # Fetch the very first line (Line 1)
+            header_line = await anext(stream_iterator)
+            current_line_count = 1
+
+            # Parse the header immediately
+            header = next(csv.reader(io.StringIO(header_line)))
+            demisto.debug(f"CSV Header parsed: {header}")
 
         except StopAsyncIteration:
-                demisto.debug("Report was empty (no header found).")
-                return
+            demisto.debug("Report was empty (no header found).")
+            return
         except Exception as e:
-                raise Exception(f"Failed to parse CSV header on line 1: {e}")
-        
+            raise Exception(f"Failed to parse CSV header on line 1: {e}")
+
         try:
             # Try to fetch Line 2 (the first data line)
             line_to_process = await anext(stream_iterator)
         except StopAsyncIteration:
             # Report has a header but no data
             line_to_process = None
-        
 
         while line_to_process is not None:
             current_line_count += 1
@@ -6968,7 +6967,10 @@ async def stream_and_parse_report(
                 if is_last_batch:
                     # If this is the last batch, the indicator MUST be the final total record count.
                     lines_to_send_indicator = new_total_records
-                    demisto.debug(f"DEBUG: End of {event_type} report number {instance_id} reached. Sending Final Report Total: {lines_to_send_indicator}")  # noqa: E501
+                    demisto.debug(
+                        f"DEBUG: End of {event_type} report number {instance_id} reached. Sending Final Report Total: \
+                    {lines_to_send_indicator}"
+                    )  # noqa: E501
                 else:
                     # Otherwise, send the placeholder (1) to indicate it's a middle batch.
                     lines_to_send_indicator = 1
@@ -7042,21 +7044,17 @@ async def delete_report_configuration(client: InsightVMClient, report_id: str, e
         demisto.debug(f"Warning: Could not guarantee deletion of report configuration. {e}")
 
 
-def _apply_collector_changes(
-    collector_context: Dict[str, Dict[str, Any]], 
-    collector_type: str, 
-    changes: Dict[str, Any]
-) -> None:
+def _apply_collector_changes(collector_context: Dict[str, Dict[str, Any]], collector_type: str, changes: Dict[str, Any]) -> None:
     """
     Helper function to apply changes to a specific collector's context dict
     with concurrency safety logic.
-    
+
     Modifies 'collector_context' in place.
     """
     # 1. Ensure the sub-dictionary exists for this collector type
     if collector_type not in collector_context:
         collector_context[collector_type] = {}
-        
+
     current_sub_dict = collector_context[collector_type]
 
     # Keys that must strictly increase during normal operation
@@ -7071,19 +7069,17 @@ def _apply_collector_changes(
 
     # 3. Iterate through ALL keys in the changes dictionary
     for key, new_value in changes.items():
-        
         # LOGIC A: Handle Monitored Counters (prevent race conditions)
         if key in MONITORED_KEYS and not finish:
-            
             old_value = current_sub_dict.get(key, 0)
-            
+
             if isinstance(new_value, int | float) and isinstance(old_value, int | float):
                 if new_value > old_value:
                     current_sub_dict[key] = new_value
             else:
                 # Fallback for unexpected types
                 current_sub_dict[key] = new_value
-                
+
         # LOGIC B: Handle Everything Else
         # This includes IDs, standard keys, AND the 'finish' key itself.
         else:
@@ -7875,8 +7871,6 @@ def main():  # pragma: no cover
             results = get_list_asset_group_command(client=client, **args)
         elif command == "nexpose-create-asset-group":
             results = create_asset_group_command(client=client, **args)
-        elif command == "nexpose-add-assets-to-tenant":
-            create_add_assets_to_tenant()
         else:
             raise NotImplementedError(f"Command {command} not implemented.")
 

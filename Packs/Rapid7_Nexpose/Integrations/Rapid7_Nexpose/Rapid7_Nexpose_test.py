@@ -2442,12 +2442,12 @@ async def test_run_full_collector_workflow_success(mocker):
     # Verify the workflow execution
     mock_create_report.assert_called_once_with(mock_client, "asset")
     mock_generate_report.assert_called_once_with(mock_client, "test-report-id")
-    mock_check_status.assert_called_once_with(mock_client, "test-report-id", "test-instance-id")
+    mock_check_status.assert_called_once_with(mock_client, "test-report-id", "test-instance-id", "asset")
     mock_download_parse.assert_called_once_with(mock_client, "test-report-id", "test-instance-id", {}, "asset", 500)
 
     # Verify cleanup was performed
-    mock_delete_instance.assert_called_once_with(mock_client, "test-report-id", "test-instance-id")
-    mock_delete_config.assert_called_once_with(mock_client, "test-report-id")
+    mock_delete_instance.assert_called_once_with(mock_client, "test-report-id", "test-instance-id", "asset")
+    mock_delete_config.assert_called_once_with(mock_client, "test-report-id", "asset")
 
     # Verify state checkpoints were updated correctly
     assert mock_set_integration_context.call_count >= 3  # At least 3 updates to the context
@@ -2539,7 +2539,7 @@ async def test_check_status_of_report_success(mocker):
     mock_generate_report = mocker.patch("Rapid7_Nexpose.generate_report")
 
     # Call the function under test
-    result = await check_status_of_report(mock_client, "test-report-id", "test-instance-id")
+    result = await check_status_of_report(mock_client, "test-report-id", "test-instance-id", "assets")
 
     # Verify the function returns the instance_id
     assert result == "test-instance-id"
@@ -2590,7 +2590,7 @@ async def test_check_status_of_report_failed(mocker):
     mock_generate_report = mocker.patch("Rapid7_Nexpose.generate_report", return_value="new-instance-id")
 
     # Call the function under test
-    result = await check_status_of_report(mock_client, "test-report-id", "test-instance-id")
+    result = await check_status_of_report(mock_client, "test-report-id", "test-instance-id", "assets")
 
     # Verify the function returns the new instance_id
     assert result == "new-instance-id"
@@ -2847,6 +2847,61 @@ def test_apply_collector_changes(collector_context, collector_type, changes, exp
     assert context_copy == expected_result
 
 
+@pytest.mark.parametrize(
+    "initial_context, collector_type, changes, expected_context",
+    [
+        (
+            # Test case where new value is less than existing value for a monitored key
+            {"asset": {"last_sent_line": 100, "total_records_ingested": 200}},  # Initial context
+            "asset",  # Collector type
+            {"last_sent_line": 50, "total_records_ingested": 150},  # Changes with lower values
+            {"asset": {"last_sent_line": 100, "total_records_ingested": 200}},  # Expected context (unchanged)
+        ),
+        (
+            # Test case where new value is equal to existing value for a monitored key
+            {"vulnerability": {"last_sent_line": 100, "total_records_ingested": 200}},  # Initial context
+            "vulnerability",  # Collector type
+            {"last_sent_line": 100, "total_records_ingested": 200},  # Changes with equal values
+            {"vulnerability": {"last_sent_line": 100, "total_records_ingested": 200}},  # Expected context (unchanged)
+        ),
+        (
+            # Test case where new value is greater than existing value for a monitored key
+            {"asset": {"last_sent_line": 100, "total_records_ingested": 200}},  # Initial context
+            "asset",  # Collector type
+            {"last_sent_line": 150, "total_records_ingested": 250},  # Changes with higher values
+            {"asset": {"last_sent_line": 150, "total_records_ingested": 250}},  # Expected context (updated)
+        ),
+    ],
+)
+def test_update_state_checkpoint_mismatch_updates(mocker, initial_context, collector_type, changes, expected_context):
+    """
+    Given:
+      - An initial integration context with existing values for monitored keys
+      - A collector type to update
+      - Changes with values that may be less than, equal to, or greater than the existing values
+
+    When:
+      - Calling the update_state_checkpoint function
+
+    Then:
+      - Ensure the integration context is only updated when the new values are greater than the existing values
+      - Ensure the context is not updated when the new values are less than or equal to the existing values
+    """
+    # Mock the integration context functions
+    mock_get_context = mocker.patch("Rapid7_Nexpose.get_integration_context", return_value=initial_context)
+    mock_set_context = mocker.patch("Rapid7_Nexpose.set_integration_context")
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    # Call the function under test
+    update_state_checkpoint(collector_type, changes)
+
+    # Verify get_integration_context was called
+    mock_get_context.assert_called_once()
+
+    # Verify set_integration_context was called with the expected context
+    mock_set_context.assert_called_once_with(expected_context)
+
+
 @pytest.mark.asyncio
 async def test_stream_report_success(mocker):
     """
@@ -2919,6 +2974,155 @@ async def test_stream_report_success(mocker):
 
     # Verify the response was released
     mock_response.release.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_fetch_assets_long_running_command(mocker):
+    """
+    Given:
+      - Parameters for the fetch_assets_long_running_command function
+      - A token for authentication
+
+    When:
+      - Calling the fetch_assets_long_running_command function
+
+    Then:
+      - Ensure the InsightVMClient is created with the correct parameters
+      - Ensure run_all_collectors is called with the correct parameters
+      - Ensure the function sleeps for the correct interval
+      - Ensure the function continues running in a loop
+    """
+    # Mock the parameters and token
+    params = {
+        "server": "https://test-server.com",
+        "credentials": {"identifier": "test-user", "password": "test-password"},
+        "unsecure": False,
+    }
+    token = "test-token"
+
+    # Mock the InsightVMClient
+    mock_client_instance = mocker.AsyncMock()
+    mock_client_class = mocker.patch("Rapid7_Nexpose.InsightVMClient", return_value=mock_client_instance)
+    mock_client_instance.__aenter__.return_value = mock_client_instance
+
+    # Mock run_all_collectors
+    mock_run_all_collectors = mocker.patch("Rapid7_Nexpose.run_all_collectors")
+
+    # Mock asyncio.sleep to avoid waiting in the test
+    mock_sleep = mocker.patch("Rapid7_Nexpose.asyncio.sleep")
+
+    # Mock time.time to control the execution time
+    mock_time = mocker.patch("Rapid7_Nexpose.time.time")
+    # First call is at the start, second call is at the end of the first iteration
+    mock_time.side_effect = [100, 200, 300, 400]
+
+    # Mock INTERVAL_SECONDS constant
+    mocker.patch("Rapid7_Nexpose.INTERVAL_SECONDS", 3600)  # 1 hour
+
+    # Mock demisto.debug to avoid debug output during tests
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    # Create a function to stop the infinite loop after 2 iterations
+    iteration_count = 0
+    original_sleep = asyncio.sleep
+
+    async def mock_sleep_with_exit(seconds):
+        nonlocal iteration_count
+        iteration_count += 1
+        if iteration_count >= 2:
+            raise Exception("Test complete")
+        return await original_sleep(0)  # Return immediately for testing
+
+    mock_sleep.side_effect = mock_sleep_with_exit
+
+    # Call the function under test and expect it to exit after 2 iterations
+    with pytest.raises(Exception, match="Test complete"):
+        await fetch_assets_long_running_command(params, token)
+
+    # Verify InsightVMClient was created with the correct parameters
+    mock_client_class.assert_called_with(
+        base_url="https://test-server.com", username="test-user", password="test-password", token="test-token", verify=True
+    )
+
+    # Verify run_all_collectors was called at least once
+    assert mock_run_all_collectors.call_count >= 1
+    mock_run_all_collectors.assert_called_with(mock_client_instance, batch_size=1000)
+
+    # Verify sleep was called
+    assert mock_sleep.call_count >= 1
+
+
+@pytest.mark.asyncio
+async def test_fetch_assets_long_running_command_error_handling(mocker):
+    """
+    Given:
+      - Parameters for the fetch_assets_long_running_command function
+      - A token for authentication
+      - run_all_collectors raises an exception
+
+    When:
+      - Calling the fetch_assets_long_running_command function
+
+    Then:
+      - Ensure the exception is caught and logged
+      - Ensure the function continues running in a loop despite the error
+    """
+    # Mock the parameters and token
+    params = {
+        "server": "https://test-server.com",
+        "credentials": {"identifier": "test-user", "password": "test-password"},
+        "unsecure": False,
+    }
+    token = "test-token"
+
+    # Mock the InsightVMClient
+    mock_client_instance = mocker.AsyncMock()
+    mocker.patch("Rapid7_Nexpose.InsightVMClient", return_value=mock_client_instance)
+    mock_client_instance.__aenter__.return_value = mock_client_instance
+
+    # Mock run_all_collectors to raise an exception
+    mock_run_all_collectors = mocker.patch("Rapid7_Nexpose.run_all_collectors")
+    mock_run_all_collectors.side_effect = Exception("Test error")
+
+    # Mock asyncio.sleep to avoid waiting in the test
+    mock_sleep = mocker.patch("Rapid7_Nexpose.asyncio.sleep")
+
+    # Mock time.time to control the execution time
+    mock_time = mocker.patch("Rapid7_Nexpose.time.time")
+    # First call is at the start, second call is at the end of the first iteration
+    mock_time.side_effect = [100, 200, 300, 400]
+
+    # Mock INTERVAL_SECONDS constant
+    mocker.patch("Rapid7_Nexpose.INTERVAL_SECONDS", 3600)  # 1 hour
+
+    # Mock demisto.debug to check error logging
+    mock_debug = mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    # Create a function to stop the infinite loop after 2 iterations
+    iteration_count = 0
+    original_sleep = asyncio.sleep
+
+    async def mock_sleep_with_exit(seconds):
+        nonlocal iteration_count
+        iteration_count += 1
+        if iteration_count >= 2:
+            raise Exception("Test complete")
+        return await original_sleep(0)  # Return immediately for testing
+
+    mock_sleep.side_effect = mock_sleep_with_exit
+
+    # Call the function under test and expect it to exit after 2 iterations
+    with pytest.raises(Exception, match="Test complete"):
+        await fetch_assets_long_running_command(params, token)
+
+    # Verify run_all_collectors was called at least once
+    assert mock_run_all_collectors.call_count >= 1
+
+    # Verify the error was logged
+    mock_debug.assert_any_call("Got the following error while trying to stream events: Test error")
+
+    # Verify sleep was called
+    assert mock_sleep.call_count >= 1
 
 
 @pytest.mark.asyncio
