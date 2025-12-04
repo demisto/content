@@ -6,7 +6,7 @@ from functools import cached_property
 import traceback
 from typing import Any
 from datetime import datetime, timedelta
-import json
+
 from CommonServerPython import *
 import demistomock as demisto
 
@@ -1272,7 +1272,6 @@ class ReputationAggregatedCommand(AggregatedCommand):
             )
 
         demisto.debug("All commands succeeded. Returning a success entry.")
-        demisto.debug(f"{json.dumps(final_context, indent=4)}")
         return CommandResults(readable_output=human_readable, outputs=final_context)
 
     def create_indicators_entry_results(self):
@@ -1351,12 +1350,13 @@ def create_and_extract_indicators(
     """
     Extract indicators from the provided input list for a specific indicator type,
     using the `extractIndicators` command.
+    Create IndicatorInstance foreach of the inputs and if is the right type will update the extracted field.
 
     Args:
         data (list[str]): Raw input values to validate/extract.
         indicator_type (str): Expected indicator type (e.g., "url", "file").
         mark_mismatched_type_as_invalid (bool): When True, inputs that are also
-            extracted as additional types (e.g., URL + Domain) are treated as
+            extracted as additional types (e.g., https://1.1.1.1.com is extracted as IP and URL) are treated as
             invalid for this call.
 
     Returns:
