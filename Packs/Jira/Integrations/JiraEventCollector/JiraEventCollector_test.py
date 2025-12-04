@@ -131,3 +131,104 @@ def test_fetch_events_max_fetch_set_to_one(mocker):
     assert last_run.return_value.get("next_time") == calculate_next_run(events[0]["created"])
     assert last_run.return_value.get("offset") == 1
     assert len(events) == 1
+
+def test_jira_oauth_start(mocker):
+    """
+    Given
+        - Client ID and redirect URI.
+    When
+        - jira-oauth-start is running.
+    Then
+        - Verify that the authorization URL is generated correctly.
+    """
+    from JiraEventCollector import jira_oauth_start, AUTH_URL
+    
+    client_id = "test_client_id"
+    redirect_uri = "https://test.com/callback"
+    
+    mocker.patch("secrets.token_hex", return_value="test_state")
+    
+    result = jira_oauth_start(client_id, redirect_uri)
+    
+    assert result.raw_response.startswith(AUTH_URL)
+    assert "client_id=test_client_id" in result.raw_response
+    assert "redirect_uri=https%3A%2F%2Ftest.com%2Fcallback" in result.raw_response
+    assert "state=test_state" in result.raw_response
+
+
+def test_jira_oauth_complete(mocker):
+    """
+    Given
+        - Authorization code and state.
+    When
+        - jira-oauth-complete is running.
+    Then
+        - Verify that the token exchange request is sent correctly.
+        - Verify that the integration context is updated with the token.
+    """
+    from JiraEventCollector import jira_oauth_complete
+    
+    client_id = "test_client_id"
+    client_secret = "test_client_secret"
+    code = "test_code"
+    state = "test_state"
+    redirect_uri = "https://test.com/callback"
+    
+    mock_response = {
+        "access_token": "test_access_token",
+        "refresh_token": "test_refresh_token",
+        "expires_in": 3600
+    }
+    
+    mocker.patch("requests.post", return_value=mocker.Mock(json=lambda: mock_response, status_code=200))
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    set_context = mocker.patch.object(demisto, "setIntegrationContext")
+    
+    jira_oauth_complete(client_id, client_secret, code, state, redirect_uri)
+    
+    assert set_context.call_count == 1
+    context = set_context.call_args[0][0]
+    assert context["access_token"] == "test_access_token"
+    assert context["refresh_token"] == "test_refresh_token"
+    assert "valid_until" in context
+
+
+def test_get_access_token_refresh(mocker):
+    """
+    Given
+        - Expired access token and valid refresh token in context.
+    When
+        - get_access_token is called.
+    Then
+        - Verify that the token refresh request is sent.
+        - Verify that the new token is returned and context updated.
+    """
+    from JiraEventCollector import get_access_token
+    
+    client_id = "test_client_id"
+    client_secret = "test_client_secret"
+    redirect_uri = "https://test.com/callback"
+    
+    expired_time = (datetime.now() - timedelta(hours=1)).timestamp()
+    context = {
+        "access_token": "expired_token",
+        "refresh_token": "valid_refresh_token",
+        "valid_until": expired_time
+    }
+    
+    mock_response = {
+        "access_token": "new_access_token",
+        "refresh_token": "new_refresh_token",
+        "expires_in": 3600
+    }
+    
+    mocker.patch.object(demisto, "getIntegrationContext", return_value=context)
+    set_context = mocker.patch.object(demisto, "setIntegrationContext")
+    mocker.patch("requests.post", return_value=mocker.Mock(json=lambda: mock_response, status_code=200))
+    
+    token = get_access_token(client_id, client_secret, redirect_uri)
+    
+    assert token == "new_access_token"
+    assert set_context.call_count == 1
+    new_context = set_context.call_args[0][0]
+    assert new_context["access_token"] == "new_access_token"

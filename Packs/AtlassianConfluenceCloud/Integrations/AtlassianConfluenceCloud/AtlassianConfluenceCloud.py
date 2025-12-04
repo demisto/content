@@ -1,5 +1,6 @@
 import json
 import urllib.parse
+import secrets
 from collections.abc import Callable
 from typing import Final
 
@@ -33,6 +34,13 @@ URL_SUFFIX = {
     "BASE": "/wiki",
     "NEXT_LINK_TEMPLATE": "/rest/api/audit/?end_date={}&next=true&limit={}&start={}&startDate={}",
 }
+
+AUTH_URL = "https://auth.atlassian.com/authorize"
+TOKEN_URL = "https://auth.atlassian.com/oauth/token"
+SCOPES = (
+    "read:audit-log:confluence search:confluence read:confluence-groups write:confluence-content "
+    "read:confluence-content.all write:confluence-space offline_access"
+)
 
 MESSAGES = {
     "REQUIRED_URL_FIELD": "Site Name can not be empty.",
@@ -96,6 +104,90 @@ DEFAULT_GET_EVENTS_LIMIT = "50"
 ONE_MINUTE_IN_MILL_SECONDS = 60000
 ONE_WEEK_IN_MILL_SECONDS = 604800000
 _last_run_cache = None
+""" OAUTH FUNCTIONS """
+
+
+def confluence_cloud_oauth_start(client_id: str, redirect_uri: str) -> CommandResults:
+    state = secrets.token_hex(16)
+    params = {
+        "audience": "api.atlassian.com",
+        "client_id": client_id,
+        "scope": SCOPES,
+        "redirect_uri": redirect_uri,
+        "state": state,
+        "response_type": "code",
+        "prompt": "consent",
+    }
+    url = f"{AUTH_URL}?{urllib.parse.urlencode(params)}"  # type: ignore
+    return CommandResults(
+        readable_output=f"Please authenticate [here]({url})",
+        raw_response=url,
+    )
+
+
+def confluence_cloud_oauth_complete(
+    client_id: str, client_secret: str, code: str, state: str, redirect_uri: str
+) -> CommandResults:
+    data = {
+        "grant_type": "authorization_code",
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "code": code,
+        "redirect_uri": redirect_uri,
+    }
+    response = requests.post(TOKEN_URL, json=data)
+    response.raise_for_status()
+    token_data = response.json()
+
+    expires_in = token_data.get("expires_in", 3600)
+    token_data["valid_until"] = (datetime.now() + timedelta(seconds=expires_in - 60)).timestamp()
+
+    integration_context = demisto.getIntegrationContext()
+    integration_context.update(token_data)
+    demisto.setIntegrationContext(integration_context)
+
+    return CommandResults(readable_output="✅ Authorization completed successfully.")
+
+
+def get_access_token(client_id: str, client_secret: str, redirect_uri: str) -> str:
+    integration_context = demisto.getIntegrationContext()
+    access_token = integration_context.get("access_token")
+    refresh_token = integration_context.get("refresh_token")
+    valid_until = integration_context.get("valid_until")
+
+    if not access_token or not refresh_token:
+        raise DemistoException("Access token or refresh token not found. Please run !confluence-cloud-oauth-start.")
+
+    now = datetime.now().timestamp()
+    if valid_until and now >= valid_until:
+        demisto.debug("Token expired, refreshing...")
+        return refresh_access_token(client_id, client_secret, refresh_token, redirect_uri)
+
+    return access_token
+
+
+def refresh_access_token(client_id: str, client_secret: str, refresh_token: str, redirect_uri: str) -> str:
+    data = {
+        "grant_type": "refresh_token",
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "refresh_token": refresh_token,
+        "redirect_uri": redirect_uri,
+    }
+    response = requests.post(TOKEN_URL, json=data)
+    response.raise_for_status()
+    token_data = response.json()
+
+    expires_in = token_data.get("expires_in", 3600)
+    token_data["valid_until"] = (datetime.now() + timedelta(seconds=expires_in - 60)).timestamp()
+
+    integration_context = demisto.getIntegrationContext()
+    integration_context.update(token_data)
+    demisto.setIntegrationContext(integration_context)
+
+    return token_data["access_token"]
+
+
 """ CLIENT CLASS """
 
 
@@ -1408,23 +1500,52 @@ def main() -> None:  # pragma: no cover
     main function, parses params and runs command functions
     """
     params = demisto.params()
+    command = demisto.command()
 
-    # get the service API url
-    url = params["url"].strip()
-    base_url = f"https://{url}.atlassian.net"
+    cloud_id = params.get("cloud_id")
+    client_id = params.get("client_id")
+    client_secret = params.get("client_secret")
+    callback_url = params.get("callback_url")
+
+    # Handle OAuth commands
+    if command == "confluence-cloud-oauth-start":
+        return_results(confluence_cloud_oauth_start(client_id, callback_url))
+        return
+    elif command == "confluence-cloud-oauth-complete":
+        return_results(confluence_cloud_oauth_complete(
+            client_id, client_secret, demisto.args().get("code"), demisto.args().get("state"), callback_url
+        ))
+        return
+    elif command == "confluence-cloud-oauth-test":
+        get_access_token(client_id, client_secret, callback_url)
+        return_results("✅ OAuth connection test successful.")
+        return
+
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
+    headers: dict = {"Accept": "application/json"}
+    auth = None
 
-    credentials = params.get("username", {})
-    username = credentials.get("identifier").strip()
-    password = credentials.get("password")
+    if cloud_id and client_id and client_secret:
+        # OAuth
+        base_url = f"https://api.atlassian.com/ex/confluence/{cloud_id}"
+        access_token = get_access_token(client_id, client_secret, callback_url)
+        headers["Authorization"] = f"Bearer {access_token}"
+    else:
+        # Basic Auth
+        url = params.get("url", "").strip()
+        validate_url(url)
+        base_url = f"https://{url}.atlassian.net"
+
+        credentials = params.get("username", {})
+        username = credentials.get("identifier").strip()
+        password = credentials.get("password")
+        if username and password:
+            auth = (username, password)
 
     demisto.debug(f"{LOGGING_INTEGRATION_NAME} Command being called is {demisto.command()}")
     try:
-        validate_url(url)
-        headers: dict = {"Accept": "application/json"}
-
-        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, headers=headers, auth=(username, password))
+        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, headers=headers, auth=auth)
 
         # Commands dictionary
         commands: dict[str, Callable] = {
