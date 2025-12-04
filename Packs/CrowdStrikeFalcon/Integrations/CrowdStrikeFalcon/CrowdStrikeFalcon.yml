@@ -5151,6 +5151,7 @@ script:
   isfetch:marketplacev2: false
   isfetch:platform: false
   isfetchevents: true
+  isfetchassets: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
