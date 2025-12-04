@@ -460,7 +460,7 @@ def main():
             return_results(
                 CommandResults(
                     outputs_prefix="ExpirePassword",
-                    outputs_key_field=["UserProfile.Email", "UserProfile.ID", "UserProfile.Username", "Instance"],
+                    outputs_key_field=["UserProfile.Email", "UserProfile.ID", "UserProfile.Username", "Instance", "Result"],
                     outputs=outputs,
                     readable_output=tableToMarkdown(
                         "Expire Password",
