@@ -4945,3 +4945,103 @@ def test_run_playbook_command_client_call_parameters():
     run_playbook_command(mock_client, args)
 
     mock_client.run_playbook.assert_called_once_with(["param_issue_1", "param_issue_2"], "param_test_playbook")
+
+
+def test_get_endpoint_support_file_command_success(mocker):
+    """
+    Given: A client and valid endpoint IDs to retrieve support files for.
+    When: The get_endpoint_support_file_command is called with valid parameters.
+    Then: It should return a CommandResults object with the correct group_action_id and readable output.
+    """
+    from CortexPlatformCore import get_endpoint_support_file_command, Client
+
+    # Mock the client and its method
+    mock_client = mocker.Mock(spec=Client)
+    mock_response = {
+        "reply": {
+            "group_action_id": "test-group-123",
+        }
+    }
+    mock_client.get_endpoint_support_file.return_value = mock_response
+
+    # Test arguments
+    args = {"endpoint_ids": ["endpoint1", "endpoint2", "endpoint3"]}
+
+    # Execute the command
+    result = get_endpoint_support_file_command(mock_client, args)
+
+    # Verify the client was called with correct parameters
+    expected_request_data = {
+        "request_data": {
+            "filter_data": {
+                "filter": {
+                    "AND": [
+                        {
+                            "OR": [
+                                {"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "endpoint1"},
+                                {"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "endpoint2"},
+                                {"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "endpoint3"},
+                            ]
+                        }
+                    ]
+                }
+            },
+            "filter_type": "static",
+        }
+    }
+
+    mock_client.get_endpoint_support_file.assert_called_once_with(expected_request_data)
+
+    # Verify the result
+    assert result.readable_output == "Endpoint support file request submitted successfully. Group Action ID: test-group-123"
+    assert result.outputs_prefix == "Core.EndpointSupportFile"
+    assert result.outputs_key_field == "group_action_id"
+    assert result.outputs == mock_response["reply"]
+    assert result.raw_response == mock_response
+
+
+def test_get_endpoint_support_file_command_single_endpoint(mocker):
+    """
+    Given: A client and a single endpoint ID as a string to retrieve support file for.
+    When: The get_endpoint_support_file_command is called with a single endpoint ID.
+    Then: It should correctly convert the single ID to a list and process the request successfully.
+    """
+    from CortexPlatformCore import get_endpoint_support_file_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_response = {"reply": {"group_action_id": "single-endpoint-456"}}
+    mock_client.get_endpoint_support_file.return_value = mock_response
+
+    args = {"endpoint_ids": "single-endpoint"}
+
+    result = get_endpoint_support_file_command(mock_client, args)
+
+    # Verify single endpoint was converted to list in the filter
+    expected_request_data = {
+        "request_data": {
+            "filter_data": {
+                "filter": {"AND": [{"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "single-endpoint"}]}
+            },
+            "filter_type": "static",
+        }
+    }
+    mock_client.get_endpoint_support_file.assert_called_once_with(expected_request_data)
+    assert result.outputs["group_action_id"] == "single-endpoint-456"
+
+
+def test_get_endpoint_support_file_command_missing_group_action_id(mocker):
+    """
+    Given: A client that returns a response without a group_action_id in the reply.
+    When: The get_endpoint_support_file_command is called and the group_action_id is zero.
+    Then: It should raise a DemistoException indicating the missing group_action_id.
+    """
+    from CortexPlatformCore import get_endpoint_support_file_command, DemistoException
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_response = {"reply": {"group_action_id": 0}}
+    mock_client.get_endpoint_support_file.return_value = mock_response
+
+    args = {"endpoint_ids": ["endpoint1"]}
+
+    with pytest.raises(DemistoException, match="No group_action_id found in the response"):
+        get_endpoint_support_file_command(mock_client, args)
