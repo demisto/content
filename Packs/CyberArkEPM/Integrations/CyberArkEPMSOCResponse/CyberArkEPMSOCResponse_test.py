@@ -1,14 +1,14 @@
-def mocked_client(requests_mock):
+def mocked_client(requests_mock, mock_response_search_endpoints=None):
     from CyberArkEPMSOCResponse import Client
 
     mock_response_sets = {"Sets": [{"Id": "id1", "Name": "set_name1"}]}
-    mock_response_search_endpoints = {
-        "endpoints": [
-            {"id": "endpoint_id1", "connectionStatus": "Connected"},
-            {"id": "endpoint_id2", "connectionStatus": "Disconnected"},
-            {"id": "endpoint_id3", "connectionStatus": "Connected"},
-        ]
-    }
+
+    if not mock_response_search_endpoints:
+        mock_response_search_endpoints = {
+            "endpoints": [
+                {"id": "endpoint_id1", "external_ip": "1.1.1.1", "connectionStatus": "Connected"},
+            ]
+        }
     mock_response_search_endpoint_group_id = [{"id": "group_id1"}]
 
     requests_mock.post(
@@ -39,15 +39,22 @@ def test_activate_risk_plan_command(requests_mock, mocker):
     mocker.patch(
         "CyberArkEPMSOCResponse.get_integration_context", return_value={"CyberArkEPMSOCResponse_Context": {"set_id": "id1"}}
     )
-    client = mocked_client(requests_mock)
+
+    mock_response_search_endpoints = {
+        "endpoints": [
+            {"id": "endpoint_id1", "external_ip": "1.1.1.1", "connectionStatus": "Connected"},
+        ]
+    }
+
+    client = mocked_client(requests_mock, mock_response_search_endpoints)
     args = {"risk_plan": "risk_plan1", "action": "add", "endpoint_name": "endpoint1", "external_ip": "1.1.1.1"}
 
     result = change_risk_plan_command(client, args)
-    expected_outputs = {"Endpoint_IDs": "endpoint_id1,endpoint_id3", "Risk_Plan": "risk_plan1", "Action": "add"}
+    expected_outputs = {"Endpoint_IDs": "endpoint_id1", "Risk_Plan": "risk_plan1", "Action": "add"}
     assert result.outputs == expected_outputs
 
 
-def test_activate_single_endpoint_risk_plan_command(requests_mock, mocker):
+def test_activate_multiple_endpoint_risk_plan_command(requests_mock, mocker):
     """
     Given:
         - A CyberArkEPMSOCResponse client, a risk plan, an endpoint name, and an external IP.
@@ -63,17 +70,24 @@ def test_activate_single_endpoint_risk_plan_command(requests_mock, mocker):
     mocker.patch(
         "CyberArkEPMSOCResponse.get_integration_context", return_value={"CyberArkEPMSOCResponse_Context": {"set_id": "id1"}}
     )
-    client = mocked_client(requests_mock)
+
+    mock_response_search_endpoints = {
+        "endpoints": [
+            {"id": "endpoint_id2", "external_ip": "2.2.2.2", "connectionStatus": "Connected"},
+            {"id": "endpoint_id2", "external_ip": "2.2.2.2", "connectionStatus": "Disconnected"},
+        ]
+    }
+
+    client = mocked_client(requests_mock, mock_response_search_endpoints)
     args = {
         "risk_plan": "risk_plan1",
         "action": "add",
-        "endpoint_name": "endpoint1",
-        "external_ip": "1.1.1.1",
-        "allow_multiple_endpoints": False,
+        "endpoint_name": "endpoint2",
+        "external_ip": "2.2.2.2",
     }
 
     result = change_risk_plan_command(client, args)
-    expected_outputs = {"Endpoint_IDs": "endpoint_id1", "Risk_Plan": "risk_plan1", "Action": "add"}
+    expected_outputs = {"Endpoint_IDs": "endpoint_id2,endpoint_id2", "Risk_Plan": "risk_plan1", "Action": "add"}
 
     assert result.outputs == expected_outputs
 
@@ -98,5 +112,5 @@ def test_deactivate_risk_plan_command(requests_mock, mocker):
     args = {"risk_plan": "risk_plan1", "action": "remove", "endpoint_name": "endpoint1", "external_ip": "1.1.1.1"}
 
     result = change_risk_plan_command(client, args)
-    expected_outputs = {"Endpoint_IDs": "endpoint_id1,endpoint_id3", "Risk_Plan": "risk_plan1", "Action": "remove"}
+    expected_outputs = {"Endpoint_IDs": "endpoint_id1", "Risk_Plan": "risk_plan1", "Action": "remove"}
     assert result.outputs == expected_outputs

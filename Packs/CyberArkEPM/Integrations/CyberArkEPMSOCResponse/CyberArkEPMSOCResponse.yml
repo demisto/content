@@ -37,12 +37,6 @@ script:
     - description: The external IP address of the endpoint.
       name: external_ip
       required: false
-    - description: Allow multiple endpoints to be added to the risk plan.
-      name: allow_multiple_endpoints
-      required: false
-      default: true
-      defaultValue: 'true'
-      type: 8
     description: Activates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-activate-risk-plan
     outputs:
@@ -59,12 +53,6 @@ script:
     - description: The external IP address of the endpoint.
       name: external_ip
       required: false
-    - description: Allow multiple endpoints to be removed from risk plan.
-      name: allow_multiple_endpoints
-      required: false
-      default: true
-      defaultValue: 'true'
-      type: 8
     description: Deactivates a CyberArk EPM risk plan for a specified endpoint.
     name: cyberarkepm-deactivate-risk-plan
     outputs:

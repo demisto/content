@@ -20,7 +20,7 @@ class Client(BaseClient):
         self._headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "x-cybr-telemetry": "aW49RVBNIFNPQyBSZXNwb25zZSZpdj0xLjAmdm49UGFsbyBBbHRvJml0PUVQTQ=="
+            "x-cybr-telemetry": "aW49RVBNIFNPQyBSZXNwb25zZSZpdj0xLjAmdm49UGFsbyBBbHRvJml0PUVQTQ==",
         }
         self.username = username
         self.password = password
@@ -48,13 +48,12 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def search_endpoints(endpoint_name: str, external_ip: str, allow_multiple_endpoints: bool, client: Client) -> list:
+def search_endpoints(endpoint_name: str, external_ip: str, client: Client) -> list:
     """Searches for endpoints by name and IP address.
 
     Args:
         endpoint_name (str): The name of the endpoint to search for.
         external_ip (str): The external IP address of the endpoint.
-        allow_multiple_endpoints (bool): Whether to allow multiple endpoints matched to be acted on.
         client (Client): The CyberArk EPM client.
 
     Returns:
@@ -72,12 +71,7 @@ def search_endpoints(endpoint_name: str, external_ip: str, allow_multiple_endpoi
         url_suffix = f"Sets/{set_id}/Endpoints/Search"
         result = client._http_request("POST", url_suffix=url_suffix, json_data=data)
         if result.get("endpoints"):
-            if allow_multiple_endpoints:
-                endpoint_ids = [
-                    endpoint.get("id") for endpoint in result.get("endpoints") if endpoint.get("connectionStatus") == "Connected"
-                ]
-            else:
-                endpoint_ids = [result.get("endpoints")[0].get("id")]
+            endpoint_ids = [endpoint.get("id") for endpoint in result.get("endpoints")]
             set_integration_context({CONTEXT_KEY: {"set_id": set_id}})
             return endpoint_ids
     return []
@@ -143,12 +137,9 @@ def change_risk_plan_command(client: Client, args: Dict[str, Any]) -> CommandRes
     endpoint_name = args.get("endpoint_name", "")
     external_ip = args.get("external_ip", "")
     action = args.get("action", RISK_PLAN_ACTION_ADD)
-    allow_multiple_endpoints = args.get("allow_multiple_endpoints", True)
 
     # Search for endpoints
-    endpoint_ids = search_endpoints(
-        endpoint_name=endpoint_name, external_ip=external_ip, allow_multiple_endpoints=allow_multiple_endpoints, client=client
-    )
+    endpoint_ids = search_endpoints(endpoint_name=endpoint_name, external_ip=external_ip, client=client)
 
     if not endpoint_ids:
         raise DemistoException(f"No Endpoints found matching the name: {endpoint_name} and External IP: {external_ip}")
