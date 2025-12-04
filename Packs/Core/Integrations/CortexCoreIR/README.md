@@ -3428,6 +3428,7 @@ Note: This action is only supported on XDR Agent version 8.9 and above.
 |---|---|---|
 | Success | AAA | 1.1.1.1 |
 | Failure: Endpoint Disconnected | AAA | 2.2.2.2 |
+
 ### core-list-endpoints
 
 ***
