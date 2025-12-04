@@ -219,7 +219,7 @@ class Client(BaseClient):
                 "after": after,
                 "before": before,
                 "teamId": team_id,
-                "cveId": cve_id
+                "cveId": cve_id,
             }
         )
 
@@ -1244,12 +1244,7 @@ def main():  # pragma: no cover
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
         client = Client(
-            base_url=base_url,
-            client_id=client_id,
-            client_secret=client_secret,
-            verify=verify,
-            proxy=proxy,
-            module=module
+            base_url=base_url, client_id=client_id, client_secret=client_secret, verify=verify, proxy=proxy, module=module
         )
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
