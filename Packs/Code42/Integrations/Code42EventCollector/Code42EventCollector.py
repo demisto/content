@@ -74,7 +74,7 @@ class Client:
             limit: maximum events to retrieve
             page_size: the page size per single request
         """
-        demisto.debug(f"Audit logs: {start_time=}, {end_time=}, {limit=}")
+        demisto.debug(f"Starting {EventType.AUDIT.value} logs query: {start_time=}, {end_time=}, {limit=}.")
         audit_logs = []
 
         for audit_log in self.code42_client.audit_log.v1.iter_all(
@@ -88,11 +88,12 @@ class Client:
             audit_log["eventType"] = EventType.AUDIT
             audit_logs.append(audit_log)
 
-        audit_logs = sorted(
+        sorted_audit_logs = sorted(
             audit_logs,
             key=lambda _log: _log["_time"],  # type: ignore[arg-type, return-value]
-        )
-        return audit_logs[:limit]
+        )[:limit]
+        demisto.debug(f"Starting {EventType.AUDIT.value} logs query. Got {len(sorted_audit_logs)} events.")
+        return sorted_audit_logs
 
     def get_file_events(
         self,
@@ -110,7 +111,7 @@ class Client:
             limit: maximum events to retrieve
             page_size: the page size per single request
         """
-        demisto.debug(f"File Events: {start_time=}, {end_time=}, {limit=}")
+        demisto.debug(f"Starting {EventType.FILE.value} events query: {start_time=}, {end_time=}, {limit=}.")
         query = incydr.EventQuery(
             start_date=start_time,
             end_date=end_time,
@@ -136,6 +137,7 @@ class Client:
             event.eventType = EventType.FILE
             event._time = event.event.inserted
 
+        demisto.debug(f"Finished {EventType.FILE.value} events query. Got {len(sorted_file_events)} events.")
         return [event.dict() for event in sorted_file_events]
 
 
