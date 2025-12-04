@@ -579,7 +579,7 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | The ID of the issue to get recommendations for. | Required |
+| issue_ids | Comma-separated list of IDs of the issues to get recommendations for (maximum 10 per request). | Required |
 
 #### Context Output
 
@@ -592,6 +592,19 @@ Get comprehensive recommendations for an issue, including remediation steps, pla
 | Core.IssueRecommendations.remediation | String | Remediation steps and recommendations for the issue. |
 | Core.IssueRecommendations.playbook_suggestions.playbook_id | String | The ID of the suggested playbook. |
 | Core.IssueRecommendations.playbook_suggestions.suggestion_rule_id | String | The ID of the suggestion rule that generated this recommendation. |
+| Core.IssueRecommendations.playbook_suggestions.name | String | The name of the suggested playbook. |
+| Core.IssueRecommendations.playbook_suggestions.comment | String | An explanation of the suggested playbook. |
+| Core.IssueRecommendations.quick_action_suggestions.name | String | The name of the suggested quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.suggestion_rule_id | String | The ID of the suggestion quick action rule that generated this recommendation. |
+| Core.IssueRecommendations.quick_action_suggestions.brand | String | The brand of the quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.category | String | The category of the quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.description | String | An explanation of the quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.pretty_name | String | The display name of the quick action. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.name | String | The argument name. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.prettyName | String | The argument display name. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.prettyPredefined | String | The argument predefined display value. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.description | String | The argument description. |
+| Core.IssueRecommendations.quick_action_suggestions.arguments.required | String | Whether the argument is required. |
 | Core.IssueRecommendations.existing_code_block | String | Original vulnerable code. |
 | Core.IssueRecommendations.suggested_code_block | String | Code block fix suggestion. |
 
