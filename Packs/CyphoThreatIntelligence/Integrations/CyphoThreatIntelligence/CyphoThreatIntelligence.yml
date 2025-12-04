@@ -3,7 +3,7 @@ commonfields:
   id: Cypho Threat Intelligence
   version: -1
 configuration:
-- defaultvalue: https://soar.monstersofhack.com
+- defaultvalue: https://api.cypho.io/external/v1/
   display: Server URL (e.g. https://soar.monstersofhack.com)
   name: url
   required: true
@@ -105,6 +105,6 @@ script:
   script: ''
   subtype: python3
   type: python
-fromversion: 6.0.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

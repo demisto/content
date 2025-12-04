@@ -1,10 +1,11 @@
 This integration enables your organization to efficiently collect, analyze, and respond to actionable cyber alerts generated within the Cypho platform  enhancing visibility, automation, and overall security posture.
+
 ## Configure Cypho Threat Intelligence in Cortex
 
 
 | **Parameter** | **Required** |
 | --- | --- |
-| Server URL (e.g. https://soar.monstersofhack.com) | True |
+| Server URL (e.g. <https://api.cypho.io/external/v1/>) | True |
 | Maximum number of incidents per fetch | False |
 | API Key | True |
 | First fetch time | False |
@@ -37,6 +38,7 @@ Retrieves the full details of a specific security incident from Cypho using its 
 #### Context Output
 
 There is no context output for this command.
+
 ### cypho-assign-incident
 
 ***
@@ -56,6 +58,7 @@ Assign a Cypho issue to an analyst by constructing their email from the given us
 #### Context Output
 
 There is no context output for this command.
+
 ### cypho-add-comment
 
 ***
@@ -76,6 +79,7 @@ This command sends a comment as the status_reason parameter and attributes it to
 #### Context Output
 
 There is no context output for this command.
+
 ### cypho-update-severity
 
 ***
@@ -96,6 +100,7 @@ Updates the severity level of a specific Cypho issue using its unique ticket ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### cypho-download-attachment
 
 ***
@@ -114,6 +119,7 @@ Downloads one or more attachments from a Cypho incident using the incident's uni
 #### Context Output
 
 There is no context output for this command.
+
 ### cypho-approve-dismiss-issue
 
 ***
