@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 import dateparser
 from enum import Enum
+import copy
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -24,7 +25,16 @@ ASSET_FIELDS = {
     "asset_group_ids": "xdm.asset.group_ids",
     "asset_categories": "xdm.asset.type.category",
 }
-
+APPSEC_SOURCES = [
+    "CAS_CVE_SCANNER",
+    "CAS_IAC_SCANNER",
+    "CAS_SECRET_SCANNER",
+    "CAS_LICENSE_SCANNER",
+    "CAS_SAST_SCANNER",
+    "CAS_OPERATIONAL_RISK_SCANNER",
+    "CAS_CI_CD_RISK_SCANNER",
+    "CAS_DRIFT_SCANNER",
+]
 WEBAPP_COMMANDS = [
     "core-get-vulnerabilities",
     "core-search-asset-groups",
@@ -33,13 +43,108 @@ WEBAPP_COMMANDS = [
     "core-get-asset-coverage",
     "core-get-asset-coverage-histogram",
     "core-create-appsec-policy",
+    "core-get-appsec-issues",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
-APPSEC_COMMANDS = ["core-enable-scanners"]
+APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
+XSOAR_COMMANDS = ["core-run-playbook"]
+
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
+
+
+class AppsecIssues:
+    class AppsecIssueType:
+        def __init__(self, table_name: str, filters: set[str]):
+            self.table_name: str = table_name
+            self.filters: set = filters or set()
+
+    ISSUE_TYPES = [
+        AppsecIssueType("ISSUES_IAC", {"urgency", "repository", "file_path", "automated_fix_available", "sla"}),
+        AppsecIssueType(
+            "ISSUES_CVES",
+            {
+                "urgency",
+                "repository",
+                "file_path",
+                "automated_fix_available",
+                "sla",
+                "cvss_score_gte",
+                "epss_score_gte",
+                "has_kev",
+            },
+        ),
+        AppsecIssueType("ISSUES_SECRETS", {"urgency", "repository", "file_path", "sla", "validation"}),
+        AppsecIssueType("ISSUES_WEAKNESSES", {"urgency", "repository", "file_path", "sla"}),
+        AppsecIssueType("ISSUES_OPERATIONAL_RISK", {"repository", "file_path", "sla"}),
+        AppsecIssueType("ISSUES_LICENSES", {"repository", "file_path", "sla"}),
+        AppsecIssueType("ISSUES_CI_CD", {"sla"}),
+    ]
+
+    SPECIAL_FILTERS = {
+        # List of filters that aren't a part of every Appsec table
+        "urgency",
+        "repository",
+        "file_path",
+        "automated_fix_available",
+        "sla",
+        "epss_score_gte",
+        "cvss_score_gte",
+        "has_kev",
+        "validation",
+    }
+
+    SEVERITY_MAPPINGS = {
+        "info": "SEV_010_INFO",
+        "low": "SEV_020_LOW",
+        "medium": "SEV_030_MEDIUM",
+        "high": "SEV_040_HIGH",
+        "critical": "SEV_050_CRITICAL",
+        "unknown": "SEV_090_UNKNOWN",
+    }
+
+    SEVERITY_OUTPUT_MAPPINGS = {
+        "SEV_010_INFO": "info",
+        "SEV_020_LOW": "low",
+        "SEV_030_MEDIUM": "medium",
+        "SEV_040_HIGH": "high",
+        "SEV_050_CRITICAL": "critical",
+        "SEV_090_UNKNOWN": "unknown",
+    }
+
+    STATUS_MAPPINGS = {
+        "New": "STATUS_010_NEW",
+        "In Progress": "STATUS_020_UNDER_INVESTIGATION",
+        "Resolved": "STATUS_025_RESOLVED",
+    }
+
+    STATUS_OUTPUT_MAPPINGS = {
+        "STATUS_010_NEW": "New",
+        "STATUS_020_UNDER_INVESTIGATION": "In Progress",
+        "STATUS_025_RESOLVED": "Resolved",
+    }
+
+    SLA_MAPPING = {
+        "Approaching": "APPROACHING",
+        "On Track": "IN_SLA",
+        "Overdue": "OVERDUE",
+    }
+
+    SLA_OUTPUT_MAPPING = {
+        "APPROACHING": "Approaching",
+        "IN_SLA": "On Track",
+        "OVERDUE": "Overdue",
+    }
+
+    URGENCY_OUTPUT_MAPPING = {
+        "NOT_URGENT": "Not Urgent",
+        "N/A": "N/A",
+        "TOP_URGENT": "Top Urgent",
+        "URGENT": "Urgent",
+    }
+
 
 ASSET_GROUP_FIELDS = {
     "asset_group_name": "XDM__ASSET_GROUP__NAME",
@@ -291,6 +396,28 @@ def case_to_incident(args: dict | str) -> dict | str:
     return replace_substring(args, "case", "incident")
 
 
+def arg_to_float(arg: Optional[str]):
+    """
+    Converts an XSOAR argument to a Python float
+    """
+
+    if arg is None or arg == "":
+        return None
+
+    arg = encode_string_results(arg)
+
+    if isinstance(arg, str):
+        try:
+            return float(arg)
+        except Exception:
+            raise ValueError(f'"{arg}" is not a valid number')
+
+    if isinstance(arg, int | float):
+        return arg
+
+    raise ValueError(f'"{arg}" is not a valid number')
+
+
 def preprocess_get_cases_args(args: dict):
     demisto.debug(f"original args: {args}")
     args["limit"] = min(int(args.get("limit", MAX_GET_INCIDENTS_LIMIT)), MAX_GET_INCIDENTS_LIMIT)
@@ -431,6 +558,22 @@ class Client(CoreClient):
 
         return reply
 
+    def appsec_remediate_issue(self, request_body):
+        return self._http_request(
+            method="POST",
+            data=request_body,
+            headers={**self._headers, "content-type": "application/json"},
+            url_suffix="/v1/issues/fix/trigger_fix_pull_request",
+        )
+
+    def get_appsec_suggested_fix(self, issue_id: str) -> dict | None:
+        reply = self._http_request(
+            method="GET",
+            headers=self._headers,
+            full_url=f"/api/webapp/public_api/appsec/v1/issues/fix/{issue_id}/fix_suggestion",
+        )
+        return reply
+
     def create_policy(self, policy_payload: str) -> dict:
         """
         Creates a new policy in Cortex XDR.
@@ -447,6 +590,60 @@ class Client(CoreClient):
             url_suffix="/public_api/appsec/v1/policies",
         )
 
+    def run_playbook(self, issue_ids: list, playbook_id: str) -> dict:
+        """
+        Runs a specific playbook for a given investigation.
+
+        Args:
+            issue_ids: The IDs of the issues.
+            playbook_id: The ID of the playbook to run.
+
+        Returns:
+            dict: The response from running the playbook.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/inv-playbook/new",
+            headers={
+                **self._headers,
+                "Content-Type": "application/json",
+            },
+            json_data={"alertIds": issue_ids, "playbookId": playbook_id},
+        )
+
+
+def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommendation: dict, issue_id: str) -> tuple[list, dict]:
+    """
+    Append Application Security - related suggestions to the recommendation data.
+
+    Args:
+        client (Client): Client instance used to send the request.
+        headers (list): Headers for the readable output.
+        issue (dict): Details of the issue.
+        recommendation (dict): The base remediation recommendation.
+        issue_id (str): The issue ID.
+
+    Returns:
+        tuple[list, dict]: Updated headers and recommendation including AppSec additions.
+    """
+    manual_fix = issue.get("extended_fields", {}).get("action")
+    recommendation["remediation"] = manual_fix if manual_fix else recommendation.get("remediation")
+    fix_suggestion = client.get_appsec_suggested_fix(issue_id)
+    demisto.debug(f"AppSec fix suggestion: {fix_suggestion}")
+
+    # Avoid situations where existingCodeBlock is dirty, leaving suggestedCodeBlock empty.
+    if fix_suggestion and fix_suggestion.get("suggestedCodeBlock"):
+        recommendation.update(
+            {
+                "existing_code_block": fix_suggestion.get("existingCodeBlock", ""),
+                "suggested_code_block": fix_suggestion.get("suggestedCodeBlock", ""),
+            }
+        )
+        headers.append("existing_code_block")
+        headers.append("suggested_code_block")
+
+    return headers, recommendation
+
 
 def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
     """
@@ -458,7 +655,7 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         raise DemistoException("issue_id is required.")
 
     filter_builder = FilterBuilder()
-    filter_builder.add_field("internal_id", FilterType.CONTAINS, issue_id)
+    filter_builder.add_field("internal_id", FilterType.EQ, issue_id)
 
     request_data = build_webapp_request_data(
         table_name="ALERTS_VIEW_TABLE",
@@ -493,13 +690,10 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         "playbook_suggestions": playbook_suggestions,
     }
 
-    headers = [
-        "issue_id",
-        "issue_name",
-        "severity",
-        "description",
-        "remediation",
-    ]
+    headers = ["issue_id", "issue_name", "severity", "description", "remediation"]
+
+    if issue.get("alert_source") in APPSEC_SOURCES:
+        headers, recommendation = get_appsec_suggestion(client, headers, issue, recommendation, issue_id)
 
     readable_output = tableToMarkdown(
         f"Issue Recommendations for {issue_id}",
@@ -597,7 +791,13 @@ def build_webapp_request_data(
     if on_demand_fields is None:
         on_demand_fields = []
 
-    return {"type": "grid", "table_name": table_name, "filter_data": filter_data, "jsons": [], "onDemandFields": on_demand_fields}
+    return {
+        "type": "grid",
+        "table_name": table_name,
+        "filter_data": filter_data,
+        "jsons": [],
+        "onDemandFields": on_demand_fields,
+    }
 
 
 def build_histogram_request_data(table_name: str, filter_dict: dict, max_values_per_column: int, columns: list) -> dict:
@@ -782,16 +982,31 @@ def update_issue_command(client: Client, args: dict):
     if not issue_id:
         raise DemistoException("Issue ID is required for updating an issue.")
 
+    status_map = {
+        "New": "STATUS_010_NEW",
+        "In Progress": "STATUS_020_UNDER_INVESTIGATION",
+        "Resolved - Known Issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
+        "Resolved - Duplicate Issue": "STATUS_050_RESOLVED_DUPLICATE",
+        "Resolved - False Positive": "STATUS_060_RESOLVED_FALSE_POSITIVE",
+        "Resolved - other": "STATUS_070_RESOLVED_OTHER",
+        "Resolved - True Positive": "STATUS_090_RESOLVED_TRUE_POSITIVE",
+        "Resolved - Security Testing": "STATUS_100_RESOLVED_SECURITY_TESTING",
+        "Resolved - Dismissed": "STATUS_240_RESOLVED_DISMISSED",
+        "Resolved - Fixed": "STATUS_250_RESOLVED_FIXED",
+        "Resolved - Risk Accepted": "STATUS_130_RESOLVED_RISK_ACCEPTED",
+    }
     severity_map = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
     severity_value = args.get("severity")
+    status = args.get("status")
     update_args = {
         "assigned_user": args.get("assigned_user_mail"),
-        "severity": severity_map.get(severity_value) if severity_value is not None else None,
+        "severity": severity_map.get(severity_value) if severity_value else None,
         "name": args.get("name"),
         "occurred": arg_to_timestamp(args.get("occurred"), ""),
         "phase": args.get("phase"),
         "type": args.get("type"),
         "description": args.get("description"),
+        "resolution_status": status_map.get(status) if status else None,
     }
 
     # Remove None values before sending to API
@@ -1024,6 +1239,45 @@ def get_asset_group_ids_from_names(client: Client, group_names: list[str]) -> li
         raise DemistoException(f"Failed to fetch asset group IDs for {missing_groups}. Ensure the asset group names are valid.")
 
     return group_ids
+
+
+def appsec_remediate_issue_command(client: Client, args: dict) -> CommandResults:
+    """
+    Create automated pull requests to fix multiple security issues in a single bulk operation.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - issueIds (str): List of issue IDs to fix.
+                         - title (str): Title of the PR triggered.
+
+    Returns:
+        CommandResults: Object containing the formatted extra data,
+                        raw response, and outputs for integration context.
+    """
+    args = demisto.args()
+    issue_ids = argToList(args.get("issue_ids"))
+    if len(issue_ids) > 10:
+        raise DemistoException("Please provide a maximum of 10 issue IDs per request.")
+
+    triggered_prs = []
+    for issue_id in issue_ids:
+        request_body = {"issueIds": [issue_id], "title": args.get("title")}
+        request_body = remove_empty_elements(request_body)
+        current_response = client.appsec_remediate_issue(request_body)
+        if current_response and isinstance(current_response, dict):
+            current_triggered_prs = current_response.get("triggeredPrs")
+            if isinstance(current_triggered_prs, list) and len(current_triggered_prs) > 0:
+                triggered_prs.append(current_triggered_prs[0])
+
+    return CommandResults(
+        readable_output=tableToMarkdown(name="Triggered PRs", t=triggered_prs),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.TriggeredPRs",
+        outputs=triggered_prs,
+        outputs_key_field="issueId",
+        raw_response=triggered_prs,
+    )
 
 
 def build_asset_coverage_filter(args: dict) -> FilterBuilder:
@@ -1423,6 +1677,195 @@ def create_policy_build_triggers(args: dict) -> dict:
     return triggers
 
 
+def create_appsec_issues_filter_and_tables(args: dict) -> dict[str, FilterBuilder]:
+    """
+    Generate a filter and determine applicable tables for fetching AppSec issues based on input filter arguments.
+
+    Args:
+        args (dict): Command input args for core-appsec-get-issues.
+
+    Returns:
+        tuple[list, FilterBuilder]: A tuple containing:
+            - A list of applicable issue type table names
+            - A FilterBuilder instance with configured filters
+    """
+    special_filter_args = {filter for filter in args if filter in AppsecIssues.SPECIAL_FILTERS}
+    tables_filters = {}
+    filter_builder = FilterBuilder()
+
+    for issue_type in AppsecIssues.ISSUE_TYPES:
+        if special_filter_args.issubset(issue_type.filters):
+            tables_filters[issue_type.table_name] = filter_builder
+
+    if not tables_filters:
+        raise DemistoException(f"No matching issue type found for the given filter combination: {special_filter_args}")
+
+    filter_builder.add_field("cas_issues_cvss_score", FilterType.GTE, arg_to_float(args.get("cvss_score_gte")))
+    filter_builder.add_field("cas_issues_epss_score", FilterType.GTE, arg_to_float(args.get("epss_score_gte")))
+    filter_builder.add_field("cas_issues_is_kev", FilterType.EQ, arg_to_bool_or_none(args.get("has_kev")))
+    filter_builder.add_field("cas_sla_status", FilterType.EQ, argToList(args.get("sla")), AppsecIssues.SLA_MAPPING)
+    filter_builder.add_field("cas_issues_is_fixable", FilterType.EQ, arg_to_bool_or_none(args.get("automated_fix_available")))
+    filter_builder.add_field("cas_issues_validation", FilterType.EQ, argToList(args.get("validation")))
+    filter_builder.add_field("urgency", FilterType.EQ, argToList(args.get("urgency")))
+    filter_builder.add_field("severity", FilterType.EQ, argToList(args.get("severity")), AppsecIssues.SEVERITY_MAPPINGS)
+    filter_builder.add_field("internal_id", FilterType.CONTAINS, argToList(args.get("issue_id")))
+    filter_builder.add_field("alert_name", FilterType.CONTAINS, argToList(args.get("issue_name")))
+    filter_builder.add_field("cas_issues_asset_name", FilterType.CONTAINS, argToList(args.get("asset_name")))
+    filter_builder.add_field("cas_issues_repository", FilterType.CONTAINS, argToList(args.get("repository")))
+    filter_builder.add_field("cas_issues_file_path", FilterType.CONTAINS, argToList(args.get("file_path")))
+    filter_builder.add_field("cas_issues_git_user", FilterType.CONTAINS, argToList(args.get("collaborator")))
+    filter_builder.add_field("status_progress", FilterType.EQ, argToList(args.get("status")))
+    filter_builder.add_time_range_field("local_insert_ts", args.get("start_time"), args.get("end_time"))
+    filter_builder.add_field_with_mappings(
+        "assigned_to_pretty",
+        FilterType.CONTAINS,
+        argToList(args.get("assignee")),
+        {
+            "unassigned": FilterType.IS_EMPTY,
+            "assigned": FilterType.NIS_EMPTY,
+        },
+    )
+
+    if "backlog_status" in args and "ISSUES_CI_CD" in tables_filters:
+        # backlog filter is different for the CI/CD issue table
+        cicd_filter_builder = copy.deepcopy(filter_builder)
+        cicd_filter_builder.add_field("issue_backlog_status", FilterType.EQ, argToList(args.get("backlog_status")))
+        tables_filters["ISSUES_CI_CD"] = cicd_filter_builder
+
+    filter_builder.add_field("backlog_status", FilterType.EQ, argToList(args.get("backlog_status")))
+
+    return tables_filters
+
+
+def normalize_and_filter_appsec_issue(issue: dict) -> dict:
+    """
+    Transforms raw issue data from the main issue table into the AppSec issues format.
+
+    Args:
+        raw_issue (dict): Raw issue data retrieved from the alerts view table.
+
+    Returns:
+        dict: issue with standard Appsec fields.
+    """
+    issue_all_fields = cast(dict, alert_to_issue(issue))
+
+    filtered_output_keys: dict[str, dict] = {
+        "internal_id": {"path": ["internal_id"]},
+        "severity": {"path": ["severity"], "mapper": AppsecIssues.SEVERITY_OUTPUT_MAPPINGS},
+        "issue_name": {"path": ["issue_name"]},
+        "issue_source": {"path": ["issue_source"]},
+        "issue_category": {"path": ["issue_category"]},
+        "issue_domain": {"path": ["issue_domain"]},
+        "issue_description": {"path": ["issue_description"]},
+        "status": {"path": ["status_progress"], "mapper": AppsecIssues.STATUS_OUTPUT_MAPPINGS},
+        "asset_name": {"path": ["cas_issues_asset_name"]},
+        "assignee": {"path": ["assigned_to_pretty"]},
+        "time_added": {"path": ["source_insert_ts"]},
+        "epss_score": {"path": ["cas_issues_extended_fields", "epss_score"]},
+        "cvss_score": {"path": ["cas_issues_normalized_fields", "xdm.vulnerability.cvss_score"]},
+        "has_kev": {"path": ["cas_issues_is_kev"]},
+        "urgency": {"path": ["urgency"], "mapper": AppsecIssues.URGENCY_OUTPUT_MAPPING},
+        "sla_status": {"path": ["cas_sla_status"], "mapper": AppsecIssues.SLA_OUTPUT_MAPPING},
+        "secret_validation": {"path": ["secret_validation"]},
+        "is_fixable": {"path": ["cas_issues_is_fixable"]},
+        "repository_name": {"path": ["cas_issues_normalized_fields", "xdm.repository.name"]},
+        "repository_organization": {"path": ["cas_issues_normalized_fields", "xdm.repository.organization"]},
+        "file_path": {"path": ["cas_issues_normalized_fields", "xdm.file.path"]},
+        "collaborator": {"path": ["cas_issues_normalized_fields", "xdm.code.git.commit.author.name"]},
+        "is_deployed": {"path": ["cas_issues_extended_fields", "urgency", "metric", "is_deployed"]},
+        "backlog_status": {"path": ["backlog_status"]},
+    }
+    appsec_issue = {}
+    for output_key, output_info in filtered_output_keys.items():
+        current_value = issue_all_fields
+        path = output_info.get("path", {})
+        for key in path:
+            current_value = current_value.get(key, {})
+
+        if current_value:
+            value = current_value if "mapper" not in output_info else output_info.get("mapper", {}).get(current_value)
+            appsec_issue[output_key] = value
+
+    return appsec_issue
+
+
+def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves application security issues based on specified filters across multiple issue types.
+    """
+    limit = arg_to_number(args.get("limit")) or 50
+    sort_field = args.get("sort_field", "severity")
+    sort_order = args.get("sort_order", "DESC")
+
+    tables_filters: dict[str, FilterBuilder] = create_appsec_issues_filter_and_tables(args)
+
+    all_appsec_issues: list[dict] = []
+    for table_name, filter_builder in tables_filters.items():
+        request_data = build_webapp_request_data(
+            table_name=table_name,
+            filter_dict=filter_builder.to_dict(),
+            limit=limit,
+            sort_field=sort_field,
+            sort_order=sort_order,
+        )
+        try:
+            demisto.debug(f"Fetching issues from table {table_name}")
+            response = client.get_webapp_data(request_data)
+            reply = response.get("reply", {})
+            data = reply.get("DATA", [])
+            all_appsec_issues.extend(data)
+        except Exception as e:
+            raise DemistoException(f"Failed to retrieve issues from the {table_name} table: {e}")
+
+    sorted_issues = sorted(all_appsec_issues, key=lambda issue: issue.get(sort_field, ""), reverse=(sort_order == "DESC"))
+    sorted_issues = sorted_issues[:limit]
+    filtered_appsec_issues = [normalize_and_filter_appsec_issue(issue) for issue in sorted_issues]
+
+    readable_output = tableToMarkdown(
+        "Application Security Issues", filtered_appsec_issues, headerTransform=string_to_table_header, sort_headers=False
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AppsecIssue",
+        outputs_key_field="internal_id",
+        outputs=filtered_appsec_issues,
+        raw_response=all_appsec_issues,
+    )
+
+
+def run_playbook_command(client: Client, args: dict) -> CommandResults:
+    """
+    Executes a playbook command with specified arguments.
+
+    Args:
+        client (Client): The client instance for making API requests.
+        args (dict): Arguments for running the playbook.
+
+    Returns:
+        CommandResults: Results of the playbook execution.
+    """
+    playbook_id = args.get("playbook_id", "")
+    issue_ids = argToList(args.get("issue_ids", ""))
+
+    response = client.run_playbook(issue_ids, playbook_id)
+
+    # Process the response to determine success or failure
+    if not response:
+        # Empty response indicates success for all issues
+        return CommandResults(
+            readable_output=f"Playbook '{playbook_id}' executed successfully for all issue IDs: {', '.join(issue_ids)}",
+        )
+
+    error_messages = []
+
+    for issue_id, error_message in response.items():
+        error_messages.append(f"Issue ID {issue_id}: {error_message}")
+
+    demisto.debug(f"Playbook run errors: {error_messages}")
+    raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -1432,12 +1875,14 @@ def main():  # pragma: no cover
     args = demisto.args()
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
+    remove_nulls_from_dictionary(args)
     headers: dict = {}
 
     webapp_api_url = "/api/webapp"
     public_api_url = f"{webapp_api_url}/public_api/v1"
     data_platform_api_url = f"{webapp_api_url}/data-platform"
     appsec_api_url = f"{webapp_api_url}/public_api/appsec"
+    xsoar_api_url = "/xsoar"
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
 
@@ -1454,6 +1899,8 @@ def main():  # pragma: no cover
         client_url = data_platform_api_url
     elif command in APPSEC_COMMANDS:
         client_url = appsec_api_url
+    elif command in XSOAR_COMMANDS:
+        client_url = xsoar_api_url
 
     client = Client(
         base_url=client_url,
@@ -1479,6 +1926,17 @@ def main():  # pragma: no cover
             args = issue_to_alert(args)
             # Extract output_keys before calling get_alerts_by_filter_command
             output_keys = argToList(args.pop("output_keys", []))
+            assignees = argToList(args.get("assignee", "").lower())
+            if "assigned" in assignees or "unassigned" in assignees:
+                if len(assignees) > 1:
+                    raise DemistoException(
+                        f"The assigned/unassigned options can not be used with additional assignees. Received: {assignees}"
+                    )
+
+                # Swap assignee arg with the requested special operation
+                assignee_filter_option = args.pop("assignee", "")
+                args[assignee_filter_option] = True
+
             issues_command_results: CommandResults = get_alerts_by_filter_command(client, args)
             # Convert alert keys to issue keys
             if issues_command_results.outputs:
@@ -1507,8 +1965,12 @@ def main():  # pragma: no cover
 
         elif command == "core-get-issue-recommendations":
             return_results(get_issue_recommendations_command(client, args))
+
         elif command == "core-enable-scanners":
             return_results(enable_scanners_command(client, args))
+
+        elif command == "core-appsec-remediate-issue":
+            return_results(appsec_remediate_issue_command(client, args))
 
         elif command == "core-get-asset-coverage":
             return_results(get_asset_coverage_command(client, args))
@@ -1517,6 +1979,10 @@ def main():  # pragma: no cover
             return_results(get_asset_coverage_histogram_command(client, args))
         elif command == "core-create-appsec-policy":
             return_results(create_policy_command(client, args))
+        elif command == "core-get-appsec-issues":
+            return_results(get_appsec_issues_command(client, args))
+        elif command == "core-run-playbook":
+            return_results(run_playbook_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
