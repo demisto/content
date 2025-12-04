@@ -580,10 +580,10 @@ Confirms user(s) as safe (post-investigation).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Remediation.UserID | String | The ID of the user. |
-| Remediation.UserPrincipalName | String | The UPN of the user. This key will be populated only if the user's UPN is provided. |
-| Remediation.Success | Boolean | Whether the new state was applied successfully. |
-| Remediation.RiskState | String | The new risk state of the user. |
+| AzureRiskyUsers.Remediation.UserID | String | The ID of the user. |
+| AzureRiskyUsers.Remediation.UserPrincipalName | String | The UPN of the user. This key will be populated only if the user's UPN is provided. |
+| AzureRiskyUsers.Remediation.Success | Boolean | Whether the new state was applied successfully. |
+| AzureRiskyUsers.Remediation.RiskState | String | The new risk state of the user. |
 
 #### Command Example
 
@@ -592,26 +592,30 @@ Confirms user(s) as safe (post-investigation).
 #### Context Example
 
 ```json
-[
-    {
-        "UserID": "user_id_1",
-        "UserPrincipalName": "",
-        "Success": true,
-        "RiskState": "confirmedSafe"
-    },
-    {
-        "UserID": "user_id_2",
-        "UserPrincipalName": "name2@test.com",
-        "Success": true,
-        "RiskState": "confirmedSafe"
-    },
-    {
-        "UserID": "user_id_3",
-        "UserPrincipalName": "name3@test.com",
-        "Success": false,
-        "RiskState": ""
+{
+    "AzureRiskyUsers": {
+        "Remediation": [
+            {
+                "UserID": "user_id_1",
+                "UserPrincipalName": "",
+                "Success": true,
+                "RiskState": "confirmedSafe"
+            },
+            {
+                "UserID": "user_id_2",
+                "UserPrincipalName": "name2@test.com",
+                "Success": true,
+                "RiskState": "confirmedSafe"
+            },
+            {
+                "UserID": "user_id_3",
+                "UserPrincipalName": "name3@test.com",
+                "Success": false,
+                "RiskState": ""
+            }
+        ]
     }
-]
+}
 ```
 
 #### Human Readable Output
@@ -648,10 +652,10 @@ Confirms user(s) as compromised.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Remediation.UserID | String | The ID of the user. |
-| Remediation.UserPrincipalName | String | The UPN of the user. This key will be populated only if the user's UPN is provided. |
-| Remediation.Success | Boolean | Whether the new state was applied successfully. |
-| Remediation.RiskState | String | The new risk state of the user. |
+| AzureRiskyUsers.Remediation.UserID | String | The ID of the user. |
+| AzureRiskyUsers.Remediation.UserPrincipalName | String | The UPN of the user. This key will be populated only if the user's UPN is provided. |
+| AzureRiskyUsers.Remediation.Success | Boolean | Whether the new state was applied successfully. |
+| AzureRiskyUsers.Remediation.RiskState | String | The new risk state of the user. |
 
 #### Command Example
 
@@ -660,26 +664,30 @@ Confirms user(s) as compromised.
 #### Context Example
 
 ```json
-[
-    {
-        "UserID": "user_id_1",
-        "UserPrincipalName": "",
-        "Success": true,
-        "RiskState": "confirmedCompromised"
-    },
-    {
-        "UserID": "user_id_2",
-        "UserPrincipalName": "name2@test.com",
-        "Success": true,
-        "RiskState": "confirmedCompromised"
-    },
-    {
-        "UserID": "user_id_3",
-        "UserPrincipalName": "name3@test.com",
-        "Success": false,
-        "RiskState": ""
+{
+    "AzureRiskyUsers": {
+        "Remediation": [
+            {
+                "UserID": "user_id_1",
+                "UserPrincipalName": "",
+                "Success": true,
+                "RiskState": "confirmedCompromised"
+            },
+            {
+                "UserID": "user_id_2",
+                "UserPrincipalName": "name2@test.com",
+                "Success": true,
+                "RiskState": "confirmedCompromised"
+            },
+            {
+                "UserID": "user_id_3",
+                "UserPrincipalName": "name3@test.com",
+                "Success": false,
+                "RiskState": ""
+            }
+        ]
     }
-]
+}
 ```
 
 #### Human Readable Output

@@ -688,7 +688,7 @@ def risky_users_confirm(client: Client, args: dict[str, Any], confirm_func: Call
             )
         )
 
-    results[0].outputs_prefix = "Remediation"
+    results[0].outputs_prefix = "AzureRiskyUsers.Remediation"
     results[0].outputs_key_field = "UserID"
     results[0].outputs = context_ouputs
 
