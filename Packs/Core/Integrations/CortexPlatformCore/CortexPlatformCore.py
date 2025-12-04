@@ -47,6 +47,7 @@ WEBAPP_COMMANDS = [
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
+XSOAR_COMMANDS = ["core-run-playbook"]
 
 VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
@@ -587,6 +588,27 @@ class Client(CoreClient):
             data=policy_payload,
             headers={**self._headers, "content-type": "application/json"},
             url_suffix="/public_api/appsec/v1/policies",
+        )
+
+    def run_playbook(self, issue_ids: list, playbook_id: str) -> dict:
+        """
+        Runs a specific playbook for a given investigation.
+
+        Args:
+            issue_ids: The IDs of the issues.
+            playbook_id: The ID of the playbook to run.
+
+        Returns:
+            dict: The response from running the playbook.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix="/inv-playbook/new",
+            headers={
+                **self._headers,
+                "Content-Type": "application/json",
+            },
+            json_data={"alertIds": issue_ids, "playbookId": playbook_id},
         )
 
 
@@ -1812,6 +1834,38 @@ def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def run_playbook_command(client: Client, args: dict) -> CommandResults:
+    """
+    Executes a playbook command with specified arguments.
+
+    Args:
+        client (Client): The client instance for making API requests.
+        args (dict): Arguments for running the playbook.
+
+    Returns:
+        CommandResults: Results of the playbook execution.
+    """
+    playbook_id = args.get("playbook_id", "")
+    issue_ids = argToList(args.get("issue_ids", ""))
+
+    response = client.run_playbook(issue_ids, playbook_id)
+
+    # Process the response to determine success or failure
+    if not response:
+        # Empty response indicates success for all issues
+        return CommandResults(
+            readable_output=f"Playbook '{playbook_id}' executed successfully for all issue IDs: {', '.join(issue_ids)}",
+        )
+
+    error_messages = []
+
+    for issue_id, error_message in response.items():
+        error_messages.append(f"Issue ID {issue_id}: {error_message}")
+
+    demisto.debug(f"Playbook run errors: {error_messages}")
+    raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -1828,6 +1882,7 @@ def main():  # pragma: no cover
     public_api_url = f"{webapp_api_url}/public_api/v1"
     data_platform_api_url = f"{webapp_api_url}/data-platform"
     appsec_api_url = f"{webapp_api_url}/public_api/appsec"
+    xsoar_api_url = "/xsoar"
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
 
@@ -1844,6 +1899,8 @@ def main():  # pragma: no cover
         client_url = data_platform_api_url
     elif command in APPSEC_COMMANDS:
         client_url = appsec_api_url
+    elif command in XSOAR_COMMANDS:
+        client_url = xsoar_api_url
 
     client = Client(
         base_url=client_url,
@@ -1922,9 +1979,10 @@ def main():  # pragma: no cover
             return_results(get_asset_coverage_histogram_command(client, args))
         elif command == "core-create-appsec-policy":
             return_results(create_policy_command(client, args))
-
         elif command == "core-get-appsec-issues":
             return_results(get_appsec_issues_command(client, args))
+        elif command == "core-run-playbook":
+            return_results(run_playbook_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
