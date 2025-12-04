@@ -24,6 +24,9 @@ ASSET_FIELDS = {
     "asset_realms": "xdm.asset.realm",
     "asset_group_ids": "xdm.asset.group_ids",
     "asset_categories": "xdm.asset.type.category",
+    "asset_classes": "xdm.asset.type.class",
+    "software_package_versions": "xdm.software_package.version",
+    "kubernetes_cluster_versions": "xdm.kubernetes.cluster.version"
 }
 APPSEC_SOURCES = [
     "CAS_CVE_SCANNER",
@@ -1052,6 +1055,9 @@ def search_assets_command(client: Client, args):
     filter.add_field(ASSET_FIELDS["asset_realms"], FilterType.EQ, argToList(args.get("asset_realms", "")))
     filter.add_field(ASSET_FIELDS["asset_group_ids"], FilterType.ARRAY_CONTAINS, asset_group_ids)
     filter.add_field(ASSET_FIELDS["asset_categories"], FilterType.EQ, argToList(args.get("asset_categories", "")))
+    filter.add_field(ASSET_FIELDS["asset_classes"], FilterType.EQ, argToList(args.get("asset_classes", "")))
+    filter.add_field(ASSET_FIELDS["software_package_versions"], FilterType.EQ, argToList(args.get("software_package_versions", "")))
+    filter.add_field(ASSET_FIELDS["kubernetes_cluster_versions"], FilterType.EQ, argToList(args.get("kubernetes_cluster_versions", "")))
     filter_str = filter.to_dict()
 
     demisto.debug(f"Search Assets Filter: {filter_str}")

@@ -1603,6 +1603,28 @@ script:
         isArray: true
       - name: asset_categories
         description: A Comma-separated list of asset categories to search for. (e.g., "category1,category2").
+      - name: asset_classes
+        description: A comma-separated list of asset classes to search for.
+        auto: PREDEFINED
+        predefined:
+        - AI
+        - API
+        - Application
+        - Code
+        - Compute
+        - Data
+        - Device
+        - External Surface
+        - Identity
+        - Management
+        - Network
+        - Organization
+        - Other
+        - Security Services
+      - name: software_package_versions
+        description: A comma-separated list of software package versions to search for. (e.g., "0.23.0,5.2.0").
+      - name: kubernetes_cluster_versions
+        description: A comma-separated list of Kubernetes cluster versions to search for. (e.g., "1.22,1.3").
       name: core-search-assets
       description: Retrieves asset from the Cortex platform using optional filter criteria.
       outputs:
