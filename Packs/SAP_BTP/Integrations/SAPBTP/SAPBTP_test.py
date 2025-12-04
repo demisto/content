@@ -187,7 +187,7 @@ def test_parse_integration_params_missing_required_fail(params, expected_error):
     [
         (
             {"url": SERVER_URL, "token_url": AUTH_SERVER_URL, "client_id": MOCK_CLIENT_ID, "auth_type": AuthType.MTLS.value},
-            "mTLS requires Certificate and Private Key",
+            "mTLS authentication requires both Certificate and Private Key",
         ),
         (
             {
@@ -197,11 +197,11 @@ def test_parse_integration_params_missing_required_fail(params, expected_error):
                 "auth_type": AuthType.MTLS.value,
                 "certificate": MOCK_CERTIFICATE,
             },
-            "mTLS requires Certificate and Private Key",
+            "mTLS authentication requires both Certificate and Private Key",
         ),
         (
             {"url": SERVER_URL, "token_url": AUTH_SERVER_URL, "client_id": MOCK_CLIENT_ID, "auth_type": AuthType.NON_MTLS.value},
-            "Non-mTLS requires Client Secret",
+            "Non-mTLS authentication requires Client Secret",
         ),
         (
             {"url": SERVER_URL, "token_url": AUTH_SERVER_URL, "client_id": MOCK_CLIENT_ID, "auth_type": "InvalidAuth"},
@@ -462,6 +462,18 @@ def test_get_formatted_utc_time(date_input, expected_format):
         # Should be able to parse it back
         parsed = datetime.strptime(result, Config.DATE_FORMAT)
         assert isinstance(parsed, datetime)
+
+
+def test_get_formatted_utc_time_invalid_date():
+    """Tests get_formatted_utc_time handles invalid date gracefully."""
+    from SAPBTP import get_formatted_utc_time, Config
+
+    result = get_formatted_utc_time("not_a_valid_date_12345")
+
+    # Should still return a valid formatted string (current time)
+    assert isinstance(result, str)
+    parsed = datetime.strptime(result, Config.DATE_FORMAT)
+    assert isinstance(parsed, datetime)
 
 
 # ========================================
@@ -976,3 +988,45 @@ def test_main_command_execution_error(mocker):
 def test_command_map_completeness(command_name, expected_in_map):
     """Tests that COMMAND_MAP contains all expected commands."""
     assert (command_name in SAPBTP.COMMAND_MAP) == expected_in_map
+
+
+def test_main_with_mtls_cert_creation(mocker):
+    """Tests main() creates mTLS certificates when auth_type is mTLS."""
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": SERVER_URL,
+            "token_url": AUTH_SERVER_URL,
+            "client_id": MOCK_CLIENT_ID,
+            "certificate": MOCK_CERTIFICATE,
+            "private_key": MOCK_PRIVATE_KEY,
+            "auth_type": AuthType.MTLS.value,
+        },
+    )
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=[])
+
+    mock_create_cert = mocker.patch("SAPBTP.create_mtls_cert_files", return_value=("/tmp/cert.pem", "/tmp/key.pem"))
+    mock_return_results = mocker.patch("SAPBTP.return_results")
+
+    SAPBTP.main()
+
+    mock_create_cert.assert_called_once_with(MOCK_CERTIFICATE, MOCK_PRIVATE_KEY)
+    mock_return_results.assert_called_once_with("ok")
+
+
+def test_main_parse_params_error(mocker):
+    """Tests main() handles parameter parsing errors."""
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "params", return_value={})  # Missing required params
+    mocker.patch.object(demisto, "args", return_value={})
+
+    mock_return_error = mocker.patch("SAPBTP.return_error")
+
+    SAPBTP.main()
+
+    mock_return_error.assert_called_once()
+    error_message = mock_return_error.call_args[0][0]
+    assert "API URL is required" in error_message
