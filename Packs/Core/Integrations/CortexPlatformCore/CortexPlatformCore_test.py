@@ -4925,3 +4925,108 @@ def test_process_case_response_renames_incident_domain_to_case_domain():
     assert "incidentDomain" not in result
     assert result["caseDomain"] == "security"
     assert result["caseId"] == "case101"
+
+
+def test_run_playbook_command_empty_response_success():
+    """
+    Given:
+        A mock client that returns an empty response and valid playbook arguments.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The function should return a successful result with appropriate readable output.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+
+    args = {"playbook_id": "test_playbook_123", "issue_ids": ["issue_1", "issue_2"]}
+
+    result = run_playbook_command(mock_client, args)
+
+    assert "executed successfully" in result.readable_output
+    assert "test_playbook_123" in result.readable_output
+    assert "issue_1, issue_2" in result.readable_output
+
+
+def test_run_playbook_command_multiple_errors_response():
+    """
+    Given:
+        A mock client that returns error responses for multiple issues.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        A ValueError should be raised containing all error messages for the issues.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {
+        "issue_1": "Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert",
+        "issue_2": "Skipping execution of playbook multi_fail_playbook for alert issue_2, failed creating investigation playbook",
+        "issue_3": "Skipping execution of playbook multi_fail_playbook for alert issue_3, failed creating investigation playbook",
+    }
+
+    args = {"playbook_id": "multi_fail_playbook", "issue_ids": ["issue_1", "issue_2", "issue_3"]}
+
+    with pytest.raises(ValueError) as exc_info:
+        run_playbook_command(mock_client, args)
+
+    error_message = str(exc_info.value)
+    assert "multi_fail_playbook" in error_message
+    assert (
+        "Issue ID issue_1: Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert"
+        in error_message
+    )
+    assert (
+        "Issue ID issue_2: Skipping execution of playbook multi_fail_playbook for alert issue_2, "
+        "failed creating investigation playbook" in error_message
+    )
+    assert (
+        "Issue ID issue_3: Skipping execution of playbook multi_fail_playbook for alert issue_3, "
+        "failed creating investigation playbook" in error_message
+    )
+
+
+def test_run_playbook_command_string_issue_ids():
+    """
+    Given:
+        A mock client and arguments with string issue IDs that need to be converted to a list.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The function should successfully process the string issue IDs and return the expected output.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+
+    args = {"playbook_id": "test_playbook", "issue_ids": "issue_1,issue_2,issue_3"}
+
+    result = run_playbook_command(mock_client, args)
+
+    assert "issue_1, issue_2, issue_3" in result.readable_output
+    mock_client.run_playbook.assert_called_once()
+
+
+def test_run_playbook_command_client_call_parameters():
+    """
+    Given:
+        A mock client and valid playbook arguments.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The client.run_playbook method should be called with the correct parameters.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+
+    args = {"playbook_id": "param_test_playbook", "issue_ids": ["param_issue_1", "param_issue_2"]}
+
+    run_playbook_command(mock_client, args)
+
+    mock_client.run_playbook.assert_called_once_with(["param_issue_1", "param_issue_2"], "param_test_playbook")
