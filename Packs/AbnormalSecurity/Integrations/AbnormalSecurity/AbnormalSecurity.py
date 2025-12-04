@@ -461,7 +461,7 @@ class Client(BaseClient):
         Get list of activity logs using the SOAR Activity Logs API.
 
         Args:
-            tenant_ids (list): List of tenant IDs
+            tenant_ids (list): List of tenant IDs (passed as query parameters)
             action (str, optional): Filter by action (search|remediation|csv_export)
             page_number (int, optional): Page number (default 1)
             page_size (int, optional): Page size (default 100, max 1000)
@@ -469,14 +469,10 @@ class Client(BaseClient):
         Returns:
             dict: Activity logs with pagination and metadata
         """
-        params = assign_params(action=action, pageNumber=page_number, pageSize=page_size)
+        params = assign_params(action=action, pageNumber=page_number, pageSize=page_size, tenant_ids=tenant_ids)
         headers = self._headers
-        
-        json_data = {
-            "tenant_ids": tenant_ids
-        }
 
-        response = self._http_request("get", "search/activities", params=params, json_data=json_data, headers=headers)
+        response = self._http_request("get", "search/activities", params=params, headers=headers)
 
         return response
 
@@ -526,7 +522,7 @@ class Client(BaseClient):
         )
         headers = self._headers
 
-        response = self._http_request("get", "messages/attachments/download", params=params, headers=headers, resp_type="response")
+        response = self._http_request("get", "search/messages/attachments/download", params=params, headers=headers, resp_type="response")
 
         return response
 
@@ -545,7 +541,7 @@ class Client(BaseClient):
         params = assign_params(quarantineIdentity=quarantine_identity, recipientMailbox=recipient_mailbox)
         headers = self._headers
 
-        response = self._http_request("get", f"messages/{cloud_message_id}/eml", params=params, headers=headers, resp_type="response")
+        response = self._http_request("get", f"search/messages/{cloud_message_id}/eml", params=params, headers=headers, resp_type="response")
 
         return response
 
