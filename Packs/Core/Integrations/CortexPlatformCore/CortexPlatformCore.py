@@ -45,6 +45,7 @@ WEBAPP_COMMANDS = [
     "core-get-asset-coverage-histogram",
     "core-create-appsec-policy",
     "core-get-appsec-issues",
+    "core-list-endpoints"
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -816,6 +817,7 @@ def build_webapp_request_data(
     sort_field: str | None,
     on_demand_fields: list | None = None,
     sort_order: str | None = "DESC",
+    start_page: int = 0,
 ) -> dict:
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
@@ -823,7 +825,7 @@ def build_webapp_request_data(
     sort = [{"FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field), "ORDER": sort_order}] if sort_field else []
     filter_data = {
         "sort": sort,
-        "paging": {"from": 0, "to": limit},
+        "paging": {"from": start_page, "to": limit},
         "filter": filter_dict,
     }
     demisto.debug(f"{filter_data=}")
@@ -2132,6 +2134,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-appsec-issues":
             return_results(get_appsec_issues_command(client, args))
+            
+        elif command == "core-list-endpoints":
+            return_results(core_list_endpoints_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
