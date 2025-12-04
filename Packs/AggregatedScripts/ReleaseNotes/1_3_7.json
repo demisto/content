@@ -1,4 +1,0 @@
-{
-  "breakingChanges": true,
-  "breakingChangesNotes": "Refactored the file-enrichment script to align with the other enrichment scripts. The context output structure and flow have been updated. Important: please update the 'Cortex Response and Remediation' pack to ensure that no playbook fails."
-}
