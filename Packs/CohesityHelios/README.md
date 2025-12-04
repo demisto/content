@@ -22,7 +22,7 @@ Cohesity’s comprehensive, end-to-end solution [Cohesity Ransomware](https://ww
 
 - Rest API integration for your Cohesity Helios
 
-- Audit and Alert logs mapping
+- Audit and Alert logs XDM mapping
 
 ## Generate an api key from Helios UI
 
