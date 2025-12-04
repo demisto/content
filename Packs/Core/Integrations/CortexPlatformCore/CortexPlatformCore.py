@@ -13,7 +13,8 @@ INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 MAX_GET_INCIDENTS_LIMIT = 100
 SEARCH_ASSETS_DEFAULT_LIMIT = 100
-
+AGENTS_TABLE = "AGENTS_TABLE"
+MAX_GET_ENDPOINTS_LIMIT = 100
 
 ASSET_FIELDS = {
     "asset_names": "xdm.asset.name",
@@ -44,6 +45,7 @@ WEBAPP_COMMANDS = [
     "core-get-asset-coverage-histogram",
     "core-create-appsec-policy",
     "core-get-appsec-issues",
+    "core-list-endpoints",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -53,6 +55,67 @@ VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
+
+ENDPOINT_TYPE = {
+    "mobile": "AGENT_TYPE_MOBILE",
+    "server": "AGENT_TYPE_SERVER",
+    "workstation": "AGENT_TYPE_WORKSTATION",
+    "containerized": "AGENT_TYPE_CONTAINERIZED",
+    "serverless": "AGENT_TYPE_SERVERLESS",
+}
+ENDPOINT_STATUS = {
+    "connected": "STATUS_010_CONNECTED",
+    "lost": "STATUS_020_LOST",
+    "disconnected": "STATUS_040_DISCONNECTED",
+    "uninstalled": "STATUS_050_UNINSTALLED",
+    "vdi pending login": "STATUS_060_VDI_PENDING_LOG_ON",
+    "forensics offline": "STATUS_070_FORENSICS_OFFLINE",
+}
+ENDPOINT_PLATFORM = {
+    "windows": "AGENT_OS_WINDOWS",
+    "mac": "AGENT_OS_MAC",
+    "linux": "AGENT_OS_LINUX",
+    "android": "AGENT_OS_ANDROID",
+    "ios": "AGENT_OS_IOS",
+    "serverless": "AGENT_OS_SERVERLESS",
+}
+ENDPOINT_OPERATIONAL_STATUS = {
+    "protected": "PROTECTED",
+    "partially protected": "PARTIALLY_PROTECTED",
+    "unprotected": "UNPROTECTED",
+}
+ASSIGNED_PREVENTION_POLICY = {
+    "pcastro": "0a80deae95e84a90a26e0586a7a6faef",
+    "Caas Default": "236a259c803d491484fc5f6d0c198676",
+    "kris": "31987a7fb890406ca70287c1fc582cbf",
+    "democloud": "44fa048803db4a8f989125a3887baf68",
+    "Linux Default": "705e7aae722f45c5ab2926e2639b295f",
+    "Android Default": "874e0fb9979c44459ca8f2dfdb3f03d9",
+    "Serverless Function Default": "c68bb058bbf94bbcb78d748191978d3b",
+    "macOS Default": "c9fd93fcee42486fb270ae0acbb7e0fb",
+    "iOS Default": "dc2e804c147f4549a6118c96a5b0d710",
+    "Windows Default": "e1f6b443a1e24b27955af39b4c425556",
+    "bcpolicy": "f32766a625db4cc29b5dddbfb721fe58",
+}
+ENDPOINT_FIELDS = {
+    "endpoint_name": "HOST_NAME",
+    "endpoint_type": "AGENT_TYPE",
+    "endpoint_status": "AGENT_STATUS",
+    "platform": "OS_TYPE",
+    "operating_system": "OS_DESC",
+    "agent_version": "AGENT_VERSION",
+    "agent_eol": "SUPPORTED_VERSION",
+    "os_version": "OS_VERSION",
+    "ip_address": "IP",
+    "domain": "DOMAIN",
+    "assigned_prevention_policy": "ACTIVE_POLICY",
+    "group_name": "GROUP_ID",
+    "tags": "TAGS",
+    "endpoint_id": "AGENT_ID",
+    "operational_status": "OPERATIONAL_STATUS",
+    "cloud_provider": "CLOUD_PROVIDER",
+    "cloud_region": "CLOUD_REGION",
+}
 
 
 class AppsecIssues:
@@ -218,6 +281,7 @@ class FilterBuilder:
         JSON_WILDCARD = ("JSON_WILDCARD", "OR")
         IS_EMPTY = ("IS_EMPTY", "OR")
         NIS_EMPTY = ("NIS_EMPTY", "AND")
+        ADVANCED_IP_MATCH_EXACT = ("ADVANCED_IP_MATCH_EXACT", "OR")
 
     AND = "AND"
     OR = "OR"
@@ -776,6 +840,7 @@ def build_webapp_request_data(
     sort_field: str | None,
     on_demand_fields: list | None = None,
     sort_order: str | None = "DESC",
+    start_page: int = 0,
 ) -> dict:
     """
     Builds the request data for the generic /api/webapp/get_data endpoint.
@@ -783,7 +848,7 @@ def build_webapp_request_data(
     sort = [{"FIELD": COVERAGE_API_FIELDS_MAPPING.get(sort_field, sort_field), "ORDER": sort_order}] if sort_field else []
     filter_data = {
         "sort": sort,
-        "paging": {"from": 0, "to": limit},
+        "paging": {"from": start_page, "to": limit},
         "filter": filter_dict,
     }
     demisto.debug(f"{filter_data=}")
@@ -1866,6 +1931,151 @@ def run_playbook_command(client: Client, args: dict) -> CommandResults:
     raise ValueError(f"Playbook '{playbook_id}' failed for following issues:\n" + "\n".join(error_messages))
 
 
+def map_endpoint_format(endpoint_list: list) -> list:
+    """
+    Maps and prepares endpoints data for consistent output formatting.
+
+    Args:
+        endpoint_list (list): Raw endpoint list from client response.
+
+    Returns:
+        dict: Formatted endpoint results with markdown table and outputs.
+    """
+    map_output_endpoint_fields = {v: k for k, v in ENDPOINT_FIELDS.items()}
+
+    map_output_endpoint_type = {v: k for k, v in ENDPOINT_TYPE.items()}
+
+    map_output_endpoint_status = {v: k for k, v in ENDPOINT_STATUS.items()}
+
+    map_output_endpoint_platform = {v: k for k, v in ENDPOINT_PLATFORM.items()}
+
+    map_output_endpoint_operational_status = {v: k for k, v in ENDPOINT_OPERATIONAL_STATUS.items()}
+
+    map_output_assigned_prevention_policy = {v: k for k, v in ASSIGNED_PREVENTION_POLICY.items()}
+
+    # A dispatcher for easy lookup:
+    nested_mappers = {
+        "endpoint_type": map_output_endpoint_type,
+        "endpoint_status": map_output_endpoint_status,
+        "platform": map_output_endpoint_platform,
+        "operational_status": map_output_endpoint_operational_status,
+        "assigned_prevention_policy": map_output_assigned_prevention_policy,
+    }
+    mapped_list = []
+
+    for outputs in endpoint_list:
+        mapped_item = {}
+
+        for raw_key, raw_value in outputs.items():
+            # Step 1: map backend key → friendly key
+            if raw_key not in map_output_endpoint_fields:
+                continue
+
+            friendly_key = map_output_endpoint_fields[raw_key]
+
+            # Step 2: map nested values (policy ID, status, etc.)
+            if friendly_key in nested_mappers:
+                mapper = nested_mappers[friendly_key]
+                friendly_value = mapper.get(raw_value, raw_value)
+            elif friendly_key == "agent_eol":  # agent_eol = not supported_version
+                friendly_value = not raw_value
+            else:
+                friendly_value = raw_value
+
+            mapped_item[friendly_key] = friendly_value
+
+        mapped_list.append(mapped_item)
+
+    return mapped_list
+
+
+def build_endpoint_filters(args: dict):
+    """
+    Build a FilterBuilder for endpoint queries from provided arguments.
+
+    Args:
+        args (dict): Command arguments.
+
+    Returns:
+        FilterBuilder: Object with filters applied.
+    """
+    operational_status = [
+        ENDPOINT_OPERATIONAL_STATUS[operational_status] for operational_status in argToList(args.get("operational_status"))
+    ]
+    endpoint_type = [ENDPOINT_TYPE[endpoint_type] for endpoint_type in argToList(args.get("endpoint_type"))]
+    endpoint_status = [ENDPOINT_STATUS[status] for status in argToList(args.get("endpoint_status"))]
+    platform = [ENDPOINT_PLATFORM[platform] for platform in argToList(args.get("platform"))]
+    assigned_prevention_policy = [
+        ASSIGNED_PREVENTION_POLICY[assigned] for assigned in argToList(args.get("assigned_prevention_policy"))
+    ]
+    agent_eol = args.get("agent_eol")
+    supported_version = not arg_to_bool_or_none(agent_eol) if agent_eol else None
+
+    filter_builder = FilterBuilder()
+    filter_builder.add_field(ENDPOINT_FIELDS["endpoint_status"], FilterType.EQ, endpoint_status)
+    filter_builder.add_field(ENDPOINT_FIELDS["operational_status"], FilterType.EQ, operational_status)
+    filter_builder.add_field(ENDPOINT_FIELDS["endpoint_type"], FilterType.EQ, endpoint_type)
+    filter_builder.add_field(ENDPOINT_FIELDS["platform"], FilterType.EQ, platform)
+    filter_builder.add_field(ENDPOINT_FIELDS["assigned_prevention_policy"], FilterType.EQ, assigned_prevention_policy)
+    filter_builder.add_field(ENDPOINT_FIELDS["endpoint_name"], FilterType.EQ, argToList(args.get("endpoint_name")))
+    filter_builder.add_field(ENDPOINT_FIELDS["operating_system"], FilterType.CONTAINS, argToList(args.get("operating_system")))
+    filter_builder.add_field(ENDPOINT_FIELDS["agent_version"], FilterType.EQ, argToList(args.get("agent_version")))
+    filter_builder.add_field(ENDPOINT_FIELDS["os_version"], FilterType.EQ, argToList(args.get("os_version")))
+    filter_builder.add_field(ENDPOINT_FIELDS["ip_address"], FilterType.ADVANCED_IP_MATCH_EXACT, argToList(args.get("ip_address")))
+    filter_builder.add_field(ENDPOINT_FIELDS["domain"], FilterType.EQ, argToList(args.get("domain")))
+    filter_builder.add_field(ENDPOINT_FIELDS["group_name"], FilterType.EQ, argToList(args.get("group_name")))
+    filter_builder.add_field(ENDPOINT_FIELDS["tags"], FilterType.EQ, argToList(args.get("tags")))
+    filter_builder.add_field(ENDPOINT_FIELDS["endpoint_id"], FilterType.EQ, argToList(args.get("endpoint_id")))
+    filter_builder.add_field(ENDPOINT_FIELDS["cloud_provider"], FilterType.EQ, argToList(args.get("cloud_provider")))
+    filter_builder.add_field(ENDPOINT_FIELDS["cloud_region"], FilterType.EQ, argToList(args.get("cloud_region")))
+    filter_builder.add_field(ENDPOINT_FIELDS["agent_eol"], FilterType.EQ, supported_version)
+    filter_dict = filter_builder.to_dict()
+
+    return filter_dict
+
+
+def core_list_endpoints_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves a list of endpoints from the server, applies filters, maps the data, and returns
+    it as CommandResults for Cortex XSOAR.
+
+    Args:
+        client (Client): The integration client used to fetch data.
+        args (dict): Command arguments.
+
+    Returns:
+        CommandResults: Contains the formatted table, raw response, and outputs.
+    """
+    page = arg_to_number(args.get("page")) or 0
+    limit = arg_to_number(args.get("limit")) or MAX_GET_ENDPOINTS_LIMIT
+    page_from = page * limit
+    page_to = page * limit + limit
+    filter_dict = build_endpoint_filters(args)
+
+    request_data = build_webapp_request_data(
+        table_name=AGENTS_TABLE,
+        filter_dict=filter_dict,
+        limit=page_to,
+        sort_field="AGENT_NAME",
+        sort_order="ASC",
+        start_page=page_from,
+    )
+    demisto.info(f"{request_data=}")
+    response = client.get_webapp_data(request_data)
+    reply = response.get("reply", {})
+    data = reply.get("DATA", [])
+    data = map_endpoint_format(data)
+    demisto.debug(f"Endpoint data after mapping and formatting: {data}")
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Endpoints", data, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Endpoint",
+        outputs_key_field="endpoint_id",
+        outputs=data,
+        raw_response=data,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -1983,6 +2193,9 @@ def main():  # pragma: no cover
             return_results(get_appsec_issues_command(client, args))
         elif command == "core-run-playbook":
             return_results(run_playbook_command(client, args))
+
+        elif command == "core-list-endpoints":
+            return_results(core_list_endpoints_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
