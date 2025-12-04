@@ -137,7 +137,7 @@ aggregated_details AS (
         ) AS finding_details_json
     FROM
         fact_asset_scan_vulnerability_instance fasvi
-    INNER JOIN
+    INNER JOIN 
         fact_asset_vulnerability_finding favf
         ON fasvi.asset_id = favf.asset_id
         AND fasvi.vulnerability_id = favf.vulnerability_id
@@ -164,7 +164,7 @@ LEFT JOIN dim_vulnerability AS dv
     ON ad.vulnerability_id = dv.vulnerability_id
 LEFT JOIN aggregated_categories AS ac
     ON ad.vulnerability_id = ac.vulnerability_id
-LEFT JOIN cve_references cef
+LEFT JOIN cve_references cef 
     ON ad.vulnerability_id = cef.vulnerability_id
 ORDER BY
     ad.asset_id, ad.vulnerability_id, ad.scan_date DESC
@@ -2455,21 +2455,13 @@ class InsightVMClient:
         request_func = getattr(self._session, method.lower())
 
         demisto.debug(f"Executing {method} request to: {url}")
-
-        # Execute the request
-        # Note: 'json=payload' is used for POST/PUT. 'data' or 'params' would be used otherwise.
-        # The 'ssl=False' is critical for self-signed certs common in on-prem consoles.
         response = await request_func(
             url,
             headers=self._headers,
             json=payload,
             ssl=False,
-            # If we are expecting a streamed response (like report download), set the content reader
-            # Aiohttp handles streaming implicitly, but we pass stream=True just in case for clarity
-            # We don't use 'stream' here as we handle the content streaming after getting the response object.
         )
 
-        # Check for non-2xx status codes (general error handling)
         if 400 <= response.status < 600:
             error_body = await response.text()
             response.close()  # Close response if we're not using it anymore
@@ -6888,7 +6880,11 @@ async def stream_and_parse_report(
 
     demisto.debug(f"--- Starting Data Stream (Resuming from line: {start_line_for_batch_raw}) ---")
     # --- Lookahead Stream Setup ---
-    stream_iterator = stream_report(client, report_id, instance_id).__aiter__()
+    try:
+        stream_iterator = stream_report(client, report_id, instance_id).__aiter__()
+    except Exception as e:
+        raise DemistoException(f"Failed to initialize stream: {e}")
+
     line_to_process: Optional[str] = None
 
     # Track data records processed in the current run (resets to 0 on crash/restart)
@@ -6897,12 +6893,29 @@ async def stream_and_parse_report(
     demisto.debug(f"--- Starting Data Stream for {event_type} report instance {instance_id} ---")
 
     try:
-        # 1. INITIAL LINE READ: Get the very first line of the stream
+        # 1. INITIAL LINE READ: Get the header of the report
         try:
+                # Fetch the very first line (Line 1)
+                header_line = await anext(stream_iterator)
+                current_line_count = 1
+                
+                # Parse the header immediately
+                header = next(csv.reader(io.StringIO(header_line)))
+                demisto.debug(f"CSV Header parsed: {header}")
+
+        except StopAsyncIteration:
+                demisto.debug("Report was empty (no header found).")
+                return
+        except Exception as e:
+                raise Exception(f"Failed to parse CSV header on line 1: {e}")
+        
+        try:
+            # Try to fetch Line 2 (the first data line)
             line_to_process = await anext(stream_iterator)
         except StopAsyncIteration:
-            demisto.debug(F"Report {instance_id} stream was empty.")
-            return  # Exit if the report is empty
+            # Report has a header but no data
+            line_to_process = None
+        
 
         while line_to_process is not None:
             current_line_count += 1
@@ -6915,16 +6928,7 @@ async def stream_and_parse_report(
                 # If we fail to get the next line, this is the final line of the report.
                 next_line = None
 
-            # 1a. Process Header (Line 1)
-            if current_line_count == HEADER_LINE_NUMBER:
-                try:
-                    header = next(csv.reader(io.StringIO(current_line)))
-                    line_to_process = next_line
-                    continue
-                except Exception as e:
-                    raise Exception(f"Failed to parse CSV header on line {current_line_count}: {e}")
-
-            # 1b. Skip Checkpoint
+            # 1. Skip Checkpoint
             if current_line_count <= last_sent_line_raw:
                 line_to_process = next_line
                 continue
@@ -7014,35 +7018,76 @@ async def stream_and_parse_report(
         raise
 
 
-async def delete_report_instance(client: InsightVMClient, report_id: str, instance_id: str):
+async def delete_report_instance(client: InsightVMClient, report_id: str, instance_id: str, event_type: str):
     """Deletes a specific report instance (a single run)."""
     endpoint = f"/api/3/reports/{report_id}/history/{instance_id}"
-    demisto.debug(f"Deleting report instance ID: {instance_id}.")
+    demisto.debug(f"Deleting report instance ID: {instance_id} for {event_type}.")
     try:
         await client.http_request("DELETE", endpoint)
-        demisto.debug(f"Report instance {instance_id} deleted successfully.")
+        demisto.debug(f"Report instance {instance_id} for {event_type} deleted successfully.")
     except Exception as e:
         # Expected if resource is already gone (e.g., Status 404)
         demisto.debug(f"Warning: Could not guarantee deletion of report {instance_id} instance. {e}")
 
 
-async def delete_report_configuration(client: InsightVMClient, report_id: str):
+async def delete_report_configuration(client: InsightVMClient, report_id: str, event_type: str):
     """Deletes the entire report configuration."""
     endpoint = f"/api/3/reports/{report_id}"
-    demisto.debug(f"Deleting report configuration ID: {report_id}.")
+    demisto.debug(f"Deleting report configuration ID: {report_id} for {event_type}.")
     try:
         await client.http_request("DELETE", endpoint)
-        demisto.debug(f"Report {report_id} configuration deleted successfully.")
+        demisto.debug(f"Report {report_id} for {event_type} configuration deleted successfully.")
     except Exception as e:
         # Expected if resource is already gone (e.g., Status 404)
         demisto.debug(f"Warning: Could not guarantee deletion of report configuration. {e}")
 
 
-def _apply_collector_changes(collector_context: Dict[str, Dict[str, Any]], collector_type: str, changes: Dict[str, Any]) -> None:
-    """Applies a dictionary of changes to the specific collector's state."""
+def _apply_collector_changes(
+    collector_context: Dict[str, Dict[str, Any]], 
+    collector_type: str, 
+    changes: Dict[str, Any]
+) -> None:
+    """
+    Helper function to apply changes to a specific collector's context dict
+    with concurrency safety logic.
+    
+    Modifies 'collector_context' in place.
+    """
+    # 1. Ensure the sub-dictionary exists for this collector type
     if collector_type not in collector_context:
         collector_context[collector_type] = {}
-    collector_context[collector_type].update(changes)
+        
+    current_sub_dict = collector_context[collector_type]
+
+    # Keys that must strictly increase during normal operation
+    MONITORED_KEYS = {"last_sent_line", "total_records_ingested"}
+
+    # 2. Determine 'finish' state for logic decisions
+    # Priority: Argument in 'changes' > Persisted value in Context > Default False
+    if "finish" in changes:
+        finish = changes["finish"]
+    else:
+        finish = current_sub_dict.get("finish", False)
+
+    # 3. Iterate through ALL keys in the changes dictionary
+    for key, new_value in changes.items():
+        
+        # LOGIC A: Handle Monitored Counters (prevent race conditions)
+        if key in MONITORED_KEYS and not finish:
+            
+            old_value = current_sub_dict.get(key, 0)
+            
+            if isinstance(new_value, int | float) and isinstance(old_value, int | float):
+                if new_value > old_value:
+                    current_sub_dict[key] = new_value
+            else:
+                # Fallback for unexpected types
+                current_sub_dict[key] = new_value
+                
+        # LOGIC B: Handle Everything Else
+        # This includes IDs, standard keys, AND the 'finish' key itself.
+        else:
+            current_sub_dict[key] = new_value
 
 
 def update_state_checkpoint(collector_type: str, changes: Dict[str, Any]) -> None:
@@ -7561,11 +7606,11 @@ async def run_full_collector_workflow(client: InsightVMClient, event_type: str, 
 
     # Always delete the specific instance first
     if report_id and instance_id:
-        await delete_report_instance(client, report_id, instance_id)
+        await delete_report_instance(client, report_id, instance_id, event_type)
 
     # Then delete the entire report configuration
     if report_id:
-        await delete_report_configuration(client, report_id)
+        await delete_report_configuration(client, report_id, event_type)
 
     # Clear all state markers in context for the next 12-hour run
     update_state_checkpoint(event_type, {"instance_id": "", "report_id": "", "finish": False})
@@ -7646,11 +7691,6 @@ async def fetch_assets_long_running_command(params: dict, token: str):
         await asyncio.sleep(remaining_time_seconds)
 
 
-def create_add_assets_to_tenant():
-    json_array = []
-    send_data_to_xsiam(json_array, VENDOR.get("asset"), PRODUCT.get("asset"), data_type=ASSETS)
-
-
 def main():  # pragma: no cover
     try:
         args = demisto.args()
@@ -7685,6 +7725,7 @@ def main():  # pragma: no cover
             results = "ok"
         elif command == "long-running-execution":
             demisto.info("Starting long-running execution.")
+            support_multithreading()
             asyncio.run(fetch_assets_long_running_command(params, token))
         elif command == "nexpose-create-asset":
             results = create_asset_command(client=client, **args)
