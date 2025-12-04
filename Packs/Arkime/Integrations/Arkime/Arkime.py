@@ -8,6 +8,7 @@ from collections.abc import Callable
 
 from requests import Response
 
+
 from requests.auth import HTTPDigestAuth
 import urllib3
 
