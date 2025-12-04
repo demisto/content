@@ -354,7 +354,7 @@ async def get_audit_events_for_service(
 
 async def test_module(client: AsyncClient, service_names: list[str]) -> str:
     """
-    Tests the connection to the Gnenesys Cloud realtime audit events API.
+    Tests the connection to the Genesys Cloud realtime audit events API.
 
     Args:
         client (AsyncClient): An instance of the AsyncClient.
