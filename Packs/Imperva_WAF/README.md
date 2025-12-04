@@ -9,8 +9,9 @@ Imperva WAF Gateway is a key component of Imperva’s market-leading, full stack
 ## This pack includes
 
 Data normalization capabilities:
-    * Rules for modeling Imperva SecureSphere CEF logs that are ingested via the Broker VM into Cortex XSIAM.
-    * The ingested Imperva SecureSphere logs can be queried in XQL Search using the *`imperva_inc__securesphere_raw`* dataset.
+
+- Rules for modeling Imperva SecureSphere CEF logs that are ingested via Broker VM into Cortex XSIAM.
+- The ingested Imperva SecureSphere logs can be queried in XQL Search using the *`imperva_inc__securesphere_raw`* dataset.
 
 **Supported log categories:** Security Logs
 
