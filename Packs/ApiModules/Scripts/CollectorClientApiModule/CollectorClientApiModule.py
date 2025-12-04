@@ -1,24 +1,20 @@
-import asyncio
-import base64
-import contextlib
+from __future__ import annotations 
+
 import json
-import math
 import random
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from threading import Lock
 from typing import (
     Any,
     AsyncIterator,
-    Awaitable,
-    Callable,
     Dict,
     Final,
-    Iterable,
     List,
     Literal,
     MutableMapping,
+    NewType,
     Optional,
     Sequence,
     Tuple,
@@ -30,10 +26,15 @@ from typing import (
 import anyio
 import demistomock as demisto
 import httpx
+from pydantic import BaseModel, Field, field_validator, model_validator, ConfigDict
 from CommonServerPython import *  # noqa: F401,F403
 from CommonServerUserPython import *  # noqa: F401,F403
 
 """CollectorClient: High-performance async-first HTTP client for event collection.
+
+Version: 1.0.0
+Python: 3.9+
+Dependencies: httpx, anyio, pydantic
 
 This module provides a complete solution for building event collectors in XSOAR/XSIAM.
 It handles pagination, authentication, retry logic, rate limiting, state management,
@@ -42,7 +43,7 @@ and timeout handling automatically.
 **Quick Start:**
 
 ```python
-from CollectorClient import (
+from CollectorClientApiModule import (
     CollectorClient,
     CollectorBlueprint,
     CollectorRequest,
@@ -100,9 +101,9 @@ for event in result.events:
 """
 
 # Type aliases for semantic clarity (using type aliases instead of NewType for better ergonomics)
-Cursor = str  # Semantic type: pagination cursor token
-EventID = str  # Semantic type: unique event identifier
-StateKey = str  # Semantic type: state storage key identifier
+Cursor = NewType('Cursor', str)
+EventID = NewType('EventID', str)
+StateKey = NewType('StateKey', str)
 
 # HTTP method literal type
 HTTPMethod = Literal["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
@@ -114,7 +115,6 @@ PaginationMode = Literal["cursor", "page", "offset", "link", "none"]
 StrategyName = Literal["sequential", "concurrent", "batch", "stream"]
 
 # Constants
-SENSITIVE_KEYS: Final[Tuple[str, ...]] = ("token", "secret", "authorization", "password", "credential", "key")
 STATE_NAMESPACE: Final[str] = "collector_client"
 DEFAULT_USER_AGENT: Final[str] = "CollectorClient/1.0"
 DEFAULT_STREAM_CHUNK: Final[int] = 500
@@ -164,63 +164,59 @@ class CollectorConfigurationError(CollectorError):
     """Raised when the blueprint or request definition is invalid."""
 
 
-def _is_sensitive(key: str) -> bool:
-    lowered = key.lower()
-    return any(marker in lowered for marker in SENSITIVE_KEYS)
-
-
-def sanitize(value: Any) -> Any:
-    if isinstance(value, dict):
-        return {k: ("<redacted>" if _is_sensitive(k) else sanitize(v)) for k, v in value.items()}
-    if isinstance(value, list):
-        return [sanitize(item) for item in value]
-    return value
-
-
 def _ensure_dict(value: Optional[MutableMapping[str, Any]]) -> Dict[str, Any]:
     if value is None:
         return {}
     return dict(value)
 
 
-def _resolve_path(data: Any, path: Optional[str]) -> Any:
-    if not path:
-        return data
-    current = data
-    for part in path.strip(".").split("."):
-        if current is None:
-            return None
-        if not part:
+def _get_value_by_path(obj: Any, path: str) -> Any:
+    """Retrieve a value from a nested dictionary using dot notation.
+    
+    Args:
+        obj: The dictionary or object to search.
+        path: The dot-separated path (e.g., "data.items").
+        
+    Returns:
+        The value at the path, or None if not found.
+    """
+    if not path or not isinstance(path, str):
+        return obj
+    
+    current = obj
+    for part in path.split("."):
+        if not part:  # Skip empty parts from ".." or leading/trailing dots
             continue
-        if "[" in part and part.endswith("]"):
-            name, _, index_part = part.partition("[")
-            if name:
-                current = current.get(name) if isinstance(current, dict) else None
-                if current is None:
-                    return None
-            index_part = index_part.rstrip("]")
-            if index_part == "*":
-                return current
+        if isinstance(current, dict):
+            current = current.get(part)
+        elif isinstance(current, list):
             try:
-                idx = int(index_part)
+                idx = int(part)
+                if 0 <= idx < len(current):
+                    current = current[idx]
+                else:
+                    return None
             except ValueError:
                 return None
-            if isinstance(current, list) and 0 <= idx < len(current):
-                current = current[idx]
-            else:
-                return None
         else:
-            current = current.get(part) if isinstance(current, dict) else None
+            return None
+            
+        if current is None:
+            return None
+            
     return current
 
 
 def _extract_list(data: Any, path: Optional[str]) -> List[Any]:
-    extracted = _resolve_path(data, path)
+    extracted = _get_value_by_path(data, path) if path else data
     if extracted is None:
         return []
     if isinstance(extracted, list):
         return extracted
     if isinstance(extracted, dict):
+        return [extracted]
+    # Handle primitive types explicitly
+    if isinstance(extracted, (str, int, float, bool)):
         return [extracted]
     return [extracted]
 
@@ -229,76 +225,15 @@ def _now() -> float:
     return time.monotonic()
 
 
-@dataclass(slots=True)
-class RetryPolicy:
-    """Retry policy for handling transient API failures.
-    
-    Configures automatic retry behavior with exponential backoff and jitter.
-    Retries are attempted for retryable HTTP status codes and network exceptions.
-    
-    **Default Configuration:**
-    
-    - 5 retry attempts
-    - Exponential backoff: 1s, 2s, 4s, 8s, 16s (capped at max_delay)
-    - 20% jitter to prevent thundering herd
-    - Respects `Retry-After` headers when present
-    - Retries on: 408, 413, 425, 429, 500, 502, 503, 504
-    
-    **Custom Configuration:**
-    
-    ```python
-    RetryPolicy(
-        max_attempts=10,  # More retries for unreliable APIs
-        initial_delay=0.5,  # Start with shorter delay
-        multiplier=2.0,  # Double delay each retry
-        max_delay=120.0,  # Cap at 2 minutes
-        jitter=0.3,  # 30% jitter
-        respect_retry_after=True,  # Honor API's Retry-After header
-    )
-    ```
-    
-    **Retry Logic:**
-    
-    1. On retryable error, wait: `min(max_delay, initial_delay * (multiplier ^ attempt))`
-    2. Add random jitter: `±(delay * jitter)`
-    3. If `Retry-After` header present and `respect_retry_after=True`, use that value instead
-    4. Retry up to `max_attempts` times
-    5. After all retries exhausted, raise `CollectorRetryError`
-    
-    **Retryable Status Codes:**
-    
-    - 408: Request Timeout
-    - 413: Payload Too Large
-    - 425: Too Early
-    - 429: Too Many Requests (rate limit)
-    - 500: Internal Server Error
-    - 502: Bad Gateway
-    - 503: Service Unavailable
-    - 504: Gateway Timeout
-    
-    **Retryable Exceptions:**
-    
-    - `httpx.ConnectError`: Connection failed
-    - `httpx.ReadTimeout`: Read timeout
-    - `httpx.WriteTimeout`: Write timeout
-    - `httpx.RemoteProtocolError`: Protocol error
-    - `httpx.PoolTimeout`: Connection pool timeout
-    
-    Args:
-        max_attempts: Maximum retry attempts (must be >= 1, default: 5)
-        initial_delay: Initial delay in seconds before first retry (must be >= 0, default: 1.0)
-        multiplier: Exponential backoff multiplier (must be >= 1.0, default: 2.0)
-        max_delay: Maximum delay between retries in seconds (must be > initial_delay, default: 60.0)
-        jitter: Random jitter as fraction of delay (0.0-1.0, default: 0.2 = 20%)
-        retryable_status_codes: HTTP status codes that trigger retry (default: 408, 413, 425, 429, 500, 502, 503, 504)
-        retryable_exceptions: Exception types that trigger retry (default: network/timeout exceptions)
-        respect_retry_after: Honor `Retry-After` header from API responses (default: True)
-    """
-    max_attempts: int = 5
-    initial_delay: float = 1.0
-    multiplier: float = 2.0
-    max_delay: float = 60.0
-    jitter: float = 0.2
+class RetryPolicy(BaseModel):
+    """Retry policy for handling transient API failures."""
+    model_config = ConfigDict(extra='forbid')
+
+    max_attempts: int = Field(5, ge=1)
+    initial_delay: float = Field(1.0, ge=0)
+    multiplier: float = Field(2.0, ge=1.0)
+    max_delay: float = Field(60.0, gt=0)
+    jitter: float = Field(0.2, ge=0.0, le=1.0)
     retryable_status_codes: Tuple[int, ...] = (408, 413, 425, 429, 500, 502, 503, 504)
     retryable_exceptions: Tuple[Type[Exception], ...] = (
         httpx.ConnectError,
@@ -309,6 +244,12 @@ class RetryPolicy:
     )
     respect_retry_after: bool = True
 
+    @model_validator(mode='after')
+    def validate_delay(self) -> "RetryPolicy":
+        if self.max_delay <= self.initial_delay:
+            raise ValueError(f"max_delay ({self.max_delay}) must be > initial_delay ({self.initial_delay})")
+        return self
+
     def next_delay(self, attempt: int, retry_after: Optional[float] = None) -> float:
         if retry_after is not None and self.respect_retry_after:
             return retry_after
@@ -317,11 +258,12 @@ class RetryPolicy:
         return max(0.0, delay + random.uniform(-jitter_value, jitter_value))
 
 
-@dataclass(slots=True)
-class CircuitBreakerPolicy:
-    failure_threshold: int = 5
-    recovery_timeout: float = 60.0
-    half_open_threshold: int = 2
+class CircuitBreakerPolicy(BaseModel):
+    """Circuit breaker policy for preventing cascading failures."""
+    model_config = ConfigDict(extra='forbid')
+
+    failure_threshold: int = Field(5, ge=1)
+    recovery_timeout: float = Field(60.0, gt=0)
 
 
 class CircuitBreaker:
@@ -350,70 +292,12 @@ class CircuitBreaker:
             self._opened_at = _now()
 
 
-@dataclass(slots=True)
-class RateLimitPolicy:
-    """Rate limiting policy using token bucket algorithm.
-    
-    Proactively limits request rate to prevent hitting API rate limits.
-    Uses a token bucket algorithm: tokens refill at `rate_per_second`, with a maximum
-    burst capacity of `burst` tokens.
-    
-    **How It Works:**
-    
-    - Each request consumes 1 token
-    - Tokens refill at `rate_per_second` per second
-    - Maximum burst capacity is `burst` tokens
-    - If no tokens available, request waits until token refills
-    
-    **Example:**
-    
-    ```python
-    # Limit to 10 requests per second, allow burst of 20
-    RateLimitPolicy(rate_per_second=10.0, burst=20)
-    ```
-    
-    This means:
-    - Can make 20 requests immediately (burst)
-    - Then limited to 10 requests per second
-    - If you make 20 requests, you must wait 2 seconds before next request
-    
-    **When to Use:**
-    
-    - API has documented rate limits (e.g., "100 requests/minute")
-    - You want to avoid 429 (Too Many Requests) errors
-    - You need predictable, steady request rate
-    
-    **Disabling Rate Limiting:**
-    
-    Set `rate_per_second=0.0` (default) to disable. The client will still respect
-    `Retry-After` headers from the API, but won't proactively limit requests.
-    
-    **Common Configurations:**
-    
-    ```python
-    # 10 requests/second, burst of 10
-    RateLimitPolicy(rate_per_second=10.0, burst=10)
-    
-    # 100 requests/minute = ~1.67 requests/second
-    RateLimitPolicy(rate_per_second=100.0/60.0, burst=5)
-    
-    # 1000 requests/hour = ~0.28 requests/second
-    RateLimitPolicy(rate_per_second=1000.0/3600.0, burst=10)
-    ```
-    
-    Args:
-        rate_per_second: Request rate limit (requests per second). Set to 0.0 to disable (default).
-        burst: Maximum burst capacity (number of tokens). Must be >= 1 (default: 1).
-            Higher values allow more requests in quick succession.
-        respect_retry_after: Honor `Retry-After` header from API responses (default: True).
-            Even with rate limiting enabled, the API may still send 429 responses.
-    
-    Note:
-        Rate limiting is disabled by default (`rate_per_second=0.0`). Set to a positive
-        value to enable proactive rate limiting.
-    """
-    rate_per_second: float = 0.0
-    burst: int = 1
+class RateLimitPolicy(BaseModel):
+    """Rate limiting policy using token bucket algorithm."""
+    model_config = ConfigDict(extra='forbid')
+
+    rate_per_second: float = Field(0.0, ge=0)
+    burst: int = Field(1, ge=1)
     respect_retry_after: bool = True
 
     @property
@@ -430,15 +314,15 @@ class TokenBucketRateLimiter:
         self._lock = anyio.Lock()
 
     async def acquire(self) -> None:
-        async with self._lock:
-            await self._refill_locked()
-            if self._tokens >= 1:
-                self._tokens -= 1
-                return
-            needed = 1 - self._tokens
-            wait_seconds = needed / self.policy.rate_per_second
-        await anyio.sleep(wait_seconds)
-        await self.acquire()
+        while True:
+            async with self._lock:
+                await self._refill_locked()
+                if self._tokens >= 1:
+                    self._tokens -= 1
+                    return
+                needed = 1 - self._tokens
+                wait_seconds = needed / self.policy.rate_per_second
+            await anyio.sleep(wait_seconds)
 
     async def _refill_locked(self) -> None:
         now = _now()
@@ -450,259 +334,83 @@ class TokenBucketRateLimiter:
         self._updated = now
 
 
-@dataclass(slots=True)
-class TimeoutSettings:
-    """Timeout configuration for HTTP requests and execution deadline.
-    
-    Configures timeouts for different phases of HTTP requests and overall execution.
-    Setting `execution` enables timeout awareness and automatic state preservation.
-    
-    **Timeout Types:**
-    
-    - `connect`: Time to establish connection (default: 10s)
-    - `read`: Time to read response data (default: 60s)
-    - `write`: Time to write request data (default: 60s)
-    - `pool`: Time to get connection from pool (default: 60s)
-    - `execution`: Total execution time limit (default: None = disabled)
-    - `safety_buffer`: Seconds before execution timeout to abort (default: 30s)
-    
-    **Execution Timeout (Recommended):**
-    
-    Setting `execution` enables timeout awareness:
-    - Detects when execution deadline is approaching
-    - Automatically saves state before timeout
-    - Raises `CollectorTimeoutError` with preserved state
-    - Allows seamless resume on next run
-    
-    ```python
-    TimeoutSettings(
-        execution=300,  # 5 minutes total execution time
-        safety_buffer=30,  # Abort 30s before deadline
-    )
-    ```
-    
-    **Common Configurations:**
-    
-    ```python
-    # Fast API, short execution window
-    TimeoutSettings(
-        connect=5.0,
-        read=30.0,
-        execution=120,  # 2 minutes
-        safety_buffer=20,
-    )
-    
-    # Slow API, long execution window
-    TimeoutSettings(
-        connect=15.0,
-        read=120.0,
-        execution=600,  # 10 minutes
-        safety_buffer=60,
-    )
-    ```
-    
-    Args:
-        connect: Connection timeout in seconds (default: 10.0)
-        read: Read timeout in seconds (default: 60.0)
-        write: Write timeout in seconds (default: 60.0)
-        pool: Connection pool timeout in seconds (default: 60.0)
-        execution: Total execution time limit in seconds (default: None = disabled).
-            **Recommended**: Set this to enable timeout awareness and state preservation.
-        safety_buffer: Seconds before execution timeout to abort (default: 30.0).
-            Ensures state is saved before hard timeout. Should be < execution.
-    """
-    connect: float = 10.0
-    read: float = 60.0
-    write: float = 60.0
-    pool: float = 60.0
-    execution: Optional[float] = None
-    safety_buffer: float = 30.0
+class TimeoutSettings(BaseModel):
+    """Timeout configuration for HTTP requests and execution deadline."""
+    model_config = ConfigDict(extra='forbid')
+
+    connect: float = Field(10.0, gt=0)
+    read: float = Field(60.0, gt=0)
+    write: float = Field(60.0, gt=0)
+    pool: float = Field(60.0, gt=0)
+    execution: Optional[float] = Field(None, gt=0)
+    safety_buffer: float = Field(30.0, gt=0)
+
+    @model_validator(mode='after')
+    def validate_execution_safety(self) -> "TimeoutSettings":
+        if self.execution is not None and self.execution <= self.safety_buffer:
+            raise ValueError(f"execution ({self.execution}) must be > safety_buffer ({self.safety_buffer})")
+        return self
 
     def as_httpx(self) -> httpx.Timeout:
         return httpx.Timeout(connect=self.connect, read=self.read, write=self.write, pool=self.pool)
 
 
-@dataclass(slots=True)
-class PaginationConfig:
+class PaginationConfig(BaseModel):
     """Configuration for API pagination handling.
     
-    The CollectorClient supports multiple pagination strategies. Choose the mode that matches
-    your API's pagination style.
+    This class defines how the collector should navigate through pages of results.
     
-    **Pagination Mode Selection:**
-    
-    - **"cursor"**: Use when API returns a cursor/token in response (e.g., `{"next_cursor": "abc123"}`)
-      - Required: `next_cursor_path` (e.g., "meta.next_cursor")
-      - Optional: `cursor_param` (query param name, default: "cursor")
-      - Example response: `{"data": {"events": [...]}, "meta": {"next_cursor": "abc123"}}`
-      
-    - **"page"**: Use when API uses page numbers (e.g., `?page=1&page=2`)
-      - Required: `page_param` (default: "page")
-      - Optional: `page_size_param` and `page_size` for fixed page sizes
-      - Optional: `has_more_path` to check if more pages exist (e.g., "meta.has_more")
-      - Example response: `{"events": [...], "page": 1, "has_more": true}`
-      
-    - **"offset"**: Use when API uses offset/limit (e.g., `?offset=0&limit=100`)
-      - Required: `offset_param` (default: "offset")
-      - Required: `page_size` and `page_size_param` for consistent page sizes
-      - Example response: `{"items": [...], "total": 1000}`
-      
-    - **"link"**: Use when API returns RFC5988 Link headers or next URL in response
-      - Required: `link_path` (e.g., "links.next" or "pagination.next_url")
-      - Example response: `{"data": [...], "links": {"next": "https://api.example.com/events?page=2"}}`
-      
-    - **"none"**: No pagination (single request, all data in one response)
-    
-    **Examples:**
-    
-    Cursor-based pagination:
-    ```python
-    PaginationConfig(
-        mode="cursor",
-        next_cursor_path="meta.next_cursor",  # Path to cursor in JSON response
-        cursor_param="cursor",  # Query param name (default)
-        data_path="data.events",  # Optional: path to event array
-    )
-    ```
-    
-    Page-based pagination:
-    ```python
-    PaginationConfig(
-        mode="page",
-        page_param="page",
-        page_size_param="per_page",
-        page_size=100,
-        start_page=1,  # Use 0 for zero-indexed pages
-        has_more_path="meta.has_more",  # Optional: check this field
-    )
-    ```
-    
-    Offset-based pagination:
-    ```python
-    PaginationConfig(
-        mode="offset",
-        offset_param="offset",
-        page_size_param="limit",
-        page_size=100,  # Required for offset mode
-    )
-    ```
-    
-    **Common Mistakes:**
-    
-    1. Setting `mode="cursor"` but forgetting `next_cursor_path` (required!)
-    2. Using `mode="offset"` without setting `page_size` (required!)
-    3. Forgetting to set `data_path` when events are nested (e.g., response is `{"data": {"events": [...]}}`)
-    4. Using wrong `start_page` value (check if API uses 0-indexed or 1-indexed pages)
-    
-    Args:
-        mode: Pagination strategy. Must be one of: "cursor", "page", "offset", "link", "none"
-        data_path: Optional dot-notation path to event array in response (e.g., "data.events").
-            If not set, assumes events are at root level or uses CollectorRequest.data_path.
-        cursor_param: Query parameter name for cursor token (default: "cursor")
-        next_cursor_path: Dot-notation path to next cursor in response JSON.
-            Required for cursor mode. Example: "meta.next_cursor" or "pagination.next"
-        page_param: Query parameter name for page number (default: "page")
-        start_page: First page number (default: 1, use 0 for zero-indexed APIs)
-        page_size_param: Query parameter name for page size (e.g., "limit", "per_page", "size")
-        page_size: Number of items per page. Required for offset mode, optional for page mode.
-        has_more_path: Dot-notation path to boolean indicating more pages exist.
-            Example: "meta.has_more" or "pagination.has_next"
-        link_path: Dot-notation path to next page URL in response. Required for link mode.
-            Example: "links.next" or "pagination.next_url"
-        offset_param: Query parameter name for offset value (default: "offset")
-        offset_step: Increment for offset (default: 0, auto-calculated from page_size if set)
-        stop_when_empty: Stop pagination if a page returns 0 items (default: True)
-        max_pages: Maximum number of pages to fetch (None = unlimited). Useful for testing or
-            preventing runaway pagination.
+    **Modes:**
+    - `cursor`: Uses a cursor token from the response to fetch the next page.
+    - `page`: Uses a page number that increments with each request.
+    - `offset`: Uses an offset (skip) that increases by `page_size` or `limit`.
+    - `link`: Uses a full URL provided in the response for the next page.
+    - `none`: No pagination (single request).
     """
+    model_config = ConfigDict(extra='forbid')
+
     mode: PaginationMode = "none"
     data_path: Optional[str] = None
+    
+    # Cursor mode settings
     cursor_param: str = "cursor"
     next_cursor_path: Optional[str] = None
+    
+    # Page mode settings
     page_param: str = "page"
-    start_page: int = 1
+    start_page: int = Field(1, ge=0)
     page_size_param: Optional[str] = None
-    page_size: Optional[int] = None
+    page_size: Optional[int] = Field(None, gt=0)
     has_more_path: Optional[str] = None
+    
+    # Link mode settings
     link_path: Optional[str] = None
+    
+    # Offset mode settings
     offset_param: str = "offset"
     offset_step: int = 0
+    
+    # General settings
     stop_when_empty: bool = True
-    max_pages: Optional[int] = None
+    max_pages: Optional[int] = Field(None, gt=0)
+
+    @model_validator(mode='after')
+    def validate_pagination_mode(self) -> "PaginationConfig":
+        if self.mode == "cursor" and not self.next_cursor_path:
+            raise ValueError("mode='cursor' requires next_cursor_path")
+        if self.mode == "offset" and not self.page_size:
+            raise ValueError("mode='offset' requires page_size")
+        if self.mode == "link" and not self.link_path:
+            raise ValueError("mode='link' requires link_path")
+        if self.mode == "page" and self.page_size and not self.page_size_param:
+            raise ValueError("page_size requires page_size_param to be set")
+        return self
 
 
-@dataclass(slots=True)
-class CollectorRequest:
-    """HTTP request configuration for event collection.
-    
-    Defines a single API request to fetch events. Can be used standalone or with shards
-    for concurrent multi-endpoint collection.
-    
-    **Basic Usage:**
-    
-    ```python
-    CollectorRequest(
-        endpoint="/v1/events",
-        data_path="data.events",  # Path to event array in response
-        params={"filter": "active"},
-    )
-    ```
-    
-    **With Pagination:**
-    
-    ```python
-    CollectorRequest(
-        endpoint="/v1/events",
-        data_path="data.events",
-        pagination=PaginationConfig(
-            mode="cursor",
-            next_cursor_path="meta.next_cursor",
-        ),
-    )
-    ```
-    
-    **With Shards (Concurrent Collection):**
-    
-    ```python
-    CollectorRequest(
-        endpoint="/v1/events",
-        data_path="data.events",
-        shards=[
-            {"params": {"region": "us"}, "state_key": "events-us"},
-            {"params": {"region": "eu"}, "state_key": "events-eu"},
-        ],
-    )
-    ```
-    
-    **Common Mistakes:**
-    
-    1. Forgetting to set `data_path` when events are nested in response
-       - Response: `{"data": {"events": [...]}}` → `data_path="data.events"`
-       - Response: `{"items": [...]}` → `data_path="items"`
-       - Response: `[...]` (array at root) → `data_path` not needed
-    
-    2. Setting `pagination` on request but also on blueprint (request takes precedence)
-    
-    3. Using `shards` without setting `default_strategy="concurrent"` in blueprint
-    
-    Args:
-        endpoint: API endpoint path (must start with "/"). Example: "/v1/events"
-        method: HTTP method to use. Default: "GET". Valid: "GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"
-        params: Query parameters as dict. Example: `{"page": 1, "limit": 100}`
-        json_body: Request body for POST/PUT requests. Can be dict, list, or any JSON-serializable value.
-        headers: Custom HTTP headers. Example: `{"X-Custom-Header": "value"}`
-        data_path: Dot-notation path to event array in response JSON.
-            Example: "data.events" for `{"data": {"events": [...]}}`
-            If not set, uses PaginationConfig.data_path or assumes root-level array.
-        pagination: Pagination configuration. If None, uses blueprint's default pagination.
-        stream: Enable streaming response (for large payloads). Default: False
-        timeout: Per-request timeout override. If None, uses blueprint timeout settings.
-        state_key: Key for storing pagination state in integration context.
-            If None, uses endpoint path. Use unique keys for multiple requests.
-        shards: List of shard configurations for concurrent collection.
-            Each shard can override endpoint, params, headers, etc.
-            Each shard maintains separate pagination state under its state_key.
-    """
+class CollectorRequest(BaseModel):
+    """HTTP request configuration for event collection."""
+    model_config = ConfigDict(extra='forbid')
+
     endpoint: str
     method: HTTPMethod = "GET"
     params: Optional[Dict[str, Any]] = None
@@ -714,6 +422,13 @@ class CollectorRequest:
     timeout: Optional[TimeoutSettings] = None
     state_key: Optional[StateKey] = None
     shards: Optional[List[ShardConfig]] = None
+
+    @field_validator('endpoint')
+    @classmethod
+    def validate_endpoint(cls, v: str) -> str:
+        if not v.startswith("/"):
+            raise ValueError(f"endpoint must start with '/', got: {v}")
+        return v
 
 
 @dataclass
@@ -798,7 +513,7 @@ class CollectorState:
 class IntegrationContextStore:
     def __init__(self, collector_name: str):
         self.collector_name = collector_name
-        self._lock = Lock()
+        self._lock = Lock()  # Using threading.Lock since demisto calls are synchronous
 
     def read(self) -> Dict[str, Any]:
         context = demisto.getIntegrationContext() or {}
@@ -807,11 +522,19 @@ class IntegrationContextStore:
 
     def write(self, data: Dict[str, Any]) -> None:
         with self._lock:
-            context = demisto.getIntegrationContext() or {}
-            namespace = context.get(STATE_NAMESPACE, {})
-            namespace[self.collector_name] = data
-            context[STATE_NAMESPACE] = namespace
-            demisto.setIntegrationContext(context)
+            max_retries = 3
+            for attempt in range(max_retries):
+                context = demisto.getIntegrationContext() or {}
+                namespace = context.get(STATE_NAMESPACE, {})
+                namespace[self.collector_name] = data
+                context[STATE_NAMESPACE] = namespace
+                try:
+                    demisto.setIntegrationContext(context)
+                    break
+                except Exception:
+                    if attempt == max_retries - 1:
+                        raise
+                    time.sleep(0.1 * (attempt + 1))  # Exponential backoff
 
 
 class CollectorStateStore:
@@ -872,130 +595,31 @@ class CollectorRunResult:
     metrics: Optional[ExecutionMetrics] = None
 
 
-@dataclass
-class CollectorBlueprint:
-    """Blueprint defining a collector's complete configuration.
-    
-    The blueprint is the main configuration object that defines how the collector
-    interacts with the API. It combines authentication, retry logic, rate limiting,
-    pagination, and collection strategy into a single declarative configuration.
-    
-    **Minimal Setup (3 required fields):**
-    
-    ```python
-    blueprint = CollectorBlueprint(
-        name="MyCollector",
-        base_url="https://api.example.com",
-        request=CollectorRequest(endpoint="/v1/events", data_path="data.events"),
-    )
-    ```
-    
-    **Complete Example:**
-    
-    ```python
-    blueprint = CollectorBlueprint(
-        name="MyCollector",
-        base_url=params["url"],
-        request=CollectorRequest(
-            endpoint="/v1/events",
-            data_path="data.events",
-            pagination=PaginationConfig(
-                mode="cursor",
-                next_cursor_path="meta.next_cursor",
-            ),
-        ),
-        auth_handler=APIKeyAuthHandler(params["api_key"], header_name="X-API-Key"),
-        retry_policy=RetryPolicy(max_attempts=5, initial_delay=1.0),
-        rate_limit=RateLimitPolicy(rate_per_second=10, burst=20),
-        timeout=TimeoutSettings(execution=300, safety_buffer=30),
-        default_strategy="sequential",
-        default_limit=1000,
-        verify=params.get("insecure", "false").lower() != "true",  # SSL verification
-        proxy=params.get("proxy", "false").lower() == "true",  # Use system proxy
-    )
-    ```
-    
-    **Collection Strategy Selection:**
-    
-    - **"sequential"** (default): Fetch pages one at a time, in order. Best for:
-      - Single endpoint collection
-      - APIs that require strict ordering
-      - Low resource usage
-    
-    - **"concurrent"**: Fetch multiple shards in parallel. Best for:
-      - Multiple endpoints/shards (must provide `request.shards`)
-      - Independent data sources that can be fetched simultaneously
-      - Higher throughput requirements
-    
-    - **"batch"**: Collect events and flush in batches. Best for:
-      - Downstream systems that prefer batch processing
-      - Memory-efficient processing of large datasets
-    
-    - **"stream"**: Process events as they arrive. Best for:
-      - Real-time event processing
-      - Large datasets where immediate processing is needed
-    
-    **Validation Rules:**
-    
-    - `name`: Must be a valid identifier (alphanumeric + underscores). Used for state storage.
-    - `base_url`: Must be a valid HTTP(S) URL. Trailing slashes are automatically removed.
-    - `request.endpoint`: Must start with "/"
-    - `default_strategy`: Must be one of: "sequential", "concurrent", "batch", "stream"
-    - `concurrency`: Must be >= 1 (only used with "concurrent" strategy)
-    - `default_limit`: If set, must be > 0
-    
-    **Common Mistakes:**
-    
-    1. Forgetting to set `data_path` when events are nested (e.g., `{"data": {"events": [...]}}`)
-    2. Setting `pagination.mode="cursor"` but forgetting `next_cursor_path`
-    3. Using `default_strategy="concurrent"` without providing `shards` in request
-    4. Setting `timeout.execution` to None when you need timeout awareness
-    5. Using OAuth2 without providing `context_store` to auth handler (tokens won't persist)
-    
-    Args:
-        name: Unique identifier for this collector. Used for state storage in integration context.
-            Must be alphanumeric with underscores. Example: "MyCollector" or "EventCollector_v2"
-        base_url: Base URL of the API. Must include protocol (http:// or https://).
-            Trailing slashes are automatically removed.
-        request: Primary request configuration. Defines endpoint, pagination, and request parameters.
-        auth_handler: Authentication handler. None for unauthenticated APIs.
-            Use APIKeyAuthHandler, BearerTokenAuthHandler, BasicAuthHandler, or OAuth2ClientCredentialsHandler.
-        retry_policy: Retry configuration for handling transient failures.
-            Default: 5 attempts with exponential backoff.
-        rate_limit: Rate limiting configuration. Set rate_per_second > 0 to enable.
-            Default: disabled (rate_per_second=0.0)
-        circuit_breaker: Circuit breaker configuration for preventing cascading failures.
-            Opens after failure_threshold consecutive failures.
-        timeout: Timeout settings for HTTP requests and execution deadline.
-            Set execution to enable timeout awareness and state preservation.
-        default_strategy: Default collection strategy when not specified in collect_events().
-            Must be: "sequential", "concurrent", "batch", or "stream"
-        default_limit: Default maximum number of events to collect per run.
-            None = unlimited. Can be overridden in collect_events(limit=...)
-        concurrency: Maximum concurrent requests when using "concurrent" strategy.
-            Default: 4. Only used with concurrent strategy and shards.
-        diagnostic_mode: Enable verbose debug logging. Useful for troubleshooting.
-            Default: False
-        verify: Whether to verify SSL certificates (default: True).
-            Set False to allow self-signed certificates. Matches BaseClient behavior.
-        proxy: Whether to use system proxy (default: False).
-            Set True to use HTTP_PROXY/HTTPS_PROXY environment variables.
-            Matches BaseClient behavior.
-    """
+class CollectorBlueprint(BaseModel):
+    """Blueprint defining a collector's complete configuration."""
+    model_config = ConfigDict(arbitrary_types_allowed=True, extra='forbid')
+
     name: str
     base_url: str
     request: CollectorRequest
     auth_handler: Optional["AuthHandler"] = None
-    retry_policy: RetryPolicy = field(default_factory=RetryPolicy)
-    rate_limit: RateLimitPolicy = field(default_factory=RateLimitPolicy)
-    circuit_breaker: CircuitBreakerPolicy = field(default_factory=CircuitBreakerPolicy)
-    timeout: TimeoutSettings = field(default_factory=TimeoutSettings)
+    retry_policy: RetryPolicy = Field(default_factory=RetryPolicy)
+    rate_limit: RateLimitPolicy = Field(default_factory=RateLimitPolicy)
+    circuit_breaker: CircuitBreakerPolicy = Field(default_factory=CircuitBreakerPolicy)
+    timeout: TimeoutSettings = Field(default_factory=TimeoutSettings)
     default_strategy: StrategyName = "sequential"
-    default_limit: Optional[int] = None
-    concurrency: int = 4
+    default_limit: Optional[int] = Field(None, gt=0)
+    concurrency: int = Field(4, ge=1)
     diagnostic_mode: bool = False
     verify: bool = True
     proxy: bool = False
+
+    @field_validator('base_url')
+    @classmethod
+    def validate_base_url(cls, v: str) -> str:
+        if not v.startswith("http://") and not v.startswith("https://"):
+            raise ValueError(f"base_url must start with http:// or https://, got: {v}")
+        return v
 
 
 class ExecutionDeadline:
@@ -1011,7 +635,19 @@ class ExecutionDeadline:
         return remaining
 
     def should_abort(self) -> bool:
-        if self.settings.execution is not None and self.settings.execution <= self.settings.safety_buffer:
+        """Check if execution should abort due to approaching deadline.
+        
+        Returns False if:
+        - No execution timeout is set
+        - Execution timeout is too short to be meaningful (≤ safety_buffer)
+        
+        Returns True if:
+        - Remaining time < safety_buffer
+        """
+        if self.settings.execution is None:
+            return False
+        # If execution timeout is too short, don't abort (invalid config)
+        if self.settings.execution <= self.settings.safety_buffer:
             return False
         remaining = self.seconds_remaining()
         if remaining is None:
@@ -1033,18 +669,20 @@ class AuthHandler:
     """
     name: str = "auth"
 
-    async def on_request(self, request: httpx.Request) -> None:
+    async def on_request(self, client: "CollectorClient", request: httpx.Request) -> None:
         """Modify the request to add authentication credentials.
         
         Args:
+            client: The CollectorClient instance.
             request: The HTTP request to modify in-place.
         """
         raise NotImplementedError("Subclasses must implement on_request()")
 
-    async def on_auth_failure(self, response: httpx.Response) -> bool:
+    async def on_auth_failure(self, client: "CollectorClient", response: httpx.Response) -> bool:
         """Handle authentication failure response.
         
         Args:
+            client: The CollectorClient instance.
             response: The HTTP response indicating auth failure (typically 401/403).
             
         Returns:
@@ -1106,7 +744,7 @@ class APIKeyAuthHandler(AuthHandler):
         self.query_param = query_param
         self.name = "api_key"
 
-    async def on_request(self, request: httpx.Request) -> None:
+    async def on_request(self, client: "CollectorClient", request: httpx.Request) -> None:
         if self.header_name:
             request.headers[self.header_name] = self.key
         if self.query_param:
@@ -1134,7 +772,7 @@ class BearerTokenAuthHandler(AuthHandler):
         self.token = token
         self.name = "bearer"
 
-    async def on_request(self, request: httpx.Request) -> None:
+    async def on_request(self, client: "CollectorClient", request: httpx.Request) -> None:
         request.headers["Authorization"] = f"Bearer {self.token}"
 
 
@@ -1159,11 +797,11 @@ class BasicAuthHandler(AuthHandler):
         password: HTTP Basic Auth password
     """
     def __init__(self, username: str, password: str):
-        credentials = f"{username}:{password}".encode("utf-8")
-        self._encoded = base64.b64encode(credentials).decode("utf-8")
+        credentials = f"{username}:{password}"
+        self._encoded = b64_encode(credentials)
         self.name = "basic"
 
-    async def on_request(self, request: httpx.Request) -> None:
+    async def on_request(self, client: "CollectorClient", request: httpx.Request) -> None:
         request.headers["Authorization"] = f"Basic {self._encoded}"
 
 
@@ -1251,8 +889,6 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
         client_secret: str,
         scope: Optional[str] = None,
         audience: Optional[str] = None,
-        verify: bool = True,
-        proxy: Optional[str] = None,
         refresh_buffer: int = 60,
         context_store: Optional[IntegrationContextStore] = None,
     ):
@@ -1261,8 +897,6 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
         self.client_secret = client_secret
         self.scope = scope
         self.audience = audience
-        self.verify = verify
-        self.proxy = proxy
         self.refresh_buffer = refresh_buffer
         self._context_store = context_store
         self._lock = anyio.Lock()
@@ -1296,29 +930,29 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
         current.update(payload)
         self._context_store.write(current)
 
-    async def on_request(self, request: httpx.Request) -> None:
-        await self._ensure_token()
+    async def on_request(self, client: "CollectorClient", request: httpx.Request) -> None:
+        await self._ensure_token(client)
         if not self._token:
             raise CollectorAuthenticationError("OAuth token is not available")
         request.headers["Authorization"] = f"Bearer {self._token}"
 
-    async def on_auth_failure(self, response: httpx.Response) -> bool:
+    async def on_auth_failure(self, client: "CollectorClient", response: httpx.Response) -> bool:
         if response.status_code == 401:
             async with self._lock:
                 self._token = None
                 self._expires_at = None
-                await self._fetch_token()
+                await self._fetch_token(client)
             return True
         return False
 
-    async def _ensure_token(self) -> None:
+    async def _ensure_token(self, client: "CollectorClient") -> None:
         async with self._lock:
             if self._token and self._expires_at:
                 if _now() < (self._expires_at - self.refresh_buffer):
                     return
-            await self._fetch_token()
+            await self._fetch_token(client)
 
-    async def _fetch_token(self) -> None:
+    async def _fetch_token(self, client: "CollectorClient") -> None:
         data = {"grant_type": "client_credentials"}
         if self.scope:
             data["scope"] = self.scope
@@ -1326,17 +960,27 @@ class OAuth2ClientCredentialsHandler(AuthHandler):
             data["audience"] = self.audience
         auth = (self.client_id, self.client_secret)
         timeout = httpx.Timeout(15.0)
-        async with httpx.AsyncClient(verify=self.verify, proxies=self.proxy, timeout=timeout) as client:
-            response = await client.post(self.token_url, data=data, auth=auth)
-            try:
-                response.raise_for_status()
-            except httpx.HTTPStatusError as exc:
-                raise CollectorAuthenticationError(f"OAuth token request failed: {exc.response.text}") from exc
+        
+        try:
+            response = await client._client.post(self.token_url, data=data, auth=auth, timeout=timeout)
+            response.raise_for_status()
+        except httpx.HTTPStatusError as exc:
+            raise CollectorAuthenticationError(f"OAuth token request failed: {exc.response.text}") from exc
+        except httpx.RequestError as exc:
+            raise CollectorAuthenticationError(f"OAuth token request failed: {exc}") from exc
+        
+        try:
             payload = response.json()
-            self._token = payload.get("access_token")
-            expires_in = payload.get("expires_in", 0)
-            self._expires_at = _now() + float(expires_in)
-            self._persist()
+        except Exception as exc:
+            raise CollectorAuthenticationError(f"Invalid OAuth token response: {response.text}") from exc
+        
+        self._token = payload.get("access_token")
+        if not self._token:
+            raise CollectorAuthenticationError("OAuth response missing access_token")
+        
+        expires_in = payload.get("expires_in", 3600)  # Default to 1 hour if not provided
+        self._expires_at = _now() + float(expires_in)
+        self._persist()
 
 
 @dataclass
@@ -1417,10 +1061,16 @@ class CollectorLogger:
         Returns:
             RequestTrace object for updating with response
         """
+        # Sanitize sensitive headers for security
+        safe_headers = headers.copy()
+        for sensitive_key in ['Authorization', 'X-API-Key', 'X-Auth-Token', 'API-Key']:
+            if sensitive_key in safe_headers:
+                safe_headers[sensitive_key] = '***REDACTED***'
+        
         trace = RequestTrace(
             method=method,
             url=url,
-            headers=headers.copy(),
+            headers=safe_headers,
             params=params.copy(),
             body=body,
             timestamp=_now(),
@@ -1428,6 +1078,9 @@ class CollectorLogger:
         )
         if self.diagnostic_mode:
             self._traces.append(trace)
+            # Limit trace history to prevent memory issues
+            if len(self._traces) > 1000:
+                self._traces.pop(0)
         return trace
 
     def trace_response(
@@ -1512,7 +1165,7 @@ class CollectorLogger:
         recommendations: List[str] = []
         
         if self._errors:
-            error_types = {}
+            error_types: Dict[str, int] = {}
             for err in self._errors:
                 err_type = err.get("context", {}).get("error_type", "unknown")
                 error_types[err_type] = error_types.get(err_type, 0) + 1
@@ -1548,7 +1201,11 @@ class CollectorLogger:
     def _format(self, level: str, message: str, extra: Optional[Dict[str, Any]]) -> str:
         if not extra:
             return f"[CollectorClient:{self.collector_name}:{level}] {message}"
-        return f"[CollectorClient:{self.collector_name}:{level}] {message} | extra={json.dumps(sanitize(extra))}"
+        try:
+            extra_str = json.dumps(extra)
+        except (TypeError, ValueError):
+            extra_str = str(extra)
+        return f"[CollectorClient:{self.collector_name}:{level}] {message} | extra={extra_str}"
 
 
 class PaginationEngine:
@@ -1590,12 +1247,20 @@ class PaginationEngine:
         if self.config.mode == "none":
             return False
         if self.config.mode == "cursor":
-            cursor_value = _resolve_path(response_payload, self.config.next_cursor_path)
+            cursor_value = (
+                _get_value_by_path(response_payload, self.config.next_cursor_path)
+                if self.config.next_cursor_path
+                else None
+            )
             self.state.cursor = cursor_value
             self.state.metadata["has_more"] = bool(cursor_value)
             return bool(cursor_value)
         if self.config.mode == "page":
-            has_more = _resolve_path(response_payload, self.config.has_more_path)
+            has_more = (
+                _get_value_by_path(response_payload, self.config.has_more_path)
+                if self.config.has_more_path
+                else None
+            )
             if has_more is None and self.config.page_size and self.config.stop_when_empty:
                 has_more = items_returned >= self.config.page_size
             if has_more:
@@ -1611,7 +1276,11 @@ class PaginationEngine:
             self.state.metadata["has_more"] = False
             return False
         if self.config.mode == "link":
-            link = _resolve_path(response_payload, self.config.link_path)
+            link = (
+                _get_value_by_path(response_payload, self.config.link_path)
+                if self.config.link_path
+                else None
+            )
             self.state.metadata["next_link"] = link
             return bool(link)
         return False
@@ -1915,7 +1584,10 @@ class CollectorClient:
         await self._client.aclose()
 
     def close(self) -> None:
-        anyio.run(self.aclose)
+        try:
+            anyio.run(self.aclose)
+        except Exception as e:
+            self.logger.error(f"Error closing client: {e}")
 
     async def _request(self, request: CollectorRequest) -> httpx.Response:
         if not self.circuit_breaker.can_execute():
@@ -1930,7 +1602,7 @@ class CollectorClient:
             headers["User-Agent"] = DEFAULT_USER_AGENT
 
         attempt = 0
-        last_error: Optional[Exception] = None
+        last_error: Exception = Exception("Unknown error")  # Initialize to avoid type error
         trace: Optional[RequestTrace] = None
         
         while attempt < self.retry_policy.max_attempts:
@@ -1946,7 +1618,7 @@ class CollectorClient:
                 )
 
                 if self.auth_handler:
-                    await self.auth_handler.on_request(http_request)
+                    await self.auth_handler.on_request(self, http_request)
 
                 # Trace request if in diagnostic mode
                 if self.blueprint.diagnostic_mode:
@@ -1978,7 +1650,7 @@ class CollectorClient:
                     )
                 
                 if response.status_code == 401 and self.auth_handler:
-                    should_retry = await self.auth_handler.on_auth_failure(response)
+                    should_retry = await self.auth_handler.on_auth_failure(self, response)
                     if should_retry:
                         continue
                 if response.status_code in self.retry_policy.retryable_status_codes:
@@ -1991,7 +1663,10 @@ class CollectorClient:
                     {"status": response.status_code, "elapsed": elapsed_ms, "endpoint": request.endpoint},
                 )
                 return response
-            except tuple(self.retry_policy.retryable_exceptions) as exc:
+            except CollectorError:
+                # Re-raise CollectorError (including subclasses) without wrapping
+                raise
+            except tuple(self.retry_policy.retryable_exceptions) as exc:  # pylint: disable=catching-non-exception
                 last_error = exc
                 elapsed_ms = (_now() - start) * 1000
                 if self.blueprint.diagnostic_mode and trace:
@@ -2025,25 +1700,43 @@ class CollectorClient:
                     )
                     self.logger.trace_error(trace, f"HTTP {exc.response.status_code}: {exc.response.text[:200]}")
                 
+                # Map HTTP status codes to specific exception types
                 if exc.response.status_code == 429:
                     self.metrics.quota_error += 1
                     self.logger.error("Rate limit error", {"status": 429, "error_type": "rate_limit"})
+                    should_retry = exc.response.status_code in self.retry_policy.retryable_status_codes
+                    if should_retry and attempt < self.retry_policy.max_attempts:
+                        retry_after = _parse_retry_after(exc.response)
+                        delay = self.retry_policy.next_delay(attempt, retry_after)
+                        self.metrics.retry_error += 1
+                        await anyio.sleep(delay)
+                        continue
+                    self.circuit_breaker.record_failure()
+                    raise CollectorRateLimitError(f"Rate limit exceeded: {exc.response.text}") from exc
                 elif exc.response.status_code in (401, 403):
                     self.metrics.auth_error += 1
                     self.logger.error("Authentication error", {"status": exc.response.status_code, "error_type": "auth"})
+                    should_retry = exc.response.status_code in self.retry_policy.retryable_status_codes
+                    if should_retry and attempt < self.retry_policy.max_attempts:
+                        retry_after = _parse_retry_after(exc.response)
+                        delay = self.retry_policy.next_delay(attempt, retry_after)
+                        self.metrics.retry_error += 1
+                        await anyio.sleep(delay)
+                        continue
+                    self.circuit_breaker.record_failure()
+                    raise CollectorAuthenticationError(f"Authentication failed: {exc.response.text}") from exc
                 else:
                     self.metrics.service_error += 1
                     self.logger.error("Service error", {"status": exc.response.status_code, "error_type": "service"})
-                
-                should_retry = exc.response.status_code in self.retry_policy.retryable_status_codes
-                if should_retry and attempt < self.retry_policy.max_attempts:
-                    retry_after = _parse_retry_after(exc.response)
-                    delay = self.retry_policy.next_delay(attempt, retry_after)
-                    self.metrics.retry_error += 1
-                    await anyio.sleep(delay)
-                    continue
-                self.circuit_breaker.record_failure()
-                raise CollectorError(f"Request failed: {exc.response.text}") from exc
+                    should_retry = exc.response.status_code in self.retry_policy.retryable_status_codes
+                    if should_retry and attempt < self.retry_policy.max_attempts:
+                        retry_after = _parse_retry_after(exc.response)
+                        delay = self.retry_policy.next_delay(attempt, retry_after)
+                        self.metrics.retry_error += 1
+                        await anyio.sleep(delay)
+                        continue
+                    self.circuit_breaker.record_failure()
+                    raise CollectorError(f"Request failed: {exc.response.text}") from exc
             except Exception as exc:
                 elapsed_ms = (_now() - start) * 1000
                 if self.blueprint.diagnostic_mode and trace:
@@ -2054,7 +1747,7 @@ class CollectorClient:
                 self.logger.error("Non-retryable exception occurred", {"error": str(exc), "error_type": type(exc).__name__})
                 raise
         self.circuit_breaker.record_failure()
-        raise CollectorRetryError(f"Exceeded retry attempts: {last_error}")  # type: ignore[name-defined]
+        raise CollectorRetryError(f"Exceeded retry attempts: {last_error}")
 
     def request_sync(self, request: CollectorRequest) -> httpx.Response:
         return anyio.run(self._request, request)
@@ -2209,6 +1902,22 @@ class CollectorClient:
             exhausted=exhausted,
             metrics=self.metrics,
         )
+
+    def get(self, endpoint: str, params: Optional[Dict[str, Any]] = None, **kwargs) -> httpx.Response:
+        """Make a GET request."""
+        return self.request_sync(CollectorRequest(endpoint=endpoint, params=params, **kwargs))
+
+    def post(self, endpoint: str, json_body: Optional[Any] = None, **kwargs) -> httpx.Response:
+        """Make a POST request."""
+        return self.request_sync(CollectorRequest(endpoint=endpoint, method="POST", json_body=json_body, **kwargs))
+
+    def put(self, endpoint: str, json_body: Optional[Any] = None, **kwargs) -> httpx.Response:
+        """Make a PUT request."""
+        return self.request_sync(CollectorRequest(endpoint=endpoint, method="PUT", json_body=json_body, **kwargs))
+
+    def delete(self, endpoint: str, **kwargs) -> httpx.Response:
+        """Make a DELETE request."""
+        return self.request_sync(CollectorRequest(endpoint=endpoint, method="DELETE", **kwargs))
 
     def collect_events_sync(
         self,
@@ -2493,22 +2202,25 @@ class CollectorClient:
     def validate_configuration(self) -> List[str]:
         """Validate the current configuration and return any errors.
         
-        This is a convenience method that calls validate_blueprint().
+        This method triggers Pydantic validation.
         
         **Usage:**
         
         ```python
-        errors = client.validate_configuration()
-        if errors:
-            for error in errors:
-                print(f"Configuration error: {error}")
+        try:
+            client.validate_configuration()
+        except Exception as e:
+            print(f"Configuration error: {e}")
         ```
         
         Returns:
             List of error messages (empty if configuration is valid)
         """
-        from CollectorClient import validate_blueprint  # type: ignore[attr-defined]
-        return validate_blueprint(self.blueprint)
+        try:
+            CollectorBlueprint.model_validate(self.blueprint.model_dump())
+            return []
+        except Exception as e:
+            return [str(e)]
 
     def health_check(self) -> Dict[str, Any]:
         """Perform a health check of the collector configuration and state.
@@ -2568,11 +2280,11 @@ class CollectorClient:
         if isinstance(strategy, CollectionStrategy):
             return strategy
         name: StrategyName = strategy or self.blueprint.default_strategy  # type: ignore[assignment]
-        strategy_cls = STRATEGY_MAP.get(name)  # type: ignore[arg-type]
+        if name == "concurrent":
+            return ConcurrentCollectionStrategy(self.blueprint.concurrency)
+        strategy_cls = STRATEGY_MAP.get(name)
         if not strategy_cls:
             raise CollectorConfigurationError(f"Unknown collection strategy: {name}")
-        if strategy_cls is ConcurrentCollectionStrategy:
-            return strategy_cls(self.blueprint.concurrency)
         return strategy_cls()
 
     def _normalize_requests(
@@ -2585,23 +2297,22 @@ class CollectorClient:
         return list(request)
 
     def _expand_shards(self, request: CollectorRequest) -> List[CollectorRequest]:
+        """Expand a request with shards into multiple independent requests.
+
+        If the request has no shards, returns the request as-is.
+        If the request has shards, returns the base request AND the shard requests.
+
+        Args:
+            request: The request to expand
+
+        Returns:
+            List of requests (including the base request and shard requests)
+        """
         if not request.shards:
             return [request]
-        clones: List[CollectorRequest] = [
-            CollectorRequest(
-                endpoint=request.endpoint,
-                method=request.method,
-                params=_ensure_dict(request.params),
-                json_body=request.json_body,
-                headers=_ensure_dict(request.headers),
-                data_path=request.data_path,
-                pagination=request.pagination,
-                stream=request.stream,
-                timeout=request.timeout,
-                state_key=request.state_key or request.endpoint,
-                shards=None,
-            )
-        ]
+
+        # Include the base request and all shard requests
+        clones: List[CollectorRequest] = [request]
         for idx, shard in enumerate(request.shards):
             params = _ensure_dict(request.params)
             params.update(shard.get("params", {}))
@@ -2632,11 +2343,18 @@ class CollectorClient:
         return {"default": resume_state}
 
     def _aggregate_state(self, executors: List[CollectorExecutor]) -> CollectorState:
+        """Aggregate state from multiple executors.
+        
+        For multi-shard collection, stores each shard's state separately in metadata.
+        The top-level cursor and last_event_id are taken from the first executor
+        (mainly for backward compatibility with single-request scenarios).
+        """
         metadata: Dict[str, Any] = {"requests": {}}
         cursor = None
         last_event = None
         for executor in executors:
             metadata["requests"][executor.state_key] = executor.pagination.state.to_dict()
+            # Take first non-None values (mainly for single-request backward compatibility)
             cursor = cursor or executor.pagination.state.cursor
             last_event = last_event or executor.pagination.state.last_event_id
         return CollectorState(cursor=cursor, last_event_id=last_event, metadata=metadata)
@@ -2662,8 +2380,9 @@ def _parse_retry_after(response: Optional[httpx.Response]) -> Optional[float]:
         return float(retry_after)
     except ValueError:
         try:
-            parsed = datetime.strptime(retry_after, "%a, %d %b %Y %H:%M:%S GMT")
-            return max(0.0, (parsed - datetime.utcnow()).total_seconds())
+            from datetime import timezone
+            parsed = datetime.strptime(retry_after, "%a, %d %b %Y %H:%M:%S GMT").replace(tzinfo=timezone.utc)
+            return max(0.0, (parsed - datetime.now(timezone.utc)).total_seconds())
         except ValueError:
             return None
 
@@ -2941,287 +2660,6 @@ class CollectorBlueprintBuilder:
         )
 
 
-def validate_blueprint(blueprint: CollectorBlueprint) -> List[str]:
-    """Validate a CollectorBlueprint and return a list of errors (empty if valid).
-    
-    This helps catch configuration mistakes early with helpful error messages.
-    
-    **Usage:**
-    
-    ```python
-    errors = validate_blueprint(blueprint)
-    if errors:
-        return_error(f"Configuration errors: {', '.join(errors)}")
-    ```
-    
-    **Checks:**
-    
-    - Required fields are present
-    - Pagination configuration matches mode
-    - Endpoint starts with "/"
-    - Base URL is valid
-    - Strategy is valid
-    - Timeout settings are reasonable
-    
-    Args:
-        blueprint: The blueprint to validate
-        
-    Returns:
-        List of error messages (empty if valid)
-    """
-    errors: List[str] = []
-    
-    # Check required fields
-    if not blueprint.name:
-        errors.append("blueprint.name is required")
-    if not blueprint.base_url:
-        errors.append("blueprint.base_url is required")
-    if not blueprint.request:
-        errors.append("blueprint.request is required")
-    
-    # Check base URL format
-    if blueprint.base_url and not (blueprint.base_url.startswith("http://") or blueprint.base_url.startswith("https://")):
-        errors.append(f"base_url must start with http:// or https://, got: {blueprint.base_url}")
-    
-    # Check endpoint format
-    if blueprint.request and not blueprint.request.endpoint.startswith("/"):
-        errors.append(f"request.endpoint must start with '/', got: {blueprint.request.endpoint}")
-    
-    # Check pagination configuration
-    if blueprint.request and blueprint.request.pagination:
-        pag = blueprint.request.pagination
-        if pag.mode == "cursor" and not pag.next_cursor_path:
-            errors.append("PaginationConfig: mode='cursor' requires next_cursor_path")
-        if pag.mode == "offset" and not pag.page_size:
-            errors.append("PaginationConfig: mode='offset' requires page_size")
-        if pag.mode == "link" and not pag.link_path:
-            errors.append("PaginationConfig: mode='link' requires link_path")
-    
-    # Check strategy
-    valid_strategies = ("sequential", "concurrent", "batch", "stream")
-    if blueprint.default_strategy not in valid_strategies:
-        errors.append(f"default_strategy must be one of {valid_strategies}, got: {blueprint.default_strategy}")
-    
-    # Check concurrency
-    if blueprint.concurrency < 1:
-        errors.append(f"concurrency must be >= 1, got: {blueprint.concurrency}")
-    
-    # Check timeout
-    if blueprint.timeout.execution is not None and blueprint.timeout.execution <= blueprint.timeout.safety_buffer:
-        errors.append(
-            f"timeout.execution ({blueprint.timeout.execution}) must be > safety_buffer ({blueprint.timeout.safety_buffer})"
-        )
-    
-    return errors
-
-
-def create_simple_collector(
-    name: str,
-    base_url: str,
-    endpoint: str,
-    auth_handler: AuthHandler,
-    data_path: Optional[str] = None,
-    pagination: Optional[PaginationConfig] = None,
-) -> CollectorClient:
-    """Create a CollectorClient with minimal configuration (sensible defaults).
-    
-    This is the fastest way to get started with CollectorClient. Perfect for simple
-    APIs that don't need custom retry/rate limiting configuration.
-    
-    **Usage:**
-    
-    ```python
-    client = create_simple_collector(
-        name="MyCollector",
-        base_url="https://api.example.com",
-        endpoint="/v1/events",
-        auth_handler=APIKeyAuthHandler("secret", header_name="X-API-Key"),
-        data_path="data.events",
-        pagination=PaginationConfig(mode="cursor", next_cursor_path="meta.next_cursor"),
-    )
-    result = client.collect_events_sync(limit=1000)
-    ```
-    
-    **Defaults Applied:**
-    
-    - RetryPolicy: 5 attempts, exponential backoff
-    - RateLimitPolicy: Disabled
-    - TimeoutSettings: Standard timeouts, no execution limit
-    - Strategy: Sequential
-    - SSL verification: Enabled
-    - Proxy: Disabled
-    
-    Args:
-        name: Collector name
-        base_url: Base API URL
-        endpoint: API endpoint path
-        auth_handler: Authentication handler
-        data_path: Path to event array in response
-        pagination: Optional pagination configuration
-        
-    Returns:
-        Configured CollectorClient instance
-    """
-    request = CollectorRequest(
-        endpoint=endpoint,
-        data_path=data_path,
-        pagination=pagination,
-    )
-    blueprint = CollectorBlueprint(
-        name=name,
-        base_url=base_url,
-        request=request,
-        auth_handler=auth_handler,
-    )
-    return CollectorClient(blueprint)
-
-
-def discover_pagination_mode(sample_response: Dict[str, Any]) -> Optional[PaginationConfig]:
-    """Auto-discover pagination configuration from a sample API response.
-    
-    This helper analyzes a sample response and suggests a PaginationConfig.
-    Useful for developers who aren't sure what pagination mode to use.
-    
-    **Usage:**
-    
-    ```python
-    # Make a test request to get sample response
-    sample = requests.get("https://api.example.com/v1/events").json()
-    
-    # Auto-discover pagination
-    pagination = discover_pagination_mode(sample)
-    if pagination:
-        print(f"Suggested pagination: {pagination.mode}")
-        print(f"Next cursor path: {pagination.next_cursor_path}")
-    ```
-    
-    **Detection Logic:**
-    
-    - Cursor: Looks for "cursor", "next_cursor", "pagination.cursor", etc.
-    - Page: Looks for "page", "current_page", "pagination.page", etc.
-    - Offset: Looks for "offset", "skip", "pagination.offset", etc.
-    - Link: Looks for "links.next", "next_url", "pagination.next", etc.
-    
-    Args:
-        sample_response: Sample JSON response from the API
-        
-    Returns:
-        Suggested PaginationConfig, or None if pagination not detected
-    """
-    if not isinstance(sample_response, dict):
-        return None
-    
-    # Check for cursor-based pagination
-    cursor_paths = [
-        "next_cursor",
-        "cursor",
-        "pagination.next_cursor",
-        "meta.next_cursor",
-        "pagination.cursor",
-        "page_info.next_cursor",
-    ]
-    for path in cursor_paths:
-        if _resolve_path(sample_response, path):
-            return PaginationConfig(mode="cursor", next_cursor_path=path, cursor_param="cursor")
-    
-    # Check for page-based pagination
-    page_paths = [
-        "page",
-        "current_page",
-        "pagination.page",
-        "meta.page",
-    ]
-    has_more_paths = [
-        "has_more",
-        "pagination.has_more",
-        "meta.has_more",
-        "next_page",
-    ]
-    for path in page_paths:
-        if _resolve_path(sample_response, path) is not None:
-            has_more = next((p for p in has_more_paths if _resolve_path(sample_response, p) is not None), None)
-            return PaginationConfig(
-                mode="page",
-                page_param="page",
-                start_page=1,
-                has_more_path=has_more,
-            )
-    
-    # Check for offset-based pagination
-    offset_paths = [
-        "offset",
-        "skip",
-        "pagination.offset",
-    ]
-    for path in offset_paths:
-        if _resolve_path(sample_response, path) is not None:
-            return PaginationConfig(
-                mode="offset",
-                offset_param="offset",
-                page_size_param="limit",
-            )
-    
-    # Check for link-based pagination
-    link_paths = [
-        "links.next",
-        "next_url",
-        "pagination.next",
-        "meta.next",
-        "next",
-    ]
-    for path in link_paths:
-        if _resolve_path(sample_response, path):
-            return PaginationConfig(mode="link", link_path=path)
-    
-    return None
-
-
-def discover_data_path(sample_response: Dict[str, Any]) -> Optional[str]:
-    """Auto-discover the data_path from a sample API response.
-    
-    Looks for common patterns like "data", "items", "results", "events", etc.
-    
-    **Usage:**
-    
-    ```python
-    sample = requests.get("https://api.example.com/v1/events").json()
-    data_path = discover_data_path(sample)
-    if data_path:
-        print(f"Suggested data_path: {data_path}")
-    ```
-    
-    Args:
-        sample_response: Sample JSON response from the API
-        
-    Returns:
-        Suggested data_path, or None if not detected
-    """
-    if not isinstance(sample_response, dict):
-        return None
-    
-    # Common patterns for event arrays
-    common_paths = [
-        "data",
-        "items",
-        "results",
-        "events",
-        "records",
-        "entries",
-        "data.items",
-        "data.events",
-        "data.results",
-        "response.data",
-        "response.items",
-    ]
-    
-    for path in common_paths:
-        value = _resolve_path(sample_response, path)
-        if isinstance(value, list) and len(value) > 0:
-            return path
-    
-    return None
-
-
 # Public exports to match API Module expectations
 __all__ = [
     "CollectorClient",
@@ -3244,10 +2682,6 @@ __all__ = [
     "CollectorTimeoutError",
     # Helper functions
     "CollectorBlueprintBuilder",
-    "validate_blueprint",
-    "create_simple_collector",
-    "discover_pagination_mode",
-    "discover_data_path",
     # Diagnostic classes
     "RequestTrace",
     "DiagnosticReport",

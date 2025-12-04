@@ -4,6 +4,22 @@ CollectorClient is the canonical API module for XSOAR/XSIAM event collectors. It
 
 ---
 
+## 📋 Table of Contents
+
+- [When Should I Use CollectorClient?](#when-should-i-use-collectorclient)
+- [Quick Start Checklist](#quick-start-checklist)
+- [Implementation Templates](#implementation-templates)
+  - [Standard Implementation](#standard-implementation)
+  - [Builder Pattern (Recommended)](#builder-pattern-recommended)
+- [Authentication Recipes](#authentication-recipes)
+- [Pagination Patterns](#pagination-patterns)
+- [Collection Strategies](#collection-strategies)
+- [Resilience & Performance](#resilience--performance)
+- [Troubleshooting & Diagnostics](#troubleshooting--diagnostics)
+- [Testing](#testing)
+
+---
+
 ## When Should I Use CollectorClient?
 
 - You are polling a remote API for events/logs/assets.
@@ -13,37 +29,42 @@ CollectorClient is the canonical API module for XSOAR/XSIAM event collectors. It
 
 ---
 
-## 10-Step Implementation Checklist (Copy & Paste Friendly)
+## Quick Start Checklist
 
 | # | Step | Notes / Snippet |
 |---|------|-----------------|
-|1|Import CollectorClient module.|`from CollectorClient import *`|
+|1|Import CollectorClient module.|`from CollectorClientApiModule import *`|
 |2|Read integration params.|`params = demisto.params()`|
 |3|Pick an `AuthHandler`.|See [Authentication Recipes](#authentication-recipes).|
 |4|Describe pagination via `PaginationConfig`.|Cursor/Page/Offset/Link examples below.|
-|5|Create a `CollectorRequest` (endpoint, params, `data_path`, pagination).|Set `state_key` if you have multiple feeds.|
-|6|Configure `RetryPolicy`, `RateLimitPolicy`, and `TimeoutSettings`.|Start with defaults; adjust as needed.|
-|7|Build a `CollectorBlueprint` bundling everything.|`CollectorBlueprint(name="MyCollector", base_url=params["url"], ...)`|
-|8|Instantiate `CollectorClient(blueprint)`.|Reuse across commands if possible.|
-|9|Call `collect_events_sync(limit=?, strategy=?, resume_state=?)`.|`collect_events` (async) is also available.|
-|10|Persist `result.state` and return outputs/metrics.|`demisto.setIntegrationContext({"state": result.state.to_dict()})`|
+|5|Create a `CollectorRequest`.|Define endpoint, params, and data path.|
+|6|Configure Policies.|Retry, Rate Limit, and Timeouts.|
+|7|Build a `CollectorBlueprint`.|Bundle everything together.|
+|8|Instantiate `CollectorClient`.|`client = CollectorClient(blueprint)`|
+|9|Call `collect_events_sync`.|`result = client.collect_events_sync(limit=1000)`|
+|10|Persist State & Return Results.|Save `result.state` and return `CommandResults`.|
 
 ---
 
-## Boilerplate Template
+## Implementation Templates
+
+### Standard Implementation
+
+Use this for full control over every configuration option.
 
 ```python
-from CollectorClient import *
-
+from CollectorClientApiModule import *
 
 def build_client() -> CollectorClient:
     params = demisto.params()
 
+    # 1. Authentication
     auth = APIKeyAuthHandler(
         key=params["api_key"],
         header_name="X-API-Key",
     )
 
+    # 2. Pagination
     pagination = PaginationConfig(
         mode="cursor",
         cursor_param="cursor",
@@ -52,6 +73,7 @@ def build_client() -> CollectorClient:
         page_size=int(params.get("page_size", 200)),
     )
 
+    # 3. Request Definition
     request = CollectorRequest(
         endpoint="/v1/events",
         params={"limit": pagination.page_size},
@@ -60,6 +82,7 @@ def build_client() -> CollectorClient:
         state_key="events-default",
     )
 
+    # 4. Blueprint
     blueprint = CollectorBlueprint(
         name="MyCollector",
         base_url=params["url"],
@@ -68,19 +91,21 @@ def build_client() -> CollectorClient:
         retry_policy=RetryPolicy(max_attempts=5, initial_delay=1),
         rate_limit=RateLimitPolicy(rate_per_second=5, burst=10),
         timeout=TimeoutSettings(execution=demisto.commandExecutionTime()),
-        default_strategy="sequential",
     )
 
     return CollectorClient(blueprint)
 
-
 def fetch_events_command():
     client = build_client()
+    
+    # Resume from previous state if available
     context = demisto.getIntegrationContext() or {}
     resume_state = CollectorState.from_dict(context.get("state")) if context.get("state") else None
 
+    # Collect events
     result = client.collect_events_sync(limit=1000, resume_state=resume_state)
 
+    # Save state for next run
     demisto.setIntegrationContext({"state": result.state.to_dict()})
 
     return_results(CommandResults(
@@ -92,7 +117,38 @@ def fetch_events_command():
     ))
 ```
 
-This template is intentionally verbose so a GenAI assistant (or a human) can follow it step-by-step.
+### Builder Pattern (Recommended)
+
+Use `CollectorBlueprintBuilder` for a fluent, readable configuration.
+
+```python
+from CollectorClientApiModule import *
+
+def build_client() -> CollectorClient:
+    params = demisto.params()
+    
+    blueprint = (
+        CollectorBlueprintBuilder("MyCollector", params["url"])
+        .with_endpoint(
+            endpoint="/v1/events", 
+            data_path="data.events"
+        )
+        .with_cursor_pagination(
+            next_cursor_path="meta.next_cursor",
+            cursor_param="cursor"
+        )
+        .with_api_key_auth(
+            key=params["api_key"], 
+            header_name="X-API-Key"
+        )
+        .with_rate_limit(rate_per_second=10, burst=20)
+        .with_timeout(execution=demisto.commandExecutionTime())
+        .with_retry_policy(max_attempts=3)
+        .build()
+    )
+    
+    return CollectorClient(blueprint)
+```
 
 ---
 
@@ -100,12 +156,24 @@ This template is intentionally verbose so a GenAI assistant (or a human) can fol
 
 | Scenario | Handler | How to Configure |
 |----------|---------|------------------|
-|Header API key|`APIKeyAuthHandler`|`APIKeyAuthHandler(key=params["api_key"], header_name="X-Key")`|
-|Query param API key|`APIKeyAuthHandler`|`APIKeyAuthHandler(key=params["api_key"], query_param="apikey")`|
-|Bearer token|`BearerTokenAuthHandler`|`BearerTokenAuthHandler(token=params["token"])`|
-|Basic auth|`BasicAuthHandler`|`BasicAuthHandler(username=params["user"], password=params["password"])`|
-|OAuth2 client credentials|`OAuth2ClientCredentialsHandler`|Provide `token_url`, `client_id`, `client_secret`, optional `scope`/`audience`. Tokens auto-refresh and are stored in integration context.|
-|Custom flow|Subclass `AuthHandler`|Override `on_request()` to mutate headers/query params, `on_auth_failure()` to refresh credentials and return `True` to retry.|
+| **Header API Key** | `APIKeyAuthHandler` | `APIKeyAuthHandler(key="...", header_name="X-Key")` |
+| **Query Param Key** | `APIKeyAuthHandler` | `APIKeyAuthHandler(key="...", query_param="apikey")` |
+| **Bearer Token** | `BearerTokenAuthHandler` | `BearerTokenAuthHandler(token="...")` |
+| **Basic Auth** | `BasicAuthHandler` | `BasicAuthHandler(username="...", password="...")` |
+| **OAuth2** | `OAuth2ClientCredentialsHandler` | See example below. |
+
+### OAuth2 Example
+
+```python
+context_store = IntegrationContextStore("MyCollector")
+auth = OAuth2ClientCredentialsHandler(
+    token_url="https://api.example.com/oauth/token",
+    client_id=params["client_id"],
+    client_secret=params["client_secret"],
+    scope="read:events",
+    context_store=context_store,  # Persists token across runs
+)
+```
 
 ---
 
@@ -113,75 +181,79 @@ This template is intentionally verbose so a GenAI assistant (or a human) can fol
 
 | Mode | Minimal Config | API Expectations | State Behavior |
 |------|----------------|------------------|----------------|
-|Cursor|`PaginationConfig(mode="cursor", cursor_param="cursor", next_cursor_path="meta.next")`|Response returns `"meta.next"`.|`state.cursor` stores the next cursor.|
-|Page|`mode="page", page_param="page", start_page=1`|API expects page numbers.|`state.page` increments after each request.|
-|Offset|`mode="offset", offset_param="offset", page_size_param="limit"`|API expects offsets.|`state.offset` increments by `page_size`.|
-|Link|`mode="link", link_path="links.next"`|API returns a next URL.|`state.metadata["next_link"]` holds the URL.|
-
-All pagination metadata (including cursors, offsets, and `has_more` flags) is stored under `collector_client[collector_name][state_key]` in the integration context.
+| **Cursor** | `mode="cursor", cursor_param="cursor", next_cursor_path="meta.next"` | Response returns a cursor string. | `state.cursor` stores the next cursor. |
+| **Page** | `mode="page", page_param="page", start_page=1` | API expects page numbers. | `state.page` increments after each request. |
+| **Offset** | `mode="offset", offset_param="offset", page_size_param="limit"` | API expects skip/offset. | `state.offset` increments by `page_size`. |
+| **Link** | `mode="link", link_path="links.next"` | API returns a full URL. | `state.metadata["next_link"]` holds the URL. |
 
 ---
 
-## Collection Strategies At a Glance
+## Collection Strategies
 
-| Strategy | Description | How to Enable |
-|----------|-------------|---------------|
-|`sequential`|Default; fetches pages one at a time.|`blueprint.default_strategy = "sequential"` or pass `strategy="sequential"`.|
-|`concurrent`|Fans out per shard (e.g., per region/device).|Populate `request.shards = [{"params": {...}, "state_key": "..."}]` and call `collect_events_sync(strategy="concurrent")`. Concurrency equals `CollectorBlueprint.concurrency`.|
-|`batch`|Flushes batches (e.g., every 500 events) via `CollectorExecutor.flush_batch`. Use when downstream needs chunking.|`collect_events_sync(strategy=BatchCollectionStrategy(batch_size=500))`.|
-|`stream`|Emits results to `CollectorExecutor.stream_batch` immediately (e.g., push to SIEM sink).|`collect_events_sync(strategy=StreamCollectionStrategy())`.|
-
-All strategies enforce `TimeoutSettings`. If time is nearly exhausted, `CollectorTimeoutError` is raised, state is persisted, and partial results are returned.
+| Strategy | Description | Use Case |
+|----------|-------------|----------|
+| **Sequential** | Fetches pages one at a time. | Default. Simple, reliable, preserves order. |
+| **Concurrent** | Fans out requests. | High throughput. Requires sharding (e.g., by region). |
+| **Batch** | Flushes batches periodically. | When downstream needs chunked processing. |
+| **Stream** | Emits results immediately. | Real-time processing or low memory footprint. |
 
 ---
 
-## Rate Limiting, Retry, and Circuit Breaking
+## Resilience & Performance
 
+### Retry Policy
+Handles transient failures (429, 5xx, network errors) with exponential backoff.
 ```python
 RetryPolicy(
     max_attempts=5,
     initial_delay=1,
     multiplier=2,
-    retryable_status_codes=(408, 429, 500, 502, 503, 504),
+    retryable_status_codes=(408, 429, 500, 502, 503, 504)
 )
+```
 
+### Rate Limiting
+Token bucket algorithm to respect API limits.
+```python
 RateLimitPolicy(rate_per_second=5, burst=10)
+```
 
+### Circuit Breaker
+Prevents request storms when the upstream is unhealthy.
+```python
 CircuitBreakerPolicy(failure_threshold=5, recovery_timeout=60)
 ```
 
-- HTTP 429 increments `ExecutionMetrics.quota_error`, honors `Retry-After`, and counts as a retry.
-- Network failures (`httpx.ConnectError`, timeouts, etc.) follow exponential backoff with jitter.
-- The circuit breaker prevents request storms when the upstream is unhealthy.
-
 ---
 
-## Logging & Metrics
+## Troubleshooting & Diagnostics
 
-- `CollectorLogger.info()` writes to `demisto.info`, while `debug()` logs only when `CollectorBlueprint.diagnostic_mode=True`.
-- All sensitive fields are sanitized (headers/params containing *token*, *secret*, *key*).
-- `ExecutionMetrics` is automatically incremented: successes, auth/quota/service errors, retries, and timeouts. Pass `result.metrics.metrics` to `CommandResults`.
+CollectorClient includes built-in diagnostic tools to help debug issues.
 
----
+### Diagnostic Report
+Generate a comprehensive report of the last run, including request traces and errors.
 
-## Testing Guidance
+```python
+# 1. Enable diagnostic mode in blueprint
+blueprint.diagnostic_mode = True
 
-1. Use `pytest` + `respx` to mock HTTP responses.  
-2. Cover authentication, pagination, retries, and resume scenarios (see `CollectorClient_test.py`).  
-3. Run the module’s tests locally before submitting:
-
-```bash
-poetry run pytest Packs/ApiModules/Scripts/CollectorClient/CollectorClient_test.py
+# 2. Run collection
+try:
+    client.collect_events_sync()
+except Exception:
+    # 3. Get report
+    report = client.get_diagnostic_report()
+    demisto.debug(f"Diagnostics: {report}")
 ```
 
----
+### Error Diagnosis
+Get actionable advice for specific exceptions.
 
-## Operational Notes
-
-- Integration context path: `collector_client[collector_name][state_key]`.
-- Docker image: `demisto/python3:3.10.14.92207` (ships with `httpx`, `anyio`, `respx`, etc.).
-- Resume support: pass the previous `CollectorState` via `resume_state=result.state`.
-- HTTP/2 is automatically preferred. If `h2` is missing, CollectorClient logs an INFO message and continues with HTTP/1.1.
-
-Use this document as a readiness checklist. Every section was crafted to be copy/paste-friendly so GenAI and engineers can implement a collector with minimal guesswork.
-
+```python
+try:
+    client.collect_events_sync()
+except CollectorError as e:
+    diagnosis = client.diagnose_error(e)
+    demisto.error(f"Issue: {diagnosis['issue']}")
+    demisto.error(f"Solution: {diagnosis['solution']}")
+```
