@@ -1,7 +1,7 @@
 The Elasticsearch v2 integration supports Elasticsearch 6.0.0 and later.
 This integration was integrated and tested with versions 6.6.2, 7.3, 8.4.1 of Elasticsearch.
 
-#### Authentication
+## Authentication
 
 There are 3 different authentication [methods](https://www.elastic.co/docs/api/doc/elasticsearch#doc-authentication)
 
@@ -47,13 +47,22 @@ Notes:
 * Not all fields can be used for sorting in Elasticsearch. Sorting is only supported for fields of the following types: **boolean**, **numeric**, **date**, and **keyword**.
 * The "Test" button does not fully validate the fetch incidents functionality. To ensure the instance is correctly configured for fetching incidents, run the *!es-integration-health-check* command
 
-#### Additional Configuration Details
+## Additional Configuration Parameters Details
 
-**Username** Use for Basic auth username. Optionally you can use this field as an *API key ID* for *API Key auth*. Example: for an *API Key ID* kQme5aOx enter: _api_key_id:kQme5aOx
-**Password** Use for Basic auth password. Optionally you can use this field as an *API key* for *API Key auth*. Example: for an *API Key* ui2lp2axT enter: ui2lp2axT
-**Query String** - for more information about the Lucene syntax see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.3/query-dsl-query-string-query.html#query-string-syntax)
-**Raw Query** - for more information about Query DSL see [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html)
-**Time field type** - 3 formats supported:
+**Username**
+Use for Basic auth username. Optionally you can use this field as an *API key ID* for *API Key auth*. Example: for an *API Key ID* kQme5aOx enter: _api_key_id:kQme5aOx
+
+**Password**
+Use for Basic auth password. Optionally you can use this field as an *API key* for *API Key auth*. Example: for an *API Key* ui2lp2axT enter: ui2lp2axT
+
+**Query String**
+for more information about the Lucene syntax see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.3/query-dsl-query-string-query.html#query-string-syntax)
+
+**Raw Query**
+for more information about Query DSL see [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html)
+
+**Time field type**
+3 formats supported:
 
 * Simple-Date - A plain date string. You must specify the format in which the date is stored. For more information about time formatting, see [here](http://strftime.org/)
 * Timestamp-Second - A numeric value representing the number of seconds since the Unix epoch (00:00:00 UTC on 1 January 1970). Example: ‘1572164838’
