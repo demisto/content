@@ -54,6 +54,13 @@ configuration:
   type: 8
   required: false
   section: Connect
+- display: Module
+  name: module
+  type: 0
+  required: false
+  defaultvalue: 'ZIPS'
+  additionalinfo: 'The module of the application the API is pointing to. Default is "ZIPS". This parameter is optional but recommended. Leave empty to omit the module parameter from requests.'
+  section: Connect
 - display: Incident type
   name: incidentType
   type: 13
@@ -919,7 +926,7 @@ script:
       predefined:
       - EMM
       - ZIPS
-      description: The module parameter is required to get the groups related to EMM connection or ZIPS connection. Default is "ZIPS".
+      description: The module parameter is required to get the groups related to EMM connection or ZIPS connection. If provided, this command argument takes priority over the integration's "Module" parameter. Default is "ZIPS".
       name: module
     description: Get policy groups.
     name: zimperium-policy-group-list

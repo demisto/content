@@ -1,6 +1,7 @@
 import urllib3
-from CommonServerPython import *
+
 import demistomock as demisto
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -14,11 +15,12 @@ class Client(BaseClient):
     Client to use in the ZimperiumV2 integration. Overrides BaseClient
     """
 
-    def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool):
+    def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool, module: Optional[str]):
         self._headers = {"Content-Type": "application/json"}
         super().__init__(base_url=base_url, verify=verify, headers=self._headers, proxy=proxy)
         access_token = self.auth(client_id, client_secret)
         self._headers["Authorization"] = f"Bearer {access_token}"
+        self._module = module if module else None
 
     def auth(self, client_id: str, client_secret: str):
         """
@@ -151,7 +153,6 @@ class Client(BaseClient):
         params = {
             "page": page,
             "size": size,
-            "module": "ZIPS",
             "after": after,
             "before": before,
             "teamId": team_id,
@@ -159,6 +160,9 @@ class Client(BaseClient):
             "severityName": severity,
             "sort": sort,
         }
+        if self._module:
+            params["module"] = self._module
+
         if search_params:
             params.update(search_params)
 
@@ -208,7 +212,15 @@ class Client(BaseClient):
             Response from API.
         """
         params = assign_params(
-            **{"page": page, "size": size, "module": "ZIPS", "after": after, "before": before, "teamId": team_id, "cveId": cve_id}
+            **{
+                "page": page,
+                "size": size,
+                "module": self._module if self._module else None,
+                "after": after,
+                "before": before,
+                "teamId": team_id,
+                "cveId": cve_id
+            }
         )
 
         return self._http_request(
@@ -221,9 +233,11 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        params = {
-            "module": module if module else "ZIPS",
-        }
+        # Use command argument if provided, otherwise use instance Module parameter
+        effective_module = module if module is not None else self._module
+        params = {}
+        if effective_module:
+            params["module"] = effective_module
         return self._http_request(
             method="GET", url_suffix="/mtd-policy/public/v1/groups/page", headers=self._headers, params=params
         )
@@ -257,7 +271,7 @@ class Client(BaseClient):
             **{
                 "page": page,
                 "size": size,
-                "module": "ZIPS",
+                "module": self._module if self._module else None,
                 "after": after,
                 "before": before,
                 "teamId": team_id,
@@ -285,7 +299,7 @@ class Client(BaseClient):
             **{
                 "page": page,
                 "size": size,
-                "module": "ZIPS",
+                "module": self._module if self._module else None,
             }
         )
 
@@ -1214,6 +1228,7 @@ def main():  # pragma: no cover
     base_url = urljoin(params.get("url"), "/api")
     verify = not params.get("insecure", False)
     proxy = argToBoolean(params.get("proxy", False))
+    module = params.get("module")
 
     # fetch params
     max_fetch = arg_to_number(params.get("max_fetch", 50)) or 50
@@ -1228,7 +1243,14 @@ def main():  # pragma: no cover
     args = demisto.args()
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        client = Client(base_url=base_url, client_id=client_id, client_secret=client_secret, verify=verify, proxy=proxy)
+        client = Client(
+            base_url=base_url,
+            client_id=client_id,
+            client_secret=client_secret,
+            verify=verify,
+            proxy=proxy,
+            module=module
+        )
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client, first_fetch_time_str, fetch_query, max_fetch, look_back))
