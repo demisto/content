@@ -3429,6 +3429,7 @@ Note: This action is only supported on XDR Agent version 8.9 and above.
 | Success | AAA | 1.1.1.1 |
 | Failure: Endpoint Disconnected | AAA | 2.2.2.2 |
 
+<!--
 ### core-list-endpoints
 
 ***
@@ -3483,3 +3484,4 @@ Retrieves endpoints based on the provided filters.
 | Core.Endpoint.operational_status | String | The operational status of the endpoint. |
 | Core.Endpoint.cloud_provider | String | The cloud provider associated with the endpoint. |
 | Core.Endpoint.cloud_region | String | The cloud region of the endpoint. |
+-->
