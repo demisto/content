@@ -95,11 +95,16 @@ outputs:
   description: The TIM score of the URL.
   type: Number
 - contextPath: FileEnrichment.Status
+<<<<<<< HEAD
   description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, "Error" if enrichment Failed, and "None" if never modified.'
   type: string
 - contextPath: FileEnrichment.Message
   description: The error message explaining the reason for the failure (e.g., "Invalid", "createIndicator failed", etc.).
   type: string
+=======
+  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified.'
+  type: String
+>>>>>>> master
 - contextPath: FileEnrichment.ModifiedTime
   description: The time the indicator was last modified.
   type: Date
@@ -311,7 +316,11 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.12.11.4819260
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+dockerimage: demisto/python3:3.12.12.5490952
 fromversion: 6.10.0
 marketplaces:
 - xsoar
