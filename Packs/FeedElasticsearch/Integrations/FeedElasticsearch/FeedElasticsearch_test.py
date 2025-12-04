@@ -283,6 +283,7 @@ def test_extract_indicators_from_generic_hit(mocker):
     )
     assert ioc_lst == [PARSED_CUSTOM_HIT]
 
+
 def test_create_enrichment_batches_one_indicator(mocker):
     import FeedElasticsearch as esf
 
