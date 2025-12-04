@@ -1977,14 +1977,17 @@ script:
       required: true
     - name: worklog_type
       description: Work Log Type.
+      required: True
     - name: view_access
       description: View Acces.
+      required: True
     - name: detailed_description
       description: Detailed Description.
+      required: True
     - name: entry_ids
       description: A comma-separated list of entry_ids to add as attachments.
   - arguments:
-    - description: A comma-separated list of service request definition IDs. Used as a filtering argument.
+    - description: A comma-separated list of DisplayIDs. Used as a filtering argument.
       isArray: true
       name: ticket_ids
     - description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
