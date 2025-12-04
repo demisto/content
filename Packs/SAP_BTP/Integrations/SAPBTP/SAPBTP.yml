@@ -70,7 +70,7 @@ configuration:
 - name: isFetchEvents
   display: Fetch events
   type: 8
-  defaultvalue: 'false'
+  defaultvalue: 'true'
   required: false
   section: Collect
 - name: first_fetch
@@ -134,14 +134,13 @@ script:
     - contextPath: SAPBTP.Event.data
       description: Event data payload.
       type: Unknown
-  isfetch: true
   isfetchevents: true
   runonce: false
   script: ''
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.12.12.5490952
-fromversion: 6.10.0
+fromversion: 8.11.0
 marketplaces:
 - xsoar
 - marketplacev2
