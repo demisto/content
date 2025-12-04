@@ -2166,7 +2166,7 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     validate_related_arguments_provided(assignee_login_id=assignee_login_id, assignee=assignee)
     if not template_id:
-        validate_related_arguments_provided(
+        validate_required_arguments_provided(
             summary=summary,
             service_type=service_type,
             reported_source=reported_source,
@@ -2175,7 +2175,6 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
             status=status,
             urgency=urgency,
             impact=impact,
-
         )
 
     response = client.create_incident_request(  # type: ignore[arg-type,call-arg]
