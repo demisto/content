@@ -62,7 +62,7 @@ display: Genesys Cloud
 name: GenesysCloud
 script:
   commands:
-  - name: genesis-cloud-get-events
+  - name: genesys-cloud-get-events
     description: Gets audit events from Genesys Cloud from the past 14 days. This command is intended for development and debugging purposes, as it may produce duplicate events.
     arguments:
     - name: should_push_events
@@ -72,7 +72,6 @@ script:
       predefined:
       - 'true'
       - 'false'
-      required: true
     - name: service_name
       description: Filter by alert status.
       auto: PREDEFINED

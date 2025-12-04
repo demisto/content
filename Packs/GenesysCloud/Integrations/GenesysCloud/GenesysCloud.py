@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import aiohttp
 from http import HTTPStatus
 import asyncio
+import math
 from typing import Any
 from datetime import datetime, timedelta, UTC
 
@@ -280,7 +281,7 @@ def deduplicate_and_format_events(
             demisto.debug(f"Skipping duplicate {event_id=}.")
             continue
         all_fetched_ids.add(event_id)
-        event["_time"] = arg_to_datetime(event.get("eventTime"), required=True).strftime(DATE_FORMAT)  # type: ignore [union-attr]
+        event["_time"] = arg_to_datetime(event.get("eventDate"), required=True).strftime(DATE_FORMAT)  # type: ignore [union-attr]
         event["source_log_type"] = service_name
         events.append(event)
     return events
@@ -314,7 +315,7 @@ async def get_audit_events_for_service(
 
     # Calculate number of pages needed based on limit and page size
     start_page_number = 1  # Page numbers start from 1
-    stop_page_number = (limit // DEFAULT_AUDIT_PAGE_SIZE) + 1  # Stop page not included (range stops one before)
+    stop_page_number = math.ceil(limit / DEFAULT_AUDIT_PAGE_SIZE) + 1  # Stop page not included (range stops one before)
     demisto.debug(f"[{service_name}] Fetching {stop_page_number} pages concurrently to retrieve up to {limit} events.")
 
     # Create tasks for fetching all pages concurrently
@@ -336,12 +337,13 @@ async def get_audit_events_for_service(
     for page_number, page_response in enumerate(page_responses):
         # Process and deduplicate events from this page
         page_events = deduplicate_and_format_events(page_response, all_fetched_ids, service_name)
-        all_events.extend(page_events)
+        for event in page_events:
+            all_events.append(event)
 
-        # Stop if limit was reached
-        if len(all_events) >= limit:
-            demisto.debug(f"[{service_name}] Reached {limit=} after processing events on {page_number=}.")
-            break
+            # Stop if limit was reached
+            if len(all_events) >= limit:
+                demisto.debug(f"[{service_name}] Reached {limit=} after processing events on {page_number=}.")
+                break
 
     demisto.debug(f"[{service_name}] Fetched total of {len(all_events)} events from {stop_page_number} pages.")
     return all_events
@@ -466,11 +468,11 @@ async def fetch_events_command(
                 continue
 
             # Get the newest event timestamp
-            newest_event_time = service_events[-1].get("eventTime")
+            newest_event_time = service_events[-1].get("eventDate")
             demisto.debug(f"[{service_name}] Got {len(service_events)} deduplicated events with {newest_event_time=}.")
 
             # Get the IDs of the service events that have the newest time
-            new_last_fetched_ids = [event.get("id") for event in service_events if event.get("eventTime") == newest_event_time]
+            new_last_fetched_ids = [event.get("id") for event in service_events if event.get("eventDate") == newest_event_time]
 
             # Update next run for service
             service_next_run = {"from_date": newest_event_time, "last_fetched_ids": new_last_fetched_ids}
@@ -526,7 +528,7 @@ async def main() -> None:  # pragma: no cover
             if command == "test-module":
                 return_results(await test_module(async_client, service_names=service_names))
 
-            elif command == "genesis-cloud-get-events":
+            elif command == "genesys-cloud-get-events":
                 should_push_events = argToBoolean(args.pop("should_push_events", False))
                 events, command_results = await get_events_command(async_client, args)
                 return_results(command_results)

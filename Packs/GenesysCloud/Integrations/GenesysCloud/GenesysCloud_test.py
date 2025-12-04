@@ -238,8 +238,8 @@ async def test_async_client_get_realtime_audits(async_client: AsyncClient, mocke
 
     mock_response_json = {
         "entities": [
-            {"id": "event-1", "eventTime": "2025-01-01T00:00:00Z"},
-            {"id": "event-2", "eventTime": "2025-01-01T01:00:00Z"},
+            {"id": "event-1", "eventDate": "2025-01-01T00:00:00Z"},
+            {"id": "event-2", "eventDate": "2025-01-01T01:00:00Z"},
         ],
         "pageNumber": 1,
         "pageSize": 500,
@@ -280,7 +280,7 @@ async def test_async_client_get_realtime_audits_401_retry(async_client: AsyncCli
     service_name = "Architect"
     page_number = 1
 
-    mock_response_json = {"entities": [{"id": "event-1", "eventTime": "2025-01-01T00:00:00Z"}]}
+    mock_response_json = {"entities": [{"id": "event-1", "eventDate": "2025-01-01T00:00:00Z"}]}
 
     mock_responses = [
         mock_async_session_response(error_status_code=401, error_message="Unauthorized"),  # First call -> expired token error
@@ -309,8 +309,8 @@ async def test_async_client_get_realtime_audits_401_retry(async_client: AsyncCli
         pytest.param(
             {
                 "entities": [
-                    {"id": "event-1", "eventTime": "2025-01-01T00:00:00Z"},
-                    {"id": "event-2", "eventTime": "2025-01-01T01:00:00Z"},
+                    {"id": "event-1", "eventDate": "2025-01-01T00:00:00Z"},
+                    {"id": "event-2", "eventDate": "2025-01-01T01:00:00Z"},
                 ]
             },
             set(),
@@ -321,8 +321,8 @@ async def test_async_client_get_realtime_audits_401_retry(async_client: AsyncCli
         pytest.param(
             {
                 "entities": [
-                    {"id": "event-1", "eventTime": "2025-01-01T00:00:00Z"},
-                    {"id": "event-2", "eventTime": "2025-01-01T01:00:00Z"},
+                    {"id": "event-1", "eventDate": "2025-01-01T00:00:00Z"},
+                    {"id": "event-2", "eventDate": "2025-01-01T01:00:00Z"},
                 ]
             },
             {"event-1"},
@@ -338,7 +338,7 @@ async def test_async_client_get_realtime_audits_401_retry(async_client: AsyncCli
             id="Empty raw response",
         ),
         pytest.param(
-            {"entities": [{"id": "event-1", "eventTime": "2025-01-01T00:00:00Z"}]},
+            {"entities": [{"id": "event-1", "eventDate": "2025-01-01T00:00:00Z"}]},
             {"event-1"},
             0,
             1,
@@ -368,7 +368,7 @@ def test_deduplicate_and_format_events(
     assert len(all_fetched_ids) == expected_all_ids_count
 
     for event in new_events:
-        assert event["_time"] == arg_to_datetime(event["eventTime"]).strftime(DATE_FORMAT)
+        assert event["_time"] == arg_to_datetime(event["eventDate"]).strftime(DATE_FORMAT)
         assert event["source_log_type"] == service_name
 
 
@@ -389,10 +389,10 @@ async def test_get_audit_events_for_service_pagination(async_client: AsyncClient
 
     mock_response_jsons = [
         {  # Page 0
-            "entities": [{"id": f"event-A{i}", "eventTime": "2025-01-01T00:00:00Z"} for i in range(500)],
+            "entities": [{"id": f"event-A{i}", "eventDate": "2025-01-01T00:00:00Z"} for i in range(500)],
         },
         {  # Page 1
-            "entities": [{"id": f"event-B{i}", "eventTime": "2025-01-01T01:00:00Z"} for i in range(500)],
+            "entities": [{"id": f"event-B{i}", "eventDate": "2025-01-01T01:00:00Z"} for i in range(500)],
         },
     ]
 
@@ -429,9 +429,9 @@ async def test_get_audit_events_for_service_with_deduplication(async_client: Asy
 
     mock_response_json = {
         "entities": [
-            {"id": "event-A0", "eventTime": "2025-01-01T00:00:00Z"},  # Duplicate
-            {"id": "event-A1", "eventTime": "2025-01-01T00:00:00Z"},  # Duplicate
-            {"id": "event-A2", "eventTime": "2025-01-01T00:00:00Z"},  # New
+            {"id": "event-A0", "eventDate": "2025-01-01T00:00:00Z"},  # Duplicate
+            {"id": "event-A1", "eventDate": "2025-01-01T00:00:00Z"},  # Duplicate
+            {"id": "event-A2", "eventDate": "2025-01-01T00:00:00Z"},  # New
         ],
     }
 
@@ -463,7 +463,7 @@ async def test_get_events_command(async_client: AsyncClient, mocker: MockerFixtu
      - Ensure get_audit_events_for_service is called with the correct arguments.
      - Ensure tableToMarkdown is called with the correct arguments.
     """
-    mock_events = [{"id": "event-1", "eventTime": "2025-01-01T00:00:00Z", "_time": "2025-01-01T00:00:00Z"}]
+    mock_events = [{"id": "event-1", "eventDate": "2025-01-01T00:00:00Z", "_time": "2025-01-01T00:00:00Z"}]
 
     mock_get_audit_events = mocker.patch("GenesysCloud.get_audit_events_for_service", return_value=mock_events)
     mock_table_to_markdown = mocker.patch("GenesysCloud.tableToMarkdown")
@@ -487,11 +487,11 @@ async def test_get_events_command(async_client: AsyncClient, mocker: MockerFixtu
             100,
             {
                 "Architect": [
-                    {"id": "event-1", "eventTime": "2025-01-01T00:00:00Z"},
-                    {"id": "event-2", "eventTime": "2025-01-01T01:00:00Z"},
+                    {"id": "event-1", "eventDate": "2025-01-01T00:00:00Z"},
+                    {"id": "event-2", "eventDate": "2025-01-01T01:00:00Z"},
                 ],
                 "PeoplePermissions": [
-                    {"id": "event-3", "eventTime": "2025-01-01T00:30:00Z"},
+                    {"id": "event-3", "eventDate": "2025-01-01T00:30:00Z"},
                 ],
             },
             {
@@ -507,8 +507,8 @@ async def test_get_events_command(async_client: AsyncClient, mocker: MockerFixtu
             50,
             {
                 "Architect": [
-                    {"id": "event-2", "eventTime": "2025-01-01T01:00:00Z"},
-                    {"id": "event-3", "eventTime": "2025-01-01T01:00:00Z"},
+                    {"id": "event-2", "eventDate": "2025-01-01T01:00:00Z"},
+                    {"id": "event-3", "eventDate": "2025-01-01T01:00:00Z"},
                 ],
             },
             {
@@ -579,7 +579,7 @@ async def test_fetch_events_command_service_failure_isolation(async_client: Asyn
     async def mock_get_audit_events(client, from_date, to_date, service_name, limit, last_fetched_ids=None):
         if service_name == "PeoplePermissions":
             raise Exception("Service error")
-        return [{"id": f"{service_name}-event-1", "eventTime": "2025-01-01T00:00:00Z"}]
+        return [{"id": f"{service_name}-event-1", "eventDate": "2025-01-01T00:00:00Z"}]
 
     mocker.patch("GenesysCloud.get_audit_events_for_service", side_effect=mock_get_audit_events)
     mock_demisto_error = mocker.patch.object(demisto, "error")

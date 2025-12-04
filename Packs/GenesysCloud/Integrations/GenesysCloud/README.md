@@ -26,13 +26,13 @@ Gets audit events from Genesys Cloud from the past 14 days. This command is inte
 
 #### Base Command
 
-`genesis-cloud-get-events`
+`genesys-cloud-get-events`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Optional |
 | service_name | Filter by alert status. Possible values are: Architect, PeoplePermissions, ContactCenter, Groups, Telephony, Outbound, Routing, Integrations, AnalyticsReporting. | Required |
 | limit | Maximum number of audit events to return. | Optional |
 | from_date | The start date from which to get events. Must be within the last 14 days. Default value is 1 hour ago. | Optional |
