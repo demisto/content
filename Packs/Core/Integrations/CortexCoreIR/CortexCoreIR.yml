@@ -30,13 +30,6 @@ configuration:
   hidden: true
   required: false
   section: Connect
-- display: API Key ID
-  name: credentials
-  defaultvalue: ""
-  type: 9
-  required: false
-  section: Connect
-  displaypassword: API Key
 - additionalinfo: The timeout of the HTTP requests sent to Cortex API (in seconds).
   defaultvalue: '120'
   display: HTTP Timeout
