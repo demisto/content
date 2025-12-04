@@ -290,7 +290,6 @@ class Client(CoreClient):
         incident_id,
         status=None,
         assigned_user_mail=None,
-        assigned_user_pretty_name=None,
         severity=None,
         resolve_comment=None,
         unassign_user=None,
@@ -298,16 +297,13 @@ class Client(CoreClient):
     ):
         update_data: dict[str, Any] = {}
 
-        if unassign_user and (assigned_user_mail or assigned_user_pretty_name):
+        if unassign_user and assigned_user_mail:
             raise ValueError("Can't provide both assignee_email/assignee_name and unassign_user")
         if unassign_user:
             update_data["assigned_user_mail"] = "none"
 
         if assigned_user_mail:
             update_data["assigned_user_mail"] = assigned_user_mail
-
-        if assigned_user_pretty_name:
-            update_data["assigned_user_pretty_name"] = assigned_user_pretty_name
 
         if status:
             update_data["status"] = status
@@ -619,7 +615,6 @@ def get_tenant_info_command(client: Client):
 def update_incident_command(client, args):
     incident_id = args.get("incident_id")
     assigned_user_mail = args.get("assigned_user_mail")
-    assigned_user_pretty_name = args.get("assigned_user_pretty_name")
     status = args.get("status")
     demisto.debug(f"this_is_the_status {status}")
     severity = args.get("manual_severity")
@@ -628,15 +623,9 @@ def update_incident_command(client, args):
     add_comment = args.get("add_comment")
     resolve_alerts = argToBoolean(args.get("resolve_alerts", False))
 
-    if assigned_user_pretty_name and not assigned_user_mail:
-        raise DemistoException(
-            'To set a new assigned_user_pretty_name, you must also provide a value for the "assigned_user_mail" argument.'
-        )
-
     client.update_incident(
         incident_id=incident_id,
         assigned_user_mail=assigned_user_mail,
-        assigned_user_pretty_name=assigned_user_pretty_name,
         unassign_user=unassign_user,
         status=status,
         severity=severity,
