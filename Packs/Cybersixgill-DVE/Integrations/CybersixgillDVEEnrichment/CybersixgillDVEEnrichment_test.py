@@ -371,7 +371,7 @@ expected_enrich_remediation_output = [{"Value": "CVE-2020-9047", "Advisory": "N/
 mock_response, mock_response_remediation = "", ""
 mocked_get_token_response = """{"access_token": "fababfafbh"}"""
 args = {"cve_id": "CVE-2020-9047"}
-channel_code = "d5cd46c205c20c87006b55a18b106428"
+channel_code = "7457a04d972fceb8e0cc2192ba4abc66" if is_xsiam() else "7698e8287dfde53dcd13082be750a85a"
 
 
 class MockedResponse:
