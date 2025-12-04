@@ -415,7 +415,7 @@ def get_chrome_processes(port) -> list:
         demisto.debug(f"Detected {len(chrome_processes)} Chrome processes running on port {port}")
         return chrome_processes
     except Exception as e:
-        demisto.info(f"Unexpected exception when fetching process list, error: {e}")
+        demisto.info(f"Unexpected exception when fetching chrome process list, error: {e}")
         return []
 
 
