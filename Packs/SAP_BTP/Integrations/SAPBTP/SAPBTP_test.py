@@ -435,6 +435,37 @@ def test_http_request_json_parse_failure(mocker, client_non_mtls):
 
 
 # ========================================
+# Tests: _parse_events_from_response
+# ========================================
+
+
+@pytest.mark.parametrize(
+    "response_body,expected_count,expected_first_uuid",
+    [
+        # Direct list format
+        ([{"uuid": "event1"}, {"uuid": "event2"}], 2, "event1"),
+        # Dictionary with 'results' key
+        ({"results": [{"uuid": "event1"}]}, 1, "event1"),
+        # Nested 'd.results' (OData format)
+        ({"d": {"results": [{"uuid": "event1"}, {"uuid": "event2"}]}}, 2, "event1"),
+        # Single object with message_uuid
+        ({"message_uuid": "msg1", "uuid": "event1"}, 1, "event1"),
+        # Empty results
+        ({"results": []}, 0, None),
+        # Empty dict
+        ({}, 0, None),
+    ],
+)
+def test_parse_events_from_response_formats(client_non_mtls, response_body, expected_count, expected_first_uuid):
+    """Tests _parse_events_from_response handles various response formats."""
+    events = client_non_mtls._parse_events_from_response(response_body)
+
+    assert len(events) == expected_count
+    if expected_count > 0:
+        assert events[0]["uuid"] == expected_first_uuid
+
+
+# ========================================
 # Tests: get_formatted_utc_time
 # ========================================
 
@@ -846,6 +877,41 @@ def test_fetch_events_command_events_without_time(mocker, client_non_mtls):
     # Should not update last_run if events have no time field
     demisto.setLastRun.assert_not_called()
     SAPBTP.send_events_to_xsiam.assert_called_once()
+
+
+def test_fetch_events_command_with_first_fetch_enabled(mocker, client_non_mtls):
+    """Tests fetch_events_command uses FIRST_FETCH when first_fetch=True."""
+
+    mock_events = [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}]
+
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "params", return_value={"first_fetch": True})
+    mock_fetch = mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(SAPBTP, "send_events_to_xsiam")
+
+    fetch_events_command(client_non_mtls)
+
+    # Verify it was called and last_run was updated
+    mock_fetch.assert_called_once()
+    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T00:00:00Z"})
+
+
+def test_fetch_events_command_with_first_fetch_disabled(mocker, client_non_mtls):
+    """Tests fetch_events_command uses FROM_TIME when first_fetch=False."""
+    mock_events = [{"uuid": "1", "time": "2024-01-01T00:00:00Z"}]
+
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "params", return_value={"first_fetch": False})
+    mock_fetch = mocker.patch.object(SAPBTP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(SAPBTP, "send_events_to_xsiam")
+
+    fetch_events_command(client_non_mtls)
+
+    # Verify it was called and last_run was updated
+    mock_fetch.assert_called_once()
+    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T00:00:00Z"})
 
 
 # ========================================

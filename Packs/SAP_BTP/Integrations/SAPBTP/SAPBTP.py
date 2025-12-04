@@ -1,9 +1,9 @@
 import tempfile
 import time
 import traceback
+from datetime import datetime, timedelta, timezone  # noqa: UP017
 from enum import Enum
 from typing import Any
-import datetime as dt
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -84,6 +84,7 @@ class DefaultValues(str, Enum):
     """Default values for command arguments."""
 
     FROM_TIME = "1 minute ago"
+    FIRST_FETCH = "3 minute ago"
     MAX_FETCH = "5000"
 
 
@@ -102,29 +103,26 @@ def get_formatted_utc_time(date_input: str | None) -> str:
     return formatted_time
 
 
-def parse_date_or_use_current(date_string: str | None) -> dt.datetime:
+def parse_date_or_use_current(date_string: str | None) -> datetime:
     """Parse a date string or return current UTC datetime if parsing fails.
 
     Ensures the result is always a timezone-aware UTC datetime object.
     """
     if not date_string:
-        current_time = dt.datetime.now(dt.UTC)
+        current_time = datetime.now(timezone.utc)  # noqa: UP017
         demisto.debug(f"[Date Helper] No input provided. Using current UTC: {current_time}")
         return current_time
 
     demisto.debug(f"[Date Helper] Attempting to parse date string: '{date_string}'")
-    parsed_datetime = dateparser.parse(date_string)
+    parsed_datetime = dateparser.parse(date_string, settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True})
 
     if not parsed_datetime:
         demisto.debug(f"[Date Helper] Failed to parse '{date_string}'. Fallback to current UTC.")
-        return dt.datetime.now(dt.UTC)
+        return datetime.now(timezone.utc)  # noqa: UP017
 
-    # Force UTC timezone
-    if not parsed_datetime.tzinfo:
-        # If naive, assume local system time and convert to UTC
-        parsed_datetime = parsed_datetime.replace(tzinfo=dt.UTC)
-    else:
-        parsed_datetime = parsed_datetime.astimezone(dt.UTC)
+    # Ensure UTC timezone
+    if parsed_datetime.tzinfo != timezone.utc:  # noqa: UP017
+        parsed_datetime = parsed_datetime.astimezone(timezone.utc)  # noqa: UP017
 
     demisto.debug(f"[Date Helper] Final parsed date: {parsed_datetime.isoformat()}")
     return parsed_datetime
@@ -432,7 +430,7 @@ def test_module(client: Client) -> str:
     demisto.debug("[Test Module] Starting...")
 
     try:
-        utc_now = dt.datetime.now(dt.UTC)
+        utc_now = datetime.now(timezone.utc)  # noqa: UP017
         test_time = (utc_now - timedelta(minutes=Config.TEST_MODULE_LOOKBACK_MINUTES)).strftime(Config.DATE_FORMAT)
 
         demisto.debug(f"[Test Module] Fetching from: {test_time}")
@@ -552,21 +550,20 @@ def fetch_events_command(client: Client) -> None:
 
     params = demisto.params()
     max_events_to_fetch = int(params.get("max_fetch", DefaultValues.MAX_FETCH.value))
-    first_fetch_param = params.get("first_fetch")
+    first_fetch_param = argToBoolean(params.get("first_fetch", False))
 
     last_run = demisto.getLastRun()
     last_fetch_timestamp = last_run.get("last_fetch")
 
-    # Determine Start Time
     if last_fetch_timestamp:
         time_input = last_fetch_timestamp
-        demisto.debug(f"[Fetch Logic] Continuing from Last Run: {time_input}")
+        demisto.debug(f"[Fetch Logic] Continuing from Last Run. Fetching from: {time_input}")
     elif first_fetch_param:
-        time_input = first_fetch_param
-        demisto.debug(f"[Fetch Logic] First Run (Configured): {time_input}")
+        time_input = DefaultValues.FIRST_FETCH.value
+        demisto.debug(f"[Fetch Logic] First Run. Fetching from: {time_input}")
     else:
         time_input = DefaultValues.FROM_TIME.value
-        demisto.debug(f"[Fetch Logic] First Run (Default): {time_input}")
+        demisto.debug(f"[Fetch Logic] Fallback (no last_run and first_fetch disabled). Fetching from: {time_input}")
 
     created_after = get_formatted_utc_time(time_input)
 
