@@ -313,8 +313,9 @@ async def get_audit_events_for_service(
     all_events: list[dict[str, Any]] = []
 
     # Calculate number of pages needed based on limit and page size
-    max_page_number = (limit + DEFAULT_AUDIT_PAGE_SIZE - 1) // DEFAULT_AUDIT_PAGE_SIZE  # Ceiling division
-    demisto.debug(f"[{service_name}] Fetching {max_page_number} pages concurrently to retrieve up to {limit} events.")
+    start_page_number = 1  # Page numbers start from 1
+    stop_page_number = (limit // DEFAULT_AUDIT_PAGE_SIZE) + 1  # Stop page not included (range stops one before)
+    demisto.debug(f"[{service_name}] Fetching {stop_page_number} pages concurrently to retrieve up to {limit} events.")
 
     # Create tasks for fetching all pages concurrently
     page_tasks = [
@@ -325,7 +326,7 @@ async def get_audit_events_for_service(
             page_number=page_number,
             page_size=DEFAULT_AUDIT_PAGE_SIZE,
         )
-        for page_number in range(max_page_number)  # Page numbers start from 0
+        for page_number in range(start_page_number, stop_page_number)  # Page numbers start from 1
     ]
 
     # Fetch all pages concurrently
@@ -342,7 +343,7 @@ async def get_audit_events_for_service(
             demisto.debug(f"[{service_name}] Reached {limit=} after processing events on {page_number=}.")
             break
 
-    demisto.debug(f"[{service_name}] Fetched total of {len(all_events)} events from {max_page_number} pages.")
+    demisto.debug(f"[{service_name}] Fetched total of {len(all_events)} events from {stop_page_number} pages.")
     return all_events
 
 

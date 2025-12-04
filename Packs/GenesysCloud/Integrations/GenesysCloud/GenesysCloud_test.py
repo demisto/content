@@ -233,7 +233,7 @@ async def test_async_client_get_realtime_audits(async_client: AsyncClient, mocke
     from_date = "2025-01-01T00:00:00Z"
     to_date = "2025-01-02T00:00:00Z"
     service_name = "Architect"
-    page_number = 0
+    page_number = 1
     page_size = 500
 
     mock_response_json = {
@@ -241,7 +241,7 @@ async def test_async_client_get_realtime_audits(async_client: AsyncClient, mocke
             {"id": "event-1", "eventTime": "2025-01-01T00:00:00Z"},
             {"id": "event-2", "eventTime": "2025-01-01T01:00:00Z"},
         ],
-        "pageNumber": 0,
+        "pageNumber": 1,
         "pageSize": 500,
     }
 
@@ -278,7 +278,7 @@ async def test_async_client_get_realtime_audits_401_retry(async_client: AsyncCli
     from_date = "2025-01-01T00:00:00Z"
     to_date = "2025-01-02T00:00:00Z"
     service_name = "Architect"
-    page_number = 0
+    page_number = 1
 
     mock_response_json = {"entities": [{"id": "event-1", "eventTime": "2025-01-01T00:00:00Z"}]}
 
@@ -290,7 +290,7 @@ async def test_async_client_get_realtime_audits_401_retry(async_client: AsyncCli
     mock_get_auth_header = mocker.patch.object(async_client, "get_authorization_header", return_value="Bearer test_token")
 
     async with async_client as _client:
-        mocker.patch.object(_client._session, "post", side_effect=mock_responses)
+        mock_post_request = mocker.patch.object(_client._session, "post", side_effect=mock_responses)
         response_json = await _client.get_realtime_audits(
             from_date=from_date,
             to_date=to_date,
@@ -300,7 +300,7 @@ async def test_async_client_get_realtime_audits_401_retry(async_client: AsyncCli
 
     assert response_json == mock_response_json
     assert mock_get_auth_header.call_count == 2  # First call + retry with `force_generate_new_token=True`
-    assert _client._session.post.call_count == 2
+    assert mock_post_request.call_count == 2
 
 
 @pytest.mark.parametrize(
