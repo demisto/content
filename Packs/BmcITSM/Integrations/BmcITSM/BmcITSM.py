@@ -2110,11 +2110,11 @@ def service_request_update_command(client: Client, args: Dict[str, Any]) -> Comm
     client.service_request_update_request(  # type: ignore[arg-type,call-arg]
         formatted_service_request_id,
         summary,
-        status,
-        urgency,
-        impact,
-        customer_first_name,
-        customer_last_name,
+        status,  # type: ignore[arg-type]
+        urgency,  # type: ignore[arg-type]
+        impact,  # type: ignore[arg-type]
+        customer_first_name,  # type: ignore[arg-type]
+        customer_last_name,  # type: ignore[arg-type]
         location_company,
         site_group,  # type: ignore[arg-type]
         region,  # type: ignore[arg-type]
