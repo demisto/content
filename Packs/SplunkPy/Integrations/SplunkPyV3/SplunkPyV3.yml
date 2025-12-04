@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy
+  id: SplunkPy v3
   version: -1
 sectionorder:
 - Connect
@@ -328,8 +328,8 @@ configuration:
   required: false
   additionalinfo: Add this tag to an entry to mirror it as a note to Splunk.
 description: Runs queries on Splunk servers.
-display: SplunkPy
-name: SplunkPy
+display: SplunkPy v3
+name: SplunkPy v3
 script:
   commands:
   - arguments:
@@ -679,15 +679,6 @@ script:
   - description: Query Splunk to retrieve a list of sample alerts by alert type. Used for mapping fetched incidents through the Get Schema option.
     name: get-mapping-fields
     arguments: []
-  - arguments:
-    - description: The remote event ID.
-      name: id
-      required: true
-    - defaultValue: '0'
-      description: ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only updated if it was modified after the last update time.
-      name: lastUpdate
-    description: Gets data from a finding event. This method does not update the current incident, and should be used for debugging purposes.
-    name: get-remote-data
   - arguments:
     - description: ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only returned if it was modified after the last update time.
       name: lastUpdate

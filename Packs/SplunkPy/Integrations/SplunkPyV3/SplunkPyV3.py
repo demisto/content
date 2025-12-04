@@ -18,12 +18,11 @@ from splunklib import client, results
 from splunklib.binding import AuthenticationError, HTTPError, namespace
 from splunklib.data import Record
 
-INTEGRATION_LOG = "SplunkV3- "
+INTEGRATION_LOG = "SplunkPyV3- "
 OUTPUT_MODE_JSON = "json"  # type of response from splunk-sdk query (json/csv/xml)
 # Define utf8 as default encoding
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
-DAYLIGHT_SAVING_TIME_DELTA = timedelta(hours=1)
 DEFAULT_ASSET_ENRICH_TABLES = "asset_lookup_by_str,asset_lookup_by_cidr"
 DEFAULT_IDENTITY_ENRICH_TABLE = "identity_lookup_expanded"
 VERIFY_CERTIFICATE = not bool(params.get("unsecure"))
@@ -350,11 +349,7 @@ def remove_irrelevant_incident_ids(
             # Last fetched IDs hold the occurred time that they were seen, which is basically the end time of the fetch window
             # they were fetched in, and will be deleted from the last fetched IDs once they pass the fetch window
             incident_window_end_datetime = datetime.strptime(incident_occurred_time.get("occurred_time", ""), SPLUNK_TIME_FORMAT)
-
-            # We subtract DAYLIGHT_SAVING_TIME_DELTA to account for daylight saving time changes.
-            # This prevents duplicate incidents that may occur when the clock shifts,
-            # ensuring incidents remain in the cache during the transition period.
-            if incident_window_end_datetime >= window_start_datetime - DAYLIGHT_SAVING_TIME_DELTA:
+            if incident_window_end_datetime >= window_start_datetime:
                 # We keep the incident, since it is still in the fetch window
                 extensive_log(
                     f"[SplunkPy] Keeping {incident_id} as part of the last fetched IDs. {incident_window_end_datetime=}"
@@ -429,8 +424,8 @@ def build_fetch_kwargs(
     return {
         occurred_start_time_fieldname: occured_start_time,
         occurred_end_time_fieldname: latest_time,
-        # "count": FETCH_LIMIT,
-        # "offset": search_offset,
+        "count": FETCH_LIMIT,
+        "offset": search_offset,
         "output_mode": OUTPUT_MODE_JSON,
     }
 
@@ -1838,12 +1833,14 @@ def enrich_findings_with_splunk_notes(
     # to avoid performance issues with large audit logs
     search_query = (
         f'search index=_audit source=mc_notes earliest=-7d ({or_clause_str}) '
-        '| rex "(?<timestamp>[\\d.]+),(?<note_id>[\\w-]+),(?<user>[\\w_]+),(?<model>[\\w]+),(?<command>[\\w]+),(?<diff>.+)" '
+        # '| rex "(?<timestamp>[\\d.]+),(?<note_id>[\\w-]+),(?<user>[\\w_]+),(?<model>[\\w]+),(?<command>[\\w]+),(?<diff>.+)" '
+        '| rex "(?<timestamp>[\\d.]+),(?<note_id>[\\w-]+),"'
         '| dedup note_id '
-        '| table note_id, command, diff'
+        # '| table note_id, command, diff'
+        '| table note_id'
     )
     
-    demisto.debug(f"enrich_findings_with_splunk_notes: Running {search_query=} to find the changed note IDs")
+    demisto.debug(f"enrich_findings_with_splunk_notes: Running fetch query to find the changed note IDs in {len(finding_ids)} findings, {search_query=}")
     
     try:
         # Execute the search query to get note IDs
