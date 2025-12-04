@@ -25,6 +25,15 @@ class UserData(TypedDict):
     Instance: str
 
 
+# --- Constants ---
+# Success message patterns for different integrations
+AD_NEVER_EXPIRE_CLEARED = 'AD account {username} has cleared "password never expire" attribute. Value is set to False'
+AD_PASSWORD_EXPIRED = "Expired password successfully"
+MSGRAPH_PASSWORD_RESET = "User {username} will be required to change his password."
+AWS_PASSWORD_CHANGED = "The user {username} Password was changed"
+OKTA_PASSWORD_EXPIRED_MARKER = "PASSWORD_EXPIRED"
+
+
 # --- Utility Functions ---
 def get_instance_from_result(res: dict) -> str:
     """
@@ -160,11 +169,9 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
     res_modify_never_expire, hr_modify_never_expire = run_command("ad-modify-password-never-expire", args_modify_never_expire_command)
     demisto.debug(f"DELETE-ExpirePassword: AD {res_modify_never_expire=} {hr_modify_never_expire=}")
 
-    def is_modify_never_expired_succeed(res_modify_never_expire_arg):
-        return res_modify_never_expire_arg.get("Contents") == f'AD account {username} has cleared "password never expire" attribute. Value is set to False'
-
     # Check if clearing the "never expire" flag failed first
-    if not any(is_modify_never_expired_succeed(res) for res in res_modify_never_expire):
+    expected_msg = AD_NEVER_EXPIRE_CLEARED.format(username=username)
+    if not any(res.get("Contents") == expected_msg for res in res_modify_never_expire):
         return [
             ExpiredPasswordResult(
                 Result="Failed",
@@ -183,7 +190,7 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
     func_res = []
     for res in res_expire:
         res_msg = res.get("Contents", "AD password command failed")
-        success = res_msg == "Expired password successfully"
+        success = res_msg == AD_PASSWORD_EXPIRED
         func_res.append(
             build_result(
                 res,
@@ -211,7 +218,8 @@ def run_microsoft_graph_user(user: UserData, using: str) -> tuple[list[ExpiredPa
     func_res = []
     for res in res_cmd:
         res_hr = get_response_message(res, "Microsoft Graph User expiration password command failed")
-        success = res_hr == f"User {user['Username']} will be required to change his password."
+        expected_msg = MSGRAPH_PASSWORD_RESET.format(username=user['Username'])
+        success = res_hr == expected_msg
         func_res.append(
             build_result(
                 res,
@@ -240,7 +248,7 @@ def run_okta_v2(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
     for res in res_cmd:
         res_msg = get_response_message(res)
         demisto.debug(f"DELETE-ExpirePassword: Okta v2 Check Content {res_msg=}")
-        success = 'PASSWORD_EXPIRED' in res_msg
+        success = OKTA_PASSWORD_EXPIRED_MARKER in res_msg
         func_res.append(
             build_result(
                 res,
@@ -311,7 +319,8 @@ def run_aws_iam(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
     for res in res_cmd:
         res_msg = get_response_message(res)
         # The AWS-IAM integration returns "The user {user} password was changed" on success
-        success = res_msg == f"The user {user['Username']} Password was changed"
+        expected_msg = AWS_PASSWORD_CHANGED.format(username=user['Username'])
+        success = res_msg == expected_msg
         func_res.append(
             build_result(
                 res,
@@ -356,8 +365,8 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
     res, hr = run_command("get-user-data", args | {"verbose": "true"}, label_hr=False)
 
     demisto.debug(f"DELETE-ExpirePassword: get_users {res=} {hr=}")
-    if errors_users := [r for r in res if r["Type"] == EntryType.ERROR]:
-        if err := next((r for r in errors_users if not r["HumanReadable"]), None):
+    if error_results := [r for r in res if r["Type"] == EntryType.ERROR]:
+        if err := next((r for r in error_results if not r["HumanReadable"]), None):
             demisto.debug(f"Error when calling get-user-data:\n{err['Contents']}")
 
     # Check for no available integrations
@@ -368,15 +377,15 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
             f"No integrations were found for the brands {args.get('brands')}. Please verify the brand instances' setup."
         )
 
-    res_user = next(  # get the output with the users
+    user_result = next(  # get the output with the users
         (r for r in res if r["EntryContext"]), None
     )
 
     # Check for unexpected response
-    if not res_user:
+    if not user_result:
         raise DemistoException(f"Unexpected response when calling get-user-data:\n{res}")
 
-    users = [dict.fromkeys(UserData.__required_keys__, "") | res for res in res_user["Contents"]]
+    users = [dict.fromkeys(UserData.__required_keys__, "") | res for res in user_result["Contents"]]
 
     # Check for no users found (Status is not 'found' for any user)
     if not any(user["Status"] == "found" for user in users):
