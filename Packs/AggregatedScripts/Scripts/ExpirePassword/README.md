@@ -1,4 +1,4 @@
-This script expires users' passwords across multiple services by enforcing a password reset on next sign-in.
+This script expires users passwords across multiple services by enforcing a password reset on next sign-in.
 
 ## Script Data
 
