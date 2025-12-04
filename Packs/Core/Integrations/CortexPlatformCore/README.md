@@ -880,6 +880,7 @@ Retrieves application security issues based on specified filters.
 | Core.AppsecIssue.has_kev | Boolean | Whether the issue is part of the Known Exploited Vulnerabilities catalog \(KEV\). |
 | Core.AppsecIssue.backlog_status | String | The backlog status of the issue. |
 
+<!--
 ### core-update-case
 
 ***
@@ -936,3 +937,4 @@ Updates the properties of a case. This command does not provide an explicit indi
 | Core.Case.groupingStatus.reason | String | Reason for the grouping status. |
 | Core.Case.tags.tag_id | String | Tag ID associated with the case. |
 | Core.Case.tags.tag_name | String | Tag name associated with the case. |
+-->
