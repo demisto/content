@@ -406,7 +406,7 @@ class Client(BaseClient):
         response = self._http_request("GET", f"arsys/v1/entry/{form}", params=params)
         return response
 
-    def worklog_attachment_get_request(self, worklog_id: str) -> List[fileResult]:
+    def worklog_attachment_get_request(self, worklog_id: str) -> List[dict]:
         """
         Get BmcITSM Work Log Attachments.
 
@@ -425,7 +425,7 @@ class Client(BaseClient):
                 content_disposition = res.headers["content-disposition"]
             except KeyError:
                 continue
-            fname = re.findall("filename\*?=([^;]+)", content_disposition, flags=re.IGNORECASE)
+            fname = re.findall("filename*?=([^;]+)", content_disposition, flags=re.IGNORECASE)
             fname = fname[0].strip().strip('"')
             attachments.append(fileResult(fname, res.content))
 
@@ -1786,7 +1786,7 @@ def ticket_delete_command(client: Client, args: Dict[str, Any]) -> List[CommandR
     return commands_results
 
 
-def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> str:
     """BmcITSM ticket create relationship command.
 
     Args:
@@ -1805,14 +1805,14 @@ def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> 
     second_form_name = args.get("second_form_name")
     second_request_id = args.get("second_request_id")
     bidirectional = argToBoolean(args.get("bidirectional"))
-    res = client.ticket_create_relationship_request(
-        request_type=request_type,
-        request_description=request_description,
-        association_type=association_type,
-        first_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[first_form_name],
-        first_request_id=first_request_id,
-        second_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[second_form_name],
-        second_request_id=second_request_id,
+    client.ticket_create_relationship_request(
+        request_type=request_type,  # type: ignore[arg-type]
+        request_description=request_description,  # type: ignore[arg-type]
+        association_type=association_type,  # type: ignore[arg-type]
+        first_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[first_form_name],  # type: ignore[index]
+        first_request_id=first_request_id,  # type: ignore[arg-type]
+        second_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[second_form_name],  # type: ignore[index]
+        second_request_id=second_request_id,  # type: ignore[arg-type]
     )
 
     if bidirectional:
@@ -1825,17 +1825,17 @@ def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> 
             "Resolved by": "Resolved",
         }
 
-        res = client.ticket_create_relationship_request(
-            request_type=request_type,
-            request_description=request_description,
-            association_type=association_types[association_type],
-            first_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[second_form_name],
-            first_request_id=second_request_id,
-            second_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[first_form_name],
-            second_request_id=first_request_id,
+        client.ticket_create_relationship_request(
+            request_type=request_type,  # type: ignore[arg-type]
+            request_description=request_description,  # type: ignore[arg-type]
+            association_type=association_types[association_type],  # type: ignore[index]
+            first_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[second_form_name],  # type: ignore[index]
+            first_request_id=second_request_id,  # type: ignore[arg-type]
+            second_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[first_form_name],  # type: ignore[index]
+            second_request_id=first_request_id,  # type: ignore[arg-type]
         )
 
-    return res
+    return "Relationship is created."
 
 
 def service_request_definition_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1901,9 +1901,9 @@ def worklog_list_command(client: Client, args: Dict[str, Any]) -> CommandResults
     return command_results
 
 
-def worklog_attachment_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def worklog_attachment_get_command(client: Client, args: Dict[str, Any]) -> List[dict]:
     worklog_id = args.get("worklog_id")
-    res = client.worklog_attachment_get_request(worklog_id)
+    res = client.worklog_attachment_get_request(worklog_id)  # type: ignore[arg-type]
     return res
 
 
