@@ -385,16 +385,21 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
     if not user_result:
         raise DemistoException(f"Unexpected response when calling get-user-data:\n{res}")
 
-    users = [dict.fromkeys(UserData.__required_keys__, "") | res for res in user_result["Contents"]]
+    # Build user list with all required fields, defaulting missing ones to empty string
+    users = [
+        {key: user_data.get(key, "") for key in UserData.__required_keys__}
+        for user_data in user_result["Contents"]
+    ]
 
     # Check for no users found (Status is not 'found' for any user)
     if not any(user["Status"] == "found" for user in users):
+        demisto.debug(f"ExpirePassword: Did not found valid users {users}.")
         raise DemistoException("ExpirePassword: User(s) not found.")
 
     return users, hr
 
 
-def expire_passwords(users: list[UserData]) -> tuple[list[ExpiredPasswordResult], str]:
+def expire_passwords(users: list[UserData]) -> tuple[list[dict], str]:
     """
     Expires the passwords for a list of users by calling the appropriate integration command for each.
 
@@ -405,10 +410,10 @@ def expire_passwords(users: list[UserData]) -> tuple[list[ExpiredPasswordResult]
         DemistoException: If no users were found with a "found" status that could be acted upon.
 
     Returns:
-        tuple[list[ExpiredPasswordResult], str]: A list of results from the password expiration operations,
-                                                 including user profile information and the aggregated HR.
+        tuple[list[dict], str]: A list of results from the password expiration operations,
+                                including user profile information and the aggregated HR.
     """
-    context: list[ExpiredPasswordResult] = []
+    context: list[dict] = []
     human_readables = []
     demisto.debug(f"DELETE-ExpirePassword: expire_passwords {users=}")
     for user in users:
@@ -416,18 +421,19 @@ def expire_passwords(users: list[UserData]) -> tuple[list[ExpiredPasswordResult]
             command_func = get_module_command_func(user["Brand"])
             res_cmd, hr = command_func(user, user["Instance"])
             demisto.debug(f"DELETE-ExpirePassword: expire_passwords main {res_cmd=} {hr=}")
-            context += [
-                {
+            # Build context entries by merging user profile with command results
+            for res in res_cmd:
+                result_entry = {
                     "UserProfile": {
                         "Email": user["Email"],
                         "ID": user["ID"],
                         "Username": user["Username"],
                     },
                     "Brand": user["Brand"],
+                    **res  # Merge result fields (Result, Message, Instance)
                 }
-                | res
-                for res in res_cmd
-            ]
+                context.append(result_entry)
+            
             human_readables.append(hr)
         else:
             demisto.debug(f"ExpirePassword: {user['Status']}, for brand: {user['Brand']}")
