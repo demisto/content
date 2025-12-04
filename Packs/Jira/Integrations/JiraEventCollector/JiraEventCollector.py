@@ -8,12 +8,97 @@ import urllib3
 from CommonServerPython import *  # noqa: F401
 from pydantic import AnyUrl, BaseConfig, BaseModel, Field, Json  # pylint: disable=no-name-in-module
 from requests.auth import HTTPBasicAuth
+import urllib.parse
+import secrets
 
 urllib3.disable_warnings()
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 VENDOR = "atlassian"
 PRODUCT = "jira"
+
+AUTH_URL = "https://auth.atlassian.com/authorize"
+TOKEN_URL = "https://auth.atlassian.com/oauth/token"
+SCOPES = "read:audit-log:jira read:user:jira offline_access"
+
+
+def jira_oauth_start(client_id: str, redirect_uri: str) -> CommandResults:
+    state = secrets.token_hex(16)
+    params = {
+        "audience": "api.atlassian.com",
+        "client_id": client_id,
+        "scope": SCOPES,
+        "redirect_uri": redirect_uri,
+        "state": state,
+        "response_type": "code",
+        "prompt": "consent",
+    }
+    url = f"{AUTH_URL}?{urllib.parse.urlencode(params)}"  # type: ignore
+    return CommandResults(
+        readable_output=f"Please authenticate [here]({url})",
+        raw_response=url,
+    )
+
+
+def jira_oauth_complete(client_id: str, client_secret: str, code: str, state: str, redirect_uri: str) -> CommandResults:
+    data = {
+        "grant_type": "authorization_code",
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "code": code,
+        "redirect_uri": redirect_uri,
+    }
+    response = requests.post(TOKEN_URL, json=data)
+    response.raise_for_status()
+    token_data = response.json()
+
+    expires_in = token_data.get("expires_in", 3600)
+    token_data["valid_until"] = (datetime.now() + timedelta(seconds=expires_in - 60)).timestamp()
+
+    integration_context = demisto.getIntegrationContext()
+    integration_context.update(token_data)
+    demisto.setIntegrationContext(integration_context)
+
+    return CommandResults(readable_output="✅ Authorization completed successfully.")
+
+
+def get_access_token(client_id: str, client_secret: str, redirect_uri: str) -> str:
+    integration_context = demisto.getIntegrationContext()
+    access_token = integration_context.get("access_token")
+    refresh_token = integration_context.get("refresh_token")
+    valid_until = integration_context.get("valid_until")
+
+    if not access_token or not refresh_token:
+        raise DemistoException("Access token or refresh token not found. Please run !jira-oauth-start.")
+
+    now = datetime.now().timestamp()
+    if valid_until and now >= valid_until:
+        demisto.debug("Token expired, refreshing...")
+        return refresh_access_token(client_id, client_secret, refresh_token, redirect_uri)
+
+    return access_token
+
+
+def refresh_access_token(client_id: str, client_secret: str, refresh_token: str, redirect_uri: str) -> str:
+    data = {
+        "grant_type": "refresh_token",
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "refresh_token": refresh_token,
+        "redirect_uri": redirect_uri,
+    }
+    response = requests.post(TOKEN_URL, json=data)
+    response.raise_for_status()
+    token_data = response.json()
+
+    expires_in = token_data.get("expires_in", 3600)
+    token_data["valid_until"] = (datetime.now() + timedelta(seconds=expires_in - 60)).timestamp()
+
+    integration_context = demisto.getIntegrationContext()
+    integration_context.update(token_data)
+    demisto.setIntegrationContext(integration_context)
+
+    return token_data["access_token"]
 
 
 class Method(str, Enum):
@@ -59,11 +144,7 @@ class Request(BaseModel):
     insecure: bool = Field(not demisto.params().get("insecure", False), alias="verify")
     proxy: bool = Field(demisto.params().get("proxy", False), alias="proxies")
     data: Optional[str] = None
-    auth: Optional[HTTPBasicAuth] = Field(
-        HTTPBasicAuth(
-            demisto.params().get("credentials", {}).get("identifier"), demisto.params().get("credentials", {}).get("password")
-        )
-    )
+    auth: Optional[HTTPBasicAuth] = None
 
     class Config(BaseConfig):
         arbitrary_types_allowed = True
@@ -177,14 +258,53 @@ class GetEvents:
 def main():
     # Args is always stronger. Get last run even stronger
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
+    command = demisto.command()
 
-    demisto_params["url"] = f'{str(demisto_params.get("url", "")).removesuffix("/")}/rest/api/3/auditing/record'
+    cloud_id = demisto_params.get("cloud_id")
+    client_id = demisto_params.get("client_id")
+    client_secret = demisto_params.get("client_secret")
+    callback_url = demisto_params.get("callback_url")
+
+    # Handle OAuth commands
+    if command == "jira-oauth-start":
+        return_results(jira_oauth_start(client_id, callback_url))
+        return
+    elif command == "jira-oauth-complete":
+        return_results(jira_oauth_complete(
+            client_id, client_secret, demisto.args().get("code"), demisto.args().get("state"), callback_url
+        ))
+        return
+    elif command == "jira-oauth-test":
+        get_access_token(client_id, client_secret, callback_url)
+        return_results("✅ OAuth connection test successful.")
+        return
+
+    headers = {}
+
+    if cloud_id and client_id and client_secret:
+        # OAuth
+        demisto_params["url"] = f"https://api.atlassian.com/ex/jira/{cloud_id}/rest/api/3/auditing/record"
+        access_token = get_access_token(client_id, client_secret, callback_url)
+        headers["Authorization"] = f"Bearer {access_token}"
+    else:
+        # Basic Auth
+        url = demisto_params.get("url", "")
+        if not url:
+            raise DemistoException("Server URL is required for Basic Authentication.")
+        demisto_params["url"] = f'{str(url).removesuffix("/")}/rest/api/3/auditing/record'
+
+        creds = demisto_params.get("credentials", {})
+        identifier = creds.get("identifier")
+        password = creds.get("password")
+        if identifier and password:
+            demisto_params["auth"] = HTTPBasicAuth(identifier, password)
+
+    demisto_params["headers"] = headers
     demisto_params["params"] = ReqParams.model_validate(demisto_params)  # type: ignore[attr-defined]
 
     request = Request.model_validate(demisto_params)  # type: ignore[attr-defined]
     client = Client(request)
     get_events = GetEvents(client)
-    command = demisto.command()
 
     if command == "test-module":
         get_events.run(max_fetch=1)

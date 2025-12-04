@@ -1,4 +1,5 @@
 import pytest
+import secrets
 from AtlassianConfluenceCloud import DEFAULT_GET_EVENTS_LIMIT, MESSAGES, URL_SUFFIX, Client, fetch_events, get_events
 from CommonServerPython import *
 from pytest_mock import MockerFixture
@@ -415,7 +416,7 @@ def test_confluence_cloud_content_search_command_when_valid_response_is_returned
         expected_readable_output = f.read()
 
     args = {"query": "type=page", "expand": DEFAULT_EXPANDED_FIELD_CONTENT, "next_token": "1223344resfdczcxdvcdsv"}
-    response = confluence_cloud_content_search_command(client, args)
+    response = confluence_cloud_content_search_command(client, args)  # type: ignore
 
     assert response.outputs == expected_context_output
     assert response.readable_output == expected_readable_output
@@ -509,7 +510,7 @@ def test_confluence_cloud_content_list_command_when_valid_response_is_returned(r
         "status": "current",
         "creation_date": "6 Aug 2021",
     }
-    response = confluence_cloud_content_list_command(client, args)
+    response = confluence_cloud_content_list_command(client, args)  # type: ignore
 
     assert response.outputs_prefix == "ConfluenceCloud.Content"
     assert response.outputs_key_field == "id"
@@ -727,7 +728,7 @@ def test_confluence_cloud_content_update_command_when_valid_response_is_returned
         expected_readable_output = f.read()
 
     args = {"content_id": "2097159", "title": "XSOAR_Page", "type": "page", "version": 2}
-    response = confluence_cloud_content_update_command(client, args)
+    response = confluence_cloud_content_update_command(client, args)  # type: ignore
 
     assert response.outputs_prefix == "ConfluenceCloud.Content"
     assert response.outputs_key_field == "id"
@@ -773,7 +774,7 @@ def test_confluence_cloud_content_update_command_when_object_not_present(request
         expected_readable_output = f.read()
 
     args = {"content_id": "2097159", "title": "XSOAR_Page", "type": "page", "version": 2}
-    response = confluence_cloud_content_update_command(client, args)
+    response = confluence_cloud_content_update_command(client, args)  # type: ignore
 
     assert response.outputs_prefix == "ConfluenceCloud.Content"
     assert response.outputs_key_field == "id"
@@ -863,7 +864,7 @@ def test_confluence_cloud_content_search_command_when_object_not_present(request
         expected_readable_output = f.read()
 
     args = {"query": "type=page", "expand": DEFAULT_EXPANDED_FIELD_CONTENT, "next_token": "1223344resfdczcxdvcdsv"}
-    response = confluence_cloud_content_search_command(client, args)
+    response = confluence_cloud_content_search_command(client, args)  # type: ignore
 
     assert response.outputs == expected_context_output
     assert response.readable_output == expected_readable_output
@@ -899,7 +900,7 @@ def test_confluence_cloud_content_list_command_when_when_object_not_present(requ
         "status": "current",
         "date": "6 Aug 2021",
     }
-    response = confluence_cloud_content_list_command(client, args)
+    response = confluence_cloud_content_list_command(client, args)  # type: ignore
 
     assert response.outputs_prefix == "ConfluenceCloud.Content"
     assert response.outputs_key_field == "id"
@@ -960,7 +961,7 @@ def test_fetch_events_with_partial_last_run(mocker: MockerFixture):
 
     # expected values
     expected_end_date = (mock_time - 5) * 1000
-    expected_start_date = last_run["end_date"] + 1
+    expected_start_date = last_run["end_date"] + 1  # type: ignore
 
     actual_events, actual_last_run = fetch_events(client, fetch_limit, last_run)
     mock_search.assert_called_with(limit=fetch_limit, start_date=str(expected_start_date), end_date=str(expected_end_date))
@@ -992,7 +993,7 @@ def test_fetch_events_with_full_last_run(mocker: MockerFixture):
 
     # expected values
     expected_end_date = (mock_time - 5) * 1000
-    expected_start_date = last_run["end_date"] + 1
+    expected_start_date = int(last_run["end_date"]) + 1
 
     actual_events, actual_last_run = fetch_events(client, fetch_limit, last_run)
     assert actual_events == first_page_response["results"] * 2
@@ -1161,3 +1162,97 @@ def test_confluence_cloud_content_get_command_when_valid_response_is_returned(re
     assert response.outputs_key_field == "id"
     assert response.outputs == expected_context_output
     assert response.readable_output == expected_readable_output
+
+
+def test_confluence_cloud_oauth_start(mocker):
+    """
+    Given:
+        - A call to confluence-cloud-oauth-start command
+    When:
+        - The command is executed
+    Then:
+        - Ensure the authorization URL is generated correctly with the state
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_oauth_start
+
+    mocker.patch.object(secrets, "token_hex", return_value="state_token")
+    mocker.patch(
+        "AtlassianConfluenceCloud.demisto.params",
+        return_value={"client_id": "client_id", "callback_url": "callback_url"}
+    )
+    mocker.patch("AtlassianConfluenceCloud.demisto.setIntegrationContext")
+
+    res = confluence_cloud_oauth_start("client_id", "callback_url")
+    assert "https://auth.atlassian.com/authorize" in res.readable_output
+    assert "state=state_token" in res.readable_output
+    assert "client_id=client_id" in res.readable_output
+    assert "redirect_uri=callback_url" in res.readable_output
+
+
+def test_confluence_cloud_oauth_complete(mocker, requests_mock):
+    """
+    Given:
+        - A call to confluence-cloud-oauth-complete command with a valid code and state
+    When:
+        - The command is executed
+    Then:
+        - Ensure the access token is retrieved and stored in the integration context
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_oauth_complete
+
+    mocker.patch("AtlassianConfluenceCloud.demisto.params", return_value={
+        "client_id": "client_id",
+        "client_secret": "client_secret",
+        "callback_url": "callback_url"
+    })
+    mocker.patch("AtlassianConfluenceCloud.demisto.getIntegrationContext", return_value={"state": "state_token"})
+    set_context = mocker.patch("AtlassianConfluenceCloud.demisto.setIntegrationContext")
+
+    requests_mock.post("https://auth.atlassian.com/oauth/token", json={
+        "access_token": "access_token",
+        "refresh_token": "refresh_token",
+        "expires_in": 3600
+    })
+
+    res = confluence_cloud_oauth_complete("client_id", "client_secret", "code", "state_token", "callback_url")
+    assert "Authorization completed successfully." in res.readable_output
+    assert set_context.call_count == 1
+    context = set_context.call_args[0][0]
+    assert context["access_token"] == "access_token"
+    assert context["refresh_token"] == "refresh_token"
+
+
+def test_get_access_token_refresh(mocker, requests_mock):
+    """
+    Given:
+        - An expired access token in the integration context
+    When:
+        - get_access_token is called
+    Then:
+        - Ensure a new access token is retrieved using the refresh token and stored in the integration context
+    """
+    from AtlassianConfluenceCloud import get_access_token
+
+    mocker.patch("AtlassianConfluenceCloud.demisto.params", return_value={
+        "client_id": "client_id",
+        "client_secret": "client_secret",
+        "callback_url": "callback_url"
+    })
+    mocker.patch("AtlassianConfluenceCloud.demisto.getIntegrationContext", return_value={
+        "access_token": "old_access_token",
+        "refresh_token": "refresh_token",
+        "valid_until": 0  # Expired
+    })
+    set_context = mocker.patch("AtlassianConfluenceCloud.demisto.setIntegrationContext")
+
+    requests_mock.post("https://auth.atlassian.com/oauth/token", json={
+        "access_token": "new_access_token",
+        "refresh_token": "new_refresh_token",
+        "expires_in": 3600
+    })
+
+    token = get_access_token("client_id", "client_secret", "callback_url")
+    assert token == "new_access_token"
+    assert set_context.call_count == 1
+    new_context = set_context.call_args[0][0]
+    assert new_context["access_token"] == "new_access_token"

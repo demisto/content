@@ -9,15 +9,35 @@ configuration:
 - defaultvalue: https://<your-domain>.atlassian.net
   display: Server URL
   name: url
-  required: true
+  required: false
   type: 0
   section: Connect
 - display: User name
   additionalinfo: The user name (admin@example.com) and password
   name: credentials
   displaypassword: API token
-  required: true
+  required: false
   type: 9
+  section: Connect
+- display: Cloud ID
+  name: cloud_id
+  type: 0
+  required: false
+  section: Connect
+- display: Client ID
+  name: client_id
+  type: 0
+  required: false
+  section: Connect
+- display: Client Secret
+  name: client_secret
+  type: 4
+  required: false
+  section: Connect
+- display: Callback URL
+  name: callback_url
+  type: 0
+  required: false
   section: Connect
 - defaultvalue: 3 days
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). default is 3 days.
@@ -46,6 +66,19 @@ display: Jira Event Collector
 name: Jira Event Collector
 script:
   commands:
+  - description: Start the OAuth process.
+    name: jira-oauth-start
+  - description: Complete the OAuth process.
+    name: jira-oauth-complete
+    arguments:
+    - description: The authorization code.
+      name: code
+      required: true
+    - description: The state.
+      name: state
+      required: true
+  - description: Test the OAuth connection.
+    name: jira-oauth-test
   - description: 'Returns a list of audit records'
     name: jira-get-events
     arguments:
