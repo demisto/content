@@ -33,6 +33,13 @@ MSGRAPH_PASSWORD_RESET = "User {username} will be required to change his passwor
 AWS_PASSWORD_CHANGED = "The user {username} Password was changed"
 OKTA_PASSWORD_EXPIRED_MARKER = "PASSWORD_EXPIRED"
 
+# Generic failure messages for different integrations
+AD_GENERIC_FAILURE = "Active Directory password expiration failed"
+MSGRAPH_GENERIC_FAILURE = "Microsoft Graph password reset failed"
+OKTA_GENERIC_FAILURE = "Okta password expiration failed"
+GSUITE_GENERIC_FAILURE = "GSuite password reset failed"
+AWS_GENERIC_FAILURE = "AWS IAM password reset failed"
+
 
 # --- Utility Functions ---
 def get_instance_from_result(res: dict) -> str:
@@ -66,7 +73,7 @@ def build_result(
     res: dict,
     success_condition: bool,
     success_msg: str,
-    failure_msg: str | None = None
+    failure_msg: str
 ) -> ExpiredPasswordResult:
     """
     Build standardized ExpiredPasswordResult.
@@ -75,14 +82,14 @@ def build_result(
         res (dict): Command result dictionary.
         success_condition (bool): Whether the operation succeeded.
         success_msg (str): Message to use on success.
-        failure_msg (str | None): Message to use on failure. If None, extracts from res.
+        failure_msg (str): Message to use on failure.
     
     Returns:
         ExpiredPasswordResult: Standardized result dictionary.
     """
     return ExpiredPasswordResult(
         Result="Success" if success_condition else "Failed",
-        Message=success_msg if success_condition else (failure_msg or get_response_message(res)),
+        Message=success_msg if success_condition else failure_msg,
         Instance=get_instance_from_result(res)
     )
 
@@ -163,7 +170,7 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
     """
     username = user["Username"]
 
-    # 1. Clear the "Password Never Expires" attribute (userAccountControl 0x10000)
+    # 1. Clear the "Password Never Expires" attribute
     # This must run before ad-expire-password to ensure the policy can be enforced.
     args_modify_never_expire_command = {"username": username, "using": using, "value": "false"}
     res_modify_never_expire, hr_modify_never_expire = run_command("ad-modify-password-never-expire", args_modify_never_expire_command)
@@ -189,14 +196,14 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Expi
 
     func_res = []
     for res in res_expire:
-        res_msg = res.get("Contents", "AD password command failed")
+        res_msg = res.get("Contents")
         success = res_msg == AD_PASSWORD_EXPIRED
         func_res.append(
             build_result(
                 res,
                 success_condition=success,
-                success_msg=f"Active Directory: {res_msg}",
-                failure_msg=res_msg
+                success_msg=AD_PASSWORD_EXPIRED,
+                failure_msg=res_msg or AD_GENERIC_FAILURE
             )
         )
     return func_res, hr
@@ -217,14 +224,14 @@ def run_microsoft_graph_user(user: UserData, using: str) -> tuple[list[ExpiredPa
     demisto.debug(f"DELETE-ExpirePassword: MSG User {res_cmd=} {hr=}")
     func_res = []
     for res in res_cmd:
-        res_hr = get_response_message(res, "Microsoft Graph User expiration password command failed")
+        res_hr = get_response_message(res, MSGRAPH_GENERIC_FAILURE)
         expected_msg = MSGRAPH_PASSWORD_RESET.format(username=user['Username'])
         success = res_hr == expected_msg
         func_res.append(
             build_result(
                 res,
                 success_condition=success,
-                success_msg="Password reset successfully enforced",
+                success_msg=expected_msg,
                 failure_msg=res_hr
             )
         )
@@ -246,7 +253,7 @@ def run_okta_v2(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
     demisto.debug(f"DELETE-ExpirePassword: Okta v2 {res_cmd=} {hr=}")
     func_res = []
     for res in res_cmd:
-        res_msg = get_response_message(res)
+        res_msg = get_response_message(res, OKTA_GENERIC_FAILURE)
         demisto.debug(f"DELETE-ExpirePassword: Okta v2 Check Content {res_msg=}")
         success = OKTA_PASSWORD_EXPIRED_MARKER in res_msg
         func_res.append(
@@ -280,12 +287,13 @@ def run_gsuiteadmin(user: UserData, using: str) -> tuple[list[ExpiredPasswordRes
     for res in res_cmd:
         # make sure the field changePasswordAtNextLogin is true
         success = bool(dict_safe_get(res, ["Contents", "changePasswordAtNextLogin"]))
+        res_msg = get_response_message(res, GSUITE_GENERIC_FAILURE)
         func_res.append(
             build_result(
                 res,
                 success_condition=success,
                 success_msg="Password reset successfully enforced",
-                failure_msg=str(res.get("Contents") or "Unable to expire password")
+                failure_msg=res_msg
             )
         )
     return func_res, hr
@@ -317,7 +325,7 @@ def run_aws_iam(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
     demisto.debug(f"DELETE-ExpirePassword: AWS-IAM {res_cmd=} {hr=}")
     func_res = []
     for res in res_cmd:
-        res_msg = get_response_message(res)
+        res_msg = get_response_message(res, AWS_GENERIC_FAILURE)
         # The AWS-IAM integration returns "The user {user} password was changed" on success
         expected_msg = AWS_PASSWORD_CHANGED.format(username=user['Username'])
         success = res_msg == expected_msg
@@ -325,8 +333,8 @@ def run_aws_iam(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
             build_result(
                 res,
                 success_condition=success,
-                success_msg="IAM user login profile updated successfully, requiring password change on next sign-in.",
-                failure_msg=f"AWS-IAM command did not confirm success. Response: {res_msg or 'No response message'}"
+                success_msg=expected_msg,
+                failure_msg=res_msg
             )
         )
     return func_res, hr
@@ -374,7 +382,7 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
             r["HumanReadable"] == "### User(s) data\n**No entries.**\n" for r in res
     ):
         raise DemistoException(
-            f"No integrations were found for the brands {args.get('brands')}. Please verify the brand instances' setup."
+            f"No integrations were found for the brands {args.get('brands')}. Please verify the brand instances setup."
         )
 
     user_result = next(  # get the output with the users
