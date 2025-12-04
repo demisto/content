@@ -247,6 +247,14 @@ script:
       isArray: true
       name: indicator
       required: true
+    - description: The indicator to enable.
+      isArray: true
+      name: indicator
+      required: true
+    - description: The indicator to enable.
+      isArray: true
+      name: indicator
+      required: true
     description: Enables IOCs in the XDR server.
     name: xdr-iocs-enable
   - arguments:
