@@ -697,7 +697,9 @@ script:
         - description: The assets IDs related to the issue. Accepts a comma-separated list.
           isArray: true
           name: asset_ids
-        - description: The assignee of the issue. Accepts a comma-separated list.
+        - description: |
+            The assignee of the issue. Accepts a comma-separated list.
+            Use "unassigned" for unassigned issues or "assigned" for all assigned issues.
           isArray: true
           name: assignee
         - description: A comma separated list of outputs to include in the context.
@@ -1599,6 +1601,8 @@ script:
         description: |
           A JSON encoded string representing a list of asset groups to search for. (e.g., `["group1", "group2"]`).
         isArray: true
+      - name: asset_categories
+        description: A Comma-separated list of asset categories to search for. (e.g., "category1,category2").
       name: core-search-assets
       description: Retrieves asset from the Cortex platform using optional filter criteria.
       outputs:
@@ -2268,6 +2272,17 @@ script:
         - contextPath: Core.AppsecIssue.backlog_status
           description: The backlog status of the issue.
           type: String
+    - name: core-run-playbook
+      description:  Runs a playbook on specific issue IDs.
+      hidden: true
+      arguments:
+        - name: playbook_id
+          description: The ID of the playbook to run.
+          required: true
+        - name: issue_ids
+          description: The IDs of the issues to process with the playbook.
+          required: true
+          isArray: true
   runonce: false
   script: "-"
   subtype: python3
