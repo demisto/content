@@ -463,7 +463,7 @@ async def fetch_events_command(
 
             # If no new events from service, set its next run same as last run
             if not service_events:
-                demisto.debug(f"[{service_names}] No new events found since {service_last_run=}.")
+                demisto.debug(f"[{service_name}] No new events found since {service_last_run=}.")
                 next_run[service_name] = service_last_run
                 continue
 
