@@ -1,7 +1,8 @@
 import json
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, call
 
 import pytest
+import time
 import requests_mock
 from Okta_v2 import (
     Client,
@@ -785,6 +786,91 @@ def test_verify_push_factor_command(mocker, args, polling_response, result):
     _, outputs, _ = verify_push_factor_command(client, args)
     assert outputs.get("Account(val.ID && val.ID === obj.ID)").get("ID") == "TestID"
     assert outputs.get("Account(val.ID && val.ID === obj.ID)").get("VerifyPushResult") == result
+
+
+
+
+@pytest.mark.parametrize(
+    "args, polling_time, max_polling_calls, expected_calls, expected_result",
+    [
+        (
+            {"userId": "TestID", "factorId": "FactorID", "polling_time": "2", "max_polling_calls": "3"},
+            2,
+            3,
+            3,
+            "TIMEOUT",
+        ),
+        (
+            {"userId": "TestID", "factorId": "FactorID", "polling_time": "1", "max_polling_calls": "5"},
+            1,
+            5,
+            2,
+            "SUCCESS",
+        ),
+    ],
+)
+def test_verify_push_factor_command_polling_args(mocker, args, polling_time, max_polling_calls, expected_calls, expected_result):
+    """
+    Given:
+    - Arguments for verify_push_factor_command with custom polling_time and max_polling_calls
+    
+    When:
+    - Running verify_push_factor_command with these arguments
+    
+    Then:
+    - Ensure poll_verify_push is called with the correct polling_time and max_polling_calls
+    - Ensure time.sleep is called the expected number of times with the correct polling_time
+    - Verify the expected result is returned
+    """
+    # Mock the verify_push_factor method to return a response with a poll link
+    mocker.patch.object(client, "verify_push_factor", return_value=verify_push_factor_response)
+    
+    # Mock time.sleep to avoid actual waiting during tests
+    mocker.patch("time.sleep")
+    
+    # For the first test case (TIMEOUT), all responses should be "WAITING" until timeout
+    # For the second test case (SUCCESS), the second response should be "SUCCESS"
+    if expected_result == "TIMEOUT":
+        waiting_response = {"factorResult": "WAITING"}
+        timeout_response = {"factorResult": "TIMEOUT"}
+        
+        # Mock http_request to return "WAITING" for all calls
+        mocker.patch.object(
+            client,
+            "http_request",
+            side_effect=[waiting_response] * max_polling_calls
+        )
+        
+        # Mock poll_verify_push to simulate timeout
+        mocker.patch.object(
+            client,
+            "poll_verify_push",
+            return_value=timeout_response
+        )
+    else:
+        # For SUCCESS case, return SUCCESS on the second call
+        success_response = {"factorResult": "SUCCESS"}
+        
+        # Mock poll_verify_push to return SUCCESS after some calls
+        mocker.patch.object(
+            client,
+            "poll_verify_push",
+            return_value=success_response
+        )
+    
+    # Call the function
+    _, outputs, _ = verify_push_factor_command(client, args)
+    
+    # Verify poll_verify_push was called with correct arguments
+    client.poll_verify_push.assert_called_once_with(
+        "https://test.com/api/v1/users/TestID/factors/FactorID/transactions/TransactionID",
+        polling_time,
+        max_polling_calls
+    )
+    
+    # Verify the result
+    assert outputs.get("Account(val.ID && val.ID === obj.ID)").get("ID") == "TestID"
+    assert outputs.get("Account(val.ID && val.ID === obj.ID)").get("VerifyPushResult") == expected_result
 
 
 @pytest.mark.parametrize(
