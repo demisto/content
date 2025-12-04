@@ -4946,7 +4946,6 @@ def test_run_playbook_command_client_call_parameters():
     mock_client.run_playbook.assert_called_once_with(["param_issue_1", "param_issue_2"], "param_test_playbook")
 
 
-
 class TestMapEndpointFormat:
     """Test cases for map_endpoint_format function"""
 
@@ -4960,6 +4959,7 @@ class TestMapEndpointFormat:
             - Returns properly mapped endpoint data with friendly field names and values
         """
         from CortexPlatformCore import map_endpoint_format
+
         raw_endpoint_list = [
             {
                 "AGENT_ID": "endpoint-123",
@@ -5004,6 +5004,7 @@ class TestMapEndpointFormat:
             - Returns mapped data only for existing fields
         """
         from CortexPlatformCore import map_endpoint_format
+
         raw_endpoint_list = [
             {
                 "AGENT_ID": "endpoint-456",
@@ -5028,6 +5029,7 @@ class TestMapEndpointFormat:
             - Returns original values for unmapped items
         """
         from CortexPlatformCore import map_endpoint_format
+
         raw_endpoint_list = [{"AGENT_ID": "endpoint-789", "AGENT_TYPE": "UNKNOWN_TYPE", "AGENT_STATUS": "UNKNOWN_STATUS"}]
 
         result = map_endpoint_format(raw_endpoint_list)
@@ -5046,6 +5048,7 @@ class TestMapEndpointFormat:
             - Returns empty list
         """
         from CortexPlatformCore import map_endpoint_format
+
         result = map_endpoint_format([])
         assert result == []
 
@@ -5059,6 +5062,7 @@ class TestMapEndpointFormat:
             - Returns mapped data for all endpoints
         """
         from CortexPlatformCore import map_endpoint_format
+
         raw_endpoint_list = [
             {
                 "AGENT_ID": "endpoint-1",
@@ -5206,9 +5210,9 @@ def test_build_endpoint_filters_agent_eol_inversion(mocker):
     # Verify supported_version (not agent_eol) was passed correctly
     calls = mock_filter_instance.add_field.call_args_list
     agent_eol_call = None
-    for call in calls:
-        if call[0][0] == ENDPOINT_FIELDS["agent_eol"]:
-            agent_eol_call = call
+    for current_call in calls:
+        if current_call[0][0] == ENDPOINT_FIELDS["agent_eol"]:
+            agent_eol_call = current_call
             break
 
     assert agent_eol_call is not None

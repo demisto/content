@@ -45,7 +45,7 @@ WEBAPP_COMMANDS = [
     "core-get-asset-coverage-histogram",
     "core-create-appsec-policy",
     "core-get-appsec-issues",
-    "core-list-endpoints"
+    "core-list-endpoints",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -116,6 +116,7 @@ ENDPOINT_FIELDS = {
     "cloud_provider": "CLOUD_PROVIDER",
     "cloud_region": "CLOUD_REGION",
 }
+
 
 class AppsecIssues:
     class AppsecIssueType:
@@ -2192,7 +2193,7 @@ def main():  # pragma: no cover
             return_results(get_appsec_issues_command(client, args))
         elif command == "core-run-playbook":
             return_results(run_playbook_command(client, args))
-            
+
         elif command == "core-list-endpoints":
             return_results(core_list_endpoints_command(client, args))
 
