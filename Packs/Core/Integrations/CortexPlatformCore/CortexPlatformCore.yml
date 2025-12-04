@@ -2274,7 +2274,7 @@ script:
           type: String
     - name: core-update-case
       hidden: true
-      description: Updates the properties of a case. This command does not provide an explicit indication of success.
+      description: Updates the properties of a case.
       arguments:
         - name: case_id
           description: A comma-separated list of case IDs to update.
