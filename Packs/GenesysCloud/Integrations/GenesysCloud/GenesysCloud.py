@@ -491,6 +491,7 @@ async def fetch_events_command(
         error_summary = "\n".join(f"{service_name}: {error}" for service_name, error in per_service_errors.items())
         raise DemistoException(f"Fetching events failed from all services:\n{error_summary}.")
 
+    demisto.debug(f"Finished fetching {len(all_events)} events. Setting {next_run=}.")
     return next_run, all_events
 
 
