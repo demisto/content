@@ -988,7 +988,7 @@ tasks:
                       "AND": [
                         {
                           "SEARCH_FIELD": "agent_id",
-                          "SEARCH_TYPE": "CONTAINS",
+                          "SEARCH_TYPE": "EQ",
                           "SEARCH_VALUE": "${inputs.agentID}"
                         }
                       ]
@@ -1497,7 +1497,7 @@ tasks:
                     },
                     {
                       "SEARCH_FIELD": "agent_id",
-                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_TYPE": "EQ",
                       "SEARCH_VALUE": "${inputs.agentID}"
                     }
                   ]
@@ -1556,7 +1556,7 @@ tasks:
                     },
                     {
                       "SEARCH_FIELD": "agent_id",
-                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_TYPE": "EQ",
                       "SEARCH_VALUE": "${inputs.agentID}"
                     }
                   ]
@@ -1646,7 +1646,7 @@ tasks:
                       "AND": [
                         {
                           "SEARCH_FIELD": "agent_id",
-                          "SEARCH_TYPE": "CONTAINS",
+                          "SEARCH_TYPE": "EQ",
                           "SEARCH_VALUE": "${inputs.agentID}"
                         }
                       ]
@@ -1718,7 +1718,7 @@ tasks:
                       "AND": [
                         {
                           "SEARCH_FIELD": "agent_id",
-                          "SEARCH_TYPE": "CONTAINS",
+                          "SEARCH_TYPE": "EQ",
                           "SEARCH_VALUE": "${inputs.agentID}"
                         }
                       ]
@@ -1820,7 +1820,7 @@ tasks:
                       "AND": [
                         {
                           "SEARCH_FIELD": "agent_id",
-                          "SEARCH_TYPE": "CONTAINS",
+                          "SEARCH_TYPE": "EQ",
                           "SEARCH_VALUE": "${inputs.agentID}"
                         }
                       ]
@@ -1907,7 +1907,7 @@ tasks:
                       "AND": [
                         {
                           "SEARCH_FIELD": "agent_id",
-                          "SEARCH_TYPE": "CONTAINS",
+                          "SEARCH_TYPE": "EQ",
                           "SEARCH_VALUE": "${inputs.agentID}"
                         }
                       ]
@@ -1999,7 +1999,7 @@ tasks:
                       "AND": [
                         {
                           "SEARCH_FIELD": "agent_id",
-                          "SEARCH_TYPE": "CONTAINS",
+                          "SEARCH_TYPE": "EQ",
                           "SEARCH_VALUE": "${inputs.agentID}"
                         }
                       ]
@@ -2074,7 +2074,7 @@ tasks:
                       "AND": [
                         {
                           "SEARCH_FIELD": "agent_id",
-                          "SEARCH_TYPE": "CONTAINS",
+                          "SEARCH_TYPE": "EQ",
                           "SEARCH_VALUE": "${inputs.agentID}"
                         }
                       ]
@@ -2151,7 +2151,7 @@ tasks:
                       "AND": [
                         {
                           "SEARCH_FIELD": "agent_id",
-                          "SEARCH_TYPE": "CONTAINS",
+                          "SEARCH_TYPE": "EQ",
                           "SEARCH_VALUE": "${inputs.agentID}"
                         }
                       ]
@@ -2234,7 +2234,7 @@ tasks:
                       "AND": [
                         {
                           "SEARCH_FIELD": "agent_id",
-                          "SEARCH_TYPE": "CONTAINS",
+                          "SEARCH_TYPE": "EQ",
                           "SEARCH_VALUE": "${inputs.agentID}"
                         }
                       ]
