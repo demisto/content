@@ -231,6 +231,14 @@ class Client(CoreClient):
                 raise DemistoException(f"Got 404 when querying for alert ID {alert_id}, alert not found.")
             else:
                 raise e
+            
+    def get_endpoint_update_version(self, endpoint_ids):
+        reply = self._http_request(
+            method="POST",
+            json_data={"asset_id": endpoint_ids},
+            url_suffix="/agents/upgrade/details",
+        )
+        return reply
 
 
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
@@ -814,6 +822,23 @@ def is_ip_list_valid(ip_list: list[str]):
             raise DemistoException(f"ip address {ip_address} is invalid")
 
 
+def get_endpoint_update_version_command(client, args):
+    """
+    Get the endpoint update version for specified endpoints.
+
+    Args:
+        client (Client): Integration client.
+        args (dict): Command arguments containing endpoint list.
+
+    Returns:
+        CommandResults: Formatted results of endpoint update versions.
+    """
+    endpoint_ids = argToList(args.get("endpoint_ids", ""))
+    response = client.get_endpoint_update_version(endpoint_ids)
+    return CommandResults(
+        
+    )
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -1203,6 +1228,9 @@ def main():  # pragma: no cover
 
         elif command == "core-block-ip":
             return_results(core_block_ip_command(args, client))
+        
+        elif command == "core-get-endpoint-update-version":
+            return_results(get_endpoint_update_version_command(client, args))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
