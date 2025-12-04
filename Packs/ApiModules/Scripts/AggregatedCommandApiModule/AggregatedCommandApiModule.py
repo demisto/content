@@ -6,7 +6,7 @@ from functools import cached_property
 import traceback
 from typing import Any
 from datetime import datetime, timedelta
-
+import json
 from CommonServerPython import *
 import demistomock as demisto
 
@@ -518,7 +518,7 @@ class ContextBuilder:
             # 2. Handle Failure Case (Logic extracted from original Case 1, 3, 4, 5, 6)
             if indicator_instance.final_status == Status.FAILURE:
                 results.append(
-                    {"Value": value or raw, "Status": IndicatorStatus.ERROR, "Message": indicator_instance.context_message}
+                    {"Value": value or raw, "Status": IndicatorStatus.ERROR.value, "Message": indicator_instance.context_message}
                 )
                 continue
 
@@ -558,7 +558,7 @@ class ContextBuilder:
             indicator_list (list[dict]): The list of indicators to enrich.
         """
         for indicator in indicator_list:
-            if "Score" in self.indicator_schema.context_output_mapping and indicator.get("Status") != IndicatorStatus.ERROR:
+            if "Score" in self.indicator_schema.context_output_mapping and indicator.get("Status") != IndicatorStatus.ERROR.value:
                 all_scores = [res.get("Score", 0) for res in indicator.get("Results", [])] + [indicator.get("TIMScore", 0)]
                 max_score = max(all_scores or [0])
                 indicator["MaxScore"] = max_score
@@ -1272,6 +1272,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             )
 
         demisto.debug("All commands succeeded. Returning a success entry.")
+        demisto.debug(f"{json.dumps(final_context, indent=4)}")
         return CommandResults(readable_output=human_readable, outputs=final_context)
 
     def create_indicators_entry_results(self):
