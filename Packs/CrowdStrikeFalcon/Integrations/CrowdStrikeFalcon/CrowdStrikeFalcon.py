@@ -3608,6 +3608,7 @@ def get_cnapp_assets():
 
 
 def fetch_assets_command():
+    demisto.info("[test] Strating fetch assets exeuction.")
     new_last_run, detections, items_count, snapshot_id, update_module_health = get_cnapp_assets()
     
     demisto.debug(f"[test] sending a batch of {len(detections)} assets to xsiam with {snapshot_id=}")
@@ -3628,6 +3629,7 @@ def fetch_assets_command():
     demisto.debug(f"[test] preparing to save assets last run with {new_last_run=}.")
     demisto.setAssetsLastRun(new_last_run)
     demisto.debug("assets last run was saved succesfuly.")
+    demisto.info("[test] finished fetch assets exeuction.")
 
 
 def fetch_detections_by_product_type(
