@@ -83,6 +83,9 @@ outputs:
 - contextPath: CVEEnrichment.Results.Published
   description: The published date of the indicator.
   type: string
+- contextPath: CVEEnrichment.Results.Status
+  description: 'The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified.'
+  type: string
 - contextPath: CVEEnrichment.Results.ModifiedTime
   description: The time the indicator was last modified.
   type: Date
