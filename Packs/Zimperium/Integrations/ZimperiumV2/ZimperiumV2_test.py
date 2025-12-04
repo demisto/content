@@ -444,41 +444,22 @@ def test_proxy_parameter_setup(proxy, result, mocker):
     assert client.call_args.kwargs.get("proxy") == result
 
 
-def test_module_parameter_with_command_argument_override_omitted(requests_mock):
-    """
-    Test that module parameter is omitted from requests when both client and command module are None.
-
-    This test uses policy_group_list_command as a representative command that supports
-    module as both a client parameter and a command argument.
-    """
-    requests_mock.post(f"{SERVER_URL}/auth/v1/api_keys/login", json={"accessToken": "token"})
-    client = Client(base_url=SERVER_URL, client_id="test", client_secret="test", verify=True, proxy=False, module=None)
-
-    mock_response = util_load_json("./test_data/policy_group_list.json")
-    requests_mock.get(f"{SERVER_URL}/mtd-policy/public/v1/groups/page", json=mock_response)
-
-    args = {}
-    policy_group_list_command(client=client, args=args)
-
-    # Verify the module parameter is omitted from the request
-    actual_module = requests_mock.last_request.qs.get("module")
-    assert actual_module is None, f"Expected module to be omitted, but got {actual_module}"
-
-
 @pytest.mark.parametrize(
     "client_module,command_module,expected_module",
     [
+        (None, None, None),  # Both None - module omitted
         ("ZIPS", None, "zips"),  # Client module only
         ("EMM", None, "emm"),  # Client module with different value
         ("ZIPS", "EMM", "emm"),  # Command argument takes priority over client module
         (None, "ZIPS", "zips"),  # Command argument when client has no module
     ],
 )
-def test_module_parameter_with_command_argument_override_included(client_module, command_module, expected_module, requests_mock):
+def test_module_parameter_with_command_argument_override(client_module, command_module, expected_module, requests_mock):
     """
     Test module parameter behavior for commands that support module as a command argument.
 
     Validates:
+    - When both client and command module are None, module is omitted from requests
     - When module is set (ZIPS/EMM), it should be included in requests (lowercase)
     - Command argument should take priority over client module parameter
 
@@ -486,9 +467,9 @@ def test_module_parameter_with_command_argument_override_included(client_module,
     module as both a client parameter and a command argument.
 
     Args:
-        client_module: Module value passed to Client constructor
-        command_module: Module value passed as command argument
-        expected_module: Expected module value in the API request (lowercase)
+        client_module: Module value passed to Client constructor (None, "ZIPS", or "EMM")
+        command_module: Module value passed as command argument (None, "ZIPS", or "EMM")
+        expected_module: Expected module value in the API request (None or lowercase string)
     """
     requests_mock.post(f"{SERVER_URL}/auth/v1/api_keys/login", json={"accessToken": "token"})
     client = Client(base_url=SERVER_URL, client_id="test", client_secret="test", verify=True, proxy=False, module=client_module)
@@ -499,46 +480,27 @@ def test_module_parameter_with_command_argument_override_included(client_module,
     args = {"module": command_module} if command_module is not None else {}
     policy_group_list_command(client=client, args=args)
 
-    # Verify the module parameter in the request (query parameters are lowercase in the URL)
+    # Verify the module parameter in the request
     actual_module = requests_mock.last_request.qs.get("module")
-    assert actual_module == [expected_module], f"Expected module={expected_module}, but got {actual_module}"
-
-
-def test_module_parameter_from_client_only_omitted(requests_mock):
-    """
-    Test that module parameter is omitted from requests when client module is None.
-
-    This test uses threat_search_command as a representative command that:
-    - Previously had hardcoded module="ZIPS"
-    - Now uses the configurable client module parameter
-    - Does not support module as a command argument
-    """
-    requests_mock.post(f"{SERVER_URL}/auth/v1/api_keys/login", json={"accessToken": "token"})
-    client = Client(base_url=SERVER_URL, client_id="test", client_secret="test", verify=True, proxy=False, module=None)
-
-    mock_response = util_load_json("./test_data/threat_search.json")
-    requests_mock.get(f"{SERVER_URL}/threats/public/v1/threats", json=mock_response)
-
-    args = {"after": "3 month"}
-    threat_search_command(client=client, args=args)
-
-    # Verify the module parameter is omitted from the request
-    actual_module = requests_mock.last_request.qs.get("module")
-    assert actual_module is None, f"Expected module to be omitted, but got {actual_module}"
+    expected_value = [expected_module] if expected_module is not None else None
+    assert actual_module == expected_value, f"Expected module={expected_value}, but got {actual_module}"
 
 
 @pytest.mark.parametrize(
     "client_module,expected_module",
     [
+        (None, None),  # Client module None - module omitted
         ("ZIPS", "zips"),  # Client module set to ZIPS
         ("EMM", "emm"),  # Client module set to EMM
     ],
 )
-def test_module_parameter_from_client_only_included(client_module, expected_module, requests_mock):
+def test_module_parameter_from_client_only(client_module, expected_module, requests_mock):
     """
     Test module parameter behavior for commands that only use the client-level module parameter.
 
-    Validates that when client module is set (ZIPS/EMM), it should be included in requests (lowercase).
+    Validates:
+    - When client module is None, module is omitted from requests
+    - When client module is set (ZIPS/EMM), it should be included in requests (lowercase)
 
     This test uses threat_search_command as a representative command that:
     - Previously had hardcoded module="ZIPS"
@@ -546,8 +508,8 @@ def test_module_parameter_from_client_only_included(client_module, expected_modu
     - Does not support module as a command argument
 
     Args:
-        client_module: Module value passed to Client constructor
-        expected_module: Expected module value in the API request (lowercase)
+        client_module: Module value passed to Client constructor (None, "ZIPS", or "EMM")
+        expected_module: Expected module value in the API request (None or lowercase string)
     """
     requests_mock.post(f"{SERVER_URL}/auth/v1/api_keys/login", json={"accessToken": "token"})
     client = Client(base_url=SERVER_URL, client_id="test", client_secret="test", verify=True, proxy=False, module=client_module)
@@ -558,6 +520,7 @@ def test_module_parameter_from_client_only_included(client_module, expected_modu
     args = {"after": "3 month"}
     threat_search_command(client=client, args=args)
 
-    # Verify the module parameter in the request (query parameters are lowercase in the URL)
+    # Verify the module parameter in the request
     actual_module = requests_mock.last_request.qs.get("module")
-    assert actual_module == [expected_module], f"Expected module={expected_module}, but got {actual_module}"
+    expected_value = [expected_module] if expected_module is not None else None
+    assert actual_module == expected_value, f"Expected module={expected_value}, but got {actual_module}"
