@@ -13,12 +13,12 @@
                 "sections": [
                     {
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 5,
                         "hideName": false,
                         "i": "hkzismdwjw-a4c86940-769e-11eb-b547-b75a1233ac03",
                         "items": [
                             {
-                                "endCol": 2,
+                                "endCol": 6,
                                 "fieldId": "bitsighttemporaryid",
                                 "height": 22,
                                 "id": "cb022d80-769e-11eb-b547-b75a1233ac03",
@@ -28,7 +28,7 @@
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
+                                "endCol": 6,
                                 "fieldId": "bitsightaffectsrating",
                                 "height": 22,
                                 "id": "c302f280-769f-11eb-b547-b75a1233ac03",
@@ -38,7 +38,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 6,
                                 "fieldId": "bitsightassets",
                                 "height": 44,
                                 "id": "de163600-769e-11eb-b547-b75a1233ac03",
@@ -47,7 +47,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 6,
                                 "fieldId": "details",
                                 "height": 44,
                                 "id": "e62c5ef0-769e-11eb-b547-b75a1233ac03",
@@ -56,7 +56,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 6,
                                 "fieldId": "bitsightevidencekey",
                                 "height": 22,
                                 "id": "ed95cd20-769e-11eb-b547-b75a1233ac03",
@@ -65,7 +65,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 6,
                                 "fieldId": "bitsightrelatedfindings",
                                 "height": 22,
                                 "id": "020c99f0-769f-11eb-b547-b75a1233ac03",
@@ -74,7 +74,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 6,
                                 "fieldId": "bitsightriskcategory",
                                 "height": 22,
                                 "id": "088e4030-769f-11eb-b547-b75a1233ac03",
@@ -83,7 +83,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 6,
                                 "fieldId": "bitsightriskvector",
                                 "height": 22,
                                 "id": "108b14c0-769f-11eb-b547-b75a1233ac03",
@@ -93,7 +93,7 @@
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
+                                "endCol": 6,
                                 "fieldId": "bitsightriskvectorlabel",
                                 "height": 22,
                                 "id": "17a55180-769f-11eb-b547-b75a1233ac03",
@@ -103,7 +103,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 6,
                                 "fieldId": "bitsightrolledupobservationid",
                                 "height": 22,
                                 "id": "1fdc9700-769f-11eb-b547-b75a1233ac03",
@@ -112,7 +112,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 6,
                                 "fieldId": "severity",
                                 "height": 22,
                                 "id": "258653d0-769f-11eb-b547-b75a1233ac03",
@@ -121,7 +121,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 6,
                                 "fieldId": "bitsightseveritycategory",
                                 "height": 22,
                                 "id": "26d5de40-769f-11eb-b547-b75a1233ac03",
@@ -130,7 +130,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 6,
                                 "fieldId": "bitsighttags",
                                 "height": 22,
                                 "id": "2da3f6d0-769f-11eb-b547-b75a1233ac03",
@@ -140,7 +140,7 @@
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
+                                "endCol": 6,
                                 "fieldId": "bitsightcomments",
                                 "height": 22,
                                 "id": "380a9f70-769f-11eb-b547-b75a1233ac03",
@@ -151,7 +151,7 @@
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
+                                "endCol": 6,
                                 "fieldId": "bitsightremainingdecay",
                                 "height": 22,
                                 "id": "3d286ff0-769f-11eb-b547-b75a1233ac03",
@@ -159,16 +159,24 @@
                                 "listId": "hkzismdwjw-a4c86940-769e-11eb-b547-b75a1233ac03",
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "bitsightremediationstatus",
+                                "height": 22,
+                                "id": "ab68b780-92e8-11f0-961c-59b5f1937369",
+                                "index": 15,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 3,
                         "moved": false,
                         "name": "Bitsight",
                         "static": false,
                         "w": 3,
+                        "wrapLabels": true,
                         "x": 0,
                         "y": 0
                     }
