@@ -576,7 +576,7 @@ def main():
     # Authentication parameters
     tenant_id = params.get("tenant_id", "")
     client_id = params.get("client_id", "")
-    client_secret = params.get("client_secret", "")
+    client_secret = params.get("client_secret", {}).get("password", "")
     certificate_thumbprint = params.get("certificate_thumbprint")
     private_key = params.get("private_key")
 

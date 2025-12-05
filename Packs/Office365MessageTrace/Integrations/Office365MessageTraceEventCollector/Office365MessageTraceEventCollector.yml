@@ -26,9 +26,11 @@ configuration:
   type: 0
   section: Connect
 - additionalinfo: Azure AD application client secret
-  display: Client Secret
+  display: ""
+  displaypassword: Client Secret
   name: client_secret
   required: true
+  hiddenusername: true
   type: 9
   section: Connect
 - additionalinfo: X.509 certificate thumbprint for certificate-based authentication (optional)
