@@ -1,0 +1,21 @@
+{
+    "name": "Cypho Threat Intelligence",
+    "description": "The Cypho-XSOAR Content Pack automates incident management between Cypho and Cortex XSOAR. It includes 7 automations, 1 playbook, 23 incident types, and 72 incident fields, enabling users to assign incidents, add comments, update severity, approve or dismiss issues, download attachments, and fetch incidents from Cypho. This content pack ensures incidents in XSOAR accurately reflect the current state of Cypho tickets, streamlines workflows, reduces manual effort, and improves operational efficiency and compliance.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Mahammad Rahimov",
+    "url": "",
+    "email": "",
+    "created": "2025-11-10T15:13:21Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "MahammadRahimov"
+    ]
+}
