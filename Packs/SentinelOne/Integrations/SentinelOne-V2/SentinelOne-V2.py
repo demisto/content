@@ -4629,6 +4629,7 @@ def main():
             "sentinelone-agent-processes": get_agent_processes,
         },
         "2.1": {
+            "sentinelone-resolve-threat": resolve_threat_command,
             "sentinelone-threat-summary": get_threat_summary_command,
             "sentinelone-threat-analysis": get_threat_analysis_command,
             "sentinelone-update-threats-verdict": update_threat_analyst_verdict,
