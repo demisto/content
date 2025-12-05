@@ -25,7 +25,7 @@ Mutual TLS provides the highest level of security by using client certificates f
 
 This method uses OAuth 2.0 client credentials flow with a client ID and client secret:
 
-- Simpler to set up initially
+- Simple to set up initially
 - Uses client ID and client secret for authentication
 - Requires regular secret rotation according to security policies
 - Suitable for development and testing environments
