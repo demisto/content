@@ -1043,18 +1043,20 @@ def generate_field_contents(client, fields_values, level_fields, depth):
     if fields_values and not isinstance(fields_values, dict):
         demisto.debug(f"Fields values string before escaping: {fields_values}")
 
-        # Escape backslashes if not any of the following valid JSON escape sequences:
-        # \" - escaped double quote        \\ - escaped backslash
-        # \/ - escaped forward slash       \b - backspace
-        # \f - form feed                   \n - new line
-        # \r - carriage return             \t - tab
-        # \uXXXX - unicode character (where XXXX is exactly 4 hexadecimal digits)
-        #
-        # The pattern matches a backslash NOT followed by:
-        # - A double quote, backslash, forward slash, b, f, n, r, or t
-        # - The letter 'u' followed by exactly 4 hexadecimal digits
-        pattern = r'\\(?!(?:["\\/nrt]|u[0-9a-fA-F]{4}))'
-        fields_values = re.sub(pattern, r"\\\\", fields_values)
+        # Pattern explanation:
+        # Group 1 (valid): Matches any valid JSON escape sequence (e.g., \", \\, \n, \u1234)
+        # Group 2 (invalid): Matches any remaining backslash that wasn't captured in Group 1
+        pattern = r'(?P<valid>\\["\\/bfnrt]|\\u[0-9a-fA-F]{4})|(?P<invalid>\\)'
+
+        def fix_escape(match):
+            # If it matched a valid escape sequence (Group 1), keep it exactly as is.
+            if match.group("valid"):
+                return match.group("valid")
+            # If it matched an invalid backslash (Group 2), double escape it.
+            return "\\\\"
+
+        # Apply the substitution using the callback
+        fields_values = re.sub(pattern, fix_escape, fields_values)
         demisto.debug(f"Fields values string after escaping: {fields_values}")
 
         try:
