@@ -87,7 +87,7 @@ Before configuring the integration, you must complete the following prerequisite
 
 ## Configure SAP BTP (Business Technology Platform) in Cortex XSIAM
 
-1.    Navigate to **Settings** > **Configurations** > **Automation & Feed Integrations**
+1. Navigate to **Settings** > **Configurations** > **Automation & Feed Integrations**
 2. Search for SAP BTP (Business Technology Platform).
 3. Click **Add instance** to create and configure a new integration instance.
 
