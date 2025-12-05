@@ -187,7 +187,7 @@ script:
     - contextPath: CVE.Description
       description: The description of the CVE.
       type: String
-  dockerimage: demisto/python3:3.12.11.4508456
+  dockerimage: demisto/python3:3.12.12.5490952
   feed: true
   runonce: false
   script: ''
