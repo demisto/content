@@ -6,6 +6,7 @@ from CommonServerUserPython import *  # noqa: F401
 """IMPORTS"""
 
 import json
+import traceback
 from datetime import UTC, datetime, timedelta
 from typing import Any, TypeVar
 
@@ -36,6 +37,7 @@ from pytmv1 import (  # noqa: E402
 
 """CONSTANTS"""
 VENDOR_NAME = "TrendMicroVisionOneV3"
+MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 ACCOUNT_IDENTIFIERS = "account_identifiers"
 EMAIL_IDENTIFIERS = "email_identifiers"
 ENDPOINT_IDENTIFIERS = "endpoint_identifiers"
@@ -227,6 +229,10 @@ GET_CUSTOM_SCRIPT_LIST_COMMAND = "trendmicro-visionone-get-custom-script-list"
 GET_OBSERVED_ATTACK_TECHNIQUES_COMMAND = "trendmicro-visionone-get-observed-attack-techniques"
 FETCH_INCIDENTS = "fetch-incidents"
 TEST_MODULE = "test-module"
+UPDATE_REMOTE_SYSTEM_COMMAND = "update-remote-system"
+GET_REMOTE_DATA_COMMAND = "get-remote-data"
+GET_MODIFIED_REMOTE_DATA_COMMAND = "get-modified-remote-data"
+GET_MAPPING_FIELDS_COMMAND = "get-mapping-fields"
 
 table_name = {
     ADD_NOTE_COMMAND: TABLE_ADD_NOTE,
@@ -1169,13 +1175,31 @@ def add_or_remove_from_block_list(v1_client: pytmv1.Client, command: str, args: 
     )
 
 
+def get_mirroring() -> dict[str, Any]:
+    """
+    Get mirroring configuration fields.
+    Returns mirror_direction, mirror_instance fields that will be mapped
+    to dbotMirrorDirection, dbotMirrorInstance via Incoming Mapper.
+
+    Returns:
+        dict: Dictionary containing mirror configuration fields
+    """
+    params = demisto.params()
+    mirror_direction = params.get("mirror_direction", "None")
+
+    return {
+        "mirror_direction": MIRROR_DIRECTION.get(mirror_direction),
+        "mirror_instance": demisto.integrationInstance(),
+    }
+
+
 def fetch_incidents(v1_client: pytmv1.Client):
     """
     This function executes to get all workbench alerts by using
     startDateTime, endDateTime and sends the result to war room.
     """
     end = datetime.now(UTC)
-    days = int(demisto.params().get("first_fetch", ""))
+    days = int(demisto.params().get("first_fetch", "7"))
 
     last_run = demisto.getLastRun()
     if last_run and "start_time" in last_run:
@@ -1187,17 +1211,18 @@ def fetch_incidents(v1_client: pytmv1.Client):
     # list to store incidents that will be sent to the UI
     incidents: list[dict[str, Any]] = []
     if alerts:
-        # Alerts are fetched per created_date_time in descending order
-        # Set the last_event to the created_date_time for the first alert
-        # in alert list to get the latest created_date_time
         for record in alerts:
+            alert_data = record.model_dump()
+
+            mirroring_fields = get_mirroring()
+            mirroring_fields["mirror_id"] = record.id
+            alert_data.update(mirroring_fields)
+
             incident = {
                 "name": record.model,
-                "dbotMirrorId": record.id,
-                "details": record.description if isinstance(record, SaeAlert) else None,
                 "occurred": record.created_date_time,
                 "severity": incident_severity_to_dbot_score(record.severity),
-                "rawJSON": record.model_dump_json(),
+                "rawJSON": json.dumps(alert_data),
             }
             incidents.append(incident)
     demisto.setLastRun({"start_time": end.isoformat()})
@@ -2376,6 +2401,346 @@ def update_status(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | Comma
     )
 
 
+def xsoar_status_to_vision_one(incident_status: int) -> str:
+    """
+    Maps XSOAR incident status to Vision One alert status.
+    Returns the alert status enum name (lowercase) for enum access.
+    """
+    if incident_status == 0:  # Pending
+        return "open"
+    elif incident_status == 1:  # Active
+        return "in_progress"
+    elif incident_status == 2:  # Closed
+        return "closed"
+    return "open"
+
+
+def update_remote_system_command(v1_client: pytmv1.Client, args: dict[str, Any]) -> str:
+    """
+    Handles outgoing mirroring - pushes XSOAR incident changes to Vision One alerts.
+    Syncs status and closeReason fields directly from incident data.
+
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client
+    :param args: Arguments containing incident data and delta
+    :return: Remote incident ID
+    """
+    # Parse arguments using UpdateRemoteSystemArgs
+    parsed_args = UpdateRemoteSystemArgs(args)
+
+    # Return early if no remote incident ID
+    if not parsed_args.remote_incident_id:
+        return EMPTY_STRING
+
+    remote_incident_id = parsed_args.remote_incident_id
+
+    try:
+        demisto.debug(
+            f"update_remote_system: remote_incident_id={remote_incident_id}, "
+            f"incident_changed={parsed_args.incident_changed}, "
+            f"delta={parsed_args.delta}, "
+            f"data_keys={list(parsed_args.data.keys()) if parsed_args.data else 'None'}, "
+            f"data={parsed_args.data}"
+        )
+
+        # Process if incident changed (regardless of delta/mapper)
+        if parsed_args.incident_changed:
+            # Get status directly from data (not from delta)
+            incident_status = parsed_args.data.get("status")
+
+            if incident_status is None:
+                return remote_incident_id
+
+            # Get alert ETag (required for updates)
+            resp = v1_client.alert.get(alert_id=remote_incident_id)
+
+            if _is_pytmv1_error(resp.result_code):
+                err: pytmv1.Error = unwrap(resp.error)
+                demisto.error(f"update_remote_system: Error fetching alert {remote_incident_id}: {err.message}")
+                return remote_incident_id
+
+            alert_resp: pytmv1.GetAlertResp = unwrap(resp.response)
+            etag = alert_resp.etag
+
+            if not etag:
+                demisto.error(f"update_remote_system: No etag returned for alert {remote_incident_id}")
+                return remote_incident_id
+
+            # Get close reason and notes from data
+            close_reason = parsed_args.data.get("closeReason", EMPTY_STRING)
+            close_notes = parsed_args.data.get("closeNotes", EMPTY_STRING)
+            closing_user_id = parsed_args.data.get("closingUserId", EMPTY_STRING)
+            xsoar_incident_id = parsed_args.data.get("id", EMPTY_STRING)
+
+            # Map XSOAR status to Vision One status
+            v1_status = xsoar_status_to_vision_one(incident_status)
+            sts = AlertStatus[v1_status.upper()]
+
+            # Map closeReason to investigation result only when incident is Closed
+            inv_result_enum = None
+            if incident_status == 2 and close_reason:  # Closed with closeReason
+                # Map XSOAR closeReason (string) to Vision One InvestigationResult
+                # XSOAR closeReason values: "False Positive", "Resolved", "Duplicate", "Other"
+                if close_reason == "False Positive":
+                    inv_result_enum = InvestigationResult.FALSE_POSITIVE
+                elif close_reason == "Resolved":
+                    inv_result_enum = InvestigationResult.TRUE_POSITIVE
+                elif close_reason == "Duplicate":
+                    inv_result_enum = InvestigationResult.NO_FINDINGS
+                elif close_reason == "Other":
+                    inv_result_enum = InvestigationResult.NOTEWORTHY
+
+            # Update status (and optionally inv_result if Closed with closeReason)
+            resp = v1_client.alert.update_status(
+                alert_id=remote_incident_id,
+                status=sts,
+                etag=etag,
+                inv_result=inv_result_enum,  # None if not Closed or no closeReason
+            )
+
+            if _is_pytmv1_error(resp.result_code):
+                err: pytmv1.Error = unwrap(resp.error)
+                demisto.error(f"update_remote_system: Error updating status: {err.message}")
+                return remote_incident_id
+
+            if incident_status == 2 and close_notes:
+                closing_note = (
+                    f"[Mirrored From XSOAR] XSOAR Incident ID: {xsoar_incident_id}\n\n"
+                    f"Close Reason: {close_reason}\n\n"
+                    f"Closed By: {closing_user_id}\n\n"
+                    f"Close Notes: {close_notes}"
+                )
+
+                # Add note to Vision One alert
+                note_resp = v1_client.note.create(alert_id=remote_incident_id, note_content=closing_note)
+
+                if _is_pytmv1_error(note_resp.result_code):
+                    err_note: pytmv1.Error = unwrap(note_resp.error)
+                    demisto.error(f"update_remote_system: Error adding closing note: {err_note.message}")
+
+    except Exception as e:
+        demisto.error(f"update_remote_system: Error updating Vision One alert {remote_incident_id}: {str(e)}")
+
+    return remote_incident_id
+
+
+def vision_one_status_to_xsoar(v1_status: str) -> int:
+    """
+    Maps Vision One alert status to XSOAR incident status.
+    Vision One API returns: "Open", "In Progress", "Closed"
+    XSOAR expects: 0=Pending, 1=Active, 2=Closed
+    """
+    status_map = {
+        "Open": 0,  # Pending
+        "In Progress": 1,  # Active
+        "Closed": 2,  # Closed
+    }
+    return status_map.get(v1_status, 0)  # Default to Pending if unknown
+
+
+def get_modified_remote_data_command(v1_client: pytmv1.Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
+    """
+    Handles incoming mirroring - detects which Vision One alerts have been modified.
+    Queries alerts updated since last_update timestamp and returns their IDs.
+
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client
+    :param args: Arguments containing last_update timestamp
+    :return: GetModifiedRemoteDataResponse with list of modified alert IDs
+    """
+    # Check if lastUpdate is provided in args before parsing
+    if 'lastUpdate' not in args or not args.get('lastUpdate'):
+        demisto.debug("get_modified_remote_data: First sync, no last_update provided, returning empty list")
+        return GetModifiedRemoteDataResponse([])
+
+    # Parse arguments
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update
+
+    try:
+        last_update_dt = arg_to_datetime(last_update, is_utc=True, required=True)
+    except Exception as e:
+        demisto.error(f"get_modified_remote_data: Invalid last_update format: {last_update}, error: {e}")
+        last_update_dt = datetime.now(UTC) - timedelta(hours=1)
+
+    # Set end time to now
+    end_dt = datetime.now(UTC)
+
+    # Format timestamps for Vision One API (ISO 8601 format: yyyy-MM-ddThh:mm:ssZ)
+    if not check_datetime_aware(last_update_dt):
+        last_update_dt = last_update_dt.astimezone()
+    if not check_datetime_aware(end_dt):
+        end_dt = end_dt.astimezone()
+
+    last_update_dt = last_update_dt.astimezone(UTC)
+    end_dt = end_dt.astimezone(UTC)
+
+    # Format to ISO 8601 without milliseconds for API compatibility
+    formatted_start = last_update_dt.isoformat(timespec="seconds").replace("+00:00", "Z")
+    formatted_end = end_dt.isoformat(timespec="seconds").replace("+00:00", "Z")
+
+    # List to collect modified alert IDs
+    modified_incident_ids: list[str] = []
+
+    def _collect_alerts(alert: SaeAlert | TiAlert) -> None:
+        """Callback to collect alert IDs."""
+        modified_incident_ids.append(alert.id)
+
+    try:
+        # Query Vision One for alerts updated in the time range
+        # Use updatedDateTime as the date_time_target to get modified alerts
+        v1_client.alert.consume(
+            _collect_alerts,
+            start_time=formatted_start,
+            end_time=formatted_end,
+            date_time_target="updatedDateTime",
+        )
+
+    except Exception as err:
+        demisto.error(f"get_modified_remote_data: Error fetching modified alerts: {err}")
+        # Return empty list on error - XSOAR will handle gracefully
+        return GetModifiedRemoteDataResponse([])
+
+    return GetModifiedRemoteDataResponse(modified_incident_ids)
+
+
+def get_remote_data_command(v1_client: pytmv1.Client, args: dict[str, Any]) -> GetRemoteDataResponse:
+    """
+    Handles incoming mirroring - fetches updated alert data from Vision One.
+    Only returns data when changes are detected to optimize performance.
+
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client
+    :param args: Arguments containing remote_incident_id (alert ID) and last_update timestamp
+    :return: GetRemoteDataResponse with updated incident data and entries
+    """
+    # Use GetRemoteDataArgs for standardized argument parsing
+    parsed_args = GetRemoteDataArgs(args)
+    alert_id = parsed_args.remote_incident_id
+    last_update = parsed_args.last_update
+
+    if not alert_id:
+        return GetRemoteDataResponse({}, [])
+
+    try:
+        # Fetch alert data from Vision One
+        resp = v1_client.alert.get(alert_id=alert_id)
+
+        if _is_pytmv1_error(resp.result_code):
+            err: pytmv1.Error = unwrap(resp.error)
+            demisto.error(f"get_remote_data: Error fetching alert {alert_id}: {err.message}")
+            return GetRemoteDataResponse({}, [])
+
+        alert_resp: pytmv1.GetAlertResp = unwrap(resp.response)
+        alert_data = alert_resp.data.model_dump()
+
+        # Check if alert was modified after last_update (optimize performance)
+        alert_updated_time = alert_data.get("updated_date_time")
+        if last_update and alert_updated_time:
+            try:
+                last_update_dt = arg_to_datetime(last_update, is_utc=True, required=True)
+                alert_updated_dt = arg_to_datetime(alert_updated_time, is_utc=True, required=True)
+
+                if alert_updated_dt <= last_update_dt:
+                    return GetRemoteDataResponse({}, [])
+            except Exception:
+                pass
+
+        # Save original Vision One status before modifying alert_data
+        v1_status = alert_data.get("status", "open")
+        v1_status_str = v1_status.value if hasattr(v1_status, 'value') else str(v1_status)
+        v1_status_lower = v1_status_str.lower()
+
+        investigation_result = alert_data.get("investigation_result", "")
+        if investigation_result:
+            investigation_result = investigation_result.value if hasattr(
+                investigation_result, 'value') else investigation_result
+
+        demisto.debug(
+            f"get_remote_data: alert_id={alert_id}, "
+            f"v1_status_lower={v1_status_lower}"
+        )
+
+        entries = []
+
+        if v1_status_lower == "closed":
+            close_reason = "Other"
+            close_notes = f"Vision One alert status: {v1_status_str}"
+
+            if investigation_result:
+                inv_result_mapping = {
+                    "True Positive": "Resolved",
+                    "False Positive": "False Positive",
+                    "Benign True Positive": "False Positive",
+                    "No Findings": "Duplicate",
+                    "Noteworthy": "Other",
+                }
+                close_reason = inv_result_mapping.get(investigation_result, "Other")
+                close_notes = f"Vision One investigation result: {investigation_result}"
+
+            close_entry = {
+                "Type": EntryType.NOTE,
+                "Contents": {
+                    "dbotIncidentClose": True,
+                    "closeReason": close_reason,
+                    "closeNotes": close_notes,
+                },
+                "ContentsFormat": EntryFormat.JSON,
+            }
+            entries.append(close_entry)
+        elif v1_status_lower in ["open", "in progress"]:
+            reopen_entry = {
+                "Type": EntryType.NOTE,
+                "Contents": {
+                    "dbotIncidentReopen": True,
+                },
+                "ContentsFormat": EntryFormat.JSON,
+            }
+            entries.append(reopen_entry)
+
+        if entries:
+            demisto.debug(f"get_remote_data: Returning entries for alert {alert_id}, entries count: {len(entries)}")
+            return GetRemoteDataResponse(alert_data, entries)
+        else:
+            demisto.debug(f"get_remote_data: No status change needed for alert {alert_id}")
+            return GetRemoteDataResponse(alert_data, [])
+
+    except Exception as e:
+        demisto.error(f"get_remote_data: Error processing alert {alert_id}: {str(e)}")
+        return GetRemoteDataResponse({}, [])
+
+
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    """
+    Returns the mapping schema for Vision One alerts to XSOAR incidents.
+    Used by XSOAR UI to show available fields when configuring mappers.
+
+    This function returns ONLY fields that are relevant for mirroring:
+    - Fields that can be synced bidirectionally or incoming-only
+    - Fields that are actually used by get_remote_data_command
+    """
+    incident_type_name = "Trend Micro Vision One XDR Incident"
+    mapping = SchemeTypeMapping(type_name=incident_type_name)
+
+    # Define ONLY mirroring-relevant fields that get_remote_data actually syncs
+    mapping_fields = {
+        # Bidirectional mirroring fields (synced both ways)
+        "status": "Alert Status - synced bidirectionally (Open/In Progress/Closed)",
+        "investigation_result": "Investigation Result - synced bidirectionally, mapped to/from closeReason (True Positive/False Positive/No Findings/Noteworthy)",
+
+        # Incoming mirroring fields (Vision One → XSOAR only)
+        "severity": "Alert Severity - synced from Vision One to XSOAR",
+        "investigation_status": "Investigation Status - synced from Vision One (New/In Progress/Closed)",
+
+        # Mirror configuration fields (required for mirroring to work)
+        "mirror_direction": "Mirror Direction - required for mirroring",
+        "mirror_instance": "Mirror Instance - required for mirroring",
+        "mirror_id": "Mirror ID - required for mirroring",
+    }
+
+    for field_name, field_description in mapping_fields.items():
+        mapping.add_field(name=field_name, description=field_description)
+
+    return GetMappingFieldsResponse([mapping])
+
+
 def run_custom_script(v1_client: pytmv1.Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Runs custom script using endpoint (hostname) or agent_guid
@@ -2747,7 +3112,6 @@ def main():  # pragma: no cover
         v1_client = _get_client(VENDOR_NAME, api_key, base_url)
 
         command = demisto.command()
-        demisto.debug(COMMAND_CALLED.format(command=command))
         args = demisto.args()
 
         if command == TEST_MODULE:
@@ -2880,11 +3244,24 @@ def main():  # pragma: no cover
         elif command == GET_OBSERVED_ATTACK_TECHNIQUES_COMMAND:
             return_results(get_observed_attack_techniques(v1_client, args))
 
+        elif command == UPDATE_REMOTE_SYSTEM_COMMAND:
+            return_results(update_remote_system_command(v1_client, args))
+
+        elif command == GET_MODIFIED_REMOTE_DATA_COMMAND:
+            return_results(get_modified_remote_data_command(v1_client, args))
+
+        elif command == GET_REMOTE_DATA_COMMAND:
+            return_results(get_remote_data_command(v1_client, args))
+
+        elif command == GET_MAPPING_FIELDS_COMMAND:
+            return_results(get_mapping_fields_command())
+
         else:
             demisto.error(f"{command} command is not implemented.")
             raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as error:
+        demisto.error(f"Exception in main(): command={demisto.command()}, error={error!s}, traceback={traceback.format_exc()}")
         return return_error(f"Failed to execute {demisto.command()} command. Error: {error!s}")
 
 
