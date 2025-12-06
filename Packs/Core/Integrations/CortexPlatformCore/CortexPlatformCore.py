@@ -44,6 +44,7 @@ WEBAPP_COMMANDS = [
     "core-get-asset-coverage-histogram",
     "core-create-appsec-policy",
     "core-get-appsec-issues",
+    "core-update-case",
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -54,6 +55,44 @@ VULNERABLE_ISSUES_TABLE = "VULNERABLE_ISSUES_TABLE"
 ASSET_GROUPS_TABLE = "UNIFIED_ASSET_MANAGEMENT_ASSET_GROUPS"
 ASSET_COVERAGE_TABLE = "COVERAGE"
 APPSEC_RULES_TABLE = "CAS_DETECTION_RULES"
+
+
+class CaseManagement:
+    STATUS_RESOLVED_REASON = {
+        "known_issue": "STATUS_040_RESOLVED_KNOWN_ISSUE",
+        "duplicate": "STATUS_050_RESOLVED_DUPLICATE",
+        "false_positive": "STATUS_060_RESOLVED_FALSE_POSITIVE",
+        "true_positive": "STATUS_090_RESOLVED_TRUE_POSITIVE",
+        "security_testing": "STATUS_100_RESOLVED_SECURITY_TESTING",
+        "other": "STATUS_070_RESOLVED_OTHER",
+    }
+
+    FIELDS = {
+        "case_id_list": "CASE_ID",
+        "case_domain": "INCIDENT_DOMAIN",
+        "case_name": "NAME",
+        "case_description": "DESCRIPTION",
+        "status": "STATUS_PROGRESS",
+        "severity": "SEVERITY",
+        "creation_time": "CREATION_TIME",
+        "asset_ids": "UAI_ASSET_IDS",
+        "asset_groups": "UAI_ASSET_GROUP_IDS",
+        "assignee": "ASSIGNED_USER_PRETTY",
+        "assignee_email": "ASSIGNED_USER",
+        "name": "CONTAINS",
+        "description": "DESCRIPTION",
+        "last_updated": "LAST_UPDATE_TIME",
+        "hosts": "HOSTS",
+        "starred": "CASE_STARRED",
+    }
+
+    STATUS = {
+        "new": "STATUS_010_NEW",
+        "under_investigation": "STATUS_020_UNDER_INVESTIGATION",
+        "resolved": "STATUS_025_RESOLVED",
+    }
+
+    SEVERITY = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
 
 
 class AppsecIssues:
@@ -381,6 +420,34 @@ def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     return data
 
 
+def process_case_response(resp):
+    """
+    Process case response by removing unnecessary fields.
+
+    Args:
+        resp (dict): Response dictionary to be processed
+
+    Returns:
+        dict: Cleaned response dictionary
+    """
+    fields_to_remove = ["layoutId", "layoutRuleName", "sourcesList"]
+
+    reply = resp.get("reply", {})
+
+    for field in fields_to_remove:
+        reply.pop(field, None)
+
+    # Remove nested score values
+    if "score" in reply and isinstance(reply["score"], dict):
+        reply["score"].pop("previous_score_source", None)
+        reply["score"].pop("previous_score", None)
+
+    if "incidentDomain" in reply:
+        reply["caseDomain"] = reply.pop("incidentDomain")
+
+    return reply
+
+
 def issue_to_alert(args: dict | str) -> dict | str:
     return replace_substring(args, "issue", "alert")
 
@@ -607,6 +674,24 @@ class Client(CoreClient):
             url_suffix="/retrieve_endpoint_tsf",
         )
 
+    def update_case(self, case_update_payload, case_id):
+        """
+        Update a case with the provided data.
+
+        Args:
+            case_update_payload (dict): The data to update in the case.
+            case_id (str): Case ID to update.
+
+        Returns:
+            dict: Response from the API for the case update.
+        """
+        request_data = {"request_data": {"newIncidentInterface": True, "case_id": case_id, **case_update_payload}}
+        return self._http_request(
+            method="POST",
+            url_suffix="/case/set_data",
+            json_data=request_data,
+        )
+
     def run_playbook(self, issue_ids: list, playbook_id: str) -> dict:
         """
         Runs a specific playbook for a given investigation.
@@ -626,6 +711,28 @@ class Client(CoreClient):
                 "Content-Type": "application/json",
             },
             json_data={"alertIds": issue_ids, "playbookId": playbook_id},
+        )
+
+    def unassign_case(self, case_id: str) -> dict:
+        """
+        Unassign a case by updating it with default unassignment data.
+
+        Args:
+            case_id (str): Case ID to unassign.
+
+        Returns:
+            dict: Response from the API for the case update.
+        """
+        request_data = {"request_data": {"newIncidentInterface": True, "case_id": case_id}}
+
+        return self._http_request(
+            method="POST",
+            url_suffix="/case/un_assign_user",
+            headers={
+                **self._headers,
+                "Content-Type": "application/json",
+            },
+            json_data=request_data,
         )
 
 
@@ -1549,6 +1656,31 @@ def create_policy_build_conditions(client: Client, args: dict) -> dict:
     return builder.to_dict()
 
 
+def parse_custom_fields(custom_fields: str) -> dict:
+    """
+    Parse and sanitize custom fields from JSON string input.
+
+    Args:
+        custom_fields: JSON string containing array of custom field objects
+
+    Returns:
+        dict: Dictionary with sanitized alphanumeric keys and string values,
+              duplicate keys are ignored (first occurrence wins)
+    """
+    custom_fields = safe_load_json(custom_fields)
+
+    parsed_fields = {}
+
+    for custom_field in custom_fields:
+        for key, value in custom_field.items():
+            # Sanitize key: remove non-alphanumeric characters
+            sanitized_key = "".join(char for char in key if char.isalnum())
+            if sanitized_key and sanitized_key not in parsed_fields:
+                parsed_fields[sanitized_key] = str(value)
+
+    return parsed_fields
+
+
 def create_policy_build_scope(args: dict) -> dict:
     """
     Build scope filters for create-policy.
@@ -1882,6 +2014,82 @@ def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def update_case_command(client: Client, args: dict) -> CommandResults:
+    """
+    Updates one or more cases with the specified parameters such as name, description, assignee, status, and custom fields.
+
+    Handles case status changes including resolution with proper validation, and supports bulk updates across multiple cases.
+    Validates input parameters and returns appropriate error messages for invalid values.
+    """
+    case_ids = argToList(args.get("case_id"))
+    case_name = args.get("case_name", "")
+    description = args.get("description", "")
+    assignee = args.get("assignee", "").lower()
+    status = args.get("status", "")
+    notes = args.get("notes", "")
+    starred = args.get("starred", "")
+    user_defined_severity = args.get("user_defined_severity", "")
+    resolve_reason = args.get("resolve_reason", "")
+    resolved_comment = args.get("resolved_comment", "")
+    resolve_all_alerts = args.get("resolve_all_alerts", "")
+    custom_fields = parse_custom_fields(args.get("custom_fields", []))
+    if assignee == "unassigned":
+        for case_id in case_ids:
+            client.unassign_case(case_id)
+        assignee = ""
+
+    if status == "resolved" and (not resolve_reason or not CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason, False)):
+        raise ValueError("In order to set the case to resolved, you must provide a resolve reason.")
+
+    if (resolve_reason or resolve_all_alerts or resolved_comment) and not status == "resolved":
+        raise ValueError(
+            "In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to "
+            "'resolved.'"
+        )
+
+    if status and not CaseManagement.STATUS.get(status):
+        raise ValueError(f"Invalid status '{status}'. Valid statuses are: {list(CaseManagement.STATUS.keys())}")
+
+    if user_defined_severity and not CaseManagement.SEVERITY.get(user_defined_severity, False):
+        raise ValueError(
+            f"Invalid user_defined_severity '{user_defined_severity}'. Valid severities are: "
+            f"{list(CaseManagement.SEVERITY.keys())}"
+        )
+
+    # Build request_data with mapped and filtered values
+    case_update_payload = {
+        "caseName": case_name if case_name else None,
+        "description": description if description else None,
+        "assignedUser": assignee if assignee else None,
+        "notes": notes if notes else None,
+        "starred": starred if starred else None,
+        "status": CaseManagement.STATUS.get(status) if status else None,
+        "userSeverity": CaseManagement.SEVERITY.get(user_defined_severity) if user_defined_severity else None,
+        "resolve_reason": CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason) if resolve_reason else None,
+        "caseResolvedComment": resolved_comment if resolved_comment else None,
+        "resolve_all_alerts": resolve_all_alerts if resolve_all_alerts else None,
+        "CustomFields": custom_fields if custom_fields else None,
+    }
+    remove_nulls_from_dictionary(case_update_payload)
+
+    if not case_update_payload and args.get("assignee", "").lower() != "unassigned":
+        raise ValueError("No valid update parameters provided for case update.")
+
+    demisto.info(f"Executing case update for cases {case_ids} with request data: {case_update_payload}")
+    responses = [client.update_case(case_update_payload, case_id) for case_id in case_ids]
+    replies = []
+    for resp in responses:
+        replies.append(process_case_response(resp))
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Cases", replies, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+        outputs_key_field="case_id",
+        outputs=replies,
+        raw_response=replies,
+    )
+
+
 def run_playbook_command(client: Client, args: dict) -> CommandResults:
     """
     Executes a playbook command with specified arguments.
@@ -2032,6 +2240,8 @@ def main():  # pragma: no cover
             return_results(create_policy_command(client, args))
         elif command == "core-get-appsec-issues":
             return_results(get_appsec_issues_command(client, args))
+        elif command == "core-update-case":
+            return_results(update_case_command(client, args))
         elif command == "core-run-playbook":
             return_results(run_playbook_command(client, args))
 
