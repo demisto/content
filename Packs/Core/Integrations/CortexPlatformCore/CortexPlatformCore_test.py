@@ -4840,3 +4840,193 @@ def test_create_appsec_issues_filter_and_tables_no_matching_table():
 
     with pytest.raises(DemistoException, match="No matching issue type found for the given filter combination"):
         create_appsec_issues_filter_and_tables(args)
+
+
+@pytest.mark.parametrize(
+    "custom_fields_json,expected",
+    [
+        (
+            '[{"field1": "value1"}, {"field2": "value2"}, {"field3": "value3"}]',
+            {"field1": "value1", "field2": "value2", "field3": "value3"},
+        ),
+        (
+            '[{"field-1": "value1", "field_2": "value2", "field@3": "value3"}]',
+            {"field1": "value1", "field2": "value2", "field3": "value3"},
+        ),
+        ('[{"field-1": "first"}, {"field_1": "second"}]', {"field1": "first"}),
+        ("[]", {}),
+        ('[{"---": "value1", "@#$": "value2"}]', {}),
+        ('[{"123": "value1", "456field": "value2"}]', {"123": "value1", "456field": "value2"}),
+        ('[{"": "value1", "field2": "value2"}]', {"field2": "value2"}),
+    ],
+)
+def test_parse_custom_fields(custom_fields_json, expected):
+    """
+    Given:
+        A JSON string containing custom fields and expected parsed result.
+    When:
+        The parse_custom_fields function is called with the JSON string.
+    Then:
+        The function should return a dictionary with normalized field names matching the expected result.
+    """
+    from CortexPlatformCore import parse_custom_fields
+
+    result = parse_custom_fields(custom_fields_json)
+    assert result == expected
+
+
+def test_process_case_response_removes_specified_fields():
+    """
+    Given:
+        A case response containing fields that should be removed (layoutId, layoutRuleName, sourcesList,
+        previous_score, previous_score_source).
+    When:
+        The process_case_response function is called.
+    Then:
+        The specified fields should be removed from the response while preserving other fields.
+    """
+    from CortexPlatformCore import process_case_response
+
+    resp = {
+        "reply": {
+            "layoutId": "layout123",
+            "layoutRuleName": "rule456",
+            "sourcesList": ["source1", "source2"],
+            "caseId": "case789",
+            "status": "open",
+            "score": {"current_score": 85, "previous_score": 70, "previous_score_source": "manual", "max_score": 100},
+        }
+    }
+    result = process_case_response(resp)
+    assert "layoutId" not in result
+    assert "layoutRuleName" not in result
+    assert "sourcesList" not in result
+    assert result["caseId"] == "case789"
+    assert result["status"] == "open"
+    assert "previous_score" not in result["score"]
+    assert "previous_score_source" not in result["score"]
+    assert result["score"]["current_score"] == 85
+    assert result["score"]["max_score"] == 100
+
+
+def test_process_case_response_renames_incident_domain_to_case_domain():
+    """
+    Given:
+        A case response containing an incidentDomain field.
+    When:
+        The process_case_response function is called.
+    Then:
+        The incidentDomain field should be renamed to caseDomain and the original field should be removed.
+    """
+    from CortexPlatformCore import process_case_response
+
+    resp = {"reply": {"incidentDomain": "security", "caseId": "case101"}}
+    result = process_case_response(resp)
+    assert "incidentDomain" not in result
+    assert result["caseDomain"] == "security"
+    assert result["caseId"] == "case101"
+
+
+def test_run_playbook_command_empty_response_success():
+    """
+    Given:
+        A mock client that returns an empty response and valid playbook arguments.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The function should return a successful result with appropriate readable output.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+
+    args = {"playbook_id": "test_playbook_123", "issue_ids": ["issue_1", "issue_2"]}
+
+    result = run_playbook_command(mock_client, args)
+
+    assert "executed successfully" in result.readable_output
+    assert "test_playbook_123" in result.readable_output
+    assert "issue_1, issue_2" in result.readable_output
+
+
+def test_run_playbook_command_multiple_errors_response():
+    """
+    Given:
+        A mock client that returns error responses for multiple issues.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        A ValueError should be raised containing all error messages for the issues.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {
+        "issue_1": "Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert",
+        "issue_2": "Skipping execution of playbook multi_fail_playbook for alert issue_2, failed creating investigation playbook",
+        "issue_3": "Skipping execution of playbook multi_fail_playbook for alert issue_3, failed creating investigation playbook",
+    }
+
+    args = {"playbook_id": "multi_fail_playbook", "issue_ids": ["issue_1", "issue_2", "issue_3"]}
+
+    with pytest.raises(ValueError) as exc_info:
+        run_playbook_command(mock_client, args)
+
+    error_message = str(exc_info.value)
+    assert "multi_fail_playbook" in error_message
+    assert (
+        "Issue ID issue_1: Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert"
+        in error_message
+    )
+    assert (
+        "Issue ID issue_2: Skipping execution of playbook multi_fail_playbook for alert issue_2, "
+        "failed creating investigation playbook" in error_message
+    )
+    assert (
+        "Issue ID issue_3: Skipping execution of playbook multi_fail_playbook for alert issue_3, "
+        "failed creating investigation playbook" in error_message
+    )
+
+
+def test_run_playbook_command_string_issue_ids():
+    """
+    Given:
+        A mock client and arguments with string issue IDs that need to be converted to a list.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The function should successfully process the string issue IDs and return the expected output.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+
+    args = {"playbook_id": "test_playbook", "issue_ids": "issue_1,issue_2,issue_3"}
+
+    result = run_playbook_command(mock_client, args)
+
+    assert "issue_1, issue_2, issue_3" in result.readable_output
+    mock_client.run_playbook.assert_called_once()
+
+
+def test_run_playbook_command_client_call_parameters():
+    """
+    Given:
+        A mock client and valid playbook arguments.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The client.run_playbook method should be called with the correct parameters.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+
+    args = {"playbook_id": "param_test_playbook", "issue_ids": ["param_issue_1", "param_issue_2"]}
+
+    run_playbook_command(mock_client, args)
+
+    mock_client.run_playbook.assert_called_once_with(["param_issue_1", "param_issue_2"], "param_test_playbook")
