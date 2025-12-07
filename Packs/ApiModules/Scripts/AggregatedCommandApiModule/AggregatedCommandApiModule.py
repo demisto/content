@@ -1415,7 +1415,38 @@ def create_and_extract_indicators(
                 invalid_set.add(raw)
             continue
 
-        
+        if not extracted_ctx:
+            demisto.debug("Invalid Input (no indicators extracted)")
+            if raw not in invalid_set:
+                indicators_instances.append(IndicatorInstance(raw_input=raw, final_status=Status.FAILURE, hr_message="Invalid"))
+                invalid_set.add(raw)
+
+        else:
+            expected_indicators = []
+            has_other_types = False
+            for key, indicators in extracted_ctx.items():
+                if key.lower() == expected_type_lower:
+                    expected_indicators = indicators
+                else:
+                    has_other_types = True
+            demisto.debug(f"expected for '{raw}': {expected_indicators}, other types exits={has_other_types}")
+
+            if not expected_indicators and raw not in invalid_set:
+                # Extracted something, but not of the expected type -> invalid for this call
+                demisto.debug("Invalid input (no indicators of expected type)")
+                indicators_instances.append(IndicatorInstance(raw_input=raw, hr_message="Invalid", final_status=Status.FAILURE))
+                invalid_set.add(raw)
+            elif mark_mismatched_type_as_invalid and has_other_types and raw not in invalid_set:
+                # We got expected type + other types and we choose to treat that as invalid
+                demisto.debug("Invalid input (mismatched additional types present)")
+                indicators_instances.append(IndicatorInstance(raw_input=raw, hr_message="Invalid", final_status=Status.FAILURE))
+                invalid_set.add(raw)
+            else:
+                demisto.debug("Valid input")
+                for expected_indicator in expected_indicators:
+                    if expected_indicator not in valid_set:
+                        indicators_instances.append(IndicatorInstance(raw_input=raw, extracted_value=expected_indicator))
+                        valid_set.add(expected_indicator)
 
     if not valid_set:
         raise ValueError("No valid indicators found in the input data.")
