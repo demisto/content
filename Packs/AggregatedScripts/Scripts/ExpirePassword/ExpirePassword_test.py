@@ -524,8 +524,9 @@ def test_expire_passwords_single_user_success(mock_run_command):
             "Instance": "inst1",
         }
     ]
-    # Okta v2 test setup requires only one mock run_command call
-    mock_run_command.return_value = ([{"Contents": "Success", "Type": 1}], "")
+    # Mock response must contain OKTA_PASSWORD_EXPIRED_MARKER for success
+    success_msg = f"User status changed to {OKTA_PASSWORD_EXPIRED_MARKER}"
+    mock_run_command.return_value = ([{"HumanReadable": success_msg, "Type": 1, "Metadata": {"instance": "inst1"}}], "")
 
     results, _ = expire_passwords(users)
     expected_results = [
@@ -832,16 +833,19 @@ def test_main_all_success(mock_demisto, mock_run_command, mock_return_results):
 
 def test_main_exception_handling(mock_demisto, mock_return_error):
     """
-    Given: An exception occurs during execution.
+    Given: An exception occurs during execution (inside the try block).
     When: main is called.
     Then: It should call return_error with the exception message.
     """
-    mock_demisto.args.side_effect = Exception("Test exception")
-    mock_demisto.error = MagicMock()
+    mock_demisto.args.return_value = {"user_name": "testuser"}  # Valid args
+    mock_demisto.error = MagicMock()  # Create explicit mock for demisto.error()
 
-    main()
+    # Patch validate_input to raise exception inside the try block
+    with patch("ExpirePassword.validate_input", side_effect=Exception("Test exception")):
+        main()
 
+    # Verify error handling was called correctly
     mock_return_error.assert_called_once()
     error_msg = mock_return_error.call_args[0][0]
     assert "Failed to execute ExpirePassword. Error: Test exception" in error_msg
-    mock_demisto.error.assert_called_once()
+    mock_demisto.error.assert_called_once()  # Verify demisto.error() was called for logging
