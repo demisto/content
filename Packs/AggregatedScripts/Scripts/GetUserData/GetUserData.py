@@ -772,8 +772,9 @@ def main():
         if domain and not users_names:
             raise ValueError("When specifying the domain argument, the user_name argument must also be provided.")
         if not any((users_ids, users_names, users_emails, users_sid)):
-            raise ValueError("At least one of the following arguments must be specified:"
-                             " user_id, user_name, user_email or users_sid.")
+            raise ValueError(
+                "At least one of the following arguments must be specified:" " user_id, user_name, user_email or users_sid."
+            )
 
         command_results_list: list[CommandResults] = []
         users_outputs: list[dict] = []
@@ -1058,7 +1059,6 @@ def main():
             if readable_output and outputs:
                 users_outputs.extend(outputs)
                 users_readables.extend(readable_output)
-
 
         #################################
         ### Running for Users Emails ###
