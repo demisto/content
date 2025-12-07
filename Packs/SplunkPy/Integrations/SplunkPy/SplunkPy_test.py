@@ -2181,7 +2181,8 @@ def test_drilldown_enrichment_query_earliest(mocker: MockerFixture):
     Tests the drilldown enrichment process when query contains earliest filter
 
     Given:
-        A drilldown data without drilldown_earliest and drilldown_latest values, the drilldown search query contains earliest filter.
+        A drilldown data without drilldown_earliest and drilldown_latest values,
+        the drilldown search query contains earliest filter.
     When:
         Performing drilldown enrichment to generate search jobs and queries
     Then:
