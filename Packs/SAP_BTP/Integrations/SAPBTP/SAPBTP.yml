@@ -19,7 +19,7 @@ configuration:
   section: Connect
   additionalinfo: SAP Service Key field 'uaa.url' for OAuth2 authentication (e.g., https://<subdomain>.authentication.<region>.hana.ondemand.com). This is on a different subdomain than the API URL.
 - name: client_id
-  display: Client ID (Username)
+  display: Client ID
   required: true
   type: 0
   section: Connect
@@ -34,6 +34,14 @@ configuration:
   - mTLS
   - Non-mTLS
   additionalinfo: Select authentication method. mTLS (recommended) requires Certificate + Private Key. Non-mTLS requires Client Secret.
+- name: client_secret
+  display: Client Secret
+  displaypassword: Client Secret
+  required: false
+  type: 9
+  section: Connect
+  hiddenusername: true
+  additionalinfo: For Non-mTLS authentication. SAP Service Key field 'uaa.clientsecret'.
 - name: certificate
   display: Certificate
   required: false
@@ -46,13 +54,6 @@ configuration:
   type: 14
   section: Connect
   additionalinfo: For mTLS authentication (recommended). Body of key.pem file in PEM format.
-- name: client_secret
-  display: Client Secret (Password)
-  required: false
-  type: 9
-  displaypassword: Client Secret
-  section: Connect
-  additionalinfo: For Non-mTLS authentication. SAP Service Key field 'uaa.clientsecret'.
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
@@ -117,7 +118,7 @@ script:
     - name: should_push_events
       description: Indicates whether or not to push the collected events into XSIAM.
       required: false
-      defaultValue: 'true'
+      defaultValue: 'false'
     outputs:
     - contextPath: SAPBTP.Event.uuid
       description: Unique identifier of the event.

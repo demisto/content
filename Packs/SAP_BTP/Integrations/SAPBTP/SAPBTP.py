@@ -155,26 +155,30 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     demisto.debug("[Config] Starting parameter validation")
 
     base_url = (params.get("url", "")).strip().rstrip("/")
-    token_url_param = params.get("token_url", "").strip().rstrip("/")
-
     if not base_url:
         raise DemistoException("API URL is required. Please provide the Service Key 'url' field.")
+
+    token_url_param = params.get("token_url", "").strip().rstrip("/")
     if not token_url_param:
         raise DemistoException("Token URL is required. Please provide the Service Key 'uaa.url' field.")
 
     token_url = f"{token_url_param}/oauth/token"
 
-    verify_certificate = not argToBoolean(params.get("insecure", False))
-    proxy = argToBoolean(params.get("proxy", False))
-    auth_type = params.get("auth_type", AuthType.NON_MTLS.value)
-
     client_id = params.get("client_id", "").strip() or None
-    client_secret = params.get("client_secret", "").strip() or None
-    certificate = params.get("certificate", "").strip() or None
-    private_key = params.get("private_key", "").strip() or None
-
     if not client_id:
         raise DemistoException("Client ID is required.")
+
+    auth_type = params.get("auth_type", AuthType.NON_MTLS.value)
+    proxy = argToBoolean(params.get("proxy", False))
+
+    # Basic Auth credentials / Non-mTls
+    credentials = params.get("client_secret", {})
+    client_secret = credentials.get("password", params.get("password"))
+
+    # mTls Auth
+    verify_certificate = not argToBoolean(params.get("insecure", False))
+    certificate = params.get("certificate", "").strip() or None
+    private_key = params.get("private_key", "").strip() or None
 
     demisto.debug(f"[Config] URL: {base_url} | Token URL: {token_url} | Auth Type: {auth_type}")
 
@@ -530,7 +534,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults |
     events = fetch_events_with_pagination(client, created_after, limit, created_before)
 
     if should_push_events and events:
-        send_events_to_xsiam(events, vendor=Config.VENDOR, product=Config.PRODUCT)
+        send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
         demisto.debug(f"[Command] Pushed {len(events)} events to XSIAM")
         return f"Successfully retrieved and pushed {len(events)} events to XSIAM"
 
@@ -571,6 +575,8 @@ def fetch_events_command(client: Client) -> None:
     events = fetch_events_with_pagination(client, created_after, max_events_to_fetch)
 
     if events:
+        send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
+
         # Update Last Run using the Newest event in our processed batch
         last_event = events[-1]
         new_last_run_time = last_event.get("time")
@@ -581,7 +587,6 @@ def fetch_events_command(client: Client) -> None:
         else:
             demisto.debug("[Last Run] WARNING: Last event missing 'time' field. Not updating.")
 
-        send_events_to_xsiam(events, vendor=Config.VENDOR, product=Config.PRODUCT)
         demisto.debug(f"[Command] Sent {len(events)} events to XSIAM")
     else:
         demisto.debug("[Command] No new events found.")
