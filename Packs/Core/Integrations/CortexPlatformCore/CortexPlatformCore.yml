@@ -1666,6 +1666,10 @@ script:
         description: The related cases breakdown of the asset.
       - contextPath: Core.Asset.provider
         description: The asset provider.
+      - contextPath: Core.Asset.kubernetes.cluster.version
+        description: The Kubernetes cluster version of the asset.
+      - contextPath: Core.Asset.software_package.version
+        description: The software package version of the asset.
     - arguments:
         - description: The maximum number of groups to return.
           defaultValue: "50"

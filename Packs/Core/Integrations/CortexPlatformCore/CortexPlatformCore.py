@@ -1029,6 +1029,12 @@ def get_extra_data_for_case_id_command(client: CoreClient, args):
         raw_response=mapped_response,
     )
 
+def normalize_key(k: str) -> str:
+    if k.startswith("xdm.asset."):
+        return k.replace("xdm.asset.", "")
+    if k.startswith("xdm."):
+        return k.replace("xdm.", "")
+    return k
 
 def search_assets_command(client: Client, args):
     """
@@ -1063,15 +1069,17 @@ def search_assets_command(client: Client, args):
     demisto.debug(f"Search Assets Filter: {filter_str}")
     page_size = arg_to_number(args.get("page_size", SEARCH_ASSETS_DEFAULT_LIMIT))
     page_number = arg_to_number(args.get("page_number", 0))
-    on_demand_fields = ["xdm.asset.tags"]
+    on_demand_fields = ["xdm.asset.tags", "xdm.kubernetes.cluster.version", "xdm.software_package.version"]
     raw_response = client.search_assets(filter_str, page_number, page_size, on_demand_fields).get("reply", {}).get("data", [])
     # Remove "xdm.asset." suffix from all keys in the response
     response = [
-        {k.replace("xdm.asset.", "") if k.startswith("xdm.asset.") else k: v for k, v in item.items()} for item in raw_response
+        {normalize_key(k): v for k, v in item.items()}
+        for item in raw_response
     ]
     return CommandResults(
         readable_output=tableToMarkdown("Assets", response, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Asset",
+        outputs_key_field="id",
         outputs=response,
         raw_response=raw_response,
     )
