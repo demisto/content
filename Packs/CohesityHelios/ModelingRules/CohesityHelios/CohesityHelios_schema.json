@@ -57,6 +57,22 @@
         "type": "string",
         "is_array": false
       },
+      "alertName": {
+        "type": "string",
+        "is_array": false
+      },
+      "alertCode": {
+        "type": "string",
+        "is_array": false
+      },
+      "clusterName": {
+        "type": "string",
+        "is_array": false
+      },
+      "alertId": {
+        "type": "string",
+        "is_array": false
+      },
       "id": {
         "type": "string",
         "is_array": false
