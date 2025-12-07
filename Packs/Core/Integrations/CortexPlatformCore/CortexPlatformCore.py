@@ -252,6 +252,7 @@ class FilterBuilder:
         EQ = ("EQ", "OR")
         RANGE = ("RANGE", "OR")
         CONTAINS = ("CONTAINS", "OR")
+        CONTAINS_IN_LIST = ("CONTAINS_IN_LIST" , "OR")
         GTE = ("GTE", "OR")
         ARRAY_CONTAINS = ("ARRAY_CONTAINS", "OR")
         JSON_WILDCARD = ("JSON_WILDCARD", "OR")
@@ -943,6 +944,7 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
     filter_builder.add_field(
         "PLATFORM_SEVERITY", FilterType.EQ, argToList(args.get("severity")), VULNERABILITIES_SEVERITY_MAPPING
     )
+    filter_builder.add_field("FINDING_SOURCES" , FilterType.CONTAINS_IN_LIST, argToList(args.get("finding_sources")))
     filter_builder.add_field("ISSUE_ID", FilterType.CONTAINS, argToList(args.get("issue_id")))
     filter_builder.add_time_range_field("LAST_OBSERVED", args.get("start_time"), args.get("end_time"))
     filter_builder.add_field_with_mappings(
@@ -983,6 +985,7 @@ def get_vulnerabilities_command(client: Client, args: dict) -> CommandResults:
         "HAS_KEV",
         "EXPLOITABLE",
         "ASSET_IDS",
+        "FINDING_SOURCES"
     ]
     filtered_data = [{k: v for k, v in item.items() if k in output_keys} for item in data]
 
