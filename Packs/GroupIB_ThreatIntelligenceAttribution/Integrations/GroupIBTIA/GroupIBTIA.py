@@ -16,6 +16,9 @@ from cyberintegrations import TIPoller
 from traceback import format_exc
 import re
 from enum import Enum
+from itertools import chain
+from collections.abc import Iterable
+from typing import cast
 
 # Disable insecure warnings
 urllib3_disable_warnings(InsecureRequestWarning)
@@ -1402,7 +1405,7 @@ class Client(BaseClient):
 
     limit = 100
 
-    def __init__(self, base_url, verify=True, proxy=False, headers=None, auth=None):
+    def __init__(self, base_url, verify=True, proxy=False, headers=None, auth=None, limit: int = 100):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
         self._auth: tuple[str, str]
@@ -1411,12 +1414,13 @@ class Client(BaseClient):
             api_key=self._auth[1],
             api_url=base_url,
         )
+        self.limit = int(limit)
         self.poller.set_product(
             product_type="SOAR",
             product_name="CortexSOAR",
             product_version="unknown",
             integration_name="Group-IB Threat Intelligence",
-            integration_version="2.1.0",
+            integration_version="2.1.2",
         )
 
     @staticmethod
@@ -1434,10 +1438,22 @@ class Client(BaseClient):
                     f"please use a format such as: 2020-01-01 or January 1 2020 or 3 days. The format given is: {date_from}"
                 )
             date_from = date_from.strftime("%Y-%m-%d")  # type: ignore
+        demisto.debug(
+            "[handle_first_time_fetch] Computed initial parameters: "
+            f"last_fetch_exists={bool(last_fetch)}, date_from={date_from}"
+        )
 
         return last_fetch, date_from  # type: ignore
 
-    def create_poll_generator(self, collection_name: str, hunting_rules: int, enable_probable_corporate_access: bool, **kwargs):
+    def create_poll_generator(
+        self,
+        collection_name: str,
+        hunting_rules: int,
+        enable_probable_corporate_access: bool,
+        unique: bool,
+        combolist: bool,
+        **kwargs,
+    ):
         """
         Interface to work with different types of indicators.
         """
@@ -1457,6 +1473,11 @@ class Client(BaseClient):
                 starting_date_from = date_from
                 starting_date_to = datetime.now().strftime(DATE_FORMAT)
                 date_to = starting_date_to
+            demisto.debug(
+                "[create_poll_generator] Using search generator for compromised/breached: "
+                f"last_fetch={last_fetch}, date_from={date_from}, date_to={date_to}, "
+                f"starting_date_from={starting_date_from}, starting_date_to={starting_date_to}"
+            )
 
             return self.poller.create_search_generator(
                 collection_name=collection_name,
@@ -1473,20 +1494,49 @@ class Client(BaseClient):
         else:
             if collection_name in COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES:
                 hunting_rules = 1
-            if enable_probable_corporate_access:
-                enable_probable_corporate_access = 1  # type: ignore
-            else:
-                enable_probable_corporate_access = 0  # type: ignore
+            sequpdate_for_generator = last_fetch
+            date_from_for_generator = date_from
+            if not last_fetch and date_from:
+                try:
+                    demisto.debug(
+                        "[create_poll_generator] Resolving initial seqUpdate via sequence_list: "
+                        f"collection={collection_name}, date_from={date_from}, hunting_rules={hunting_rules}"
+                    )
+                    seq_map = self.poller.get_seq_update_dict(
+                        date=date_from,
+                        collection_name=collection_name,
+                        apply_hunting_rules=hunting_rules,
+                    )
+                    resolved_seq = seq_map.get(collection_name)
+                    if resolved_seq:
+                        sequpdate_for_generator = resolved_seq
+                        date_from_for_generator = None
+                        demisto.debug(f"[create_poll_generator] Using resolved seqUpdate={resolved_seq}; dropping date_from")
+                    else:
+                        demisto.debug(
+                            "[create_poll_generator] sequence_list returned empty for collection; fallback to date_from"
+                        )
+                except Exception as e:
+                    demisto.debug(f"[create_poll_generator] sequence_list resolution failed: {e}; fallback to date_from")
+
+            demisto.debug(
+                "[create_poll_generator] Using update generator: "
+                f"collection={collection_name}, sequpdate={sequpdate_for_generator}, date_from={date_from_for_generator}, "
+                f"limit={self.limit}, hunting_rules={hunting_rules}"
+            )
+
             return (
                 self.poller.create_update_generator(
                     collection_name=collection_name,
-                    date_from=date_from,
-                    sequpdate=last_fetch,
+                    date_from=date_from_for_generator,
+                    sequpdate=sequpdate_for_generator,
                     limit=self.limit,
                     apply_hunting_rules=hunting_rules,
-                    probable_corporate_access=enable_probable_corporate_access,
+                    probable_corporate_access=int(enable_probable_corporate_access),
+                    unique=int(unique),
+                    combolist=int(combolist),
                 ),
-                last_fetch,
+                sequpdate_for_generator,
             )
 
     def search_proxy_function(self, query: str) -> list[dict[str, Any]]:
@@ -1740,12 +1790,10 @@ class IncidentBuilder:
         "gibdatecompromised",
     ]
 
-    def __init__(self, collection_name: str, incident: dict, mapping: dict, exclude_combolist: bool) -> None:
+    def __init__(self, collection_name: str, incident: dict, mapping: dict) -> None:
         self.collection_name = collection_name
         self.incident = incident
         self.mapping = mapping
-        self.exclude_combolist = exclude_combolist
-        self.remove_threat_actor_from_incident = False
 
     def get_system_severity(self) -> int:
         severity_map = {
@@ -1876,30 +1924,7 @@ class IncidentBuilder:
                     else:
                         self.incident[field] = None
 
-    def check_combolist(self) -> bool:
-        if self.collection_name == "compromised/account_group":
-            incident_source_type = self.incident.get("source_type", "")
-            demisto.debug(f"check_combolist {incident_source_type} {self.incident['id']} {self.exclude_combolist}")
-            if self.exclude_combolist and (incident_source_type == "Combolist" or "Combolist" in incident_source_type):
-                return False
-            elif not self.exclude_combolist and (incident_source_type == "Combolist" or "Combolist" in incident_source_type):
-                self.remove_threat_actor_from_incident = True
-                return True
-        return True
-
-    def check_threat_actor(self):
-        if self.collection_name == "compromised/account_group":
-            demisto.debug(
-                f"check_threat_actor {self.incident['source_type']} "
-                f"{self.incident['id']} {self.remove_threat_actor_from_incident}"
-            )
-            if self.remove_threat_actor_from_incident:
-                demisto.debug(f"check_threat_actor Threat actor before deleting:{self.incident['events_table']['threatActor']}")
-                self.incident["events_table"]["threatActor"] = []
-                demisto.debug(f"check_threat_actor Threat actor after deleting:{self.incident['events_table']['threatActor']}")
-
     def build_incident(self) -> dict:
-        self.check_threat_actor()
         self.incident = CommonHelpers.custom_generate_portal_link(collection_name=self.collection_name, incident=self.incident)
         incident_name = self.get_incident_name()
         system_severity = self.get_system_severity()
@@ -2054,7 +2079,8 @@ def fetch_incidents_command(
     incident_collections: list[str],
     max_requests: int,
     hunting_rules: int,
-    exclude_combolist: bool = False,
+    combolist: bool = False,
+    unique: bool = False,
     enable_probable_corporate_access: bool = False,
 ) -> tuple[dict, list]:
     """
@@ -2069,12 +2095,20 @@ def fetch_incidents_command(
 
     :return: next_run will be last_run in the next fetch-incidents; incidents and indicators will be created in Demisto.
     """
-    incidents = []
+    demisto.debug(
+        "[fetch-incidents] Starting fetch with params: "
+        f"collections={incident_collections}, max_requests={max_requests}, "
+        f"hunting_rules={hunting_rules}, combolist={combolist}, unique={unique}, "
+        f"enable_probable_corporate_access={enable_probable_corporate_access}, "
+        f"first_fetch_time={first_fetch_time}"
+    )
+    incidents: list[dict] = []
     next_run: dict[str, dict[str, int | Any]] = {"last_fetch": {}}
     for collection_name in incident_collections:  # noqa: B007
         collection_availability_check(client=client, collection_name=collection_name)
         CommonHelpers.validate_collections(collection_name)
         last_fetch = last_run.get("last_fetch", {}).get(collection_name)
+        demisto.debug(f"[fetch-incidents] Collection={collection_name} previous_last_fetch={last_fetch}")
         requests_count = 0
         sequpdate = 0
         portions, last_fetch = client.create_poll_generator(
@@ -2083,35 +2117,56 @@ def fetch_incidents_command(
             last_fetch=last_fetch,
             first_fetch_time=first_fetch_time,
             enable_probable_corporate_access=enable_probable_corporate_access,
+            combolist=combolist,
+            unique=unique,
         )
 
         mapping = MAPPING.get(collection_name, {})
+        demisto.debug(f"[fetch-incidents] Collection={collection_name} generator created: {portions}")
         for portion in portions:
             sequpdate = portion.sequpdate
+            demisto.debug(
+                f"[fetch-incidents] Portion received: collection={collection_name}, seqUpdate={sequpdate}, "
+                f"portion_size={portion.portion_size}, count={portion.count}"
+            )
             new_parsed_json = portion.bulk_parse_portion(keys_list=[mapping], as_json=False)
-            if isinstance(new_parsed_json, list):
-                for i in new_parsed_json:
-                    for incident in i:
-                        incident_builder = IncidentBuilder(
-                            collection_name=collection_name,
-                            incident=incident,
-                            mapping=mapping,
-                            exclude_combolist=exclude_combolist,
-                        )
-                        if incident_builder.check_combolist():
-                            constructed_incident = incident_builder.build_incident()
-                            incidents.append(constructed_incident)
+            if not isinstance(new_parsed_json, list):
+                raise Exception("new_parsed_json in portion should be a list")
+
+            if new_parsed_json and isinstance(new_parsed_json[0], list):
+                iterable: Iterable[dict] = cast(Iterable[dict], chain.from_iterable(new_parsed_json))
             else:
-                raise Exception("new_parsed_json in portion should not be a string")
+                iterable = cast(Iterable[dict], new_parsed_json)
+
+            before_count = len(incidents)
+            incidents.extend(
+                IncidentBuilder(
+                    collection_name=collection_name,
+                    incident=incident,
+                    mapping=mapping,
+                ).build_incident()
+                for incident in iterable
+            )
+            added = len(incidents) - before_count
+            demisto.debug(f"[fetch-incidents] Built incidents for portion: added={added}, total={len(incidents)}")
 
             requests_count += 1
-            if requests_count > max_requests:
+            if requests_count >= max_requests:
                 break
 
         if collection_name == "compromised/breached":
             next_run["last_fetch"][collection_name] = last_fetch
+        else:
+            demisto.debug(f"[fetch-incidents] Final seqUpdate for collection={collection_name}: {sequpdate}")
+            effective_last_fetch = last_fetch
+            if isinstance(sequpdate, int) and sequpdate > 0:
+                if isinstance(last_fetch, int) and last_fetch > 0:
+                    effective_last_fetch = max(last_fetch, sequpdate)
+                else:
+                    effective_last_fetch = sequpdate
 
-        next_run["last_fetch"][collection_name] = sequpdate
+            next_run["last_fetch"][collection_name] = effective_last_fetch
+            demisto.debug(f"[fetch-incidents] Updated next_run for collection={collection_name}: {effective_last_fetch}")
 
     return next_run, incidents
 
@@ -2272,12 +2327,22 @@ def main():
         incidents_first_fetch = params.get("first_fetch", "3 days").strip()
         requests_count = int(params.get("max_fetch", 3))
 
-        exclude_combolist = params.get("exclude_combolist", False)
+        combolist = params.get("combolist", False)
+        unique = params.get("unique", False)
         enable_probable_corporate_access = params.get("enable_probable_corporate_access", False)
+        limit_param = params.get("limit", 100)
+        limit = int(limit_param)
 
         args = demisto.args()
         command = demisto.command()
-        LOG(f"Command being called is {command}")
+        demisto.debug(f"Command being called is {command}")
+        demisto.debug(
+            "[main] Parsed params: "
+            f"url={base_url}, proxy={proxy}, verify={verify_certificate}, "
+            f"hunting_rules={hunting_rules}, first_fetch={incidents_first_fetch}, max_fetch={requests_count}, "
+            f"collections={incident_collections}, combolist={combolist}, unique={unique}, "
+            f"enable_probable_corporate_access={enable_probable_corporate_access}, limit={limit}"
+        )
 
         client = Client(
             base_url=base_url,
@@ -2285,8 +2350,9 @@ def main():
             auth=(username, password),
             proxy=proxy,
             headers={"Accept": "*/*"},
+            limit=limit,
         )
-        demisto.info("client getted")
+        demisto.info("Client created successfully")
 
         deprecated_comands = [
             "gibtia-get-compromised-card-info",
@@ -2341,17 +2407,20 @@ def main():
 
         elif command == "fetch-incidents":
             # Set and define the fetch incidents command to run after activated via integration settings.
+            last_run = demisto.getLastRun()
             next_run, incidents = fetch_incidents_command(
                 client=client,
-                last_run=demisto.getLastRun(),
+                last_run=last_run,
                 first_fetch_time=incidents_first_fetch,
                 incident_collections=incident_collections,
                 max_requests=requests_count,
                 hunting_rules=hunting_rules,
-                exclude_combolist=exclude_combolist,
+                combolist=combolist,
+                unique=unique,
                 enable_probable_corporate_access=enable_probable_corporate_access,
             )
-            demisto.debug(f"{str(incidents)}")
+            demisto.debug(f"[fetch-incidents] Incidents created this run: count={len(incidents)}")
+            demisto.debug(f"next_run: {next_run}, last_run: {last_run}")
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         else:
