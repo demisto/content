@@ -1,7 +1,7 @@
 import json
 import os
 import time
-from datetime import datetime, UTC
+from datetime import datetime, timezone  # noqa: UP017
 
 import pytest
 from CommonServerPython import *
@@ -18,7 +18,7 @@ from SAPBTP import (  # noqa: E402
     get_events_command,
     parse_date_or_use_current,
     parse_integration_params,
-    test_module,
+    test_module2,
 )
 
 # ========================================
@@ -132,9 +132,9 @@ def test_parse_date_or_use_current_success(date_string, expected_type):
 def test_parse_date_or_use_current_invalid_returns_current():
     """Tests parse_date_or_use_current returns current time for invalid date."""
 
-    before = datetime.now(UTC)
+    before = datetime.now(timezone.utc)  # noqa: UP017
     result = parse_date_or_use_current("invalid_date_string")
-    after = datetime.now(UTC)
+    after = datetime.now(timezone.utc)  # noqa: UP017
     assert before <= result <= after
 
 
@@ -584,7 +584,7 @@ def test_get_audit_log_events_single_event_with_message_uuid(mocker, client_non_
 
 def test_get_audit_log_events_empty_response(mocker, client_non_mtls):
     """Tests get_audit_log_events handles empty response gracefully."""
-    mock_response_body = {"results": []}
+    mock_response_body: dict[str, list] = {"results": []}
     mock_response_headers: dict[str, str] = {}
 
     mocker.patch.object(client_non_mtls, "http_request", return_value=(mock_response_body, mock_response_headers))
@@ -703,7 +703,7 @@ def test_test_module_success(mocker, client_non_mtls):
     """Tests test_module returns 'ok' on success."""
     mocker.patch.object(client_non_mtls, "get_audit_log_events", return_value=([{"uuid": "test"}], None))
 
-    result = test_module(client_non_mtls)
+    result = test_module2(client_non_mtls)
 
     assert result == "ok"
 
@@ -716,7 +716,7 @@ def test_test_module_auth_error_401(mocker, client_non_mtls):
         side_effect=DemistoException("Error [401] - Unauthorized"),
     )
 
-    result = test_module(client_non_mtls)
+    result = test_module2(client_non_mtls)
 
     assert result == "Authorization Error: Verify Client ID, Secret, or Certificates."
 
@@ -729,7 +729,7 @@ def test_test_module_auth_error_403(mocker, client_non_mtls):
         side_effect=DemistoException("Error [403] - Forbidden"),
     )
 
-    result = test_module(client_non_mtls)
+    result = test_module2(client_non_mtls)
 
     assert result == "Authorization Error: Verify Client ID, Secret, or Certificates."
 
@@ -743,7 +743,7 @@ def test_test_module_other_error_raises(mocker, client_non_mtls):
     )
 
     with pytest.raises(DemistoException, match="Internal Server Error"):
-        test_module(client_non_mtls)
+        test_module2(client_non_mtls)
 
 
 # ========================================
@@ -764,6 +764,7 @@ def test_get_events_command_success(mocker, client_non_mtls):
     assert result.outputs_prefix == "SAPBTP.Event"
     assert result.outputs_key_field == "uuid"
     assert result.outputs == mock_events
+    assert isinstance(result.outputs, list)
     assert len(result.outputs) == 1
 
 
@@ -779,7 +780,7 @@ def test_get_events_command_with_push_events(mocker, client_non_mtls):
 
     assert isinstance(result, str)
     assert "1 events" in result
-    SAPBTP.send_events_to_xsiam.assert_called_once_with(events=mock_events, vendor=Config.VENDOR, product=Config.PRODUCT)
+    SAPBTP.send_events_to_xsiam.assert_called_once_with(events=mock_events, vendor=Config.VENDOR, product=Config.PRODUCT)  # type: ignore[attr-defined]
 
 
 def test_get_events_command_default_values(mocker, client_non_mtls):
@@ -829,8 +830,8 @@ def test_fetch_events_command_first_run(mocker, client_non_mtls):
 
     fetch_events_command(client_non_mtls)
 
-    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T01:00:00Z"})
-    SAPBTP.send_events_to_xsiam.assert_called_once_with(events=mock_events, vendor=Config.VENDOR, product=Config.PRODUCT)
+    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T01:00:00Z"})  # type: ignore[attr-defined]
+    SAPBTP.send_events_to_xsiam.assert_called_once_with(events=mock_events, vendor=Config.VENDOR, product=Config.PRODUCT)  # type: ignore[attr-defined]
 
 
 def test_fetch_events_command_with_last_run(mocker, client_non_mtls):
@@ -845,7 +846,7 @@ def test_fetch_events_command_with_last_run(mocker, client_non_mtls):
 
     fetch_events_command(client_non_mtls)
 
-    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-02T00:00:00Z"})
+    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-02T00:00:00Z"})  # type: ignore[attr-defined]
 
 
 def test_fetch_events_command_no_events(mocker, client_non_mtls):
@@ -858,8 +859,8 @@ def test_fetch_events_command_no_events(mocker, client_non_mtls):
 
     fetch_events_command(client_non_mtls)
 
-    demisto.setLastRun.assert_not_called()
-    SAPBTP.send_events_to_xsiam.assert_not_called()
+    demisto.setLastRun.assert_not_called()  # type: ignore[attr-defined]
+    SAPBTP.send_events_to_xsiam.assert_not_called()  # type: ignore[attr-defined]
 
 
 def test_fetch_events_command_events_without_time(mocker, client_non_mtls):
@@ -875,8 +876,8 @@ def test_fetch_events_command_events_without_time(mocker, client_non_mtls):
     fetch_events_command(client_non_mtls)
 
     # Should not update last_run if events have no time field
-    demisto.setLastRun.assert_not_called()
-    SAPBTP.send_events_to_xsiam.assert_called_once()
+    demisto.setLastRun.assert_not_called()  # type: ignore[attr-defined]
+    SAPBTP.send_events_to_xsiam.assert_called_once()  # type: ignore[attr-defined]
 
 
 def test_fetch_events_command_with_first_fetch_enabled(mocker, client_non_mtls):
@@ -894,7 +895,7 @@ def test_fetch_events_command_with_first_fetch_enabled(mocker, client_non_mtls):
 
     # Verify it was called and last_run was updated
     mock_fetch.assert_called_once()
-    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T00:00:00Z"})
+    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T00:00:00Z"})  # type: ignore[attr-defined]
 
 
 def test_fetch_events_command_with_first_fetch_disabled(mocker, client_non_mtls):
@@ -911,7 +912,7 @@ def test_fetch_events_command_with_first_fetch_disabled(mocker, client_non_mtls)
 
     # Verify it was called and last_run was updated
     mock_fetch.assert_called_once()
-    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T00:00:00Z"})
+    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T00:00:00Z"})  # type: ignore[attr-defined]
 
 
 # ========================================
