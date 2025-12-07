@@ -2,7 +2,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import DemistoException, entryTypes
 from AggregatedCommandApiModule import *
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, timezone
 
 
 # =================================================================================================
@@ -1601,7 +1601,7 @@ def test_get_indicator_status_from_ioc_various(module_factory, has_manual, modif
         - Else STALE (including invalid/no modifiedTime).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
 
     def iso(dt: datetime) -> str:
         # Code under test accepts 'Z' or '+00:00'; it replaces Z → +00:00, so we emit 'Z' here.
@@ -1635,7 +1635,7 @@ def test_get_indicator_status_from_ioc_boundary_freshness_window(module_factory)
         - Returns FRESH at the boundary (minus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     boundary_time = now - STATUS_FRESHNESS_WINDOW + timedelta(hours=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
@@ -1652,7 +1652,7 @@ def test_get_indicator_status_from_ioc_boundary_stale(module_factory):
         - Returns STALE at the boundary (plus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     boundary_time = now - STATUS_FRESHNESS_WINDOW - timedelta(seconds=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
@@ -1780,7 +1780,8 @@ def test_summarize_command_results_error_condition(module_factory, mocker, entri
 
     # 2. Act
     # REMOVED: verbose_outputs argument (now part of instance state)
-    res = mod.summarize_command_results(entries, final_context={"ctx": 1})
+    mod.entry_results = entries
+    res = mod.summarize_command_results(final_context={"ctx": 1})
 
     # 3. Assert
     assert (res.entry_type == entryTypes["error"]) == expect_error
@@ -1801,8 +1802,8 @@ def test_summarize_command_results_appends_unsupported_enrichment_row(module_fac
 
     tbl = mocker.patch("AggregatedCommandApiModule.tableToMarkdown", return_value="TBL")
 
-    entries = [make_entry_result("c1", "A", Status.SUCCESS, "")]
-    res = mod.summarize_command_results(entries, final_context={"ctx": 1})
+    mod.entry_results = [make_entry_result("c1", "A", Status.SUCCESS, "")]
+    res = mod.summarize_command_results(final_context={"ctx": 1})
     assert res.readable_output == "TBL"
 
     # Inspect the table rows passed to tableToMarkdown
