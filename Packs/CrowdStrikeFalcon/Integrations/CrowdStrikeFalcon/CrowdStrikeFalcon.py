@@ -955,7 +955,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
     """
     add_mirroring_fields(detection)
     demisto.debug(f"detection_to_incident_context, {detection_type=}")
-    if detection_type in (IDP_DETECTION_FETCH_TYPE, NGSIEM_DETECTION_FETCH_TYPE, THIRD_PARTY_DETECTION_FETCH_TYPE):
+    if detection_type in (IDP_DETECTION_FETCH_TYPE, NGSIEM_DETECTION_FETCH_TYPE, THIRD_PARTY_DETECTION_FETCH_TYPE, ):
         demisto.debug(f"detection_to_incident_context, {detection_type=} calling fix_time_field")
         fix_time_field(detection, start_time_key)
 
@@ -3503,7 +3503,7 @@ def fetch_items(command="fetch-incidents"):
             look_back=look_back,
             fetch_query=params.get("ngsiem_incident_fetch_query", ""),
             detections_type=NGSIEM_INCIDENT_FETCH_TYPE,
-            product_type="ngsiem",
+            product_type="xdr",
             detection_name_prefix=NGSIEM_INCIDENT_FETCH_TYPE,
             start_time_key="created_timestamp",
             is_fetch_events=False
