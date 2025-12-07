@@ -21,6 +21,7 @@ OUTPUT_KEYS = [
     "action_file_macro_sha256",
     "status.progress",
     "assetid",
+    "asset_ids",
     "assigned_to_pretty",
     "assigned_to",
     "source_insert_ts",
