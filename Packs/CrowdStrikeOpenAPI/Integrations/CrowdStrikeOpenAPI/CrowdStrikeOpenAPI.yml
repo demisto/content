@@ -1,4 +1,7 @@
 category: Endpoint
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: CrowdStrike OpenAPI
   version: -1
@@ -25717,7 +25720,7 @@ script:
     - contextPath: CrowdStrike.deviceNetworkHistory.resources.history.timestamp
       description: ''
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.12.6151721
   runonce: false
   script: '-'
   subtype: python3
