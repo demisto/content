@@ -12,8 +12,8 @@ from CommonServerPython import (
     ScheduledCommand,
     entryTypes,
     outputPaths,
-    requests,
 )
+import requests
 from freezegun import freeze_time
 from pytest_mock import MockerFixture
 from test_data import input_data
@@ -8025,3 +8025,89 @@ def test_http_request_is_time_sensitive_timeout_and_retries(mocker):
     call_args = mock_generic_http_request.call_args[1]  # kwargs
     assert call_args["retries"] == 5, f"Expected retries=5 when get_token_flag=False, got {call_args['retries']}"
     assert call_args["timeout"] == 60, f"Expected timeout=60 when get_token_flag=False, got {call_args['timeout']}"
+
+
+class TestFetchAssetsFlow:
+    """Tests for the fetch-assets flow."""
+
+    def generate_mock_alerts(self, count, start_id=1):
+        """Generates a list of mock CNAPP alerts."""
+        alerts = []
+        for i in range(count):
+            alerts.append({
+                "severity": "Critical",
+                "first_seen_timestamp": "2025-11-24T11:04:03Z",
+                "last_seen_timestamp": "2025-11-26T10:18:35Z",
+                "detection_name": f"PotentialKernelTampering-{start_id + i}",
+                "detection_event_simple_name": "BPFCommandIssued",
+                "detection_description": "The eBPF feature has been invoked from within a container. This is a highly unusual activity from within the container and can be used to load a kernel root kit or manipulate kernel behavior or settings effecting the entire host system where the container is running.",
+                "containers_impacted_count": "1",
+                "containers_impacted_ids": [
+                    "test"
+                ]
+            })
+        return alerts
+
+    @pytest.mark.parametrize(
+        "total, expected_items_count, expected_snapshot_id, expected_last_run",
+        [
+            (100, 100, "123123", {
+            "offset": 0,
+            "total_fetched_until_now": 0,
+        }),
+            (200, 1, "123123", {
+            "offset": 100,
+            "total_fetched_until_now": 100,
+            "snapshot_id": "123123",
+            "nextTrigger": "0",
+            "type": 1
+        })
+        ],
+    )
+    def test_get_cnapp_assets(self, mocker, requests_mock, total, expected_items_count, expected_snapshot_id, expected_last_run):
+        """
+        Given:
+            - a mock response for /container-security/combined/container-alerts/v1 endpoint.
+            - case 1: mock where the response is the last one (no further calls should be done)
+            - case 2: mock where the response is not the last one (further calls should be done)
+        When:
+            - Calling get_cnapp_assets.
+        Then:
+            - Verify that http_request is called with correct pagination parameters.
+            - Verify that all alerts are collected.
+            - Verify that the last_run object is updated correctly for pagination.
+            - case 1: items_count should be set to 1, no nextTrigger/type/snapshot_id in the last run
+            - case 2: items_count should be set to 100, nextTrigger/type/snapshot_id in the last run
+        """
+        from CrowdStrikeFalcon import get_cnapp_assets
+        import time
+        initial_last_run = {"offset": 0, "total_fetched_until_now": 0}
+
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "url": SERVER_URL,
+            },
+        )
+        mocker.patch("CrowdStrikeFalcon.demisto.getAssetsLastRun", return_value=initial_last_run)
+        mocker.patch.object(time, "time", return_value=123.123)
+        mock_alerts_page1 = self.generate_mock_alerts(100, 1)
+        request_mock_obj = requests_mock.get(f"{SERVER_URL}/container-security/combined/container-alerts/v1?offset=0&limit=100", json={
+            "resources": mock_alerts_page1,
+            "meta": {
+                "pagination":{
+                    "offset": 0,
+                    "limit": 100,
+                    "total": total
+                }
+            }
+            })
+
+        new_last_run, cnapp_alerts, items_count, snapshot_id = get_cnapp_assets()
+
+        assert request_mock_obj.call_count == 1
+        assert len(cnapp_alerts) == 100
+        assert items_count == expected_items_count
+        assert snapshot_id == expected_snapshot_id
+        assert new_last_run == expected_last_run

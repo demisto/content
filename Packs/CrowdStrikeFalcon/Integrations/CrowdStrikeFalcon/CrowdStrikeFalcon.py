@@ -17,6 +17,7 @@ import requests
 import urllib3
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
+from urllib import parse
 
 urllib3.disable_warnings()
 """ GLOBALS/PARAMS """
@@ -3579,12 +3580,11 @@ def get_cnapp_assets():
     total_fetched_until_now = int(last_run.get("total_fetched_until_now", 0))
     new_last_run = {}
     limit = 100
-    endpoint_url = "/container-security/combined/container-alerts/v1"
+    endpoint = "/container-security/combined/container-alerts/v1"
     params = {"offset": offset, "limit": limit}
-    update_module_health = False
 
-    demisto.info(f"[test] calling endpoint with {params=}")
-    response = http_request("GET", endpoint_url, params)
+    demisto.info(f"[test] calling {endpoint=} with {params=}")
+    response = http_request("GET", endpoint, params)
     demisto.info(f"[test] {response=}")
 
     cnapp_alerts = response.get("resources", [])
@@ -3596,20 +3596,19 @@ def get_cnapp_assets():
         demisto.debug(f"[test] fetch {total_fetched_until_now} assets out of expected {total_detections} so far, setting NextTrigger to 0.")
         offset += len(cnapp_alerts)
         items_count = 1
-        new_last_run = {"offset": offset, "total_fetched_until_now": total_fetched_until_now, "snapshot_id": snapshot_id, "nextTrigger": 0}
+        new_last_run = {"offset": offset, "total_fetched_until_now": total_fetched_until_now, "snapshot_id": snapshot_id, "nextTrigger": "0", "type": 1}
     else:
         demisto.debug(f"[test] fetched all expected assets ({total_detections}), closing the snapshot.")
         offset = 0
         items_count = total_fetched_until_now
         new_last_run = {"offset": offset, "total_fetched_until_now": 0}
-        update_module_health = True
 
-    return new_last_run, cnapp_alerts, items_count, snapshot_id, update_module_health
+    return new_last_run, cnapp_alerts, items_count, snapshot_id
 
 
 def fetch_assets_command():
     demisto.info("[test] Strating fetch assets exeuction.")
-    new_last_run, detections, items_count, snapshot_id, update_module_health = get_cnapp_assets()
+    new_last_run, detections, items_count, snapshot_id = get_cnapp_assets()
     
     demisto.debug(f"[test] sending a batch of {len(detections)} assets to xsiam with {snapshot_id=}")
     send_data_to_xsiam(
@@ -3623,12 +3622,12 @@ def fetch_assets_command():
     )
     demisto.debug("[test] finished sending a batch assets.")
     
-    if update_module_health:
-        demisto.updateModuleHealth({"assetsPulled": items_count})
-    
     demisto.debug(f"[test] preparing to save assets last run with {new_last_run=}.")
     demisto.setAssetsLastRun(new_last_run)
-    demisto.debug("assets last run was saved succesfuly.")
+    demisto.debug("[test] assets last run was saved succesfuly.")
+
+    demisto.updateModuleHealth({"assetsPulled": len(detections)})
+
     demisto.info("[test] finished fetch assets exeuction.")
 
 
