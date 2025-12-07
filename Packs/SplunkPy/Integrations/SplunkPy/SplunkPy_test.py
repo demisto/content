@@ -4932,3 +4932,33 @@ def test_fetch_vs_mirror_comment_storage_difference(mocker):
     assert all(isinstance(comment, dict) and "Comment" in comment for comment in mirror_notable_map[test_id]["SplunkComments"])
     assert mirror_notable_map[test_id]["SplunkComments"][0]["Comment"] == "Second comment"  # Most recent first
     assert mirror_notable_map[test_id]["SplunkComments"][1]["Comment"] == "First comment"
+
+
+
+
+def test_drilldown_enrichment_query_earliest(mocker: MockerFixture):
+
+    from splunklib import client
+
+    service = Service("DONE")
+
+    mock_params = {"fetchQuery": "`notable` is cool | fillnull value=NULL"}
+    mocker.patch("demistomock.params", return_value=mock_params)
+
+
+    notable_data = {
+                    "event_id": "test_id",
+                    "drilldown_name": "View all login attempts by system $src$",
+                    "drilldown_search": '| from datamodel:"Authentication"."Authentication" | search src=$src|s$ | earliest=1d',
+                    "drilldown_searches": "[]",
+                    "_raw": "src='test_src'",
+                }
+
+
+    jobs_and_queries = splunk.drilldown_enrichment(service, notable_data, 5)
+    for i in range(len(jobs_and_queries)):
+        job_and_queries = jobs_and_queries[i]
+        assert job_and_queries[0] == "View all login attempts by system 'test_src'"
+        assert job_and_queries[1] == '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'" | earliest=1d'
+        assert isinstance(job_and_queries[2], client.Job)
+
