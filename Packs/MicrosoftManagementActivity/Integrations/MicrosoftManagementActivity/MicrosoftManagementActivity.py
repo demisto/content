@@ -219,7 +219,7 @@ class Client(BaseClient):
         )
 
 
-def test_module(client: Client):
+def test_module(client: Client, auth_code: str):
     params = demisto.params()
     fetch_delta = params.get("first_fetch_delta", "10 minutes")
     user_input_fetch_start_date, _ = parse_date_range(fetch_delta)
@@ -230,7 +230,7 @@ def test_module(client: Client):
         client.get_access_token_data()
         return "ok"
 
-    if params.get("self_deployed") and (not params.get("auth_code") or not params.get("redirect_uri")):
+    if params.get("self_deployed") and (not auth_code or not params.get("redirect_uri")):
         raise DemistoException(
             "Error: in the self_deployed authentication flow the Authorization code and "
             "the Application redirect URI cannot be empty."

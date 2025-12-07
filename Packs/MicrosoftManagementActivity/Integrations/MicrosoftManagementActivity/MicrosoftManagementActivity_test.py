@@ -414,9 +414,10 @@ def test_get_content_types_to_fetch(mocker, requests_mock, demisto_params, expec
 def test_content_records_to_incidents_records_creation():
     from MicrosoftManagementActivity import content_records_to_incidents
 
+    start_time_past = "2019-01-01T00:00:00"
     time_now_string = datetime.strftime(datetime.now(), DATE_FORMAT)
-    incidents, latest_creation_time = content_records_to_incidents(
-        GET_BLOB_DATA_RESPONSE_FOR_AUDIT_GENERAL, TIME_6_HOURS_AGO_STRING, time_now_string
+    incidents, latest_creation_time, _ = content_records_to_incidents(
+        GET_BLOB_DATA_RESPONSE_FOR_AUDIT_GENERAL, start_time_past, time_now_string, {}
     )
     single_incident = incidents[0]
     assert "name" in single_incident
@@ -436,7 +437,7 @@ def test_content_records_to_incidents_last_run(content_records, expected_last_ru
     time_24_hours_ago_string = datetime.strftime(time_24_hours_ago, DATE_FORMAT)
     start_time = time_24_hours_ago_string
 
-    _, last_run = content_records_to_incidents(content_records, start_time, end_time)
+    _, last_run, _ = content_records_to_incidents(content_records, start_time, end_time, {})
     assert are_dates_approximately_equal(last_run, expected_last_run)
 
 
@@ -447,15 +448,23 @@ def test_fetch_incidents_flow(mocker, requests_mock):
     set_requests_mock(client, requests_mock)
     demisto_params = {"content_types_to_fetch": "audit.general"}
     mocker.patch.object(demisto, "params", return_value=demisto_params)
-    last_run = {}
-    first_fetch_delta = TIME_24_HOURS_AGO
 
-    next_run, incidents = fetch_incidents(client, last_run, first_fetch_delta)
+    # We mock the time calculation to force a window that covers the 2020 mock data.
+    # This bypasses the "max 7 days lookback" logic in the real function.
+    mocker.patch(
+        'MicrosoftManagementActivity.get_fetch_start_and_end_time',
+        return_value=("2020-02-27T00:00:00", "2020-02-27T01:00:00")
+    )
+
+    last_run = {}
+    first_fetch_dummy = "2020-01-01T00:00:00"
+
+    next_run, incidents = fetch_incidents(client, last_run, first_fetch_dummy)
+
     incident_names = [incident["name"] for incident in incidents]
+
     assert incident_names == [
-        "Microsoft Management Activity: 1234",
-        "Microsoft Management Activity: 1234",
-        "Microsoft Management Activity: 1234",
+        "Microsoft Management Activity: 1234"
     ]
 
 
