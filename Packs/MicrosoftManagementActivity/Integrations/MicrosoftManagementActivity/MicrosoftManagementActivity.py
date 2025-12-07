@@ -602,7 +602,7 @@ def main():
         )
 
         if command == "test-module":
-            return_results(test_module(client=client))
+            return_results(test_module(client=client, auth_code=auth_code))
 
         # in the generate login url command we still don't't have the auth code do get the token
         if command != "ms-management-activity-generate-login-url":
