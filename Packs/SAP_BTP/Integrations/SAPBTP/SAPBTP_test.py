@@ -109,6 +109,27 @@ def mock_context():
     set_integration_context({})
 
 
+@pytest.fixture
+def client():
+    """Default client fixture for test_module function in SAPBTP.py.
+
+    This fixture is needed because pytest discovers test_module() in SAPBTP.py
+    and tries to run it as a test. We provide this fixture to satisfy the
+    dependency, but the actual test is filtered out by pytest_collection_modifyitems
+    in conftest.py.
+    """
+    return Client(
+        base_url=SERVER_URL,
+        token_url=TOKEN_URL,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        verify=True,
+        proxy=False,
+        auth_type=AuthType.NON_MTLS.value,
+        cert_data=None,
+    )
+
+
 # ========================================
 # Tests: Helper Functions
 # ========================================
