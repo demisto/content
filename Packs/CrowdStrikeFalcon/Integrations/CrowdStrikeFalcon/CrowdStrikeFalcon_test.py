@@ -8034,34 +8034,40 @@ class TestFetchAssetsFlow:
         """Generates a list of mock CNAPP alerts."""
         alerts = []
         for i in range(count):
-            alerts.append({
-                "severity": "Critical",
-                "first_seen_timestamp": "2025-11-24T11:04:03Z",
-                "last_seen_timestamp": "2025-11-26T10:18:35Z",
-                "detection_name": f"PotentialKernelTampering-{start_id + i}",
-                "detection_event_simple_name": "BPFCommandIssued",
-                "detection_description": "The eBPF feature has been invoked from within a container. This is a highly unusual activity from within the container and can be used to load a kernel root kit or manipulate kernel behavior or settings effecting the entire host system where the container is running.",
-                "containers_impacted_count": "1",
-                "containers_impacted_ids": [
-                    "test"
-                ]
-            })
+            alerts.append(
+                {
+                    "severity": "Critical",
+                    "first_seen_timestamp": "2025-11-24T11:04:03Z",
+                    "last_seen_timestamp": "2025-11-26T10:18:35Z",
+                    "detection_name": f"PotentialKernelTampering-{start_id + i}",
+                    "detection_event_simple_name": "BPFCommandIssued",
+                    "detection_description": "The eBPF feature has been invoked from within a container. This is a highly"
+                    "unusual activity from within the container and can be used to load a kernel root kit or manipulate kernel"
+                    "behavior or settings effecting the entire host system where the container is running.",
+                    "containers_impacted_count": "1",
+                    "containers_impacted_ids": ["test"],
+                }
+            )
         return alerts
 
     @pytest.mark.parametrize(
         "total, expected_items_count, expected_snapshot_id, expected_last_run",
         [
-            (100, 100, "123123", {
-            "offset": 0,
-            "total_fetched_until_now": 0,
-        }),
-            (200, 1, "123123", {
-            "offset": 100,
-            "total_fetched_until_now": 100,
-            "snapshot_id": "123123",
-            "nextTrigger": "0",
-            "type": 1
-        })
+            (
+                100,
+                100,
+                "123123",
+                {
+                    "offset": 0,
+                    "total_fetched_until_now": 0,
+                },
+            ),
+            (
+                200,
+                1,
+                "123123",
+                {"offset": 100, "total_fetched_until_now": 100, "snapshot_id": "123123", "nextTrigger": "0", "type": 1},
+            ),
         ],
     )
     def test_get_cnapp_assets(self, mocker, requests_mock, total, expected_items_count, expected_snapshot_id, expected_last_run):
@@ -8081,6 +8087,7 @@ class TestFetchAssetsFlow:
         """
         from CrowdStrikeFalcon import get_cnapp_assets
         import time
+
         initial_last_run = {"offset": 0, "total_fetched_until_now": 0}
 
         mocker.patch.object(
@@ -8093,16 +8100,10 @@ class TestFetchAssetsFlow:
         mocker.patch("CrowdStrikeFalcon.demisto.getAssetsLastRun", return_value=initial_last_run)
         mocker.patch.object(time, "time", return_value=123.123)
         mock_alerts_page1 = self.generate_mock_alerts(100, 1)
-        request_mock_obj = requests_mock.get(f"{SERVER_URL}/container-security/combined/container-alerts/v1?offset=0&limit=100", json={
-            "resources": mock_alerts_page1,
-            "meta": {
-                "pagination":{
-                    "offset": 0,
-                    "limit": 100,
-                    "total": total
-                }
-            }
-            })
+        request_mock_obj = requests_mock.get(
+            f"{SERVER_URL}/container-security/combined/container-alerts/v1?offset=0&limit=100",
+            json={"resources": mock_alerts_page1, "meta": {"pagination": {"offset": 0, "limit": 100, "total": total}}},
+        )
 
         new_last_run, cnapp_alerts, items_count, snapshot_id = get_cnapp_assets()
 
@@ -8142,16 +8143,10 @@ class TestFetchAssetsFlow:
 
         # Mock API response for the first call (100 assets out of 150)
         mock_alerts_page1 = self.generate_mock_alerts(100, 1)
-        requests_mock.get(f"{SERVER_URL}/container-security/combined/container-alerts/v1?offset=0&limit=100", json={
-            "resources": mock_alerts_page1,
-            "meta": {
-                "pagination": {
-                    "offset": 0,
-                    "limit": 100,
-                    "total": 150
-                }
-            }
-        })
+        requests_mock.get(
+            f"{SERVER_URL}/container-security/combined/container-alerts/v1?offset=0&limit=100",
+            json={"resources": mock_alerts_page1, "meta": {"pagination": {"offset": 0, "limit": 100, "total": 150}}},
+        )
 
         fetch_assets_command()
 
@@ -8167,13 +8162,9 @@ class TestFetchAssetsFlow:
             should_update_health_module=False,
         )
         assert mock_set_assets_last_run.call_count == 1
-        mock_set_assets_last_run.assert_called_with({
-            "offset": 100,
-            "total_fetched_until_now": 100,
-            "snapshot_id": "123123",
-            "nextTrigger": "0",
-            "type": 1
-        })
+        mock_set_assets_last_run.assert_called_with(
+            {"offset": 100, "total_fetched_until_now": 100, "snapshot_id": "123123", "nextTrigger": "0", "type": 1}
+        )
         assert mock_update_module_health.call_count == 1
         mock_update_module_health.assert_called_with({"assetsPulled": 100})
 
@@ -8184,21 +8175,15 @@ class TestFetchAssetsFlow:
             "total_fetched_until_now": 100,
             "snapshot_id": "123123",
             "nextTrigger": "0",
-            "type": 1
+            "type": 1,
         }
 
         # Mock API response for the second call (remaining 50 assets)
         mock_alerts_page2 = self.generate_mock_alerts(50, 101)
-        requests_mock.get(f"{SERVER_URL}/container-security/combined/container-alerts/v1?offset=100&limit=100", json={
-            "resources": mock_alerts_page2,
-            "meta": {
-                "pagination": {
-                    "offset": 100,
-                    "limit": 100,
-                    "total": 150
-                }
-            }
-        })
+        requests_mock.get(
+            f"{SERVER_URL}/container-security/combined/container-alerts/v1?offset=100&limit=100",
+            json={"resources": mock_alerts_page2, "meta": {"pagination": {"offset": 100, "limit": 100, "total": 150}}},
+        )
 
         fetch_assets_command()
 
@@ -8214,9 +8199,6 @@ class TestFetchAssetsFlow:
             should_update_health_module=False,
         )
         assert mock_set_assets_last_run.call_count == 2
-        mock_set_assets_last_run.assert_called_with({
-            "offset": 0,
-            "total_fetched_until_now": 0
-        })
+        mock_set_assets_last_run.assert_called_with({"offset": 0, "total_fetched_until_now": 0})
         assert mock_update_module_health.call_count == 2
         mock_update_module_health.assert_called_with({"assetsPulled": 50})
