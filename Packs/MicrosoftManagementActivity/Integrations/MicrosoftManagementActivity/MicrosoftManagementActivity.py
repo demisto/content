@@ -219,7 +219,7 @@ class Client(BaseClient):
         )
 
 
-def test_module(client: Client, auth_code: str):
+def test_module(client: Client):
     params = demisto.params()
     fetch_delta = params.get("first_fetch_delta", "10 minutes")
     user_input_fetch_start_date, _ = parse_date_range(fetch_delta)
@@ -230,7 +230,7 @@ def test_module(client: Client, auth_code: str):
         client.get_access_token_data()
         return "ok"
 
-    if params.get("self_deployed") and (not auth_code or not params.get("redirect_uri")):
+    if params.get("self_deployed") and (not params.get("auth_code") or not params.get("redirect_uri")):
         raise DemistoException(
             "Error: in the self_deployed authentication flow the Authorization code and "
             "the Application redirect URI cannot be empty."
@@ -476,42 +476,55 @@ def get_all_content_records_of_specified_types(client, content_types_to_fetch, s
     return all_content_records
 
 
-def content_records_to_incidents(content_records, start_time, end_time):
+def content_records_to_incidents(content_records, start_time, end_time, last_run):
+    last_incidents_id_dedup = last_run.get("incidents_id_dedup", [])
     incidents = []
+    new_incidents_id_dedup: Set = set()
     start_time_datetime = datetime.strptime(start_time, DATE_FORMAT)
     latest_creation_time_datetime = start_time_datetime
-
-    record_ids_already_found: Set = set()
+    current_batch_ids: Set = set()
 
     for content_record in content_records:
         incident_creation_time_str = content_record["CreationTime"]
         incident_creation_time_datetime = datetime.strptime(incident_creation_time_str, DATE_FORMAT)
 
-        if incident_creation_time_datetime < start_time_datetime:
-            pass
         incident_creation_time_in_incidents_format = incident_creation_time_str + "Z"
         record_id = content_record["Id"]
+
+        # Skipping incidents from earlier time
+        if incident_creation_time_datetime < start_time_datetime:
+            continue
+
+        # Skipping incidents from previous run
+        if record_id in last_incidents_id_dedup:
+            continue
+
+        # Internal Batch Deduplication (Skip duplicates within this specific response)
+        if record_id in current_batch_ids:
+            continue
+        current_batch_ids.add(record_id)
+
         incident = {
             "name": f"Microsoft Management Activity: {record_id}",
             "occurred": incident_creation_time_in_incidents_format,
             "rawJSON": json.dumps(content_record),
         }
-
-        if incident["name"] in record_ids_already_found:
-            pass
-        else:
-            record_ids_already_found.add(incident["name"])
-
         incidents.append(incident)
+
         if incident_creation_time_datetime > latest_creation_time_datetime:
             latest_creation_time_datetime = incident_creation_time_datetime
+            new_incidents_id_dedup = {record_id}
+        elif incident_creation_time_datetime == latest_creation_time_datetime:
+            new_incidents_id_dedup.add(record_id)
 
     latest_creation_time_str = datetime.strftime(latest_creation_time_datetime, DATE_FORMAT)
 
     if len(content_records) == 0 or latest_creation_time_str == start_time:
         latest_creation_time_str = end_time
+        # If we advanced to end_time, we don't need to dedup IDs anymore
+        new_incidents_id_dedup = set()
 
-    return incidents, latest_creation_time_str
+    return incidents, latest_creation_time_str, list(new_incidents_id_dedup)
 
 
 def fetch_incidents(client, last_run, first_fetch_datetime):
@@ -520,8 +533,8 @@ def fetch_incidents(client, last_run, first_fetch_datetime):
     content_types_to_fetch = get_content_types_to_fetch(client)
     content_records = get_all_content_records_of_specified_types(client, content_types_to_fetch, start_time, end_time)
     filtered_content_records = filter_records(content_records, demisto.params())
-    incidents, last_fetch = content_records_to_incidents(filtered_content_records, start_time, end_time)
-    next_run = {"last_fetch": last_fetch}
+    incidents, last_fetch, incidents_id_dedup = content_records_to_incidents(filtered_content_records, start_time, end_time, last_run)
+    next_run = {"last_fetch": last_fetch, "incidents_id_dedup": incidents_id_dedup}
     demisto.debug(f"fetch_incidents: {next_run=}")
     return next_run, incidents
 
@@ -589,7 +602,7 @@ def main():
         )
 
         if command == "test-module":
-            return_results(test_module(client=client, auth_code=auth_code))
+            return_results(test_module(client=client))
 
         # in the generate login url command we still don't't have the auth code do get the token
         if command != "ms-management-activity-generate-login-url":
