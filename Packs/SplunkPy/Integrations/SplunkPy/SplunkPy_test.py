@@ -2130,6 +2130,7 @@ def test_drilldown_enrichment_fillnull(mocker: MockerFixture, notable_data, expe
         assert job_and_queries[1] == expected_result[i][1]
         assert isinstance(job_and_queries[2], client.Job)
 
+
 def test_drilldown_enrichment_query_earliest(mocker: MockerFixture):
     """
     Tests the drilldown enrichment process when query contains earliest filter
@@ -2149,23 +2150,22 @@ def test_drilldown_enrichment_query_earliest(mocker: MockerFixture):
     mock_params = {"fetchQuery": "`notable` is cool | fillnull value=NULL"}
     mocker.patch("demistomock.params", return_value=mock_params)
 
-
     notable_data = {
-                    "event_id": "test_id",
-                    "drilldown_name": "View all login attempts by system $src$",
-                    "drilldown_search": '| from datamodel:"Authentication"."Authentication" | search src=$src|s$ | earliest=1d',
-                    "drilldown_searches": "[]",
-                    "_raw": "src='test_src'",
-                }
-
+        "event_id": "test_id",
+        "drilldown_name": "View all login attempts by system $src$",
+        "drilldown_search": '| from datamodel:"Authentication"."Authentication" | search src=$src|s$ | earliest=1d',
+        "drilldown_searches": "[]",
+        "_raw": "src='test_src'",
+    }
 
     jobs_and_queries = splunk.drilldown_enrichment(service, notable_data, 5)
     for i in range(len(jobs_and_queries)):
         job_and_queries = jobs_and_queries[i]
         assert job_and_queries[0] == "View all login attempts by system 'test_src'"
-        assert job_and_queries[1] == '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'" | earliest=1d'
+        assert (
+            job_and_queries[1] == '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'" | earliest=1d'
+        )
         assert isinstance(job_and_queries[2], client.Job)
-
 
 
 @pytest.mark.parametrize(
@@ -4975,13 +4975,13 @@ def test_fetch_vs_mirror_comment_storage_difference(mocker):
     "query, expected",
     [
         # Positive cases
-        ('index=your_index earliest=-5m', True),
-        ('index=your_index earliest= @d', True),
-        ('index=your_index earliest     =@mon', True),
+        ("index=your_index earliest=-5m", True),
+        ("index=your_index earliest= @d", True),
+        ("index=your_index earliest     =@mon", True),
         ('index=your_index earliest = "01/01/2025:00:00:00"', True),
         ("no keyword here", False),
-        ("earliest", False)
-    ]
+        ("earliest", False),
+    ],
 )
 def test_earliest_time_exists_in_query(query, expected):
     """
@@ -4995,4 +4995,5 @@ def test_earliest_time_exists_in_query(query, expected):
         - Otherwise, it returns False.
     """
     from SplunkPy import earliest_time_exists_in_query
+
     assert earliest_time_exists_in_query(query) == expected
