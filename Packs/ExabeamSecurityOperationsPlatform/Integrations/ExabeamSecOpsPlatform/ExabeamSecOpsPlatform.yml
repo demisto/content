@@ -66,8 +66,6 @@ configuration:
   additionalinfo: This value should not exceed 3,000 due to product's API limitations.
   name: max_fetch  # for fetch-incidents on XSOAR
   type: 0
-  required: false
-  defaultvalue: '50'
   section: Collect
   hidden:
   - marketplacev2
