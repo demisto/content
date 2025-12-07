@@ -1266,6 +1266,18 @@ def get_drilldown_searches(notable_data):
     return []
 
 
+def earliest_time_exists_in_query(query: str) -> bool:
+    """
+    Returns True if the query contains 'earliest=' or 'earliest ='
+    (any amount of whitespace around the equals sign).
+    """
+    if query is None:
+        return False
+
+    pattern = r"earliest\s*=\s*"
+    return re.search(pattern, query) is not None
+
+
 def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_events) -> list[tuple[str, str, client.Job]]:
     """Performs a drilldown enrichment.
     If the notable has multiple drilldown searches, enriches all the drilldown searches.
@@ -1319,7 +1331,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
             if searchable_query := build_drilldown_search(notable_data, query_search, raw_dict):
                 demisto.debug(f"Search Query was build successfully for notable {notable_data[EVENT_ID]}")
 
-                if earliest_offset and latest_offset:
+                if (earliest_offset and latest_offset) or earliest_time_exists_in_query(searchable_query):
                     kwargs = {"max_count": num_enrichment_events, "exec_mode": "normal"}
                     if latest_offset:
                         kwargs["latest_time"] = latest_offset
