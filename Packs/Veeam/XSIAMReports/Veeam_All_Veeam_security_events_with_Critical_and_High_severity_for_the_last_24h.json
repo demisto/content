@@ -2,6 +2,7 @@
     "templates_data": [
         {
             "report_name": "All Veeam security events with Critical and High severity for the last 24h",
+            "name": "All Veeam security events with Critical and High severity for the last 24h",
             "report_description": "Provides an overview of Veeam Backup & Replication security events with Critical and High severity created for the last 24 hours.",
             "layout": [
                 {
@@ -112,6 +113,7 @@
                 "relativeTime": 86400000
             },
             "global_id": "5582a3167bab421595e9e9df9b257457",
+            "id": "5582a3167bab421595e9e9df9b257457",
             "time_offset": 10800,
             "metadata": "{\"params\": []}"
         }
