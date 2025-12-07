@@ -94,7 +94,7 @@ script:
     - name: to_date
       description: The end date till which to get events. Must be within the last 14 days.
       defaultValue: "now"
-  dockerimage: demisto/auth-utils:1.0.0.4578605
+  dockerimage: demisto/auth-utils:1.0.0.6111183
   isfetchevents: true
   runonce: false
   script: '-'
