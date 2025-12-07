@@ -4055,6 +4055,7 @@ def main():  # pragma: no cover
             demisto.debug(f"Running health check for connector ID: {connector_id}")
             return return_results(run_health_check_for_accounts(connector_id, CloudTypes.AZURE.value, health_check))
 
+        client = get_azure_client(params, args)
         if command == "test-module":
             return_results(test_module(client))
         elif command in commands_with_params_and_args:
