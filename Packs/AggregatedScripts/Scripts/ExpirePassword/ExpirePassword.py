@@ -346,6 +346,17 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
 
     # Build user list with all required fields, defaulting missing ones to empty string
     users = [{key: user_data.get(key, "") for key in UserData.__required_keys__} for user_data in user_result["Contents"]]
+    
+    # Remove duplicates by keeping unique users based on (Username, Email, ID, Brand, Instance)
+    seen = set()
+    deduplicated_users = []
+    for user in users:
+        # Create a unique key from user identifying fields
+        user_key = (user["Username"], user["Email"], user["ID"], user["Brand"], user["Instance"])
+        if user_key not in seen:
+            seen.add(user_key)
+            deduplicated_users.append(user)
+    users = deduplicated_users
 
     # Check for no users found (Status is not 'found' for any user)
     if not any(user["Status"] == "found" for user in users):
