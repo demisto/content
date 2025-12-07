@@ -426,7 +426,8 @@ _EXTRACTION_JAVASCRIPT = """
     if (metadataOutput.length > 0) metadataOutput.push('\\n\\n---\\n\\n');
 
     // --- HTML/Markdown Extraction ---
-    const MAIN_CONTENT_SELECTORS = 'article, [class*="pan-article-content-wrapper"], [class*="post-content"], #main-article-body';
+    const MAIN_CONTENT_SELECTORS = 'main, article, [class*="pan-article-content-wrapper"], [class*="post-content"], '
+        + '#main-article-body, .entry-content, #content, #article-body';
 
     const IGNORE_SELECTORS = 'nav, header, footer, aside, script, style, noscript, form, iframe, button, video, audio, '
         + '[role="navigation"], [role="banner"], [role="contentinfo"], [role="complementary"], '
@@ -566,13 +567,8 @@ _EXTRACTION_JAVASCRIPT = """
     // Table cleanup
     finalContent = finalContent.replace(/\\|(\\s*?)\\|(\\s*?)-\\|/g, '|');
     finalContent = finalContent.replace(/\\|\\s*?\\n/g, '\\n');
-
+    finalContent = finalContent.split('\\n').map(line => line.trim()).join('\\n');
     finalContent = finalContent.trim();
-
-    // Fallback check
-    if (finalContent.length < 1000) {
-        return { type: 'html', content: document.body.textContent.trim() };
-    }
 
     return { type: 'html', content: finalContent };
 })();
