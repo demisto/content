@@ -84,6 +84,33 @@ def unit42_error_handler(res: requests.Response):
     return_error(error_msg)
 
 
+def encode_url_indicator(indicator_value: str) -> str:
+    """
+    Double-encode URLs to handle special characters like < and >
+
+    Args:
+        indicator_value: The URL to encode
+
+    Returns:
+        Encoded URL string
+    """
+    # Step 1: Parse the URL to separate components
+    parsed = urllib.parse.urlparse(indicator_value)
+
+    # Step 2: Encode special characters in the query string (keeping '=' safe)
+    # This converts query=<test> to query=%3Ctest%3E
+    encoded_query = urllib.parse.quote(parsed.query, safe="=") if parsed.query else ""
+
+    # Step 3: Reconstruct the URL with the encoded query
+    temp_url = urllib.parse.urlunparse(parsed._replace(query=encoded_query))
+
+    # Step 4: Final full URL encoding for the API request
+    # This converts the entire URL including the already-encoded query
+    # Example: https://example.com/search?query=%3Ctest%3E becomes
+    # https%3A%2F%2Fexample.com%2Fsearch%3Fquery%3D%253Ctest%253E
+    return urllib.parse.quote(temp_url, safe="")
+
+
 #### CLIENT CLASS ####
 
 
@@ -112,22 +139,7 @@ class Client(BaseClient):
             requests.Response object
         """
         if indicator_type.lower() == "url":
-            # Double-encode URLs to handle special characters like < and >
-            # Step 1: Parse the URL to separate components
-            parsed = urllib.parse.urlparse(indicator_value)
-            
-            # Step 2: Encode special characters in the query string (keeping '=' safe)
-            # This converts query=<test> to query=%3Ctest%3E
-            encoded_query = urllib.parse.quote(parsed.query, safe='=') if parsed.query else ''
-            
-            # Step 3: Reconstruct the URL with the encoded query
-            temp_url = urllib.parse.urlunparse(parsed._replace(query=encoded_query))
-            
-            # Step 4: Final full URL encoding for the API request
-            # This converts the entire URL including the already-encoded query
-            # Example: https://example.com/search?query=%3Ctest%3E becomes
-            # https%3A%2F%2Fexample.com%2Fsearch%3Fquery%3D%253Ctest%253E
-            indicator_value = urllib.parse.quote(temp_url, safe="")
+            indicator_value = encode_url_indicator(indicator_value=indicator_value)
 
         endpoint = LOOKUP_ENDPOINT.format(indicator_type=indicator_type, indicator_value=indicator_value)
 
