@@ -12,8 +12,8 @@ from CommonServerPython import (
     ScheduledCommand,
     entryTypes,
     outputPaths,
+    requests,
 )
-import requests
 from freezegun import freeze_time
 from pytest_mock import MockerFixture
 from test_data import input_data
