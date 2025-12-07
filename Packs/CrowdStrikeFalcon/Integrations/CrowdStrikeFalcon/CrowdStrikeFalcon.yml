@@ -5157,6 +5157,37 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA rule's version ID.
       type: String
+  - arguments:
+    - description: The filter to use for the query.
+      name: filter
+      required: false
+    description: Returns a list of CNAPP alerts. Used for debugging fetch-assets.
+    name: cs-falcon-list-cnapp-alerts
+    outputs:
+    - contextPath: CrowdStrike.CnappAlert.containers_impacted_count
+      description: The number of containers impacted by the alert.
+      type: String
+    - contextPath: CrowdStrike.CnappAlert.containers_impacted_ids
+      description: The list of the ids of containers impacted by the alert.
+      type: String
+    - contextPath: CrowdStrike.CnappAlert.detection_description
+      description: The description of the alert.
+      type: String
+    - contextPath: CrowdStrike.CnappAlert.detection_event_simple_name
+      description: The simple name of the alert.
+      type: String
+    - contextPath: CrowdStrike.CnappAlert.detection_name
+      description: The name of the alert.
+      type: String
+    - contextPath: CrowdStrike.CnappAlert.first_seen_timestamp
+      description: The first time the alert was seen.
+      type: String
+    - contextPath: CrowdStrike.CnappAlert.last_seen_timestamp
+      description: The last time the alert was seen.
+      type: String
+    - contextPath: CrowdStrike.CnappAlert.severity
+      description: The severity of the alert.
+      type: String
   dockerimage: demisto/py3-tools:1.0.0.5475267
   isfetch: true
   isfetch:marketplacev2: false

@@ -3571,6 +3571,44 @@ def fetch_items(command="fetch-incidents"):
     return last_run, items
 
 
+def list_cnapp_alerts_command(args: dict[str, Any]) -> CommandResults:
+    filter = args.get("filter", "")
+
+    response = preform_get_cnapp_alerts_request(filter=filter)
+
+    alerts = response.get("resources", [])
+    return CommandResults(
+        outputs_prefix="CrowdStrike.CnappAlert",
+        outputs_key_field="detection_name",
+        outputs=alerts,
+        readable_output=tableToMarkdown(
+            name="CrowdStrike CNAPP alerts",
+            t=alerts,
+            sort_headers=False,
+        ),
+        raw_response=alerts,
+    )
+
+
+def preform_get_cnapp_alerts_request(offset=0, filter=""):
+    """Preforms request to get CNAPP alerts
+
+    Args:
+        offset (int, optional): The offset for pagination
+        filter (str, optional): A filter to use if given.
+
+    Returns:
+       the response.
+    """
+    limit = 100
+    endpoint = "/container-security/combined/container-alerts/v1"
+    params = {"offset": offset, "limit": limit}
+    if filter:
+        params["filter"] = filter
+    demisto.info(f"Preforming a reuest to get cnapp alerts. Calling {endpoint=} with {params=}")
+    return http_request("GET", endpoint, params)
+
+
 def get_cnapp_assets():
     last_run = demisto.getAssetsLastRun()
     demisto.debug(f"Starting a new cnapp fetch assets execution with {last_run=}")
@@ -3578,12 +3616,8 @@ def get_cnapp_assets():
     offset = int(last_run.get("offset", 0))
     total_fetched_until_now = int(last_run.get("total_fetched_until_now", 0))
     new_last_run = {}
-    limit = 100
-    endpoint = "/container-security/combined/container-alerts/v1"
-    params = {"offset": offset, "limit": limit}
 
-    demisto.info(f"Calling {endpoint=} with {params=}")
-    response = http_request("GET", endpoint, params)
+    response = preform_get_cnapp_alerts_request()
 
     cnapp_alerts = response.get("resources", [])
     total_detections = demisto.get(response, "meta.pagination.total")
@@ -8013,6 +8047,8 @@ def main():  # pragma: no cover
             return_results(get_ioarules_command(args=args))
         elif command == "fetch-assets":
             fetch_assets_command()
+        elif command == "cs-falcon-list-cnapp-alerts":
+            return_results(list_cnapp_alerts_command(args=args))
         else:
             raise NotImplementedError(f"CrowdStrike Falcon error: command {command} is not implemented")
     except Exception as e:
