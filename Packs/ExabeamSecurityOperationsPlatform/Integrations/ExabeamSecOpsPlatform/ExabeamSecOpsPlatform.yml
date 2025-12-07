@@ -65,6 +65,7 @@ configuration:
 - display: Maximum Incidents Per Fetch
   additionalinfo: This value should not exceed 3,000 due to product's API limitations.
   name: max_fetch  # for fetch-incidents on XSOAR
+  defaultvalue: 50
   type: 0
   section: Collect
   hidden:
