@@ -429,21 +429,21 @@ class Client(BaseClient):
 # =================================
 
 
+# def test_module(client: Client) -> str:
+#     """Test API connectivity by fetching 1 minute of data."""
+#     demisto.debug("[Test Module] Starting...")
+
+#     utc_now = datetime.now(timezone.utc)  # noqa: UP017
+#     test_time = (utc_now - timedelta(minutes=Config.TEST_MODULE_LOOKBACK_MINUTES)).strftime(Config.DATE_FORMAT)
+
+#     demisto.debug(f"[Test Module] Fetching from: {test_time}")
+#     fetch_events_with_pagination(client, created_after=test_time, max_events=Config.TEST_MODULE_MAX_EVENTS)
+
+#     demisto.debug("[Test Module] Success")
+#     return "ok"
+
+
 def test_module(client: Client) -> str:
-    """Test API connectivity by fetching 1 minute of data."""
-    demisto.debug("[Test Module] Starting...")
-
-    utc_now = datetime.now(timezone.utc)  # noqa: UP017
-    test_time = (utc_now - timedelta(minutes=Config.TEST_MODULE_LOOKBACK_MINUTES)).strftime(Config.DATE_FORMAT)
-
-    demisto.debug(f"[Test Module] Fetching from: {test_time}")
-    fetch_events_with_pagination(client, created_after=test_time, max_events=Config.TEST_MODULE_MAX_EVENTS)
-
-    demisto.debug("[Test Module] Success")
-    return "ok"
-
-
-def test_module2(client: Client) -> str:
     """Test API connectivity by fetching 1 minute of data."""
     demisto.debug("[Test Module] Starting...")
 
