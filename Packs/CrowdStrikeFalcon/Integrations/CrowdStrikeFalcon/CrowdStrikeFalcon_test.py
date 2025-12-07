@@ -8111,3 +8111,112 @@ class TestFetchAssetsFlow:
         assert items_count == expected_items_count
         assert snapshot_id == expected_snapshot_id
         assert new_last_run == expected_last_run
+
+    def test_fetch_assets_command_two_calls_flow(self, mocker, requests_mock):
+        """
+        Given:
+            - A scenario where fetch-assets needs two API calls to retrieve all assets.
+            - First call returns 100 assets, indicating a total of 150.
+            - Second call returns the remaining 50 assets.
+        When:
+            - Calling fetch_assets_command twice to simulate the full flow.
+        Then:
+            - Verify that http_request is called with correct pagination parameters for both calls.
+            - Verify that send_data_to_xsiam is called twice with the correct assets and snapshot_id.
+            - Verify that setAssetsLastRun is called twice with the correct last_run objects.
+            - Verify that updateModuleHealth is called twice with the correct assetsPulled count.
+        """
+        from CrowdStrikeFalcon import fetch_assets_command, CNAPP_PRODUCT, VENDOR
+        import time
+
+        # Mocks
+        mock_get_assets_last_run = mocker.patch("CrowdStrikeFalcon.demisto.getAssetsLastRun")
+        mock_set_assets_last_run = mocker.patch("CrowdStrikeFalcon.demisto.setAssetsLastRun")
+        mock_send_data_to_xsiam = mocker.patch("CrowdStrikeFalcon.send_data_to_xsiam")
+        mock_update_module_health = mocker.patch("CrowdStrikeFalcon.demisto.updateModuleHealth")
+        mocker.patch.object(time, "time", return_value=123.123)
+
+        # --- First Call ---
+        # Initial last_run for the first call
+        mock_get_assets_last_run.return_value = {"offset": 0, "total_fetched_until_now": 0}
+
+        # Mock API response for the first call (100 assets out of 150)
+        mock_alerts_page1 = self.generate_mock_alerts(100, 1)
+        requests_mock.get(f"{SERVER_URL}/container-security/combined/container-alerts/v1?offset=0&limit=100", json={
+            "resources": mock_alerts_page1,
+            "meta": {
+                "pagination": {
+                    "offset": 0,
+                    "limit": 100,
+                    "total": 150
+                }
+            }
+        })
+
+        fetch_assets_command()
+
+        # Assertions for the first call
+        assert mock_send_data_to_xsiam.call_count == 1
+        mock_send_data_to_xsiam.assert_called_with(
+            data=mock_alerts_page1,
+            vendor=VENDOR,
+            product=CNAPP_PRODUCT,
+            data_type="assets",
+            snapshot_id="123123",
+            items_count=1,
+            should_update_health_module=False,
+        )
+        assert mock_set_assets_last_run.call_count == 1
+        mock_set_assets_last_run.assert_called_with({
+            "offset": 100,
+            "total_fetched_until_now": 100,
+            "snapshot_id": "123123",
+            "nextTrigger": "0",
+            "type": 1
+        })
+        assert mock_update_module_health.call_count == 1
+        mock_update_module_health.assert_called_with({"assetsPulled": 100})
+
+        # --- Second Call ---
+        # last_run for the second call (as it would be after the first call)
+        mock_get_assets_last_run.return_value = {
+            "offset": 100,
+            "total_fetched_until_now": 100,
+            "snapshot_id": "123123",
+            "nextTrigger": "0",
+            "type": 1
+        }
+
+        # Mock API response for the second call (remaining 50 assets)
+        mock_alerts_page2 = self.generate_mock_alerts(50, 101)
+        requests_mock.get(f"{SERVER_URL}/container-security/combined/container-alerts/v1?offset=100&limit=100", json={
+            "resources": mock_alerts_page2,
+            "meta": {
+                "pagination": {
+                    "offset": 100,
+                    "limit": 100,
+                    "total": 150
+                }
+            }
+        })
+
+        fetch_assets_command()
+
+        # Assertions for the second call
+        assert mock_send_data_to_xsiam.call_count == 2
+        mock_send_data_to_xsiam.assert_called_with(
+            data=mock_alerts_page2,
+            vendor=VENDOR,
+            product=CNAPP_PRODUCT,
+            data_type="assets",
+            snapshot_id="123123",
+            items_count=150,
+            should_update_health_module=False,
+        )
+        assert mock_set_assets_last_run.call_count == 2
+        mock_set_assets_last_run.assert_called_with({
+            "offset": 0,
+            "total_fetched_until_now": 0
+        })
+        assert mock_update_module_health.call_count == 2
+        mock_update_module_health.assert_called_with({"assetsPulled": 50})
