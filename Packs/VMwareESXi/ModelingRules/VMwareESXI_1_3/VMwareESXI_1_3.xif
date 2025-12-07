@@ -1,6 +1,6 @@
 [MODEL: dataset="VMware_ESXi_raw"]
 alter event_type = arrayindex( regextract(_raw_log ,"\d+-\d+-\d+T\d+:\d+:\d+\.*\d*Z[\s|\|]\s*([a-zA-Z0-9-_]+)"),0)
-    ,username = arrayindex( regextract(_raw_log ,"User\s\'([a-zA-Z]+)\'"),0) 
+    ,username = arrayindex( regextract(_raw_log ,"User\s\'([a-zA-Z]+)\'|for\s+(\S+)\s+from"),0) 
     ,command_line = arrayindex( regextract(_raw_log ,"command\s\'([^\']+)\'"),0) 
     ,source_ip = arrayindex( regextract(_raw_log ,"from\s(\d+\.\d+\.\d+\.\d+)\s"),0) 
     ,source_port = arrayindex( regextract(_raw_log ,"from\s\d+\.\d+\.\d+\.\d+\sport\s(\d+)"),0) 
