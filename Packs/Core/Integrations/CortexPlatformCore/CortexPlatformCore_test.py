@@ -387,80 +387,14 @@ def test_get_cases_command_case_id_as_int(mocker: MockerFixture):
     from CortexPlatformCore import get_cases_command
 
     client = mocker.Mock()
-    client.get_incidents.return_value = [{"case_id": "1"}]
+    client.get_webapp_data.return_value = {"reply": {"DATA": [{"CASE_ID": 1}]}}  # Changed to int
+    client.map_case_format.return_value = [{"case_id": "1"}]  # Mapped to string
     mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
+
     args = {"case_id_list": 1}
     result = get_cases_command(client, args)
-    assert result.outputs == [{"case_id": "1"}]
-    client.get_incidents.assert_called_once()
-    assert result.readable_output.startswith("table")
-
-
-def test_get_cases_command_limit_enforced(mocker: MockerFixture):
-    """
-    Given:
-        - limit greater than MAX_GET_INCIDENTS_LIMIT
-    When:
-        - Calling get_cases_command
-    Then:
-        - Limit is set to MAX_GET_INCIDENTS_LIMIT
-        - client.get_incidents is called with limit=MAX_GET_INCIDENTS_LIMIT
-    """
-    from CortexPlatformCore import get_cases_command
-
-    client = mocker.Mock()
-    client.get_incidents.return_value = [{"case_id": str(i)} for i in range(MAX_GET_INCIDENTS_LIMIT + 1)]
-    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
-    args = {"limit": MAX_GET_INCIDENTS_LIMIT + 10, "case_id_list": "1"}
-    result = get_cases_command(client, args)
-    assert len(result.outputs) == MAX_GET_INCIDENTS_LIMIT + 1
-    client.get_incidents.assert_called_with(
-        incident_id_list=["1"],
-        lte_modification_time=None,
-        gte_modification_time=None,
-        lte_creation_time=None,
-        gte_creation_time=None,
-        sort_by_creation_time=None,
-        sort_by_modification_time=None,
-        page_number=0,
-        limit=MAX_GET_INCIDENTS_LIMIT,
-        starred=None,
-        starred_incidents_fetch_window=mocker.ANY,
-    )
-
-
-def test_get_cases_command_no_filters_error(mocker: MockerFixture):
-    """
-    Given:
-        - No filters provided
-    When:
-        - Calling get_cases_command
-    Then:
-        - ValueError is raised
-    """
-    from CortexPlatformCore import get_cases_command
-
-    client = mocker.Mock()
-    args = {}
-    with pytest.raises(ValueError, match="Specify a query for the incidents"):
-        get_cases_command(client, args)
-
-
-def test_get_cases_command_conflicting_time_filters(mocker: MockerFixture):
-    """
-    Given:
-        - since_modification_time and gte_modification_time both set
-    When:
-        - Calling get_cases_command
-    Then:
-        - ValueError is raised
-    """
-    from CortexPlatformCore import get_cases_command
-
-    client = mocker.Mock()
-    args = {"since_modification_time": "1 day", "gte_modification_time": "2022-01-01"}
-    with pytest.raises(ValueError):
-        get_cases_command(client, args)
+    assert result[1].outputs[0].get("case_id") == "1"
+    assert result[1].readable_output.startswith("table")
 
 
 def test_replace_substring_string():
@@ -4567,6 +4501,438 @@ def test_create_appsec_issues_filter_and_tables_no_matching_table():
 
     with pytest.raises(DemistoException, match="No matching issue type found for the given filter combination"):
         create_appsec_issues_filter_and_tables(args)
+
+
+@pytest.mark.parametrize("input_data", ["not a list", [], None])
+def test_map_case_format_invalid_input(input_data):
+    """
+    Given:
+        Invalid input data (not a list, empty list, or None).
+    When:
+        The map_case_format function is called.
+    Then:
+        An empty dictionary should be returned.
+    """
+    from CortexPlatformCore import map_case_format
+
+    result = map_case_format(input_data)
+    assert result == {}
+
+
+def test_map_case_format_complete_mapping():
+    """
+    Given:
+        Valid case data in raw format.
+    When:
+        The map_case_format function is called.
+    Then:
+        The case data should be correctly mapped to the expected format.
+    """
+    from CortexPlatformCore import map_case_format
+
+    case_data = [load_test_data("./TestData/case_raw_format.json")]
+    result = sorted(map_case_format(case_data))
+    expected = sorted([load_test_data("./TestData/case_expected_format.json")])
+
+    assert result == expected
+
+
+@pytest.mark.parametrize("case_extra_data", [{}, None])
+def test_extract_ids_empty_case_extra_data(case_extra_data):
+    """
+    Given:
+        Empty or None case extra data.
+    When:
+        The extract_ids function is called.
+    Then:
+        An empty list should be returned.
+    """
+    from CortexPlatformCore import extract_ids
+
+    result = extract_ids(case_extra_data)
+    assert result == []
+
+
+def test_extract_ids_multiple_valid_issues():
+    """
+    Given:
+        Case extra data containing multiple valid issues with issue_ids.
+    When:
+        The extract_ids function is called.
+    Then:
+        A list containing all issue_ids should be returned.
+    """
+
+    from CortexPlatformCore import extract_ids
+
+    case_extra_data: dict = {
+        "issues": {
+            "data": [
+                {"issue_id": "12345", "title": "Test Issue 1"},
+                {"issue_id": "67890", "title": "Test Issue 2"},
+                {"issue_id": "11111", "title": "Test Issue 3"},
+            ]
+        }
+    }
+    result = extract_ids(case_extra_data)
+    assert result == ["12345", "67890", "11111"]
+
+
+def test_get_case_extra_data_with_all_fields_present(mocker):
+    """
+    Given:
+        A mock client and case data with all possible fields present.
+    When:
+        The get_case_extra_data function is called.
+    Then:
+        All fields should be correctly extracted and returned in the result.
+    """
+    from CortexPlatformCore import get_case_extra_data
+
+    mock_client = mocker.Mock()
+    mock_client._base_url = "original_url"
+
+    mock_case_data = {
+        "case": {
+            "notes": "Test notes",
+            "xdr_url": "https://example.com/xdr",
+            "starred_manually": True,
+            "manual_description": "Case manual description",
+            "detection_time": "2023-01-01T00:00:00Z",
+        },
+        "manual_description": "Global manual description",
+        "network_artifacts": [{"id": "net1", "type": "ip"}],
+        "file_artifacts": [{"id": "file1", "hash": "abc123"}],
+    }
+
+    mock_command_result = mocker.Mock()
+    mock_command_result.outputs = mock_case_data
+
+    mocker.patch("CortexPlatformCore.get_extra_data_for_case_id_command", return_value=mock_command_result)
+    mocker.patch("CortexPlatformCore.extract_ids", return_value=["issue1", "issue2"])
+
+    args = {"case_id": "123"}
+    result = get_case_extra_data(mock_client, args)
+
+    assert mock_client._base_url == "api/webapp/public_api/v1"
+    assert result["issue_ids"] == ["issue1", "issue2"]
+    assert result["network_artifacts"] == [{"id": "net1", "type": "ip"}]
+    assert result["file_artifacts"] == [{"id": "file1", "hash": "abc123"}]
+    assert result["notes"] == "Test notes"
+    assert result["xdr_url"] == "https://example.com/xdr"
+    assert result["starred_manually"] is True
+    assert result["manual_description"] == "Global manual description"
+    assert result["detection_time"] == "2023-01-01T00:00:00Z"
+
+
+def test_get_case_extra_data_client_base_url_modification(mocker):
+    """
+    Given:
+        A mock client with an original base URL.
+    When:
+        The get_case_extra_data function is called.
+    Then:
+        The client's base URL should be modified to "api/webapp/public_api/v1".
+    """
+    from CortexPlatformCore import get_case_extra_data
+
+    mock_client = mocker.Mock()
+    original_url = "https://original.api.endpoint"
+    mock_client._base_url = original_url
+
+    mock_command_result = mocker.Mock()
+    mock_command_result.outputs = {}
+
+    mocker.patch("CortexPlatformCore.get_extra_data_for_case_id_command", return_value=mock_command_result)
+    mocker.patch("CortexPlatformCore.extract_ids", return_value=[])
+
+    args = {"case_id": "url_test"}
+    get_case_extra_data(mock_client, args)
+
+    assert mock_client._base_url == "api/webapp/public_api/v1"
+
+
+def test_add_cases_extra_data_single_case(mocker):
+    """
+    Given:
+        A mock client and a list containing a single case.
+    When:
+        The add_cases_extra_data function is called.
+    Then:
+        A list with one case containing extra data should be returned and get_case_extra_data should be called once.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
+    mock_get_case_extra_data.return_value = {"extra_field": "extra_value"}
+
+    case_data: list[dict] = [{"case_id": "123", "title": "Test Case"}]
+    result = add_cases_extra_data(mock_client, case_data)
+
+    assert len(result) == 1
+    assert result[0]["case_id"] == "123"
+    assert result[0]["CaseExtraData"] == {"extra_field": "extra_value"}
+    mock_get_case_extra_data.assert_called_once_with(mock_client, {"case_id": "123", "limit": 1000})
+
+
+def test_add_cases_extra_data_multiple_cases(mocker):
+    """
+    Given:
+        A mock client and a list containing multiple cases.
+    When:
+        The add_cases_extra_data function is called.
+    Then:
+        A list with all cases containing their respective extra data should be
+        returned and get_case_extra_data should be called for each case.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
+    mock_get_case_extra_data.side_effect = [{"extra_field1": "value1"}, {"extra_field2": "value2"}, {"extra_field3": "value3"}]
+
+    case_data = [
+        {"case_id": "123", "title": "Case 1"},
+        {"case_id": "456", "title": "Case 2"},
+        {"case_id": "789", "title": "Case 3"},
+    ]
+    result = add_cases_extra_data(mock_client, case_data)
+
+    assert len(result) == 3
+    assert result[0]["CaseExtraData"] == {"extra_field1": "value1"}
+    assert result[1]["CaseExtraData"] == {"extra_field2": "value2"}
+    assert result[2]["CaseExtraData"] == {"extra_field3": "value3"}
+    assert mock_get_case_extra_data.call_count == 3
+
+
+def test_add_cases_extra_data_empty_list(mocker):
+    """
+    Given:
+        A mock client and an empty case list.
+    When:
+        The add_cases_extra_data function is called.
+    Then:
+        An empty list should be returned and get_case_extra_data should not be called.
+    """
+    from CortexPlatformCore import add_cases_extra_data
+
+    mock_client = mocker.Mock()
+    mock_get_case_extra_data = mocker.patch("CortexPlatformCore.get_case_extra_data")
+
+    case_data = []
+    result = add_cases_extra_data(mock_client, case_data)
+
+    assert result == []
+    mock_get_case_extra_data.assert_not_called()
+
+    def test_determine_assignee_filter_field_none(self):
+        from CortexPlatformCore import determine_assignee_filter_field, CaseManagement
+
+        result = determine_assignee_filter_field([])
+        assert result == CaseManagement.FIELDS["assignee"]
+
+    def test_determine_assignee_filter_field_with_email(self):
+        from CortexPlatformCore import determine_assignee_filter_field, CaseManagement
+
+        result = determine_assignee_filter_field(["user@example.com"])
+        assert result == CaseManagement.FIELDS["assignee_email"]
+
+    def test_determine_assignee_filter_field_with_pretty_name(self):
+        from CortexPlatformCore import determine_assignee_filter_field, CaseManagement
+
+        result = determine_assignee_filter_field(["John Doe"])
+        assert result == CaseManagement.FIELDS["assignee"]
+
+
+@pytest.mark.parametrize(
+    "custom_fields_json,expected",
+    [
+        (
+            '[{"field1": "value1"}, {"field2": "value2"}, {"field3": "value3"}]',
+            {"field1": "value1", "field2": "value2", "field3": "value3"},
+        ),
+        (
+            '[{"field-1": "value1", "field_2": "value2", "field@3": "value3"}]',
+            {"field1": "value1", "field2": "value2", "field3": "value3"},
+        ),
+        ('[{"field-1": "first"}, {"field_1": "second"}]', {"field1": "first"}),
+        ("[]", {}),
+        ('[{"---": "value1", "@#$": "value2"}]', {}),
+        ('[{"123": "value1", "456field": "value2"}]', {"123": "value1", "456field": "value2"}),
+        ('[{"": "value1", "field2": "value2"}]', {"field2": "value2"}),
+    ],
+)
+def test_parse_custom_fields(custom_fields_json, expected):
+    """
+    Given:
+        A JSON string containing custom fields and expected parsed result.
+    When:
+        The parse_custom_fields function is called with the JSON string.
+    Then:
+        The function should return a dictionary with normalized field names matching the expected result.
+    """
+    from CortexPlatformCore import parse_custom_fields
+
+    result = parse_custom_fields(custom_fields_json)
+    assert result == expected
+
+
+def test_process_case_response_removes_specified_fields():
+    """
+    Given:
+        A case response containing fields that should be removed (layoutId, layoutRuleName, sourcesList,
+        previous_score, previous_score_source).
+    When:
+        The process_case_response function is called.
+    Then:
+        The specified fields should be removed from the response while preserving other fields.
+    """
+    from CortexPlatformCore import process_case_response
+
+    resp = {
+        "reply": {
+            "layoutId": "layout123",
+            "layoutRuleName": "rule456",
+            "sourcesList": ["source1", "source2"],
+            "caseId": "case789",
+            "status": "open",
+            "score": {"current_score": 85, "previous_score": 70, "previous_score_source": "manual", "max_score": 100},
+        }
+    }
+    result = process_case_response(resp)
+    assert "layoutId" not in result
+    assert "layoutRuleName" not in result
+    assert "sourcesList" not in result
+    assert result["caseId"] == "case789"
+    assert result["status"] == "open"
+    assert "previous_score" not in result["score"]
+    assert "previous_score_source" not in result["score"]
+    assert result["score"]["current_score"] == 85
+    assert result["score"]["max_score"] == 100
+
+
+def test_process_case_response_renames_incident_domain_to_case_domain():
+    """
+    Given:
+        A case response containing an incidentDomain field.
+    When:
+        The process_case_response function is called.
+    Then:
+        The incidentDomain field should be renamed to caseDomain and the original field should be removed.
+    """
+    from CortexPlatformCore import process_case_response
+
+    resp = {"reply": {"incidentDomain": "security", "caseId": "case101"}}
+    result = process_case_response(resp)
+    assert "incidentDomain" not in result
+    assert result["caseDomain"] == "security"
+    assert result["caseId"] == "case101"
+
+
+def test_run_playbook_command_empty_response_success():
+    """
+    Given:
+        A mock client that returns an empty response and valid playbook arguments.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The function should return a successful result with appropriate readable output.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+
+    args = {"playbook_id": "test_playbook_123", "issue_ids": ["issue_1", "issue_2"]}
+
+    result = run_playbook_command(mock_client, args)
+
+    assert "executed successfully" in result.readable_output
+    assert "test_playbook_123" in result.readable_output
+    assert "issue_1, issue_2" in result.readable_output
+
+
+def test_run_playbook_command_multiple_errors_response():
+    """
+    Given:
+        A mock client that returns error responses for multiple issues.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        A ValueError should be raised containing all error messages for the issues.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {
+        "issue_1": "Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert",
+        "issue_2": "Skipping execution of playbook multi_fail_playbook for alert issue_2, failed creating investigation playbook",
+        "issue_3": "Skipping execution of playbook multi_fail_playbook for alert issue_3, failed creating investigation playbook",
+    }
+
+    args = {"playbook_id": "multi_fail_playbook", "issue_ids": ["issue_1", "issue_2", "issue_3"]}
+
+    with pytest.raises(ValueError) as exc_info:
+        run_playbook_command(mock_client, args)
+
+    error_message = str(exc_info.value)
+    assert "multi_fail_playbook" in error_message
+    assert (
+        "Issue ID issue_1: Skipping execution of playbook multi_fail_playbook for alert issue_1, couldn't find alert"
+        in error_message
+    )
+    assert (
+        "Issue ID issue_2: Skipping execution of playbook multi_fail_playbook for alert issue_2, "
+        "failed creating investigation playbook" in error_message
+    )
+    assert (
+        "Issue ID issue_3: Skipping execution of playbook multi_fail_playbook for alert issue_3, "
+        "failed creating investigation playbook" in error_message
+    )
+
+
+def test_run_playbook_command_string_issue_ids():
+    """
+    Given:
+        A mock client and arguments with string issue IDs that need to be converted to a list.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The function should successfully process the string issue IDs and return the expected output.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+
+    args = {"playbook_id": "test_playbook", "issue_ids": "issue_1,issue_2,issue_3"}
+
+    result = run_playbook_command(mock_client, args)
+
+    assert "issue_1, issue_2, issue_3" in result.readable_output
+    mock_client.run_playbook.assert_called_once()
+
+
+def test_run_playbook_command_client_call_parameters():
+    """
+    Given:
+        A mock client and valid playbook arguments.
+    When:
+        The run_playbook_command function is called.
+    Then:
+        The client.run_playbook method should be called with the correct parameters.
+    """
+    from CortexPlatformCore import run_playbook_command
+
+    mock_client = Mock()
+    mock_client.run_playbook.return_value = {}
+
+    args = {"playbook_id": "param_test_playbook", "issue_ids": ["param_issue_1", "param_issue_2"]}
+
+    run_playbook_command(mock_client, args)
+
+    mock_client.run_playbook.assert_called_once_with(["param_issue_1", "param_issue_2"], "param_test_playbook")
 
 
 class TestGetAppsecSuggestion(unittest.TestCase):
