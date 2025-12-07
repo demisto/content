@@ -17,6 +17,12 @@
     ],
     "useCases": [],
     "keywords": [],
+    "dependencies": {
+        "AggregatedScripts": {
+            "mandatory": true,
+            "display_name": "Aggregated Scripts"
+        }
+    },
     "marketplaces": [
         "marketplacev2",
         "platform"
