@@ -755,7 +755,6 @@ def test_main_function_success(mocker):
     # Mock AzureClient
     mock_client = mocker.Mock()
     mocker.patch("Azure.AzureClient", return_value=mock_client)
-    # mocker.patch("COOCApiModule.is_gov_account", return_value=False)
 
     # Mock storage_account_update_command to return a CommandResults object
     mock_cmd_result = mocker.Mock()
