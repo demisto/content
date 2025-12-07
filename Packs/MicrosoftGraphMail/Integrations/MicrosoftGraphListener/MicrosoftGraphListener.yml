@@ -112,18 +112,18 @@ configuration:
   required: false
   type: 8
   section: Collect
-- display: Email address from which to fetch incidents (e.g., "example@mail.com")
+- display: Email address to associate for this integration.
   name: mailbox_to_fetch
-  required: true
+  required: false
   type: 0
-  section: Collect
+  section: Connect
   additionalinfo: During authentication, ensure you are logged in to this email address.
 - display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g., Inbox/Phishing)
   name: folder_to_fetch
   type: 0
   defaultvalue: Inbox
   section: Collect
-  required: true
+  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   defaultvalue: '15 minutes'

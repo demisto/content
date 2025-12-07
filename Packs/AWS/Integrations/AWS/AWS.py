@@ -24,6 +24,40 @@ MAX_LIMIT_VALUE = 1000
 DEFAULT_LIMIT_VALUE = 50
 
 
+def handle_port_range(args: dict) -> tuple:
+    """
+    Parse and extract port range information from command arguments.
+
+    Handles port specification in multiple formats:
+    - Individual from_port and to_port arguments
+    - Single port argument that can be a port number or range (e.g., "80" or "80-443")
+
+    Args:
+        args (dict): Command arguments dictionary containing port specifications
+
+    Returns:
+        tuple: A tuple containing (from_port, to_port) as integers, or (None, None) if no ports specified
+    """
+    from_port = arg_to_number(args.get("from_port"))
+    to_port = arg_to_number(args.get("to_port"))
+
+    def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+        """Parse port argument which can be a single port or range (min-max)."""
+        if not port:
+            return None, None
+
+        if "-" in port:
+            from_port, to_port = port.split("-", 1)
+            return int(from_port.strip()), int(to_port.strip())
+        else:
+            _port: int = int(port.strip())
+            return _port, _port
+
+    if args.get("port") and (not from_port and not to_port):
+        from_port, to_port = parse_port_range(args.get("port", ""))
+    return from_port, to_port
+
+
 def serialize_response_with_datetime_encoding(response: Dict[str, Any]) -> Dict[str, Any]:
     """
     Serialize AWS API response with proper datetime encoding for JSON compatibility.
@@ -1314,20 +1348,8 @@ class EC2:
         2. Full mode: using ip_permissions for complex configurations
         """
 
-        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
-            """Parse port argument which can be a single port or range (min-max)."""
-            if not port:
-                return None, None
-
-            if "-" in port:
-                from_port, to_port = port.split("-", 1)
-                return int(from_port.strip()), int(to_port.strip())
-            else:
-                _port: int = int(port.strip())
-                return _port, _port
-
         kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
-        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
+        kwargs["FromPort"], kwargs["ToPort"] = handle_port_range(args)
 
         if ip_permissions := args.get("ip_permissions"):
             try:
@@ -1364,20 +1386,8 @@ class EC2:
         2. Full mode: using ip_permissions for complex configurations
         """
 
-        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
-            """Parse port argument which can be a single port or range (min-max)."""
-            if not port:
-                return None, None
-
-            if "-" in port:
-                from_port, to_port = port.split("-", 1)
-                return int(from_port.strip()), int(to_port.strip())
-            else:
-                _port: int = int(port.strip())
-                return _port, _port
-
         kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
-        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
+        kwargs["FromPort"], kwargs["ToPort"] = handle_port_range(args)
 
         if ip_permissions := args.get("ip_permissions"):
             try:
@@ -1413,19 +1423,6 @@ class EC2:
         1) Full mode: use `ip_permissions` JSON
         2) Simple mode: protocol, port, cidr → build IpPermissions
         """
-
-        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
-            """Parse port argument which can be a single port or range (min-max)."""
-            if not port:
-                return None, None
-
-            if "-" in port:
-                from_port, to_port = port.split("-", 1)
-                return int(from_port.strip()), int(to_port.strip())
-            else:
-                _port: int = int(port.strip())
-                return _port, _port
-
         group_id = args.get("group_id")
         ip_permissions_arg = args.get("ip_permissions")
 
@@ -1438,17 +1435,25 @@ class EC2:
         else:
             # Simple mode: build a single rule descriptor
             proto = args.get("protocol")
-            from_port, to_port = parse_port_range(args.get("port", ""))
-            cidr = args.get("cidr")
-            ip_perms = [{"IpProtocol": proto, "FromPort": from_port, "ToPort": to_port, "IpRanges": [{"CidrIp": cidr}]}]
+            from_port, to_port = handle_port_range(args)
 
+            cidr = args.get("cidr")
+            ip_perms = [
+                {"IpProtocol": proto, "FromPort": from_port, "ToPort": to_port, "IpRanges": [{"CidrIp": cidr}] if cidr else None}
+            ]
+            ip_perms = [remove_empty_elements(ip_perms[0])]
         kwargs = {"GroupId": group_id, "IpPermissions": ip_perms}
 
         try:
             resp = client.revoke_security_group_egress(**kwargs)
             status = resp.get("Return")
             if resp.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200 and status:
-                return CommandResults(readable_output="Egress rule revoked successfully.")
+                readable_output = (
+                    "Egress rule revoked successfully."
+                    if resp.get("RevokedSecurityGroupRules")
+                    else "No egress rules were revoked."
+                )
+                return CommandResults(readable_output=readable_output, raw_response=resp)
             else:
                 # If no exception but Return is False, AWS may report unknown perms
                 unknown = resp.get("UnknownIpPermissions")
@@ -2317,6 +2322,177 @@ class EC2:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(readable_output="The resources where tagged successfully")
+
+    @staticmethod
+    def create_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Creates a new security group in the specified VPC or EC2-Classic.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - group_name (str): Name of the security group.
+                - description (str): Description of the security group.
+                - vpc_id (str, optional): VPC ID where security group will be created.
+
+        Returns:
+            CommandResults: Results of the operation with security group creation details
+        """
+        group_name = args.get("group_name")
+        description = args.get("description")
+        vpc_id = args.get("vpc_id")
+        kwargs = {"Description": description, "GroupName": group_name, "VpcId": vpc_id}
+        remove_nulls_from_dictionary(kwargs)
+        response = client.create_security_group(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK and (group_id := response.get("GroupId")):
+            return CommandResults(
+                readable_output=f'The security group "{group_id}" was created successfully.',
+                raw_response=response,
+            )
+        else:
+            return AWSErrorHandler.handle_response_error(response)
+
+    @staticmethod
+    def delete_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Deletes a security group.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - group_id (str, optional): ID of the security group to delete.
+                - group_name (str, optional): Name of the security group to delete.
+
+        Returns:
+            CommandResults: Results of the operation with deletion confirmation
+        """
+        group_id = args.get("group_id")
+        group_name = args.get("group_name")
+
+        if not group_id and not group_name:
+            raise DemistoException("Either group_id or group_name must be provided")
+
+        if group_id and group_name:
+            raise DemistoException("Cannot specify both group_id and group_name. Please provide only one.")
+
+        kwargs = {}
+
+        if group_id:
+            kwargs["GroupId"] = group_id
+        else:
+            kwargs["GroupName"] = group_name
+
+        remove_nulls_from_dictionary(kwargs)
+        response = client.delete_security_group(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK and response.get("GroupId"):
+            return CommandResults(
+                readable_output=f"Successfully deleted security group: {response.get('GroupId')}",
+                raw_response=response,
+            )
+        else:
+            # If group_id was not found or no GroupId in response, raise an exception
+            return AWSErrorHandler.handle_response_error(response)
+
+    @staticmethod
+    def describe_security_groups_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Describes one or more security groups in your account.
+        Returns detailed information about security groups including their rules, tags, and associated VPC information.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - group_ids (str, optional): Comma-separated list of security group IDs
+                - group_names (str, optional): Comma-separated list of security group names
+                - filters (str, optional): Custom filters to apply
+
+
+        Returns:
+            CommandResults: Results containing security group details
+        """
+        kwargs = {}
+        data = []
+        if args.get("filters") is not None:
+            kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
+        if args.get("group_ids") is not None:
+            kwargs.update({"GroupIds": argToList(args.get("group_ids", []))})
+        if args.get("group_names") is not None:
+            kwargs.update({"GroupNames": argToList(args.get("group_names", []))})
+        # Can't add limit when specify GroupIds or GroupNames
+        if not args.get("group_ids") and not args.get("group_names"):
+            kwargs.update(build_pagination_kwargs(args))
+
+        remove_nulls_from_dictionary(kwargs)
+        response = client.describe_security_groups(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            if len(response["SecurityGroups"]) == 0:
+                return CommandResults(readable_output="No security groups were found.")
+            for _, sg in enumerate(response["SecurityGroups"]):
+                data.append(
+                    {
+                        "Description": sg["Description"],
+                        "GroupName": sg["GroupName"],
+                        "OwnerId": sg["OwnerId"],
+                        "GroupId": sg["GroupId"],
+                        "VpcId": sg["VpcId"],
+                        "tags": sg.get("Tags"),
+                    }
+                )
+            output = json.dumps(response["SecurityGroups"], cls=DatetimeEncoder)
+
+            outputs = {
+                "AWS.EC2.SecurityGroups(val.GroupId && val.GroupId == obj.GroupId)": json.loads(output),
+                "AWS.EC2(true)": {"SecurityGroupsNextToken": response.get("NextToken")},
+            }
+            return CommandResults(
+                outputs=outputs,
+                readable_output=tableToMarkdown("AWS EC2 SecurityGroups", data, removeNull=True),
+                raw_response=response,
+            )
+        else:
+            return AWSErrorHandler.handle_response_error(response)
+
+    @staticmethod
+    def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Adds the specified outbound (egress) rules to a security group.
+
+        The command supports two modes:
+        1. Simple mode: using protocol, port, and cidr arguments
+        2. Full mode: using ip_permissions for complex configurations
+        """
+
+        kwargs: Dict[str, Any] = {"GroupId": args.get("group_id")}
+        from_port = arg_to_number(args.get("from_port"))
+        to_port = arg_to_number(args.get("to_port"))
+
+        if ip_permissions := args.get("ip_permissions"):
+            try:
+                kwargs["IpPermissions"] = json.loads(ip_permissions)
+            except json.JSONDecodeError as e:
+                raise DemistoException(f"Received invalid `ip_permissions` JSON object: {e}")
+        else:
+            kwargs["IpPermissions"] = [
+                {
+                    "IpProtocol": args.get("protocol"),
+                    "FromPort": from_port,
+                    "ToPort": to_port,
+                    "IpRanges": [{"CidrIp": args.get("cidr")}] if args.get("cidr") else None,
+                }
+            ]
+
+        remove_nulls_from_dictionary(kwargs["IpPermissions"][0])
+        response = client.authorize_security_group_egress(**kwargs)
+
+        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK and response["Return"]:
+            readable_output = (
+                "The Security Group egress rule was authorized"
+                if response.get("SecurityGroupRules")
+                else "No Security Group egress rule was authorized"
+            )
+            return CommandResults(readable_output=readable_output, raw_response=response)
+        else:
+            return AWSErrorHandler.handle_response_error(response)
 
 
 class EKS:
@@ -3774,6 +3950,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-billing-budgets-list": Budgets.billing_budgets_list_command,
     "aws-billing-budget-notification-list": Budgets.billing_budget_notification_list_command,
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
+    "aws-s3-public-access-block-quick-action": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
     "aws-s3-bucket-versioning-enable-quick-action": S3.put_bucket_versioning_command,
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
@@ -3796,6 +3973,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-iam-role-from-instance-profile-remove": IAM.remove_role_from_instance_profile_command,
     "aws-iam-access-key-update": IAM.update_access_key_command,
     "aws-ec2-instance-metadata-options-modify": EC2.modify_instance_metadata_options_command,
+    "aws-ec2-enable-imdsv2-quick-action": EC2.modify_instance_metadata_options_command,
     "aws-ec2-instance-attribute-modify": EC2.modify_instance_attribute_command,
     "aws-ec2-instance-attribute-modify-quick-action": EC2.modify_instance_attribute_command,
     "aws-ec2-snapshot-attribute-modify": EC2.modify_snapshot_attribute_command,
@@ -3815,7 +3993,13 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-latest-ami-get": EC2.get_latest_ami_command,
     "aws-ec2-network-acl-create": EC2.create_network_acl_command,
     "aws-ec2-ipam-discovered-public-addresses-get": EC2.get_ipam_discovered_public_addresses_command,
+    "aws-ec2-security-group-create": EC2.create_security_group_command,
+    "aws-ec2-security-group-delete": EC2.delete_security_group_command,
+    "aws-ec2-security-groups-describe": EC2.describe_security_groups_command,
+    "aws-ec2-security-group-egress-authorize": EC2.authorize_security_group_egress_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
+    "aws-eks-enable-control-plane-logging-quick-action": EKS.update_cluster_config_command,
+    "aws-eks-disable-public-access-quick-action": EKS.update_cluster_config_command,
     "aws-eks-cluster-describe": EKS.describe_cluster_command,
     "aws-eks-access-policy-associate": EKS.associate_access_policy_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
@@ -4057,10 +4241,10 @@ def get_service_client(
     params: dict = {},
     args: dict = {},
     command: str = "",
-    session: Optional[Session] = None,
+    session: Session | None = None,
     service_name: str = "",
-    config: Optional[Config] = None,
-) -> tuple[BotoClient, Optional[Session]]:
+    config: Config | None = None,
+) -> tuple[BotoClient, Session | None]:
     """
     Create and configure a boto3 client for the specified AWS service.
 

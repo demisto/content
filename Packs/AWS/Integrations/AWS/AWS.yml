@@ -1169,6 +1169,63 @@ script:
     - name: resources_vpc_config
       description: "A JSON representation of the VPC configuration used by the cluster control plane. For example \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
       required: false
+  - name: aws-eks-enable-control-plane-logging-quick-action
+    description: Enables control plane logging for an EKS cluster.
+    prettyname: Enable Control Plane Logging
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: cluster_name
+        prettyname: EKS Cluster
+        description: The name of the Amazon EKS cluster to update.
+        required: true
+        prettypredefined:
+          EKS Cluster: ${asset.xdm.asset.name}
+      - name: logging
+        description: "Enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs. By default, cluster control plane logs aren’t exported to CloudWatch Logs. For example \"{'clusterLogging': [{'types': ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'], 'enabled': true}]}\"."
+        defaultValue: '{"clusterLogging":[{"types":["api","audit","authenticator","controllerManager","scheduler"],"enabled":true}]}'
+        hidden: true
+
+  - name: aws-eks-disable-public-access-quick-action
+    description: Disables public access to the EKS cluster's API endpoint, making it only accessible from within the cluster's VPC.
+    prettyname: Set EKS Cluster to Private
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: cluster_name
+        prettyname: EKS Cluster
+        description: The name of the Amazon EKS cluster to update.
+        required: true
+        prettypredefined:
+          EKS Cluster: ${asset.xdm.asset.name}
+      - name: resources_vpc_config
+        description: "A JSON representation of the VPC configuration used by the cluster control plane. For example \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
+        defaultValue: '{"endpointPublicAccess": false, "endpointPrivateAccess": true}'
+        hidden: true
 
   - name: aws-eks-cluster-describe
     description: Describes an Amazon EKS cluster.
@@ -2172,18 +2229,24 @@ script:
       description: 'The ID of the security group.'
       required: true
     - name: protocol
-      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6 or a number. Use -1 to specify all protocols. Use with port and CIDR arguments for simple rule revocation.'
       required: false
     - name: port
       description: 'For TCP or UDP: The range of ports to revoke (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule revocation.'
+      required: false
+      deprecated: true
+    - name: from_port
+      description: 'If the protocol is TCP or UDP, this is the start of the port range. If the protocol is ICMP or ICMPv6, this is the ICMP type or -1 (all ICMP types).'
+      required: false
+    - name: to_port
+      description: 'If the protocol is TCP or UDP, this is the end of the port range. If the protocol is ICMP or ICMPv6, this is the ICMP code or -1 (all ICMP codes). If the start port is -1 (all ICMP types), then the end port must be -1 (all ICMP codes).'
       required: false
     - name: cidr
       description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation.'
       required: false
     - name: ip_permissions
-      description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
+      description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/CIDR arguments.'
       required: false
-
   - name: aws-ec2-security-group-ingress-authorize
     description: 'Adds the specified inbound (ingress) rules to a security group.'
     arguments:
@@ -2232,18 +2295,24 @@ script:
       description: 'The ID of the security group.'
       required: true
     - name: protocol
-      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization.'
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6 or a number. Use -1 to specify all protocols. Use with port and CIDR arguments for simple rule authorization.'
       required: false
     - name: port
       description: 'For TCP or UDP: The range of ports to authorize (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule authorization.'
+      required: false
+      deprecated: true
+    - name: from_port
+      description: 'If the protocol is TCP or UDP, this is the start of the port range. If the protocol is ICMP or ICMPv6, this is the ICMP type or -1 (all ICMP types).'
+      required: false
+    - name: to_port
+      description: 'If the protocol is TCP or UDP, this is the end of the port range. If the protocol is ICMP or ICMPv6, this is the ICMP code or -1 (all ICMP codes). If the start port is -1 (all ICMP types), then the end port must be -1 (all ICMP codes).'
       required: false
     - name: cidr
       description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization.'
       required: false
     - name: ip_permissions
-      description: 'The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/cidr arguments.'
+      description: 'The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/CIDR arguments.'
       required: false
-
   - name: aws-ec2-security-group-egress-revoke
     description: 'Removes the specified outbound (egress) rules from the specified security group.'
     arguments:
@@ -2292,16 +2361,86 @@ script:
       description: 'The ID of the security group.'
       required: true
     - name: protocol
-      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6 or a number. Use -1 to specify all protocols. Use with port and CIDR arguments for simple rule revocation.'
       required: false
     - name: port
       description: 'For TCP or UDP: The range of ports to revoke (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule revocation.'
+      required: false
+      deprecated: true
+    - name: from_port
+      description: 'If the protocol is TCP or UDP, this is the start of the port range. If the protocol is ICMP or ICMPv6, this is the ICMP type or -1 (all ICMP types).'
+      required: false
+    - name: to_port
+      description: 'If the protocol is TCP or UDP, this is the end of the port range. If the protocol is ICMP or ICMPv6, this is the ICMP code or -1 (all ICMP codes). If the start port is -1 (all ICMP types), then the end port must be -1 (all ICMP codes).'
       required: false
     - name: cidr
       description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation.'
       required: false
     - name: ip_permissions
-      description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
+      description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/CIDR arguments.'
+      required: false
+  - name: aws-ec2-security-group-egress-authorize
+    execution: true
+    description: 'Adds the specified inbound (egress) rules to a security group.'
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+
+    - name: group_id
+      description: 'The ID of the security group.'
+      required: true
+    - name: protocol
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6 or a number. Use -1 to specify all protocols. Use with from_port, to_port and CIDR arguments for simple rule authorization. VPC security group rules must specify protocols explicitly.'
+      required: false
+    - name: from_port
+      description: 'If the protocol is TCP or UDP, this is the start of the port range. If the protocol is ICMP or ICMPv6, this is the ICMP type or -1 (all ICMP types).'
+      required: false
+    - name: to_port
+      description: 'If the protocol is TCP or UDP, this is the end of the port range. If the protocol is ICMP or ICMPv6, this is the ICMP code or -1 (all ICMP codes). If the start port is -1 (all ICMP types), then the end port must be -1 (all ICMP codes).'
+      required: false
+    - name: cidr
+      description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and from_port, to_port arguments for simple rule authorization.'
+      required: false
+    - name: ip_permissions
+      description: 'The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/CIDR arguments.'
       required: false
 
   - name: aws-ec2-snapshot-attribute-modify
@@ -2625,7 +2764,6 @@ script:
     - name: instance_id
       description: 'The ID of the instance.'
       required: true
-
     - description: Whether IMDSv2 is required.
       auto: PREDEFINED
       name: http_tokens
@@ -5406,7 +5544,7 @@ script:
       description: The reason for the function’s current state.
       type: String
     - contextPath: AWS.Lambda.FunctionConfig.StateReasonCode
-      description: The reason code for the function’s current state. 
+      description: The reason code for the function’s current state.
       type: String
     - contextPath: AWS.Lambda.FunctionConfig.LastUpdateStatus
       description: The status of the last update that was performed on the function.
@@ -5617,7 +5755,7 @@ script:
     description: Returns the resource-based IAM policy for a Lambda function.
     outputs:
       - contextPath: AWS.Lambda.Policy.Version
-        description: The policy version. 
+        description: The policy version.
         type: Date
       - contextPath: AWS.Lambda.Policy.Id
         description: The identifier of the policy.
@@ -6614,6 +6752,80 @@ script:
       description: Additional attributes returned by the API.
       type: unknown
 
+  - name: aws-s3-public-access-block-quick-action
+    description: Blocks all public access to the S3 bucket.
+    prettyname: Block S3 Public Access
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: bucket
+        prettyname: Bucket Name
+        description: The name of the Amazon S3 bucket.
+        required: true
+        prettypredefined:
+          Bucket Name: ${asset.xdm.asset.name}
+      - name: block_public_acls
+        description: Wether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
+        defaultValue: 'true'
+        hidden: true
+      - name: ignore_public_acls
+        description: Wether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
+        defaultValue: 'true'
+        hidden: true
+      - name: block_public_policy
+        description: Wether Amazon S3 should block public bucket policies for this bucket.
+        defaultValue: 'true'
+        hidden: true
+      - name: restrict_public_buckets
+        description: Wether Amazon S3 should restrict public bucket policies for this bucket.
+        defaultValue: 'true'
+        hidden: true
+
+  - name: aws-ec2-enable-imdsv2-quick-action
+    description: Enables instance metadata services v2.0 for the EC2 instance.
+    prettyname: Enable IMDSv2
+    hidden: true
+    quickaction: true
+    arguments:
+      - name: account_id
+        description: The AWS account ID.
+        prettyname: Account ID
+        required: true
+        prettypredefined:
+          Account ID: ${asset.xdm.asset.realm}
+      - name: region
+        description: The AWS region.
+        prettyname: Region
+        required: true
+        prettypredefined:
+          Region: ${asset.xdm.asset.cloud.region}
+      - name: instance_id
+        prettyname: EC2 Instance ID
+        description: The ID of the instance.
+        required: true
+        prettypredefined:
+          EC2 Instance ID: ${asset.xdm.asset.strong_id}
+      - name: http_tokens
+        description: Whether IMDSv2 is required.
+        defaultValue: 'required'
+        hidden: true
+      - name: http_endpoint
+        description: Enables or disables the HTTP metadata endpoint on your instances.
+        defaultValue: 'enabled'
+        hidden: true
+
   - name: aws-acm-certificate-options-update
     description: Updates Certificate Transparency (CT) logging for an AWS Certificate Manager (ACM) certificate (ENABLED or DISABLED).
     arguments:
@@ -6668,7 +6880,202 @@ script:
       - ENABLED
       - DISABLED
     outputs: []
-    
+
+  - name: aws-ec2-security-group-create
+    execution: true
+    description: Creates a security group.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: group_name
+      description: The name of the security group. Up to 255 characters in length. Cannot start with sg-. Names are case-insensitive and must be unique within the VPC.
+      required: true
+    - name: description
+      description: 'A description for the security group. This is informational only. Up to 255 characters in length. Valid characters: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*.'
+      required: true
+    - name: vpc_id
+      description: The ID of the VPC. Required for a nondefault VPC.
+      required: false
+  - name: aws-ec2-security-group-delete
+    execution: true
+    description: Deletes a security group.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: group_id
+      description: The ID of the security group to delete (e.g., sg-12345678). Required if group_name is not provided.
+    - name: group_name
+      description: The name of the security group to delete. Required if group_id is not provided. Note that you can’t reference a security group for EC2-VPC by name.
+  - name: aws-ec2-security-groups-describe
+    description: Describes the specified security groups or all of your security groups. Returns detailed information about security groups including their rules, tags, and associated VPC information.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: group_ids
+      description: Comma-separated list of security group IDs (e.g., sg-12345678,sg-87654321).
+      isArray: true
+    - name: group_names
+      description: Comma-separated list of security group names. group_names is only supported for EC2-Classic and default VPC.
+      isArray: true
+    - name: filters
+      description: "One or more custom filters to apply, separated by ';' (for example, name=<name>;values=<values>).You can specify up to 50 filters and up to 200 values per filter in a single request."
+      isArray: true
+    - name: limit
+      defaultValue: "50"
+      description: The maximum number of records to return. Valid range is 5-1000.
+    - name: next_token
+      description: The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter.
+    outputs:
+    - contextPath: AWS.EC2.SecurityGroupsNextToken
+      description: The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.Description
+      description: A description of the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.GroupName
+      description: The name of the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions
+      description: The inbound rules associated with the security group.
+    - contextPath: AWS.EC2.SecurityGroups.OwnerId
+      description: The AWS account ID of the owner of the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.GroupId
+      description: The ID of the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress
+      description: The outbound rules associated with the security group.
+      type: array
+    - contextPath: AWS.EC2.SecurityGroups.VpcId
+      description: The ID of the VPC for the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.SecurityGroupArn
+      description: The ARN of the security group.
+      type: string
+
   isfetch: false
   runonce: false
   script: '-'
