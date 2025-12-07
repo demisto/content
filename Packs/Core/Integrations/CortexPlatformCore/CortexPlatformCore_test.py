@@ -4841,6 +4841,91 @@ def test_create_appsec_issues_filter_and_tables_no_matching_table():
         create_appsec_issues_filter_and_tables(args)
 
 
+@pytest.mark.parametrize(
+    "custom_fields_json,expected",
+    [
+        (
+            '[{"field1": "value1"}, {"field2": "value2"}, {"field3": "value3"}]',
+            {"field1": "value1", "field2": "value2", "field3": "value3"},
+        ),
+        (
+            '[{"field-1": "value1", "field_2": "value2", "field@3": "value3"}]',
+            {"field1": "value1", "field2": "value2", "field3": "value3"},
+        ),
+        ('[{"field-1": "first"}, {"field_1": "second"}]', {"field1": "first"}),
+        ("[]", {}),
+        ('[{"---": "value1", "@#$": "value2"}]', {}),
+        ('[{"123": "value1", "456field": "value2"}]', {"123": "value1", "456field": "value2"}),
+        ('[{"": "value1", "field2": "value2"}]', {"field2": "value2"}),
+    ],
+)
+def test_parse_custom_fields(custom_fields_json, expected):
+    """
+    Given:
+        A JSON string containing custom fields and expected parsed result.
+    When:
+        The parse_custom_fields function is called with the JSON string.
+    Then:
+        The function should return a dictionary with normalized field names matching the expected result.
+    """
+    from CortexPlatformCore import parse_custom_fields
+
+    result = parse_custom_fields(custom_fields_json)
+    assert result == expected
+
+
+def test_process_case_response_removes_specified_fields():
+    """
+    Given:
+        A case response containing fields that should be removed (layoutId, layoutRuleName, sourcesList,
+        previous_score, previous_score_source).
+    When:
+        The process_case_response function is called.
+    Then:
+        The specified fields should be removed from the response while preserving other fields.
+    """
+    from CortexPlatformCore import process_case_response
+
+    resp = {
+        "reply": {
+            "layoutId": "layout123",
+            "layoutRuleName": "rule456",
+            "sourcesList": ["source1", "source2"],
+            "caseId": "case789",
+            "status": "open",
+            "score": {"current_score": 85, "previous_score": 70, "previous_score_source": "manual", "max_score": 100},
+        }
+    }
+    result = process_case_response(resp)
+    assert "layoutId" not in result
+    assert "layoutRuleName" not in result
+    assert "sourcesList" not in result
+    assert result["caseId"] == "case789"
+    assert result["status"] == "open"
+    assert "previous_score" not in result["score"]
+    assert "previous_score_source" not in result["score"]
+    assert result["score"]["current_score"] == 85
+    assert result["score"]["max_score"] == 100
+
+
+def test_process_case_response_renames_incident_domain_to_case_domain():
+    """
+    Given:
+        A case response containing an incidentDomain field.
+    When:
+        The process_case_response function is called.
+    Then:
+        The incidentDomain field should be renamed to caseDomain and the original field should be removed.
+    """
+    from CortexPlatformCore import process_case_response
+
+    resp = {"reply": {"incidentDomain": "security", "caseId": "case101"}}
+    result = process_case_response(resp)
+    assert "incidentDomain" not in result
+    assert result["caseDomain"] == "security"
+    assert result["caseId"] == "case101"
+
+
 def test_run_playbook_command_empty_response_success():
     """
     Given:
@@ -5517,3 +5602,101 @@ def test_core_list_endpoints_command_error_handling(mocker):
     # Verify exception is propagated
     with pytest.raises(Exception, match="Server error"):
         core_list_endpoints_command(mock_client, args)
+def test_get_endpoint_support_file_command_success(mocker):
+    """
+    Given: A client and valid endpoint IDs to retrieve support files for.
+    When: The get_endpoint_support_file_command is called with valid parameters.
+    Then: It should return a CommandResults object with the correct group_action_id and readable output.
+    """
+    from CortexPlatformCore import get_endpoint_support_file_command, Client
+
+    # Mock the client and its method
+    mock_client = mocker.Mock(spec=Client)
+    mock_response = {
+        "reply": {
+            "group_action_id": "test-group-123",
+        }
+    }
+    mock_client.get_endpoint_support_file.return_value = mock_response
+
+    # Test arguments
+    args = {"endpoint_ids": ["endpoint1", "endpoint2", "endpoint3"]}
+
+    # Execute the command
+    result = get_endpoint_support_file_command(mock_client, args)
+
+    # Verify the client was called with correct parameters
+    expected_request_data = {
+        "request_data": {
+            "filter_data": {
+                "filter": {
+                    "AND": [
+                        {
+                            "OR": [
+                                {"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "endpoint1"},
+                                {"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "endpoint2"},
+                                {"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "endpoint3"},
+                            ]
+                        }
+                    ]
+                }
+            },
+            "filter_type": "static",
+        }
+    }
+
+    mock_client.get_endpoint_support_file.assert_called_once_with(expected_request_data)
+
+    # Verify the result
+    assert result.readable_output == "Endpoint support file request submitted successfully. Group Action ID: test-group-123"
+    assert result.outputs_prefix == "Core.EndpointSupportFile"
+    assert result.outputs_key_field == "group_action_id"
+    assert result.outputs == mock_response["reply"]
+    assert result.raw_response == mock_response
+
+
+def test_get_endpoint_support_file_command_single_endpoint(mocker):
+    """
+    Given: A client and a single endpoint ID as a string to retrieve support file for.
+    When: The get_endpoint_support_file_command is called with a single endpoint ID.
+    Then: It should correctly convert the single ID to a list and process the request successfully.
+    """
+    from CortexPlatformCore import get_endpoint_support_file_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_response = {"reply": {"group_action_id": "single-endpoint-456"}}
+    mock_client.get_endpoint_support_file.return_value = mock_response
+
+    args = {"endpoint_ids": "single-endpoint"}
+
+    result = get_endpoint_support_file_command(mock_client, args)
+
+    # Verify single endpoint was converted to list in the filter
+    expected_request_data = {
+        "request_data": {
+            "filter_data": {
+                "filter": {"AND": [{"SEARCH_FIELD": "AGENT_ID", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "single-endpoint"}]}
+            },
+            "filter_type": "static",
+        }
+    }
+    mock_client.get_endpoint_support_file.assert_called_once_with(expected_request_data)
+    assert result.outputs["group_action_id"] == "single-endpoint-456"
+
+
+def test_get_endpoint_support_file_command_missing_group_action_id(mocker):
+    """
+    Given: A client that returns a response without a group_action_id in the reply.
+    When: The get_endpoint_support_file_command is called and the group_action_id is zero.
+    Then: It should raise a DemistoException indicating the missing group_action_id.
+    """
+    from CortexPlatformCore import get_endpoint_support_file_command, DemistoException
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_response = {"reply": {"group_action_id": 0}}
+    mock_client.get_endpoint_support_file.return_value = mock_response
+
+    args = {"endpoint_ids": ["endpoint1"]}
+
+    with pytest.raises(DemistoException, match="No group_action_id found in the response"):
+        get_endpoint_support_file_command(mock_client, args)
