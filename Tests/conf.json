@@ -233,9 +233,7 @@
             "timeout": 400
         },
         {
-            "integrations": [
-                "Microsoft Management Activity API (O365 Azure Events)"
-            ],
+            "integrations": "Microsoft Management Activity API (O365 Azure Events)",
             "playbookID": "MicrosoftManagementActivity - Test"
         },
         {
@@ -462,12 +460,6 @@
             "integrations": "Azure Storage Table",
             "playbookID": "playbook-AzureStorageTable-Test",
             "fromversion": "6.0.0"
-        },
-        {
-            "integrations": "EwsExtension",
-            "playbookID": "playbook-EWS_O365_Extension_test",
-            "fromversion": "6.0.0",
-            "timeout": 500
         },
         {
             "integrations": "Majestic Million",
@@ -2240,12 +2232,6 @@
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender Advanced Threat Protection - Test self deployed",
-            "instance_names": "microsoft_defender_atp_dev_self_deployed",
-            "timeout": 700
-        },
-        {
-            "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
             "instance_names": "microsoft_defender_atp_dev_self_deployed"
         },
@@ -2258,11 +2244,6 @@
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
             "instance_names": "microsoft_defender_atp_prod"
-        },
-        {
-            "integrations": "Microsoft 365 Defender",
-            "playbookID": "Microsoft_365_Defender-Test",
-            "instance_names": "ms_365_defender_device_code"
         },
         {
             "integrations": "Microsoft 365 Defender",
@@ -2293,11 +2274,6 @@
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test prod",
             "instance_names": "ms_graph_security_prod"
-        },
-        {
-            "integrations": "Microsoft Graph",
-            "playbookID": "Microsoft Graph Security Test self deployed",
-            "instance_names": "ms_graph_security_client_cred"
         },
         {
             "integrations": "Microsoft Graph",
@@ -3418,12 +3394,6 @@
             "playbookID": "EWS_O365_test",
             "fromversion": "5.0.0",
             "timeout": 500
-        },
-        {
-            "integrations": "EWSO365",
-            "instance_names": "ewso365_dev_team",
-            "playbookID": "EWS_O365_send_mail_test",
-            "fromversion": "5.0.0"
         },
         {
             "integrations": "Unit42v2 Feed",
@@ -4850,6 +4820,7 @@
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
             "memory_threshold": 300,
+            "timeout": 1200,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -5954,6 +5925,7 @@
         }
     ],
     "skipped_tests": {
+        "TAXII 2 Feed Test": "No instance - CIAC-15292",
         "Tanium Threat Response V2 Test": "The creds were expired, opened a ticket CRTX-155635",
         "ExabeamDataLake-test": "The credentials were expired, can't restore CRTX-149225",
         "ThreatCrowd - Test": "The pack is deprecated",
@@ -6056,7 +6028,7 @@
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
         "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
         "XsoarPowershellTesting-Test": "Issue 32689",
-        "MicrosoftManagementActivity - Test": "Issue 43922",
+        "MicrosoftManagementActivity - Test": "Issue CRTX-208277",
         "Google-Vault-Generic-Test": "Issue 24347",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "Zscaler Test": "Issue 40157, API subscription currently Expired",
@@ -6064,7 +6036,6 @@
         "cisco-ise-test-playbook": "CRTX-146167",
         "GuardiCoreV2-Test": "Issue 43822",
         "ExtractAttackPattern-Test": "Issue 44095",
-        "playbook-EWS_O365_Extension_test": "Issue 25605, Issue 39008",
         "Cherwell - test": "Issue 26780",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Endpoint Malware Investigation - Generic - Test": "Issue 44779",
@@ -6078,9 +6049,7 @@
         "AzureADTest": "Issue 40131",
         "Autoextract - Test": "Issue 45293",
         "LogRhythm-Test-Playbook": "Issue 27164",
-        "Microsoft_365_Defender-Test": "Issue 39390",
         "Tanium Threat Response - Request File Download v2 - Test": "Issue 46326",
-        "EWS_O365_send_mail_test": "Issue 44200",
         "Cisco Umbrella Test": "Issue 24338",
         "Unit42 Intel Objects Feed - Test": "Issue 44100",
         "Fetch Indicators Test": "Issue 45490",
@@ -6125,10 +6094,6 @@
         "Test-Detonate URL - ThreatGrid": "No instance, developed by Qmasters",
         "awake_security_test_pb": "No instance, CRTX-77572",
         "SumoLogic-Test": "401 unauthorized, CIAC-6334",
-        "EWS_O365_test": "Issue CIAC-6753",
-        "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
-        "Microsoft Defender Advanced Threat Protection - Test self deployed": "Issue CIAC-7527",
-        "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527",
         "OpsGenieV3TestPlaybook": "Issue CIAC-7649",
         "ThreatStream-Test": "Issue CRTX-96526",
         "MSG-Threat-Assessment-test": "API limitation",
@@ -6383,6 +6348,7 @@
         "Send Email To Recipients",
         "EWS V2 Send Mail Test 2",
         "EWS V2 Send Mail Test 3",
+        "EWS_O365_test",
         "Mail Sender (New) Test",
         "TestImageOCR",
         "MicrosoftGraphMail-Test_dev_no_oproxy",
@@ -6390,8 +6356,10 @@
         "MicrosoftGraphMail-Test_prod",
         "Microsoft Defender Advanced Threat Protection - Test dev",
         "Microsoft Defender Advanced Threat Protection - Test prod",
-        "Microsoft Defender Advanced Threat Protection - Test self deployed",
+        "Microsoft Defender Advanced Threat Protection - Test",
         "Microsoft Defender - ATP - Indicators SC Test",
+        "Microsoft_365_Defender-Test",
+        "MicrosoftManagementActivity - Test",
         "Whois A new layout implemented with python-whois service",
         "Detonate URL - WildFire-v2 - Test",
         "CrowdStrike Falcon Basic Test",

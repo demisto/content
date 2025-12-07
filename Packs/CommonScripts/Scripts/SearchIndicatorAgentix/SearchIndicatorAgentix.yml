@@ -45,7 +45,7 @@ outputs:
   description: The numeric score of the indicator (0 = Unknown, 1 = Good, 2 = Suspicious, 3 = Malicious).
 - contextPath: foundIndicators.verdict
   description: The human readable score/verdict of the Indicator.
-- contextPath: foundIndicators.investigationIDs
+- contextPath: foundIndicators.IssueIDs
   description: The investigations related to the indicator.
 - contextPath: foundIndicators.expirationStatus
   description: The expiration status of the indicator.
