@@ -442,7 +442,7 @@ def test_taxii20_indicators_objects(mocker, taxii2_server_v20):
         assert response.status_code == 200
         assert response.content_type == "application/vnd.oasis.stix+json; version=2.0"
         assert response.json == objects
-        assert response.headers.get("Content-Range") == "items 0-2/5"
+        assert response.headers.get("Content-Range") == "items 0-3/5"
 
 
 @pytest.mark.parametrize(

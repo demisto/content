@@ -665,7 +665,7 @@ class XSOAR2STIXParser:
             xsoar_indicator_to_return = xsoar_indicator
         extension_definition = {}
 
-        if self.has_extension and object_type not in self.types_for_indicator_sdo:
+        if self.has_extension:
             stix_object, extension_definition, extensions_dict = self.create_extension_definition(
                 object_type, extensions_dict, xsoar_type, created_parsed, modified_parsed, stix_object, xsoar_indicator_to_return
             )
@@ -793,7 +793,10 @@ class XSOAR2STIXParser:
             pattern_type="stix",
             labels=labels,
         )
-        return dict({k: v for k, v in stix_object.items() if k in ("spec_version", "created", "modified")}, **stix_domain_object)
+        return dict(
+            {k: v for k, v in stix_object.items() if k in ("spec_version", "created", "modified", "extensions")},
+            **stix_domain_object,
+        )
 
     @staticmethod
     def create_sdo_stix_uuid(
