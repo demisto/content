@@ -2356,9 +2356,6 @@ script:
         - iOS Default
         - Windows Default
         - bcpolicy
-      - description: A comma-separated list of group names assigned to the endpoints.
-        name: group_name
-        isArray: true
       - description: A comma-separated list of endpoint tags.
         name: tags
         isArray: true

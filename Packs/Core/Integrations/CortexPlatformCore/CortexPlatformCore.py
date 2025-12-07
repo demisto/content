@@ -109,7 +109,6 @@ ENDPOINT_FIELDS = {
     "ip_address": "IP",
     "domain": "DOMAIN",
     "assigned_prevention_policy": "ACTIVE_POLICY",
-    "group_name": "GROUP_ID",
     "tags": "TAGS",
     "endpoint_id": "AGENT_ID",
     "operational_status": "OPERATIONAL_STATUS",
@@ -1977,8 +1976,6 @@ def map_endpoint_format(endpoint_list: list) -> list:
             if friendly_key in nested_mappers:
                 mapper = nested_mappers[friendly_key]
                 friendly_value = mapper.get(raw_value, raw_value)
-            elif friendly_key == "agent_eol":  # agent_eol = not supported_version
-                friendly_value = not raw_value
             else:
                 friendly_value = raw_value
 
@@ -2009,7 +2006,7 @@ def build_endpoint_filters(args: dict):
         ASSIGNED_PREVENTION_POLICY[assigned] for assigned in argToList(args.get("assigned_prevention_policy"))
     ]
     agent_eol = args.get("agent_eol")
-    supported_version = not arg_to_bool_or_none(agent_eol) if agent_eol else None
+    supported_version = arg_to_bool_or_none(agent_eol) if agent_eol else None
 
     filter_builder = FilterBuilder()
     filter_builder.add_field(ENDPOINT_FIELDS["endpoint_status"], FilterType.EQ, endpoint_status)
@@ -2023,7 +2020,6 @@ def build_endpoint_filters(args: dict):
     filter_builder.add_field(ENDPOINT_FIELDS["os_version"], FilterType.EQ, argToList(args.get("os_version")))
     filter_builder.add_field(ENDPOINT_FIELDS["ip_address"], FilterType.ADVANCED_IP_MATCH_EXACT, argToList(args.get("ip_address")))
     filter_builder.add_field(ENDPOINT_FIELDS["domain"], FilterType.EQ, argToList(args.get("domain")))
-    filter_builder.add_field(ENDPOINT_FIELDS["group_name"], FilterType.EQ, argToList(args.get("group_name")))
     filter_builder.add_field(ENDPOINT_FIELDS["tags"], FilterType.EQ, argToList(args.get("tags")))
     filter_builder.add_field(ENDPOINT_FIELDS["endpoint_id"], FilterType.EQ, argToList(args.get("endpoint_id")))
     filter_builder.add_field(ENDPOINT_FIELDS["cloud_provider"], FilterType.EQ, argToList(args.get("cloud_provider")))
