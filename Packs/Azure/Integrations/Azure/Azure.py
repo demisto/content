@@ -3993,7 +3993,7 @@ def main():  # pragma: no cover
     demisto.debug(f"{connector_id=}")
     client = get_azure_client(params, args)
     global GOV_ACCOUNT
-    GOV_ACCOUNT = is_gov_account(connector_id, client.subscription_id)
+    GOV_ACCOUNT = is_gov_account(connector_id, client.subscription_id) if connector_id else False
     handle_proxy()
     try:
         commands_with_params_and_args = {

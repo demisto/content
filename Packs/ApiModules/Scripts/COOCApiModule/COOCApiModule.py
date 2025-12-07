@@ -394,6 +394,7 @@ def create_permissions_error_entry(account_id: Optional[str], message: Optional[
     # Return formatted error response
     return error_entry
 
+
 def is_gov_account(connector_id: str, account_id: str) -> bool:
     """
     Return whether the account connected to the connector_id is a gov account or not.
@@ -406,11 +407,19 @@ def is_gov_account(connector_id: str, account_id: str) -> bool:
         A boolean representing whether the account is a gov account or not.
     """
     accounts_info = get_accounts_by_connector_id(connector_id, None)  # return all accounts with max_results = None
-    # go over the list of account to find the correct one
+    # go over the list of accounts to find the correct one
     relevant_account = {}
     for account in accounts_info:
         if account.get("account_id") == account_id:
             relevant_account = account
             break
-    demisto.debug(f"{relevant_account.get("cloud_partition")=}")
-    return relevant_account.get("cloud_partition") == "GOV"
+
+    if not relevant_account:
+        demisto.debug(f"No account found with account_id: {account_id}")
+        return False
+
+    demisto.debug(f"{relevant_account.get('cloud_partition')=}")
+    if account_cloud_partition := relevant_account.get("cloud_partition", ""):
+        return account_cloud_partition.upper() == "GOV"
+    else:
+        return False
