@@ -2,12 +2,18 @@
 
 Your Customer Experience Engineer (CEE) will provide you with a [Google Developer Service Account Credential](https://developers.google.com/identity/protocols/OAuth2#serviceaccount) to enable the Google API client to communicate with the Backstory API.
 
-To use the v1 alpha API, your Customer Experience Engineer (CEE) will provide a [Google Developer Service Account Credential](https://developers.google.com/identity/protocols/OAuth2#serviceaccount) to enable the Google API client to communicate with the V1 alpha API. The Google SecOps Project Instance ID is available on the Settings or Profile page of the Google SecOps platform.
+To use the v1 alpha API, your Customer Experience Engineer (CEE) will provide a [Google Developer Service Account Credential](https://developers.google.com/identity/protocols/OAuth2#serviceaccount) to enable the Google API client to communicate with the V1 alpha API or you can use the following steps to create a service account. The Google SecOps Project Instance ID and Google SecOps Project Number can be retrieved from the Settings or Profile page of the Google SecOps platform.
 
-### Required Permissions for v1 alpha API supported Service Account JSON
+**Troubleshooting Connection Issues:** If you encounter connection or access denied errors, update the API URL format and provide the Google SecOps Project Number.
 
-* Viewer Permission: If you only need to get or list resources, the Chronicle Viewer role is sufficient. [Learn more](https://cloud.google.com/iam/docs/roles-permissions/chronicle#chronicle.viewer)
-* Editor Permission: If you need to create or update resources (such as creating or editing rules), the Chronicle Editor role is required. [Learn more](https://cloud.google.com/iam/docs/roles-permissions/chronicle#chronicle.editor)
+### Create a v1 alpha API supported Service Account JSON
+
+* Log in to [Google Cloud Console](https://console.cloud.google.com/) and select the GCP Project ID shown in the Profile page of the Google SecOps platform.
+* Navigate to IAM & Admin → Service Accounts, click \"+ CREATE SERVICE ACCOUNT\", and provide a descriptive name (e.g., secops-v1alpha-service-account).
+* Grant appropriate Chronicle roles:
+  * Viewer Permission: If you only need to get or list resources, the Chronicle Viewer role is sufficient. [Learn more](https://cloud.google.com/iam/docs/roles-permissions/chronicle#chronicle.viewer)
+* Go to the created service account → Keys tab → ADD KEY → Create new key → Choose JSON format → Click CREATE.
+* The JSON file will automatically download. Keep this file secure as it contains authentication credentials.
 
 ### Instance Configuration
 
