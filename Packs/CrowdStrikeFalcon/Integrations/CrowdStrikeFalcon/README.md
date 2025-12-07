@@ -6457,6 +6457,59 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 | --- | --- | --- | --- |  --- | --- |  --- | --- |  --- | --- |
 | CVE-20212-2222 |  host | 1 | Server | ip |  |  | site | 5.5 |  |
 
+### cs-falcon-list-cnapp-alerts
+
+***
+Returns a list of CNAPP alerts. Used for debugging fetch-assets.
+
+#### Base Command
+
+`cs-falcon-list-cnapp-alerts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | The filter to use for the query. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.CnappAlert.containers_impacted_count | String | The number of containers impacted by the alert. |
+| CrowdStrike.CnappAlert.containers_impacted_ids | Array | The list of the ids of containers impacted by the alert. |
+| CrowdStrike.CnappAlert.detection_description | String | The description of the alert. |
+| CrowdStrike.CnappAlert.detection_event_simple_name | String | The simple name of the alert. |
+| CrowdStrike.CnappAlert.detection_name | String | The name of the alert. |
+| CrowdStrike.CnappAlert.first_seen_timestamp | String | The first time the alert was seen. |
+| CrowdStrike.CnappAlert.last_seen_timestamp | String | The last time the alert was seen. |
+| CrowdStrike.CnappAlert.severity | String | The severity of the alert. |
+
+#### Command Example
+
+``` cs-falcon-list-cnapp-alerts ```
+
+#### Context Example
+
+```json
+{
+    "severity": "Critical",
+    "first_seen_timestamp": "2025-11-24T11:04:03Z",
+    "last_seen_timestamp": "2025-11-26T10:18:35Z",
+    "detection_name": "PotentialKernelTampering",
+    "detection_event_simple_name": "BPFCommandIssued",
+    "detection_description": "some decription.",
+    "containers_impacted_count": "1",
+    "containers_impacted_ids": ["id1", "id2"],
+}
+```
+
+#### Human Readable Output
+
+|severity|first_seen_timestamp|last_seen_timestamp|detection_name|detection_event_simple_name|detection_description|containers_impacted_count|containers_impacted_ids|
+|---|---|---|---|---|---|---|---|
+| Critical | 2025-11-24T11:04:03Z | 2025-11-26T10:18:35Z | PotentialKernelTampering | BPFCommandIssued | alert description. | 1 | test |
+
 ## Troubleshooting
 
 - In the different fetch query configuration parameters such as "Endpoint Detections fetch query" and "Endpoint Incidents fetch query", to query for multiple values in the same field use the following format: `field:['value1','value2','value3']`.

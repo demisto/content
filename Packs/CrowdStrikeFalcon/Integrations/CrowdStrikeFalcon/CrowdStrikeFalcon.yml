@@ -5169,7 +5169,7 @@ script:
       type: String
     - contextPath: CrowdStrike.CnappAlert.containers_impacted_ids
       description: The list of the ids of containers impacted by the alert.
-      type: String
+      type: Array
     - contextPath: CrowdStrike.CnappAlert.detection_description
       description: The description of the alert.
       type: String
