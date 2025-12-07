@@ -148,7 +148,17 @@ There are no input arguments for this command.
             "additional_purchased_quota": 0,
             "eval_quota": 0,
             "license_quota": 1000,
-            "used_quota": 0.00299
+            "used_quota": 0.00299,
+            "total_daily_running_queries": 4,
+            "total_daily_concurrent_rejected_queries": 8,
+            "current_concurrent_active_queries": {
+                "debee6b0c41f47_911_inv": {
+                    "xql": "config timeframe = 1mo | dataset=xdr_data | limit 1000000",
+                    "duration": 61
+                }
+            },
+            "current_concurrent_active_queries_count": 1,
+            "max_daily_concurrent_active_query_count": 4
         }
     }
 }
