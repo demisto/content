@@ -1,0 +1,33 @@
+[
+    {
+    "Id": "OLD_EVENT_001",
+    "CreationTime": "2025-12-05T04:00:00",
+    "Operation": "UserLoggedIn",
+    "UserId": "admin@example.com"
+  },
+  {
+    "Id": "OVERLAP_EVENT_001",
+    "CreationTime": "2025-12-05T04:10:00",
+    "Operation": "FileAccessed",
+    "UserId": "user1@example.com"
+  },
+  {
+    "Id": "OVERLAP_EVENT_002",
+    "CreationTime": "2025-12-05T04:10:00",
+    "Operation": "FileDownloaded",
+    "UserId": "user1@example.com"
+  },
+  {
+    "Id": "NEW_EVENT_001",
+    "CreationTime": "2025-12-05T04:15:00",
+    "Operation": "UserCreated",
+    "UserId": "admin@example.com"
+  },
+  {
+    "Id": "NEW_EVENT_001",
+    "CreationTime": "2025-12-05T04:15:00",
+    "Operation": "UserCreated",
+    "UserId": "admin@example.com",
+    "Note": "This is an internal duplicate of the previous record"
+  }
+]

@@ -724,3 +724,115 @@ def test_test_module_with_auth_code(mocker):
     assert mock_return_error.called
     error_message = mock_return_error.call_args[0][0]
     assert expected_error in error_message
+
+
+@pytest.fixture
+def mock_content_records():
+    """Reads the mocked JSON data for all tests."""
+    file_path = os.path.join("test_data", "incidents_mocked.json")
+    with open(file_path, "r") as f:
+        return json.load(f)
+
+
+def test_fetch_standard_flow(mock_content_records):
+    """
+    Case 1: Standard Fetch
+    - Start Time: 04:05 (After OLD_EVENT, Before others)
+    - Last Run: Empty (First time seeing these)
+    - Expected:
+        - OLD_EVENT skipped (time filter).
+        - Internal duplicate NEW_EVENT_001 skipped.
+        - Returns 3 valid incidents.
+        - Last Fetch moves to 04:15:00 (Latest event).
+        - Dedup list contains ['NEW_EVENT_001'].
+    """
+    from MicrosoftManagementActivity import content_records_to_incidents
+    start_time = "2025-12-05T04:05:00"
+    end_time = "2025-12-05T04:20:00"
+    last_run = {}
+
+    incidents, next_timestamp, next_dedup_ids = content_records_to_incidents(
+        mock_content_records, start_time, end_time, last_run
+    )
+
+    # 1. Check Incidents Count (Should be 3: Overlap1, Overlap2, New1)
+    # Old event (04:00) is < 04:05, so skipped.
+    # Duplicate New1 is skipped by internal dedup.
+    assert len(incidents) == 3
+    assert incidents[0]["name"] == "Microsoft Management Activity: OVERLAP_EVENT_001"
+    assert incidents[2]["name"] == "Microsoft Management Activity: NEW_EVENT_001"
+
+    # 2. Check Next Timestamp
+    # Should correspond to the latest event found (04:15:00)
+    assert next_timestamp == "2025-12-05T04:15:00"
+
+    # 3. Check Dedup IDs for next run
+    # Should contain IDs of events happening at 04:15:00
+    assert next_dedup_ids == ["NEW_EVENT_001"]
+
+
+def test_fetch_with_deduplication(mock_content_records):
+    """
+    Case 2: Deduplication Logic (The Fix)
+    - Start Time: 04:10 (Exact time of OVERLAP events)
+    - Last Run: We already fetched 'OVERLAP_EVENT_001' in the previous cycle.
+    - Expected:
+        - OVERLAP_EVENT_001 skipped (found in last_run).
+        - OVERLAP_EVENT_002 fetched (same time, but new ID).
+        - NEW_EVENT_001 fetched.
+        - Total incidents: 2.
+    """
+    from MicrosoftManagementActivity import content_records_to_incidents
+    start_time = "2025-12-05T04:10:00"
+    end_time = "2025-12-05T04:20:00"
+
+    # We pretend we just finished a run that ended at 04:10:00
+    # and we saw OVERLAP_EVENT_001 there.
+    last_run = {
+        "last_fetch": "2025-12-05T04:10:00",
+        "incidents_id_dedup": ["OVERLAP_EVENT_001"]
+    }
+
+    incidents, next_timestamp, next_dedup_ids = content_records_to_incidents(
+        mock_content_records, start_time, end_time, last_run
+    )
+
+    # 1. Check Incidents
+    # Expected: OVERLAP_EVENT_002 and NEW_EVENT_001
+    assert len(incidents) == 2
+
+    incident_ids = [inc['name'] for inc in incidents]
+    assert "Microsoft Management Activity: OVERLAP_EVENT_001" not in incident_ids, "Duplicate should have been skipped"
+    assert "Microsoft Management Activity: OVERLAP_EVENT_002" in incident_ids, "Same-time non-duplicate should be kept"
+
+    # 2. Check Next Timestamp
+    assert next_timestamp == "2025-12-05T04:15:00"
+
+
+def test_fetch_advance_window_empty_results(mock_content_records):
+    """
+    Case 3: Window Advance (All Filtered / No New Data)
+    - Start Time: 04:16 (After all events in json)
+    - Expected:
+        - 0 Incidents.
+        - Timestamp advances to END_TIME (not stuck at start time).
+        - Dedup list cleared.
+    """
+    from MicrosoftManagementActivity import content_records_to_incidents
+    start_time = "2025-12-05T04:16:00"
+    end_time = "2025-12-05T04:30:00"
+    last_run = {}
+
+    incidents, next_timestamp, next_dedup_ids = content_records_to_incidents(
+        mock_content_records, start_time, end_time, last_run
+    )
+
+    # 1. Check Incidents
+    assert len(incidents) == 0
+
+    # 2. Check Timestamp Advance
+    # Since no incidents were found > 04:16, logic should force update to end_time
+    assert next_timestamp == end_time
+
+    # 3. Check Dedup Clean Slate
+    assert next_dedup_ids == []
