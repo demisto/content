@@ -577,7 +577,7 @@ class Client(CoreClient):
             url_suffix="/v1/issues/fix/trigger_fix_pull_request",
         )
 
-    def get_appsec_suggested_fix(self, issue_id: str):
+    def get_appsec_suggested_fix(self, issue_id: str) -> dict | None:
         reply = self._http_request(
             method="GET",
             headers=self._headers,
@@ -616,6 +616,10 @@ def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     Returns:
         tuple[list, dict]: Updated headers and recommendation including AppSec additions.
     """
+    alert_source = issue.get("alert_source")
+    if alert_source not in APPSEC_SOURCES:
+        return {}
+
     recommendation = {}
     manual_fix = issue.get("extended_fields", {}).get("action")
     if manual_fix:
@@ -624,7 +628,6 @@ def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
     fix_suggestion = client.get_appsec_suggested_fix(issue_id)
     demisto.debug(f"AppSec fix suggestion: {fix_suggestion}")
 
-    # Avoid situations where existingCodeBlock is dirty, leaving suggestedCodeBlock empty.
     if fix_suggestion and isinstance(fix_suggestion, dict) and fix_suggestion.get("suggestedCodeBlock"):
         recommendation.update(
             {
@@ -632,29 +635,29 @@ def get_appsec_suggestion(client: Client, issue: dict, issue_id: str) -> dict:
                 "suggested_code_block": fix_suggestion.get("suggestedCodeBlock", ""),
             }
         )
+    demisto.debug(f"{recommendation=} for {issue=}")
 
     return recommendation
 
 
 def populate_playbook_and_quick_action_suggestions(
-    client, issue_id, pbs_metadata, pb_id_to_index, qa_name_to_data
-) -> tuple[dict, dict, str, str]:
+    client: Client, issue_id: str, pb_id_to_data: dict, qa_name_to_data: dict
+) -> dict:
     """
     Fetches playbook and quick-action suggestions for a given issue
     and updates the recommendation dictionary accordingly.
 
     Returns:
-        (recommendation, readable_recommendation, playbook_id, quick_action_id)
+        recommendation
     """
     recommendation = {}
-    readable_recommendation = {}
 
     response = client.get_playbook_suggestion_by_issue(issue_id)
     suggestions = response.get("reply", {})
     demisto.debug(f"Playbooks and quick action {suggestions=} for {issue_id=}")
 
     if not suggestions:
-        return {}, {}, "", ""
+        return {}
 
     # Playbook suggestion
     playbook_id = suggestions.get("playbook_id")
@@ -665,12 +668,9 @@ def populate_playbook_and_quick_action_suggestions(
             "playbook_id": playbook_id,
             "suggestion_rule_id": suggestion_rule_id,
         }
-        readable_recommendation["playbook_suggestions"] = {"playbook_id": playbook_id}
-        if playbook_id in pb_id_to_index:
-            current_pb_metadata = pbs_metadata[pb_id_to_index[playbook_id]]
-            name = current_pb_metadata.get("name")
-            recommendation["playbook_suggestions"].update({"name": name, "comment": current_pb_metadata.get("comment")})
-            readable_recommendation["playbook_suggestions"].update({"name": name})
+        pb_data = pb_id_to_data.get(playbook_id)
+        if pb_data:
+            recommendation["playbook_suggestions"].update(pb_data)
 
     # Quick action suggestion
     quick_action_id = suggestions.get("quick_action_id", None)
@@ -681,13 +681,11 @@ def populate_playbook_and_quick_action_suggestions(
             "name": quick_action_id,
             "suggestion_rule_id": quick_action_suggestion_rule_id,
         }
-        readable_recommendation["quick_action_suggestions"] = {"name": quick_action_id}
         qa_data = qa_name_to_data.get(quick_action_id)
         if qa_data:
             recommendation["quick_action_suggestions"].update(qa_data)
-            readable_recommendation["quick_action_suggestions"].update({"pretty_name": qa_data.get("pretty_name")})
 
-    return recommendation, readable_recommendation, playbook_id, quick_action_id
+    return recommendation
 
 
 def map_qa_name_to_data(qas_metadata) -> dict:
@@ -698,6 +696,9 @@ def map_qa_name_to_data(qas_metadata) -> dict:
     Returns:
         dict: command_name → metadata.
     """
+    if not isinstance(qas_metadata, list):
+        return {}
+
     qa_name_to_data = {}
 
     for item in qas_metadata:
@@ -719,6 +720,107 @@ def map_qa_name_to_data(qas_metadata) -> dict:
             )
 
     return qa_name_to_data
+
+
+def map_pb_id_to_data(pbs_metadata) -> dict:
+    """
+    Maps each playbook ID to its corresponding data to enable fast lookups.
+
+    Args:
+        pbs_metadata: List of playbook metadata dictionaries.
+
+    Returns:
+        dict: Mapping of playbook ID to its data from the metadata list.
+    """
+    if not isinstance(pbs_metadata, list):
+        return {}
+
+    pb_id_to_data = {}
+    for pb_metadata in pbs_metadata:
+        pb_id = pb_metadata.get("id")
+        if pb_id:
+            pb_id_to_data[pb_id] = remove_empty_elements({"name": pb_metadata.get("name"), "comment": pb_metadata.get("comment")})
+
+    return pb_id_to_data
+
+
+def create_issue_recommendations_readable_output(issue_ids: list[str], all_recommendations: list[dict]) -> str:
+    """
+    Create readable output for issue recommendations with dynamic headers based on content.
+
+    Args:
+        issue_ids: List of issue IDs being processed
+        all_recommendations: Complete recommendation data used to determine headers and create readable output
+
+    Returns:
+        str: Formatted markdown table string for readable output
+    """
+    # Base headers that are always present
+    headers = [
+        "issue_id",
+        "issue_name",
+        "severity",
+        "description",
+        "remediation",
+    ]
+
+    # Flags to track what headers we need to append
+    append_appsec_headers = False
+    append_playbook_suggestions_header = False
+    append_quick_action_suggestions_header = False
+
+    readable_recommendations = []
+
+    # Single loop to both check for headers and create readable recommendations
+    for recommendation in all_recommendations:
+        # Check what headers we need to append
+        if not append_appsec_headers and ("existing_code_block" in recommendation or "suggested_code_block" in recommendation):
+            append_appsec_headers = True
+        if not append_playbook_suggestions_header and "playbook_suggestions" in recommendation:
+            append_playbook_suggestions_header = True
+        if not append_quick_action_suggestions_header and "quick_action_suggestions" in recommendation:
+            append_quick_action_suggestions_header = True
+
+        # Create readable recommendation
+        readable_rec = recommendation.copy()
+
+        # Simplify playbook suggestions for readable output (show only name)
+        if "playbook_suggestions" in readable_rec and isinstance(readable_rec["playbook_suggestions"], dict):
+            pb_suggestions = readable_rec["playbook_suggestions"]
+            readable_rec["playbook_suggestions"] = {
+                "name": pb_suggestions.get("name", ""),
+                "playbook_id": pb_suggestions.get("playbook_id", ""),
+            }
+
+        # Simplify quick action suggestions for readable output (show only pretty_name)
+        if "quick_action_suggestions" in readable_rec and isinstance(readable_rec["quick_action_suggestions"], dict):
+            qa_suggestions = readable_rec["quick_action_suggestions"]
+            readable_rec["quick_action_suggestions"] = {
+                "name": qa_suggestions.get("name", ""),
+                "pretty_name": qa_suggestions.get("pretty_name", ""),
+            }
+
+        readable_recommendations.append(readable_rec)
+
+    # Add conditional headers based on what we found
+    if append_appsec_headers:
+        headers.extend(["existing_code_block", "suggested_code_block"])
+
+    if append_playbook_suggestions_header:
+        headers.append("playbook_suggestions")
+
+    if append_quick_action_suggestions_header:
+        headers.append("quick_action_suggestions")
+
+    # Create the readable output table
+    issue_readable_output = tableToMarkdown(
+        f"Issue Recommendations for {issue_ids}",
+        readable_recommendations,
+        headerTransform=string_to_table_header,
+        headers=headers,
+    )
+
+    return issue_readable_output
 
 
 def get_issue_recommendations_command(client: Client, args: dict) -> CommandResults:
@@ -750,23 +852,11 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
     if not issue_data:
         raise DemistoException(f"No issues found with IDs: {issue_ids}")
 
-    headers = [
-        "issue_id",
-        "issue_name",
-        "severity",
-        "description",
-        "remediation",
-    ]
-
-    append_appsec_headers = False
-    append_playbook_suggestions_header = False
-    append_quick_action_suggestions_header = False
-    pbs_metadata = client.get_playbooks_metadata() or {}
-    pb_id_to_index = {item.get("id"): index for index, item in enumerate(pbs_metadata)}
+    pbs_metadata = client.get_playbooks_metadata() or []
     qas_metadata = client.get_quick_actions_metadata() or []
+    pb_id_to_data = map_pb_id_to_data(pbs_metadata)
     qa_name_to_data = map_qa_name_to_data(qas_metadata)
     all_recommendations = []
-    readable_recommendations = []
 
     for issue in issue_data:
         current_issue_id = issue.get("internal_id")
@@ -781,46 +871,21 @@ def get_issue_recommendations_command(client: Client, args: dict) -> CommandResu
         }
 
         # --- Playbook and Quick Action Suggestions ---
-        recommendation_pb_qa, readable_recommendation, pb, qa = populate_playbook_and_quick_action_suggestions(
-            client, current_issue_id, pbs_metadata, pb_id_to_index, qa_name_to_data
+        recommendation_pb_qa = populate_playbook_and_quick_action_suggestions(
+            client, current_issue_id, pb_id_to_data, qa_name_to_data
         )
         recommendation.update(recommendation_pb_qa)
-        if pb:
-            append_playbook_suggestions_header = True
-        if qa:
-            append_quick_action_suggestions_header = True
-
-        alert_source = issue.get("alert_source")
 
         # --- AppSec ---
-        if alert_source in APPSEC_SOURCES:
-            appsec_recommendation = get_appsec_suggestion(client, issue, current_issue_id)
-            demisto.debug(f"{appsec_recommendation=} for {current_issue_id=}")
-            if appsec_recommendation:
-                recommendation.update(appsec_recommendation)
-                append_appsec_headers = True
+        appsec_recommendation = get_appsec_suggestion(client, issue, current_issue_id)
+        if appsec_recommendation:
+            recommendation.update(appsec_recommendation)
 
         all_recommendations.append(recommendation)
-        current_readable_recommendation = recommendation.copy()
-        current_readable_recommendation.update(readable_recommendation)
-        readable_recommendations.append(current_readable_recommendation)
 
     # Final header adjustments
-    if append_appsec_headers:
-        headers.extend(["existing_code_block", "suggested_code_block"])
-
-    if append_playbook_suggestions_header:
-        headers.append("playbook_suggestions")
-
-    if append_quick_action_suggestions_header:
-        headers.append("quick_action_suggestions")
-
-    # Combine all readable outputs
-    issue_readable_output = tableToMarkdown(
-        f"Issue Recommendations for {issue_ids}",
-        readable_recommendations,
-        headerTransform=string_to_table_header,
-        headers=headers,
+    issue_readable_output = create_issue_recommendations_readable_output(
+        issue_ids=issue_ids, all_recommendations=all_recommendations
     )
 
     return CommandResults(
