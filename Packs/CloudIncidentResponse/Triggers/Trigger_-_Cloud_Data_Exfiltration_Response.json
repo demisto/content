@@ -1,9 +1,11 @@
 {
   "trigger_id": "3138b81e2f9359a688026162234eb419",
+  "id": "3138b81e2f9359a688026162234eb419",
   "playbook_id": "Cloud Data Exfiltration Response",
   "suggestion_reason": "Recommended for alerts involving cloud data exfiltration",
   "description": "This trigger is responsible for handling cloud data exfiltration alerts",
   "trigger_name": "Cloud Data Exfiltration",
+  "name": "Cloud Data Exfiltration",
   "alerts_filter": {
     "filter": {
       "AND": [
