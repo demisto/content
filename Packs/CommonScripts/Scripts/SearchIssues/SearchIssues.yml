@@ -171,6 +171,9 @@ outputs:
   - contextPath: Core.Issue.internal_id
     description: The internal ID of the issue.
     type: String
+  - contextPath: Core.Issue.case_id
+    description: The case IDs associated with the issue.
+    type: List
   - contextPath: Core.Issue.issue_source
     description: The source of the issue.
     type: String
