@@ -1004,8 +1004,8 @@ def update_issue_command(client: Client, args: dict):
     severity_map = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
     severity_value = args.get("severity")
     status = args.get("status")
-    link_cases = argToList(args.get("link_cases"))
-    unlink_cases = argToList(args.get("unlink_cases"))
+    link_cases = [int(case_id) for case_id in argToList(args.get("link_cases"))] if args.get("link_cases") else []
+    unlink_cases = [int(case_id) for case_id in argToList(args.get("unlink_cases"))] if args.get("unlink_cases") else []
 
     update_args = {
         "assigned_user": args.get("assigned_user_mail"),
@@ -1025,11 +1025,11 @@ def update_issue_command(client: Client, args: dict):
         raise DemistoException("Please provide arguments to update the issue.")
 
     if link_cases:
-        client.link_issue_to_cases(issue_id, link_cases)
+        client.link_issue_to_cases(int(issue_id), link_cases)
         demisto.debug(f"Linked issue {issue_id} to cases {link_cases}")
 
     if unlink_cases:
-        client.unlink_issue_from_cases(issue_id, unlink_cases)
+        client.unlink_issue_from_cases(int(issue_id), unlink_cases)
         demisto.debug(f"Unlinked issue {issue_id} from cases {unlink_cases}")
 
     if filtered_update_args:
