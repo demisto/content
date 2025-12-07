@@ -296,7 +296,7 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
     last_run_date = last_run.get("LastRun")
     days = 0
     if last_run_date:
-        days = days_since(last_run_date) + 1
+        days = days_since(last_run_date)
 
     operations, _ = client.get_operations_with_pagination(
         limit=max_fetch, last_operation_id=last_run.get("Id"), days=days

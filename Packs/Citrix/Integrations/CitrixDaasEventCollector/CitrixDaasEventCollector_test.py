@@ -2,7 +2,7 @@ import pytest
 from CommonServerPython import *
 from unittest.mock import MagicMock
 from freezegun import freeze_time
-from CitrixDaasEventCollector import Client, get_events_command, fetch_events_command, module_test_command
+from CitrixDaasEventCollector import Client, get_events_command, fetch_events_command, module_test_command, days_since
 
 
 @pytest.fixture
@@ -219,3 +219,17 @@ def test_module_test_command_returns_ok(mocker):
 
     result = module_test_command(client, {})
     assert result == "ok"
+
+@freeze_time("2025-01-16T00:00:00Z")
+def test_days_since():
+    """
+    Given:
+        - A ISO-8601 timestamp.
+    When:
+        - Running the `days_since` function.
+    Then:
+        - The result should be 5 days ago.
+    """
+
+    result = days_since("2025-01-10T16:44:35.470Z")
+    assert result == 5
