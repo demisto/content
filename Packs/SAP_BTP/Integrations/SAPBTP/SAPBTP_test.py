@@ -223,7 +223,7 @@ def test_parse_integration_params_auth_validation_fail(params, expected_error):
                 "url": SERVER_URL,
                 "token_url": AUTH_SERVER_URL,
                 "client_id": MOCK_CLIENT_ID,
-                "client_secret": MOCK_CLIENT_SECRET,
+                "client_secret": {"password": MOCK_CLIENT_SECRET},
                 "auth_type": AuthType.NON_MTLS.value,
                 "insecure": True,
                 "proxy": True,
@@ -779,7 +779,7 @@ def test_get_events_command_with_push_events(mocker, client_non_mtls):
 
     assert isinstance(result, str)
     assert "1 events" in result
-    SAPBTP.send_events_to_xsiam.assert_called_once_with(mock_events, vendor=Config.VENDOR, product=Config.PRODUCT)
+    SAPBTP.send_events_to_xsiam.assert_called_once_with(events=mock_events, vendor=Config.VENDOR, product=Config.PRODUCT)
 
 
 def test_get_events_command_default_values(mocker, client_non_mtls):
@@ -830,7 +830,7 @@ def test_fetch_events_command_first_run(mocker, client_non_mtls):
     fetch_events_command(client_non_mtls)
 
     demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-01T01:00:00Z"})
-    SAPBTP.send_events_to_xsiam.assert_called_once_with(mock_events, vendor=Config.VENDOR, product=Config.PRODUCT)
+    SAPBTP.send_events_to_xsiam.assert_called_once_with(events=mock_events, vendor=Config.VENDOR, product=Config.PRODUCT)
 
 
 def test_fetch_events_command_with_last_run(mocker, client_non_mtls):
@@ -929,7 +929,7 @@ def test_main_invalid_command_fail(mocker):
             "url": SERVER_URL,
             "token_url": AUTH_SERVER_URL,
             "client_id": MOCK_CLIENT_ID,
-            "client_secret": MOCK_CLIENT_SECRET,
+            "client_secret": {"password": MOCK_CLIENT_SECRET},
         },
     )
     mocker.patch.object(demisto, "args", return_value={})
@@ -954,7 +954,7 @@ def test_main_test_module_success(mocker):
             "url": SERVER_URL,
             "token_url": AUTH_SERVER_URL,
             "client_id": MOCK_CLIENT_ID,
-            "client_secret": MOCK_CLIENT_SECRET,
+            "client_secret": {"password": MOCK_CLIENT_SECRET},
             "auth_type": AuthType.NON_MTLS.value,
         },
     )
@@ -978,7 +978,7 @@ def test_main_get_events_success(mocker):
             "url": SERVER_URL,
             "token_url": AUTH_SERVER_URL,
             "client_id": MOCK_CLIENT_ID,
-            "client_secret": MOCK_CLIENT_SECRET,
+            "client_secret": {"password": MOCK_CLIENT_SECRET},
             "auth_type": AuthType.NON_MTLS.value,
         },
     )
@@ -1002,7 +1002,7 @@ def test_main_fetch_events_success(mocker):
             "url": SERVER_URL,
             "token_url": AUTH_SERVER_URL,
             "client_id": MOCK_CLIENT_ID,
-            "client_secret": MOCK_CLIENT_SECRET,
+            "client_secret": {"password": MOCK_CLIENT_SECRET},
             "auth_type": AuthType.NON_MTLS.value,
         },
     )
@@ -1025,7 +1025,7 @@ def test_main_command_execution_error(mocker):
             "url": SERVER_URL,
             "token_url": AUTH_SERVER_URL,
             "client_id": MOCK_CLIENT_ID,
-            "client_secret": MOCK_CLIENT_SECRET,
+            "client_secret": {"password": MOCK_CLIENT_SECRET},
             "auth_type": AuthType.NON_MTLS.value,
         },
     )
