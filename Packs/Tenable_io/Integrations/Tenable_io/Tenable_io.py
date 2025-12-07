@@ -1217,7 +1217,7 @@ def request_uuid_export_vulnerabilities(args: Dict[str, Any]) -> PollResult:
         PollResult: A result to return to the user which will be set as a CommandResults.
     """
     tag_category = args.get("tagCategory")
-    tag_value = args.get("tagValue")
+    tag_value = argToList(args.get("tagValue"))
     request_params = remove_empty_elements(
         {
             "num_assets": arg_to_number(args.get("numAssets")),

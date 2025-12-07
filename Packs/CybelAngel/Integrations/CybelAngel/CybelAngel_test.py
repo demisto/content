@@ -3,17 +3,25 @@ from datetime import datetime, timedelta, UTC
 import pytest
 from CommonServerPython import *
 from CybelAngel import (
-    Client, get_report_by_id_command, post_comment_command,
-    get_comments_command, remediate_command,
-    get_report_pdf_command, _datetime_helper, _set_context, get_report_attachment_command, update_status_command,
-    fetch_incidents, test_module)
+    Client,
+    get_report_by_id_command,
+    post_comment_command,
+    get_comments_command,
+    remediate_command,
+    get_report_pdf_command,
+    _datetime_helper,
+    _set_context,
+    get_report_attachment_command,
+    update_status_command,
+    fetch_incidents,
+    test_module,
+)
 
 BASE_URL = "https://platform.cybelangel.com/"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def load_mock_response(file_name: str) -> str:
-
     with open(f"test_data/{file_name}", encoding="utf-8") as mock_file:
         return mock_file.read()
 
@@ -119,11 +127,7 @@ def test_remediate_command(client, requests_mock):
     mock_response = {"status": "remediation_requested"}
     requests_mock.post(f"{BASE_URL}api/v1/reports/remediation-request", json=mock_response)
 
-    args = {
-        "report_id": "test-report-id",
-        "email": "user@example.com",
-        "requester_fullname": "John Doe"
-    }
+    args = {"report_id": "test-report-id", "email": "user@example.com", "requester_fullname": "John Doe"}
     result = remediate_command(client, args)
 
     assert isinstance(result, CommandResults)
@@ -157,11 +161,7 @@ def test_post_comment_command(client, requests_mock):
     mock_response = {"status": "comment_posted"}
     requests_mock.post(f"{BASE_URL}api/v1/reports/test-report-id/comments", json=mock_response)
 
-    args = {
-        "report_id": "test-report-id",
-        "comment": "This is a test comment",
-        "tenant_id": "test-tenant-id"
-    }
+    args = {"report_id": "test-report-id", "comment": "This is a test comment", "tenant_id": "test-tenant-id"}
     result = post_comment_command(client, args["tenant_id"], args)
 
     assert isinstance(result, CommandResults)
@@ -204,10 +204,7 @@ def test_post_comment_with_parent(client, requests_mock):
     requests_mock.post(f"{BASE_URL}api/v1/reports/test-report-id/comments", json=mock_response)
 
     response, status_code = client.post_comment(
-        comment="Reply comment",
-        report_id="test-report-id",
-        tenant_id="test-tenant-id",
-        parent_id="parent-comment-id"
+        comment="Reply comment", report_id="test-report-id", tenant_id="test-tenant-id", parent_id="parent-comment-id"
     )
     assert status_code == 200
 
@@ -222,8 +219,7 @@ def test_get_report_by_id_error(client, requests_mock):
 
 def test_get_comments_error(client, requests_mock):
     """Test error handling in get_comments"""
-    requests_mock.get(f"{BASE_URL}api/v1/reports/test-id/comments",
-                      exc=requests.exceptions.HTTPError)
+    requests_mock.get(f"{BASE_URL}api/v1/reports/test-id/comments", exc=requests.exceptions.HTTPError)
     with pytest.raises(SystemExit):
         client.get_comments("test-id")
 
@@ -260,49 +256,37 @@ def test_set_context(client):
 
 # --- Command tests
 
+
 def test_get_report_attachment_command(client, requests_mock):
     mock_content = b"test attachment content"
     requests_mock.get(f"{BASE_URL}api/v1/reports/test-id/attachments/att-id", content=mock_content)
 
-    result = get_report_attachment_command(client, {
-        'report_id': 'test-id',
-        'attachment_id': 'att-id',
-        'filename': 'test.txt'
-    })
-    assert result['Type'] == EntryType.FILE
-    assert result['File'] == 'test.txt'
+    result = get_report_attachment_command(client, {"report_id": "test-id", "attachment_id": "att-id", "filename": "test.txt"})
+    assert result["Type"] == EntryType.FILE
+    assert result["File"] == "test.txt"
 
 
 def test_get_report_attachment_error(client, requests_mock):
     requests_mock.get(f"{BASE_URL}api/v1/reports/test-id/attachments/att-id", exc=Exception("Download failed"))
 
-    result = get_report_attachment_command(client, {
-        'report_id': 'test-id',
-        'attachment_id': 'att-id',
-        'filename': 'test.txt'
-    })
-    assert result.readable_output == 'Error downloading attachment: Download failed'
+    result = get_report_attachment_command(client, {"report_id": "test-id", "attachment_id": "att-id", "filename": "test.txt"})
+    assert result.readable_output == "Error downloading attachment: Download failed"
 
 
 def test_update_status_command(client, requests_mock):
     mock_response = {"status": "updated"}
     requests_mock.put(f"{BASE_URL}api/v1/reports/test-id/status", json=mock_response)
 
-    result = update_status_command(client, {
-        'report_id': 'test-id',
-        'status': 'resolved'
-    })
-    assert result.outputs_prefix == 'CybelAngel.StatusUpdate'
+    result = update_status_command(client, {"report_id": "test-id", "status": "resolved"})
+    assert result.outputs_prefix == "CybelAngel.StatusUpdate"
     assert "updated" in result.raw_response
+
 
 def test_update_status_error(client, requests_mock):
     requests_mock.put(f"{BASE_URL}api/v1/reports/test-id/status", exc=Exception("Update failed"))
 
-    result = update_status_command(client, {
-        'report_id': 'test-id',
-        'status': 'resolved'
-    })
-    assert 'Error Updating status' in result.readable_output
+    result = update_status_command(client, {"report_id": "test-id", "status": "resolved"})
+    assert "Error Updating status" in result.readable_output
 
 
 def test_fetch_incidents_with_invalid_response(client, requests_mock):
@@ -327,10 +311,7 @@ def test_client_initialization():
 
     # Test with all parameters
     client2 = Client(
-        client_id="test_id",
-        client_secret="test_secret",
-        auth_token="existing_token",
-        token_time="2024-02-19T12:00:00Z"
+        client_id="test_id", client_secret="test_secret", auth_token="existing_token", token_time="2024-02-19T12:00:00Z"
     )
     assert client2.token == "existing_token"
     assert client2.token_time == "2024-02-19T12:00:00Z"
@@ -349,12 +330,7 @@ def test_fetch_token_success(requests_mock):
 
 def test_get_reports_success(client, requests_mock):
     """Test successful retrieval of reports"""
-    mock_response = {
-        "reports": [
-            {"id": "1", "title": "Report 1"},
-            {"id": "2", "title": "Report 2"}
-        ]
-    }
+    mock_response = {"reports": [{"id": "1", "title": "Report 1"}, {"id": "2", "title": "Report 2"}]}
     requests_mock.get(f"{BASE_URL}api/v2/reports", json=mock_response)
 
     reports = client.get_reports(interval=60)
@@ -365,12 +341,7 @@ def test_get_reports_success(client, requests_mock):
 
 def test_get_all_reports_success(client, requests_mock):
     """Test successful retrieval of all reports"""
-    mock_response = {
-        "reports": [
-            {"id": "1", "title": "Old Report"},
-            {"id": "2", "title": "Recent Report"}
-        ]
-    }
+    mock_response = {"reports": [{"id": "1", "title": "Old Report"}, {"id": "2", "title": "Recent Report"}]}
     requests_mock.get(f"{BASE_URL}api/v2/reports", json=mock_response)
 
     reports = client.get_all_reports()
@@ -401,19 +372,14 @@ def test_fetch_incidents_command_complete(client, requests_mock):
                 "created_at": "2024-02-19T10:00:00",
                 "severity": 3,
                 "category": "test",
-                "abstract": "Test incident"
+                "abstract": "Test incident",
             }
         ]
     }
     requests_mock.get(f"{BASE_URL}api/v2/reports", json=mock_reports_response)
 
     # Test first fetch
-    incidents = fetch_incidents(
-        client,
-        first_fetch=True,
-        last_run=None,
-        first_fetch_interval=1
-    )
+    incidents = fetch_incidents(client, first_fetch=True, last_run=None, first_fetch_interval=1)
 
     assert len(incidents) == 1
     assert incidents[0]["name"] == "CybelAngel Report - test-1"

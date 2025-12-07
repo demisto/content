@@ -680,11 +680,9 @@ script:
     description: Uploads a file to the CrowdStrike cloud. (Can be used for the RTR 'put' command).
     name: cs-falcon-upload-file
   - arguments:
-    - description: The ID of the file to delete.
-                   Either this argument or file_name is required. When both are specified, file_id takes precedence.
+    - description: The ID of the file to delete. Either this argument or file_name is required. When both are specified, file_id takes precedence.
       name: file_id
-    - description: The name of the file to delete.
-                   Either this argument or file_id is required. When both are specified, file_id takes precedence.
+    - description: The name of the file to delete. Either this argument or file_id is required. When both are specified, file_id takes precedence.
       name: file_name
     description: Deletes a file based on the provided ID or name. Can delete only one file at a time.
     name: cs-falcon-delete-file
@@ -5148,7 +5146,7 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.4257568
+  dockerimage: demisto/py3-tools:1.0.0.5475267
   isfetch: true
   isfetch:marketplacev2: false
   isfetch:platform: false

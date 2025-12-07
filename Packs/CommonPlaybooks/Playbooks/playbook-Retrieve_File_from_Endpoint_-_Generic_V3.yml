@@ -231,9 +231,3 @@ outputs:
 tests:
 - Retrieve File from Endpoint - Generic V3 Test
 fromversion: 6.0.0
-supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
-- agentix

@@ -118,7 +118,7 @@ configuration:
   type: 0
   required: false
 deprecated: true
-description: Deprecated. Use Unit 42 Feed integration instead. 
+description: Deprecated. Use Unit 42 Feed integration instead.
 display: AutoFocus Feed (Deprecated)
 name: AutoFocus Feed
 script:

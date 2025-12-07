@@ -45,6 +45,7 @@ tags:
 - transformer
 - date
 timeout: '0'
+isllm: false
 type: python
 dockerimage: demisto/python3:3.12.8.3296088
 fromversion: 5.0.0

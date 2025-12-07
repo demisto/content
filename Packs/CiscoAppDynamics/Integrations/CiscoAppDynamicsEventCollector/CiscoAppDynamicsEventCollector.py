@@ -15,7 +15,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 class EventType:
     """
-    This class defines a CybelAngel API Event – used to dynamically store
+    This class defines a CybelAngel API Event - used to dynamically store
     per-type settings for fetching and deduplicating events.
     """
 
@@ -35,7 +35,7 @@ class EventType:
             url_suffix      (str): URL suffix of the CybelAngel API endpoint (no leading slash).
             time_field      (str): Field name in the event used for timestamp mapping (`_time`).
             max_fetch       (int): Default value for the maximum number of events to fetch.
-            source_log_type (str): Value to assign to each event’s `source_log_type` field in XSIAM.
+            source_log_type (str): Value to assign to each event's `source_log_type` field in XSIAM.
             api_limit       (int): Maximum events that the API can retrieve in one call.
             default_params (dict): Dict to contain default parameters for the API calls.
         """
