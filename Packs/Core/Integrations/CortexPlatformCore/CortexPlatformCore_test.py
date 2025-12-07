@@ -4986,7 +4986,7 @@ class TestMapEndpointFormat:
                 "platform": "windows",  # Maps from AGENT_OS_WINDOWS
                 "operational_status": "protected",  # Maps from PROTECTED
                 "assigned_prevention_policy": "PREVENTION_POLICY_ENABLED",  # No mapping found, uses original
-                "agent_eol": True,  # not False = True
+                "agent_eol": False,
                 "agent_version": "7.8.0",
                 "domain": "corp.local",
             }
@@ -5082,12 +5082,12 @@ class TestMapEndpointFormat:
             {
                 "endpoint_id": "endpoint-1",
                 "endpoint_name": "host-1",
-                "agent_eol": False,  # not True = False
+                "agent_eol": True,
             },
             {
                 "endpoint_id": "endpoint-2",
                 "endpoint_name": "host-2",
-                "agent_eol": True,  # not False = True
+                "agent_eol": False,
             },
         ]
 
@@ -5131,7 +5131,6 @@ def test_build_endpoint_filters_all_args(mocker):
         "os_version": "10.0.19041",
         "ip_address": "192.168.1.100",
         "domain": "corp.local",
-        "group_name": "test-group",
         "tags": "production",
         "endpoint_id": "endpoint-123",
         "cloud_provider": "AWS",
@@ -5142,7 +5141,7 @@ def test_build_endpoint_filters_all_args(mocker):
 
     # Verify FilterBuilder was instantiated and configured
     mock_filter_builder.assert_called_once()
-    assert mock_filter_instance.add_field.call_count == 17
+    assert mock_filter_instance.add_field.call_count == 16
     mock_filter_instance.to_dict.assert_called_once()
     assert result == {"mock": "filter_dict"}
 
@@ -5175,7 +5174,7 @@ def test_build_endpoint_filters_minimal_args(mocker):
     result = build_endpoint_filters(args)
 
     mock_filter_builder.assert_called_once()
-    assert mock_filter_instance.add_field.call_count == 17
+    assert mock_filter_instance.add_field.call_count == 16
     mock_filter_instance.to_dict.assert_called_once()
     assert result == {"empty": "filter"}
 
@@ -5216,7 +5215,7 @@ def test_build_endpoint_filters_agent_eol_inversion(mocker):
             break
 
     assert agent_eol_call is not None
-    assert not agent_eol_call[0][2]
+    assert agent_eol_call[0][2]
 
 
 def test_core_list_endpoints_command_success(mocker):
