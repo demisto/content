@@ -21,8 +21,8 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 RES_EXAMPLE = {
     "Items": [
         {
-            "Id": "0",
-            "Text": "string",
+            "Id": "abcd1",
+            "Text": "Shutdown Machine ",
             "User": "string",
             "UserIdentity": "string",
             "Source": "string",
@@ -30,7 +30,7 @@ RES_EXAMPLE = {
             "EndTime": "2024-01-02T13:22:36.848+00:00",
             "FormattedEndTime": "2024-01-02T13:22:36Z",
             "StartTime": "2024-01-02T13:22:36.614+00:00",
-            "FormattedStartTime": "2025-09-03T13:22:36Z",
+            "FormattedStartTime": "2025-12-04T16:44:35.470Z",
             "IsSuccessful": True,
             "TargetTypes": ["string"],
             "OperationType": "Unknown",
@@ -39,8 +39,8 @@ RES_EXAMPLE = {
             "Parameters": [{"Name": "Name", "Value": "Value"}],
         },
         {
-            "Id": "1",
-            "Text": "string",
+            "Id": "abcd2",
+            "Text": "Shutdown Machine ",
             "User": "string",
             "UserIdentity": "string",
             "Source": "string",
@@ -48,7 +48,7 @@ RES_EXAMPLE = {
             "EndTime": "2024-01-02T13:22:36.848+00:00",
             "FormattedEndTime": "2024-01-02T13:22:36Z",
             "StartTime": "2024-01-02T13:22:36.614+00:00",
-            "FormattedStartTime": "2025-09-03T13:22:36Z",
+            "FormattedStartTime": "2025-12-04T13:44:35.470Z",
             "IsSuccessful": True,
             "TargetTypes": ["string"],
             "OperationType": "Unknown",
@@ -57,8 +57,8 @@ RES_EXAMPLE = {
             "Parameters": [{"Name": "Name", "Value": "Value"}],
         },
         {
-            "Id": "2",
-            "Text": "string",
+            "Id": "abcd3",
+            "Text": "Shutdown Machine ",
             "User": "string",
             "UserIdentity": "string",
             "Source": "string",
@@ -66,7 +66,7 @@ RES_EXAMPLE = {
             "EndTime": "2024-01-02T13:22:36.848+00:00",
             "FormattedEndTime": "2024-01-02T13:22:36Z",
             "StartTime": "2024-01-02T13:22:36.614+00:00",
-            "FormattedStartTime": "2025-09-03T13:22:36Z",
+            "FormattedStartTime": "2025-12-04T11:44:35.470Z",
             "IsSuccessful": True,
             "TargetTypes": ["string"],
             "OperationType": "Unknown",
@@ -75,8 +75,8 @@ RES_EXAMPLE = {
             "Parameters": [{"Name": "Name", "Value": "Value"}],
         },
         {
-            "Id": "3",
-            "Text": "string",
+            "Id": "abcd4",
+            "Text": "Shutdown Machine ",
             "User": "string",
             "UserIdentity": "string",
             "Source": "string",
@@ -84,14 +84,14 @@ RES_EXAMPLE = {
             "EndTime": "2024-01-02T13:22:36.848+00:00",
             "FormattedEndTime": "2024-01-02T13:22:36Z",
             "StartTime": "2024-01-02T13:22:36.614+00:00",
-            "FormattedStartTime": "2025-09-03T13:22:36Z",
+            "FormattedStartTime": "2025-12-04T10:44:34.373Z",
             "IsSuccessful": True,
             "TargetTypes": ["string"],
             "OperationType": "Unknown",
             "Labels": ["string"],
             "Metadata": [{"Name": "Name", "Value": "Value"}],
             "Parameters": [{"Name": "Name", "Value": "Value"}],
-        },
+        }
     ],
     "ContinuationToken": "ContinuationToken",
     "TotalItems": 4,
@@ -162,9 +162,10 @@ class Client(BaseClient):
         demisto.debug(f"Site id is {site_id}")
         return site_id
 
-    def get_operations(self, search_date_option: str | None, continuation_token: str = None, limit: int = None):
+    def get_operations(self, search_date_option: str | None, continuation_token: str = None,
+                       limit: int = None, days: int = None):
         # TODO: remove
-        # return RES_EXAMPLE
+        return RES_EXAMPLE
 
         # get access token value
         integration_context = demisto.getIntegrationContext()
@@ -182,6 +183,10 @@ class Client(BaseClient):
             continuationToken=continuation_token,
             searchDateOption=search_date_option,
         )
+        if days:
+            # Note: This parameter is exclusive with parameter searchDateOption. If neither is specified, all records will be returned.
+            params.pop("searchDateOption", None)
+            params["days"] = days
 
         # Use the smaller of requested limit or API max per request
         params["limit"] = min(limit if limit else RECORDS_REQUEST_LIMIT, RECORDS_REQUEST_LIMIT)
@@ -213,14 +218,15 @@ class Client(BaseClient):
         else:
             return response.json()
 
-    def get_operations_with_pagination(self, limit: int, search_date_option: str | None, last_operation_id: str | None = None):
+    def get_operations_with_pagination(self, limit: int, search_date_option: str | None = None,
+                                       last_operation_id: str | None = None, days: int | None = None):
         operations: list[dict] = []
         continuation_token = None
         raw_res = None
 
         while len(operations) < int(limit):
             raw_res = self.get_operations(
-                search_date_option=search_date_option, continuation_token=continuation_token, limit=limit
+                search_date_option=search_date_option, continuation_token=continuation_token, limit=limit, days=days
             )
 
             items = raw_res.get("Items", [])
@@ -272,13 +278,28 @@ def get_events_command(client: Client, args: dict):  # type: ignore
 
     return results
 
+def days_since(timestamp_str) -> int:
+    # Parse the ISO-8601 timestamp with Zulu time (UTC)
+    dt = datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+    dt = dt.replace(tzinfo=timezone.utc)
+
+    # Current time in UTC
+    now = datetime.now(timezone.utc)
+
+    # Difference in days
+    delta = now - dt
+    return delta.days
 
 def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
-    # TODO: implement last run by time
-    search_date_option = last_run.get("LastRun") or "LastMinute"
+    last_run = {'LastRun': '2025-12-04T10:44:34.373Z', 'Id': 'abcd4'}
+    
+    last_run_date = last_run.get("LastRun")
+    days = 0
+    if last_run_date:
+        days = days_since(last_run_date) + 1
 
     operations, _ = client.get_operations_with_pagination(
-        limit=max_fetch, search_date_option=search_date_option, last_operation_id=last_run.get("Id")
+        limit=max_fetch, last_operation_id=last_run.get("Id"), days=days
     )
 
     # take the last record time because the response sort data in descending order,
