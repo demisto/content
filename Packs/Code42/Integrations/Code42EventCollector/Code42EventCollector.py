@@ -1,5 +1,5 @@
 import hashlib
-
+from uuid import uuid4
 import incydr
 from incydr.enums.file_events import EventSearchTerm
 
@@ -17,12 +17,12 @@ DEFAULT_AUDIT_EVENTS_MAX_FETCH = 100000
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S.%fZ"
 
 MAX_FETCH_AUDIT_LOGS = 100000
-MAX_AUDIT_LOGS_PAGE_SIZE = 1000
-MAX_AUDIT_LOGS_BATCH_SIZE = 1000
+MAX_AUDIT_LOGS_PAGE_SIZE = 6000
+MAX_AUDIT_LOGS_BATCH_SIZE = 6000
 
 MAX_FETCH_FILE_EVENTS = 50000
-MAX_FILE_EVENTS_PAGE_SIZE = 1000
-MAX_FILE_EVENTS_BATCH_SIZE = 1000
+MAX_FILE_EVENTS_PAGE_SIZE = 6000
+MAX_FILE_EVENTS_BATCH_SIZE = 6000
 FILE_EVENTS_LOOK_BACK = timedelta(seconds=45)
 # The time filter in Code 42 is only accurate up to the first 23 characters (first 3 microsecond digits)
 # i.e., a query for incidents inserted after "2025-01-01 00:00:00.123456Z" is the same as "2025-01-01 00:00:00.123000Z"
@@ -329,9 +329,9 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
                 f"Batching complete for {EventType.FILE.value} events. "
                 f"New progress={latest_cumulative_count}/{max_fetch_file_events}, {next_trigger=}."
             )
-        # Otherwise, if batched fetching is still ongoing, keep latest cumulative count and trigger immediate next fetch
+        # Otherwise, if batched fetching is still ongoing, keep latest cumulative count and trigger near immediate next fetch
         else:
-            next_trigger = "0"  # immediate
+            next_trigger = "3"  # 3 seconds
             demisto.debug(
                 f"Batch continues for {EventType.FILE.value} events. "
                 f"New progress={latest_cumulative_count}/{max_fetch_file_events}, {next_trigger=}."
@@ -410,9 +410,9 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
                 f"Batching complete for {EventType.AUDIT.value} logs. "
                 f"New progress={latest_cumulative_count}/{max_fetch_audit_events}, {next_trigger=}."
             )
-        # Otherwise, if batched fetching is still ongoing, keep latest cumulative count and trigger immediate next fetch
+        # Otherwise, if batched fetching is still ongoing, keep latest cumulative count and trigger near immediate next fetch
         else:
-            next_trigger = "0"  # immediate
+            next_trigger = "3"  # 3 seconds
             demisto.debug(
                 f"Batch continues for {EventType.AUDIT.value} logs. "
                 f"New progress={latest_cumulative_count}/{max_fetch_audit_events}, {next_trigger=}."
@@ -480,10 +480,10 @@ def fetch_events(
         demisto.updateModuleHealth({f"{EventType.AUDIT.value} events sent": len(audit_logs)})
         total_event_count += len(audit_logs)
 
-    # If at least one type has not completed batching, trigger next fetch iteration immediately
-    if last_run.get(FileEventLastRun.NEXT_TRIGGER.value) == "0" or last_run.get(AuditLogLastRun.NEXT_TRIGGER.value) == "0":
-        last_run["nextTrigger"] = "0"
-        demisto.debug("At least on event type has batching in progress. Next run will be triggered immediately.")
+    # If at least one type has not completed batching, trigger next fetch iteration in 3 seconds
+    if last_run.get(FileEventLastRun.NEXT_TRIGGER.value) == "3" or last_run.get(AuditLogLastRun.NEXT_TRIGGER.value) == "3":
+        last_run["nextTrigger"] = "3"
+        demisto.debug("At least on event type has batching in progress. Next run will be triggered in 3 seconds.")
     else:
         last_run["nextTrigger"] = None
         demisto.debug("All event types finished batching. Next run will be triggered based on fetch interval.")
@@ -522,6 +522,8 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
 
 def main() -> None:
+    container_uuid = str(uuid4())
+    demisto.debug(f"Starting running CUSTOM VERSION on {container_uuid=}.")
     params = demisto.params()
     client_id: str = params.get("credentials", {}).get("identifier", "")
     client_secret: str = params.get("credentials", {}).get("password", "")
@@ -556,6 +558,7 @@ def main() -> None:
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {command} command.\nError:\ntype:{type(e)}, error:{str(e)}")
+    demisto.debug(f"Finished running CUSTOM VERSION on {container_uuid=}.")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
