@@ -3,6 +3,7 @@
     "profile_type": "STANDARD",
     "name": "Tableau",
     "content_global_id": "Tableau",
+    "id": "Tableau",
     "from_xdr_version": "3.5.0",
     "yaml_template": ""
 }
