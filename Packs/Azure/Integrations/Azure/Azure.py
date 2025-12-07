@@ -18,7 +18,6 @@ DEFAULT_LIMIT = "50"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 API_VERSION = "2022-09-01"
 NEW_API_VERSION_PARAMS = {"api-version": "2024-05-01"}
-GOV_ACCOUNT = False
 GRANT_BY_CONNECTION = {
     "Device Code": DEVICE_CODE,
     "Authorization Code": AUTHORIZATION_CODE,
@@ -3991,9 +3990,6 @@ def main():  # pragma: no cover
     demisto.debug(f"Command being called is {command}")
     connector_id = get_connector_id()
     demisto.debug(f"{connector_id=}")
-    client = get_azure_client(params, args)
-    global GOV_ACCOUNT
-    GOV_ACCOUNT = is_gov_account(connector_id, client.subscription_id) if connector_id else False
     handle_proxy()
     try:
         commands_with_params_and_args = {

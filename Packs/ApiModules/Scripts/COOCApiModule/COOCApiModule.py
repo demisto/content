@@ -412,6 +412,7 @@ def is_gov_account(connector_id: str, account_id: str) -> bool:
     for account in accounts_info:
         if account.get("account_id") == account_id:
             relevant_account = account
+            demisto.debug("found the account")
             break
 
     if not relevant_account:
