@@ -5925,7 +5925,6 @@
         }
     ],
     "skipped_tests": {
-        "TAXII 2 Feed Test": "No instance - CIAC-15292",
         "Tanium Threat Response V2 Test": "The creds were expired, opened a ticket CRTX-155635",
         "ExabeamDataLake-test": "The credentials were expired, can't restore CRTX-149225",
         "ThreatCrowd - Test": "The pack is deprecated",
