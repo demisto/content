@@ -91,7 +91,7 @@ RES_EXAMPLE = {
             "Labels": ["string"],
             "Metadata": [{"Name": "Name", "Value": "Value"}],
             "Parameters": [{"Name": "Name", "Value": "Value"}],
-        }
+        },
     ],
     "ContinuationToken": "ContinuationToken",
     "TotalItems": 4,
@@ -162,10 +162,9 @@ class Client(BaseClient):
         demisto.debug(f"Site id is {site_id}")
         return site_id
 
-    def get_operations(self, search_date_option: str | None, continuation_token: str = None,
-                       limit: int = None, days: int = None):
+    def get_operations(self, search_date_option: str | None, continuation_token: str = None, limit: int = None, days: int = None):
         # TODO: remove
-        return RES_EXAMPLE
+        # return RES_EXAMPLE
 
         # get access token value
         integration_context = demisto.getIntegrationContext()
@@ -218,8 +217,9 @@ class Client(BaseClient):
         else:
             return response.json()
 
-    def get_operations_with_pagination(self, limit: int, search_date_option: str | None = None,
-                                       last_operation_id: str | None = None, days: int | None = None):
+    def get_operations_with_pagination(
+        self, limit: int, search_date_option: str | None = None, last_operation_id: str | None = None, days: int | None = None
+    ):
         operations: list[dict] = []
         continuation_token = None
         raw_res = None
@@ -278,6 +278,7 @@ def get_events_command(client: Client, args: dict):  # type: ignore
 
     return results
 
+
 def days_since(timestamp_str) -> int:
     # Parse the ISO-8601 timestamp with Zulu time (UTC)
     dt = datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -290,17 +291,16 @@ def days_since(timestamp_str) -> int:
     delta = now - dt
     return delta.days
 
+
 def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
-    last_run = {'LastRun': '2025-12-04T10:44:34.373Z', 'Id': 'abcd4'}
-    
+    # last_run = {"LastRun": "2025-12-04T10:44:34.373Z", "Id": "abcd4"}
+
     last_run_date = last_run.get("LastRun")
     days = 0
     if last_run_date:
         days = days_since(last_run_date)
 
-    operations, _ = client.get_operations_with_pagination(
-        limit=max_fetch, last_operation_id=last_run.get("Id"), days=days
-    )
+    operations, _ = client.get_operations_with_pagination(limit=max_fetch, last_operation_id=last_run.get("Id"), days=days)
 
     # take the last record time because the response sort data in descending order,
     # the first value is the latest date

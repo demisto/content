@@ -181,7 +181,7 @@ def test_fetch_events_command_first_run(mocker):
     assert "LastRun" in last_run
     assert last_run["LastRun"] == "2025-01-01T00:00:00Z"
     assert last_run["Id"] == "id2"
-    assert get_operations_mocker.call_args.kwargs["search_date_option"] == "LastMinute"
+    assert get_operations_mocker.call_args.kwargs["days"] == 0
 
 
 def test_fetch_events_command_sets_last_run(mocker):
@@ -199,7 +199,7 @@ def test_fetch_events_command_sets_last_run(mocker):
     )
     mocker.patch("CitrixDaasEventCollector.send_events_to_xsiam")
 
-    events, last_run = fetch_events_command(client, 5, {"LastRun": "2024-01-01T00:00:00Z"})
+    events, last_run = fetch_events_command(client, 5, {"LastRun": "2025-12-04T16:44:35.470Z"})
 
     assert len(events) == 1
     assert "LastRun" in last_run
@@ -219,6 +219,7 @@ def test_module_test_command_returns_ok(mocker):
 
     result = module_test_command(client, {})
     assert result == "ok"
+
 
 @freeze_time("2025-01-16T00:00:00Z")
 def test_days_since():
