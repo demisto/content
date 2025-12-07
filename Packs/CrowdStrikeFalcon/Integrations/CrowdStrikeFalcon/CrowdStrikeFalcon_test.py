@@ -8224,8 +8224,8 @@ class TestFetchAssetsFlow:
         expected_readable_outputs = "### CrowdStrike CNAPP alerts\n|severity|first_seen_timestamp|last_seen_timestamp|"
         "detection_name|detection_event_simple_name|detection_description|containers_impacted_count|containers_impacted_ids|\n"
         "|---|---|---|---|---|---|---|---|\n| Critical | 2025-11-24T11:04:03Z | 2025-11-26T10:18:35Z |"
-        "PotentialKernelTampering-1 | BPFCommandIssued | The eBPF feature has been invoked from within a container. This is a"
+        "PotentialKernelTampering-1 | BPFCommandIssued | The eBPF feature has been invoked from within a container. This is a "
         "highlyunusual activity from within the container and can be used to load a kernel root kit or manipulate kernelbehavior"
-        "or settings effecting the entire host system where the container is running. | 1 | test |\n"
+        " or settings effecting the entire host system where the container is running. | 1 | test |\n"
         assert command_results_to_assert.outputs == expected_outputs
         assert command_results_to_assert.readable_output == expected_readable_outputs
