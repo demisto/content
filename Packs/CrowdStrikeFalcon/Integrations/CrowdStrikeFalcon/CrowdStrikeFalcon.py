@@ -3617,7 +3617,7 @@ def get_cnapp_assets():
     total_fetched_until_now = int(last_run.get("total_fetched_until_now", 0))
     new_last_run = {}
 
-    response = preform_get_cnapp_alerts_request()
+    response = preform_get_cnapp_alerts_request(offset=offset)
 
     cnapp_alerts = response.get("resources", [])
     total_detections = demisto.get(response, "meta.pagination.total")
