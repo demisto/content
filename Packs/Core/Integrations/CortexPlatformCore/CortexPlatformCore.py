@@ -44,6 +44,7 @@ WEBAPP_COMMANDS = [
     "core-get-asset-coverage-histogram",
     "core-create-appsec-policy",
     "core-get-appsec-issues",
+    "core-get-endpoint-update-version"
 ]
 DATA_PLATFORM_COMMANDS = ["core-get-asset-details"]
 APPSEC_COMMANDS = ["core-enable-scanners", "core-appsec-remediate-issue"]
@@ -588,6 +589,14 @@ class Client(CoreClient):
             headers={**self._headers, "content-type": "application/json"},
             url_suffix="/public_api/appsec/v1/policies",
         )
+        
+    def get_endpoint_update_version(self, request_data):
+        reply = self._http_request(
+            method="POST",
+            json_data={"request_data": request_data},
+            url_suffix="/agents/upgrade/details",
+        )
+        return reply
 
 
 def get_appsec_suggestion(client: Client, headers: list, issue: dict, recommendation: dict, issue_id: str) -> tuple[list, dict]:
@@ -1812,6 +1821,32 @@ def get_appsec_issues_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def get_endpoint_update_version_command(client, args):
+    """
+    Get the endpoint update version for specified endpoints.
+
+    Args:
+        client (Client): Integration client.
+        args (dict): Command arguments containing endpoint list.
+
+    Returns:
+        CommandResults: Formatted results of endpoint update versions.
+    """
+    filter_builder = FilterBuilder()
+    endpoint_ids = argToList(args.get("endpoint_ids", ""))
+    filter_builder.add_field("AGENT_ID", FilterType.EQ, endpoint_ids)
+    filter_data = {
+        "filter": filter_builder.to_dict(),
+    }
+    request_data = {"filter_data": filter_data, "filter_type": "static"}
+    demisto.debug(f"{request_data=}")
+    response = client.get_endpoint_update_version(request_data)
+    return CommandResults(
+        readable_output=tableToMarkdown("Endpoint Update Versions", response, headerTransform=string_to_table_header),
+        outputs=response,
+        outputs_prefix="Core.EndpointUpdate",
+    )
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -1925,6 +1960,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-appsec-issues":
             return_results(get_appsec_issues_command(client, args))
+            
+        elif command == "core-get-endpoint-update-version":
+            return_results(get_endpoint_update_version_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

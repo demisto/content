@@ -4516,22 +4516,6 @@ script:
     - contextPath: Core.ip_block_results
       description: A list of Dictionaries, each containing ip_address, end_point, and reason (including status and error message).
       type: List
-  - arguments: 
-    - description: A comma-separated list of endpoint IDs.
-      name: endpoint_ids
-      isArray: true
-    name: core-get-endpoint-update-version
-    description: Retrieves endpoint update versions for the provided endpoints IDs.
-    outputs:
-    - contextPath: Core.EndpointUpdate.version
-      description: The version of the endpoint update.
-      type: String
-    - contextPath: Core.EndpointUpdate.name
-      description: The name of the endpoint update.
-      type: String
-    - contextPath: Core.EdnpointUpdate.distribution
-      description: The distributions of the endpoint update.
-      type: Dictionary
   runonce: false
   script: '-'
   subtype: python3

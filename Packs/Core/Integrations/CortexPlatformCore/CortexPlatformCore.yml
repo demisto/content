@@ -2272,6 +2272,16 @@ script:
         - contextPath: Core.AppsecIssue.backlog_status
           description: The backlog status of the issue.
           type: String
+    - arguments: 
+      - description: A comma-separated list of endpoint IDs.
+        name: endpoint_ids
+        isArray: true
+      name: core-get-endpoint-update-version
+      description: Retrieves endpoint update versions for the provided endpoints IDs.
+      outputs:
+      - contextPath: Core.EndpointUpdate.distributions
+        description: The distributions of the endpoint update.
+        type: Dictionary
   runonce: false
   script: "-"
   subtype: python3
