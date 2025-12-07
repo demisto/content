@@ -2130,6 +2130,43 @@ def test_drilldown_enrichment_fillnull(mocker: MockerFixture, notable_data, expe
         assert job_and_queries[1] == expected_result[i][1]
         assert isinstance(job_and_queries[2], client.Job)
 
+def test_drilldown_enrichment_query_earliest(mocker: MockerFixture):
+    """
+    Tests the drilldown enrichment process when query contains earliest filter
+
+    Given:
+        A drilldown data without drilldown_earliest and drilldown_latest values, the drilldown search query contains earliest filter.
+    When:
+        Performing drilldown enrichment to generate search jobs and queries
+    Then:
+        The generated query match the expected enriched query and contains then earliest value
+    """
+
+    from splunklib import client
+
+    service = Service("DONE")
+
+    mock_params = {"fetchQuery": "`notable` is cool | fillnull value=NULL"}
+    mocker.patch("demistomock.params", return_value=mock_params)
+
+
+    notable_data = {
+                    "event_id": "test_id",
+                    "drilldown_name": "View all login attempts by system $src$",
+                    "drilldown_search": '| from datamodel:"Authentication"."Authentication" | search src=$src|s$ | earliest=1d',
+                    "drilldown_searches": "[]",
+                    "_raw": "src='test_src'",
+                }
+
+
+    jobs_and_queries = splunk.drilldown_enrichment(service, notable_data, 5)
+    for i in range(len(jobs_and_queries)):
+        job_and_queries = jobs_and_queries[i]
+        assert job_and_queries[0] == "View all login attempts by system 'test_src'"
+        assert job_and_queries[1] == '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'" | earliest=1d'
+        assert isinstance(job_and_queries[2], client.Job)
+
+
 
 @pytest.mark.parametrize(
     "notable_data, debug_log_message",
@@ -4934,31 +4971,28 @@ def test_fetch_vs_mirror_comment_storage_difference(mocker):
     assert mirror_notable_map[test_id]["SplunkComments"][1]["Comment"] == "First comment"
 
 
-
-
-def test_drilldown_enrichment_query_earliest(mocker: MockerFixture):
-
-    from splunklib import client
-
-    service = Service("DONE")
-
-    mock_params = {"fetchQuery": "`notable` is cool | fillnull value=NULL"}
-    mocker.patch("demistomock.params", return_value=mock_params)
-
-
-    notable_data = {
-                    "event_id": "test_id",
-                    "drilldown_name": "View all login attempts by system $src$",
-                    "drilldown_search": '| from datamodel:"Authentication"."Authentication" | search src=$src|s$ | earliest=1d',
-                    "drilldown_searches": "[]",
-                    "_raw": "src='test_src'",
-                }
-
-
-    jobs_and_queries = splunk.drilldown_enrichment(service, notable_data, 5)
-    for i in range(len(jobs_and_queries)):
-        job_and_queries = jobs_and_queries[i]
-        assert job_and_queries[0] == "View all login attempts by system 'test_src'"
-        assert job_and_queries[1] == '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'" | earliest=1d'
-        assert isinstance(job_and_queries[2], client.Job)
-
+@pytest.mark.parametrize(
+    "query, expected",
+    [
+        # Positive cases
+        ('index=your_index earliest=-5m', True),
+        ('index=your_index earliest= @d', True),
+        ('index=your_index earliest     =@mon', True),
+        ('index=your_index earliest = "01/01/2025:00:00:00"', True),
+        ("no keyword here", False),
+        ("earliest", False)
+    ]
+)
+def test_earliest_time_exists_in_query(query, expected):
+    """
+    Given:
+        - A query string that may or may not contain an 'earliest=' pattern.
+    When:
+        - earliest_time_exists_in_query is invoked with the query.
+    Then:
+        - It returns True only when 'earliest' is followed by an equals sign
+          with optional whitespace (e.g., 'earliest=...', 'earliest = ...').
+        - Otherwise, it returns False.
+    """
+    from SplunkPy import earliest_time_exists_in_query
+    assert earliest_time_exists_in_query(query) == expected
