@@ -27,6 +27,7 @@ VALID_TAG_COLORS = ["blue", "green", "orange", "red", "purple", "default"]
 
 urllib3.disable_warnings()  # Disable insecure warnings
 
+DEFAULT_BATCH_SIZE = 1000
 BASE_QUERY_FOR_ASSETS = """WITH asset_tags AS (
     SELECT
         dta.asset_id,
@@ -7625,14 +7626,12 @@ async def run_all_collectors(
     demisto.debug("Starting concurrent execution of Asset and Vulnerability collectors")
 
     # Define the two tasks (coroutines) using the passed client
-
-    asset_task = run_full_collector_workflow(client=client, batch_size=batch_size, event_type="asset")
-    vulnerability_task = run_full_collector_workflow(client=client, batch_size=batch_size, event_type="vulnerability")
+    asset_task = run_full_collector_workflow(client=client, batch_size=DEFAULT_BATCH_SIZE, event_type="asset")
+    vulnerability_task = run_full_collector_workflow(client=client, batch_size=DEFAULT_BATCH_SIZE, event_type="vulnerability")
 
     # Run both tasks concurrently. return_exceptions=True ensures one failure
     # doesn't immediately stop the other task.
     results = await asyncio.gather(asset_task, vulnerability_task, return_exceptions=True)
-    # results = await asyncio.gather(vulnerability_task, return_exceptions=True)
     demisto.debug("\n--- Concurrent Execution Complete ---")
 
     # Check results and handle exceptions
@@ -7661,10 +7660,10 @@ async def fetch_assets_long_running_command(params: dict, token: str):
         fetch_interval (int): Fetch time for this fetching events cycle.
     """
     while True:
-        demisto.debug("Started running")
-        start_time = time.time()
-
         try:
+            demisto.debug("Started running")
+            start_time = time.time()
+
             async with InsightVMClient(
                 base_url=params["server"],
                 username=params["credentials"].get("identifier"),
@@ -7672,20 +7671,19 @@ async def fetch_assets_long_running_command(params: dict, token: str):
                 token=token,
                 verify=not params.get("unsecure"),
             ) as client:
-                await run_all_collectors(client, batch_size=1000)
+                await run_all_collectors(client, batch_size=DEFAULT_BATCH_SIZE)
             demisto.debug("finished running all collectors")
+            
+            end_time = time.time()
+            duration_seconds = end_time - start_time
+            demisto.debug(f"The whole run took {duration_seconds} seconds")
+            remaining_time_seconds = INTERVAL_SECONDS - duration_seconds
+            demisto.debug(f"Will sleep for {remaining_time_seconds} seconds")
 
+            await asyncio.sleep(remaining_time_seconds)
+            
         except Exception as e:
             demisto.debug(f"Got the following error while trying to stream events: {str(e)}")
-
-        end_time = time.time()
-        duration_seconds = end_time - start_time
-        demisto.debug(f"The whole run took {duration_seconds} seconds")
-        remaining_time_seconds = INTERVAL_SECONDS - duration_seconds
-        demisto.debug(f"Will sleep for {remaining_time_seconds} seconds")
-
-        await asyncio.sleep(remaining_time_seconds)
-
 
 def main():  # pragma: no cover
     try:
@@ -7721,7 +7719,6 @@ def main():  # pragma: no cover
             results = "ok"
         elif command == "long-running-execution":
             demisto.info("Starting long-running execution.")
-            support_multithreading()
             asyncio.run(fetch_assets_long_running_command(params, token))
         elif command == "nexpose-create-asset":
             results = create_asset_command(client=client, **args)
