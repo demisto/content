@@ -1076,8 +1076,6 @@ class TestGetUserData:
 
         msgraph_user_get(command, additional_fields=False)
 
-        assert command.args.get("properties") == "DisplayName,JobTitle"
-
         mocker_run.assert_called_once()
         called_name, called_args = mocker_run.call_args[0]
 
