@@ -1,4 +1,4 @@
-# pylint: disable=E9011
+# pylint: disable=E9010, E9011
 import json
 import os
 import time
