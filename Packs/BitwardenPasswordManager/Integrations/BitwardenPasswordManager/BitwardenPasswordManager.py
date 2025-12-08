@@ -239,8 +239,12 @@ def main() -> None:  # pragma: no cover
     demisto.debug(f"Command being called is {command}")
     try:
         client = Client(
-            base_url=base_url, verify=verify_certificate, client_id=client_id, client_secret=client_secret, proxy=proxy,
-            self_hosted=self_hosted
+            base_url=base_url,
+            verify=verify_certificate,
+            client_id=client_id,
+            client_secret=client_secret,
+            proxy=proxy,
+            self_hosted=self_hosted,
         )
         args = demisto.args()
         if command == "test-module":

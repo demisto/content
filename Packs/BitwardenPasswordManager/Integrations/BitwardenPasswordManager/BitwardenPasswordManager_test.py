@@ -31,8 +31,14 @@ def mock_client_with_valid_token(mocker) -> Client:
         "BitwardenPasswordManager.get_integration_context", return_value={"token": "access_token", "expires": "1715032135"}
     )
 
-    return Client(base_url=MOCK_BASEURL, verify=False, client_id=MOCK_CLIENT_ID, client_secret=MOCK_CLIENT_SECRET, proxy=False,
-                  self_hosted=False)
+    return Client(
+        base_url=MOCK_BASEURL,
+        verify=False,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        proxy=False,
+        self_hosted=False,
+    )
 
 
 def test_login_when_token_creation(mocker):
@@ -46,8 +52,14 @@ def test_login_when_token_creation(mocker):
     mocker.patch.object(Client, "_http_request", return_value=mock_response)
     mocker.patch("BitwardenPasswordManager.get_integration_context", return_value={})
 
-    client = Client(base_url=MOCK_BASEURL, verify=False, client_id=MOCK_CLIENT_ID, client_secret=MOCK_CLIENT_SECRET, proxy=False,
-                    self_hosted=False)
+    client = Client(
+        base_url=MOCK_BASEURL,
+        verify=False,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        proxy=False,
+        self_hosted=False,
+    )
 
     assert client.token == "access_token"
 
@@ -214,7 +226,7 @@ def test_client_initialization_with_self_hosted(mocker):
         client_id=MOCK_CLIENT_ID,
         client_secret=MOCK_CLIENT_SECRET,
         proxy=False,
-        self_hosted=True
+        self_hosted=True,
     )
 
     # Verify the self_hosted flag is set
@@ -238,13 +250,7 @@ def test_client_initialization_without_self_hosted(mocker):
     mocker.patch("BitwardenPasswordManager.set_integration_context")
 
     # Create client without self_hosted parameter (should default to False)
-    client = Client(
-        base_url=MOCK_BASEURL,
-        verify=False,
-        client_id=MOCK_CLIENT_ID,
-        client_secret=MOCK_CLIENT_SECRET,
-        proxy=False
-    )
+    client = Client(base_url=MOCK_BASEURL, verify=False, client_id=MOCK_CLIENT_ID, client_secret=MOCK_CLIENT_SECRET, proxy=False)
 
     # Verify the self_hosted flag defaults to False
     assert client.self_hosted is False
