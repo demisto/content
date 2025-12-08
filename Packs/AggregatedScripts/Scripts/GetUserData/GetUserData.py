@@ -103,6 +103,7 @@ def create_user(
     id: Optional[str] = None,
     username: Optional[str] = None,
     email_address: Optional[str] = None,
+    sid: Optional[str] = None,
     risk_level: Optional[int] = None,
     additional_fields=False,
     **kwargs,
@@ -115,6 +116,7 @@ def create_user(
         source (Optional[str]): The source identifier for the user.
         username (Optional[str]): The username associated with the user.
         email_address (Optional[str]): The email address associated with the user.
+        sid (Optional[str]): The sid associated with the user.
         risk_level (Optional[str]): The risk level associated with the user.
         additional_fields (bool): whether to add all the remaining outputs or not.
         kwargs: Additional key-value pairs to include in the user dictionary.
@@ -126,6 +128,7 @@ def create_user(
         "ID": id,
         "Username": username,
         "Email": email_address,
+        "SID": sid,
         "RiskLevel": risk_level,
     }
     if additional_fields:
@@ -300,14 +303,17 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> tuple[list[d
 def ad_get_user(command: Command, additional_fields=False) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     readable_outputs_list = []
     command.args["attributes"] = demisto.args().get("attributes")
-    sid = command.args.get("user_sid")
+
+    sid = command.args.get("custom-field-data")
     if sid:
         demisto.debug(f"Using a user sid {sid}, inserting the custom-field-type args")
         command.args["custom-field-type"] = "objectSid"
 
-    demisto.debug(f"Those are the args for the command {command.args}")
+    demisto.debug(f"Those are the args for the ad-get-user command {command.args}")
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
 
+    demisto.debug(f"This is the {entry_context=}")
+    demisto.debug(f"This is the {readable_errors=}")
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     user_outputs = []
@@ -329,6 +335,7 @@ def ad_get_user(command: Command, additional_fields=False) -> tuple[list[Command
                 source=command.brand,
                 username=username,
                 email_address=mail,
+                sid=command.args.get("custom-field-data"),
                 additional_fields=additional_fields,
                 instance=output.get("instance"),
                 **outputs,
