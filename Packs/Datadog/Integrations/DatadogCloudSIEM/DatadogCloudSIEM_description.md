@@ -11,7 +11,7 @@ The SaaS platform integrates and automates infrastructure monitoring, applicatio
 
 2. In the New API Key screen, enter the name of the API key and click **Create Key**.
 
-### Create Datadog API Key.
+### Create Datadog Application Key.
 1. Navigate to **Account** > **Organization Settings** > **Application Keys** and click **New Key**.
 
 2. In the New Key screen, enter the name of the Application Key and click **Create Key**.
