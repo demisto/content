@@ -232,7 +232,7 @@ def run_okta_v2(user: UserData, using: str) -> tuple[list[ExpiredPasswordResult]
     for res in res_cmd:
         res_msg = get_response_message(res, OKTA_GENERIC_FAILURE)
         success = OKTA_PASSWORD_EXPIRED_MARKER in res_msg
-        failure_msg = res_msg if not res_msg.startswith('###') else OKTA_GENERIC_FAILURE
+        failure_msg = res_msg if not res_msg.startswith("###") else OKTA_GENERIC_FAILURE
         func_res.append(
             build_result(res, success_condition=success, success_msg="Password expired successfully", failure_msg=failure_msg)
         )
@@ -324,8 +324,8 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
     """
     res, hr = run_command("get-user-data", args | {"verbose": "true"}, label_hr=False)
     if error_results := [r for r in res if r["Type"] == EntryType.ERROR]:
-        err = list((r for r in error_results if not r["HumanReadable"]))
-        demisto.debug(f"Error(s) when calling get-user-data:\n{err}")
+        err = next((r for r in error_results if not r["HumanReadable"]), None)
+        demisto.debug(f"Error when calling get-user-data:\n{err['Contents']}")
 
     # Check for no available integrations
     if any(r["HumanReadable"] == "### User(s) data\n**No entries.**\n" for r in res):

@@ -24,11 +24,6 @@ from ExpirePassword import (
     MSGRAPH_PASSWORD_RESET,
     AWS_PASSWORD_CHANGED,
     OKTA_PASSWORD_EXPIRED_MARKER,
-    AD_GENERIC_FAILURE,
-    MSGRAPH_GENERIC_FAILURE,
-    OKTA_GENERIC_FAILURE,
-    GSUITE_GENERIC_FAILURE,
-    AWS_GENERIC_FAILURE,
 )
 
 
@@ -67,10 +62,10 @@ def test_get_instance_from_result():
     """
     res_with_instance = {"Metadata": {"instance": "test-instance"}}
     assert get_instance_from_result(res_with_instance) == "test-instance"
-    
+
     res_without_metadata = {"Contents": "some content"}
     assert get_instance_from_result(res_without_metadata) == ""
-    
+
     res_without_instance = {"Metadata": {"other": "value"}}
     assert get_instance_from_result(res_without_instance) == ""
 
@@ -83,10 +78,10 @@ def test_get_response_message():
     """
     res_with_hr = {"HumanReadable": "HR message", "Contents": "Contents message"}
     assert get_response_message(res_with_hr) == "HR message"
-    
+
     res_with_contents = {"Contents": "Contents message"}
     assert get_response_message(res_with_contents) == "Contents message"
-    
+
     res_empty = {}
     assert get_response_message(res_empty) == "Command failed"
     assert get_response_message(res_empty, "Custom default") == "Custom default"
@@ -99,21 +94,13 @@ def test_build_result():
     Then: It should create a properly formatted ExpiredPasswordResult.
     """
     res = {"Metadata": {"instance": "test-inst"}}
-    
+
     success_result = build_result(res, True, "Success msg", "Failure msg")
-    expected_success = ExpiredPasswordResult(
-        Result="Success",
-        Message="Success msg",
-        Instance="test-inst"
-    )
+    expected_success = ExpiredPasswordResult(Result="Success", Message="Success msg", Instance="test-inst")
     assert success_result == expected_success
-    
+
     failure_result = build_result(res, False, "Success msg", "Failure msg")
-    expected_failure = ExpiredPasswordResult(
-        Result="Failed",
-        Message="Failure msg",
-        Instance="test-inst"
-    )
+    expected_failure = ExpiredPasswordResult(Result="Failed", Message="Failure msg", Instance="test-inst")
     assert failure_result == expected_failure
 
 
@@ -204,15 +191,16 @@ def test_run_active_directory_query_v2_success(mock_run_command):
     # First call: ad-modify-password-never-expire (Success)
     # Second call: ad-expire-password (Success)
     mock_run_command.side_effect = [
-        ([{"Contents": AD_NEVER_EXPIRE_CLEARED.format(username="testuser"), "Type": 1, "Metadata": {"instance": "inst1"}}], "HR_CLEAR"),
+        (
+            [{"Contents": AD_NEVER_EXPIRE_CLEARED.format(username="testuser"), "Type": 1, "Metadata": {"instance": "inst1"}}],
+            "HR_CLEAR",
+        ),
         ([{"Contents": AD_PASSWORD_EXPIRED, "Type": 1, "Metadata": {"instance": "inst1"}}], "HR_EXPIRE"),
     ]
 
     result, hr = run_active_directory_query_v2(user, "inst1")
 
-    expected: list[ExpiredPasswordResult] = [
-        {"Result": "Success", "Message": AD_PASSWORD_EXPIRED, "Instance": "inst1"}
-    ]
+    expected: list[ExpiredPasswordResult] = [{"Result": "Success", "Message": AD_PASSWORD_EXPIRED, "Instance": "inst1"}]
     assert result == expected
     assert "HR_CLEAR\n\nHR_EXPIRE" in hr
 
@@ -315,7 +303,9 @@ def test_run_okta_v2_success(mock_run_command):
     mock_run_command.return_value = ([{"HumanReadable": success_msg, "Type": 1, "Metadata": {"instance": "inst1"}}], "")
     result, _ = run_okta_v2(user, "inst1")
 
-    expected: list[ExpiredPasswordResult] = [{"Result": "Success", "Message": "Password expired successfully", "Instance": "inst1"}]
+    expected: list[ExpiredPasswordResult] = [
+        {"Result": "Success", "Message": "Password expired successfully", "Instance": "inst1"}
+    ]
     assert result == expected
     mock_run_command.assert_called_with("okta-expire-password", {"username": "testuser", "using": "inst1"})
 
@@ -334,10 +324,15 @@ def test_run_gsuiteadmin_success(mock_run_command):
         "Brand": "GSuiteAdmin",
         "Instance": "inst1",
     }
-    mock_run_command.return_value = ([{"Contents": {"changePasswordAtNextLogin": True}, "Type": 1, "Metadata": {"instance": "inst1"}}], "")
+    mock_run_command.return_value = (
+        [{"Contents": {"changePasswordAtNextLogin": True}, "Type": 1, "Metadata": {"instance": "inst1"}}],
+        "",
+    )
     result, _ = run_gsuiteadmin(user, "inst1")
 
-    expected: list[ExpiredPasswordResult] = [{"Result": "Success", "Message": "Password reset successfully enforced", "Instance": "inst1"}]
+    expected: list[ExpiredPasswordResult] = [
+        {"Result": "Success", "Message": "Password reset successfully enforced", "Instance": "inst1"}
+    ]
     assert result == expected
     mock_run_command.assert_called_with(
         "gsuite-user-reset-password",
@@ -381,7 +376,17 @@ def test_run_gsuiteadmin_failure(mock_run_command):
         "Brand": "GSuiteAdmin",
         "Instance": "inst1",
     }
-    mock_run_command.return_value = ([{"Contents": {"changePasswordAtNextLogin": False}, "HumanReadable": "Failed to reset", "Type": 4, "Metadata": {"instance": "inst1"}}], "")
+    mock_run_command.return_value = (
+        [
+            {
+                "Contents": {"changePasswordAtNextLogin": False},
+                "HumanReadable": "Failed to reset",
+                "Type": 4,
+                "Metadata": {"instance": "inst1"},
+            }
+        ],
+        "",
+    )
     result, _ = run_gsuiteadmin(user, "inst1")
 
     expected: list[ExpiredPasswordResult] = [{"Result": "Failed", "Message": "Failed to reset", "Instance": "inst1"}]
@@ -426,15 +431,16 @@ def test_run_active_directory_query_v2_expire_command_failure(mock_run_command):
     }
     # First call succeeds, second call fails
     mock_run_command.side_effect = [
-        ([{"Contents": AD_NEVER_EXPIRE_CLEARED.format(username="testuser"), "Type": 1, "Metadata": {"instance": "inst1"}}], "HR_CLEAR"),
+        (
+            [{"Contents": AD_NEVER_EXPIRE_CLEARED.format(username="testuser"), "Type": 1, "Metadata": {"instance": "inst1"}}],
+            "HR_CLEAR",
+        ),
         ([{"Contents": "Failed to expire password", "Type": 4, "Metadata": {"instance": "inst1"}}], "HR_EXPIRE_FAIL"),
     ]
 
     result, hr = run_active_directory_query_v2(user, "inst1")
 
-    expected: list[ExpiredPasswordResult] = [
-        {"Result": "Failed", "Message": "Failed to expire password", "Instance": "inst1"}
-    ]
+    expected: list[ExpiredPasswordResult] = [{"Result": "Failed", "Message": "Failed to expire password", "Instance": "inst1"}]
     assert result == expected
     assert "HR_CLEAR\n\nHR_EXPIRE_FAIL" in hr
 
@@ -457,13 +463,7 @@ def test_run_aws_iam_success(mock_run_command):
     mock_run_command.return_value = ([{"HumanReadable": expected_msg, "Type": 1, "Metadata": {"instance": "inst1"}}], "")
     result, _ = run_aws_iam(user, "inst1")
 
-    expected: list[ExpiredPasswordResult] = [
-        {
-            "Result": "Success",
-            "Message": expected_msg,
-            "Instance": "inst1"
-        }
-    ]
+    expected: list[ExpiredPasswordResult] = [{"Result": "Success", "Message": expected_msg, "Instance": "inst1"}]
     assert result == expected
     # Verify correct command name and specific arguments (userName, passwordResetRequired: True)
     mock_run_command.assert_called_with(
@@ -596,21 +596,33 @@ def test_expire_passwords_mixed_success_failure(mock_run_command):
             "Status": "found",
             "Brand": "AWS - IAM",
             "Instance": "aws-inst",
-        }
+        },
     ]
-    
+
     # Mock responses: Okta succeeds, MSGraph fails, AWS succeeds
     mock_run_command.side_effect = [
         # Okta success
-        ([{"HumanReadable": f"User status changed to {OKTA_PASSWORD_EXPIRED_MARKER}", "Type": 1, "Metadata": {"instance": "okta-inst"}}], "Okta HR"),
+        (
+            [
+                {
+                    "HumanReadable": f"User status changed to {OKTA_PASSWORD_EXPIRED_MARKER}",
+                    "Type": 1,
+                    "Metadata": {"instance": "okta-inst"},
+                }
+            ],
+            "Okta HR",
+        ),
         # MSGraph failure
         ([{"HumanReadable": "Graph API error", "Type": 4, "Metadata": {"instance": "msgraph-inst"}}], "MSGraph HR"),
         # AWS success
-        ([{"HumanReadable": AWS_PASSWORD_CHANGED.format(username="user3"), "Type": 1, "Metadata": {"instance": "aws-inst"}}], "AWS HR"),
+        (
+            [{"HumanReadable": AWS_PASSWORD_CHANGED.format(username="user3"), "Type": 1, "Metadata": {"instance": "aws-inst"}}],
+            "AWS HR",
+        ),
     ]
 
     results, hr = expire_passwords(users)
-    
+
     expected_results = [
         {
             "UserProfile": {"ID": "1", "Username": "user1", "Email": "user1@example.com"},
@@ -632,9 +644,9 @@ def test_expire_passwords_mixed_success_failure(mock_run_command):
             "Result": "Success",
             "Message": AWS_PASSWORD_CHANGED.format(username="user3"),
             "Instance": "aws-inst",
-        }
+        },
     ]
-    
+
     assert results == expected_results
     assert "Okta HR" in hr
     assert "MSGraph HR" in hr
@@ -657,20 +669,26 @@ def test_expire_passwords_multiple_results_per_integration(mock_run_command):
             "Instance": "ad-inst",
         }
     ]
-    
+
     # Mock AD returning multiple results (both commands succeed)
     mock_run_command.side_effect = [
         # ad-modify-password-never-expire
-        ([{"Contents": AD_NEVER_EXPIRE_CLEARED.format(username="testuser"), "Type": 1, "Metadata": {"instance": "ad-inst"}}], "HR1"),
+        (
+            [{"Contents": AD_NEVER_EXPIRE_CLEARED.format(username="testuser"), "Type": 1, "Metadata": {"instance": "ad-inst"}}],
+            "HR1",
+        ),
         # ad-expire-password returns multiple results
-        ([
-            {"Contents": AD_PASSWORD_EXPIRED, "Type": 1, "Metadata": {"instance": "ad-inst"}},
-            {"Contents": AD_PASSWORD_EXPIRED, "Type": 1, "Metadata": {"instance": "ad-inst-backup"}}
-        ], "HR2"),
+        (
+            [
+                {"Contents": AD_PASSWORD_EXPIRED, "Type": 1, "Metadata": {"instance": "ad-inst"}},
+                {"Contents": AD_PASSWORD_EXPIRED, "Type": 1, "Metadata": {"instance": "ad-inst-backup"}},
+            ],
+            "HR2",
+        ),
     ]
 
     results, hr = expire_passwords(users)
-    
+
     # Should get one result per command result from ad-expire-password
     assert len(results) == 2
     assert all(result["Result"] == "Success" for result in results)
@@ -760,7 +778,7 @@ def test_main_partial_success(mock_demisto, mock_run_command, mock_return_result
                             "Status": "found",
                             "Brand": "Microsoft Graph User",
                             "Instance": "msgraph-inst",
-                        }
+                        },
                     ],
                     "HumanReadable": "User data HR",
                     "EntryContext": [{}],
@@ -769,7 +787,16 @@ def test_main_partial_success(mock_demisto, mock_run_command, mock_return_result
             "",
         ),
         # Okta succeeds
-        ([{"HumanReadable": f"User status changed to {OKTA_PASSWORD_EXPIRED_MARKER}", "Type": 1, "Metadata": {"instance": "okta-inst"}}], ""),
+        (
+            [
+                {
+                    "HumanReadable": f"User status changed to {OKTA_PASSWORD_EXPIRED_MARKER}",
+                    "Type": 1,
+                    "Metadata": {"instance": "okta-inst"},
+                }
+            ],
+            "",
+        ),
         # MSGraph fails
         ([{"HumanReadable": "Graph API error", "Type": 4, "Metadata": {"instance": "msgraph-inst"}}], ""),
     ]
@@ -816,7 +843,16 @@ def test_main_all_success(mock_demisto, mock_run_command, mock_return_results):
             "Get users HR",
         ),
         # Okta succeeds
-        ([{"HumanReadable": f"User status changed to {OKTA_PASSWORD_EXPIRED_MARKER}", "Type": 1, "Metadata": {"instance": "okta-inst"}}], "Okta HR"),
+        (
+            [
+                {
+                    "HumanReadable": f"User status changed to {OKTA_PASSWORD_EXPIRED_MARKER}",
+                    "Type": 1,
+                    "Metadata": {"instance": "okta-inst"},
+                }
+            ],
+            "Okta HR",
+        ),
     ]
 
     main()
