@@ -228,7 +228,7 @@ class Client(BaseClient):
                 url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
             )
         except Exception as e:
-            # Use repr() for JSON errors to avoid issues, str() for others
+            # Use repr() for JSON errors to avoid parsing issues, str() for others
             error_str = repr(e) if isinstance(e, json.JSONDecodeError) else str(e)
 
             # Detect authentication errors more broadly - including JSON parse errors from HTML responses
