@@ -8,6 +8,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 ## Configure Zimperium v2 in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL (e.g., https://mtduat.zimperium.com) |  | True |
@@ -20,7 +21,9 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Advanced: Minutes to look back when fetching | Use this parameter to determine how far back to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
+| Module | The module of the application the API is pointing to. Default is "ZIPS". This parameter is optional but recommended. Leave empty to omit the module parameter from requests. | False |
 | Incident type |  |  |
+
 
 ## Commands
 
@@ -1063,86 +1066,36 @@ Get policy groups.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| module | The module parameter is required to get the groups related to EMM connection or ZIPS connection. Default is "ZIPS". Possible values are: EMM, ZIPS. | Optional |
+| module | The module parameter is required to get the groups related to EMM connection or ZIPS connection. If provided, this command argument takes priority over the integration's "Module" parameter. Default is "ZIPS". Possible values are: EMM, ZIPS. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zimperium.PolicyGroup.id | String | The ID of the policy group. |
-| Zimperium.PolicyGroup.accountId | String | The account identifier for the policy group's content. |
-| Zimperium.PolicyGroup.appPolicyId | String | The app policy ID of the policy group. |
-| Zimperium.PolicyGroup.appSettingsId | String | The app settings ID of the policy group. |
-| Zimperium.PolicyGroup.brandingPolicyId | Unknown | The branding policy identifier of the policy group. |
-| Zimperium.PolicyGroup.created | Date | The date and time the policy group was created. |
-| Zimperium.PolicyGroup.description | String | The description of the policy group. |
-| Zimperium.PolicyGroup.dormancyPolicyId | String | The dormancy policy identifier of the policy group. |
-| Zimperium.PolicyGroup.emmConnectionId | Unknown | The enterprise mobile management (EMM) connection ID of the policy group. |
-| Zimperium.PolicyGroup.emmGroupId | Unknown | The enterprise mobile management (EMM) group ID of the policy group. |
-| Zimperium.PolicyGroup.emmPriority | Unknown | The enterprise mobile management (EMM) priority of the policy group. |
-| Zimperium.PolicyGroup.extensionPolicyId | String | The extension policy identifier of the policy group. |
-| Zimperium.PolicyGroup.content.global | Boolean | Whether the policy group is global. |
-| Zimperium.PolicyGroup.knoxPolicyId | Unknown | The Knox policy ID of the policy group. |
-| Zimperium.PolicyGroup.modified | Date | The date and time when the policy group was last modified. |
-| Zimperium.PolicyGroup.name | String | The name of the policy group. |
-| Zimperium.PolicyGroup.networkPolicyId | String | The network policy ID of the policy group. |
-| Zimperium.PolicyGroup.osRiskPolicyId | String | The operating system risk policy ID of the policy group. |
-| Zimperium.PolicyGroup.phishingPolicyId | String | The phishing policy identifier of the policy group. |
-| Zimperium.PolicyGroup.privacyId | String | The privacy identifier of the policy group. |
-| Zimperium.PolicyGroup.team.id | String | The ID of the team associated with the policy group. |
-| Zimperium.PolicyGroup.team.name | String | The team name of the policy group. |
-| Zimperium.PolicyGroup.trmId | String | The Threat Response Matrix (TRM) ID of the policy group. |
-| Zimperium.PolicyGroup.team | Unknown | The policy group's team information. |
-
-#### Command example
-
-```!zimperium-policy-group-list```
-
-#### Context Example
-
-```json
-{
-    "Zimperium": {
-        "PolicyGroup": [
-            {
-                "accountId": "2",
-                "appPolicyId": "2",
-                "appSettingsId": "a5",
-                "brandingPolicyId": null,
-                "created": "2024-01-22T11:37:36.749+00:00",
-                "description": "test",
-                "dormancyPolicyId": "2",
-                "emmConnectionId": null,
-                "emmGroupId": null,
-                "emmPriority": null,
-                "extensionPolicyId": "2",
-                "global": false,
-                "id": "65",
-                "knoxPolicyId": null,
-                "modified": "2024-01-22T11:37:36.749+00:00",
-                "name": "Test",
-                "networkPolicyId": "2",
-                "osRiskPolicyId": "2",
-                "phishingPolicyId": "2",
-                "privacyId": "a2",
-                "team": {
-                    "id": "1",
-                    "name": "Default"
-                },
-                "trmId": "er"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Policy Group List
->
->|Id|Name|Team|Privacy Id|Trm Id|Phishing Policy Id|App Settings Id|App Policy Id|Network Policy Id|Os Risk Policy Id|
->|---|---|---|---|---|---|---|---|---|---|
->| 65 | Test | id: 1<br/>name: Default | a2 | er | 2 | a5 | 2 | 2 | 2 |
+| Zimperium.PolicyGroup.id | String | The ID of the policy group. | 
+| Zimperium.PolicyGroup.accountId | String | The account identifier for the policy group's content. | 
+| Zimperium.PolicyGroup.appPolicyId | String | The app policy ID of the policy group. | 
+| Zimperium.PolicyGroup.appSettingsId | String | The app settings ID of the policy group. | 
+| Zimperium.PolicyGroup.brandingPolicyId | Unknown | The branding policy identifier of the policy group. | 
+| Zimperium.PolicyGroup.created | Date | The date and time the policy group was created. | 
+| Zimperium.PolicyGroup.description | String | The description of the policy group. | 
+| Zimperium.PolicyGroup.dormancyPolicyId | String | The dormancy policy identifier of the policy group. | 
+| Zimperium.PolicyGroup.emmConnectionId | Unknown | The enterprise mobile management \(EMM\) connection ID of the policy group. | 
+| Zimperium.PolicyGroup.emmGroupId | Unknown | The enterprise mobile management \(EMM\) group ID of the policy group. | 
+| Zimperium.PolicyGroup.emmPriority | Unknown | The enterprise mobile management \(EMM\) priority of the policy group. | 
+| Zimperium.PolicyGroup.extensionPolicyId | String | The extension policy identifier of the policy group. | 
+| Zimperium.PolicyGroup.content.global | Boolean | Whether the policy group is global. | 
+| Zimperium.PolicyGroup.knoxPolicyId | Unknown | The Knox policy ID of the policy group. | 
+| Zimperium.PolicyGroup.modified | Date | The date and time when the policy group was last modified. | 
+| Zimperium.PolicyGroup.name | String | The name of the policy group. | 
+| Zimperium.PolicyGroup.networkPolicyId | String | The network policy ID of the policy group. | 
+| Zimperium.PolicyGroup.osRiskPolicyId | String | The operating system risk policy ID of the policy group. | 
+| Zimperium.PolicyGroup.phishingPolicyId | String | The phishing policy identifier of the policy group. | 
+| Zimperium.PolicyGroup.privacyId | String | The privacy identifier of the policy group. | 
+| Zimperium.PolicyGroup.team.id | String | The ID of the team associated with the policy group. | 
+| Zimperium.PolicyGroup.team.name | String | The team name of the policy group. | 
+| Zimperium.PolicyGroup.trmId | String | The Threat Response Matrix \(TRM\) ID of the policy group. | 
+| Zimperium.PolicyGroup.team | Unknown | The policy group's team information. | 
 
 ### zimperium-policy-privacy-get
 
