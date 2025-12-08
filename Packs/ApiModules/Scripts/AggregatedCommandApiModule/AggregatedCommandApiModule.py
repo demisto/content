@@ -903,7 +903,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             None,
         )
         if enrich_entry:
-            demisto.debug(f"Create Entry: Status={enrich_entry.status.value}, args={enrich_entry.args}")
+            demisto.debug(f"Enrich Entry: Status={enrich_entry.status.value}, args={enrich_entry.args}")
         errors: list[str] = []
         # Determine CreateNewIndicatorsOnly status and error message
         is_created = bool(create_entry and create_entry.status == Status.SUCCESS)
@@ -1293,7 +1293,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
 
     def _inject_unsupported_brands(self):
         """
-        If any unsupported enrichment brands are exists will append human readable entry for each of them.
+        If any unsupported enrichment brands exist, append a summary entry for each of them.
         """
         if not self.unsupported_enrichment_brands:
             return
@@ -1376,12 +1376,12 @@ class ReputationAggregatedCommand(AggregatedCommand):
         self.create_indicators_entry_results()
         self._inject_unsupported_brands()
         # Remove Entries from non brands command such as CreateNewIndicator and EnrichIndicator
-        final_entires = [entry for entry in self.entry_results if entry.brand != ""]
+        final_entries = [entry for entry in self.entry_results if entry.brand != ""]
 
-        human_readable = self._build_final_human_readable(final_entires)
+        human_readable = self._build_final_human_readable(final_entries)
 
         # Return an error only if there were no successes AND at least one of those was a hard failure.
-        if self._is_final_result_error(final_entires):
+        if self._is_final_result_error(final_entries):
             demisto.debug("All commands failed or no indicators found. Returning an error entry.")
             return CommandResults(
                 readable_output="Error: All commands failed or no indicators found.\n" + human_readable,

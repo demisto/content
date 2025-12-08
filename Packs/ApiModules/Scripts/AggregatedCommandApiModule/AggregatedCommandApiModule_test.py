@@ -1989,7 +1989,7 @@ def test_create_indicators_entry_results(module_factory):
         ),
     ],
 )
-def test_is_error_result(module_factory, entries, expected_is_error):
+def test_is_final_result_error(module_factory, entries, expected_is_error):
     """
     Given:
         - A list of entries with different statuses and messages.
@@ -2001,7 +2001,7 @@ def test_is_error_result(module_factory, entries, expected_is_error):
     """
     mod = module_factory()
 
-    assert mod._is_error_result(entries) == expected_is_error
+    assert mod._is_final_result_error(entries) == expected_is_error
 
 
 def test_summarize_command_results_uses_is_error_result_for_entry_type(module_factory, mocker):
@@ -2021,14 +2021,14 @@ def test_summarize_command_results_uses_is_error_result_for_entry_type(module_fa
     # Avoid depending on markdown formatting
     mocker.patch("AggregatedCommandApiModule.tableToMarkdown", return_value="TBL")
 
-    # Case 1: _is_error_result -> True => EntryType.ERROR
-    mocker.patch.object(mod, "_is_error_result", return_value=True)
+    # Case 1: _is_final_result_error -> True => EntryType.ERROR
+    mocker.patch.object(mod, "_is_final_result_error", return_value=True)
     mod.entry_results = [make_entry_result("c1", "A", Status.FAILURE, "Error")]
     res = mod.summarize_command_results(final_context={"ctx": 1})
     assert res.entry_type == entryTypes["error"]
 
-    # Case 2: _is_error_result -> False => success (default entry type)
-    mocker.patch.object(mod, "_is_error_result", return_value=False)
+    # Case 2: _is_final_result_error -> False => success (default entry type)
+    mocker.patch.object(mod, "_is_final_result_error", return_value=False)
     mod.entry_results = [make_entry_result("c2", "B", Status.SUCCESS, "")]
     res = mod.summarize_command_results(final_context={"ctx": 1})
     assert res.entry_type != entryTypes["error"]
