@@ -1,6 +1,7 @@
 import urllib3
-from CommonServerPython import *
+
 import demistomock as demisto
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -1208,6 +1209,7 @@ def fetch_incidents(
 
 
 def main():  # pragma: no cover
+    # some change here
     params = demisto.params()
     client_id = params.get("credentials", {}).get("identifier")
     client_secret = params.get("credentials", {}).get("password")
