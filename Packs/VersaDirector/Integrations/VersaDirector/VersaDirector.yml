@@ -1809,7 +1809,7 @@ script:
   runonce: false
   type: python
   subtype: python3
-  dockerimage: demisto/auth-utils:1.0.0.4578605
+  dockerimage: demisto/auth-utils:1.0.0.6111183
   # Fetch events (XSIAM only)
   isfetchevents: true
   isfetchevents:xsoar: false

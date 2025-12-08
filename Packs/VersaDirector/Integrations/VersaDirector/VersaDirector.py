@@ -7,7 +7,6 @@ from collections.abc import Callable
 import urllib3
 import aiohttp
 from CommonServerPython import *  # noqa #! pylint: disable=unused-wildcard-import
-import urllib3
 from http import HTTPStatus
 
 # Disable insecure warnings
@@ -1508,6 +1507,24 @@ class AsyncClient:
         # Always ensure HTTP client session is closed
         await self._session.close()
 
+    @staticmethod
+    async def _handle_response_error(response: aiohttp.ClientResponse):
+        """
+        Handles error responses and provides a more informative error message.
+
+        Args:
+            response (aiohttp.ClientResponse): The client response object.
+
+        Raises:
+            DemistoException: If a `ClientResponseError` is raised due to a failed request.
+        """
+        try:
+            response.raise_for_status()
+        except aiohttp.ClientResponseError as e:
+            url = e.request_info.url
+            response_json = await response.json()
+            raise DemistoException(f"Request to {url} failed with HTTP {e.status} status: {response_json}.")
+
     async def get_audit_logs(self, time_filter: str, offset: int = 0, limit: int = 2500) -> dict[str, Any]:
         """
         Retrieves audit logs from Versa Director.
@@ -1525,7 +1542,7 @@ class AsyncClient:
 
         demisto.debug(f"Starting request for audit logs using {params=}.")
         async with self._session.get(url=url, params=params, proxy=self._proxy_url) as response:
-            response.raise_for_status()
+            await self._handle_response_error(response)
             demisto.debug(f"Received successful response for audit logs using {params=}.")
             return await response.json()
 
