@@ -6,12 +6,29 @@ commonfields:
   id: Microsoft Graph
   version: -1
 configuration:
-- defaultvalue: https://graph.microsoft.com
-  display: Host URL
+- defaultvalue: Worldwide
+  display: Azure Cloud
+  name: azure_cloud
+  required: false
+  type: 15
+  options:
+  - Worldwide
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Germany
+  - China
+  - Custom
+  additionalinfo: When selecting the Custom option, the Host URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  section: Connect
+  advanced: true
+- display: Host URL
   name: host
-  required: true
+  required: false
   type: 0
   section: Connect
+  advanced: true
+  additionalinfo: The host URL. When using this parameter, select the Custom option for the Azure Cloud. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - defaultvalue: Alerts v2
   display: MS graph security alert API Version
   name: api_version
@@ -1602,7 +1619,83 @@ script:
       isArray: false
       name: search_id
       required: true
+    - description: "Specify the statistics to generate. The possible values are: includeRefiners, includeQueryStats, includeUnindexedStats, advancedIndexing, locationsWithoutHits. The advancedIndexing and locationsWithoutHits values are only considered if includeUnindexedStats is set."
+      isArray: false
+      name: statistics_options
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - 'includeRefiners'
+        - 'includeQueryStats'
+        - 'includeUnindexedStats'
+        - 'advancedIndexing'
+        - 'locationsWithoutHits'
+    description: Starts an eDiscovery estimate statistics operation in Microsoft Purview. The operation calculates the size and number of items matching the search query.
+    execution: false
+    name: msg-run-estimate-statistics
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
     - description: The ID of the eDiscovery search.
+      isArray: false
+      name: search_id
+      required: true
+    outputs:
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.CaseID
+        description: The ID of the eDiscovery case.
+        type: String
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.SearchID
+        description: The ID of the eDiscovery search.
+        type: String
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.OperationID
+        description: The ID of the last estimate statistics operation.
+        type: String
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.Status
+        description: The current status of the last estimate statistics operation (e.g., running, succeeded, failed).
+        type: String
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.PercentProgress
+        description: The percent progress of the last estimate statistics operation.
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.CreatedDateTime
+        description: The date and time when the estimate operation was created.
+        type: Date
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.CompletedDateTime
+        description: The date and time when the estimate operation completed.
+        type: Date
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.IndexedItemsCount
+        description: The number of indexed items found in the search.
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.IndexedItemsSize
+        description: The total size (in bytes) of indexed items.
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.UnindexedItemsCount
+        description: The number of unindexed items found in the search.
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.UnindexedItemsSize
+        description: The total size (in bytes) of unindexed items.
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.TotalItemsCount
+        description: The total number of items (indexed + unindexed).
+        type: Number
+      - contextPath: MsGraph.eDiscovery.EstimateStatistics.TotalItemsSize
+        description: The total size (in bytes) of all items (indexed + unindexed).
+        type: Number
+    description:  Retrieves the most recent eDiscovery estimate statistics operation for a given search in Microsoft Purview. Use this command after running 'msg-run-estimate-statistics' to check the results.
+    execution: false
+    polling: true
+    name: msg-get-last-estimate-statistics-operation
+  - arguments:
+    - description: The ID of the eDiscovery case.
+      isArray: false
+      name: case_id
+      required: true
+    - description: The ID of the eDiscovery search.
+      isArray: false
+      name: search_id
+      required: true
+    - description: Whether the action is soft delete or hard delete.
       isArray: false
       name: purge_type
       required: false
@@ -1610,7 +1703,7 @@ script:
       predefined:
       - permanentlyDelete
       - recoverable
-    - description: The ID of the eDiscovery search.
+    - description: Define the locations to be in scope of the purge action.
       isArray: false
       name: purge_areas
       required: false
@@ -1619,8 +1712,7 @@ script:
       - teamsMessages
       - mailboxes
     description: |-
-      Delete Microsoft Teams messages contained in an eDiscovery search.
-      Note: This request purges Teams data only. It does not purge other types of data such as mailbox items.
+      Deletes mailbox items in Exchange or messages in Microsoft Teams that are included in an eDiscovery search.
 
       You can collect and purge the following categories of Teams content:
 
@@ -2266,7 +2358,6 @@ script:
 tests:
 - Microsoft Graph Security Test dev
 - Microsoft Graph Security Test prod
-- Microsoft Graph Security Test self deployed
 - Microsoft Graph Security Test dev v2
 - Microsoft Graph Security Test prod v2
 - Microsoft Graph Security Test self deployed v2

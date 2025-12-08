@@ -28,23 +28,23 @@ configuration:
   type: 8
   required: false
   section: Connect
-description: Infoblox enables you to receive metadata about IPs in your network and manages the DNS Firewall by configuring RPZs. It defines RPZ rules to block DNS resolution for malicious or unauthorized hostnames, or redirect clients to a walled garden by substituting responses.
-display: Infoblox
+description: Infoblox NIOS enables you to receive metadata about IPs in your network and manages the DNS Firewall by configuring RPZs. It defines RPZ rules to block DNS resolution for malicious or unauthorized hostnames, or redirect clients to a walled garden by substituting responses.
+display: Infoblox NIOS
 name: Infoblox
 script:
   commands:
   - arguments:
-    - description: The IP address for which to retrieve information, e.g., "192.168.1.1". Cannot be used in conjunction with `network` or `from/to_ip` arguments.
+    - description: The IP address for which to retrieve information, e.g., "192.168.1.1", "2001:db8::1". Cannot be used in conjunction with `network` or `from/to_ip` arguments.
       name: ip
       required: false
     - name: network
-      description: The network that the IP belongs in FQDN/CIDR format, e.g., "192.168.1.0/24". Cannot be used in conjunction with `ip` or `from/to_ip` arguments.
+      description: The network that the IP belongs in FQDN/CIDR format, e.g., "192.168.1.0/24", "2001:db8::/64". Cannot be used in conjunction with `ip` or `from/to_ip` arguments.
       required: false
     - name: from_ip
-      description: The beginning of the IP range, e.g., "192.168.1.0". Must be used in conjunction with `to_ip`.
+      description: The beginning of the IP range, e.g., "192.168.1.0", "2001:db8::". Must be used in conjunction with `to_ip`.
       required: false
     - name: to_ip
-      description: The end of the IP range, e.g., "192.168.1.254". Must be used in conjunction with `from_ip`.
+      description: The end of the IP range, e.g., "192.168.1.254", "2001:db8::254". Must be used in conjunction with `from_ip`.
       required: false
     - name: status
       description: The status of the IP device. Used in conjunction with the `network` or `ip` argument.
@@ -149,6 +149,12 @@ script:
     - description: Maximum results to return. Maximum is 1000.
       name: max_results
       defaultValue: 50
+    - description: The name of the DNS zone in FQDN format.
+      name: fqdn
+    - description: The name of the DNS view in which the zone resides.
+      name: view
+    - description: The comment for the zone to retrieve.
+      name: comment
     description: List all response policy zones.
     name: infoblox-list-response-policy-zones
     outputs:
@@ -285,6 +291,9 @@ script:
       type: string
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
       description: The reference ID of the rule.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Canonical
+      description: The canonical value of the rule.
       type: string
   - arguments:
     - description: The name for a record in FQDN format.
@@ -713,6 +722,9 @@ script:
     - contextPath: Infoblox.RulesSearchResults.View
       description: The view of the definition.
       type: string
+    - contextPath: Infoblox.RulesSearchResults.Canonical
+      description: The canonical value of the rule.
+      type: string
   - arguments:
     - description: The reference ID of the rule (reference ID can be retrieved by running the 'infoblox-search-rule' command).
       name: reference_id
@@ -791,6 +803,235 @@ script:
     - contextPath: Infoblox.NetworkInfo.AdditionalFields
       description: The additional fields for network.
       type: Unknown
+  - name: infoblox-update-rpz-rule
+    description: Update a response policy zone rule.
+    arguments:
+    - name: reference_id
+      description: The reference ID of the existing RPZ rule to update.
+      required: true
+    - name: name
+      description: The name of the response policy zone rule.
+      required: true
+    - name: rule_type
+      description: The type of the response policy zone rule.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Passthru
+      - Block (No such domain)
+      - Block (No data)
+      - Substitute (domain name)
+    - name: rp_zone
+      description: The zone to assign the rule to.
+      required: true
+    - name: comment
+      description: The comment for this rule update.
+      required: false
+    - name: substitute_name
+      description: The substitute name to assign (substitute domain only).
+      required: false
+    - name: view
+      description: The DNS view in which the records are located.
+      defaultValue: default
+      required: false
+    - name: additional_parameters
+      auto: PREDEFINED
+      type: keyValue
+      description: "JSON object containing additional parameters (disable, use_ttl, ttl, extattrs) to update RPZ rule. Example: {\"disable\": true, \"use_ttl\": true, \"ttl\": 3600}."
+      required: false
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Canonical
+      description: Canonical value of the rule.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Whether the rule is disabled.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+      description: The comment for this rule.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
+      description: The object type as used in Infoblox.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View of the definition.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+      description: The zone to which this rule belongs.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: The reference ID of the rule.
+      type: string
+  - name: infoblox-create-host-record
+    description: "Creates a host record. Note: Either ipv4_address or ipv6_address is required."
+    arguments:
+    - name: name
+      description: The name of the host in FQDN format '{name}.{zone}' (e.g. example.auth_zone). It must belong to an existing DNS zone.
+      required: true
+    - name: view
+      description: The DNS view in which the records are located.
+      defaultValue: default
+      required: false
+    - name: ipv4_address
+      type: textArea
+      description: "The IPv4 addresses for the host record. Example: [{\"ipv4addr\": \"192.168.1.0\"}], [{\"ipv4addr\": \"192.168.1.1\", \"configure_for_dhcp\": true, \"mac\": \"00:01:00:01:00:01\"}]."
+      required: false
+    - name: ipv6_address
+      type: textArea
+      description: "The IPv6 addresses for the host record. Example: [{\"ipv6addr\": \"2001:db8::1\"}], [{\"ipv6addr\": \"2001:db8::2\", \"configure_for_dhcp\": true, \"duid\": \"00:01:00:01:0a:1a\"}]."
+      required: false
+    - name: comment
+      description: The comment for this host record.
+      required: false
+    - name: aliases
+      type: textArea
+      description: "The aliases for this host record. Example: [\"alias1\", \"alias2\"]."
+      required: false
+    - name: configure_for_dns
+      description: Whether to configure the host record for DNS.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Yes
+      - No
+      defaultValue: Yes
+    - name: extattrs
+      type: textArea
+      description: "The extended attributes for this host record. Example: {\"Site\": {\"value\": \"example\"}}."
+      required: false
+    - name: additional_parameters
+      auto: PREDEFINED
+      type: keyValue
+      description: "JSON object containing additional parameters to create host record. Example: {\"use_ttl\": true, \"ttl\": 3600, \"disable\": true}."
+      required: false
+    outputs:
+    - contextPath: Infoblox.Host.ReferenceID
+      description: The host record reference ID.
+      type: String
+    - contextPath: Infoblox.Host.IPV4Addresses
+      description: The host IPv4 addresses.
+      type: String
+    - contextPath: Infoblox.Host.IPV6Addresses
+      description: The host IPv6 addresses.
+      type: String
+    - contextPath: Infoblox.Host.ConfigureForDNS
+      description: Whether the host is configured for DNS.
+      type: Boolean
+    - contextPath: Infoblox.Host.Name
+      description: The host record name.
+      type: String
+    - contextPath: Infoblox.Host.ExtendedAttributes
+      description: The network extended attributes.
+      type: Unknown
+    - contextPath: Infoblox.Host.AdditionalFields
+      description: The additional fields for network.
+      type: Unknown
+    - contextPath: Infoblox.Host.Aliases
+      description: The aliases for this host record.
+      type: String
+    - contextPath: Infoblox.Host.AllowTelnet
+      description: Whether the host is allowed to use telnet.
+      type: Boolean
+    - contextPath: Infoblox.Host.NetworkView
+      description: The network view of the host record.
+      type: String
+    - contextPath: Infoblox.Host.View
+      description: The view of the host record.
+      type: String
+    - contextPath: Infoblox.Host.Zone
+      description: The zone of the host record.
+      type: String
+    - contextPath: Infoblox.Host.Disable
+      description: Whether the host is disabled.
+      type: Boolean
+    - contextPath: Infoblox.Host.DNSName
+      description: The DNS name of the host record.
+      type: String
+  - name: infoblox-dhcp-lease-lookup
+    description: Look up a DHCP lease.
+    arguments:
+    - name: ip_address
+      description: Lease IP address (IPv4 or IPv6).
+      required: false
+    - name: hardware
+      description: MAC address for IPv4 leases. Regex or exact search supported.
+      required: false
+    - name: hostname
+      description: Hostname sent via DHCP option 12. Regex/exact search.
+      required: false
+    - name: ipv6_duid
+      description: IPv6 DUID identifier for IPv6 leases. Regex/exact search.
+      required: false
+    - name: protocol
+      auto: PREDEFINED
+      predefined:
+      - IPV4
+      - IPV6
+      - BOTH
+      defaultValue: BOTH
+      description: The protocol of the DHCP lease.
+      required: false
+    - name: fingerprint
+      description: DHCP client fingerprint; case-insensitive or regex search.
+      required: false
+    - name: username
+      description: Specify the user associated with the lease request.
+      required: false
+    - name: limit
+      defaultValue: 100
+      description: Specify the maximum number of leases to return.
+      required: false
+    outputs:
+    - contextPath: Infoblox.DHCPLease.ReferenceID
+      description: The DHCP lease reference ID.
+      type: String
+    - contextPath: Infoblox.DHCPLease.Address
+      description: The DHCP lease address.
+      type: String
+    - contextPath: Infoblox.DHCPLease.BindingState
+      description: The DHCP lease binding state.
+      type: String
+    - contextPath: Infoblox.DHCPLease.ClientHostname
+      description: The DHCP lease client hostname.
+      type: String
+    - contextPath: Infoblox.DHCPLease.CLTT
+      description: The DHCP lease client last transaction time.
+      type: String
+    - contextPath: Infoblox.DHCPLease.Ends
+      description: The DHCP lease ends time.
+      type: String
+    - contextPath: Infoblox.DHCPLease.Fingerprint
+      description: The DHCP lease fingerprint.
+      type: String
+    - contextPath: Infoblox.DHCPLease.Hardware
+      description: The DHCP lease hardware address.
+      type: String
+    - contextPath: Infoblox.DHCPLease.IPV6PrefixBits
+      description: The DHCP lease IPv6 prefix bits.
+      type: String
+    - contextPath: Infoblox.DHCPLease.IsInvalidMAC
+      description: The Flag indicating if the MAC address is invalid.
+      type: Boolean
+    - contextPath: Infoblox.DHCPLease.NetworkView
+      description: The network view of the DHCP lease record.
+      type: String
+    - contextPath: Infoblox.DHCPLease.Network
+      description: The network of the DHCP lease record.
+      type: String
+    - contextPath: Infoblox.DHCPLease.Protocol
+      description: The protocol of the DHCP lease record.
+      type: String
+    - contextPath: Infoblox.DHCPLease.Starts
+      description: The DHCP lease starts time.
+      type: String
+    - contextPath: Infoblox.DHCPLease.Variable
+      description: The DHCP lease variable.
+      type: String
+    - contextPath: Infoblox.DHCPLease.UID
+      description: The unique identifier of the DHCP lease record.
+      type: String
   dockerimage: demisto/python3:3.12.12.5490952
   runonce: false
   script: ''

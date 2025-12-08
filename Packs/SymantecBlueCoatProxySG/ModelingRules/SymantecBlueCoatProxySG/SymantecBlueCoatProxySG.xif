@@ -6,7 +6,7 @@
 */
 
 // filter out records which contain only metadata 
-filter _raw_log !~= "^#.*" 
+filter raw_log_cleaned !~= "^#.*"
 
 | alter // Extract fields based on their relative location in the list
     time_taken = parsed_fields -> time_taken, // Time taken (in milliseconds) to process the request
@@ -32,7 +32,7 @@ filter _raw_log !~= "^#.*"
     x_virus_id = parsed_fields -> x_virus_id, // Identifier of a virus if one was detected.
     s_ip = parsed_fields -> s_ip, // IP address of the appliance on which the client established its connection
     r_ip = parsed_fields -> r_ip, // IP address of the destination
-    event_description = arrayindex(regextract(_raw_log ,"\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\s\S+\s(.*)"),0) // The raw log without headers
+    event_description = arrayindex(regextract(raw_log_cleaned ,"\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\s\S+\s(.*)"),0) // The raw log without headers
 | alter // post extraction processing 
     // check IP addresses formats 
     c_ip_v4 = if(c_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", c_ip),

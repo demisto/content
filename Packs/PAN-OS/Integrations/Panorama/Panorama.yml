@@ -3739,6 +3739,8 @@ script:
       - complete
       - show
       - get
+    - description: The object's new name, used when action=rename. If no value is provided, the name defaults to 'newname'.
+      name: newname
     - description: The category parameter. For example, when exporting a configuration file, use "category=configuration".
       name: category
     - description: Specifies the XML structure that defines the command. Used for operation commands (op type command). Can be retrieved from the PAN-OS web UI debugger or enabling debugging via the CLI using `debug cli on`.

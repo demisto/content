@@ -78,7 +78,7 @@ configuration:
   name: selected_event_types
   type: 16
   section: Collect
-  required: true
+  required: false
   options:
   - Audit Logs
   - Activity Logs
@@ -103,7 +103,7 @@ script:
   - name: monday-auth-test
     description: Run this command to test the connectivity to Monday.
     arguments: []
-  dockerimage: demisto/python3:3.12.11.4508456
+  dockerimage: demisto/python3:3.12.12.5490952
   isfetchevents: true
   runonce: false
   script: '-'

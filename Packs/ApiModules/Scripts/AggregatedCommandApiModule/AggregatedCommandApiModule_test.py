@@ -112,6 +112,30 @@ def module_factory():
 # -------------------------------------------------------------------------------------------------
 # --- Validation Tests ---
 @pytest.mark.parametrize(
+    "values, mapping, expected",
+    [
+        # Match first value
+        (["md5", "sha256"], {"MD5": "md5"}, "md5"),
+        # Match second value
+        (["md5", "sha256"], {"SHA256": "sha256"}, "sha256"),
+        # Case-insensitive match
+        (["AaA"], {"MD5": "aAa"}, "AaA"),
+    ],
+)
+def test_map_back_to_input_basic(values, mapping, expected):
+    """
+    Given:
+        - A list of original values and a mapping of hash field -> value.
+    When:
+        - Calling map_back_to_input.
+    Then:
+        - Returns the first original value that matches one of the mapping values (case-insensitive),
+          or empty string if none match.
+    """
+    assert map_back_to_input(values, mapping) == expected
+
+
+@pytest.mark.parametrize(
     "data, indicator_type, extracted, expected_set",
     [
         # Exact match
@@ -500,6 +524,62 @@ def test_create_indicator_lifts_tim_fields_and_pops_from_tim_result():
     assert item["Results"][2] == brand_b
 
 
+def test_create_indicator_file_type_adds_hashes_from_tim():
+    """
+    Given:
+        - A ContextBuilder for a file indicator with multiple hash fields.
+        - TIM context with a TIM entry that has MD5, SHA1, and SHA256.
+    When:
+        - create_indicator() is called.
+    Then:
+        - The resulting item has:
+            - Value set to the tim_context key.
+            - A 'Hashes' dict with all available hash values.
+            - Status and ModifiedTime lifted to the top level.
+    """
+    file_indicator = Indicator(
+        type="file",
+        value_field=["MD5", "SHA1", "SHA256"],
+        context_path_prefix="File(",
+        context_output_mapping={"Score": "Score"},
+    )
+    builder = ContextBuilder(
+        indicator=file_indicator,
+        final_context_path="FileEnrichmentV2(val.Value && val.Value == obj.Value)",
+    )
+
+    tim_entry = {
+        "Brand": "TIM",
+        "MD5": "md5-value",
+        "SHA1": "sha1-value",
+        "SHA256": "sha256-value",
+        "Score": 2,
+        "Status": "Fresh",
+        "ModifiedTime": "2025-09-01T00:00:00Z",
+    }
+
+    # tim_context keys are the indicator "values"; for files this will often be one of the hashes
+    builder.tim_context = {"file-indicator-key": [tim_entry]}
+
+    out = builder.create_indicator()
+    assert len(out) == 1
+    item = out[0]
+
+    # Top-level value should be the key from tim_context
+    assert item["Value"] == "file-indicator-key"
+
+    # Hashes aggregated from the TIM entry
+    assert item["Hashes"] == {
+        "MD5": "md5-value",
+        "SHA1": "sha1-value",
+        "SHA256": "sha256-value",
+    }
+
+    # Status / ModifiedTime lifted
+    assert item["Status"] == "Fresh"
+    assert item["ModifiedTime"] == "2025-09-01T00:00:00Z"
+
+
 def test_add_tim_context():
     """
     Given:
@@ -566,7 +646,7 @@ def test_build_extract_tim_score():
     When:
         - The build() method is called.
     Then:
-        - TIMScore is computed only from entries where Brand == "TIM" (max over those), ignoring others.
+        - TIMScore is computed only from entries where Brand == "TIM", ignoring others.
     """
     indicator_with_score = Indicator(
         type="test",
@@ -581,7 +661,6 @@ def test_build_extract_tim_score():
         "indicator1": [
             {"Score": 5, "Brand": "TIM"},
             {"Score": 8, "Brand": "brandA"},  # should be ignored for TIMScore
-            {"Score": 3, "Brand": "TIM"},
         ]
     }
     builder.add_tim_context(tim_ctx, dbot_scores=[])
@@ -850,6 +929,71 @@ def test_unsupported_enrichment_brands_various(
 # -------------------------------------------------------------------------------------------------
 
 
+def test_internal_enrichment_brands_injected_when_no_brands_and_external_false(module_factory, mocker):
+    """
+    Given:
+        - internal_enrichment_brands configured (e.g., WildFire).
+        - No brands explicitly requested.
+        - external_enrichment is False.
+        - BrandManager.enabled_brands includes the internal enrichment brand.
+        - There is also an INTERNAL command with its own brand.
+    When:
+        - Instantiating ReputationAggregatedCommand.
+    Then:
+        - self.brands should include both the internal_enrichment_brands and the INTERNAL command brands.
+        - prepare_commands_batches should include both INTERNAL and EXTERNAL commands.
+    """
+    # Patch enabled_brands to simulate active integrations
+    mocker.patch("AggregatedCommandApiModule.BrandManager.enabled_brands", return_value={"WildFire-v2", "OtherBrand"})
+
+    cmd_internal = Command(
+        name="core-get-hash-analytics-prevalence", args={}, brand="Cortex Core - IR", command_type=CommandType.INTERNAL
+    )
+    cmd_external = Command(name="enrichIndicators", args={}, command_type=CommandType.EXTERNAL)
+
+    module = module_factory(
+        brands=[],  # simulate user didn't pass brands
+        external_enrichment=False,
+        internal_enrichment_brands=["WildFire-v2"],
+        indicator=default_indicator,
+        commands=[[cmd_internal, cmd_external]],
+    )
+
+    # Brands list should now be union of active internal_enrichment_brands and INTERNAL command brands
+    assert set(module.brands) == {"WildFire-v2", "Cortex Core - IR"}
+
+    # And prepare_commands_batches should now include both INTERNAL and EXTERNAL commands
+    batches = module.prepare_commands_batches(external_enrichment=False)
+    flattened = [c for batch in batches for c in batch]
+    assert {c.name for c in flattened} == {"core-get-hash-analytics-prevalence", "enrichIndicators"}
+
+
+def test_internal_enrichment_brands_not_applied_when_brands_given(module_factory, mocker):
+    """
+    Given:
+        - internal_enrichment_brands configured.
+        - User explicitly passes brands in the command args.
+        - external_enrichment is False.
+        - internal_enrichment_brands are enabled.
+    When:
+        - Instantiating ReputationAggregatedCommand.
+    Then:
+        - self.brands remains the user-provided brands (no auto-injection).
+    """
+    mocker.patch("AggregatedCommandApiModule.BrandManager.enabled_brands", return_value={"WildFire-v2"})
+
+    cmd_internal = Command(name="intA", args={}, brand="A", command_type=CommandType.INTERNAL)
+    module = module_factory(
+        brands=["UserBrand"],
+        external_enrichment=False,
+        internal_enrichment_brands=["WildFire-v2"],
+        indicator=default_indicator,
+        commands=[[cmd_internal]],
+    )
+
+    assert module.brands == ["UserBrand"]
+
+
 # --- Prepare Commands Tests ---
 @pytest.mark.parametrize(
     "requested_brands, external_enrichment, expected_names",
@@ -1116,7 +1260,7 @@ def test_process_single_tim_ioc(
     mocker.patch.object(module, "parse_indicator", side_effect=side_effect)
 
     # Act
-    indicators, entry = module._process_single_tim_ioc(ioc_input)
+    indicators, entry, value = module._process_single_tim_ioc(ioc_input)
 
     # Assert
     assert indicators == expected_indicators
@@ -1124,7 +1268,7 @@ def test_process_single_tim_ioc(
     assert entry.command_name == "search-indicators-in-tim"
     assert entry.brand == "TIM"
     assert entry.status == Status.SUCCESS
-    assert entry.args == ioc_input.get("value")
+    assert entry.args == value
     assert entry.message == expected_entry_msg
 
 
@@ -1236,8 +1380,78 @@ def test_create_tim_indicator_uses_score_and_status(module_factory, mocker):
     assert res["Status"] == IndicatorStatus.FRESH.value
     assert res["Brand"] == "TIM"
     assert res["Score"] == 2
-    assert res["Data"] == "indicator1"
+    assert res[default_indicator.value_field] == "indicator1"
     assert res["ModifiedTime"] is None
+
+
+def test_create_tim_indicator_file_type_maps_value_using_hashes(module_factory, mocker):
+    """
+    Given:
+        - A ReputationAggregatedCommand configured for type='file' with multiple hash fields.
+        - self.data contains the original input hash (MD5).
+        - The TIM IOC 'value' is SHA256, and CustomFields include both md5/sha256.
+    When:
+        - create_tim_indicator is called.
+    Then:
+        - The resulting TIM indicator:
+            - Has Brand='TIM'.
+            - Has MD5/SHA256 fields mapped from CustomFields.
+            - Has Score taken from ioc['score'].
+            - Has Status/ModifiedTime set from get_indicator_status_from_ioc/ioc['modifiedTime'].
+            - Has Value equal to the original input hash (MD5), via map_back_to_input.
+    """
+    # Indicator for file with multiple hash fields
+    file_indicator = Indicator(
+        type="file",
+        value_field=["MD5", "SHA256"],
+        context_path_prefix="File(",
+        context_output_mapping={
+            "MD5": "MD5",
+            "SHA256": "SHA256",
+            "Score": "Score",
+        },
+    )
+
+    original_md5 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    sha256_val = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+
+    mod = module_factory(
+        indicator=file_indicator,
+        data=[original_md5],
+    )
+    ioc = {
+        "score": 3,
+        "value": sha256_val,
+        "modifiedTime": "2025-09-01T00:00:00Z",
+        "CustomFields": {
+            "md5": original_md5,
+            "sha256": sha256_val,
+        },
+    }
+
+    status_mock = mocker.patch.object(
+        mod,
+        "get_indicator_status_from_ioc",
+        return_value=IndicatorStatus.FRESH.value,
+    )
+
+    res = mod.create_tim_indicator(ioc)
+
+    # Status was computed through the helper
+    status_mock.assert_called_once_with(ioc)
+
+    # Brand / Score / Status / ModifiedTime
+    assert res["Brand"] == "TIM"
+    assert res["Score"] == 3
+    assert res["Status"] == IndicatorStatus.FRESH.value
+    assert res["ModifiedTime"] == "2025-09-01T00:00:00Z"
+
+    # Hash fields mapped from CustomFields (lowercase → CamelCase via context_output_mapping)
+    assert res["MD5"] == original_md5
+    assert res["SHA256"] == sha256_val
+
+    # For file indicators: Value is mapped back to the original input (MD5), not the TIM 'value' (SHA256)
+    assert res["Value"] == original_md5
 
 
 @pytest.mark.parametrize(
@@ -1378,10 +1592,10 @@ def test_summarize_command_results_appends_unsupported_enrichment_row(module_fac
     When:
         - summarize_command_results is called.
     Then:
-        - The HR table includes a row for the unsupported brands.
+        - The HR table includes a row for each unsupported brand.
     """
     mod = module_factory(brands=["X", "Y"])
-    # Make the property return our list
+    # Make the property return our list via BrandManager
     mod.brand_manager.unsupported_external = lambda _commands: ["X", "Y"]
 
     tbl = mocker.patch("AggregatedCommandApiModule.tableToMarkdown", return_value="TBL")
@@ -1393,12 +1607,12 @@ def test_summarize_command_results_appends_unsupported_enrichment_row(module_fac
     # Inspect the table rows passed to tableToMarkdown
     args, kwargs = tbl.call_args
     table_rows = kwargs.get("t", args[1] if len(args) > 1 else None)
-    assert any(
-        row.get("Brand") == "X,Y"
-        and row.get("Status") == Status.FAILURE.value
-        and "Unsupported Command" in (row.get("Message") or "")
-        for row in table_rows
-    )
+
+    # There should be separate rows for X and Y, each marked as failure with the unsupported message
+    for brand in ("X", "Y"):
+        row = next(r for r in table_rows if r.get("Brand") == brand)
+        assert row.get("Status") == Status.FAILURE.value
+        assert "Unsupported Command" in (row.get("Message") or "")
 
 
 # -- Context Mapping --

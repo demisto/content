@@ -30,6 +30,10 @@ MIRROR_DIRECTION = {
 }
 DOPPEL_ALERT = "Doppel Alert"
 DOPPEL_INCIDENT = "Doppel Incident"
+DEFAULT_RETRY_TOTAL = 3
+DEFAULT_RETRY_BACKOFF_FACTOR = 2
+DEFAULT_RETRY_STATUS_LIST = [429, 500, 502, 503, 504]
+
 
 """ CLIENT CLASS """
 
@@ -44,11 +48,35 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, base_url, api_key, user_api_key=None):
-        super().__init__(base_url)
+    def __init__(
+        self,
+        base_url,
+        api_key,
+        user_api_key=None,
+        organization_code=None,
+        verify=None,
+        proxy=None,
+        retry_total=DEFAULT_RETRY_TOTAL,
+        retry_backoff_factor=DEFAULT_RETRY_BACKOFF_FACTOR,
+        retry_status_list=DEFAULT_RETRY_STATUS_LIST,
+    ):
+        super().__init__(base_url, verify=verify, proxy=proxy)
+
         self._headers = {"accept": "application/json", "x-api-key": api_key}
         if user_api_key:
             self._headers["x-user-api-key"] = user_api_key
+        if organization_code:
+            self._headers["x-organization-code"] = organization_code
+
+        # Store retry configuration on the client and leverage BaseClient._http_request parameters
+        self._retries = retry_total
+        self._backoff_factor = retry_backoff_factor
+        self._status_list_to_retry = retry_status_list
+
+        demisto.debug(
+            f"Initialized HTTP client using BaseClient._http_request retry params: total={retry_total}, "
+            f"backoff_factor={retry_backoff_factor}, status_list={retry_status_list}"
+        )
 
     def get_alert(self, id: str, entity: str) -> dict[str, str]:
         """Return the alert's details when provided the Alert ID or Entity as input
@@ -68,7 +96,14 @@ class Client(BaseClient):
         if entity:
             params["entity"] = entity
 
-        response_content = self._http_request(method="GET", url_suffix="alert", params=params)
+        response_content = self._http_request(
+            method="GET",
+            url_suffix="alert",
+            params=params,
+            retries=self._retries,
+            backoff_factor=self._backoff_factor,
+            status_list_to_retry=self._status_list_to_retry,
+        )
         return response_content
 
     def update_alert(
@@ -104,10 +139,13 @@ class Client(BaseClient):
         payload = {"queue_state": queue_state, "entity_state": entity_state, "comment": comment}
 
         response_content = self._http_request(
-            method="PUT",  # Changed to PUT as per reference
+            method="PUT",
             full_url=api_url,
             params=params,
             json_data=payload,
+            retries=self._retries,
+            backoff_factor=self._backoff_factor,
+            status_list_to_retry=self._status_list_to_retry,
         )
         return response_content
 
@@ -125,20 +163,40 @@ class Client(BaseClient):
 
         demisto.debug(f"API Request Params: {filtered_params}")
 
-        # Use params as query parameters, not json_data
-        response_content = self._http_request(method="GET", full_url=api_url, params=filtered_params)
+        response_content = self._http_request(
+            method="GET",
+            full_url=api_url,
+            params=filtered_params,
+            retries=self._retries,
+            backoff_factor=self._backoff_factor,
+            status_list_to_retry=self._status_list_to_retry,
+        )
         return response_content
 
     def create_alert(self, entity: str) -> dict[str, Any]:
         api_name = "alert"
         api_url = f"{self._base_url}/{api_name}"
-        response_content = self._http_request(method="POST", full_url=api_url, json_data={"entity": entity})
+        response_content = self._http_request(
+            method="POST",
+            full_url=api_url,
+            json_data={"entity": entity},
+            retries=self._retries,
+            backoff_factor=self._backoff_factor,
+            status_list_to_retry=self._status_list_to_retry,
+        )
         return response_content
 
     def create_abuse_alert(self, entity: str) -> dict[str, Any]:
         api_name = "alert/abuse"
         api_url = f"{self._base_url}/{api_name}"
-        response_content = self._http_request(method="POST", full_url=api_url, json_data={"entity": entity})
+        response_content = self._http_request(
+            method="POST",
+            full_url=api_url,
+            json_data={"entity": entity},
+            retries=self._retries,
+            backoff_factor=self._backoff_factor,
+            status_list_to_retry=self._status_list_to_retry,
+        )
         return response_content
 
 
@@ -669,6 +727,11 @@ def main() -> None:
     """Main function, parses params and runs command functions."""
     api_key = demisto.params().get("credentials", {}).get("password")
     user_api_key = demisto.params().get("user_credentials", {}).get("password")
+    organization_code = demisto.params().get("organization_code")
+    verify = not demisto.params().get("insecure")
+    proxy = demisto.params().get("proxy")
+
+    demisto.debug(f"Verify SSL: {verify} and Proxy: {proxy}")
 
     # Get the service API URL
     base_url = urljoin(demisto.params()["url"], "/v1")
@@ -694,7 +757,14 @@ def main() -> None:
     demisto.info(f"Command being called is {current_command}")
 
     try:
-        client = Client(base_url=base_url, api_key=api_key, user_api_key=user_api_key)
+        client = Client(
+            base_url=base_url,
+            api_key=api_key,
+            user_api_key=user_api_key,
+            organization_code=organization_code,
+            verify=verify,
+            proxy=proxy,
+        )
 
         if current_command in supported_commands_test_module:
             # Calls test_module(client) without args

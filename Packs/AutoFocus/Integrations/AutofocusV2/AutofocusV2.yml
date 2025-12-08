@@ -21,7 +21,7 @@ configuration:
   section: Connect
 - display: Source Reliability
   name: integrationReliability
-  required: true
+  required: false
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable

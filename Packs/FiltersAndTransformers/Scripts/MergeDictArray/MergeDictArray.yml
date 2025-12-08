@@ -54,5 +54,6 @@ tags:
 - entirelist
 type: javascript
 fromversion: 6.0.0
+isllm: false
 tests:
 - MergeDictArray - Test

@@ -6,16 +6,28 @@ commonfields:
   id: FireEye ETP Event Collector
   version: -1
 configuration:
-- defaultvalue: https://etp.us.fireeye.com
-  display: Server URL (e.g., https://etp.us.fireeye.com)
+- defaultvalue: https://etp.us.fireeye.com.
+  display: Server URL (e.g., https://etp.us.fireeye.com or https://us.etp.trellix.com).
   name: url
   required: true
   type: 0
   section: Connect
+- display: Client ID (OAuth)
+  name: oauth_credentials
+  displaypassword: Client Secret (OAuth)
+  type: 9
+  section: Connect
+- display: OAuth Scopes (OAuth)
+  name: oauth_scopes
+  defaultvalue: etp.alrt.ro etp.trce.ro
+  type: 0
+  required: false
+  additionalinfo: "Space-separated list of OAuth scopes. Note: Only include scopes that your application's Client ID has already been authorized to use."
+  section: Connect
 - displaypassword: API Key
   additionalinfo: The API Key allows you to integrate with the Trellix Email Security - Cloud.
   name: credentials
-  required: true
+  required: false
   hiddenusername: true
   type: 9
   section: Connect

@@ -62,3 +62,13 @@ Gets indicators available in the configured Elasticsearch database.
 #### Context Output
 
 There is no context output for this command.
+
+## Known Limitations
+
+**Indicator Type Case Sensitivity**: The indicator type field in Elasticsearch must exactly match the indicator type in Cortex XSOAR, including case sensitivity. For example, if the indicator type in XSOAR is `File` (with uppercase 'F'), then the indicator type in Elasticsearch must also be `File`, not `file` (lowercase). If there is a case mismatch, indicators will not be created in XSOAR.
+  
+To resolve this issue:
+
+  1. Check the existing indicator types in XSOAR by navigating to: `<XSOAR Domain>/configuration/indicator/types`
+  2. Update your Elasticsearch documents so that the indicator type field matches the exact case of the type in XSOAR
+  3. For the Generic Feed type, ensure the field specified in the "Indicator Type Field" parameter returns values that match XSOAR's indicator types exactly

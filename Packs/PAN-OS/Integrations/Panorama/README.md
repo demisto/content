@@ -383,6 +383,7 @@ Run any command supported in the API.
 | job-id | Job ID. | Optional |
 | query | Query string. | Optional |
 | vsys | The name of the virtual system to be configured. If no vsys is mentioned, this command will not use the vsys parameter. | Optional |
+| newname | The object's new name, used when action=rename. If no value is provided, the name defaults to 'newname'.| Optional |
 
 #### Context Output
 

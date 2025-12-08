@@ -30,12 +30,12 @@ if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
 elif ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, ELASTICSEARCH_V9]:
     from elastic_transport import RequestsHttpNode
     from elasticsearch import Elasticsearch, NotFoundError  # type: ignore[assignment]
-    from elasticsearch_dsl import Search
-    from elasticsearch_dsl.query import QueryString
+    from elasticsearch.dsl import Search
+    from elasticsearch.dsl.query import QueryString
 else:  # Elasticsearch (<= v7)
     from elasticsearch7 import Elasticsearch, NotFoundError, RequestsHttpConnection  # type: ignore[assignment,misc]
-    from elasticsearch_dsl import Search
-    from elasticsearch_dsl.query import QueryString
+    from elasticsearch.dsl import Search
+    from elasticsearch.dsl.query import QueryString
 
 
 ES_DEFAULT_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSSSSS"
@@ -776,6 +776,10 @@ def results_to_incidents_datetime(response, last_fetch):
                         inc["labels"] = incident_label_maker(hit.get("_source"))
 
                     incidents.append(inc)
+                else:
+                    demisto.debug(
+                        f"Skipping hit ID: {hit.get('_id')} since {hit_timestamp=} is earlier than the {current_fetch=}"
+                    )
 
     return incidents, last_fetch.isoformat()  # type:ignore[union-attr]
 
@@ -843,6 +847,9 @@ def get_time_range(
     if TIME_METHOD == "Simple-Date":
         range_dict["format"] = ES_DEFAULT_DATETIME_FORMAT
 
+    if utc_offset := re.search(r"([+-]\d{2}:\d{2})$", time_range_start):
+        range_dict["time_zone"] = utc_offset.group(1)
+
     demisto.debug(f"Time range dictionary created: {range_dict}")
     return {"range": {time_field: range_dict}}
 
@@ -896,7 +903,7 @@ def fetch_incidents(proxies):
     if RAW_QUERY:
         response = execute_raw_query(es, RAW_QUERY)
     else:
-        query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
+        query = QueryString(query="(" + FETCH_QUERY + ") AND " + TIME_FIELD + ":*")
         # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
         search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
         search = search.sort({TIME_FIELD: {"order": "asc"}})[0:FETCH_SIZE].query(query)
@@ -1098,9 +1105,9 @@ def index_document(args, proxies):
     demisto.debug(f"Indexing document in index {index} with ID {doc_id}")
     if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
         if doc_id:
-            response = es.index(index=index, id=doc_id, document=doc)  # pylint: disable=E1123,E1120
+            response = es.index(index=index, id=doc_id, document=doc)  # pylint: disable=E1123,E1120,E1125
         else:
-            response = es.index(index=index, document=doc)  # pylint: disable=E1123,E1120
+            response = es.index(index=index, document=doc)  # pylint: disable=E1123,E1120,E1125
 
     else:  # Elasticsearch version v7 or below, OpenSearch (BC)
         # In elasticsearch lib <8 'document' param is called 'body'

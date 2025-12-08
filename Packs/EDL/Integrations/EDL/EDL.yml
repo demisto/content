@@ -45,7 +45,7 @@ configuration:
   defaultvalue: '2500'
   display: List Size
   name: edl_size
-  required: true
+  required: false
   type: 0
   section: Collect
 - additionalinfo: How often to refresh the list (e.g., less than 1 minute, 5 minutes, 12 hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend setting this value at less than 1 minute.
