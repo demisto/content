@@ -1065,7 +1065,7 @@ class TestGetUserData:
             The 'properties' key from demisto.args() is injected into command.args
             and passed to run_execute_command.
         """
-        mocker.patch("GetUserData.demisto.args", return_value={"properties": "DisplayName,JobTitle,ID,Mail"})
+        mocker.patch("GetUserData.demisto.args", return_value={"properties": "DisplayName,JobTitle"})
         command = Command("Microsoft Graph User", "msgraph-user-get", {"user": "graph_user"})
 
         mocker_run = mocker.patch("GetUserData.run_execute_command", return_value=([{}], "Human readable", []))
@@ -1076,7 +1076,7 @@ class TestGetUserData:
 
         msgraph_user_get(command, additional_fields=False)
 
-        assert command.args.get("properties") == "DisplayName,JobTitle"
+        assert command.args.get("properties") == "DisplayName,JobTitle,ID,Mail"
 
         mocker_run.assert_called_once()
         called_name, called_args = mocker_run.call_args[0]
