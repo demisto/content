@@ -247,7 +247,7 @@ class Client(BaseClient):
 
         for operation in operations:
             operation["_time"] = operation.get("FormattedStartTime")
-
+        #TODO: fix the limit issue to take the first items
         return operations[:limit], raw_res
 
 
