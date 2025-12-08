@@ -2,7 +2,7 @@
     "name": "Trend Vision One",
     "description": "Purpose-built threat defense platform with XDR capabilities that correlate data across email, endpoints, servers, cloud, and networks.",
     "support": "partner",
-    "currentVersion": "4.3.2",
+    "currentVersion": "4.5.1",
     "serverMinVersion": "6.2.0",
     "author": "Trend Micro",
     "url": "https://success.trendmicro.com",
